@@ -1,0 +1,47 @@
+[user]
+	name = Pedro Pombeiro
+	email = noreply@pedro.pombei.ro
+	signingkey = B04C63F91EF312EF
+[core]
+	editor = nano
+[commit]
+	gpgsign = true
+	template = ~/.git_commit_msg.txt
+[push]
+	default = simple
+[gpg]
+	program = gpg2
+[rebase]
+	autoSquash = true
+	autoStash = true
+	missingCommitsCheck = warn
+[diff]
+	tool = beyondcompare4
+	guitool = beyondcompare4
+[difftool]
+	prompt = false
+[difftool "beyondcompare4"]
+	cmd = bcompare \"$LOCAL\" \"$REMOTE\"
+	path = /usr/bin/bcompare
+	keepTemporaries = false
+	keepBackup = false
+	trustExitCode = true
+[merge]
+	keepBackup = false
+	tool = p4merge
+	guitool = p4merge
+[mergetool]
+	prompt = false
+[mergetool "p4merge"]
+	cmd = p4merge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
+	keepTemporaries = false
+	keepBackup = false
+	trustExitCode = false
+	path = /usr/bin/p4merge
+[alias]
+  mr = !sh -c 'git fetch $1 merge-requests/$2/head:mr-$1-$2 && git checkout mr-$1-$2' -
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true

@@ -108,7 +108,7 @@ ssh -T git@gitlab.com
   - [Krisp](https://krisp.ai/)
   - [LibreOffice](https://www.libreoffice.org/download/download/)
   - [MacPass](https://macpassapp.org/)
-  - [MacPass](https://github.com/mas-cli/mas)
+  - [Mac App Store command line interface](https://github.com/mas-cli/mas)
   - [Microsoft Edge](https://www.microsoft.com/en-us/edge)
   - [Plex](https://www.plex.tv/media-server-downloads/#plex-app)
   - [ProtonMail Bridge](https://protonmail.com/bridge/install)

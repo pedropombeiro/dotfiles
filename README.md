@@ -78,7 +78,7 @@ npm install -g doctoc
 ```shell
 # Install software
 brew install asciinema autojump coreutils moreutils fzf gnutls \
-             htop httpie jq yq ncdu nvm wget xz the_silver_searcher \
+             htop httpie jq yq nano ncdu nvm wget xz the_silver_searcher \
              python@3.8 tig watch youtube-dl
 brew cask install balenaetcher docker monitorcontrol
 

@@ -117,6 +117,7 @@ fi
 alias zshconfig="nano ~/.zshrc"
 alias ohmyzsh="nano ~/.oh-my-zsh"
 alias mkcd='foo(){ mkdir -p "$1"; cd "$1" }; foo'
+alias myip="curl http://ipecho.net/plain; echo"
 
 export REACT_EDITOR=code
 export GOPATH=~/go

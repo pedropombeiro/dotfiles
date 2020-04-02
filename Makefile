@@ -1,3 +1,8 @@
+.PHONY: update
+update:
+	@/usr/bin/git --git-dir=$(HOME)/.cfg/ --work-tree=$(HOME) fetch origin && \
+	 /usr/bin/git --git-dir=$(HOME)/.cfg/ --work-tree=$(HOME) reset --hard origin/master
+
 .PHONY: install
 install:
 	@if [ "$(shell uname -s)" = "Linux" ]; then \

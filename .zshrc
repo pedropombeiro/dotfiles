@@ -21,8 +21,8 @@ zstyle ':completion:*:killall:*' command 'ps -u $USER -o cmd'
 # Say how long a command took, if it took more than 10 seconds
 REPORTTIME=10
 
-# Set name of the theme to load --- if set to "random", it will load a random theme each time oh-my-zsh is loaded, in which 
-# case, to know which specific one was loaded, run: echo $RANDOM_THEME See 
+# Set name of the theme to load --- if set to "random", it will load a random theme each time oh-my-zsh is loaded, in which
+# case, to know which specific one was loaded, run: echo $RANDOM_THEME See
 # https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 #ZSH_THEME="robbyrussell"
 #ZSH_THEME="agnoster"
@@ -116,6 +116,7 @@ fi
 # Example aliases
 alias zshconfig="nano ~/.zshrc"
 alias ohmyzsh="nano ~/.oh-my-zsh"
+alias mkcd='foo(){ mkdir -p "$1"; cd "$1" }; foo'
 
 export REACT_EDITOR=code
 export GOPATH=~/go

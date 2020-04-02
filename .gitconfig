@@ -9,8 +9,6 @@
 	template = ~/.git_commit_msg.txt
 [push]
 	default = simple
-[gpg]
-	program = gpg2
 [rebase]
 	autoSquash = true
 	autoStash = true

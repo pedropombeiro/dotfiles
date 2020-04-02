@@ -117,9 +117,9 @@ sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-c
   sudo chmod +x /usr/local/bin/docker-compose
 
 # Beyond Compare 4
-sudo dpkg --add-architecture i386 && \
-  cd $download_dir && wget -O bcompare_amd64.deb https://www.scootersoftware.com/bcompare-4.2.5.23088_amd64.deb && \
-  sudo gdebi bcompare_amd64.deb
+cd $download_dir && wget -O bcompare_amd64.deb https://www.scootersoftware.com/bcompare-4.3.4.24657_amd64.deb && \
+  sudo gdebi bcompare_amd64.deb && \
+  sudo ln -sf /usr/bin/bcompare /usr/local/bin/bcompare # For compatibility with install on MacOS
 
 # P4Merge
 cd $download_dir && wget https://www.perforce.com/downloads/perforce/r17.3/bin.linux26x86_64/p4v.tgz && \

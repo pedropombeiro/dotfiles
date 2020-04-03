@@ -54,7 +54,7 @@ This dotfiles environment is based on https://www.atlassian.com/git/tutorials/do
 To check out this repo and automatically back up any existing dotenv files, run:
 
 ```shell
-curl -Lks https://gitlab.com/pedropombeiro/dotfiles/snippets/1960043 | /bin/bash
+curl -Lks https://gitlab.com/pedropombeiro/dotfiles/snippets/1960043/raw | /bin/bash
 ```
 
 # Post-install procedure

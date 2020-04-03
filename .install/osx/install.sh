@@ -4,7 +4,7 @@ set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Install software through Homebrew
+# Install software through Homebrew (https://formulae.brew.sh/)
 brew update
 
 brew install asciinema \
@@ -58,7 +58,7 @@ brew services start syncthing
 
 # For a GitLab development machine
 brew install minikube derailed/k9s/k9s
-brew cask install google-cloud-sdk
+brew cask install google-cloud-sdk jetbrains-toolbox
 
 set +e
 git clone https://github.com/bhilburn/powerlevel9k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel9k

@@ -50,6 +50,15 @@ EOF
 sudo add-apt-repository ppa:apandada1/brightness-controller && \
   sudo apt install -y brightness-controller
 
+# ProtonMail Bridge
+cd $download_dir && \
+  wget -O protonmail-bridge.deb https://protonmail.com/download/protonmail-bridge_1.2.6-1_amd64.deb
+  sudo gdebi protonmail-bridge.deb
+
+# ProtonVPN
+sudo apt install -y openvpn dialog python3-pip python3-setuptools
+sudo pip3 install protonvpn-cli
+
 # Simplenote
 cd $download_dir && \
   wget -O simplenote.deb https://github.com/Automattic/simplenote-electron/releases/download/v1.1.6/simplenote_1.1.6_amd64.deb
@@ -333,3 +342,9 @@ EOF
 
 systemctl daemon-reload
 systemctl enable powertop.service
+
+###################################################################
+# Attended configuration
+###################################################################
+
+sudo protonvpn init

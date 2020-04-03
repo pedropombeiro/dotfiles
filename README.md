@@ -83,7 +83,7 @@ npm install -g doctoc
 ```shell
 make install
 
-# Install ssh keys and verify you can connect to github and gitlab:
+# Verify you can connect to github and gitlab with the generated SSH keys:
 ssh -T git@github.com
 ssh -T git@gitlab.com
 ```

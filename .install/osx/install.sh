@@ -11,6 +11,7 @@ brew install asciinema \
              jq \
              mackup \
              mas-cli/tap/mas \
+             mc \
              moreutils \
              ncdu \
              nvm \

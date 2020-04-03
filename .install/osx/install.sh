@@ -70,4 +70,8 @@ mas install 957734279 # Toggl Desktop
 mas install 485812721 # TweetDeck
 mas install 1147396723 # WhatsApp
 
+git clone https://github.com/bhilburn/powerlevel9k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel9k
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
 source ${BASH_SOURCE}/defaults.sh

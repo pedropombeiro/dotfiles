@@ -23,6 +23,16 @@ sudo apt install -y preload gnome-tweak-tool unity-tweak-tool build-essential \
   gdebi-core httpie network-manager-openvpn-gnome mc moreutils tig \
   rng-tools asciinema
 
+# Oh-my-zsh
+sudo apt install -y zsh
+zsh --version
+chsh -s $(which zsh)
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+git clone https://github.com/bhilburn/powerlevel9k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel9k
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
 # https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#git
 # Fonts for powerlevel theme in VS Code: https://dev.to/mattstratton/making-powerline-work-in-visual-studio-code-terminal-1m7
 sudo apt install -y zsh fonts-powerline

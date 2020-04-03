@@ -137,6 +137,7 @@ ssh -T git@gitlab.com
   - WhatsApp ([App Store](https://apps.apple.com/us/app/whatsapp-desktop/id1147396723))
 - [Elgato Control Center](https://www.elgato.com/en/gaming/downloads)
 - [Microsoft To Do](https://todo.microsoft.com/tasks/)
+- Oh-my-zsh (installed via curl/git clone)
 - [OpenVPN](https://vpn.pombei.ro/?src=connect)
 - GitLab-specific:
   - [Install GitLink](https://plugins.jetbrains.com/plugin/8183-gitlink)

@@ -9,6 +9,7 @@ brew install asciinema \
              htop \
              httpie \
              jq \
+             mackup \
              mas-cli/tap/mas \
              moreutils \
              ncdu \

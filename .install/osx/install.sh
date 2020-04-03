@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
+set -e
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # Install software through Homebrew
+brew update
+
 brew install asciinema \
              autojump \
              coreutils \
@@ -16,13 +22,14 @@ brew install asciinema \
              ncdu \
              nvm \
              python@3.8 \
+             syncthing \
              the_silver_searcher \
              tig \
              watch \
              wget \
              xz \
              youtube-dl \
-             yq \
+             yq
 brew cask install 1password \
                   balenaetcher \
                   beyond-compare \
@@ -53,18 +60,16 @@ brew services start syncthing
 brew install minikube derailed/k9s/k9s
 brew cask install google-cloud-sdk
 
+set +e
 git clone https://github.com/bhilburn/powerlevel9k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel9k
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
-source ${BASH_SOURCE}/defaults.sh
+source ${SCRIPT_DIR}/defaults.sh
 
 # Install App Store apps
-if [ -z "$(mas account)" ]; then
-  read -p "Please enter your Apple ID:" APPLEID
+mas account > /dev/null || read -k 1 "Please log in to the App Store before proceeding"
 
-  mas signin "${APPLEID}"
-fi
 mas install 994933038 # Annotate
 mas install 973130201 # Be Focused
 mas install 865500966 # Feedly

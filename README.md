@@ -64,6 +64,11 @@ To install all the required software, run [make install](./.install/linux/instal
 ```shell
 make install
 
+# VirtualBox requires special permissions for its kernel extension to work
+# so installation will fail the first time, until you enable the permission
+# in System Preferences (just retry again after enabling permission)
+brew cask install virtualbox
+
 nvm install --lts --latest-npm
 
 npm install -g doctoc
@@ -124,7 +129,6 @@ ssh -T git@gitlab.com
   - [Spotify](https://www.spotify.com/download/mac)
   - [Syncthing](https://syncthing.net/downloads/)
   - [TripMode 2](https://www.tripmode.ch/)
-  - [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
   - [Visual Studio Code](https://code.visualstudio.com/Download)
 - Installed via mas-cli:
   - Annotate ([App Store](https://apps.apple.com/us/app/annotate-text-emoji-stickers-shapes-on-photos-screenshots/id994933038))
@@ -142,6 +146,7 @@ ssh -T git@gitlab.com
 - [Microsoft To Do](https://todo.microsoft.com/tasks/)
 - [Oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) (installed via curl/git clone)
 - [OpenVPN](https://vpn.pombei.ro/?src=connect)
+- [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 - GitLab-specific:
   - [Install GitLink](https://plugins.jetbrains.com/plugin/8183-gitlink)
 

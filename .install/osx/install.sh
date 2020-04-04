@@ -51,7 +51,6 @@ brew cask install 1password \
                   spotify \
                   syncthing \
                   tripmode \
-                  virtualbox \
                   visual-studio-code
 
 brew services start syncthing
@@ -65,6 +64,7 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 
 # Install Oh-my-zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+chmod o-w,g-w /usr/local/share/zsh /usr/local/share/zsh/site-functions
 
 set +e
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k

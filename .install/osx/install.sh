@@ -63,7 +63,8 @@ brew cask install google-cloud-sdk jetbrains-toolbox
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 
 # Install Oh-my-zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+export KEEP_ZSHRC=yes
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 chmod o-w,g-w /usr/local/share/zsh /usr/local/share/zsh/site-functions
 
 set +e

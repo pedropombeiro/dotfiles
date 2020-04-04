@@ -31,8 +31,6 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 
 # Install Oh-my-zsh https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#git
 sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-# Fonts for powerlevel theme in VS Code: https://dev.to/mattstratton/making-powerline-work-in-visual-studio-code-terminal-1m7
-sudo apt install -y fonts-powerline
 
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions

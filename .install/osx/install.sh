@@ -84,8 +84,8 @@ source ${SCRIPT_DIR}/defaults.sh
 # Install App Store apps
 mas account > /dev/null || echo "Please log in to the App Store before proceeding. Press any key to continue" && read -k 1
 
-mas install 994933038 # Annotate
-mas install 973130201 # Be Focused
+mas install 918207447 # Annotate
+mas install 973134470 # Be Focused
 mas install 865500966 # Feedly
 mas install 409183694 # Keynote
 mas install 409203825 # Numbers

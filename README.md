@@ -59,17 +59,25 @@ curl -Lks https://gitlab.com/pedropombeiro/dotfiles/snippets/1960043/raw | /bin/
 
 # Post-install procedure
 
-## On a fresh installation - Linux
-
 To install all the required software, run [make install](./.install/linux/install.sh)
 
 ```shell
+make install
+
 # Install nvm (https://github.com/nvm-sh/nvm#installing-and-updating)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 
 nvm install --lts --latest-npm
 
 npm install -g doctoc
+```
+
+## On a fresh installation - Linux
+
+```shell
+# Verify you can connect to github and gitlab with the generated SSH keys:
+ssh -T git@github.com
+ssh -T git@gitlab.com
 ```
 
 ## On a fresh installation - Mac OS X
@@ -81,8 +89,6 @@ npm install -g doctoc
 1. Run the steps below
 
 ```shell
-make install
-
 # Verify you can connect to github and gitlab with the generated SSH keys:
 ssh -T git@github.com
 ssh -T git@gitlab.com

@@ -1,5 +1,5 @@
-.PHONY: update
-update:
+.PHONY: pull
+pull:
 	@/usr/bin/git --git-dir=$(HOME)/.cfg/ --work-tree=$(HOME) fetch origin && \
 	 /usr/bin/git --git-dir=$(HOME)/.cfg/ --work-tree=$(HOME) reset --hard origin/master
 
@@ -11,10 +11,10 @@ install:
 		.install/osx/install.sh; \
 	fi
 
-.PHONY: upgrade
-upgrade:
+.PHONY: update
+update:
 	@if [ "$(shell uname -s)" = "Linux" ]; then \
-		.install/linux/upgrade.sh; \
+		.install/linux/update.sh; \
 	else \
-		.install/osx/upgrade.sh; \
+		.install/osx/update.sh; \
 	fi

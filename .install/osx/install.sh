@@ -30,8 +30,7 @@ brew install asciinema \
              xz \
              youtube-dl \
              yq
-brew cask install 1password \
-                  balenaetcher \
+brew cask install balenaetcher \
                   beyond-compare \
                   docker \
                   dropbox \
@@ -47,7 +46,6 @@ brew cask install 1password \
                   protonvpn \
                   rescuetime \
                   skype \
-                  slack \
                   spotify \
                   syncthing \
                   tripmode \
@@ -55,9 +53,13 @@ brew cask install 1password \
 
 brew services start syncthing
 
-# For a GitLab development machine
-brew install minikube derailed/k9s/k9s
-brew cask install google-cloud-sdk jetbrains-toolbox
+APPLEID="$(mas account || echo '')"
+
+if [ "$APPLEID" = "ppombeiro@gitlab.com" ]; then
+  # For a GitLab development machine
+  brew install minikube derailed/k9s/k9s
+  brew cask install 1password google-cloud-sdk jetbrains-toolbox slack
+fi
 
 # Install nvm (https://github.com/nvm-sh/nvm#installing-and-updating)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
@@ -80,7 +82,7 @@ sudo wget -O "/Library/Fonts/MesloLGS NF Bold Italic.ttf" https://github.com/rom
 source ${SCRIPT_DIR}/defaults.sh
 
 # Install App Store apps
-mas account > /dev/null || read -k 1 "Please log in to the App Store before proceeding"
+mas account > /dev/null || echo "Please log in to the App Store before proceeding. Press any key to continue" && read -k 1
 
 mas install 994933038 # Annotate
 mas install 973130201 # Be Focused

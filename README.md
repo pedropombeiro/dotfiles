@@ -157,8 +157,11 @@ Setup the following apps:
 - Password application
   - 1Password
   - MacPass
+- Syncthing
 - Time Machine
 - Microsoft Edge
+- Visual Studio Code
+  - Install [Settings Sync plugin](https://marketplace.visualstudio.com/items?itemName=Shan.code-settings-sync)
 - Printers
 
 # Features

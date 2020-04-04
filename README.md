@@ -99,6 +99,7 @@ ssh -T git@gitlab.com
 ### Mac OS X Settings
 
 - Change the computer name
+- Change the default terminal font to 'MesloLGS NF'
 - [Disable notifications when screen is off](https://www.jeffgeerling.com/blog/2016/external-display-waking-disable-notifications-when-your-screen)
 - Disable Location Services
 - Set keyboard shortcuts

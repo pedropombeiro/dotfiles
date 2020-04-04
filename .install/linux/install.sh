@@ -23,25 +23,40 @@ sudo apt install -y preload gnome-tweak-tool unity-tweak-tool build-essential \
   gdebi-core httpie network-manager-openvpn-gnome mc moreutils tig \
   rng-tools asciinema
 
-# Oh-my-zsh
+# Install zsh
 sudo apt install -y zsh
 zsh --version
 chsh -s $(which zsh)
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
+# Install Oh-my-zsh https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#git
+sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+# Fonts for powerlevel theme in VS Code: https://dev.to/mattstratton/making-powerline-work-in-visual-studio-code-terminal-1m7
+sudo apt install -y fonts-powerline
+
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
-# https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#git
-# Fonts for powerlevel theme in VS Code: https://dev.to/mattstratton/making-powerline-work-in-visual-studio-code-terminal-1m7
-sudo apt install -y zsh fonts-powerline
-sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
+# Install fonts for Powerline10k theme
+font_dir="$HOME/.local/share/fonts"
+wget -O "$font_dir/MesloLGS NF Regular.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
+wget -O "$font_dir/MesloLGS NF Bold.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
+wget -O "$font_dir/MesloLGS NF Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
+wget -O "$font_dir/MesloLGS NF Bold Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
+if command -v fc-cache &>/dev/null; then
+  echo "Resetting font cache, this may take a moment..."
+  fc-cache -f "$font_dir"
+fi
+
+# Set as default Ubuntu terminal font
+gsettings set \
+  org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ \
+  font 'MesloLGS NF 10'
 
 sudo apt install -y ccze # https://blog.tersmitten.nl/how-to-colorize-your-log-files-with-ccze.html
 
-download_dir=/home/$LOGNAME/Downloads
+download_dir="$HOME/Downloads"
 
 # s-tui (https://github.com/amanusk/s-tui)
 sudo add-apt-repository ppa:amanusk/python-s-tui

@@ -11,6 +11,13 @@ if [ -f '$HOME/.shellrc/zshrc.d/functions/*' ]; then
   done
 fi
 
+# Which plugins would you like to load?
+# Standard plugins can be found in ~/.oh-my-zsh/plugins/*
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(autojump git git-extras web-search zsh-autosuggestions zsh-syntax-highlighting)
+
 # extra files in $HOME/.shellrc/zshrc.d/configs/pre, $HOME/.shellrc/zshrc.d/configs, and $HOME/.shellrc/zshrc.d/configs/post
 # these are loaded first, second, and third, respectively.
 _load_settings() {

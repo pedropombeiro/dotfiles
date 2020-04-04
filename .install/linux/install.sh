@@ -24,7 +24,7 @@ sudo apt install -y preload gnome-tweak-tool unity-tweak-tool build-essential \
   rng-tools asciinema
 
 # Install zsh
-sudo apt install -y zsh
+sudo apt install -y zsh autojump
 zsh --version
 chsh -s $(which zsh)
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"

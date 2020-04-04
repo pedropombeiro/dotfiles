@@ -200,3 +200,5 @@ zprof
 # Acknowledgments
 
 - [holman](https://github.com/holman/dotfiles)
+- [thoughtbot](https://github.com/thoughtbot/dotfiles)
+- [conf.d like directories for zsh/bash dotfiles](https://chr4.org/blog/2014/09/10/conf-dot-d-like-directories-for-zsh-slash-bash-dotfiles/)

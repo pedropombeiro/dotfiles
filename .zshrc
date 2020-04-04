@@ -90,6 +90,8 @@ HIST_STAMPS="yyyy-mm-dd"
 plugins=(git git-extras brew docker dirhistory debian web-search zsh-autosuggestions zsh-syntax-highlighting history-substring-search)
 
 [ -d "$ZSH/oh-my-zsh.sh" ] && source $ZSH/oh-my-zsh.sh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f /usr/local/etc/profile.d/autojump.sh ] && source /usr/local/etc/profile.d/autojump.sh
 
 # User configuration
 

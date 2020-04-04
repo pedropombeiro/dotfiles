@@ -64,9 +64,6 @@ To install all the required software, run [make install](./.install/linux/instal
 ```shell
 make install
 
-# Install nvm (https://github.com/nvm-sh/nvm#installing-and-updating)
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-
 nvm install --lts --latest-npm
 
 npm install -g doctoc
@@ -143,7 +140,7 @@ ssh -T git@gitlab.com
   - WhatsApp ([App Store](https://apps.apple.com/us/app/whatsapp-desktop/id1147396723))
 - [Elgato Control Center](https://www.elgato.com/en/gaming/downloads)
 - [Microsoft To Do](https://todo.microsoft.com/tasks/)
-- Oh-my-zsh (installed via curl/git clone)
+- [Oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) (installed via curl/git clone)
 - [OpenVPN](https://vpn.pombei.ro/?src=connect)
 - GitLab-specific:
   - [Install GitLink](https://plugins.jetbrains.com/plugin/8183-gitlink)

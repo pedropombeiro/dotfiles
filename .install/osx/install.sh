@@ -21,7 +21,7 @@ brew install asciinema \
              moreutils \
              ncdu \
              nvm \
-             python@3.8 \
+             python \
              syncthing \
              the_silver_searcher \
              tig \

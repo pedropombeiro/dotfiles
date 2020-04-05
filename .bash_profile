@@ -10,3 +10,6 @@ if [ -d $HOME/.shellrc/login.d ]; then
     source $file
   done
 fi
+
+# Load local files
+test -f ~/.bash_profile.local && source ~/.bash_profile.local

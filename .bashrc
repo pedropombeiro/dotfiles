@@ -17,3 +17,6 @@ if [ -d $HOME/.shellrc/rc.d ]; then
     source $file
   done
 fi
+
+# Load local files
+test -f ~/.bashrc.local && source ~/.bashrc.local

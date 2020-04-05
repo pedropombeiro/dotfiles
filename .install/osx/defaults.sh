@@ -143,3 +143,35 @@ defaults write com.apple.ActivityMonitor ShowCategory -int 0
 # Sort Activity Monitor results by CPU usage
 defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
 defaults write com.apple.ActivityMonitor SortDirection -int 0
+
+###############################################################################
+# Itsycal                                                                     #
+###############################################################################
+
+defaults write com.mowglii.ItsycalApp ClockFormat -string "E d MMMM H:mm";
+defaults write com.mowglii.ItsycalApp HideIcon -int 1
+defaults write com.mowglii.ItsycalApp HighlightedDOWs -int 62
+defaults write com.mowglii.ItsycalApp ShowDayOfWeekInIcon -int 1
+defaults write com.mowglii.ItsycalApp ShowEventDays -int 3
+defaults write com.mowglii.ItsycalApp ShowLocation -int 0
+defaults write com.mowglii.ItsycalApp ShowMonthInIcon -int 1
+defaults write com.mowglii.ItsycalApp ShowWeeks -int 1
+defaults write com.mowglii.ItsycalApp UseOutlineIcon -int 0
+
+###############################################################################
+# Rectangle                                                                   #
+###############################################################################
+
+defaults write com.knollsoft.Rectangle alternateDefaultShortcuts -bool false
+
+###############################################################################
+# Numii                                                                       #
+###############################################################################
+
+# Assign Ctrl+Option+C shortcut key
+defaults write com.dmitrynikolaev.numi shortcutObject '{
+"characters"="\003";
+"charactersIgnoringModifiers"=c;
+"keyCode"=8;
+"modifierFlags"=786432;
+}'

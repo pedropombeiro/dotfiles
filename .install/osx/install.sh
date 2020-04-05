@@ -32,10 +32,12 @@ brew install asciinema \
              yq
 brew cask install balenaetcher \
                   beyond-compare \
+                  cheatsheet \
                   docker \
                   dropbox \
                   fork \
                   google-chrome \
+                  itsycal \
                   krisp \
                   libreoffice \
                   macpass \
@@ -44,6 +46,8 @@ brew cask install balenaetcher \
                   plex \
                   protonmail-bridge \
                   protonvpn \
+                  recordit \
+                  rectangle \
                   rescuetime \
                   skype \
                   spotify \
@@ -84,6 +88,7 @@ source ${SCRIPT_DIR}/defaults.sh
 # Install App Store apps
 mas account > /dev/null || echo "Please log in to the App Store before proceeding. Press any key to continue" && read -k 1
 
+mas install 937984704 # Amphetamine
 mas install 918207447 # Annotate
 mas install 973134470 # Be Focused
 mas install 865500966 # Feedly

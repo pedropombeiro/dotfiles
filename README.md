@@ -128,6 +128,7 @@ ssh -T git@gitlab.com
   - [Mackup](https://github.com/lra/mackup)
   - [Midnight Commander](https://midnight-commander.org/)
   - [Microsoft Edge](https://www.microsoft.com/en-us/edge)
+  - [Numi](https://numi.io/)
   - [Plex](https://www.plex.tv/media-server-downloads/#plex-app)
   - [ProtonMail Bridge](https://protonmail.com/bridge/install)
   - [ProtonVPN](https://protonvpn.com/download)
@@ -201,8 +202,6 @@ zprof
 ```
 
 ## Useful software (not installed by default)
-
-- [Numi](https://numi.io/): beautiful calculator app for Mac (like Soulver)
 
 ## Checklist before reinstall
 

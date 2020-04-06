@@ -159,12 +159,6 @@ defaults write com.mowglii.ItsycalApp ShowWeeks -int 1
 defaults write com.mowglii.ItsycalApp UseOutlineIcon -int 0
 
 ###############################################################################
-# Rectangle                                                                   #
-###############################################################################
-
-defaults write com.knollsoft.Rectangle alternateDefaultShortcuts -bool false
-
-###############################################################################
 # Numii                                                                       #
 ###############################################################################
 

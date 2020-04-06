@@ -47,7 +47,6 @@ brew cask install balenaetcher \
                   protonmail-bridge \
                   protonvpn \
                   recordit \
-                  rectangle \
                   rescuetime \
                   skype \
                   spotify \

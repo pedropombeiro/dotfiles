@@ -132,8 +132,6 @@ ssh -T git@gitlab.com
   - [ProtonMail Bridge](https://protonmail.com/bridge/install)
   - [ProtonVPN](https://protonvpn.com/download)
   - [RecordIt](http://www.recordit.co/)
-  - [Rectangle](https://github.com/rxhanson/Rectangle)
-  - [RescueTime](https://www.rescuetime.com/download)
   - [Skype](https://www.skype.com/en/get-skype/)
   - [Slack](https://slack.com/downloads)
   - [Spotify](https://www.spotify.com/download/mac)
@@ -173,6 +171,12 @@ Setup the following apps:
 - Visual Studio Code
   - Install [Settings Sync plugin](https://marketplace.visualstudio.com/items?itemName=Shan.code-settings-sync)
 - Printers
+- Be Focused
+  - Work interval duration: 20m
+  - Short break duration: 1m
+  - Long break duration: 15m
+  - Long break after: 6 intervals
+  - Target: 18 intervals
 
 # Features
 

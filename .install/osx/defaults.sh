@@ -157,15 +157,3 @@ defaults write com.mowglii.ItsycalApp ShowLocation -int 0
 defaults write com.mowglii.ItsycalApp ShowMonthInIcon -int 1
 defaults write com.mowglii.ItsycalApp ShowWeeks -int 1
 defaults write com.mowglii.ItsycalApp UseOutlineIcon -int 0
-
-###############################################################################
-# Numii                                                                       #
-###############################################################################
-
-# Assign Ctrl+Option+C shortcut key
-defaults write com.dmitrynikolaev.numi shortcutObject '{
-"characters"="\003";
-"charactersIgnoringModifiers"=c;
-"keyCode"=8;
-"modifierFlags"=786432;
-}'

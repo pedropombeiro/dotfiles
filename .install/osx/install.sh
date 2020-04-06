@@ -85,7 +85,7 @@ sudo wget -O "/Library/Fonts/MesloLGS NF Bold Italic.ttf" https://github.com/rom
 source ${SCRIPT_DIR}/defaults.sh
 
 # Install App Store apps
-mas account > /dev/null || echo "Please log in to the App Store before proceeding. Press any key to continue" && read -k 1
+mas account > /dev/null || echo "Please log in to the App Store before proceeding. Press Enter to continue" && read
 
 mas install 937984704 # Amphetamine
 mas install 918207447 # Annotate

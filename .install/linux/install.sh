@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+echo "source ~/.bash_profile.shared" >> ~/.bash_profile
+echo "source ~/.bashrc.shared" >> ~/.bashrc
+
 rm -f ~/Downloads/*
 
 # Adapt Firefox settings
@@ -27,6 +30,7 @@ brew install fzf
 
 # Install zsh
 sudo apt install -y zsh autojump
+echo "source ~/.zshrc.shared" > ~/.zshrc
 zsh --version
 chsh -s $(which zsh)
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
@@ -273,14 +277,9 @@ cd $download_dir && wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux
   sudo mkdir -p /usr/local/bin/ngrok &&
   sudo unzip ngrok-stable-linux-amd64.zip -d /usr/local/bin/ngrok/
 
-echo PATH='/usr/local/go/bin:$HOME/go/bin:$PATH:/usr/local/bin/GitExtensions/:/usr/local/bin/ngrok/' | tee -a ~/.profile
-echo export GOPATH=~/go | tee -a ~/.profile
-echo export STATUS_GO_HOME=~/go/src/github.com/status-im/status-go | tee -a ~/.profile
-echo export STATUS_REACT_HOME=~/src/github.com/status-im/status-react | tee -a ~/.profile
+echo PATH='$PATH:/usr/local/bin/GitExtensions/:/usr/local/bin/ngrok/' | tee -a ~/.zshrc
 
-echo export REACT_EDITOR=code | tee -a ~/.bashrc
-
-source ~/.profile
+source ~/.zshrc
 
 # Setup udev for Nexus 6P
 sudo usermod -aG plugdev $LOGNAME # https://developer.android.com/studio/run/device.html && \

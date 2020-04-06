@@ -4,21 +4,44 @@ set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-# Install software through Homebrew (https://formulae.brew.sh/)
+# Install pre-requisites through Homebrew (https://formulae.brew.sh/)
 brew update
 
-brew install asciinema \
-             autojump \
-             coreutils \
+brew install autojump \
              fzf \
-             gnutls \
-             htop \
-             httpie \
              jq \
              mackup \
              mas-cli/tap/mas \
+             wget
+
+echo "source ~/.bash_profile.shared" >> ~/.bash_profile
+echo "source ~/.bashrc.shared" >> ~/.bashrc
+
+# Install Oh-my-zsh
+chmod o-w,g-w /usr/local/share/zsh /usr/local/share/zsh/site-functions
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+echo "source ~/.zshrc.shared" > ~/.zshrc
+
+set +e
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+sudo wget -O "/Library/Fonts/MesloLGS NF Regular.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
+sudo wget -O "/Library/Fonts/MesloLGS NF Bold.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
+sudo wget -O "/Library/Fonts/MesloLGS NF Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
+sudo wget -O "/Library/Fonts/MesloLGS NF Bold Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
+set -e
+
+# Install software through Homebrew (https://formulae.brew.sh/)
+brew install asciinema \
+             coreutils \
+             gnutls \
+             htop \
+             httpie \
              mc \
              moreutils \
+             nano \
              ncdu \
              nvm \
              python \
@@ -26,7 +49,6 @@ brew install asciinema \
              the_silver_searcher \
              tig \
              watch \
-             wget \
              xz \
              youtube-dl \
              yq
@@ -62,25 +84,14 @@ if [ "$APPLEID" = "ppombeiro@gitlab.com" ]; then
   # For a GitLab development machine
   brew install minikube derailed/k9s/k9s
   brew cask install 1password google-cloud-sdk jetbrains-toolbox slack
+
+  # Install Go Version Manager
+  GVM_NO_UPDATE_PROFILE=1 bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
+  echo "source ~/.gvm/scripts/gvm" >> ~/.zshrc
 fi
 
 # Install nvm (https://github.com/nvm-sh/nvm#installing-and-updating)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-
-# Install Oh-my-zsh
-chmod o-w,g-w /usr/local/share/zsh /usr/local/share/zsh/site-functions
-export KEEP_ZSHRC=yes
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-
-set +e
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-
-sudo wget -O "/Library/Fonts/MesloLGS NF Regular.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
-sudo wget -O "/Library/Fonts/MesloLGS NF Bold.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
-sudo wget -O "/Library/Fonts/MesloLGS NF Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
-sudo wget -O "/Library/Fonts/MesloLGS NF Bold Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
 
 source ${SCRIPT_DIR}/defaults.sh
 

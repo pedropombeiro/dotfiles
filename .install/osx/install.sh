@@ -65,6 +65,7 @@ brew cask install balenaetcher \
                   macpass \
                   microsoft-edge \
                   monitorcontrol \
+                  muzzle \
                   numi \
                   p4v \
                   plex \

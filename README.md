@@ -128,6 +128,7 @@ ssh -T git@gitlab.com
   - [Mackup](https://github.com/lra/mackup)
   - [Midnight Commander](https://midnight-commander.org/)
   - [Microsoft Edge](https://www.microsoft.com/en-us/edge)
+  - [Muzzle](https://muzzleapp.com/)
   - [Numi](https://numi.io/)
   - [P4Merge](https://www.perforce.com/products/helix-core-apps/merge-diff-tool-p4merge)
   - [Plex](https://www.plex.tv/media-server-downloads/#plex-app)
@@ -163,6 +164,7 @@ ssh -T git@gitlab.com
 
 Setup the following apps:
 
+- Beyond Compare (import settings backup and install command line tools)
 - Dropbox
 - Password application
   - 1Password

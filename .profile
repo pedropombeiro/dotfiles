@@ -26,5 +26,5 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-# Load local files
-test -f ~/.profile.local && source ~/.profile.local
+# Load shared files
+test -f ~/.profile.shared && source ~/.profile.shared

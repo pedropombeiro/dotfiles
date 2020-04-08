@@ -66,6 +66,7 @@ brew cask install balenaetcher \
                   microsoft-edge \
                   monitorcontrol \
                   numi \
+                  p4v \
                   plex \
                   protonmail-bridge \
                   protonvpn \

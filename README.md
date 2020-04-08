@@ -129,6 +129,7 @@ ssh -T git@gitlab.com
   - [Midnight Commander](https://midnight-commander.org/)
   - [Microsoft Edge](https://www.microsoft.com/en-us/edge)
   - [Numi](https://numi.io/)
+  - [P4Merge](https://www.perforce.com/products/helix-core-apps/merge-diff-tool-p4merge)
   - [Plex](https://www.plex.tv/media-server-downloads/#plex-app)
   - [ProtonMail Bridge](https://protonmail.com/bridge/install)
   - [ProtonVPN](https://protonvpn.com/download)

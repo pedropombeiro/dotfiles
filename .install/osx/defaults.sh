@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 # Inspired from https://github.com/mathiasbynens/dotfiles/blob/master/.macos
+# https://shadowfile.inode.link/blog/2018/06/advanced-defaults1-usage/
+# http://hints.macworld.com/article.php?story=20131123074223584
 
 ###############################################################################
 # General UI/UX                                                               #

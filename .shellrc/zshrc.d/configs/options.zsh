@@ -1,3 +1,5 @@
+export TERM="xterm-256color"
+
 # Say how long a command took, if it took more than 10 seconds
 REPORTTIME=10
 

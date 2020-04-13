@@ -116,6 +116,7 @@ ssh -T git@gitlab.com
   - [1Password](https://1password.com/downloads/mac/)
   - [Beyond Compare](https://scootersoftware.com/download.php)
   - [CheatSheet](https://www.mediaatelier.com/CheatSheet/)
+  - [Dash](https://kapeli.com/dash)
   - [Docker](https://www.docker.com/products/docker-desktop)
   - [Dropbox](https://www.dropbox.com/install)
   - [Fork Git client](https://git-fork.com/update/files/Fork.dmg)

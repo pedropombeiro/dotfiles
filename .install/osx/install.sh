@@ -55,6 +55,7 @@ brew install asciinema \
 brew cask install balenaetcher \
                   beyond-compare \
                   cheatsheet \
+                  dash \
                   docker \
                   dropbox \
                   fork \

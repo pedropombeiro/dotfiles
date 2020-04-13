@@ -159,3 +159,13 @@ defaults write com.mowglii.ItsycalApp ShowLocation -int 0
 defaults write com.mowglii.ItsycalApp ShowMonthInIcon -int 1
 defaults write com.mowglii.ItsycalApp ShowWeeks -int 1
 defaults write com.mowglii.ItsycalApp UseOutlineIcon -int 0
+
+###############################################################################
+# MacPass                                                                     #
+###############################################################################
+
+defaults write -app MacPass EnableGlobalAutotype 1
+defaults write -app MacPass EnableQuicklookPreview 1
+defaults write -app MacPass LastDatabasePath = "file://${HOME}/Dropbox/pombeiro.kdbx"
+defaults write -app MacPass SUEnableAutomaticChecks 1
+defaults write -app MacPass HideAfterCopyToClipboard 1

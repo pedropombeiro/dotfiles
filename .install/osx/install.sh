@@ -59,8 +59,11 @@ brew cask install balenaetcher \
                   dash \
                   docker \
                   dropbox \
+                  homebrew/cask-drivers/elgato-control-center \
                   fork \
+                  gimp \
                   google-chrome \
+                  gpg-suite \
                   itsycal \
                   krisp \
                   libreoffice \
@@ -78,17 +81,25 @@ brew cask install balenaetcher \
                   skype \
                   spotify \
                   syncthing \
+                  toggl \
                   tripmode \
-                  visual-studio-code
+                  visual-studio-code \
+                  whatsapp
 
 brew services start syncthing
 
 APPLEID="$(mas account || echo '')"
 
-if [ "$APPLEID" = "ppombeiro@gitlab.com" ]; then
+if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
   # For a GitLab development machine
   brew install minikube derailed/k9s/k9s
-  brew cask install 1password google-cloud-sdk jetbrains-toolbox slack
+  brew cask install \
+                    1password \
+                    google-cloud-sdk \
+                    google-drive-file-stream \
+                    jetbrains-toolbox \
+                    slack \
+                    zoomus
 
   # Install Go Version Manager
   GVM_NO_UPDATE_PROFILE=1 bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)

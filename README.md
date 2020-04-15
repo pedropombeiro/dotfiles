@@ -72,7 +72,7 @@ make install
 # VirtualBox requires special permissions for its kernel extension to work
 # so installation will fail the first time, until you enable the permission
 # in System Preferences (just retry again after enabling permission)
-brew cask install virtualbox
+brew cask install virtualbox virtualbox-extension-pack
 
 nvm install --lts --latest-npm
 

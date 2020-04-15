@@ -45,6 +45,7 @@ brew install asciinema \
              ncdu \
              nvm \
              python \
+             shellcheck \
              syncthing \
              the_silver_searcher \
              tig \

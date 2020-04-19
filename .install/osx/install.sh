@@ -64,6 +64,7 @@ brew cask install balenaetcher \
                   gimp \
                   google-chrome \
                   gpg-suite \
+                  iterm2 \
                   itsycal \
                   krisp \
                   libreoffice \

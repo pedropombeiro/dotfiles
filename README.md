@@ -121,6 +121,7 @@ ssh -T git@gitlab.com
   - [Dropbox](https://www.dropbox.com/install)
   - [Fork Git client](https://git-fork.com/update/files/Fork.dmg)
   - [Google Chrome](https://www.google.com/chrome/)
+  - [iTerm2](https://www.iterm2.com/downloads.html)
   - [ItsyCal](https://www.mowglii.com/itsycal/)
   - [Krisp](https://krisp.ai/)
   - [LibreOffice](https://www.libreoffice.org/download/download/)

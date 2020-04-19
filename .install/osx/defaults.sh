@@ -169,3 +169,41 @@ defaults write -app MacPass EnableQuicklookPreview 1
 defaults write -app MacPass LastDatabasePath "file://${HOME}/Dropbox/pombeiro.kdbx"
 defaults write -app MacPass SUEnableAutomaticChecks 1
 defaults write -app MacPass HideAfterCopyToClipboard 1
+
+###############################################################################
+# iTerm2                                                                      #
+###############################################################################
+
+# Open the app so the preference files get initialized
+open -g "/Applications/iTerm.app" && sleep 2
+
+# Disable warning when quitting
+defaults write com.googlecode.iterm2 PromptOnQuit -bool false
+
+sleep 2 && osascript -e 'quit app "iTerm"'
+
+# Show tab bar in FullScreen
+defaults write com.googlecode.iterm2 ShowFullScreenTabBar -bool true
+
+# Set font to MesloLGS NF Regular 14px
+/usr/libexec/PlistBuddy -c "Set 'New Bookmarks':0:'Normal Font' MesloLGS-NF-Regular 14" ~/Library/Preferences/com.googlecode.iTerm2.plist
+/usr/libexec/PlistBuddy -c "Set 'New Bookmarks':0:'Non Ascii Font' MesloLGS-NF-Regular 14" ~/Library/Preferences/com.googlecode.iTerm2.plist
+
+# Enable title sync
+/usr/libexec/PlistBuddy -c "Set 'New Bookmarks':0:'Sync Title' 1" ~/Library/Preferences/com.googlecode.iTerm2.plist
+
+# Change default window size
+/usr/libexec/PlistBuddy -c "Set 'New Bookmarks':0:'Columns' 132" ~/Library/Preferences/com.googlecode.iTerm2.plist
+
+# Unlimited Scrollback
+/usr/libexec/PlistBuddy -c "Set 'New Bookmarks':0:'Unlimited Scrollback' true" ~/Library/Preferences/com.googlecode.iTerm2.plist
+
+# Add shortcuts to Dock
+defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Fork.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Microsoft Edge.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/iTerm.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/TogglDesktop.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</key><dict><key>file-data</key><dict><key>_CFURLString</key><string>/Applications/Visual Studio Code.app</string><key>_CFURLStringType</key><integer>0</integer></dict></dict></dict>"
+
+# reset the preferences cache
+killall cfprefsd

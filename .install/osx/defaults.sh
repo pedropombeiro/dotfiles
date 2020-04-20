@@ -164,7 +164,6 @@ defaults write com.mowglii.ItsycalApp UseOutlineIcon -int 0
 # MacPass                                                                     #
 ###############################################################################
 
-defaults write -app MacPass EnableGlobalAutotype 1
 defaults write -app MacPass EnableQuicklookPreview 1
 defaults write -app MacPass LastDatabasePath "file://${HOME}/Dropbox/pombeiro.kdbx"
 defaults write -app MacPass SUEnableAutomaticChecks 1

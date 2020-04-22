@@ -74,6 +74,9 @@ make install
 # in System Preferences (just retry again after enabling permission)
 brew cask install virtualbox virtualbox-extension-pack
 
+# Create default VM for Docker daemon with experimental mode enabled
+docker-machine create default --engine-opt experimental
+
 nvm install --lts --latest-npm
 
 npm install -g doctoc

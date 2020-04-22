@@ -57,7 +57,6 @@ brew cask install balenaetcher \
                   beyond-compare \
                   cheatsheet \
                   dash \
-                  docker \
                   dropbox \
                   homebrew/cask-drivers/elgato-control-center \
                   fork \
@@ -93,14 +92,18 @@ APPLEID="$(mas account || echo '')"
 
 if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
   # For a GitLab development machine
-  brew install minikube derailed/k9s/k9s
-  brew cask install \
-                    1password \
+  brew install docker-machine \
+               minikube \
+               derailed/k9s/k9s
+  brew cask install 1password \
+                    docker \
                     google-cloud-sdk \
                     google-drive-file-stream \
                     jetbrains-toolbox \
                     slack \
                     zoomus
+
+  brew services start docker-machine
 
   # Install Go Version Manager
   GVM_NO_UPDATE_PROFILE=1 bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
@@ -110,10 +113,10 @@ fi
 # Install nvm (https://github.com/nvm-sh/nvm#installing-and-updating)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 
-source ${SCRIPT_DIR}/defaults.sh
+source "${SCRIPT_DIR}/defaults.sh"
 
 # Install App Store apps
-mas account > /dev/null || echo "Please log in to the App Store before proceeding. Press Enter to continue" && read
+mas account > /dev/null || echo "Please log in to the App Store before proceeding. Press Enter to continue" && read -r
 
 mas install 937984704 # Amphetamine
 mas install 918207447 # Annotate

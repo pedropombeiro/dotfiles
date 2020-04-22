@@ -1,5 +1,4 @@
-# Highlight section titles in manual pages.
-export LESS_TERMCAP_md="${yellow}";
+#!/usr/bin/env bash
 
 # Don’t clear the screen after quitting a manual page.
 export MANPAGER='less -X'

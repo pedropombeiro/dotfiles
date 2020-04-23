@@ -67,6 +67,7 @@ brew cask install balenaetcher \
                   itsycal \
                   krisp \
                   libreoffice \
+                  little-snitch \
                   macpass \
                   microsoft-edge \
                   monitorcontrol \
@@ -114,6 +115,9 @@ fi
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 
 source "${SCRIPT_DIR}/defaults.sh"
+
+# Complete installation of Little Snitch (will require restart)
+open "$(find /usr/local/Caskroom/little-snitch -name 'LittleSnitch-*.dmg')"
 
 # Install App Store apps
 mas account > /dev/null || echo "Please log in to the App Store before proceeding. Press Enter to continue" && read -r

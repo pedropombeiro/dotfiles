@@ -128,6 +128,7 @@ ssh -T git@gitlab.com
   - [ItsyCal](https://www.mowglii.com/itsycal/)
   - [Krisp](https://krisp.ai/)
   - [LibreOffice](https://www.libreoffice.org/download/download/)
+  - [Little Snitch](https://www.obdev.at/products/littlesnitch/download.html)
   - [MacPass](https://macpassapp.org/)
   - [Mac App Store command line interface](https://github.com/mas-cli/mas)
   - [Mackup](https://github.com/lra/mackup)

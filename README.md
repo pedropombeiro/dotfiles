@@ -47,7 +47,7 @@ See [Installation](#Installation) and then the [fresh install section](#on-a-fre
 sudo apt install build-essential curl file git make
 
 # Install Homebrew
-sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 test -r ~/.bash_profile.local && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >> ~/.bash_profile.local
 echo "eval \$($(brew --prefix)/bin/brew shellenv)" >> ~/.profile.local
 ```

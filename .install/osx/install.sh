@@ -35,6 +35,7 @@ set -e
 
 # Install software through Homebrew (https://formulae.brew.sh/)
 brew install asciinema \
+             calc \
              coreutils \
              gnutls \
              htop \
@@ -46,6 +47,7 @@ brew install asciinema \
              nvm \
              python \
              shellcheck \
+             speedtest_cli \
              syncthing \
              the_silver_searcher \
              tig \
@@ -55,6 +57,7 @@ brew install asciinema \
              yq
 brew cask install balenaetcher \
                   beyond-compare \
+                  cakebrew \
                   cheatsheet \
                   dash \
                   dropbox \
@@ -68,6 +71,7 @@ brew cask install balenaetcher \
                   krisp \
                   libreoffice \
                   little-snitch \
+                  micro-snitch \
                   macpass \
                   microsoft-edge \
                   monitorcontrol \
@@ -81,6 +85,7 @@ brew cask install balenaetcher \
                   rescuetime \
                   skype \
                   spotify \
+                  superduper \
                   syncthing \
                   toggl \
                   tripmode \

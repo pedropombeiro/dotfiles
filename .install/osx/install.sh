@@ -100,6 +100,7 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
   # For a GitLab development machine
   brew install docker-machine \
                minikube \
+               helm \
                derailed/k9s/k9s
   brew cask install 1password \
                     docker \

@@ -99,6 +99,7 @@ APPLEID="$(mas account || echo '')"
 if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
   # For a GitLab development machine
   brew install docker-machine \
+               minio/stable/minio \
                minikube \
                helm \
                derailed/k9s/k9s

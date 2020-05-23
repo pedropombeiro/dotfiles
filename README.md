@@ -225,6 +225,11 @@ zprof
 - Make sure iCloud sync is finished (check status bar in Finder)
 - What's most important? Is it backed up?
 
+## Checklist after install
+
+- Add Terminal, iTerm, Visual Studio Code and GoLand to `System Preferences/Security & Privacy/Privacy/Developer Tools` list, to avoid Apple
+  notarisation checks that cause slowdowns.
+
 # Acknowledgments
 
 - [holman](https://github.com/holman/dotfiles)

@@ -45,6 +45,7 @@ brew install asciinema \
              nano \
              ncdu \
              nvm \
+             pinentry-mac \
              python \
              shellcheck \
              speedtest_cli \

@@ -165,3 +165,5 @@
 	insteadOf = "gst:"
 	pushInsteadOf = "gist:"
 	pushInsteadOf = "git://gist.github.com/"
+[pull]
+	rebase = true

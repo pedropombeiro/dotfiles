@@ -75,7 +75,7 @@ make install
 brew cask install virtualbox virtualbox-extension-pack
 
 # Create default VM for Docker daemon with experimental mode enabled
-docker-machine create default --engine-opt experimental
+docker-machine create docker --engine-opt experimental
 
 nvm install --lts --latest-npm
 

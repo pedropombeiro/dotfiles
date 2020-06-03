@@ -34,7 +34,8 @@ sudo wget -O "/Library/Fonts/MesloLGS NF Bold Italic.ttf" https://github.com/rom
 set -e
 
 # Install software through Homebrew (https://formulae.brew.sh/)
-brew install asciinema \
+brew install aria2 \
+             asciinema \
              calc \
              coreutils \
              gnutls \
@@ -59,7 +60,8 @@ brew install asciinema \
 
 sudo ln -sf /usr/local/bin/pinentry-mac /usr/local/bin/pinentry-xp
 
-brew cask install balenaetcher \
+brew cask install aria2d \
+                  balenaetcher \
                   beyond-compare \
                   cakebrew \
                   cheatsheet \
@@ -80,6 +82,7 @@ brew cask install balenaetcher \
                   microsoft-edge \
                   monitorcontrol \
                   muzzle \
+                  ngrok \
                   numi \
                   p4v \
                   plex \

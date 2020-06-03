@@ -80,7 +80,7 @@ sudo add-apt-repository ppa:apandada1/brightness-controller && \
   sudo apt install -y brightness-controller
 
 # ProtonMail Bridge
-cd $download_dir && \
+cd "${download_dir}" && \
   wget -O protonmail-bridge.deb https://protonmail.com/download/protonmail-bridge_1.2.6-1_amd64.deb
   sudo gdebi protonmail-bridge.deb
 
@@ -89,7 +89,7 @@ sudo apt install -y openvpn dialog python3-pip python3-setuptools
 sudo pip3 install protonvpn-cli
 
 # Simplenote
-cd $download_dir && \
+cd "${download_dir}" && \
   wget -O simplenote.deb https://github.com/Automattic/simplenote-electron/releases/download/v1.1.6/simplenote_1.1.6_amd64.deb
   sudo gdebi simplenote.deb
 
@@ -98,23 +98,23 @@ wget -q -O - https://raw.githubusercontent.com/LedgerHQ/udev-rules/master/add_ud
 sudo apt install -y python3-pip libusb-1.0-0-dev libudev-dev
 sudo pip3 install btchip-python
 
-cd $download_dir && wget -O ledger-live-desktop-linux-x86_64.AppImage https://github.com/LedgerHQ/ledger-live-desktop/releases/download/v1.0.1/ledger-live-desktop-1.0.1-linux-x86_64.AppImage && \
+cd "${download_dir}" && wget -O ledger-live-desktop-linux-x86_64.AppImage https://github.com/LedgerHQ/ledger-live-desktop/releases/download/v1.0.1/ledger-live-desktop-1.0.1-linux-x86_64.AppImage && \
   chmod +x ledger-live-desktop-linux-x86_64.AppImage && \
   sudo mv ledger-live-desktop-linux-x86_64.AppImage /usr/local/bin/
 
 # Google Chrome
 echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
-  cd $download_dir && wget https://dl.google.com/linux/linux_signing_key.pub && \
+  cd "${download_dir}" && wget https://dl.google.com/linux/linux_signing_key.pub && \
   sudo apt-key add linux_signing_key.pub && \
   sudo apt update && \
   sudo apt install google-chrome-stable
 
 # RescueTime
-cd $download_dir && wget https://www.rescuetime.com/installers/rescuetime_current_amd64.deb && \
+cd "${download_dir}" && wget https://www.rescuetime.com/installers/rescuetime_current_amd64.deb && \
   sudo gdebi rescuetime_current_amd64.deb
 
 # Toggl
-cd $download_dir && \
+cd "${download_dir}" && \
   wget http://fr.archive.ubuntu.com/ubuntu/pool/main/g/gst-plugins-base0.10/libgstreamer-plugins-base0.10-0_0.10.36-1_amd64.deb && \
   wget http://fr.archive.ubuntu.com/ubuntu/pool/universe/g/gstreamer0.10/libgstreamer0.10-0_0.10.36-1.5ubuntu1_amd64.deb && \
   sudo gdebi libgstreamer*.deb && \
@@ -124,11 +124,11 @@ cd $download_dir && \
   sudo bash -c "sed -e 's/Exec=\/opt\/toggldesktop\/TogglDesktop.sh/Exec=env QT_DEVICE_PIXEL_RATIO=2 \/opt\/toggldesktop\/TogglDesktop.sh/' /usr/share/applications/toggldesktop.desktop.orig > /usr/share/applications/toggldesktop.desktop"
 
 # Skype
-#cd $download_dir && wget https://repo.skype.com/latest/skypeforlinux-64.deb && \
+#cd "${download_dir}" && wget https://repo.skype.com/latest/skypeforlinux-64.deb && \
 #  sudo gdebi skypeforlinux-64.deb
 
 # Pushbullet
-cd $download_dir && wget -O pb-for-desktop.deb https://github.com/sidneys/pb-for-desktop/releases/download/v6.7.7/pb-for-desktop-6.7.7-amd64.deb && \
+cd "${download_dir}" && wget -O pb-for-desktop.deb https://github.com/sidneys/pb-for-desktop/releases/download/v6.7.7/pb-for-desktop-6.7.7-amd64.deb && \
   sudo gdebi pb-for-desktop.deb
 
 sudo apt --fix-broken install -y
@@ -155,18 +155,18 @@ sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-c
   sudo chmod +x /usr/local/bin/docker-compose
 
 # Beyond Compare 4
-cd $download_dir && wget -O bcompare_amd64.deb https://www.scootersoftware.com/bcompare-4.3.4.24657_amd64.deb && \
+cd "${download_dir}" && wget -O bcompare_amd64.deb https://www.scootersoftware.com/bcompare-4.3.4.24657_amd64.deb && \
   sudo gdebi bcompare_amd64.deb && \
   sudo ln -sf /usr/bin/bcompare /usr/local/bin/bcompare # For compatibility with install on MacOS
 
 # P4Merge
-cd $download_dir && wget https://www.perforce.com/downloads/perforce/r17.3/bin.linux26x86_64/p4v.tgz && \
+cd "${download_dir}" && wget https://www.perforce.com/downloads/perforce/r17.3/bin.linux26x86_64/p4v.tgz && \
   tar zxvf p4v.tgz && \
   sudo cp -r p4v-* /usr/local/p4v/ && \
   sudo ln -s /usr/local/p4v/bin/p4merge /usr/bin/p4merge
 
 # VS Code
-cd $download_dir && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg && \
+cd "${download_dir}" && curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg && \
   sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg && \
   sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list' && \
   sudo apt update && \
@@ -180,13 +180,13 @@ sudo add-apt-repository -y ppa:yubico/stable &&  \
   sudo apt install -y yubikey-neo-manager
 
 ## TODO: Follow https://github.com/drduh/YubiKey-Guide#install---linux
-echo 'hkp-cacert /etc/sks-keyservers.netCA.pem' >> ~/.gnupg/dirmngr.conf
+echo 'keyserver hkps://keys.openpgp.org' >> ~/.gnupg/dirmngr.conf
 
 # GPG
 sudo apt install -y gnupg2 gnupg-agent
+sudo ln -sf /etc/alternatives/pinentry /usr/local/bin/pinentry-xp
 gpg2 --recv 0x91527A684B864DC0 # Install Yubikey public key
 gpg2 --list-secret-keys --keyid-format LONG
-echo 'export GPG_TTY=$(tty)' >> ~/.profile
 
 # Git
 sudo add-apt-repository -y ppa:git-core/ppa && \
@@ -224,7 +224,7 @@ git config --global mergetool.p4merge.trustExitCode false
 
 # GitExtensions
 sudo apt install -y mono-complete
-cd $download_dir && wget -O GitExtensions-Mono.zip https://github.com/gitextensions/gitextensions/releases/download/v2.51.05/GitExtensions-2.51.05-Mono.zip && \
+cd "${download_dir}" && wget -O GitExtensions-Mono.zip https://github.com/gitextensions/gitextensions/releases/download/v2.51.05/GitExtensions-2.51.05-Mono.zip && \
   sudo unzip GitExtensions-Mono.zip -d /usr/local/bin/ &&
   sudo chmod +x /usr/local/bin/GitExtensions/gitext.sh
 ## GitExtensions should be run from the command line with `gitext.sh &`
@@ -250,12 +250,12 @@ sudo apt-add-repository ppa:jtaylor/keepass && \
   sudo apt install -y keepass2 keepass2-plugin-keeagent xdotool && \
   sudo apt upgrade -y
 
-cd $download_dir && wget -O KeeOtp.zip https://bitbucket.org/devinmartin/keeotp/downloads/KeeOtp-1.3.9.zip && \
+cd "${download_dir}" && wget -O KeeOtp.zip https://bitbucket.org/devinmartin/keeotp/downloads/KeeOtp-1.3.9.zip && \
   sudo mkdir -p /usr/lib/keepass2/plugins && \
   sudo unzip KeeOtp.zip -d /usr/lib/keepass2/plugins
 
 # Android Studio
-cd $download_dir && wget -O android-studio-ide-linux.zip https://dl.google.com/dl/android/studio/ide-zips/3.1.2.0/android-studio-ide-173.4720617-linux.zip && \
+cd "${download_dir}" && wget -O android-studio-ide-linux.zip https://dl.google.com/dl/android/studio/ide-zips/3.1.2.0/android-studio-ide-173.4720617-linux.zip && \
   sudo unzip android-studio-ide-linux.zip -d /usr/local/
   cd /usr/local/android-studio/bin/ && \
   ./studio.sh
@@ -273,16 +273,16 @@ echo vm.swappiness=10 | sudo tee -a /etc/sysctl.conf
 sudo sysctl -p
 
 # ngrok
-cd $download_dir && wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip && \
+cd "${download_dir}" && wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip && \
   sudo mkdir -p /usr/local/bin/ngrok &&
   sudo unzip ngrok-stable-linux-amd64.zip -d /usr/local/bin/ngrok/
 
-echo PATH='$PATH:/usr/local/bin/GitExtensions/:/usr/local/bin/ngrok/' | tee -a ~/.zshrc
+echo "PATH='\$PATH:/usr/local/bin/GitExtensions/:/usr/local/bin/ngrok/'" | tee -a ~/.zshrc
 
 source ~/.zshrc
 
 # Setup udev for Nexus 6P
-sudo usermod -aG plugdev $LOGNAME # https://developer.android.com/studio/run/device.html && \
+sudo usermod -aG plugdev "${LOGNAME}" # https://developer.android.com/studio/run/device.html && \
   sudo sh -c "echo '# Google Nexus 6P' >> /etc/udev/rules.d/51-android.rules" && \
   sudo sh -c "echo 'SUBSYSTEM==\"usb\", ATTR{idVendor}==\"18d1\", MODE=\"0664\", GROUP=\"plugdev\"' >> /etc/udev/rules.d/51-android.rules" && \
   sudo service udev restart
@@ -290,7 +290,7 @@ sudo usermod -aG plugdev $LOGNAME # https://developer.android.com/studio/run/dev
 sudo apt install -y jq
 
 # Plexamp
-cd $download_dir && wget -O plexamp-x86_64.AppImage https://plexamp.plex.tv/plexamp.plex.tv/plexamp-1.0.5-x86_64.AppImage && \
+cd "${download_dir}" && wget -O plexamp-x86_64.AppImage https://plexamp.plex.tv/plexamp.plex.tv/plexamp-1.0.5-x86_64.AppImage && \
   chmod +x plexamp-x86_64.AppImage && \
   sudo mv plexamp-x86_64.AppImage /usr/local/bin/
 

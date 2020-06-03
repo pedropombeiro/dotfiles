@@ -56,6 +56,9 @@ brew install asciinema \
              xz \
              youtube-dl \
              yq
+
+sudo ln -sf /usr/local/bin/pinentry-mac /usr/local/bin/pinentry-xp
+
 brew cask install balenaetcher \
                   beyond-compare \
                   cakebrew \

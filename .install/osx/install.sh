@@ -26,11 +26,6 @@ set +e
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-
-sudo wget -O "/Library/Fonts/MesloLGS NF Regular.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
-sudo wget -O "/Library/Fonts/MesloLGS NF Bold.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
-sudo wget -O "/Library/Fonts/MesloLGS NF Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
-sudo wget -O "/Library/Fonts/MesloLGS NF Bold Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold%20Italic.ttf
 set -e
 
 # Install software through Homebrew (https://formulae.brew.sh/)
@@ -60,6 +55,8 @@ brew install aria2 \
 
 sudo ln -sf /usr/local/bin/pinentry-mac /usr/local/bin/pinentry-xp
 
+brew tap homebrew/cask-drivers
+brew tap homebrew/cask-fonts
 brew cask install aria2d \
                   balenaetcher \
                   beyond-compare \
@@ -67,7 +64,9 @@ brew cask install aria2d \
                   cheatsheet \
                   dash \
                   dropbox \
-                  homebrew/cask-drivers/elgato-control-center \
+                  elgato-control-center \
+                  font-jetbrains-mono \
+                  font-meslolg-nerd-font \
                   fork \
                   gimp \
                   google-chrome \

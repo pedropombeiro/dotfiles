@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# Update Oh-my-zsh custom themes and plugins
+find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes" -type d -mindepth 1 -maxdepth 1 -exec git -C {} pull \;
+find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins" -type d -mindepth 1 -maxdepth 1 -exec git -C {} pull \;
+
 # Update App Store apps
 sudo softwareupdate -i -a
 
@@ -7,11 +11,6 @@ sudo softwareupdate -i -a
 brew update
 brew upgrade
 brew cask upgrade
-
-# Update Oh-my-zsh custom themes and plugins
-git -C "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k" pull
-git -C "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" pull
-git -C "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" pull
 
 # Update npm packages
 npm update -g

@@ -85,6 +85,9 @@ defaults write com.apple.screencapture type -string "png"
 # Enable HiDPI display modes (requires restart)
 sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
 
+# Disable font smoothing (https://tonsky.me/blog/monitors/#retina-macbooks)
+defaults -currentHost write -globalDomain AppleFontSmoothing -int 0
+
 ###############################################################################
 # Finder                                                                      #
 ###############################################################################

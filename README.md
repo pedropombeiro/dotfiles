@@ -118,6 +118,9 @@ ssh -T git@gitlab.com
 - Installed via brew:
   - [1Password](https://1password.com/downloads/mac/)
   - [Beyond Compare](https://scootersoftware.com/download.php)
+  - [Camera Live](https://github.com/v002/v002-Camera-Live)
+  - [CamTwist](http://camtwiststudio.com/download/)
+    - NOTE: Run `sudo codesign --remove-signature /Applications/zoom.us.app/` if Zoom does not recognize camera.
   - [CheatSheet](https://www.mediaatelier.com/CheatSheet/)
   - [Dash](https://kapeli.com/dash)
   - [Docker](https://www.docker.com/products/docker-desktop)

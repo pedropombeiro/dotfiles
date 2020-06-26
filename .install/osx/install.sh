@@ -112,6 +112,7 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
                helm \
                derailed/k9s/k9s
   brew cask install 1password \
+                    camera-live \
                     docker \
                     google-cloud-sdk \
                     google-drive-file-stream \

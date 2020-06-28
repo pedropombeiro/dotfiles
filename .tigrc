@@ -1,0 +1,51 @@
+# .tigrc - tig configuration file
+# http://jonas.nitro.dk/tig/tigrc.5.html
+#
+# Visualization
+set commit-order      = topo
+set diff-context      = 3
+set focus-child       = yes
+set horizontal-scroll = 33%
+set ignore-case       = no
+set ignore-space      = some
+set line-graphics     = utf-8
+set mailmap           = yes
+set show-changes      = yes
+set show-notes        = yes
+set split-view-height = 70%
+set tab-size          = 4
+set wrap-lines        = no
+
+set main-view-date = relative
+set main-view-id = yes
+
+# Bind Keymaps
+bind generic F @git fetch --all --prune
+bind generic P !git push --set-upstream %(remote) %(branch)
+bind main T @git stash
+bind main j previous
+bind main k next
+bind diff j move-up
+bind diff k move-down
+bind refs R !git rebase -i %(branch)
+bind refs C ?@git checkout %(branch)
+
+# User-defined external command to amend the last commit
+bind status + !git commit --amend
+
+# Configure main view columns.
+set main-view-author                = abbreviated
+set main-view-commit-title-refs     = true
+set main-view-commit-title-overflow = true
+
+# Configure blame view columns using command spanning multiple lines.
+set blame-view = \
+	date:default \
+	author:abbreviated \
+	file-name:auto \
+	id:yes,color \
+	line-number:yes,interval=5 text
+
+# Color Settings
+color cursor black cyan
+source ~/.config/tig/molokai-like.tigrc

@@ -111,7 +111,8 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
                minikube \
                helm \
                derailed/k9s/k9s
-  brew cask install 1password \
+  brew cask install 0xed \
+                    1password \
                     camera-live \
                     docker \
                     google-cloud-sdk \

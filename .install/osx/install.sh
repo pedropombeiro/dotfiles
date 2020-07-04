@@ -120,9 +120,12 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
                     google-drive-file-stream \
                     jetbrains-toolbox \
                     slack \
+                    vagrant \
                     zoomus
 
   brew services start docker-machine
+
+  vagrant plugin install vagrant-parallels
 
   # Install Go Version Manager
   GVM_NO_UPDATE_PROFILE=1 bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)

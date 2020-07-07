@@ -69,10 +69,13 @@ To install all the required software, run [make install](./.install/linux/instal
 ```shell
 make install
 
-# Install Parallels Desktop Pro from https://www.parallels.com/products/desktop/pro/
+# VirtualBox requires special permissions for its kernel extension to work
+# so installation will fail the first time, until you enable the permission
+# in System Preferences (just retry again after enabling permission)
+brew cask install virtualbox virtualbox-extension-pack
 
 # Create default VM for Docker daemon with experimental mode enabled
-docker-machine create docker-parallels --engine-opt experimental
+docker-machine create docker --engine-opt experimental
 
 nvm install --lts --latest-npm
 

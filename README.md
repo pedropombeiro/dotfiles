@@ -72,7 +72,7 @@ make install
 # Install Parallels Desktop Pro from https://www.parallels.com/products/desktop/pro/
 
 # Create default VM for Docker daemon with experimental mode enabled
-docker-machine create docker-parallels --engine-opt experimental
+docker-machine create docker-parallels --driver parallels --engine-opt experimental
 
 nvm install --lts --latest-npm
 

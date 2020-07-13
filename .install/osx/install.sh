@@ -31,6 +31,7 @@ set -e
 # Install software through Homebrew (https://formulae.brew.sh/)
 brew install aria2 \
              asciinema \
+             asdf \
              calc \
              coreutils \
              gnutls \
@@ -134,6 +135,10 @@ fi
 
 # Install nvm (https://github.com/nvm-sh/nvm#installing-and-updating)
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+
+asdf plugin add golang
+asdf install golang 1.13.8
+asdf global golang 1.13.8
 
 source "${SCRIPT_DIR}/defaults.sh"
 

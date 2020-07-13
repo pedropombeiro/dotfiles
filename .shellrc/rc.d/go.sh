@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
 export GOPATH=~/go
-export PATH="/usr/local/go/bin:${GOPATH}/bin:${PATH}"
+PATH="$(command -v go)/..:${GOPATH}/bin:${PATH}"
+export PATH

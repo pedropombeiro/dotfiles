@@ -11,6 +11,6 @@ if command -v docker-machine &>/dev/null; then
     # Configure default docker-machine VM
     eval "$(docker-machine env "${dockerVMName}")"
     # Install QEMU handlers
-    docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+    docker run --rm --privileged docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64
   fi
 fi

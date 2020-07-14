@@ -74,8 +74,6 @@ make install
 # Create default VM for Docker daemon with experimental mode enabled
 docker-machine create docker-parallels --driver parallels --engine-opt experimental
 
-nvm install --lts --latest-npm
-
 npm install -g doctoc
 ```
 

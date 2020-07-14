@@ -41,7 +41,6 @@ brew install aria2 \
              moreutils \
              nano \
              ncdu \
-             nvm \
              pinentry-mac \
              python \
              shellcheck \
@@ -125,20 +124,21 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
                     zoomus
 
   brew services start docker-machine
-
-  vagrant plugin install vagrant-parallels
-
-  # Install Go Version Manager
-  GVM_NO_UPDATE_PROFILE=1 bash < <(curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer)
-  echo "source ~/.gvm/scripts/gvm" >> ~/.zshrc
 fi
 
-# Install nvm (https://github.com/nvm-sh/nvm#installing-and-updating)
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+for p in golang golangci-lint hadolint nodejs yarn ruby shellcheck; do
+  asdf plugin add "${p}"
+done
+asdf install golang 1.13.8 && asdf global golang 1.13.8
+asdf install golangci-lint 1.27.0 && asdf global golangci-lint 1.27.0
+asdf install hadolint v1.18.0 && asdf global hadolint v1.18.0
+asdf install shellcheck 0.7.1 && asdf global shellcheck 0.7.1
 
-asdf plugin add golang
-asdf install golang 1.13.8
-asdf global golang 1.13.8
+bash -c '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-keyring'
+asdf install nodejs 14.5.0 && asdf global nodejs 14.5.0
+asdf install yarn 1.22.4 && asdf global yarn 1.22.4
+
+asdf install ruby 2.6.5 && asdf global yarn 2.6.5
 
 source "${SCRIPT_DIR}/defaults.sh"
 

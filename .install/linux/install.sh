@@ -26,7 +26,7 @@ sudo apt install -y preload gnome-tweak-tool unity-tweak-tool build-essential \
   gdebi-core httpie network-manager-openvpn-gnome mc moreutils tig \
   rng-tools asciinema shellcheck
 
-brew install fzf
+brew install bat fzf
 
 # Install zsh
 sudo apt install -y zsh autojump

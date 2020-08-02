@@ -96,6 +96,7 @@ brew cask install aria2d \
                   rescuetime \
                   skype \
                   spotify \
+                  stay \
                   superduper \
                   syncthing \
                   toggl \
@@ -119,6 +120,7 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
                derailed/k9s/k9s
   brew cask install 0xed \
                     1password \
+                    bartender \
                     camera-live \
                     docker \
                     google-cloud-sdk \

@@ -145,7 +145,7 @@ bash -c '${ASDF_DATA_DIR:=$HOME/.asdf}/plugins/nodejs/bin/import-release-team-ke
 asdf install nodejs 14.5.0 && asdf global nodejs 14.5.0
 asdf install yarn 1.22.4 && asdf global yarn 1.22.4
 
-asdf install ruby 2.6.5 && asdf global yarn 2.6.5
+asdf install ruby 2.6.6 && asdf global ruby 2.6.6
 
 source "${SCRIPT_DIR}/defaults.sh"
 

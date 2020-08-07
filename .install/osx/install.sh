@@ -78,11 +78,11 @@ brew cask install aria2d \
                   gpg-suite \
                   iterm2 \
                   itsycal \
+                  keepassxc \
                   krisp \
                   libreoffice \
                   little-snitch \
                   micro-snitch \
-                  macpass \
                   microsoft-edge \
                   monitorcontrol \
                   muzzle \

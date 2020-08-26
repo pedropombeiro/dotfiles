@@ -82,6 +82,7 @@ brew cask install aria2d \
                   krisp \
                   libreoffice \
                   little-snitch \
+                  macs-fan-control \
                   micro-snitch \
                   microsoft-edge \
                   monitorcontrol \

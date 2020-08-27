@@ -11,6 +11,23 @@
 # Disable the sound effects on boot
 sudo nvram SystemAudioVolume=" "
 
+# Set Login Window Text
+sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText "If you found this computer, please call +41 787 131 629 or email pedro@pombei.ro"
+
+# Set Timezone and Set Clock Using Network Time
+sudo systemsetup -settimezone Europe/Zurich
+sudo systemsetup setusingnetworktime on
+
+# System - Locale
+defaults write NSGlobalDomain AppleMetricUnits -bool YES
+defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
+
+# System - Sunday is the first day of the week
+defaults write NSGlobalDomain AppleFirstWeekday -dict 'gregorian' 1
+
+# System - Allow 'locate' command
+sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist > /dev/null 2>&1
+
 # Expand save panel by default
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true

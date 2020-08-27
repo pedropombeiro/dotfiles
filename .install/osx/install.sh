@@ -34,7 +34,8 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM
 set -e
 
 # Install software through Homebrew (https://formulae.brew.sh/)
-brew install aria2 \
+brew install appdelete \
+             aria2 \
              asciinema \
              asdf \
              bat \

@@ -4,6 +4,11 @@ set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# Enable TouchID on shell
+grep 'pam_tid.so' /etc/pam.d/sudo || \
+  echo -e "auth       sufficient     pam_tid.so\n$(cat /etc/pam.d/sudo)" | \
+  sudo tee /etc/pam.d/sudo
+
 # Install pre-requisites through Homebrew (https://formulae.brew.sh/)
 brew update
 

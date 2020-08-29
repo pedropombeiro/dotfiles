@@ -105,7 +105,6 @@ brew cask install alfred \
                   skype \
                   spotify \
                   stay \
-                  superduper \
                   syncthing \
                   toggl \
                   tripmode \

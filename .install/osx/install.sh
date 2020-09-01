@@ -89,10 +89,10 @@ brew cask install alfred \
                   keepassxc \
                   krisp \
                   libreoffice \
+                  lunar \
                   little-snitch \
                   micro-snitch \
                   microsoft-edge \
-                  monitorcontrol \
                   muzzle \
                   ngrok \
                   numi \

@@ -5,7 +5,7 @@ set -e
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Enable TouchID on shell
-grep 'pam_tid.so' /etc/pam.d/sudo || \
+grep 'pam_tid.so' /etc/pam.d/sudo > /dev/null || \
   echo -e "auth       sufficient     pam_tid.so\n$(cat /etc/pam.d/sudo)" | \
   sudo tee /etc/pam.d/sudo
 
@@ -16,26 +16,27 @@ brew install autojump \
              fzf \
              jq \
              mackup \
-             mas-cli/tap/mas \
+             mas \
              wget
 
 echo "source ~/.bash_profile.shared" >> ~/.bash_profile
 echo "source ~/.bashrc.shared" >> ~/.bashrc
 
-# Install Oh-my-zsh
-chmod o-w,g-w /usr/local/share/zsh /usr/local/share/zsh/site-functions
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
-echo "source ~/.zshrc.shared" > ~/.zshrc
+if [ ! -d ~/.oh-my-zsh/ ]; then
+  # Install Oh-my-zsh
+  chmod o-w,g-w /usr/local/share/zsh /usr/local/share/zsh/site-functions
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+  echo "source ~/.zshrc.shared" > ~/.zshrc
+fi
 
 set +e
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k"
-git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+[ -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k" ] || git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k"
+[ -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ] || git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+[ -d "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ] || git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
 set -e
 
 # Install software through Homebrew (https://formulae.brew.sh/)
-brew install appdelete \
-             aria2 \
+brew install aria2 \
              asciinema \
              asdf \
              bat \
@@ -44,10 +45,6 @@ brew install appdelete \
              gnutls \
              htop \
              httpie \
-             logitech-camera-settings \
-             logitech-control-center \
-             logitech-firmwareupdatetool \
-             logitech-unifying \
              mc \
              moreutils \
              nano \
@@ -69,6 +66,7 @@ sudo ln -sf /usr/local/bin/pinentry-mac /usr/local/bin/pinentry-xp
 brew tap homebrew/cask-drivers
 brew tap homebrew/cask-fonts
 brew cask install alfred \
+                  appdelete \
                   aria2d \
                   balenaetcher \
                   bartender \
@@ -79,7 +77,7 @@ brew cask install alfred \
                   dropbox \
                   elgato-control-center \
                   font-jetbrains-mono \
-                  font-meslolg-nerd-font \
+                  font-meslo-lg-nerd-font \
                   fork \
                   gimp \
                   google-chrome \
@@ -89,6 +87,10 @@ brew cask install alfred \
                   keepassxc \
                   krisp \
                   libreoffice \
+                  logitech-camera-settings \
+                  logitech-control-center \
+                  logitech-firmwareupdatetool \
+                  logitech-unifying \
                   lunar \
                   little-snitch \
                   micro-snitch \
@@ -127,7 +129,6 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
                derailed/k9s/k9s
   brew cask install 0xed \
                     1password \
-                    camera-live \
                     docker \
                     google-cloud-sdk \
                     google-drive-file-stream \

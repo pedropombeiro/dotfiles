@@ -162,19 +162,18 @@ open "$(find /usr/local/Caskroom/little-snitch -name 'LittleSnitch-*.dmg')"
 # Install App Store apps
 mas account > /dev/null || echo "Please log in to the App Store before proceeding. Press Enter to continue" && read -r
 
-mas install 937984704 # Amphetamine
-mas install 918207447 # Annotate
-mas install 973134470 # Be Focused
-mas install 865500966 # Feedly
-mas install 430798174 # HazeOver
-mas install 409183694 # Keynote
-mas install 563706976 # MusicBuddy
-mas install 409203825 # Numbers
-mas install 568494494 # Pocket
-mas install 692867256 # Simplenote
-mas install 957734279 # Toggl Desktop
-mas install 485812721 # TweetDeck
-mas install 1147396723 # WhatsApp
+mas install 937984704  # Amphetamine
+mas install 918207447  # Annotate
+mas install 973134470  # Be Focused
+mas install 865500966  # Feedly
+mas install 430798174  # HazeOver
+mas install 409183694  # Keynote
+mas install 409203825  # Numbers
+mas install 568494494  # Pocket
+mas install 692867256  # Simplenote
+mas install 1176895641 # Spark
+mas install 957734279  # Toggl Desktop
+mas install 485812721  # TweetDeck
 
 mas install 1085114709 # Parallels Desktop
 

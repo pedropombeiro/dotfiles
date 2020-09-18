@@ -1,8 +1,10 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # Update Oh-my-zsh custom themes and plugins
-find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes" -type d -mindepth 1 -maxdepth 1 -exec git -C {} pull \;
-find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins" -type d -mindepth 1 -maxdepth 1 -exec git -C {} pull \;
+DISABLE_AUTO_UPDATE=true source "${HOME}/.oh-my-zsh/oh-my-zsh.sh"
+omz update
+find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes" -mindepth 1 -maxdepth 1 -type d -exec git -C {} pull \;
+find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins" -mindepth 1 -maxdepth 1 -type d -exec git -C {} pull \;
 
 # Update App Store apps
 sudo softwareupdate -i -a

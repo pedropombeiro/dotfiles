@@ -84,6 +84,7 @@ brew cask install alfred \
                   gpg-suite \
                   istat-menus \
                   iterm2 \
+                  kap \
                   keepassxc \
                   krisp \
                   libreoffice \
@@ -102,7 +103,6 @@ brew cask install alfred \
                   plex \
                   protonmail-bridge \
                   protonvpn \
-                  recordit \
                   rescuetime \
                   skype \
                   spotify \

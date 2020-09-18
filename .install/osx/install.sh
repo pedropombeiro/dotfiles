@@ -45,6 +45,7 @@ brew install aria2 \
              gnutls \
              htop \
              httpie \
+             zaquestion/tap/lab \
              mc \
              moreutils \
              nano \

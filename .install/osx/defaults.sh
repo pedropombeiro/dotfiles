@@ -15,12 +15,9 @@ sudo nvram SystemAudioVolume=" "
 sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText "If you found this computer, please call +41 787 131 629 or email pedro@pombei.ro"
 
 # Set Timezone and Set Clock Using Network Time
+# See `sudo systemsetup -listtimezones` for other values
 sudo systemsetup -settimezone Europe/Zurich
 sudo systemsetup setusingnetworktime on
-
-# System - Locale
-defaults write NSGlobalDomain AppleMetricUnits -bool YES
-defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
 
 # System - Sunday is the first day of the week
 defaults write NSGlobalDomain AppleFirstWeekday -dict 'gregorian' 1
@@ -71,9 +68,6 @@ defaults write NSGlobalDomain AppleMetricUnits -bool true
 
 # Show language menu in the top right corner of the boot screen
 sudo defaults write /Library/Preferences/com.apple.loginwindow showInputMenu -bool true
-
-# Set the timezone; see `sudo systemsetup -listtimezones` for other values
-sudo systemsetup -settimezone "Europe/Zurich" > /dev/null
 
 ###############################################################################
 # Energy saving                                                               #
@@ -179,15 +173,6 @@ defaults write com.mowglii.ItsycalApp ShowLocation -int 0
 defaults write com.mowglii.ItsycalApp ShowMonthInIcon -int 1
 defaults write com.mowglii.ItsycalApp ShowWeeks -int 1
 defaults write com.mowglii.ItsycalApp UseOutlineIcon -int 0
-
-###############################################################################
-# MacPass                                                                     #
-###############################################################################
-
-defaults write -app MacPass EnableQuicklookPreview 1
-defaults write -app MacPass LastDatabasePath "file://${HOME}/Dropbox/pombeiro.kdbx"
-defaults write -app MacPass SUEnableAutomaticChecks 1
-defaults write -app MacPass HideAfterCopyToClipboard 1
 
 ###############################################################################
 # iTerm2                                                                      #

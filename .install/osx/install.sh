@@ -72,6 +72,7 @@ brew cask install alfred \
                   balenaetcher \
                   bartender \
                   beyond-compare \
+                  boom-3d \
                   cakebrew \
                   cheatsheet \
                   dash \

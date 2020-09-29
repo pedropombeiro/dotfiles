@@ -55,6 +55,7 @@ brew install aria2 \
              shellcheck \
              speedtest_cli \
              syncthing \
+             switchaudio-osx \
              the_silver_searcher \
              tig \
              watch \

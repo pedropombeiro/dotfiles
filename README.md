@@ -144,6 +144,7 @@ ssh -T git@gitlab.com
   - [Slack](https://slack.com/downloads)
   - [Spotify](https://www.spotify.com/download/mac)
   - [Syncthing](https://syncthing.net/downloads/)
+  - [switchaudio-osx](https://github.com/deweller/switchaudio-osx)
   - [TripMode 2](https://www.tripmode.ch/)
   - [Visual Studio Code](https://code.visualstudio.com/Download)
 - Installed via mas-cli:

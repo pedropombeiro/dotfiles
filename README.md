@@ -150,7 +150,6 @@ ssh -T git@gitlab.com
 - Installed via mas-cli:
   - Amphetamine ([App Store](https://apps.apple.com/us/app/amphetamine/id937984704))
   - Annotate ([App Store](https://apps.apple.com/us/app/annotate-text-emoji-stickers-shapes-on-photos-screenshots/id994933038))
-  - Be Focused ([App Store](https://apps.apple.com/us/app/be-focused-focus-timer/id973130201))
   - Feedly ([App Store](https://apps.apple.com/us/app/feedly-read-more-know-more/id865500966))
   - Keynote ([App Store](https://apps.apple.com/us/app/keynote/id409183694))
   - Numbers ([App Store](https://apps.apple.com/us/app/numbers/id409203825))
@@ -158,6 +157,7 @@ ssh -T git@gitlab.com
   - Pocket ([App Store](https://apps.apple.com/us/app/pocket/id568494494))
   - Simplenote ([App Store](https://apps.apple.com/us/app/simplenote/id692867256))
   - Toggl Desktop ([App Store](https://apps.apple.com/us/app/toggl-time-tracker-for-work/id957734279))
+  - Tomato One ([App Store](https://apps.apple.com/us/app/tomato-one-free-focus-timer/id907364780))
   - TweetDeck ([App Store](https://apps.apple.com/us/app/tweetdeck-by-twitter/id485812721))
   - WhatsApp ([App Store](https://apps.apple.com/us/app/whatsapp-desktop/id1147396723))
 - [Elgato Control Center](https://www.elgato.com/en/gaming/downloads)
@@ -181,12 +181,11 @@ Setup the following apps:
 - Visual Studio Code
   - Install [Settings Sync plugin](https://marketplace.visualstudio.com/items?itemName=Shan.code-settings-sync)
 - Printers
-- Be Focused
-  - Work interval duration: 20m
-  - Short break duration: 1m
-  - Long break duration: 15m
-  - Long break after: 6 intervals
-  - Target: 18 intervals
+- Tomato One
+  - Pomodoro time: 20m
+  - Break time: 1m
+  - Long break time: 45m
+  - Long break after: 12 pomodoros
 
 # Features
 

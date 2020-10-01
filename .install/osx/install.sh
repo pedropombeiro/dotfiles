@@ -68,7 +68,7 @@ sudo ln -sf /usr/local/bin/pinentry-mac /usr/local/bin/pinentry-xp
 brew tap homebrew/cask-drivers
 brew tap homebrew/cask-fonts
 brew cask install alfred \
-                  appdelete \
+                  appcleaner \
                   aria2d \
                   balenaetcher \
                   bartender \

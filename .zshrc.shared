@@ -9,7 +9,7 @@ export ZSH="$HOME/.oh-my-zsh"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(you-should-use autojump web-search zsh-interactive-cd zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(you-should-use web-search zsh-interactive-cd zsh-autosuggestions zsh-syntax-highlighting)
 
 # load custom executable functions
 if [ -f '$HOME/.shellrc/zshrc.d/functions/*' ]; then

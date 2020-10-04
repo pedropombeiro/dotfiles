@@ -94,6 +94,7 @@ brew cask install alfred \
                   libreoffice \
                   logitech-camera-settings \
                   logitech-firmwareupdatetool \
+                  logitech-options \
                   logitech-unifying \
                   lunar \
                   little-snitch \

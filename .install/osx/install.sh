@@ -112,7 +112,7 @@ brew cask install alfred \
                   spotify \
                   stay \
                   syncthing \
-                  toggl \
+                  toggl-track \
                   tripmode \
                   visual-studio-code \
                   whatsapp

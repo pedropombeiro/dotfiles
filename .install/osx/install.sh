@@ -93,7 +93,6 @@ brew cask install alfred \
                   krisp \
                   libreoffice \
                   logitech-camera-settings \
-                  logitech-control-center \
                   logitech-firmwareupdatetool \
                   logitech-unifying \
                   lunar \

@@ -51,7 +51,7 @@ _load_settings "$HOME/.shellrc/zshrc.d/configs"
 
 # Load all files from .shell/rc.d directory
 if [ -d $HOME/.shellrc/rc.d ]; then
-  for file in $HOME/.shellrc/rc.d/**/*.sh; do
+  for file in $(ls $HOME/.shellrc/rc.d/{,**/}*.sh 2>/dev/null); do
     source $file
   done
 fi

@@ -115,8 +115,6 @@ ssh -T git@gitlab.com
   - [Beyond Compare](https://scootersoftware.com/download.php)
   - [Boom 3D](https://www.globaldelight.com/boom/)
   - [Camera Live](https://github.com/v002/v002-Camera-Live)
-  - [CamTwist](http://camtwiststudio.com/download/)
-    - NOTE: Run `sudo codesign --remove-signature /Applications/zoom.us.app/` if Zoom does not recognize camera.
   - [CheatSheet](https://www.mediaatelier.com/CheatSheet/)
   - [Dash](https://kapeli.com/dash)
   - [Docker](https://www.docker.com/products/docker-desktop)
@@ -179,7 +177,7 @@ Setup the following apps:
 - Time Machine
 - Microsoft Edge
 - Visual Studio Code
-  - Install [Settings Sync plugin](https://marketplace.visualstudio.com/items?itemName=Shan.code-settings-sync)
+  - Enable settings sync
 - Printers
 - Tomato One
   - Pomodoro time: 20m

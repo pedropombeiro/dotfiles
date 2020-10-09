@@ -144,6 +144,7 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
   brew services start docker-machine
 fi
 
+set +e
 for p in golang golangci-lint hadolint nodejs yarn ruby shellcheck; do
   asdf plugin add "${p}"
 done
@@ -157,6 +158,7 @@ asdf install nodejs 14.5.0 && asdf global nodejs 14.5.0
 asdf install yarn 1.22.4 && asdf global yarn 1.22.4
 
 asdf install ruby 2.6.6 && asdf global ruby 2.6.6
+set -e
 
 source "${SCRIPT_DIR}/defaults.sh"
 

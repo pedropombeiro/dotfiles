@@ -54,7 +54,6 @@ brew install aria2 \
              pinentry-mac \
              python \
              ripgrep \
-             shellcheck \
              speedtest_cli \
              syncthing \
              switchaudio-osx \

@@ -53,6 +53,7 @@ brew install aria2 \
              ncdu \
              pinentry-mac \
              python \
+             ripgrep \
              shellcheck \
              speedtest_cli \
              syncthing \

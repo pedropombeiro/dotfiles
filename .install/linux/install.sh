@@ -186,44 +186,18 @@ sudo add-apt-repository -y ppa:yubico/stable &&  \
 echo 'keyserver hkps://keys.openpgp.org' >> ~/.gnupg/dirmngr.conf
 
 # GPG
-sudo apt install -y gnupg2 gnupg-agent
+sudo apt install -y gnupg gnupg-agent
 sudo ln -sf /etc/alternatives/pinentry /usr/local/bin/pinentry-xp
-gpg2 --recv 0x91527A684B864DC0 # Install Yubikey public key
-gpg2 --list-secret-keys --keyid-format LONG
+gpg --recv 0x91527A684B864DC0 # Install Yubikey public key
+gpg --list-secret-keys --keyid-format LONG
 
 # Git
 sudo add-apt-repository -y ppa:git-core/ppa && \
   sudo apt update && \
   sudo apt install -y git
 
-git config --global user.name 'Pedro Pombeiro'
-git config --global user.email noreply@pedro.pombei.ro
-git config --global user.signingkey B04C63F91EF312EF
-git config --global commit.gpgsign true
-git config --global push.default simple
-git config --global gpg.program $(whereis -b gpg2 | cut -d ' ' -f2)
-
-git config --global rebase.autoSquash true
-git config --global rebase.autoStash true
-git config --global rebase.missingCommitsCheck warn
-
-git config --global diff.tool beyondcompare4
-git config --global diff.guitool beyondcompare4
-git config --global difftool.prompt false
-git config --global difftool.beyondcompare4.cmd 'bcompare "$LOCAL" "$REMOTE"'
-git config --global difftool.beyondcompare4.path /usr/bin/bcompare
-git config --global difftool.beyondcompare4.keepTemporaries false
-git config --global difftool.beyondcompare4.keepBackup false
-git config --global difftool.beyondcompare4.trustExitCode true
-
-git config --global merge.keepBackup false
-git config --global merge.tool p4merge
-git config --global merge.guitool p4merge
-git config --global mergetool.prompt false
-git config --global mergetool.p4merge.cmd 'p4merge "$BASE" "$LOCAL" "$REMOTE" "$MERGED"'
-git config --global mergetool.p4merge.keepTemporaries false
-git config --global mergetool.p4merge.keepBackup false
-git config --global mergetool.p4merge.trustExitCode false
+# Ensure we have a common location for gpg between OSX and Linux
+sudo ln -sf /usr/bin/gpg /usr/local/bin/gpg
 
 # GitExtensions
 sudo apt install -y mono-complete

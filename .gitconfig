@@ -72,6 +72,9 @@
 	# https://git-scm.com/docs/git-config#git-config-pushdefault
 	default = simple
 
+[pull]
+	rebase = true
+
 [rebase]
 
 	autoSquash = true
@@ -165,5 +168,6 @@
 	insteadOf = "gst:"
 	pushInsteadOf = "gist:"
 	pushInsteadOf = "git://gist.github.com/"
-[pull]
-	rebase = true
+
+[gpg]
+	program = /usr/local/bin/gpg

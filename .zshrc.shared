@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 # Skip all this for non-interactive shells
 [[ -z "$PS1" ]] && return
 

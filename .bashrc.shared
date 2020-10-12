@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # .bashrc
 if [[ $- != *i* ]] ; then
   # shell is non-interactive. be done now!
@@ -5,15 +7,15 @@ if [[ $- != *i* ]] ; then
 fi
 
 # Load all files from .shell/bashrc.d directory
-if [ -d $HOME/.shellrc/bashrc.d ]; then
-  for file in $(ls $HOME/.shellrc/bashrc.d/{,**/}*.bash 2>/dev/null); do
-    source $file
+if [ -d "${HOME}/.shellrc/bashrc.d" ]; then
+  for file in $(ls ${HOME}/.shellrc/bashrc.d/{,**/}*.bash 2>/dev/null); do
+    source "${file}"
   done
 fi
 
 # Load all files from .shell/rc.d directory
-if [ -d $HOME/.shellrc/rc.d ]; then
-  for file in $(ls $HOME/.shellrc/rc.d/{,**/}*.sh 2>/dev/null); do
-    source $file
+if [ -d "${HOME}/.shellrc/rc.d" ]; then
+  for file in $(ls ${HOME}/.shellrc/rc.d/{,**/}*.sh 2>/dev/null); do
+    source "${file"}
   done
 fi

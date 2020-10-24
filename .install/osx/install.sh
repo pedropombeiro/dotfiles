@@ -119,6 +119,9 @@ brew cask install alfred \
 
 brew services start syncthing
 
+sudo mdutil -i off /
+sudo mdutil -E /
+
 APPLEID="$(mas account || echo '')"
 
 if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then

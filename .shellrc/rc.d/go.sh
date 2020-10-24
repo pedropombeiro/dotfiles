@@ -5,4 +5,6 @@ if command -v asdf >/dev/null && asdf current golang >/dev/null; then
   export GOROOT="$(asdf where golang)/go"
 
   export PATH="${PATH}:${GOPATH}/bin"
+
+  plugins+=(golang)
 fi

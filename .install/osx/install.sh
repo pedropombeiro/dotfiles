@@ -77,6 +77,7 @@ brew cask install alfred \
                   boom-3d \
                   cakebrew \
                   cheatsheet \
+                  chef-workstation \
                   dash \
                   dropbox \
                   elgato-control-center \

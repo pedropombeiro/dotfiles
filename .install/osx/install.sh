@@ -175,18 +175,16 @@ mas account > /dev/null || echo "Please log in to the App Store before proceedin
 mas install 937984704  # Amphetamine
 mas install 918207447  # Annotate
 mas install 865500966  # Feedly
-mas install 430798174  # HazeOver
-mas install 409183694  # Keynote
-mas install 409203825  # Numbers
 mas install 568494494  # Pocket
 mas install 692867256  # Simplenote
-mas install 1176895641 # Spark
-mas install 957734279  # Toggl Desktop
-mas install 907364780  # Tomato One
 mas install 485812721  # TweetDeck
 if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
   # For a GitLab development machine
+  mas install 430798174  # HazeOver
   mas install 1085114709 # Parallels Desktop
+  mas install 1176895641 # Spark
+  mas install 957734279  # Toggl Desktop
+  mas install 907364780  # Tomato One
 fi
 
 if ! [[ -f ~/.ssh/id_ed25519.pub ]]; then

@@ -148,7 +148,6 @@ ssh -T git@gitlab.com
 - Installed via mas-cli:
   - Amphetamine ([App Store](https://apps.apple.com/us/app/amphetamine/id937984704))
   - Annotate ([App Store](https://apps.apple.com/us/app/annotate-text-emoji-stickers-shapes-on-photos-screenshots/id994933038))
-  - Backdrop ([App Store](https://apps.apple.com/ch/app/backdrop/id411461952?l=en&mt=12))
   - Feedly ([App Store](https://apps.apple.com/us/app/feedly-read-more-know-more/id865500966))
   - Keynote ([App Store](https://apps.apple.com/us/app/keynote/id409183694))
   - Numbers ([App Store](https://apps.apple.com/us/app/numbers/id409203825))

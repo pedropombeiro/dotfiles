@@ -186,8 +186,6 @@ mas install 907364780  # Tomato One
 mas install 485812721  # TweetDeck
 if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
   # For a GitLab development machine
-  mas install 411461952  # Backdrop
-
   mas install 1085114709 # Parallels Desktop
 fi
 

@@ -184,7 +184,7 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
   mas install 1085114709 # Parallels Desktop
   mas install 1176895641 # Spark
   mas install 957734279  # Toggl Desktop
-  mas install 907364780  # Tomato One
+  mas install 402592703  # Time Out - Break Reminders
 fi
 
 if ! [[ -f ~/.ssh/id_ed25519.pub ]]; then

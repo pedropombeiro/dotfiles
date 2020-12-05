@@ -155,7 +155,7 @@ ssh -T git@gitlab.com
   - Pocket ([App Store](https://apps.apple.com/us/app/pocket/id568494494))
   - Simplenote ([App Store](https://apps.apple.com/us/app/simplenote/id692867256))
   - Toggl Desktop ([App Store](https://apps.apple.com/us/app/toggl-time-tracker-for-work/id957734279))
-  - Tomato One ([App Store](https://apps.apple.com/us/app/tomato-one-free-focus-timer/id907364780))
+  - Time Out - Break Reminders ([App Store](https://apps.apple.com/us/app/time-out-break-reminders/id402592703))
   - TweetDeck ([App Store](https://apps.apple.com/us/app/tweetdeck-by-twitter/id485812721))
   - WhatsApp ([App Store](https://apps.apple.com/us/app/whatsapp-desktop/id1147396723))
 - [Elgato Control Center](https://www.elgato.com/en/gaming/downloads)
@@ -179,11 +179,14 @@ Setup the following apps:
 - Visual Studio Code
   - Enable settings sync
 - Printers
-- Tomato One
+- Time Out
+  - Name: Pomodoro
   - Pomodoro time: 20m
   - Break time: 1m
-  - Long break time: 45m
-  - Long break after: 12 pomodoros
+  - Theme: Muscles
+  - Show button to postpone: 1 minutes
+  - Show button to postpone: 5 minutes
+  - Show button to skip break
 
 # Features
 

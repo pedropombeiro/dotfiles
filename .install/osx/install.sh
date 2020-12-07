@@ -137,6 +137,7 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
                derailed/k9s/k9s
   brew cask install 0xed \
                     1password \
+                    1password-cli \
                     docker \
                     google-cloud-sdk \
                     google-drive-file-stream \

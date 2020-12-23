@@ -122,7 +122,7 @@ ssh -T git@gitlab.com
   - [Fork Git client](https://git-fork.com/update/files/Fork.dmg)
   - [Google Chrome](https://www.google.com/chrome/)
   - [iTerm2](https://www.iterm2.com/downloads.html)
-  - [ItsyCal](https://www.mowglii.com/itsycal/)
+  - [Haptic Touch Bar](https://www.haptictouchbar.com/)
   - [Kap](https://getkap.co/)
   - [KeePassXC](https://keepassxc.org/)
   - [Krisp](https://krisp.ai/)

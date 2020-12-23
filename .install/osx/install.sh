@@ -87,6 +87,7 @@ brew cask install alfred \
                   gimp \
                   google-chrome \
                   gpg-suite \
+                  haptic-touch-bar \
                   istat-menus \
                   iterm2 \
                   kap \

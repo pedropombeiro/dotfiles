@@ -85,7 +85,6 @@ brew cask install alfred \
                   font-meslo-lg-nerd-font \
                   fork \
                   gimp \
-                  google-chrome \
                   gpg-suite \
                   haptic-touch-bar \
                   istat-menus \

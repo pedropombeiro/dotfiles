@@ -6,9 +6,9 @@ echo "source ~/.bashrc.shared" >> ~/.bashrc
 rm -f ~/Downloads/*
 
 # Adapt Firefox settings
-def_Pfile=`cat "$HOME/.mozilla/firefox/profiles.ini" | sed -n -e 's/^.*Path=//p' | head -n 1`
+def_Pfile=$(cat "$HOME/.mozilla/firefox/profiles.ini" | sed -n -e 's/^.*Path=//p' | head -n 1)
 # Enable FIDO U2F in Firefox
-echo "user_pref(\"security.webauth.u2f\", \"true\");" >> $HOME/.mozilla/firefox/$def_Pfile/prefs.js
+echo "user_pref(\"security.webauth.u2f\", \"true\");" >> "$HOME/.mozilla/firefox/$def_Pfile/prefs.js"
 
 sudo apt update
 

@@ -15,4 +15,4 @@ find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes" -mindepth 1 -maxdepth 1 -
 find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins" -mindepth 1 -maxdepth 1 -type d -exec git -C {} pull \;
 
 # Update npm packages
-npm update -g
+command -v npm 2>/dev/null && npm update -g

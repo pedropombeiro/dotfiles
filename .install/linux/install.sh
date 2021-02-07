@@ -23,7 +23,7 @@ sudo timedatectl set-ntp no && \
 # TODO: Add "server ntp.pedropombeiro.com" to /etc/ntp.conf
 
 sudo apt install -y preload gnome-tweak-tool unity-tweak-tool build-essential \
-  gdebi-core httpie network-manager-openvpn-gnome mc moreutils tig \
+  gdebi-core httpie network-manager-openvpn-gnome ctop mc moreutils tig \
   rng-tools asciinema shellcheck
 
 brew install bat fzf

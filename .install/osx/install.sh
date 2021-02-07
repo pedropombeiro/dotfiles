@@ -43,7 +43,9 @@ brew install aria2 \
              bat \
              calc \
              coreutils \
+             ctop \
              gnutls \
+             gotop \
              htop \
              httpie \
              zaquestion/tap/lab \

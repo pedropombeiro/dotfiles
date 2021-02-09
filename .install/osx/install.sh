@@ -49,6 +49,7 @@ brew install aria2 \
              htop \
              httpie \
              zaquestion/tap/lab \
+             lazygit \
              mc \
              moreutils \
              nano \

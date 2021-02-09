@@ -196,6 +196,11 @@ sudo add-apt-repository -y ppa:git-core/ppa && \
   sudo apt update && \
   sudo apt install -y git
 
+# LazyGit
+sudo add-apt-repository ppa:lazygit-team/release && \
+  sudo apt-get update && \
+  sudo apt-get install lazygit
+
 # Ensure we have a common location for gpg between OSX and Linux
 sudo ln -sf /usr/bin/gpg /usr/local/bin/gpg
 

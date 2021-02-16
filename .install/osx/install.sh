@@ -44,6 +44,7 @@ brew install aria2 \
              calc \
              coreutils \
              ctop \
+             duf \
              gnutls \
              gotop \
              htop \

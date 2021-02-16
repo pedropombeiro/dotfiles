@@ -61,4 +61,7 @@ fi
 # aliases
 [[ -f ~/.aliases.sh ]] && source ~/.aliases.sh
 
-[ -f "$ZSH/oh-my-zsh.sh" ] && source $ZSH/oh-my-zsh.sh
+if [ -f "$ZSH/oh-my-zsh.sh" ]; then
+  source $ZSH/oh-my-zsh.sh
+  unalias duf
+fi

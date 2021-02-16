@@ -14,7 +14,7 @@ brew update
 brew upgrade
 
 # Update npm packages
-command -v npm >/dev/null &&npm update -g
+command -v npm >/dev/null && npm update -g
 
 # Enable TouchID on shell
 grep 'pam_tid.so' /etc/pam.d/sudo > /dev/null || \

@@ -148,7 +148,7 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
                     jetbrains-toolbox \
                     slack \
                     vagrant \
-                    zoomus
+                    zoom
 
   brew services start docker-machine
 fi

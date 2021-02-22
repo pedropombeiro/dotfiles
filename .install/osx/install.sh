@@ -113,6 +113,7 @@ brew cask install alfred \
                   protonmail-bridge \
                   protonvpn \
                   rescuetime \
+                  send-to-kindle \
                   skype \
                   spotify \
                   stay \

@@ -117,7 +117,6 @@ ssh -T git@gitlab.com
   - [Beyond Compare](https://scootersoftware.com/download.php)
   - [Boom 3D](https://www.globaldelight.com/boom/)
   - [Camera Live](https://github.com/v002/v002-Camera-Live)
-  - [CheatSheet](https://www.mediaatelier.com/CheatSheet/)
   - [Croc file transfer](https://github.com/schollz/croc)
   - [Dash](https://kapeli.com/dash)
   - [Docker](https://www.docker.com/products/docker-desktop)
@@ -125,7 +124,6 @@ ssh -T git@gitlab.com
   - [Fork Git client](https://git-fork.com/update/files/Fork.dmg)
   - [Google Chrome](https://www.google.com/chrome/)
   - [iTerm2](https://www.iterm2.com/downloads.html)
-  - [Haptic Touch Bar](https://www.haptictouchbar.com/)
   - [Kap](https://getkap.co/)
   - [KeePassXC](https://keepassxc.org/)
   - [Krisp](https://krisp.ai/)
@@ -151,7 +149,6 @@ ssh -T git@gitlab.com
 - Installed via mas-cli:
   - Amphetamine ([App Store](https://apps.apple.com/us/app/amphetamine/id937984704))
   - Annotate ([App Store](https://apps.apple.com/us/app/annotate-text-emoji-stickers-shapes-on-photos-screenshots/id994933038))
-  - Feedly ([App Store](https://apps.apple.com/us/app/feedly-read-more-know-more/id865500966))
   - Keynote ([App Store](https://apps.apple.com/us/app/keynote/id409183694))
   - Numbers ([App Store](https://apps.apple.com/us/app/numbers/id409203825))
   - Pages ([App Store](https://apps.apple.com/us/app/pages/id409203825))

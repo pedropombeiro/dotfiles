@@ -58,6 +58,7 @@ brew install aria2 \
              ncdu \
              pinentry-mac \
              python \
+             ranger \
              ripgrep \
              speedtest_cli \
              syncthing \
@@ -81,7 +82,6 @@ brew cask install alfred \
                   beyond-compare \
                   boom-3d \
                   cakebrew \
-                  cheatsheet \
                   chef-workstation \
                   dash \
                   dropbox \
@@ -91,7 +91,6 @@ brew cask install alfred \
                   fork \
                   gimp \
                   gpg-suite \
-                  haptic-touch-bar \
                   istat-menus \
                   iterm2 \
                   kap \

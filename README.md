@@ -2,6 +2,7 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 # Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Prerequisites](#prerequisites)
   - [Mac OS X](#mac-os-x)
   - [Linux Debian/Ubuntu](#linux-debianubuntu)
@@ -17,6 +18,7 @@
   - [Profiling ZSH](#profiling-zsh)
   - [Useful software (not installed by default)](#useful-software-not-installed-by-default)
   - [Checklist before reinstall](#checklist-before-reinstall)
+  - [Checklist after install](#checklist-after-install)
 - [Acknowledgments](#acknowledgments)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -116,6 +118,7 @@ ssh -T git@gitlab.com
   - [Boom 3D](https://www.globaldelight.com/boom/)
   - [Camera Live](https://github.com/v002/v002-Camera-Live)
   - [CheatSheet](https://www.mediaatelier.com/CheatSheet/)
+  - [Croc file transfer](https://github.com/schollz/croc)
   - [Dash](https://kapeli.com/dash)
   - [Docker](https://www.docker.com/products/docker-desktop)
   - [Dropbox](https://www.dropbox.com/install)

@@ -43,6 +43,7 @@ brew install aria2 \
              bat \
              calc \
              coreutils \
+             croc \
              ctop \
              duf \
              gnutls \

@@ -25,7 +25,7 @@ fi
 _load_settings() {
   _dir="$1"
   if [ -d "$_dir" ]; then
-    if [ -f "$_dir/pre/*" ]; then
+    if [ -d "$_dir/pre" ]; then
       for config in "$_dir"/pre/**/*.*sh; do
         . $config
       done
@@ -42,7 +42,7 @@ _load_settings() {
       esac
     done
 
-    if [ -f "$_dir/post/*" ]; then
+    if [ -d "$_dir/post" ]; then
       for config in "$_dir"/post/**/*.*sh; do
         . $config
       done

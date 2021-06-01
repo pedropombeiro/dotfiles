@@ -17,7 +17,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
 
     set +e
 
-    git checkout "${CURRENT_BRANCH}"
+    git switch "${CURRENT_BRANCH}"
     [[ ${STASHED} -eq 1 ]] &&  git stash pop
   }
 

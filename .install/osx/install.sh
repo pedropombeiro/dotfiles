@@ -136,6 +136,7 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
                docker-machine-parallels \
                dive \
                graphviz \
+               pgformatter \
                minio/stable/minio \
                minikube \
                helm \

@@ -115,6 +115,7 @@ brew cask install alfred \
                   rescuetime \
                   send-to-kindle \
                   skype \
+                  sleepwatcher \
                   spotify \
                   stay \
                   syncthing \

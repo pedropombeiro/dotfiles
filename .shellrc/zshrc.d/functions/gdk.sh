@@ -4,17 +4,35 @@ if [[ -d "${GDK_ROOT}" ]]; then
   function rebase-all() {
     CURRENT_BRANCH="$(git branch --show-current)"
 
-    if git diff-index --quiet HEAD --; then
-      STASHED=0
-    else
-      git stash
-      STASHED=1
+    if ! git diff-index --quiet HEAD --; then
+      echo 'Please stash the changes in the current branch before calling rebase-all!'
+      return
     fi
 
-    git for-each-ref --shell --format='git switch %(refname) && git rebase master && echo -------- && '\\'' refs/heads/pedropombeiro | { sed 's;refs/heads/;;'; echo 'echo Done'; } | bash
+    git for-each-ref --shell --format='git switch %(refname) && git rebase master && echo -------- && '\\'' refs/heads/pedropombeiro | { sed 's;refs/heads/;;'; echo "git switch '${CURRENT_BRANCH}'"; } | bash
+  }
 
-    git switch "${CURRENT_BRANCH}"
-    [[ ${STASHED} -eq 1 ]] && git stash pop
+  function fgdku() {
+    cd "${GDK_ROOT}/gitlab" || exit
+
+    if ! git diff-index --quiet HEAD --; then
+      echo 'Please stash the changes in the current branch before calling fgdku!'
+      cd - >/dev/null
+      return
+    fi
+
+    set -e
+    echo "Updating GDK..."
+    gdk update
+    echo "Running simple test..."
+    bin/rspec spec/lib/expand_variables_spec.rb
+    echo "Rebasing local branches..."
+    rebase-all
+    echo "Done."
+
+    set +e
+
+    cd - >/dev/null
   }
 
   function branch-to() {

@@ -11,14 +11,10 @@ if [[ -d "${GDK_ROOT}" ]]; then
       STASHED=1
     fi
 
-    set -e -o pipefail
-
-    git for-each-ref --shell --format='git switch %(refname) && git rebase master && echo --------' refs/heads/pedropombeiro | sed 's;refs/heads/;;' | bash
-
-    set +e
+    git for-each-ref --shell --format='git switch %(refname) && git rebase master && echo -------- && '\\'' refs/heads/pedropombeiro | { sed 's;refs/heads/;;'; echo 'echo Done'; } | bash
 
     git switch "${CURRENT_BRANCH}"
-    [[ ${STASHED} -eq 1 ]] &&  git stash pop
+    [[ ${STASHED} -eq 1 ]] && git stash pop
   }
 
   function branch-to() {

@@ -46,8 +46,8 @@ brew install aria2 \
              croc \
              ctop \
              duf \
+             glances \
              gnutls \
-             gotop \
              htop \
              httpie \
              zaquestion/tap/lab \

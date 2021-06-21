@@ -9,7 +9,9 @@ if [[ -d "${GDK_ROOT}" ]]; then
       return
     fi
 
-    git for-each-ref --shell --format='git switch %(refname) && git rebase master && echo -------- && '\\'' refs/heads/pedropombeiro | { sed 's;refs/heads/;;'; echo "git switch '${CURRENT_BRANCH}'"; } | bash
+    DEFAULT_BRANCH='main'
+    git show-ref refs/remotes/origin/master >/dev/null && DEFAULT_BRANCH='master'
+    git for-each-ref --shell --format='git switch %(refname) && git rebase '"${DEFAULT_BRANCH}"' && echo -------- && '\\'' refs/heads/pedropombeiro | { sed 's;refs/heads/;;'; echo "git switch '${CURRENT_BRANCH}'"; } | bash
   }
 
   function fgdku() {

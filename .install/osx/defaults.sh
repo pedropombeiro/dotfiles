@@ -161,18 +161,21 @@ defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
 defaults write com.apple.ActivityMonitor SortDirection -int 0
 
 ###############################################################################
-# Itsycal                                                                     #
+# AltTab                                                                     #
 ###############################################################################
 
-defaults write com.mowglii.ItsycalApp ClockFormat -string "E d MMMM H:mm";
-defaults write com.mowglii.ItsycalApp HideIcon -int 1
-defaults write com.mowglii.ItsycalApp HighlightedDOWs -int 62
-defaults write com.mowglii.ItsycalApp ShowDayOfWeekInIcon -int 1
-defaults write com.mowglii.ItsycalApp ShowEventDays -int 3
-defaults write com.mowglii.ItsycalApp ShowLocation -int 0
-defaults write com.mowglii.ItsycalApp ShowMonthInIcon -int 1
-defaults write com.mowglii.ItsycalApp ShowWeeks -int 1
-defaults write com.mowglii.ItsycalApp UseOutlineIcon -int 0
+defaults write com.lwouis.alt-tab-macos appsToShow2 -int 1
+defaults write com.lwouis.alt-tab-macos holdShortcut "\U2318"
+defaults write com.lwouis.alt-tab-macos holdShortcut2 "\U2318"
+defaults write com.lwouis.alt-tab-macos hideSpaceNumberLabels -bool true
+defaults write com.lwouis.alt-tab-macos hideWindowlessApps -bool false
+defaults write com.lwouis.alt-tab-macos showHiddenWindows -int 2
+defaults write com.lwouis.alt-tab-macos showHiddenWindows2 -int 2
+defaults write com.lwouis.alt-tab-macos showMinimizedWindows -int 2
+defaults write com.lwouis.alt-tab-macos showMinimizedWindows2 -int 2
+defaults write com.lwouis.alt-tab-macos spacesToShow -int 2
+defaults write com.lwouis.alt-tab-macos spacesToShow2 -int 2
+defaults write com.lwouis.alt-tab-macos titleTruncation -int 1
 
 ###############################################################################
 # iTerm2                                                                      #

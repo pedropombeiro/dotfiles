@@ -62,6 +62,7 @@ brew install aria2 \
              ripgrep \
              speedtest_cli \
              syncthing \
+             syntax-highlight \
              switchaudio-osx \
              the_silver_searcher \
              tig \

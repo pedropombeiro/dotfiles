@@ -21,6 +21,8 @@ if [[ -d "${GDK_ROOT}" ]]; then
   function fgdku() {
     cd "${GDK_ROOT}/gitlab" || exit
 
+    rm -rf .git/gc.log
+
     if ! git diff-index --quiet HEAD --; then
       echo 'Please stash the changes in the current branch before calling fgdku!'
       cd - >/dev/null

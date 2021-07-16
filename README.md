@@ -227,8 +227,8 @@ zprof
 
 ## Checklist after install
 
-- Add Terminal, iTerm, Visual Studio Code and GoLand to `System Preferences/Security & Privacy/Privacy/Developer Tools` list, to avoid Apple
-  notarisation checks that cause slowdowns.
+- Add Terminal, iTerm, Visual Studio Code, RubyMine, and GoLand to `System Preferences/Security & Privacy/Privacy/Developer Tools` list, to avoid Apple notarisation checks that cause slowdowns.
+- Configure [`$HOME/.git-peek`](https://awesomeopensource.com/project/Jarred-Sumner/git-peek#private-repositories--choosing-an-editor)
 
 # Acknowledgments
 

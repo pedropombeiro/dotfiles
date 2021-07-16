@@ -46,6 +46,7 @@ brew install aria2 \
              croc \
              ctop \
              duf \
+             jarred-sumner/git-peek/git-peek \
              glances \
              gnutls \
              htop \
@@ -65,7 +66,7 @@ brew install aria2 \
              syntax-highlight \
              switchaudio-osx \
              the_silver_searcher \
-             tig \
+             tldr \
              watch \
              xz \
              youtube-dl \

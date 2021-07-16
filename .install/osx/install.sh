@@ -68,6 +68,7 @@ brew install aria2 \
              the_silver_searcher \
              tldr \
              watch \
+             wifi-password \
              xz \
              youtube-dl \
              yq

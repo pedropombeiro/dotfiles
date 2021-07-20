@@ -66,7 +66,7 @@ brew install aria2 \
              syntax-highlight \
              switchaudio-osx \
              the_silver_searcher \
-             tldr \
+             tealdeer \
              watch \
              wifi-password \
              xz \

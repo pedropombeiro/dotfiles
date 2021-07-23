@@ -114,6 +114,7 @@ ssh -T git@gitlab.com
 
 - Installed via brew:
   - [1Password](https://1password.com/downloads/mac/)
+  - [Alfred](https://www.alfredapp.com/)
   - [Beyond Compare](https://scootersoftware.com/download.php)
   - [Boom 3D](https://www.globaldelight.com/boom/)
   - [Camera Live](https://github.com/v002/v002-Camera-Live)

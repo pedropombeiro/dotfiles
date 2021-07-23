@@ -36,6 +36,9 @@ if [[ -d "${GDK_ROOT}" ]]; then
     bin/rspec spec/lib/expand_variables_spec.rb
     set +e
 
+    echo "Pruning local branches..."
+    git prune-branches
+
     echo "Rebasing local branches..."
     _rebase-all
     echo "Done."

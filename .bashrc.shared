@@ -16,6 +16,6 @@ fi
 # Load all files from .shell/rc.d directory
 if [ -d "${HOME}/.shellrc/rc.d" ]; then
   for file in $(ls ${HOME}/.shellrc/rc.d/{,**/}*.sh 2>/dev/null); do
-    source "${file"}
+    source "${file}"
   done
 fi

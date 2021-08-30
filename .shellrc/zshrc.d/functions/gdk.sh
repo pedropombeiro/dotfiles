@@ -22,6 +22,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
     cd "${GDK_ROOT}/gitlab" || exit
 
     rm -rf .git/gc.log
+    git checkout db/structure.sql
 
     if ! git diff-index --quiet HEAD --; then
       echo 'Please stash the changes in the current branch before calling fgdku!'
@@ -32,6 +33,10 @@ if [[ -d "${GDK_ROOT}" ]]; then
     set -e
     echo "Updating GDK..."
     gdk update
+
+    git checkout db/structure.sql
+		sleep 5
+
     echo "Running simple test..."
     bin/rspec spec/lib/expand_variables_spec.rb
     set +e

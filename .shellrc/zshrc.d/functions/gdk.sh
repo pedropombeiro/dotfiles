@@ -51,3 +51,60 @@ if [[ -d "${GDK_ROOT}" ]]; then
     cd - >/dev/null
   }
 fi
+
+function thin-clone() {
+  set -o pipefail
+
+  POSTGRES_AI_HOST='gitlab-joe-poc.postgres.ai'
+  case $1 in
+    create)
+      echo -n "Username (defaults to '${USER}'): "
+      read -r USERNAME
+      echo
+      if [[ -z ${USERNAME} ]]; then
+        USERNAME="${USER}"
+      fi
+
+      # Generate random password
+      PASSWORD="$(openssl rand -base64 20)"
+
+      echo "Starting a tunnel to ${POSTGRES_AI_HOST}"
+      ssh dblab-joe -f -N
+
+      echo "Creating thin clone for ${USERNAME}..."
+      PORT="$(dblab clone create --username "${USERNAME}" --password "${PASSWORD}" | jq -r '.db.port')"
+      LOCAL_PORT=10000
+
+      echo "Forwarding local port (${LOCAL_PORT}) to the returned port (${PORT}) at ${POSTGRES_AI_HOST}"
+      ssh -L "${LOCAL_PORT}:localhost:${PORT}" -f -N "gldatabase@${POSTGRES_AI_HOST}"
+
+      echo "Connecting psql to the local port (${LOCAL_PORT}) with random password ${PASSWORD}"
+      export PAGER='less -RS'
+      PGPASSWORD="${PASSWORD}" psql -h localhost -p "${LOCAL_PORT}" -U "${USERNAME}" gitlabhq_dblab --set="PROMPT1=%/ on :${PORT}%R%#"
+      ;;
+    destroy-all)
+      echo -n "Username (defaults to '${USER}'): "
+      read -r USERNAME
+      echo
+      if [[ -z ${USERNAME} ]]; then
+        USERNAME="${USER}"
+      fi
+
+      echo "Listing thin clones for ${USERNAME}"
+      IDS=( $(dblab instance status | jq --arg username "${USERNAME}" -r '.clones[] | select(.db.username == $username) | .id') )
+      for id in "${IDS[@]}"; do
+        echo "Destroying clone ${id}..."
+        dblab clone destroy "${id}"
+      done
+      ;;
+    stop-ssh)
+      echo 'Stopping SSH processes...'
+      ps aux | grep ssh | grep '\-joe' | awk '{print $2}' | xargs kill -9 || echo -n
+      ;;
+    *)
+      echo "Unknown command '$1', aborting"
+      ;;
+  esac
+
+  echo Done
+}

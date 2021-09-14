@@ -65,8 +65,15 @@ function thin-clone() {
         USERNAME="${USER}"
       fi
 
-      # Generate random password
-      PASSWORD="$(openssl rand -base64 20)"
+      PASSENTRY="$(grep "localhost:10000:gitlabhq_dblab:${USERNAME}" ~/.pgpass)"
+      if [[ -z ${PASSENTRY} ]]; then
+        # Generate random password
+        PASSWORD="$(openssl rand -base64 20)"
+        export PGPASSWORD="${PASSWORD}"
+      else
+        echo "Found entry in ~/.pgpass for ${USERNAME}"
+        PASSWORD=$(echo "${PASSENTRY}" | awk -F "\"*:\"*" '{print $5}')
+      fi
 
       echo "Starting a tunnel to ${POSTGRES_AI_HOST}"
       ssh dblab-joe -f -N
@@ -80,7 +87,7 @@ function thin-clone() {
 
       echo "Connecting psql to the local port (${LOCAL_PORT}) with random password ${PASSWORD}"
       export PAGER='less -RS'
-      PGPASSWORD="${PASSWORD}" psql -h localhost -p "${LOCAL_PORT}" -U "${USERNAME}" gitlabhq_dblab --set="PROMPT1=%/ on :${PORT}%R%#"
+      psql -h localhost -p "${LOCAL_PORT}" -U "${USERNAME}" gitlabhq_dblab --set="PROMPT1=%/ on :${PORT}%R%#"
       ;;
     destroy-all)
       echo -n "Username (defaults to '${USER}'): "
@@ -94,7 +101,7 @@ function thin-clone() {
       IDS=( $(dblab instance status | jq --arg username "${USERNAME}" -r '.clones[] | select(.db.username == $username) | .id') )
       for id in "${IDS[@]}"; do
         echo "Destroying clone ${id}..."
-        dblab clone destroy "${id}"
+        dblab clone destroy -a "${id}"
       done
       ;;
     stop-ssh)

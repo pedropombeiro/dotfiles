@@ -150,6 +150,7 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
                     1password \
                     1password-cli \
                     docker \
+                    eqmac \
                     google-cloud-sdk \
                     google-drive-file-stream \
                     jetbrains-toolbox \

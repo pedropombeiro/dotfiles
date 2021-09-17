@@ -89,6 +89,17 @@ function thin-clone() {
       export PAGER='less -RS'
       psql -h localhost -p "${LOCAL_PORT}" -U "${USERNAME}" gitlabhq_dblab --set="PROMPT1=%/ on :${PORT}%R%#"
       ;;
+    list)
+      echo -n "Username (defaults to '${USER}'): "
+      read -r USERNAME
+      echo
+      if [[ -z ${USERNAME} ]]; then
+        USERNAME="${USER}"
+      fi
+
+      echo "Listing thin clones for ${USERNAME}"
+      dblab instance status | jq --arg username "${USERNAME}" -r '.clones[] | select(.db.username == $username) | .id'
+      ;;
     destroy-all)
       echo -n "Username (defaults to '${USER}'): "
       read -r USERNAME

@@ -112,10 +112,6 @@ echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /et
   sudo apt update && \
   sudo apt install google-chrome-stable
 
-# RescueTime
-cd "${download_dir}" && wget https://www.rescuetime.com/installers/rescuetime_current_amd64.deb && \
-  sudo gdebi rescuetime_current_amd64.deb
-
 # Toggl
 cd "${download_dir}" && \
   wget http://fr.archive.ubuntu.com/ubuntu/pool/main/g/gst-plugins-base0.10/libgstreamer-plugins-base0.10-0_0.10.36-1_amd64.deb && \
@@ -301,7 +297,6 @@ sudo mv /var/lib/snapd/desktop/applications/spotify_spotify.desktop /var/lib/sna
   sudo bash -c "sed -e 's/Exec=env BAMF_DESKTOP_FILE_HINT=\/var\/lib\/snapd\/desktop\/applications\/spotify_spotify.desktop \/snap\/bin\/spotify %U/Exec=env BAMF_DESKTOP_FILE_HINT=\/var\/lib\/snapd\/desktop\/applications\/spotify_spotify.desktop \/snap\/bin\/spotify --force-device-scale-factor=1.5 %U/' /var/lib/snapd/desktop/applications/spotify_spotify.desktop.orig > /var/lib/snapd/desktop/applications/spotify_spotify.desktop"
 
 # TODO: https://www.bettertechtips.com/linux/track-activities-linux/
-rescuetime & disown
 /usr/local/bin/ledger-live-desktop-linux-x86_64.AppImage & disown
 
 ###

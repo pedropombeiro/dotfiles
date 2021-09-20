@@ -116,7 +116,6 @@ brew cask install alfred \
                   plex \
                   protonmail-bridge \
                   protonvpn \
-                  rescuetime \
                   send-to-kindle \
                   skype \
                   sleepwatcher \

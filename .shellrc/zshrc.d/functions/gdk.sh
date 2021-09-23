@@ -38,7 +38,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
 		sleep 5
 
     echo "Running simple test..."
-    bin/rspec spec/lib/expand_variables_spec.rb
+    bin/rspec spec/lib/gitlab/ci/variables/collection_spec.rb
     set +e
 
     echo "Pruning local branches..."

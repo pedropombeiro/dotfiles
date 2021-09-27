@@ -3,6 +3,13 @@
 # Skip all this for non-interactive shells
 [[ -z "$PS1" ]] && return
 
+if [ -z "$INTELLIJ_ENVIRONMENT_READER" ]; then
+  autoload -Uz compinit
+  zstyle ':completion:*' menu select
+  fpath+=~/.zfunc
+  compinit
+fi
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 

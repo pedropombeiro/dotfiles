@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 if [[ -d "${GDK_ROOT}" ]]; then
   function _rebase-all() {
@@ -18,8 +18,26 @@ if [[ -d "${GDK_ROOT}" ]]; then
     _rebase-all
   }
 
+  function list-migrations() {
+    MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A master -- db/schema_migrations/)"
+    echo ${MIGRATIONS_DIFF} | xargs basename -a | sort -r
+  }
+
+  function undo-migrations() {
+    BRANCH_MIGRATIONS=( $(list-migrations) )
+    if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
+      echo "Undoing ${#BRANCH_MIGRATIONS[@]} branch migration(s)..."
+
+      for migration in "${BRANCH_MIGRATIONS[@]}"; do
+        bin/rails db:migrate:down VERSION="${migration}"
+      done
+
+      git stash push -m "Rolled back migration from ${ORIGINAL_BRANCH}"
+    fi
+  }
+
   function fgdku() {
-    cd "${GDK_ROOT}/gitlab" || exit
+    cd "${GDK_ROOT}/gitlab" || return
 
     rm -rf .git/gc.log
     git checkout db/structure.sql
@@ -31,6 +49,11 @@ if [[ -d "${GDK_ROOT}" ]]; then
     fi
 
     set -e
+    ORIGINAL_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+    MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A master -- db/schema_migrations/)"
+    BRANCH_MIGRATIONS=( $(echo ${MIGRATIONS_DIFF} | xargs basename -a | sort -r) )
+    undo-migrations
+
     echo "Updating GDK..."
     gdk update
 
@@ -47,6 +70,13 @@ if [[ -d "${GDK_ROOT}" ]]; then
     echo "Rebasing local branches..."
     _rebase-all
     echo "Done."
+
+    git switch "${ORIGINAL_BRANCH}"
+    if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
+      git stash pop
+      bin/rails db:migrate
+      git checkout db/structure.sql
+    fi
 
     cd - >/dev/null
   }

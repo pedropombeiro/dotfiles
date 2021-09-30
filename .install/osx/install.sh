@@ -49,7 +49,6 @@ brew install aria2 \
              jarred-sumner/git-peek/git-peek \
              gnutls \
              htop \
-             httpie \
              zaquestion/tap/lab \
              lazygit \
              mc \
@@ -68,6 +67,7 @@ brew install aria2 \
              tealdeer \
              watch \
              wifi-password \
+             xh \
              xz \
              youtube-dl \
              yq

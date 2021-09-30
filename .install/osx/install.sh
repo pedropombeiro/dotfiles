@@ -47,6 +47,7 @@ brew install aria2 \
              ctop \
              duf \
              jarred-sumner/git-peek/git-peek \
+             git-delta \
              gnutls \
              htop \
              zaquestion/tap/lab \

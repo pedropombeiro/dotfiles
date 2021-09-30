@@ -47,7 +47,6 @@ brew install aria2 \
              ctop \
              duf \
              jarred-sumner/git-peek/git-peek \
-             glances \
              gnutls \
              htop \
              httpie \

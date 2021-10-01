@@ -85,6 +85,7 @@
 
   # Detect copies as well as renames
   renames = copies
+  colorMoved = default
 
   tool = beyondcompare4
   guitool = beyondcompare4

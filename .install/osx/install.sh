@@ -136,9 +136,7 @@ APPLEID="$(mas account || echo '')"
 
 if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
   # For a GitLab development machine
-  brew install docker-machine \
-               docker-machine-parallels \
-               dive \
+  brew install dive \
                graphviz \
                pgformatter \
                minio/stable/minio \
@@ -158,8 +156,6 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
                     vagrant \
                     xbar \
                     zoom
-
-  brew services start docker-machine
 fi
 
 set +e

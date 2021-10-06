@@ -129,8 +129,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
         ssh -L "${LOCAL_PORT}:localhost:${PORT}" -f -N "gldatabase@${POSTGRES_AI_HOST}"
 
         echo "Connecting psql to the local port (${LOCAL_PORT}) with random password ${PASSWORD}"
-        export PAGER='less -RS'
-        psql -h localhost -p "${LOCAL_PORT}" -U "${USERNAME}" gitlabhq_dblab --set="PROMPT1=%/ on :${PORT}%R%#"
+        pgcli -h localhost -p "${LOCAL_PORT}" -U "${USERNAME}" -d gitlabhq_dblab
         ;;
       list)
         echo -n "Username (defaults to '${USER}'): "

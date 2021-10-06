@@ -181,17 +181,14 @@ defaults write com.lwouis.alt-tab-macos titleTruncation -int 1
 # iTerm2                                                                      #
 ###############################################################################
 
-if [ -d /Applications/iTerm.app ]; then
-  if [ -d "${HOME}/Sync/pedro/Briefcase/Backups/MBP" ]; then
-    echo "Setting iTerm preference folder"
-    defaults write com.googlecode.iterm2 PrefsCustomFolder "${HOME}/Sync/pedro/Briefcase/Backups/MBP"
-  fi
+BACKUP_FOLDER="${HOME}/Sync/pedro/Briefcase/Backups/MBP.$(yadm config local.class)"
+if [ -d /Applications/iTerm.app ] && [ -d "${BACKUP_FOLDER}" ]; then
+  echo "Setting iTerm preference folder"
+  defaults write com.googlecode.iterm2 PrefsCustomFolder "${BACKUP_FOLDER}"
 fi
 
 # Disable warning when quitting
 defaults write com.googlecode.iterm2 PromptOnQuit -bool false
-
-sleep 2 && osascript -e 'quit app "iTerm"'
 
 # Show tab bar in FullScreen
 defaults write com.googlecode.iterm2 ShowFullScreenTabBar -bool true

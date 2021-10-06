@@ -9,8 +9,6 @@ alias ohmyzsh="$EDITOR ~/.oh-my-zsh"
 alias mkcd='foo(){ mkdir -p "$1"; cd "$1" }; foo'
 alias myip="curl http://ipecho.net/plain; echo"
 
-alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
-
 # Include custom aliases
 if [[ -f ~/.aliases.local ]]; then
   source ~/.aliases.local

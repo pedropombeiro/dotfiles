@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+source "${YADM_HOOK_WORK}/.config/yadm/scripts/relink-dotfiles.sh"

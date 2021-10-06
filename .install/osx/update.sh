@@ -9,10 +9,8 @@ find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins" -mindepth 1 -maxdepth 1 
 # Update App Store apps
 sudo softwareupdate -i -a
 
-# Enable TouchID on shell
-grep 'pam_tid.so' /etc/pam.d/sudo > /dev/null || \
-  echo -e "auth       sufficient     pam_tid.so\n$(cat /etc/pam.d/sudo)" | \
-  sudo tee /etc/pam.d/sudo
+source "${HOME}/.config/yadm/scripts/enable-touchid-on-terminal.sh"
+source "${HOME}/.config/yadm/scripts/relink-dotfiles.sh"
 
 # Update Homebrew (Cask) & packages
 brew update

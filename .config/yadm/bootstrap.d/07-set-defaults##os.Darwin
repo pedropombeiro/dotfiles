@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+source "~/.install/osx/defaults.sh"

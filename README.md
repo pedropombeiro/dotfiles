@@ -3,10 +3,10 @@
 # Table of Contents
 
 - [Table of Contents](#table-of-contents)
+- [Abstract](#abstract)
 - [Prerequisites](#prerequisites)
   - [Mac OS X](#mac-os-x)
   - [Linux Debian/Ubuntu](#linux-debianubuntu)
-- [Installation](#installation)
 - [Post-install procedure](#post-install-procedure)
   - [On a fresh installation - Linux](#on-a-fresh-installation---linux)
   - [On a fresh installation - Mac OS X](#on-a-fresh-installation---mac-os-x)
@@ -23,22 +23,31 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+# Abstract
+
+This dotfiles repo leverages [YADM](https://yadm.io/) as the dotfiles manager.
+
 # Prerequisites
 
 ## Mac OS X
 
-Install the [Brew package manager](https://brew.sh/):
+Log in to the App Store.
+
+Install the YADM and the [Brew package manager](https://brew.sh/):
 
 ```shell
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+brew install yadm
 ```
 
-Install dependencies:
+Install dotfiles:
 
 ```shell
-sudo softwareupdate -i -a
-# The Xcode Command Line Tools includes git and make (not available on stock macOS)
-xcode-select --install
+# Use HTTPS protocol for anonymous access
+yadm clone --bootstrap https://gitlab.com/pedropombeiro/dotfiles.git
+# Replace remote URL
+yadm remote set-url origin git@gitlab.com:pedropombeiro/dotfiles.git
+source ~/.zshrc.shared
 ```
 
 See [Installation](#Installation) and then the [fresh install section](#on-a-fresh-installation---mac-os-x) below.
@@ -46,34 +55,16 @@ See [Installation](#Installation) and then the [fresh install section](#on-a-fre
 ## Linux Debian/Ubuntu
 
 ```shell
-sudo apt install build-essential curl file git make
-
-# Install Homebrew
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-test -r ~/.bash_profile.local && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >> ~/.bash_profile.local
-echo "eval \$($(brew --prefix)/bin/brew shellenv)" >> ~/.profile.local
-```
-
-# Installation
-
-This dotfiles environment is based on https://www.atlassian.com/git/tutorials/dotfiles.
-
-To check out this repo and automatically back up any existing dotenv files, run:
-
-```shell
-curl -Lks https://gitlab.com/pedropombeiro/dotfiles/snippets/1960043/raw | /bin/bash
+sudo apt install yadm
 ```
 
 # Post-install procedure
 
-To install all the required software, run [make install](./.install/linux/install.sh)
-
 ```shell
-make install
-
 # Install Parallels Desktop Pro from https://www.parallels.com/products/desktop/pro/
 
-npm install -g doctoc
+# Symlink the dotfiles in Syncthing
+~/.config/yadm/scripts/relink-dotfiles.sh
 ```
 
 ## On a fresh installation - Linux
@@ -96,6 +87,12 @@ ssh -T git@gitlab.com
 # Verify you can connect to github and gitlab with the generated SSH keys:
 ssh -T git@github.com
 ssh -T git@gitlab.com
+```
+
+1. After doing the first sync with Syncthing, restore Mackup backup:
+
+```shell
+mackup restore
 ```
 
 ### Mac OS X Settings
@@ -159,7 +156,6 @@ ssh -T git@gitlab.com
 - [Elgato Control Center](https://www.elgato.com/en/gaming/downloads)
 - [Microsoft To Do](https://todo.microsoft.com/tasks/)
 - [Oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) (installed via curl/git clone)
-- [OpenVPN](https://vpn.pombei.ro/?src=connect)
 - [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
 - GitLab-specific:
   - [Install GitLink](https://plugins.jetbrains.com/plugin/8183-gitlink)

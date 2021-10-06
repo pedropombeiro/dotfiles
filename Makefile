@@ -1,15 +1,11 @@
 .PHONY: pull
 pull:
-	@/usr/bin/git --git-dir=$(HOME)/.cfg/ --work-tree=$(HOME) fetch origin && \
-	 /usr/bin/git --git-dir=$(HOME)/.cfg/ --work-tree=$(HOME) reset --hard origin/master
+	@yadm fetch && \
+	 yadm reset --hard origin/master
 
 .PHONY: install
 install:
-	@if [ "$(shell uname -s)" = "Linux" ]; then \
-		.install/linux/install.sh; \
-	else \
-		.install/osx/install.sh; \
-	fi
+	@yadm bootstrap
 
 .PHONY: update
 update:
@@ -18,3 +14,7 @@ update:
 	else \
 		.install/osx/update.sh; \
 	fi
+
+.PHONY: brew-dump
+brew-dump:
+	@brew bundle dump -f --global --describe

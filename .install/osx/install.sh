@@ -19,10 +19,10 @@ brew install autojump \
              mas \
              wget
 
-echo "source ~/.bash_profile.shared" >> ~/.bash_profile
-echo "source ~/.bashrc.shared" >> ~/.bashrc
+grep '.bash_profile.shared' ~/.bash_profile >/dev/null 2>&1|| echo "source ~/.bash_profile.shared" >> ~/.bash_profile
+grep '.bashrc.shared' ~/.bashrc >/dev/null 2>&1 || echo "source ~/.bashrc.shared" >> ~/.bashrc
 
-if [ ! -d ~/.oh-my-zsh/ ]; then
+if [[ ! -d ~/.oh-my-zsh/ ]]; then
   # Install Oh-my-zsh
   chmod o-w,g-w /usr/local/share/zsh /usr/local/share/zsh/site-functions
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
@@ -30,21 +30,19 @@ if [ ! -d ~/.oh-my-zsh/ ]; then
 fi
 
 set +e
-[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes/powerlevel10k" ] || git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes/powerlevel10k"
-[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ] || git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ] || git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/you-should-use" ] || git clone https://github.com/MichaelAquilina/zsh-you-should-use.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/you-should-use"
+[[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes/powerlevel10k" ]] || git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes/powerlevel10k"
+[[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]] || git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+[[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]] || git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+[[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/you-should-use" ]] || git clone https://github.com/MichaelAquilina/zsh-you-should-use.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/you-should-use"
 set -e
 
 # Install software through Homebrew (https://formulae.brew.sh/)
-brew install aria2 \
-             asciinema \
+brew install asciinema \
              asdf \
              bat \
              calc \
              coreutils \
              croc \
-             ctop \
              duf \
              jarred-sumner/git-peek/git-peek \
              git-delta \
@@ -52,6 +50,7 @@ brew install aria2 \
              htop \
              zaquestion/tap/lab \
              lazygit \
+             lazydocker \
              mc \
              moreutils \
              nano \
@@ -86,7 +85,6 @@ brew cask install alfred \
                   beyond-compare \
                   boom-3d \
                   cakebrew \
-                  chef-workstation \
                   dash \
                   dropbox \
                   elgato-control-center \
@@ -148,7 +146,6 @@ if [ "${APPLEID}" = "ppombeiro@gitlab.com" ]; then
                     1password \
                     1password-cli \
                     docker \
-                    eqmac \
                     google-cloud-sdk \
                     google-drive-file-stream \
                     jetbrains-toolbox \

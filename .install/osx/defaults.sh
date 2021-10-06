@@ -181,8 +181,12 @@ defaults write com.lwouis.alt-tab-macos titleTruncation -int 1
 # iTerm2                                                                      #
 ###############################################################################
 
-# Open the app so the preference files get initialized
-open -g "/Applications/iTerm.app" && sleep 2
+if [ -d /Applications/iTerm.app ]; then
+  if [ -d "${HOME}/Sync/pedro/Briefcase/Backups/MBP" ]; then
+    echo "Setting iTerm preference folder"
+    defaults write com.googlecode.iterm2 PrefsCustomFolder "${HOME}/Sync/pedro/Briefcase/Backups/MBP"
+  fi
+fi
 
 # Disable warning when quitting
 defaults write com.googlecode.iterm2 PromptOnQuit -bool false

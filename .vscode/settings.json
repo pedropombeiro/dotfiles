@@ -1,0 +1,33 @@
+{
+  "files.associations": {
+    "*.yaml": "home-assistant"
+  },
+  "files.exclude": {
+    ".*_jre_*": true,
+    ".*cache": true,
+    ".android": true,
+    ".asciinema": true,
+    ".asdf": true,
+    ".bundle": true,
+    ".cache": true,
+    ".cfg": true,
+    ".chef": true,
+    ".cups": true,
+    ".dlv": true,
+    ".dropbox": true,
+    ".eclipse": true,
+    ".fonts": true,
+    ".gem": true,
+    ".ipython": true,
+    ".jupyter": true,
+    ".matplotlib": true,
+    ".npm": true,
+    ".subversion": true,
+    ".tldrc": true,
+    ".Trash": true,
+    ".vagrant.d": true,
+    ".zcompdump*": true,
+    ".zsh_sessions": true,
+    "*.gif": true
+  }
+}

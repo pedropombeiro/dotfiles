@@ -31,11 +31,16 @@ if [[ -d "${GDK_ROOT}" ]]; then
 
       BRANCH_MIGRATIONS=( $(list-migrations) )
       if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
-        echo "Undoing ${#BRANCH_MIGRATIONS[@]} branch migration(s)..."
-
-        for migration in "${BRANCH_MIGRATIONS[@]}"; do
-          bin/rails db:migrate:down VERSION="${migration}"
-        done
+        # LAST_MIGRATIONS=( $( (ls db/migrate && ls db/post_migrate) | sort -n | tail -n 6 | awk -F '"*_"*' '{print $1}' | sort -nr) )
+        # if [[ "${BRANCH_MIGRATIONS[*]}" == "${LAST_MIGRATIONS[*]}" ]]; then
+        #   echo "Rolling back ${#LAST_MIGRATIONS[@]} branch migration(s)..."
+        #   bin/rails db:rollback STEP=${#LAST_MIGRATIONS[@]}
+        # else
+          echo "Undoing ${#BRANCH_MIGRATIONS[@]} branch migration(s)..."
+          for migration in "${BRANCH_MIGRATIONS[@]}"; do
+            bin/rails db:migrate:down VERSION="${migration}"
+          done
+        # fi
 
         git stash push -m "Rolled back migration from ${ORIGINAL_BRANCH}"
       fi

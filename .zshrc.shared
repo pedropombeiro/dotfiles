@@ -52,14 +52,14 @@ _load_settings() {
 _load_settings "$HOME/.shellrc/zshrc.d/configs"
 
 # Load all files from .shell/rc.d directory
-if [ -d $HOME/.shellrc/rc.d ]; then
+if [[ -d $HOME/.shellrc/rc.d ]]; then
   for file in $(ls $HOME/.shellrc/rc.d/{,**/}*.sh 2>/dev/null | uniq); do
     source $file
   done
 fi
 
 # load custom executable functions
-if [ -f $HOME/.shellrc/zshrc.d/functions/* ]; then
+if find "$HOME/.shellrc/zshrc.d/functions" -type f >/dev/null; then
   for function in $HOME/.shellrc/zshrc.d/functions/*; do
     source $function
   done
@@ -68,7 +68,7 @@ fi
 # aliases
 [[ -f ~/.aliases.sh ]] && source ~/.aliases.sh
 
-if [ -f "$ZSH/oh-my-zsh.sh" ]; then
+if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
   source $ZSH/oh-my-zsh.sh
   unalias duf
 fi

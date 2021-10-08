@@ -87,6 +87,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
       if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
         git stash pop
         bin/rails db:migrate
+        scripts/regenerate-schema # Ensure we have a clean test DB with any branch migrations done
         git checkout db/structure.sql
       fi
 

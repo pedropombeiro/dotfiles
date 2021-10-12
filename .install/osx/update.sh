@@ -6,9 +6,6 @@ omz update
 find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes" -mindepth 1 -maxdepth 1 -type d -exec git -C {} pull \;
 find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins" -mindepth 1 -maxdepth 1 -type d -exec git -C {} pull \;
 
-# Update App Store apps
-sudo softwareupdate -i -a
-
 source "${HOME}/.config/yadm/scripts/enable-touchid-on-terminal.sh"
 source "${HOME}/.config/yadm/scripts/relink-dotfiles.sh"
 

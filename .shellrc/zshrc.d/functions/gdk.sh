@@ -41,8 +41,6 @@ if [[ -d "${GDK_ROOT}" ]]; then
             bin/rails db:migrate:down VERSION="${migration}"
           done
         # fi
-
-        git stash push -m "Rolled back migration from ${ORIGINAL_BRANCH}"
       fi
     )
   }
@@ -64,7 +62,10 @@ if [[ -d "${GDK_ROOT}" ]]; then
       ORIGINAL_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
       MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A master -- db/schema_migrations/)"
       BRANCH_MIGRATIONS=( $(echo ${MIGRATIONS_DIFF} | xargs basename -a | sort -r) )
-      undo-migrations
+      if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
+        undo-migrations
+        git stash push -m "Rolled back migration from ${ORIGINAL_BRANCH}"
+      fi
 
       echo "Updating GDK..."
       gdk update

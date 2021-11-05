@@ -32,8 +32,6 @@ brew "croc"
 brew "ctop"
 # Disk Usage/Free Utility - a better 'df' alternative
 brew "duf"
-# GNU Transport Layer Security (TLS) Library
-brew "gnutls"
 # Scriptable ping program for checking if multiple hosts are up
 brew "fping"
 # Command-line fuzzy finder written in Go
@@ -46,6 +44,8 @@ brew "git"
 brew "git-delta"
 # Blazing fast terminal-ui for git written in rust
 brew "gitui"
+# GNU Transport Layer Security (TLS) Library
+brew "gnutls"
 # Improved top (interactive process viewer)
 brew "htop"
 # Tools and libraries to manipulate images in many formats
@@ -74,10 +74,14 @@ brew "ncdu"
 brew "nmap"
 # PNG file optimizer
 brew "optipng"
+# CLI for Postgres with auto-completion and syntax highlighting
+brew "pgcli"
 # Pinentry for GPG on Mac
 brew "pinentry-mac"
 # PNG image optimizing utility
 brew "pngquant"
+# Unix pager optimized for psql
+brew "pspg"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.8"
 # File browser
@@ -157,6 +161,7 @@ cask "font-jetbrains-mono"
 cask "font-meslo-lg-nerd-font"
 # GIT client
 cask "fork"
+# Update maps and software, sync with Garmin Connect and register your device
 cask "garmin-express"
 # Free and open-source image editor
 cask "gimp"
@@ -217,12 +222,16 @@ cask "plex"
 cask "protonmail-bridge"
 # VPN client focusing on security
 cask "protonvpn"
+# NAS management application
+cask "qfinder-pro"
 # Imaging utility to install operating systems to a microSD card
 cask "raspberry-pi-imager"
 # Tool for sending personal documents to Kindles from Macs
 cask "send-to-kindle"
 # Video chat, voice call and instant messaging application
 cask "skype"
+# Team communication and collaboration software
+cask "slack"
 # Music streaming service
 cask "spotify"
 # Windows manager

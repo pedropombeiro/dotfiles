@@ -1,5 +1,4 @@
 tap "arkweid/lefthook"
-tap "derailed/k9s"
 tap "dteoh/sqa"
 tap "homebrew/bundle"
 tap "homebrew/cask"
@@ -13,7 +12,6 @@ tap "mas-cli/tap"
 tap "minio/stable"
 tap "moul/moul"
 tap "profclems/tap"
-tap "zaquestion/tap"
 # Cryptography and SSL/TLS Toolkit
 brew "openssl@1.1"
 # Library for command-line editing
@@ -40,6 +38,8 @@ brew "autojump"
 brew "bash"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# Get/set bluetooth power and discoverable state
+brew "blueutil"
 # Core application library for C
 brew "glib"
 # Manage compile and link flags for libraries
@@ -108,6 +108,10 @@ brew "htop"
 brew "iperf3"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
+# Kubernetes CLI To Manage Your Clusters In Style!
+brew "k9s"
+# Git wrapper for GitLab
+brew "lab"
 # Lazier way to manage everything docker
 brew "lazydocker"
 # Simple terminal UI for git commands
@@ -210,14 +214,10 @@ brew "ykpers"
 brew "youtube-dl"
 # Process YAML documents from the CLI
 brew "yq"
-# Kubernetes CLI To Manage Your Clusters In Style!
-brew "derailed/k9s/k9s"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
 # Compare Docker images
 brew "moul/moul/docker-diff"
-# Lab wraps Git or Hub, making it simple to clone, fork, and interact with repositories on GitLab
-brew "zaquestion/tap/lab"
 cask "0xed"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"

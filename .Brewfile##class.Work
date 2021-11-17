@@ -8,6 +8,7 @@ tap "homebrew/cask-versions"
 tap "homebrew/core"
 tap "homebrew/services"
 tap "jarred-sumner/git-peek"
+tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "mas-cli/tap"
 tap "minio/stable"
 tap "moul/moul"
@@ -218,6 +219,8 @@ brew "youtube-dl"
 brew "yq"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
+# Reconcile your local git repositories
+brew "leipert-projects/git-recon/git-recon"
 # Compare Docker images
 brew "moul/moul/docker-diff"
 cask "0xed"

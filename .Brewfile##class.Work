@@ -92,6 +92,8 @@ brew "git-quick-stats"
 brew "gnu-sed"
 # GNU Pretty Good Privacy (PGP) package
 brew "gnupg", link: false
+# Library access to GnuPG
+brew "gpgme"
 # Image processing tools collection
 brew "graphicsmagick"
 # Interpreted, interactive, object-oriented programming language

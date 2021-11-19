@@ -133,8 +133,6 @@ brew "minikube"
 brew "mkcert"
 # Collection of tools that nobody wrote when UNIX was young
 brew "moreutils"
-# Free (GNU) replacement for the Pico text editor
-brew "nano"
 # NCurses Disk Usage
 brew "ncdu"
 # HTTP(S) server and reverse proxy, and IMAP/POP3 proxy server

@@ -68,8 +68,6 @@ brew "mackup"
 brew "mas"
 # Collection of tools that nobody wrote when UNIX was young
 brew "moreutils"
-# Free (GNU) replacement for the Pico text editor
-brew "nano"
 # NCurses Disk Usage
 brew "ncdu"
 # Port scanning utility for large networks

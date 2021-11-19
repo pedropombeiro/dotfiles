@@ -9,6 +9,7 @@ tap "homebrew/services"
 tap "jarred-sumner/git-peek"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
+tap "universal-ctags/universal-ctags"
 tap "zaquestion/tap"
 # General-purpose data compression with high compression ratio
 brew "xz"
@@ -102,6 +103,8 @@ brew "syncthing", link: false
 brew "tealdeer"
 # Code-search similar to ack
 brew "the_silver_searcher"
+# Maintained ctags implementation
+brew "universal-ctags", args: ["HEAD"]
 # Executes a program periodically, showing output fullscreen
 brew "watch"
 # Internet file retriever

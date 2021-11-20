@@ -1,5 +1,3 @@
-# Automatically start tmux
+export ZVM_INIT_MODE=sourcing
 
-export VI_MODE_SET_CURSOR=true
-
-plugins+=(vi-mode)
+plugins+=(zsh-vi-mode)

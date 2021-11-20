@@ -196,6 +196,8 @@ brew "the_silver_searcher"
 brew "tokei"
 # Maintained ctags implementation
 brew "universal-ctags", args: ["HEAD"]
+# Use ViM as PAGER
+brew "vimpager"
 # Syntax-aware linter for prose
 brew "vale"
 # Vi 'workalike' with many additional features

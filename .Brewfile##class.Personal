@@ -105,6 +105,8 @@ brew "tealdeer"
 brew "the_silver_searcher"
 # Maintained ctags implementation
 brew "universal-ctags", args: ["HEAD"]
+# Use ViM as PAGER
+brew "vimpager"
 # Executes a program periodically, showing output fullscreen
 brew "watch"
 # Internet file retriever

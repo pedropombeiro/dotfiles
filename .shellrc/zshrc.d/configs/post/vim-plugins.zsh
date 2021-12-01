@@ -10,4 +10,9 @@ if [ "$(command -v vim)" ]; then
       cd -
     fi
   done
+
+  if [[ ! -d ~/.vim/pack/git-plugins/start/ale ]]; then
+    mkdir -p ~/.vim/pack/git-plugins/start
+    git clone --depth 1 https://github.com/dense-analysis/ale.git ~/.vim/pack/git-plugins/start/ale
+  fi
 fi

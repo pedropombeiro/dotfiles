@@ -160,8 +160,6 @@
 [alias]
 
   mr = !sh -c 'git fetch $1 merge-requests/$2/head:mr-$1-$2 && git checkout mr-$1-$2' -
-  pb = prune-branches
-  prune-branches = "!f() { for branch in $(git branch --list); do \\\n      if git branch -r --contains \"${branch}\" 2>&1 | rg '\\borigin/(master|main)$' >/dev/null; then \\\n        case \"${branch}\" in \\\n          main|master) \\\n          ;; \\\n          *) \\\n            git branch --delete \"${branch}\"; \\\n          ;; \\\n        esac; \\\n      fi; \\\n    done }; f"
   branch-to = "!f() {     if command -v \"$1\" >/dev/null; then\n      git log master.. --oneline --name-only --pretty=\"format:\" --diff-filter=CRAM | rg \"\\.(rb|go|sh|sql)\" | xargs \"$1\"; \\\n    else\n      echo \"'$1' is not an executable. Please specify an editor such as 'code'.\" > /dev/stderr; \\\n      return 1; \\\n    fi }; f"
 
 [filter "lfs"]

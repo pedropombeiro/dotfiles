@@ -77,9 +77,6 @@ if [[ -d "${GDK_ROOT}" ]]; then
       bin/rspec spec/lib/gitlab/ci/variables/collection_spec.rb
       set +e
 
-      echo "Pruning local branches..."
-      git prune-branches
-
       echo "Rebasing local branches..."
       _rebase-all
       echo "Done."

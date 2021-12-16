@@ -81,13 +81,17 @@ if [[ -d "${GDK_ROOT}" ]]; then
       _rebase-all
       echo "Done."
 
-      git switch "${ORIGINAL_BRANCH}"
+      [[ "${ORIGINAL_BRANCH}" == "$(git_main_branch)" ]] || git switch "${ORIGINAL_BRANCH}"
       if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
+        echo "Applying stash and migrations..."
         git stash pop
         bin/rails db:migrate
         scripts/regenerate-schema # Ensure we have a clean test DB with any branch migrations done
         git checkout db/structure.sql
       fi
+
+      echo "Warming up web server..."
+      curl -sL http://gdk.localhost:3000 -o /dev/null
 
       cd - >/dev/null
     )

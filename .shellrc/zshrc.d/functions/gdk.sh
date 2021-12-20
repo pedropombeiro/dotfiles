@@ -100,16 +100,16 @@ if [[ -d "${GDK_ROOT}" ]]; then
   function thin-clone() {
     set -o pipefail
 
+    # echo -n "Username (defaults to '${USER}'): "
+    # read -r USERNAME
+    # echo
+    if [[ -z ${USERNAME} ]]; then
+      USERNAME="${USER}"
+    fi
+
     POSTGRES_AI_HOST='gitlab-joe-poc.postgres.ai'
     case $1 in
       create)
-        echo -n "Username (defaults to '${USER}'): "
-        read -r USERNAME
-        echo
-        if [[ -z ${USERNAME} ]]; then
-          USERNAME="${USER}"
-        fi
-
         PASSENTRY="$(grep "localhost:10000:gitlabhq_dblab:${USERNAME}" ~/.pgpass)"
         if [[ -z ${PASSENTRY} ]]; then
           # Generate random password
@@ -134,24 +134,10 @@ if [[ -d "${GDK_ROOT}" ]]; then
         pgcli -h localhost -p "${LOCAL_PORT}" -U "${USERNAME}" -d gitlabhq_dblab
         ;;
       list)
-        echo -n "Username (defaults to '${USER}'): "
-        read -r USERNAME
-        echo
-        if [[ -z ${USERNAME} ]]; then
-          USERNAME="${USER}"
-        fi
-
         echo "Listing thin clones for ${USERNAME}"
         dblab instance status | jq --arg username "${USERNAME}" -r '.clones[] | select(.db.username == $username) | .id'
         ;;
       destroy-all)
-        echo -n "Username (defaults to '${USER}'): "
-        read -r USERNAME
-        echo
-        if [[ -z ${USERNAME} ]]; then
-          USERNAME="${USER}"
-        fi
-
         echo "Listing thin clones for ${USERNAME}"
         IDS=( $(dblab instance status | jq --arg username "${USERNAME}" -r '.clones[] | select(.db.username == $username) | .id') )
         for id in "${IDS[@]}"; do

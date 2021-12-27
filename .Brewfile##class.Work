@@ -357,8 +357,6 @@ cask "toggl-track"
 cask "tor-browser"
 # Control your data usage on slow or expensive networks
 cask "tripmode"
-# Enable and disable the Intel CPU Turbo Boost feature
-cask "turbo-boost-switcher"
 # Development environment
 cask "vagrant"
 # Free and open-source hosted hypervisor for x86 virtualization

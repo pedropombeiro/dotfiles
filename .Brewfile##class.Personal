@@ -129,7 +129,7 @@ brew "jarred-sumner/git-peek/git-peek"
 brew "leipert-projects/git-recon/git-recon"
 # Application launcher and productivity software
 cask "alfred"
-# Utility to set up alt-tab to switch between windows
+# Enable Windows-like alt-tab
 cask "alt-tab"
 # Android SDK component
 cask "android-platform-tools"
@@ -202,6 +202,8 @@ cask "logitech-unifying"
 cask "lunar"
 # File system integration
 cask "macfuse"
+# Track and update to the latest versions of installed software
+cask "macupdater"
 # Monitors and reports any microphone and camera activity
 cask "micro-snitch"
 # Provides updates to various Microsoft products

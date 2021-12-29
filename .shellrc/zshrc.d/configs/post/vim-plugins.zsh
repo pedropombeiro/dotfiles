@@ -1,5 +1,14 @@
 #!/usr/bin/env zsh
 
+function install-vim-plugin() {
+  local target_dir="~/.vim/pack/$2"
+  if [[ ! -d "${target_dir}" ]]; then
+    mkdir -p "$(dirname "${target_dir}")"
+    git clone --depth 1 "$1" "${target_dir}"
+    vim -u NONE -c "helptags ${target_dir}/doc" -c q
+  fi
+}
+
 if [ "$(command -v vim)" ]; then
   for plugin in sensible surround fugitive repeat commentary sleuth endwise; do
     if [[ ! -d ~/.vim/pack/tpope/start/${plugin} ]]; then
@@ -11,15 +20,7 @@ if [ "$(command -v vim)" ]; then
     fi
   done
 
-  if [[ ! -d ~/.vim/pack/git-plugins/start/ale ]]; then
-    mkdir -p ~/.vim/pack/git-plugins/start
-    git clone --depth 1 https://github.com/dense-analysis/ale.git ~/.vim/pack/git-plugins/start/ale
-    vim -u NONE -c "helptags ~/.vim/pack/git-plugins/start/ale/doc" -c q
-  fi
-
-  if [[ ! -d ~/.vim/pack/vendor/start/nerdtree ]]; then
-    mkdir -p ~/.vim/pack/vendor/start
-    git clone --depth 1 https://github.com/preservim/nerdtree.git ~/.vim/pack/vendor/start/nerdtree
-    vim -u NONE -c "helptags ~/.vim/pack/vendor/start/nerdtree/doc" -c q
-  fi
+  install-vim-plugin 'https://github.com/dense-analysis/ale.git' 'git-plugins/start/ale'
+  install-vim-plugin 'https://github.com/preservim/nerdtree.git' 'vendor/start/nerdtree'
+  install-vim-plugin 'https://github.com/vim-airline/vim-airline.git' 'dist/start/vim-airline'
 fi

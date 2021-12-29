@@ -24,4 +24,5 @@ if [ "$(command -v vim)" ]; then
   install-vim-plugin 'https://github.com/preservim/nerdtree.git' 'vendor/start/nerdtree'
   install-vim-plugin 'https://github.com/vim-airline/vim-airline.git' 'dist/start/vim-airline'
   install-vim-plugin 'https://github.com/preservim/nerdcommenter.git' 'vendor/start/nerdcommenter'
+  install-vim-plugin 'https://github.com/airblade/vim-gitgutter.git' 'airblade/start/vim-gitgutter'
 fi

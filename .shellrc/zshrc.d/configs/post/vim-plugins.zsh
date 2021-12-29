@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 function install-vim-plugin() {
-  local target_dir="~/.vim/pack/$2"
+  local target_dir="${HOME}/.vim/pack/$2"
   if [[ ! -d "${target_dir}" ]]; then
     mkdir -p "$(dirname "${target_dir}")"
     git clone --depth 1 "$1" "${target_dir}"
@@ -23,4 +23,5 @@ if [ "$(command -v vim)" ]; then
   install-vim-plugin 'https://github.com/dense-analysis/ale.git' 'git-plugins/start/ale'
   install-vim-plugin 'https://github.com/preservim/nerdtree.git' 'vendor/start/nerdtree'
   install-vim-plugin 'https://github.com/vim-airline/vim-airline.git' 'dist/start/vim-airline'
+  install-vim-plugin 'https://github.com/preservim/nerdcommenter.git' 'vendor/start/nerdcommenter'
 fi

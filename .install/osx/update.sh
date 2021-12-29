@@ -5,7 +5,7 @@ DISABLE_AUTO_UPDATE=true source "${HOME}/.oh-my-zsh/oh-my-zsh.sh"
 omz update
 find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes" -mindepth 1 -maxdepth 1 -type d -exec git -C {} pull \;
 find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins" -mindepth 1 -maxdepth 1 -type d -exec git -C {} pull \;
-find "${HOME}/.vim" -type d -name .git -exec git -C {}/.. pull \;
+find "${HOME}/.vim/pack/" -type d -name .git -exec git -C {}/.. pull \;
 
 source "${HOME}/.config/yadm/scripts/enable-touchid-on-terminal.sh"
 source "${HOME}/.config/yadm/scripts/relink-dotfiles.sh"

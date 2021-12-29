@@ -15,4 +15,10 @@ if [ "$(command -v vim)" ]; then
     mkdir -p ~/.vim/pack/git-plugins/start
     git clone --depth 1 https://github.com/dense-analysis/ale.git ~/.vim/pack/git-plugins/start/ale
   fi
+
+  if [[ ! -d ~/.vim/pack/vendor/start/nerdtree ]]; then
+    mkdir -p ~/.vim/pack/vendor/start
+    git clone --depth 1 https://github.com/preservim/nerdtree.git ~/.vim/pack/vendor/start/nerdtree
+    vim -u NONE -c "helptags ~/.vim/pack/vendor/start/nerdtree/doc" -c q
+  fi
 fi

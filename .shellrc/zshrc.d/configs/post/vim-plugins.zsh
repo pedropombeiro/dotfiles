@@ -10,7 +10,7 @@ function install-vim-plugin() {
 }
 
 if [ "$(command -v vim)" ]; then
-  for plugin in sensible surround fugitive repeat commentary sleuth endwise; do
+  for plugin in sensible surround fugitive repeat commentary sleuth endwise rails dispatch; do
     if [[ ! -d ~/.vim/pack/tpope/start/${plugin} ]]; then
       mkdir -p ~/.vim/pack/tpope/start
       cd ~/.vim/pack/tpope/start
@@ -26,6 +26,8 @@ if [ "$(command -v vim)" ]; then
   install-vim-plugin 'https://github.com/preservim/nerdcommenter.git' 'vendor/start/nerdcommenter'
   install-vim-plugin 'https://github.com/airblade/vim-gitgutter.git' 'airblade/start/vim-gitgutter'
   install-vim-plugin 'https://github.com/itmammoth/run-rspec.vim' 'vendor/start/run-rspec.vim'
+  install-vim-plugin 'https://github.com/vim-test/vim-test' 'vendor/start/vim-test'
   install-vim-plugin 'https://github.com/junegunn/vim-easy-align' 'vendor/start/vim-easy-align'
   install-vim-plugin 'https://github.com/junegunn/fzf' 'vendor/start/fzf'
+  install-vim-plugin 'https://github.com/ryanoasis/vim-devicons' 'vendor/start/vim-devicons'
 fi

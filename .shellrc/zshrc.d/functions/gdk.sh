@@ -73,6 +73,9 @@ if [[ -d "${GDK_ROOT}" ]]; then
       git checkout db/structure.sql
       sleep 5
 
+      echo "Precompiling static assets to ensure graphiql-rails changes are picked up..."
+      bundle exec rake rake:assets:precompile
+
       echo "Running simple test..."
       bin/rspec spec/lib/gitlab/ci/variables/collection_spec.rb
       set +e

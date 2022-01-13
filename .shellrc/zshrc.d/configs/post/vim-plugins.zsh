@@ -25,7 +25,6 @@ if [ "$(command -v vim)" ]; then
   install-vim-plugin 'https://github.com/vim-airline/vim-airline.git' 'dist/start/vim-airline'
   install-vim-plugin 'https://github.com/preservim/nerdcommenter.git' 'vendor/start/nerdcommenter'
   install-vim-plugin 'https://github.com/airblade/vim-gitgutter.git' 'airblade/start/vim-gitgutter'
-  install-vim-plugin 'https://github.com/itmammoth/run-rspec.vim' 'vendor/start/run-rspec.vim'
   install-vim-plugin 'https://github.com/vim-test/vim-test' 'vendor/start/vim-test'
   install-vim-plugin 'https://github.com/junegunn/vim-easy-align' 'vendor/start/vim-easy-align'
   install-vim-plugin 'https://github.com/junegunn/fzf' 'vendor/start/fzf'

@@ -29,4 +29,5 @@ if [ "$(command -v vim)" ]; then
   install-vim-plugin 'https://github.com/junegunn/vim-easy-align' 'vendor/start/vim-easy-align'
   install-vim-plugin 'https://github.com/junegunn/fzf' 'vendor/start/fzf'
   install-vim-plugin 'https://github.com/ryanoasis/vim-devicons' 'vendor/start/vim-devicons'
+  install-vim-plugin 'https://github.com/nathanaelkane/vim-indent-guides' 'vendor/start/vim-indent-guides'
 fi

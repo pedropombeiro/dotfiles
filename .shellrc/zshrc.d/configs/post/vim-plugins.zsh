@@ -1,7 +1,9 @@
 #!/usr/bin/env zsh
 
 function install-vim-plugin() {
-  local target_dir="${HOME}/.vim/pack/$2"
+  local proj="$(basename $1)"
+  local owner="$(basename "$(dirname "$1")")"
+  local target_dir="${HOME}/.vim/pack/${owner}/start/${proj}"
   if [[ ! -d "${target_dir}" ]]; then
     mkdir -p "$(dirname "${target_dir}")"
     git clone --depth 1 "$1" "${target_dir}"
@@ -20,14 +22,20 @@ if [ "$(command -v vim)" ]; then
     fi
   done
 
-  install-vim-plugin 'https://github.com/dense-analysis/ale.git' 'git-plugins/start/ale'
-  install-vim-plugin 'https://github.com/preservim/nerdtree.git' 'vendor/start/nerdtree'
-  install-vim-plugin 'https://github.com/vim-airline/vim-airline.git' 'dist/start/vim-airline'
-  install-vim-plugin 'https://github.com/preservim/nerdcommenter.git' 'vendor/start/nerdcommenter'
-  install-vim-plugin 'https://github.com/airblade/vim-gitgutter.git' 'airblade/start/vim-gitgutter'
-  install-vim-plugin 'https://github.com/vim-test/vim-test' 'vendor/start/vim-test'
-  install-vim-plugin 'https://github.com/junegunn/vim-easy-align' 'vendor/start/vim-easy-align'
-  install-vim-plugin 'https://github.com/junegunn/fzf' 'vendor/start/fzf'
-  install-vim-plugin 'https://github.com/ryanoasis/vim-devicons' 'vendor/start/vim-devicons'
-  install-vim-plugin 'https://github.com/nathanaelkane/vim-indent-guides' 'vendor/start/vim-indent-guides'
+  local urls=(
+    'https://github.com/dense-analysis/ale.git'
+    'https://github.com/preservim/nerdtree.git'
+    'https://github.com/vim-airline/vim-airline.git'
+    'https://github.com/preservim/nerdcommenter.git'
+    'https://github.com/airblade/vim-gitgutter.git'
+    'https://github.com/vim-test/vim-test'
+    'https://github.com/junegunn/vim-easy-align'
+    'https://github.com/junegunn/fzf'
+    'https://github.com/junegunn/fzf.vim'
+    'https://github.com/ryanoasis/vim-devicons'
+    'https://github.com/nathanaelkane/vim-indent-guides'
+  )
+  for url in ${urls[@]}; do
+    install-vim-plugin "${url}"
+  done
 fi

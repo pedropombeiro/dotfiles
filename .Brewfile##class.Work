@@ -13,7 +13,6 @@ tap "mas-cli/tap"
 tap "minio/stable"
 tap "moul/moul"
 tap "profclems/tap"
-tap "universal-ctags/universal-ctags"
 # Cryptography and SSL/TLS Toolkit
 brew "openssl@1.1"
 # Library for command-line editing
@@ -194,8 +193,6 @@ brew "terraform"
 brew "the_silver_searcher"
 # Program that allows you to count code, quickly
 brew "tokei"
-# Maintained ctags implementation
-brew "universal-ctags", args: ["HEAD"]
 # Use ViM as PAGER
 brew "vimpager"
 # Syntax-aware linter for prose

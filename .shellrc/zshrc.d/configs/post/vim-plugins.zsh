@@ -23,17 +23,17 @@ if [ "$(command -v vim)" ]; then
   done
 
   local urls=(
-    'https://github.com/dense-analysis/ale.git'
-    'https://github.com/preservim/nerdtree.git'
-    'https://github.com/vim-airline/vim-airline.git'
-    'https://github.com/preservim/nerdcommenter.git'
     'https://github.com/airblade/vim-gitgutter.git'
-    'https://github.com/vim-test/vim-test'
-    'https://github.com/junegunn/vim-easy-align'
+    'https://github.com/dense-analysis/ale.git'
     'https://github.com/junegunn/fzf'
     'https://github.com/junegunn/fzf.vim'
-    'https://github.com/ryanoasis/vim-devicons'
+    'https://github.com/junegunn/vim-easy-align'
     'https://github.com/nathanaelkane/vim-indent-guides'
+    'https://github.com/preservim/nerdcommenter.git'
+    'https://github.com/preservim/nerdtree.git'
+    'https://github.com/ryanoasis/vim-devicons'
+    'https://github.com/vim-airline/vim-airline.git'
+    'https://github.com/vim-test/vim-test'
   )
   for url in ${urls[@]}; do
     install-vim-plugin "${url}"

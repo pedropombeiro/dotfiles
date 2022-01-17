@@ -295,8 +295,6 @@ cask "libreoffice"
 cask "little-snitch"
 # Provides access to camera controls
 cask "logitech-camera-settings"
-# Update your Logitech wireless receivers and selected keyboards
-cask "logitech-firmwareupdatetool"
 # Utility for pairing devices with Unifying receivers
 cask "logitech-unifying"
 # Adaptive brightness for external displays

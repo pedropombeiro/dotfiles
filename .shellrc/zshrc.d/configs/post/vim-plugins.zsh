@@ -12,16 +12,6 @@ function install-vim-plugin() {
 }
 
 if [ "$(command -v vim)" ]; then
-  for plugin in sensible surround fugitive repeat commentary sleuth endwise rails dispatch; do
-    if [[ ! -d ~/.vim/pack/tpope/start/${plugin} ]]; then
-      mkdir -p ~/.vim/pack/tpope/start
-      cd ~/.vim/pack/tpope/start
-      git clone https://tpope.io/vim/${plugin}.git
-      vim -u NONE -c "helptags ${plugin}/doc" -c q
-      cd -
-    fi
-  done
-
   local urls=(
     'https://github.com/airblade/vim-gitgutter.git'
     'https://github.com/dense-analysis/ale.git'
@@ -32,9 +22,22 @@ if [ "$(command -v vim)" ]; then
     'https://github.com/preservim/nerdcommenter.git'
     'https://github.com/preservim/nerdtree.git'
     'https://github.com/ryanoasis/vim-devicons'
+    'https://github.com/tpope/vim-commentary.git'
+    'https://github.com/tpope/vim-dispatch.git'
+    'https://github.com/tpope/vim-endwise.git'
+    'https://github.com/tpope/vim-eunuch.git'
+    'https://github.com/tpope/vim-fugitive.git'
+    'https://github.com/tpope/vim-repeat.git'
+    'https://github.com/tpope/vim-sensible.git'
+    'https://github.com/tpope/vim-sleuth.git'
+    'https://github.com/tpope/vim-surround.git'
     'https://github.com/vim-airline/vim-airline.git'
     'https://github.com/vim-test/vim-test'
   )
+  if [ -d "${GDK_ROOT}" ]; then
+    urls+=('https://github.com/tpope/vim-rails.git')
+  fi
+
   for url in ${urls[@]}; do
     install-vim-plugin "${url}"
   done

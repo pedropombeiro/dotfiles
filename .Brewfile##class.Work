@@ -136,11 +136,9 @@ brew "moreutils"
 # NCurses Disk Usage
 brew "ncdu"
 # HTTP(S) server and reverse proxy, and IMAP/POP3 proxy server
-brew "nginx"
+brew "nginx", restart_service: true
 # Prometheus exporter for machine metrics
 brew "node_exporter", restart_service: true
-# Open client for Cisco AnyConnect VPN
-brew "openconnect"
 # Tool for creating identical machine images for multiple platforms
 brew "packer"
 # Swiss-army knife of markup format conversion
@@ -193,12 +191,12 @@ brew "terraform"
 brew "the_silver_searcher"
 # Program that allows you to count code, quickly
 brew "tokei"
-# Use ViM as PAGER
-brew "vimpager"
 # Syntax-aware linter for prose
 brew "vale"
 # Vi 'workalike' with many additional features
 brew "vim"
+# Use ViM as PAGER
+brew "vimpager"
 # Executes a program periodically, showing output fullscreen
 brew "watch"
 # Internet file retriever
@@ -230,7 +228,7 @@ cask "1password"
 cask "1password-cli"
 # Application launcher and productivity software
 cask "alfred"
-# Utility to set up alt-tab to switch between windows
+# Enable Windows-like alt-tab
 cask "alt-tab"
 # Application uninstaller
 cask "appcleaner"
@@ -267,6 +265,8 @@ cask "font-meslo-lg-nerd-font"
 cask "fork"
 # Free and open-source image editor
 cask "gimp"
+# Displays all your GitLab activities in one place
+cask "gitdock"
 # Web browser
 cask "google-chrome"
 # Set of tools to manage resources and applications hosted on Google Cloud
@@ -299,8 +299,6 @@ cask "little-snitch"
 cask "logitech-camera-settings"
 # Utility for pairing devices with Unifying receivers
 cask "logitech-unifying"
-# Adaptive brightness for external displays
-cask "lunar"
 # Track and update to the latest versions of installed software
 cask "macupdater"
 # Monitors and reports any microphone and camera activity
@@ -356,9 +354,9 @@ cask "tor-browser"
 cask "tripmode"
 # Development environment
 cask "vagrant"
-# Free and open-source hosted hypervisor for x86 virtualization
+# Virtualizer for x86 hardware
 cask "virtualbox"
-# AMD64/Intel64 and x86 virtualization
+# Extend the functionality of VirtualBox
 cask "virtualbox-extension-pack"
 # Open-source code editor
 cask "visual-studio-code"

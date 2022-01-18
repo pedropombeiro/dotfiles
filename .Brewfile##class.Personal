@@ -158,6 +158,8 @@ cask "dropbox"
 cask "elgato-control-center"
 # Assign keys, and then decorate and label them
 cask "elgato-stream-deck"
+# Reimagine your terminal
+cask "fig"
 # Typeface made for developers
 cask "font-jetbrains-mono"
 cask "font-meslo-lg-nerd-font"

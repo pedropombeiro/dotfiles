@@ -22,6 +22,7 @@ if [ "$(command -v vim)" ]; then
     'https://github.com/nathanaelkane/vim-indent-guides'
     'https://github.com/preservim/nerdcommenter.git'
     'https://github.com/preservim/nerdtree.git'
+    'https://github.com/RRethy/vim-illuminate.git'
     'https://github.com/ryanoasis/vim-devicons'
     'https://github.com/tpope/vim-commentary.git'
     'https://github.com/tpope/vim-dispatch.git'

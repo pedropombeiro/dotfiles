@@ -13,17 +13,21 @@ function install-vim-plugin() {
 
 if [ "$(command -v vim)" ]; then
   local urls=(
+    'https://github.com/RRethy/vim-illuminate.git'
+    'https://github.com/Xuyuanp/nerdtree-git-plugin.git'
     'https://github.com/airblade/vim-gitgutter.git'
     'https://github.com/dense-analysis/ale.git'
     'https://github.com/editorconfig/editorconfig-vim.git'
     'https://github.com/junegunn/fzf'
     'https://github.com/junegunn/fzf.vim'
     'https://github.com/junegunn/vim-easy-align'
+    'https://github.com/mtdl9/vim-log-highlighting'
     'https://github.com/nathanaelkane/vim-indent-guides'
     'https://github.com/preservim/nerdcommenter.git'
     'https://github.com/preservim/nerdtree.git'
-    'https://github.com/RRethy/vim-illuminate.git'
     'https://github.com/ryanoasis/vim-devicons'
+    'https://github.com/skywind3000/asyncrun.vim.git'
+    'https://github.com/tiagofumo/vim-nerdtree-syntax-highlight.git'
     'https://github.com/tpope/vim-commentary.git'
     'https://github.com/tpope/vim-dispatch.git'
     'https://github.com/tpope/vim-endwise.git'
@@ -32,7 +36,9 @@ if [ "$(command -v vim)" ]; then
     'https://github.com/tpope/vim-repeat.git'
     'https://github.com/tpope/vim-sensible.git'
     'https://github.com/tpope/vim-sleuth.git'
+    'https://github.com/tpope/vim-speeddating.git'
     'https://github.com/tpope/vim-surround.git'
+    'https://github.com/tpope/vim-unimpaired.git'
     'https://github.com/vim-airline/vim-airline.git'
     'https://github.com/vim-test/vim-test'
   )

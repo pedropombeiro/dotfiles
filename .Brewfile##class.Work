@@ -121,6 +121,8 @@ brew "lazydocker"
 brew "lazygit"
 # Conversion library
 brew "libiconv"
+# Curses-based tool for viewing and analyzing log files
+brew "lnav"
 # Keep your Mac's application settings in sync
 brew "mackup"
 # CLI for Node.js style checker and lint tool for Markdown files

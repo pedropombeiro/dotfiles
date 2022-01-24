@@ -37,6 +37,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
         #   bin/rails db:rollback STEP=${#LAST_MIGRATIONS[@]}
         # else
           echo "Undoing ${#BRANCH_MIGRATIONS[@]} branch migration(s)..."
+          gdk start postgres
           for migration in "${BRANCH_MIGRATIONS[@]}"; do
             bin/rails db:migrate:down VERSION="${migration}"
           done

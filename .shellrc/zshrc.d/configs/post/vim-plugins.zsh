@@ -2,8 +2,7 @@
 
 function install-vim-plugin() {
   local proj="$(basename $1)"
-  local owner="$(basename "$(dirname "$1")")"
-  local target_dir="${HOME}/.vim/pack/${owner}/start/${proj}"
+  local target_dir="${HOME}/.vim/pack/bundle/start/${proj}"
   if [[ ! -d "${target_dir}" ]]; then
     mkdir -p "$(dirname "${target_dir}")"
     git clone --depth 1 "$1" "${target_dir}"

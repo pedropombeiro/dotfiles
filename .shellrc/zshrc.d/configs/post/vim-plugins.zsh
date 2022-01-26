@@ -32,6 +32,7 @@ if [ "$(command -v vim)" ]; then
     'https://github.com/tpope/vim-endwise.git'
     'https://github.com/tpope/vim-eunuch.git'
     'https://github.com/tpope/vim-fugitive.git'
+    'https://github.com/tpope/vim-obsession.git'
     'https://github.com/tpope/vim-repeat.git'
     'https://github.com/tpope/vim-sensible.git'
     'https://github.com/tpope/vim-sleuth.git'

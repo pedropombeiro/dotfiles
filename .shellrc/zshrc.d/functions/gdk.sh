@@ -85,6 +85,8 @@ if [[ -d "${GDK_ROOT}" ]]; then
       _rebase-all
       echo "Done."
 
+      gdk restart
+
       [[ "${ORIGINAL_BRANCH}" == "$(git_main_branch)" ]] || git switch "${ORIGINAL_BRANCH}"
       if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
         echo "Applying stash and migrations..."

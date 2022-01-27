@@ -1,12 +1,14 @@
 #!/usr/bin/env zsh
 
+plugins_installed=0
+
 function install-vim-plugin() {
   local proj="$(basename $1)"
   local target_dir="${HOME}/.vim/pack/bundle/start/${proj}"
   if [[ ! -d "${target_dir}" ]]; then
     mkdir -p "$(dirname "${target_dir}")"
     git clone --depth 1 "$1" "${target_dir}"
-    vim -u NONE -c "helptags ${target_dir}/doc" -c q
+    plugins_installed=1
   fi
 }
 
@@ -49,4 +51,9 @@ if [ "$(command -v vim)" ]; then
   for url in ${urls[@]}; do
     install-vim-plugin "${url}"
   done
+
+  if [[ $plugins_installed -gt 0 ]]; then
+    echo 'Updating documentation for Vim plugins...'
+    vim -u NONE -c 'helptags ALL' -c q
+  fi
 fi

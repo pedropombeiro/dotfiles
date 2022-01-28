@@ -12,7 +12,7 @@ function install-vim-plugin() {
   fi
 }
 
-if [ "$(command -v vim)" ]; then
+if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
   local urls=(
     'https://github.com/RRethy/vim-illuminate.git'
     'https://github.com/Xuyuanp/nerdtree-git-plugin.git'
@@ -44,6 +44,7 @@ if [ "$(command -v vim)" ]; then
     'https://github.com/tpope/vim-unimpaired.git'
     'https://github.com/vim-airline/vim-airline.git'
     'https://github.com/vim-test/vim-test'
+    'https://github.com/wsdjeg/vim-fetch.git'
   )
   if [ -d "${GDK_ROOT}" ]; then
     urls+=('https://github.com/tpope/vim-rails.git')

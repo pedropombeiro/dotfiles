@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+function install_zsh_plugin() {
+  local repo="$1"
+  local path="$2"
+  if [[ ! -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/${path}" ]]; then
+    git clone --depth=1 https://github.com/${repo}.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/${path}"
+  fi
+}
+
 grep '.bash_profile.shared' ~/.bash_profile >/dev/null 2>&1|| echo "source ~/.bash_profile.shared" >> ~/.bash_profile
 grep '.bashrc.shared' ~/.bashrc >/dev/null 2>&1 || echo "source ~/.bashrc.shared" >> ~/.bashrc
 
@@ -11,9 +19,9 @@ if [[ ! -d ~/.oh-my-zsh/ ]]; then
 fi
 
 set +e
-[[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes/powerlevel10k" ]] || git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes/powerlevel10k"
-[[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ]] || git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-[[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ]] || git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-[[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/you-should-use" ]] || git clone https://github.com/MichaelAquilina/zsh-you-should-use.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/you-should-use"
-[[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-vi-mode" ]] || git clone https://github.com/jeffreytse/zsh-vi-mode "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-vi-mode"
+install_zsh_plugin 'romkatv/powerlevel10k' 'themes/powerlevel10k'
+install_zsh_plugin 'zsh-users/zsh-autosuggestions' 'plugins/zsh-autosuggestions'
+install_zsh_plugin 'zsh-users/zsh-syntax-highlighting' 'plugins/zsh-syntax-highlighting'
+install_zsh_plugin 'MichaelAquilina/zsh-you-should-use' 'plugins/you-should-use'
+install_zsh_plugin 'jeffreytse/zsh-vi-mode' 'plugins/zsh-vi-mode'
 set -e

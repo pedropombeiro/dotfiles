@@ -199,3 +199,7 @@
 
 [gpg]
   program = /usr/local/bin/gpg
+[fetch]
+	parallel = 8
+[submodule]
+	fetchJobs = 2

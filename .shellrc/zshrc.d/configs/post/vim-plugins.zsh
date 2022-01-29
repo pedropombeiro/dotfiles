@@ -19,6 +19,7 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
     'https://github.com/airblade/vim-gitgutter.git'
     'https://github.com/dense-analysis/ale.git'
     'https://github.com/editorconfig/editorconfig-vim.git'
+    'https://github.com/farmergreg/vim-lastplace.git'
     'https://github.com/junegunn/fzf'
     'https://github.com/junegunn/fzf.vim'
     'https://github.com/junegunn/vim-easy-align'

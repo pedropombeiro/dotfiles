@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+source $HOME/.asdf/asdf.sh
+
+set +e
+for p in bat ctop delta duf golang golangci-lint jq lazygit neovim ripgrep xh; do
+  asdf plugin add "${p}"
+done
+asdf plugin list | xargs -I R bash -c 'asdf install R latest && asdf global R latest'
+set -e
+

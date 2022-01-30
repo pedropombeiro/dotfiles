@@ -9,14 +9,18 @@ function install_zsh_plugin() {
   fi
 }
 
-grep '.bash_profile.shared' ~/.bash_profile >/dev/null 2>&1|| echo "source ~/.bash_profile.shared" >> ~/.bash_profile
-grep '.bashrc.shared' ~/.bashrc >/dev/null 2>&1 || echo "source ~/.bashrc.shared" >> ~/.bashrc
+grep '.bash_profile.shared' ${HOME}/.bash_profile >/dev/null 2>&1|| echo "source ~/.bash_profile.shared" >> ${HOME}/.bash_profile
+grep '.bashrc.shared' ${HOME}/.bashrc >/dev/null 2>&1 || echo "source ~/.bashrc.shared" >> ${HOME}/.bashrc
 
-if [[ ! -d ~/.oh-my-zsh/ ]]; then
+if [[ ! -d "${HOME}/.oh-my-zsh/" ]]; then
   # Install Oh-my-zsh
-  chmod o-w,g-w /usr/local/share/zsh /usr/local/share/zsh/site-functions
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
-  echo "source ~/.zshrc.shared" > ~/.zshrc
+  if [[ $(uname -r) =~ qnap ]]; then
+    CHSH=no RUNZSH=no KEEP_ZSHRC=yes ZSH=/share/homes/${USER}/.oh-my-zsh sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  else
+    chmod o-w,g-w /usr/local/share/zsh /usr/local/share/zsh/site-functions
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
+  fi
+  echo "source ~/.zshrc.shared" > ${HOME}/.zshrc
 fi
 
 set +e

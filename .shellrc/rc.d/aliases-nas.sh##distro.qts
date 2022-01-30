@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Recreate any containers that are out-of-date with the image
+alias dockerup='/share/Container/scripts/up.sh y'
+
+# Delete all stopped containers.
+alias dockercleanc='printf "\n>>> Deleting stopped containers\n\n" && docker rm $(docker ps -a -q)'
+
+# Delete all untagged images.
+alias dockercleani='printf "\n>>> Deleting untagged images\n\n" && docker rmi $(docker images -q -f dangling=true)'
+
+# Delete all unused volumes.
+alias dockercleanv='printf "\n>>> Deleting unused volumes\n\n" && docker volume rm $(docker volume ls -qf dangling=true)'
+
+# Delete all stopped containers and untagged images and volumes.
+alias dockerclean='dockercleanc || true && dockercleani || true && dockercleanv'
+
+alias dockerstatsns='docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}\t{{.NetIO}}" | sort -nrb -t " " -k 2'
+alias dockerstats='docker stats --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}\t{{.NetIO}}"'
+
+alias reload_nginx='docker exec nginx nginx -s reload'

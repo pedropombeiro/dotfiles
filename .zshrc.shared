@@ -37,14 +37,18 @@ _load_settings() {
           :
           ;;
         *)
-          test -x $config && . $config
+          if [[ -x "${config}" && ! "${config}" =~ "##" && ! "${config}" =~ "~$" ]]; then
+            source $config
+          fi
           ;;
       esac
     done
 
     if [ -d "$_dir/post" ]; then
       for config in "$_dir"/post/**/*.*sh; do
-        test -x $config && . $config
+        if [[ -x "${config}" && ! "${config}" =~ "##" && ! "${config}" =~ "~$" ]]; then
+          source $config
+        fi
       done
     fi
   fi
@@ -53,15 +57,19 @@ _load_settings "$HOME/.shellrc/zshrc.d/configs"
 
 # Load all files from .shell/rc.d directory
 if [[ -d $HOME/.shellrc/rc.d ]]; then
-  for file in $(ls $HOME/.shellrc/rc.d/{,**/}*.sh 2>/dev/null | uniq); do
-    test -x $file && source $file
+  for config in $(ls $HOME/.shellrc/rc.d/{,**/}*.sh 2>/dev/null | uniq); do
+    if [[ -x "${config}" && ! "${config}" =~ "##" && ! "${config}" =~ "~$" ]]; then
+      source $config
+    fi
   done
 fi
 
 # load custom executable functions
 if find "$HOME/.shellrc/zshrc.d/functions" -type f >/dev/null; then
   for function in $HOME/.shellrc/zshrc.d/functions/*; do
-    source $function
+    if [[ ! "${function}" =~ "##" && ! "${function}" =~ "~$" ]]; then
+      source $function
+    fi
   done
 fi
 

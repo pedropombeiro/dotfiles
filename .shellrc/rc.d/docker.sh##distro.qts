@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+INSTALL_DIR="$(/sbin/getcfg container-station Install_Path -f /etc/config/qpkg.conf)"
+
+if [[ -d "${INSTALL_DIR}" ]]; then
+  if ! echo "${PATH}" | grep "${INSTALL_DIR}" >/dev/null; then
+    export PATH="${INSTALL_DIR}/bin/:${INSTALL_DIR}/sbin/:${PATH}"
+  fi
+fi
+

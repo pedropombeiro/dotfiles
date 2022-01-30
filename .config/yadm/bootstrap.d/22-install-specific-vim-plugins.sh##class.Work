@@ -19,6 +19,6 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
 
   if [[ $plugins_installed -gt 0 ]]; then
     echo 'Updating documentation for Vim plugins...'
-    vim -u NONE -c 'helptags ALL' -c q
+    nvim -u NONE -c 'helptags ALL' -c q
   fi
 fi

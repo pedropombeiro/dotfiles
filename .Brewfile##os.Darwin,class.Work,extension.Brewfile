@@ -65,8 +65,6 @@ brew "gnu-tar"
 brew "dpkg"
 # Disk Usage/Free Utility - a better 'df' alternative
 brew "duf"
-# Modern replacement for 'ls'
-brew "exa"
 # Perl lib for reading and writing EXIF metadata
 brew "exiftool"
 # Validating, recursive, caching DNS resolver
@@ -79,8 +77,6 @@ brew "harfbuzz"
 brew "ffmpeg"
 # I/O benchmark and stress test
 brew "fio"
-# Command-line fuzzy finder written in Go
-brew "fzf"
 # Distributed revision control system
 brew "git"
 # Syntax-highlighting pager for git and diff output

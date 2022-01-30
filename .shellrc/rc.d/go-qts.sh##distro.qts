@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+GOROOT="$(asdf where golang)/go"
+if [[ -d ${GOROOT} ]] && [[ -z ${ASDF_GOLANG_DEFAULT_PACKAGES_FILE} ]]; then
+  GOPATH="$(asdf where golang)/packages"
+
+  PATH="${PATH}:${GOROOT}/bin"
+  ASDF_GOLANG_DEFAULT_PACKAGES_FILE=/share/Container/.default-golang-pkgs
+
+  export ASDF_GOLANG_DEFAULT_PACKAGES_FILE
+  export GOROOT
+  export GOPATH
+  export PATH
+fi

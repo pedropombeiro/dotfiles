@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+
+if command -v tmux > /dev/null; then
+  # Automatically start tmux
+
+  if [[ -z $ZSH_TMUX_AUTOSTART ]]; then
+    export ZSH_TMUX_AUTOSTART=true
+  fi
+
+  export ZSH_TMUX_UNICODE=true
+  export ZSH_TMUX_CONFIG=~/.shellrc/zshrc.d/configs/tmux.conf
+
+  plugins+=(tmux)
+
+  tmux has-session && tmux rename-session "$(hostname)"
+fi

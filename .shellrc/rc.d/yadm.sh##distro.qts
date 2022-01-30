@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+PATH="${PATH}:${HOME}/opt"
+export PATH
+

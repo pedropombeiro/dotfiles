@@ -6,9 +6,8 @@ source "${SCRIPT_DIR}/install-vim-plugin.sh"
 
 if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
   urls=(
-    'https://github.com/RRethy/vim-illuminate.git'
-    'https://github.com/Xuyuanp/nerdtree-git-plugin.git'
     'https://github.com/airblade/vim-gitgutter.git'
+    'https://github.com/bfontaine/Brewfile.vim.git'
     'https://github.com/dense-analysis/ale.git'
     'https://github.com/editorconfig/editorconfig-vim.git'
     'https://github.com/farmergreg/vim-lastplace.git'
@@ -20,6 +19,7 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
     'https://github.com/nishigori/increment-activator.git'
     'https://github.com/preservim/nerdcommenter.git'
     'https://github.com/preservim/nerdtree.git'
+    'https://github.com/RRethy/vim-illuminate.git'
     'https://github.com/ryanoasis/vim-devicons'
     'https://github.com/skywind3000/asyncrun.vim.git'
     'https://github.com/tiagofumo/vim-nerdtree-syntax-highlight.git'
@@ -38,6 +38,7 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
     'https://github.com/vim-airline/vim-airline.git'
     'https://github.com/vim-test/vim-test'
     'https://github.com/wsdjeg/vim-fetch.git'
+    'https://github.com/Xuyuanp/nerdtree-git-plugin.git'
   )
   plugins_installed=0
 
@@ -50,6 +51,6 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
 
   if [[ $plugins_installed -gt 0 ]]; then
     echo 'Updating documentation for Vim plugins...'
-    vim -u NONE -c 'helptags ALL' -c q
+    nvim -u NONE -c 'helptags ALL' -c q
   fi
 fi

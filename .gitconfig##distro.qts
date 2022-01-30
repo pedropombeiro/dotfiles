@@ -1,0 +1,7 @@
+[user]
+  email = noreply@pedro.pombei.ro
+  name = Pedro Pombeiro
+[push]
+  default = simple
+[pull]
+  rebase = true

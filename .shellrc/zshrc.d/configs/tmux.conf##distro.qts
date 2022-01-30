@@ -1,0 +1,12 @@
+# Turn on mouse support
+#setw -g mouse on
+
+# Use the mouse drag to re-order windows
+bind-key -n MouseDrag1Status swap-window -t=
+
+# Fix Ctrl-arrows bindings on QNAP
+set -g xterm-keys on
+
+bind-key -n Home send Escape "OH"
+bind-key -n End send Escape "OF"
+

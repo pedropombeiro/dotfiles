@@ -1,19 +1,11 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
-plugins_installed=0
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-function install-vim-plugin() {
-  local proj="$(basename $1)"
-  local target_dir="${HOME}/.vim/pack/bundle/start/${proj}"
-  if [[ ! -d "${target_dir}" ]]; then
-    mkdir -p "$(dirname "${target_dir}")"
-    git clone --depth 1 "$1" "${target_dir}"
-    plugins_installed=1
-  fi
-}
+source "${SCRIPT_DIR}/install-vim-plugin.sh"
 
 if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
-  local urls=(
+  urls=(
     'https://github.com/RRethy/vim-illuminate.git'
     'https://github.com/Xuyuanp/nerdtree-git-plugin.git'
     'https://github.com/airblade/vim-gitgutter.git'
@@ -47,12 +39,13 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
     'https://github.com/vim-test/vim-test'
     'https://github.com/wsdjeg/vim-fetch.git'
   )
-  if [ -d "${GDK_ROOT}" ]; then
-    urls+=('https://github.com/tpope/vim-rails.git')
-  fi
+  plugins_installed=0
 
   for url in ${urls[@]}; do
     install-vim-plugin "${url}"
+    if [[ $? -eq 1 ]]; then
+      plugins_installed=1
+    fi
   done
 
   if [[ $plugins_installed -gt 0 ]]; then

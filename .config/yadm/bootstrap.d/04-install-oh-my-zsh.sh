@@ -3,8 +3,9 @@
 function install_zsh_plugin() {
   local repo="$1"
   local path="$2"
-  if [[ ! -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/${path}" ]]; then
-    git clone --depth=1 https://github.com/${repo}.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/${path}"
+  local dest_path="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/${path}"
+  if [[ ! -d "${dest_path}" ]]; then
+    git clone --depth=1 https://github.com/${repo}.git "${dest_path}"
   fi
 }
 

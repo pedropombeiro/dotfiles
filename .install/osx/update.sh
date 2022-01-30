@@ -14,6 +14,8 @@ source "${HOME}/.config/yadm/scripts/relink-dotfiles.sh"
 brew update
 brew upgrade
 
+asdf plugin-update --all
+
 # Update npm packages
 command -v npm >/dev/null && npm update -g
 

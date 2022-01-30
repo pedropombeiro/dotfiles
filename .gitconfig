@@ -12,7 +12,7 @@
   whitespace = fix
 
 [core]
-  editor = vim
+  editor = nvim
 
   # Repaint the screen, discarding any buffered input.  Useful if the file is changing while it is being viewed.
   pager = less -R

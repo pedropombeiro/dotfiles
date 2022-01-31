@@ -32,6 +32,8 @@ brew "croc"
 brew "ctop"
 # Disk Usage/Free Utility - a better 'df' alternative
 brew "duf"
+# More intuitive version of du in rust
+brew "dust"
 # Scriptable ping program for checking if multiple hosts are up
 brew "fping"
 # GitHub command-line tool

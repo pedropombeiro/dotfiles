@@ -65,6 +65,8 @@ brew "gnu-tar"
 brew "dpkg"
 # Disk Usage/Free Utility - a better 'df' alternative
 brew "duf"
+# More intuitive version of du in rust
+brew "dust"
 # Perl lib for reading and writing EXIF metadata
 brew "exiftool"
 # Validating, recursive, caching DNS resolver

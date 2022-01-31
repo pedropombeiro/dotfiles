@@ -119,6 +119,8 @@ brew "lazygit"
 brew "libiconv"
 # Curses-based tool for viewing and analyzing log files
 brew "lnav"
+# Clone of ls with colorful output, file type icons, and more
+brew "lsd"
 # Keep your Mac's application settings in sync
 brew "mackup"
 # CLI for Node.js style checker and lint tool for Markdown files

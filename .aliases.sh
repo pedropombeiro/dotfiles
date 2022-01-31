@@ -9,6 +9,8 @@ alias ohmyzsh="$EDITOR ~/.oh-my-zsh"
 alias mkcd='foo(){ mkdir -p "$1"; cd "$1" }; foo'
 alias myip="curl http://ipecho.net/plain; echo"
 
+command -v lsd >/dev/null && alias ls='lsd'
+
 # Include custom aliases
 if [[ -f ~/.aliases.local ]]; then
   source ~/.aliases.local

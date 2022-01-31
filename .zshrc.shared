@@ -73,11 +73,12 @@ if find "$HOME/.shellrc/zshrc.d/functions" -type f >/dev/null; then
   done
 fi
 
-# aliases
-[[ -f ~/.aliases.sh ]] && source ~/.aliases.sh
-
 if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
   source $ZSH/oh-my-zsh.sh
   unalias duf
   unalias t
 fi
+
+# aliases
+[[ -f ~/.aliases.sh ]] && source ~/.aliases.sh
+

@@ -250,8 +250,6 @@ cask "choosy"
 cask "chromedriver"
 # API documentation browser and code snippet manager
 cask "dash"
-# App to build and share containerized applications and microservices
-cask "docker"
 # Client for the Dropbox cloud storage service
 cask "dropbox"
 # Control your Elgato Key Lights
@@ -329,6 +327,8 @@ cask "plex"
 cask "powershell6"
 # VPN client focusing on security
 cask "protonvpn"
+# Kubernetes and container management on the desktop
+cask "rancher"
 # Remote management solution
 cask "royal-tsx"
 # Tool for sending personal documents to Kindles from Macs

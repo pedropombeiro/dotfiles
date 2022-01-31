@@ -277,6 +277,7 @@ mas "Discovery", id: 1381004916
 mas "feedly", id: 865500966
 mas "GarageBand", id: 682658836
 mas "iMovie", id: 408981434
+mas "Keyboard Pilot", id: 402670023
 mas "Keynote", id: 409183694
 mas "Kindle", id: 405399194
 mas "Microsoft To Do", id: 1274495053

@@ -1,0 +1,16 @@
+#!/usr/bin/env zsh
+
+echo "Updating Entware packages..."
+opkg update && opkg upgrade
+
+echo "Updating asdf packages..."
+asdf update
+asdf plugin-update --all
+set +e
+asdf plugin list | xargs -I R -P 8 bash -c 'asdf install R latest'
+asdf plugin list | xargs -I R bash -c 'asdf global R latest'
+set -e
+asdf reshim golang
+
+source "${HOME}/.install/update-common.sh"
+

@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
+source "${HOME}/.config/yadm/scripts/colors.sh"
+
 function install_zsh_plugin() {
   local repo="$1"
   local path="$2"
   local dest_path="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/${path}"
   if [[ ! -d "${dest_path}" ]]; then
+    printf "${YELLOW}%s${NC}\n" "Cloning ${repo} ..."
     git clone --depth=1 https://github.com/${repo}.git "${dest_path}"
   fi
 }
@@ -14,6 +17,7 @@ grep '.bashrc.shared' ${HOME}/.bashrc >/dev/null 2>&1 || echo "source ~/.bashrc.
 
 if [[ ! -d "${HOME}/.oh-my-zsh/" ]]; then
   # Install Oh-my-zsh
+  printf "${YELLOW}%s${NC}\n" "Installing Oh-my-zsh..."
   if [[ $(uname -r) =~ qnap ]]; then
     CHSH=no RUNZSH=no KEEP_ZSHRC=yes ZSH=/share/homes/${USER}/.oh-my-zsh sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   else

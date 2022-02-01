@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-source $HOME/.asdf/asdf.sh
+source "${HOME}/.asdf/asdf.sh"
+source "${HOME}/.config/yadm/scripts/colors.sh"
+
+printf "${YELLOW}%s${NC}\n" "Installing asdf plugins..."
 
 set +e
 for p in bat ctop delta duf dust golang golangci-lint jq lazygit neovim ripgrep xh; do

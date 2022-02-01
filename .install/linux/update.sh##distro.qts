@@ -1,9 +1,11 @@
 #!/usr/bin/env zsh
 
-echo "Updating Entware packages..."
+source "${HOME}/.install/colors.sh"
+
+printf "${YELLOW}%s${NC}\n" "Updating Entware packages..."
 opkg update && opkg upgrade
 
-echo "Updating asdf packages..."
+printf "${YELLOW}%s${NC}\n" "Updating asdf packages..."
 asdf update
 asdf plugin-update --all
 set +e

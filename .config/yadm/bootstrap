@@ -1,10 +1,12 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Save this file as ~/.config/yadm/bootstrap and make it executable. It will
 # execute all executable files (excluding templates and editor backups) in the
 # ~/.config/yadm/bootstrap.d directory when run.
 
 set -eu
+
+source "${HOME}/.config/yadm/scripts/colors.sh"
 
 # Directory to look for bootstrap executables in
 BOOTSTRAP_D="${BASH_SOURCE[0]}.d"
@@ -17,7 +19,7 @@ fi
 find -L "${BOOTSTRAP_D}" -type f | sort | \
   while IFS= read -r bootstrap; do
     if [[ -x "${bootstrap}" && ! "${bootstrap}" =~ "##" && ! "${bootstrap}" =~ "~$" ]]; then
-      echo "Executing ${bootstrap} ..."
+      printf "${YELLOW}%s${NC}\n" "Executing ${bootstrap} ..."
       if ! "${bootstrap}"; then
         echo "Error: bootstrap '${bootstrap}' failed" >&2
         exit 1

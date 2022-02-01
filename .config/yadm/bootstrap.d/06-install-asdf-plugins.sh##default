@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+source "${HOME}/.config/yadm/scripts/colors.sh"
+
+printf "${YELLOW}%s${NC}\n" "Installing asdf plugins..."
 set +e
 for p in golang golangci-lint nodejs yarn ruby; do
   asdf plugin add "${p}"

@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+source "${HOME}/.config/yadm/scripts/colors.sh"
+
 sudo softwareupdate -i -a
 # The Xcode Command Line Tools includes git and make (not available on stock macOS)
 if ! command -v git >/dev/null; then
@@ -8,11 +10,11 @@ fi
 
 # install homebrew if it's missing
 if ! command -v brew >/dev/null 2>&1; then
-  echo "Installing homebrew"
+  printf "${YELLOW}%s${NC}\n" "Installing homebrew"
   /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 fi
 
 if [ -f "$HOME/.Brewfile" ]; then
-  echo "Updating homebrew bundle"
+  printf "${YELLOW}%s${NC}\n" "Updating homebrew bundle"
   brew bundle --global
 fi

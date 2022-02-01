@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-export FZF_DEFAULT_OPTS='--height 40% --inline-info --border'
+export FZF_DEFAULT_COMMAND='fd --type file --color=always'
+export FZF_DEFAULT_OPTS='--ansi --height 40% --inline-info --border'
 
 function j() {
     if [[ "$#" -ne 0 ]]; then

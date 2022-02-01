@@ -36,6 +36,8 @@ brew "duf"
 brew "dust"
 # Scriptable ping program for checking if multiple hosts are up
 brew "fping"
+# Simple, fast and user-friendly alternative to find
+brew "fd"
 # GitHub command-line tool
 brew "gh"
 # Distributed revision control system

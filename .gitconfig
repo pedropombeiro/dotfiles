@@ -2,9 +2,12 @@
 
 [user]
 
-  name = Pedro Pombeiro
+  name  = Pedro Pombeiro
   email = noreply@pedro.pombei.ro
-  signingkey = B04C63F91EF312EF
+
+[include]
+  path = ~/.config/dotfiles/git/gitconfig-specific
+  path = ~/.config/dotfiles/git/colors/tomorrow-night-eighties.config
 
 [apply]
 
@@ -17,16 +20,12 @@
   # Repaint the screen, discarding any buffered input.  Useful if the file is changing while it is being viewed.
   pager = less -R
 
-  excludesfile = ~/.gitignore-global
+  excludesfile = ~/.config/dotfiles/git/gitignore-global
 
   # Treat spaces before tabs and all kinds of trailing whitespace as an error
   # [default] trailing-space: looks for spaces at the end of a line
   # [default] space-before-tab: looks for spaces before tabs at the beginning of a line
   whitespace = space-before-tab,-indent-with-non-tab,trailing-space
-
-  # Make `git rebase` safer on macOS
-  # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
-  trustctime = false
 
   # Prevent showing files whose names contain non-ASCII symbols as unversioned.
   # http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
@@ -45,27 +44,12 @@
 [color "branch"]
 
   current = yellow reverse
-  local = yellow
-  remote = green
-
-[color "diff"]
-
-  meta = yellow bold
-  frag = magenta bold # line info
-  old = red # deletions
-  new = green # additions
-
-[color "status"]
-
-  added = yellow
-  changed = green
-  untracked = cyan
+  local   = yellow
+  remote  = green
 
 [commit]
 
-  # https://help.github.com/articles/signing-commits-using-gpg/
-  gpgsign = true
-  template = ~/.git_commit_msg.txt
+  template = ~/.config/dotfiles/git/git_commit_msg.txt
 
 [push]
 
@@ -77,19 +61,15 @@
 
 [rebase]
 
-  autoSquash = true
-  autoStash = true
+  autoSquash          = true
+  autoStash           = true
   missingCommitsCheck = warn
 
 [diff]
 
   # Detect copies as well as renames
-  renames = copies
+  renames    = copies
   colorMoved = default
-
-  tool = beyondcompare4
-  guitool = beyondcompare4
-
 
 [diff "bin"]
 
@@ -102,84 +82,61 @@
   autocorrect = 1
 
 [pager]
-    diff = delta
-    log = delta
-    reflog = delta
-    show = delta
+  diff   = delta
+  log    = delta
+  reflog = delta
+  show   = delta
 
 [interactive]
-    diffFilter = delta --color-only --features=interactive
+  diffFilter = delta --color-only --features=interactive
 
 [delta]
-    line-numbers = true
-    features = decorations
-    side-by-side = true
+  line-numbers = true
+  features     = decorations
+  side-by-side = true
 
 [delta "interactive"]
-    keep-plus-minus-markers = false
+  keep-plus-minus-markers = false
 
 [delta "decorations"]
-    commit-decoration-style = blue ol
-    commit-style = raw
-    file-style = omit
-    hunk-header-decoration-style = blue box
-    hunk-header-file-style = red
-    hunk-header-line-number-style = "#067a00"
-    hunk-header-style = file line-number syntax
+  commit-decoration-style       = blue ol
+  commit-style                  = raw
+  file-style                    = omit
+  hunk-header-decoration-style  = blue box
+  hunk-header-file-style        = red
+  hunk-header-line-number-style = "#067a00"
+  hunk-header-style             = file line-number syntax
 
 [difftool]
 
   prompt = false
 
-[difftool "beyondcompare4"]
-
-  cmd = bcompare \"$LOCAL\" \"$REMOTE\"
-  path = /usr/bin/bcompare
-  keepTemporaries = false
-  keepBackup = false
-  trustExitCode = true
-
 [merge]
 
   keepBackup = false
-  tool = p4merge
-  guitool = p4merge
 
 [mergetool]
 
   prompt = false
 
-[mergetool "p4merge"]
-
-  cmd = p4merge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
-  keepTemporaries = false
-  keepBackup = false
-  trustExitCode = false
-  path = /usr/bin/p4merge
-
-[alias]
-
-  mr = !sh -c 'git fetch $1 merge-requests/$2/head:mr-$1-$2 && git checkout mr-$1-$2' -
-  branch-to = "!f() {     if command -v \"$1\" >/dev/null; then\n      git log master.. --oneline --name-only --pretty=\"format:\" --diff-filter=CRAM | rg \"\\.(rb|go|sh|sql)\" | xargs \"$1\"; \\\n    else\n      echo \"'$1' is not an executable. Please specify an editor such as 'code'.\" > /dev/stderr; \\\n      return 1; \\\n    fi }; f"
-
 [filter "lfs"]
 
-  clean = git-lfs clean -- %f
-  smudge = git-lfs smudge -- %f
-  process = git-lfs filter-process
+  clean    = git-lfs clean -- %f
+  smudge   = git-lfs smudge -- %f
+  process  = git-lfs filter-process
   required = true
 
 # URL shorthands
 
 [url "git@github.com:"]
 
-  insteadOf = "gh:"
+  insteadOf     = "gh:"
   pushInsteadOf = "github:"
   pushInsteadOf = "git://github.com/"
 
 [url "git@gitlab.com:"]
 
-  insteadOf = "gl:"
+  insteadOf     = "gl:"
   pushInsteadOf = "gitlab:"
   pushInsteadOf = "git://gitlab.com/"
 
@@ -193,13 +150,11 @@
 
 [url "git@gist.github.com:"]
 
-  insteadOf = "gst:"
+  insteadOf     = "gst:"
   pushInsteadOf = "gist:"
   pushInsteadOf = "git://gist.github.com/"
 
-[gpg]
-  program = /usr/local/bin/gpg
 [fetch]
-	parallel = 8
+  parallel = 8
 [submodule]
-	fetchJobs = 2
+  fetchJobs = 2

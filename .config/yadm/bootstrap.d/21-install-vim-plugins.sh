@@ -18,11 +18,9 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
     'https://github.com/nathanaelkane/vim-indent-guides'
     'https://github.com/nishigori/increment-activator.git'
     'https://github.com/preservim/nerdcommenter.git'
-    'https://github.com/preservim/nerdtree.git'
     'https://github.com/RRethy/vim-illuminate.git'
     'https://github.com/ryanoasis/vim-devicons'
     'https://github.com/skywind3000/asyncrun.vim.git'
-    'https://github.com/tiagofumo/vim-nerdtree-syntax-highlight.git'
     'https://github.com/tpope/vim-commentary.git'
     'https://github.com/tpope/vim-dispatch.git'
     'https://github.com/tpope/vim-endwise.git'
@@ -35,10 +33,10 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
     'https://github.com/tpope/vim-speeddating.git'
     'https://github.com/tpope/vim-surround.git'
     'https://github.com/tpope/vim-unimpaired.git'
+    'https://github.com/tpope/vim-vinegar.git'
     'https://github.com/vim-airline/vim-airline.git'
     'https://github.com/vim-test/vim-test'
     'https://github.com/wsdjeg/vim-fetch.git'
-    'https://github.com/Xuyuanp/nerdtree-git-plugin.git'
   )
   plugins_installed=0
 

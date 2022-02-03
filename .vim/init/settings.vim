@@ -29,6 +29,12 @@ augroup END
 set spell spelllang=en_us
 set nospell
 
+" netrw customization (https://shapeshed.com/vim-netrw/)
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 3
+let g:netrw_altv = 1
+let g:netrw_winsize = 25
+
 " Relative line number (Mastering Vim Quickly)
 set relativenumber
 augroup toggle_relative_number

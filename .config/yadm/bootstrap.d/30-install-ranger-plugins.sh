@@ -12,6 +12,7 @@ function install-ranger-plugin() {
 }
 
 install-ranger-plugin https://github.com/alexanderjeurissen/ranger_devicons
+install-ranger-plugin https://github.com/pedropombeiro/ranger-fzf
 install-ranger-plugin https://github.com/laggardkernel/ranger-fzf-marks
 install-ranger-plugin https://github.com/maximtrp/ranger-archives
 install-ranger-plugin https://github.com/alexanderjeurissen/ranger_devicons

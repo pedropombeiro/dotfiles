@@ -199,6 +199,7 @@ BACKUP_FOLDER="${HOME}/Sync/pedro/Briefcase/Backups/MBP.$(yadm config local.clas
 if [ -d /Applications/iTerm.app ] && [ -d "${BACKUP_FOLDER}" ]; then
   echo "Setting iTerm preference folder"
   defaults write com.googlecode.iterm2 PrefsCustomFolder "${BACKUP_FOLDER}"
+  defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
 fi
 
 # Disable warning when quitting

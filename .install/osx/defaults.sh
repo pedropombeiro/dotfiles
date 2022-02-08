@@ -66,6 +66,17 @@ defaults write NSGlobalDomain AppleLocale -string "en_GB@currency=EUR"
 defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
 defaults write NSGlobalDomain AppleMetricUnits -bool true
 
+# Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+
+# Set a blazingly fast keyboard repeat rate
+defaults write NSGlobalDomain KeyRepeat -int 0
+# Set a shorter Delay until key repeat
+defaults write NSGlobalDomain InitialKeyRepeat -int 18
+
+# Disable auto-correct
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
 # Show language menu in the top right corner of the boot screen
 sudo defaults write /Library/Preferences/com.apple.loginwindow showInputMenu -bool true
 
@@ -135,6 +146,9 @@ defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
 # Use list view in all Finder windows by default
 # Four-letter codes for the other view modes: `icnv`, `clmv`, `glyv`
 defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+
+# Allow text selection in Quick Look
+defaults write com.apple.finder QLEnableTextSelection -bool true
 
 ###############################################################################
 # Dock, Dashboard, and hot corners                                            #

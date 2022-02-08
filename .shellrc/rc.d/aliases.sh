@@ -2,6 +2,10 @@
 
 alias lg='[[ ${PWD} = ${HOME} ]] && lazygit -g $HOME/.local/share/yadm/repo.git -w ~ || lazygit'
 alias gdp='printf "\`\`\`patch\n%s\n\`\`\`" "$(git diff)" | pbcopy'
+
+# Delete all remote tracking Git branches where the upstream branch has been deleted
+alias git_prune="git fetch --prune && git branch -vv | grep 'origin/.*: gone]' | awk '{print \$1}' | xargs git branch -d"
+
 alias sqlformat='pg_format --nocomment - | xargs -0 printf "\`\`\`sql\n%s\`\`\`" | pbcopy'
 alias rr=ranger
 alias vim=nvim

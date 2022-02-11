@@ -69,10 +69,13 @@ defaults write NSGlobalDomain AppleMetricUnits -bool true
 # Enable full keyboard access for all controls (e.g. enable Tab in modal dialogs)
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
-# Set a blazingly fast keyboard repeat rate
-defaults write NSGlobalDomain KeyRepeat -int 0
-# Set a shorter Delay until key repeat
-defaults write NSGlobalDomain InitialKeyRepeat -int 18
+# Set a fast keyboard repeat rate
+defaults write -g KeyRepeat -int 2
+# Set a shorter Delay until key repeat (180ms)
+defaults write -g InitialKeyRepeat -int 12
+
+# Disable press and hold for special characters
+defaults write -g ApplePressAndHoldEnabled -bool false
 
 # Disable auto-correct
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false

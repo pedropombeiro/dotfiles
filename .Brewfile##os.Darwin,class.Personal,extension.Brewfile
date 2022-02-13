@@ -34,10 +34,10 @@ brew "ctop"
 brew "duf"
 # More intuitive version of du in rust
 brew "dust"
-# Scriptable ping program for checking if multiple hosts are up
-brew "fping"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
+# Scriptable ping program for checking if multiple hosts are up
+brew "fping"
 # GitHub command-line tool
 brew "gh"
 # Distributed revision control system
@@ -122,6 +122,8 @@ brew "watch"
 brew "wget"
 # Show the current WiFi network password
 brew "wifi-password"
+# Graphical network analyzer and capture tool
+brew "wireshark", link: false
 # Friendly and fast tool for sending HTTP requests
 brew "xh"
 # Yet Another Dotfiles Manager
@@ -224,6 +226,8 @@ cask "mqtt-explorer"
 cask "musescore"
 # Silence embarrassing notifications while screensharing
 cask "muzzle"
+# WiFi site survey software and WiFi scanner
+cask "netspot"
 # Reverse proxy, secure introspectable tunnels to localhost
 cask "ngrok"
 # App to write, plan, collaborate, and get organized
@@ -272,6 +276,8 @@ cask "tripmode"
 cask "visual-studio-code"
 # Desktop client for WhatsApp
 cask "whatsapp"
+# Network protocol analyzer
+cask "wireshark"
 # Video communication and virtual meeting platform
 cask "zoom"
 mas "Amphetamine", id: 937984704

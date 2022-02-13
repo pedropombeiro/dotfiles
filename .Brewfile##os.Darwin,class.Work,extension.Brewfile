@@ -13,6 +13,7 @@ tap "mas-cli/tap"
 tap "minio/stable"
 tap "moul/moul"
 tap "profclems/tap"
+tap "zaquestion/tap"
 # Cryptography and SSL/TLS Toolkit
 brew "openssl@1.1"
 # Library for command-line editing
@@ -313,6 +314,8 @@ cask "microsoft-auto-update"
 cask "microsoft-edge"
 # Silence embarrassing notifications while screensharing
 cask "muzzle"
+# WiFi site survey software and WiFi scanner
+cask "netspot"
 # Reverse proxy, secure introspectable tunnels to localhost
 cask "ngrok"
 # App to write, plan, collaborate, and get organized

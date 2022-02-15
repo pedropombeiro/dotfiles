@@ -3,6 +3,8 @@
 set pastetoggle=<f5>
 let mapleader = "\<Space>"
 
+noremap <C-q> :qa<CR>
+
 inoremap jk <ESC>
 
 nnoremap & :&&<CR>

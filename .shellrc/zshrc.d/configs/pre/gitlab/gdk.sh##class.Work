@@ -1,5 +1,19 @@
 #!/usr/bin/env bash
 
-export RAILS_HOSTS="127.0.0.1,localhost,host.docker.internal,gdk.localhost"
 GDK_ROOT="${HOME}/src/gitlab-development-kit"
 [[ -d ${GDK_ROOT} ]] && export GDK_ROOT
+
+if [[ -d ${GDK_ROOT} && ! -f ${GDK_ROOT}/.envrc ]]; then
+  cat << EOF > "${GDK_ROOT}/.envrc"
+export RAILS_HOSTS="127.0.0.1,localhost,host.docker.internal,gdk.test,gdk.localhost"
+export ENABLE_SPRING=1
+export ENABLE_FDOC=1
+
+if [[ \${ITERM_PROFILE} == 'GDK' ]]; then
+  setup_gitlab_secrets
+fi
+EOF
+
+  direnv allow "${GDK_ROOT}"
+fi
+

@@ -43,7 +43,7 @@
 [alias]
 
   mr        = !sh -c 'git fetch $1 merge-requests/$2/head:mr-$1-$2 && git checkout mr-$1-$2' -
-  branch-to = "!f() {     if command -v \"$1\" >/dev/null; then\n      git log master.. --oneline --name-only --pretty=\"format:\" --diff-filter=CRAM | rg \"\\.(rb|go|sh|sql)\" | xargs \"$1\"; \\\n    else\n      echo \"'$1' is not an executable. Please specify an editor such as 'code'.\" > /dev/stderr; \\\n      return 1; \\\n    fi }; f"
+  branch-to = "!f() {     if command -v \"$1\" >/dev/null; then\n      files=( $(git log master.. --oneline --name-only --pretty='format:' --diff-filter=CRAM | rg \"\\.(rb|go|sh|sql)\" | sort | uniq) ); if [[ $1 == vim ]]; then\n        vim -p ${files[@]}; return 0; fi\n      echo ${files[@]} | xargs \"$1\"; \\\n    else\n      echo \"'$1' is not an executable. Please specify an editor such as 'code'.\" > /dev/stderr; \\\n      return 1; \\\n    fi }; f"
 
 [gpg]
   program = /usr/local/bin/gpg

@@ -67,3 +67,6 @@ let g:editorconfig_root_chdir = 1
 "-- Illuminate
 let g:Illuminate_ftblacklist = ['nerdtree']
 
+"-- LazyGit
+" setup mapping to call :LazyGit
+nnoremap <silent> <leader>gg :LazyGit<CR>

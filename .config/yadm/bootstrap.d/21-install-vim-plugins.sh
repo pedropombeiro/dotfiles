@@ -7,6 +7,7 @@ source "${SCRIPT_DIR}/install-vim-plugin.sh"
 
 if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
   urls=(
+    'https://github.com/RRethy/vim-illuminate'
     'https://github.com/airblade/vim-gitgutter'
     'https://github.com/bfontaine/Brewfile.vim'
     'https://github.com/dense-analysis/ale'
@@ -15,11 +16,11 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
     'https://github.com/junegunn/fzf'
     'https://github.com/junegunn/fzf.vim'
     'https://github.com/junegunn/vim-easy-align'
+    'https://github.com/kdheepak/lazygit.nvim.git'
     'https://github.com/mtdl9/vim-log-highlighting'
     'https://github.com/nathanaelkane/vim-indent-guides'
     'https://github.com/nishigori/increment-activator'
     'https://github.com/preservim/nerdcommenter'
-    'https://github.com/RRethy/vim-illuminate'
     'https://github.com/ryanoasis/vim-devicons'
     'https://github.com/skywind3000/asyncrun.vim'
     'https://github.com/tpope/vim-commentary'

@@ -12,4 +12,3 @@ if [[ -d ${GDK_ROOT} ]]; then
   alias test-mr='bin/rspec $(git diff --name-only --diff-filter=AM master | grep "spec/")'
 fi
 
-command -v direnv >/dev/null && eval "$(direnv hook zsh)"

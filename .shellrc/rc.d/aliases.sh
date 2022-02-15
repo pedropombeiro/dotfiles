@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-alias lg='[[ ${PWD} = ${HOME} ]] && lazygit -g $HOME/.local/share/yadm/repo.git -w ~ || lazygit'
+alias lg=lazygit
 alias gdp='printf "\`\`\`patch\n%s\n\`\`\`" "$(git diff)" | pbcopy'
 
 # Delete all remote tracking Git branches where the upstream branch has been deleted

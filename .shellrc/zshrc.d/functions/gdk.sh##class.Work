@@ -68,6 +68,13 @@ if [[ -d "${GDK_ROOT}" ]]; then
         git stash push -m "Rolled back migration from ${ORIGINAL_BRANCH}"
       fi
 
+      echo "Pruning local branches..."
+      git fetch --all --prune --jobs=10
+      set +e
+      git_prune
+      set -e
+      echo "Done."
+
       echo "Updating GDK..."
       gdk update
 

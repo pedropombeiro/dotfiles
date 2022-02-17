@@ -38,9 +38,7 @@ if !empty($GDK_ROOT)
 endif
 
 "-- vim-rails.vim
-if !empty($GDK_ROOT)
-  nnoremap <C-S-t> :R<CR>
-endif
+nnoremap <leader>ga :R<CR>
 
 "-- EasyAlign
 " Start interactive EasyAlign in visual mode (e.g. vipga)

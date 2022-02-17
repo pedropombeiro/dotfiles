@@ -12,6 +12,7 @@ xnoremap & :&&<CR>
 
 noremap <leader>nt :tabnew<CR>
 noremap <leader>ct :tabclose<CR>
+noremap <leader>tt :tabs<CR>
 nnoremap <C-s> :w<CR>
 inoremap <C-s> <ESC>:w<CR>
 nnoremap <C-q> :qa<CR>

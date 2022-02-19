@@ -92,6 +92,8 @@ brew "git-lfs"
 brew "git-quick-stats"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
+# Colorize logfiles and command output
+brew "grc"
 # GNU Pretty Good Privacy (PGP) package
 brew "gnupg", link: false
 # Library access to GnuPG

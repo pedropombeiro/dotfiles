@@ -50,6 +50,8 @@ brew "git-delta"
 brew "gitui"
 # GNU Transport Layer Security (TLS) Library
 brew "gnutls"
+# Colorize logfiles and command output
+brew "grc"
 # Improved top (interactive process viewer)
 brew "htop"
 # Tools and libraries to manipulate images in many formats

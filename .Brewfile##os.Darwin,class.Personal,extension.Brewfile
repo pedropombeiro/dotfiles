@@ -148,6 +148,8 @@ cask "alfred"
 cask "alt-tab"
 # Android SDK component
 cask "android-platform-tools"
+# Inspect application bundles
+cask "apparency"
 # Application uninstaller
 cask "appcleaner"
 # Backup and restore SD cards, USB drives, external HDD, etc
@@ -250,6 +252,8 @@ cask "protonmail-bridge"
 cask "protonvpn"
 # NAS management application
 cask "qfinder-pro"
+# Display image info and preview unsupported formats in QuickLook
+cask "qlimagesize"
 # Imaging utility to install operating systems to a microSD card
 cask "raspberry-pi-imager"
 # Tool for sending personal documents to Kindles from Macs

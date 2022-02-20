@@ -241,6 +241,8 @@ cask "1password-cli"
 cask "alfred"
 # Enable Windows-like alt-tab
 cask "alt-tab"
+# Inspect application bundles
+cask "apparency"
 # Application uninstaller
 cask "appcleaner"
 # Tool to flash OS images to SD cards & USB drives
@@ -336,6 +338,8 @@ cask "plex"
 cask "powershell6"
 # VPN client focusing on security
 cask "protonvpn"
+# Display image info and preview unsupported formats in QuickLook
+cask "qlimagesize"
 # Kubernetes and container management on the desktop
 cask "rancher"
 # Remote management solution

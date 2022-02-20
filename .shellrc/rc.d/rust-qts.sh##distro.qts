@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+ASDF_RUST="$(asdf where rust)"
+RUST_BIN="${ASDF_RUST}/bin"
+if [[ -d ${RUST_BIN} ]]; then
+  PATH="${PATH}:${RUST_BIN}"
+
+  export PATH
+fi

@@ -6,9 +6,11 @@ source "${HOME}/.config/yadm/scripts/colors.sh"
 printf "${YELLOW}%s${NC}\n" "Installing asdf plugins..."
 
 set +e
-for p in bat ctop delta duf dust fd golang golangci-lint jq lazygit neovim ripgrep xh; do
+for p in bat ctop delta duf dust fd golang golangci-lint jq lazygit neovim ripgrep rust xh; do
   asdf plugin add "${p}"
 done
 asdf plugin list | xargs -I R bash -c 'asdf install R latest && asdf global R latest'
 set -e
 
+# Install some useful system tools written in Rust and which don't provide an easy install method in QTS
+TMPDIR=$TEMP cargo install bottom grc-rs procs

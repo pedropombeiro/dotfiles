@@ -9,7 +9,7 @@
 ###############################################################################
 
 # Disable the sound effects on boot
-sudo nvram SystemAudioVolume=" "
+sudo nvram StartupMute=%01
 
 # Set Login Window Text
 sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText "If you found this computer, please call +41 787 131 629 or email pedro@pombei.ro"
@@ -152,6 +152,9 @@ defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
 
 # Allow text selection in Quick Look
 defaults write com.apple.finder QLEnableTextSelection -bool true
+
+# Set current folder as default search scope
+defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 
 ###############################################################################
 # Dock, Dashboard, and hot corners                                            #

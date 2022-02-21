@@ -21,7 +21,7 @@ urls=(
   'https://github.com/maximtrp/ranger-archives'
   'https://github.com/pedropombeiro/ranger-fzf'
 )
-if [[ $(find "${plugins_dir}" -type d -mindepth 1 -maxdepth 1 | wc -l) -ne ${#urls[@]} ]]; then
+if [[ $(find "${plugins_dir}" -mindepth 1 -maxdepth 1 -type d | wc -l) -ne ${#urls[@]} ]]; then
   printf "${YELLOW}%s${NC}\n" 'Change in number of Ranger plugins detected, repaving...'
 
   rm -rf "${plugins_dir}"

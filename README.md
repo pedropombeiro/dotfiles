@@ -126,7 +126,6 @@ mackup restore
   - [Little Snitch](https://www.obdev.at/products/littlesnitch/download.html)
   - [Mac App Store command line interface](https://github.com/mas-cli/mas)
   - [Mackup](https://github.com/lra/mackup)
-  - [Midnight Commander](https://midnight-commander.org/)
   - [Microsoft Edge](https://www.microsoft.com/en-us/edge)
   - [Muzzle](https://muzzleapp.com/)
   - [Numi](https://numi.io/)

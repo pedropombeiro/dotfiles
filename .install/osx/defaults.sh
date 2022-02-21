@@ -237,5 +237,10 @@ defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</
 # Add defaults to VS Code
 defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
 
+# Add defaults to SlowQuitApps
+defaults write com.dteoh.SlowQuitApps invertList -bool YES
+defaults write com.dteoh.SlowQuitApps whitelist -array-add us.zoom.xos
+killall SlowQuitApps; /Applications/SlowQuitApps.app/Contents/MacOS/SlowQuitApps & disown
+
 # reset the preferences cache
 killall cfprefsd

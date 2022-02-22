@@ -5,8 +5,6 @@ let mapleader = "\<Space>"
 
 noremap <C-q> :qa<CR>
 
-inoremap jk <ESC>
-
 nnoremap & :&&<CR>
 xnoremap & :&&<CR>
 

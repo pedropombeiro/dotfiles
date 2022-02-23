@@ -20,6 +20,12 @@ if [[ -d "${GDK_ROOT}" ]]; then
     )
   }
 
+  function wait-gdk-mr-merged() {
+    while [[ "$(curl https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab/merge_requests/$1 --header "PRIVATE-TOKEN: $GITLAB_COM_TOKEN" | jq -r .state)" != 'merged' ]]; do
+      sleep 5
+    done
+  }
+
   function list-migrations() {
     MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A master -- db/schema_migrations/)"
     echo ${MIGRATIONS_DIFF} | xargs basename -a | sort -r

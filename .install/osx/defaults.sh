@@ -17,7 +17,8 @@ sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText "
 # Set Timezone and Set Clock Using Network Time
 # See `sudo systemsetup -listtimezones` for other values
 sudo systemsetup -settimezone Europe/Zurich
-sudo systemsetup setusingnetworktime on
+sudo systemsetup -setusingnetworktime on
+sudo systemsetup -setnetworktimeserver ntp.pombei.ro
 
 # System - Sunday is the first day of the week
 defaults write NSGlobalDomain AppleFirstWeekday -dict 'gregorian' 1

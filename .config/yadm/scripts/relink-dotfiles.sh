@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-source "${HOME}/.config/yadm/scripts/colors.sh"
+YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
+
+source "${YADM_SCRIPTS}/colors.sh"
 
 class="$(yadm config local.class)"
 if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then

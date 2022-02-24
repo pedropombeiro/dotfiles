@@ -9,11 +9,7 @@ install:
 
 .PHONY: update
 update:
-	@if [ "$(shell uname -s)" = "Linux" ]; then \
-		.install/linux/update.sh; \
-	else \
-		.install/osx/update.sh; \
-	fi
+	~/.config/yadm/scripts/update.sh
 
 .PHONY: brew-dump
 brew-dump:

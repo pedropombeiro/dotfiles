@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-if [ ! -f  /usr/local/bin/pinentry-xp ] || [ "$(readlink /usr/local/bin/pinentry-xp)" != /usr/local/bin/pinentry-mac ]; then
+if [ ! -f /usr/local/bin/pinentry-xp ] || [ "$(readlink /usr/local/bin/pinentry-xp)" != /usr/local/bin/pinentry-mac ]; then
   sudo ln -sf /usr/local/bin/pinentry-mac /usr/local/bin/pinentry-xp
 fi

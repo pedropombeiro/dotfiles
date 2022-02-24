@@ -8,6 +8,7 @@ opkg install asciinema bind-dig column coreutils \
 opkg install procps-ng-ps     # installs a more modern version of ps, supporting command line switches
 opkg install coreutils-mkfifo # required for powerlevel10k ZSH theme
 opkg install coreutils-comm   # required for asdf reshim
+opkg install coreutils-sort   # required for asdf update script
 opkg install bash sysstat     # required for qnapnodeexporter/grafana
 opkg install lua              # required for nvim plugins
 

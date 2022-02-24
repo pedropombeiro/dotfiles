@@ -1,6 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
-source "${HOME}/.install/colors.sh"
+YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
+
+source "${YADM_SCRIPTS}/colors.sh"
 
 printf "${YELLOW}%s${NC}" "Updating tldr..."
 tldr --update

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
+
+source "${YADM_SCRIPTS}/colors.sh"
+
+printf "${YELLOW}%s${NC}\n" "Updating Entware packages..."
+opkg update && opkg upgrade
+
+printf "${YELLOW}%s${NC}\n" "Updating asdf packages..."
+asdf update
+asdf plugin-update --all
+set +e
+asdf plugin list | sort | xargs -I {} -P 8 bash -c 'asdf install {} $(asdf list {} | sort --ignore-leading-blanks --version-sort --reverse | head -n1)'
+asdf plugin list | sort | xargs -I {} bash -c 'asdf global {} $(asdf list {} | sort --ignore-leading-blanks --version-sort --reverse | head -n1)'
+set -e
+asdf reshim golang
+
+"${YADM_SCRIPTS}/update-common.zsh"
+

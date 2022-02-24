@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Enable TouchID on shell
 grep 'pam_tid.so' /etc/pam.d/sudo > /dev/null || \

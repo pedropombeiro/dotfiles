@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+
+YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
+
+# Update apps
+sudo apt update
+sudo apt upgrade
+
+# Update Homebrew apps
+brew update
+brew upgrade
+
+source "${YADM_SCRIPTS}/update-common.sh"
+

@@ -1,12 +1,54 @@
 #!/usr/bin/env zsh
 
 if [[ -d "${GDK_ROOT}" ]]; then
-  function _rebase-all() {
-    CURRENT_BRANCH="$(git branch --show-current)"
+  source ~/.config/yadm/scripts/colors.sh
 
-    DEFAULT_BRANCH='main'
-    git show-ref refs/remotes/origin/master >/dev/null && DEFAULT_BRANCH='master'
-    git for-each-ref --shell --format='git switch %(refname) && git rebase '"${DEFAULT_BRANCH}"' && echo -------- && '\\'' refs/heads/pedropombeiro | { sed 's;refs/heads/;;'; echo "git switch '${CURRENT_BRANCH}'"; } | bash
+  OWNER_NAME=pedropombeiro
+
+  function _get_default_branch() {
+    default_branch='main'
+    git show-ref refs/remotes/origin/master >/dev/null && default_branch='master'
+    echo $default_branch
+  }
+
+  # Assuming that you have branches named "${OWNER_NAME}/${MR_ID}/${SEQ_ID}-branch_description"
+  # this method will ensure that branches from the same MR will be rebased correctly, keeping the chain order
+  function _rebase-all() {
+    current_branch="$(git branch --show-current)"
+    default_branch="$(_get_default_branch)"
+
+    set -e
+
+    followup_base_branch="${default_branch}"
+    branches=( $(git for-each-ref --sort='refname' --shell --format='%(refname)' refs/heads/${OWNER_NAME} | sed "s;'refs/heads/\(.*\)';\1;") )
+    for branch in ${branches[@]}; do
+      local is_chained_branch=false
+      base_branch="${default_branch}"
+      if [[ $branch =~ "${OWNER_NAME}/[0-9]+/[0-9]+-[^/]*$" || $branch =~ "${OWNER_NAME}/[0-9]+-[^/]+$" ]]; then
+        base_branch="${followup_base_branch}"
+        is_chained_branch=true
+      fi
+
+      if [[ ${base_branch} == ${default_branch} || -z $(git config "branch.${base_branch}.remote") ]]; then
+        printf "${YELLOW}%s${NC}\n" "Rebasing ${branch} onto ${base_branch}..."
+        gsw "${base_branch}"
+        git rebase --autostash "${base_branch}" "${branch}"
+      else
+        base_tracking_branch="$(git rev-parse --abbrev-ref --symbolic-full-name @{u})"
+        printf "${YELLOW}%s${NC}\n" "Rebasing ${branch} onto ${base_branch} using ${base_tracking_branch} as previous base..."
+        git rebase --autostash --onto "${base_branch}" "${base_tracking_branch}" "${branch}"
+      fi
+
+      if [[ $is_chained_branch == true ]]; then
+        followup_base_branch="${branch}"
+      else
+        followup_base_branch="${default_branch}"
+      fi
+
+      echo --------
+    done
+
+    git switch "${current_branch}"
   }
 
   function rebase-all() {
@@ -92,7 +134,6 @@ if [[ -d "${GDK_ROOT}" ]]; then
 
       echo "Running simple test..."
       bin/rspec spec/lib/gitlab/ci/variables/collection_spec.rb
-      set +e
 
       echo "Rebasing local branches..."
       _rebase-all

@@ -16,4 +16,4 @@ set -e
 
 # Install some useful system tools written in Rust and which don't provide an easy install method in QTS
 asdf global rust 1.58.1
-TMPDIR=$TEMP cargo install bottom grc-rs jless procs
+TMPDIR=$TEMP cargo install bottom grc-rs jless lsd procs

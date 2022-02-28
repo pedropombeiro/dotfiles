@@ -153,6 +153,14 @@ if [[ -d "${GDK_ROOT}" ]]; then
       echo "Warming up web server..."
       curl -sL http://gdk.localhost:3000 -o /dev/null
 
+      if ps aux | grep RubyMine.app/Contents/MacOS/rubymine | grep -v "grep"; then
+        echo "Start indexing in RubyMine..."
+        osascript <<END
+          tell application "RubyMine"
+            activate
+          end tell
+END
+      fi
       cd - >/dev/null
     )
   }

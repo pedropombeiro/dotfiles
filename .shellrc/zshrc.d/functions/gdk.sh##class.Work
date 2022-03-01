@@ -14,31 +14,32 @@ if [[ -d "${GDK_ROOT}" ]]; then
   # Assuming that you have branches named "${OWNER_NAME}/${MR_ID}/${SEQ_ID}-branch_description"
   # this method will ensure that branches from the same MR will be rebased correctly, keeping the chain order
   function _rebase-all() {
-    current_branch="$(git branch --show-current)"
-    default_branch="$(_get_default_branch)"
+    local current_branch="$(git branch --show-current)"
+    local default_branch="$(_get_default_branch)"
 
     set -e
 
-    followup_base_branch="${default_branch}"
-    branches=( $(git for-each-ref --sort='refname' --shell --format='%(refname)' refs/heads/${OWNER_NAME} | sed "s;'refs/heads/\(.*\)';\1;") )
+    local followup_base_branch="${default_branch}"
+    local prev_branch_chain="${current_branch_chain}"
+    local branches=( $(git for-each-ref --sort='refname' --shell --format='%(refname)' refs/heads/${OWNER_NAME} | sed "s;'refs/heads/\(.*\)';\1;") )
     for branch in ${branches[@]}; do
       local is_chained_branch=false
-      base_branch="${default_branch}"
+      local base_branch="${default_branch}"
       if [[ $branch =~ "${OWNER_NAME}/[0-9]+/[0-9]+-[^/]*$" || $branch =~ "${OWNER_NAME}/[0-9]+-[^/]+$" ]]; then
         base_branch="${followup_base_branch}"
         is_chained_branch=true
       fi
 
-      if [[ ${base_branch} == ${default_branch} || -z $(git config "branch.${base_branch}.remote") ]]; then
-        printf "${YELLOW}%s${NC}\n" "Rebasing ${branch} onto ${base_branch}..."
-        gsw "${base_branch}"
-        git rebase --autostash "${base_branch}" "${branch}"
-      else
-        base_tracking_branch="$(git rev-parse --abbrev-ref --symbolic-full-name @{u})"
-        printf "${YELLOW}%s${NC}\n" "Rebasing ${branch} onto ${base_branch} using ${base_tracking_branch} as previous base..."
-        git rebase --autostash --onto "${base_branch}" "${base_tracking_branch}" "${branch}"
+      local current_branch_chain="$(echo -n "${branch}" | sed "s;^\(${OWNER_NAME}/[0-9]*\)/.*$;\1;")"
+      if [[ ${current_branch_chain} != ${prev_branch_chain} ]]; then
+        base_branch="${default_branch}"
       fi
 
+      printf "${YELLOW}%s${NC}\n" "Rebasing ${branch} onto ${base_branch}..."
+      git switch "${base_branch}"
+      git rebase --autostash "${base_branch}" "${branch}"
+
+      prev_branch_chain="${current_branch_chain}"
       if [[ $is_chained_branch == true ]]; then
         followup_base_branch="${branch}"
       else

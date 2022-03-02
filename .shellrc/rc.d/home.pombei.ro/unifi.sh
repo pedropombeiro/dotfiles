@@ -8,7 +8,11 @@ function loggatewayjson() {
 }
 
 function loggateway() {
-  loggatewayjson | jq --unbuffered -r '"\(.date) - \(.rule)\tIN=\(.IN)  \t\(.PROTO)\tSRC=\(.SRC)@\(.SPT)\tDST=\(.DST)@\(.DPT)\tLEN=\(.LEN)\t"'
+  if command -v lnav >/dev/null; then
+    ssh -fn gateway 'tail -fqn 100000 /var/log/messages' 2>/dev/null | lnav
+  else
+    loggatewayjson | jq --unbuffered -r '"\(.date) - \(.rule)\tIN=\(.IN)  \t\(.PROTO)\tSRC=\(.SRC)@\(.SPT)\tDST=\(.DST)@\(.DPT)\tLEN=\(.LEN)\t"'
+  fi
 }
 
 alias logap='ssh ap "tcpdump -np | sed \"s|, options \[.*\]||\""'

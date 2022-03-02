@@ -151,9 +151,6 @@ if [[ -d "${GDK_ROOT}" ]]; then
         git checkout db/structure.sql
       fi
 
-      echo "Warming up web server..."
-      curl -sL http://gdk.localhost:3000 -o /dev/null
-
       if ps aux | grep RubyMine.app/Contents/MacOS/rubymine | grep -v "grep"; then
         echo "Start indexing in RubyMine..."
         osascript <<END
@@ -162,6 +159,10 @@ if [[ -d "${GDK_ROOT}" ]]; then
           end tell
 END
       fi
+
+      echo "Warming up web server..."
+      curl -sL http://gdk.localhost:3000 -o /dev/null
+
       cd - >/dev/null
     )
   }

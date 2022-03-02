@@ -3,7 +3,7 @@
 if [[ -d "${GDK_ROOT}" ]]; then
   source ~/.config/yadm/scripts/colors.sh
 
-  OWNER_NAME=pedropombeiro
+  GITLAB_USERNAME=${USER}
 
   function _get_default_branch() {
     default_branch='main'
@@ -11,7 +11,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
     echo $default_branch
   }
 
-  # Assuming that you have branches named "${OWNER_NAME}/${MR_ID}/${SEQ_ID}-branch_description"
+  # Assuming that you have branches named "${GITLAB_USERNAME}/${MR_ID}/${SEQ_ID}-branch_description"
   # this method will ensure that branches from the same MR will be rebased correctly, keeping the chain order
   function _rebase-all() {
     local current_branch="$(git branch --show-current)"
@@ -21,16 +21,16 @@ if [[ -d "${GDK_ROOT}" ]]; then
 
     local followup_base_branch="${default_branch}"
     local prev_branch_chain="${current_branch_chain}"
-    local branches=( $(git for-each-ref --sort='refname' --shell --format='%(refname)' refs/heads/${OWNER_NAME} | sed "s;'refs/heads/\(.*\)';\1;") )
+    local branches=( $(git for-each-ref --sort='refname' --shell --format='%(refname)' refs/heads/${GITLAB_USERNAME} | sed "s;'refs/heads/\(.*\)';\1;") )
     for branch in ${branches[@]}; do
       local is_chained_branch=false
       local base_branch="${default_branch}"
-      if [[ $branch =~ "${OWNER_NAME}/[0-9]+/[0-9]+-[^/]*$" || $branch =~ "${OWNER_NAME}/[0-9]+-[^/]+$" ]]; then
+      if [[ $branch =~ "${GITLAB_USERNAME}/[0-9]+/[0-9]+-[^/]*$" || $branch =~ "${GITLAB_USERNAME}/[0-9]+-[^/]+$" ]]; then
         base_branch="${followup_base_branch}"
         is_chained_branch=true
       fi
 
-      local current_branch_chain="$(echo -n "${branch}" | sed "s;^\(${OWNER_NAME}/[0-9]*\)/.*$;\1;")"
+      local current_branch_chain="$(echo -n "${branch}" | sed "s;^\(${GITLAB_USERNAME}/[0-9]*\)/.*$;\1;")"
       if [[ ${current_branch_chain} != ${prev_branch_chain} ]]; then
         base_branch="${default_branch}"
       fi
@@ -63,10 +63,38 @@ if [[ -d "${GDK_ROOT}" ]]; then
     )
   }
 
+  function git_parent() {
+    git show-branch --no-color \
+      | sed "s/].*//" \
+      | grep "\*" \
+      | grep -v "$(git rev-parse --abbrev-ref HEAD)" \
+      | head -n1 \
+      | sed "s/^.*\[\(.*\)^[0-9]*/\1/"
+  }
+
   function wait-gdk-mr-merged() {
     while [[ "$(curl https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab/merge_requests/$1 --header "PRIVATE-TOKEN: $GITLAB_COM_TOKEN" | jq -r .state)" != 'merged' ]]; do
       sleep 5
     done
+  }
+
+  unalias gpsup 2>/dev/null
+
+  function gpsup() {
+    local remote=origin
+
+    if git remote get-url $remote | grep gitlab.com >/dev/null; then
+      git push --set-upstream $remote "$(git_current_branch)" \
+        -o merge_request.create \
+        -o "merge_request.target=$(git_parent)" \
+        -o "merge_request.assign=${GITLAB_USERNAME}" \
+        -o "merge_request.label=Category:Runner" \
+        -o "merge_request.label=section::ops" \
+        -o "merge_request.label=devops::verify" \
+        -o "merge_request.label=group::runner"
+    else
+      git push --set-upstream $remote "$(git_current_branch)"
+    fi
   }
 
   function list-migrations() {

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
+
+source "${YADM_SCRIPTS}/colors.sh"
+
+printf "${YELLOW}%s${NC}\n" "Setting up .default-golang-pkgs..."
+
+cat << EOF > ~/.default-golang-pkgs
+github.com/cheat/cheat/cmd/cheat@latest
+github.com/ipinfo/cli/ipinfo@latest
+github.com/jesseduffield/lazydocker@latest
+github.com/schollz/croc/v9@latest
+EOF
+

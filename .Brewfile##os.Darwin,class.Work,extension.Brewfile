@@ -108,6 +108,8 @@ brew "helm"
 brew "htop"
 # Update of iperf: measures TCP, UDP, and SCTP bandwidth
 brew "iperf3"
+# Official CLI for the IPinfo IP Address API
+brew "ipinfo-cli"
 # Command-line pager for JSON data
 brew "jless"
 # Lightweight and flexible command-line JSON processor

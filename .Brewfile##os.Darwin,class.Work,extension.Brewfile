@@ -88,8 +88,6 @@ brew "git"
 brew "git-delta"
 # Git extension for versioning large files
 brew "git-lfs"
-# Simple and efficient way to access statistics in git
-brew "git-quick-stats"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
 # Colorize logfiles and command output
@@ -104,8 +102,6 @@ brew "graphicsmagick"
 brew "python@3.8"
 # Framework for layout and rendering of i18n text
 brew "pango"
-# Graph visualization software from AT&T and Bell Labs
-brew "graphviz"
 # Kubernetes package manager
 brew "helm"
 # Improved top (interactive process viewer)

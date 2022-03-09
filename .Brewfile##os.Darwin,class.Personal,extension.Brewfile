@@ -46,8 +46,8 @@ brew "gh"
 brew "git"
 # Syntax-highlighting pager for git and diff output
 brew "git-delta"
-# Blazing fast terminal-ui for git written in rust
-brew "gitui"
+# GNU implementation of the famous stream editor
+brew "gnu-sed"
 # GNU Transport Layer Security (TLS) Library
 brew "gnutls"
 # Colorize logfiles and command output
@@ -98,8 +98,6 @@ brew "pinentry-mac"
 brew "pngquant"
 # Unix pager optimized for psql
 brew "pspg"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.8"
 # File browser
 brew "ranger"
 # Search tool like grep and The Silver Searcher

@@ -18,4 +18,6 @@ asdf global golang 1.17.7
 
 # Install some useful system tools written in Rust and which don't provide an easy install method in QTS
 asdf global rust 1.58.1
-TMPDIR=$TEMP cargo install bottom grc-rs jless lsd procs
+export TMPDIR=$TEMP
+cargo install bottom grc-rs lsd procs
+cargo install jless --version 0.7.2

@@ -2,6 +2,7 @@
 
 if [[ -d "${GDK_ROOT}" ]]; then
   source ~/.config/yadm/scripts/colors.sh
+  source ~/.shellrc/rc.d/aliases.sh
 
   GITLAB_USERNAME=${USER}
 
@@ -55,7 +56,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
   function rebase-all() {
     (
       if ! git diff-index --quiet HEAD --; then
-        echo 'Please stash the changes in the current branch before calling rebase-all!'
+        printf "${RED}%s${NC}\n" 'Please stash the changes in the current branch before calling rebase-all!'
         exit 1
       fi
 
@@ -113,7 +114,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
         #   echo "Rolling back ${#LAST_MIGRATIONS[@]} branch migration(s)..."
         #   bin/rails db:rollback STEP=${#LAST_MIGRATIONS[@]}
         # else
-          echo "Undoing ${#BRANCH_MIGRATIONS[@]} branch migration(s)..."
+          printf "${YELLOW}%s${NC}\n" "Undoing ${#BRANCH_MIGRATIONS[@]} branch migration(s)..."
           gdk start postgresql
           for migration in "${BRANCH_MIGRATIONS[@]}"; do
             bin/rails db:migrate:down VERSION="${migration}"
@@ -131,7 +132,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
       git checkout db/structure.sql
 
       if ! git diff-index --quiet HEAD --; then
-        echo 'Please stash the changes in the current branch before calling fgdku!'
+        printf "${RED}%s${NC}\n" 'Please stash the changes in the current branch before calling fgdku!'
         cd - >/dev/null
         exit 1
       fi
@@ -152,27 +153,27 @@ if [[ -d "${GDK_ROOT}" ]]; then
       set -e
       echo "Done."
 
-      echo "Updating GDK..."
+      printf "${YELLOW}%s${NC}\n" "Updating GDK..."
       gdk update
 
       git checkout db/structure.sql
       sleep 5
 
-      echo "Precompiling static assets to ensure graphiql-rails changes are picked up..."
+      printf "${YELLOW}%s${NC}\n" "Precompiling static assets to ensure graphiql-rails changes are picked up..."
       bundle exec rake rake:assets:precompile
 
-      echo "Running simple test..."
+      printf "${YELLOW}%s${NC}\n" "Running simple test..."
       bin/rspec spec/lib/gitlab/ci/variables/collection_spec.rb
 
       echo "Rebasing local branches..."
       _rebase-all
-      echo "Done."
+      printf "${GREEN}%s${NC}\n" "Done."
 
       gdk restart
 
       [[ "${ORIGINAL_BRANCH}" == "$(git_main_branch)" ]] || git switch "${ORIGINAL_BRANCH}"
       if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
-        echo "Applying stash and migrations..."
+        printf "${YELLOW}%s${NC}\n" "Applying stash and migrations..."
         git stash pop
         bin/rails db:migrate
         scripts/regenerate-schema # Ensure we have a clean test DB with any branch migrations done
@@ -180,7 +181,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
       fi
 
       if ps aux | grep RubyMine.app/Contents/MacOS/rubymine | grep -v "grep"; then
-        echo "Start indexing in RubyMine..."
+        printf "${YELLOW}%s${NC}\n" "Start indexing in RubyMine..."
         osascript <<END
           tell application "RubyMine"
             activate
@@ -188,7 +189,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
 END
       fi
 
-      echo "Warming up web server..."
+      printf "${YELLOW}%s${NC}\n" "Warming up web server..."
       curl -sL http://gdk.localhost:3000 -o /dev/null
 
       cd - >/dev/null
@@ -214,44 +215,44 @@ END
           PASSWORD="$(openssl rand -base64 20)"
           export PGPASSWORD="${PASSWORD}"
         else
-          echo "Found entry in ~/.pgpass for ${USERNAME}"
+          printf "${GREEN}%s${NC}\n" "Found entry in ~/.pgpass for ${USERNAME}"
           PASSWORD=$(echo "${PASSENTRY}" | awk -F "\"*:\"*" '{print $5}')
         fi
 
-        echo "Starting a tunnel to ${POSTGRES_AI_HOST}"
+        printf "${YELLOW}%s${NC}\n" "Starting a tunnel to ${POSTGRES_AI_HOST}"
         ssh dblab-joe -f -N
 
-        echo "Creating thin clone for ${USERNAME}..."
+        printf "${YELLOW}%s${NC}\n" "Creating thin clone for ${USERNAME}..."
         PORT="$(dblab clone create --username "${USERNAME}" --password "${PASSWORD}" | jq -r '.db.port')"
         LOCAL_PORT=10000
 
-        echo "Forwarding local port (${LOCAL_PORT}) to the returned port (${PORT}) at ${POSTGRES_AI_HOST}"
+        printf "${YELLOW}%s${NC}\n" "Forwarding local port (${LOCAL_PORT}) to the returned port (${PORT}) at ${POSTGRES_AI_HOST}"
         ssh -L "${LOCAL_PORT}:localhost:${PORT}" -f -N "gldatabase@${POSTGRES_AI_HOST}"
 
-        echo "Connecting psql to the local port (${LOCAL_PORT}) with random password ${PASSWORD}"
+        printf "${YELLOW}%s${NC}\n" "Connecting psql to the local port (${LOCAL_PORT}) with random password ${PASSWORD}"
         pgcli -h localhost -p "${LOCAL_PORT}" -U "${USERNAME}" -d gitlabhq_dblab
         ;;
       list)
-        echo "Listing thin clones for ${USERNAME}"
+        printf "${YELLOW}%s${NC}\n" "Listing thin clones for ${USERNAME}"
         dblab instance status | jq --arg username "${USERNAME}" -r '.clones[] | select(.db.username == $username) | .id'
         ;;
       destroy-all)
-        echo "Listing thin clones for ${USERNAME}"
+        printf "${YELLOW}%s${NC}\n" "Listing thin clones for ${USERNAME}"
         IDS=( $(dblab instance status | jq --arg username "${USERNAME}" -r '.clones[] | select(.db.username == $username) | .id') )
         for id in "${IDS[@]}"; do
-          echo "Destroying clone ${id}..."
+          printf "${YELLOW}%s${NC}\n" "Destroying clone ${id}..."
           dblab clone destroy -a "${id}"
         done
         ;;
       stop-ssh)
-        echo 'Stopping SSH processes...'
+        printf "${YELLOW}%s${NC}\n" 'Stopping SSH processes...'
         ps aux | grep ssh | grep '\-joe' | awk '{print $2}' | xargs kill -9 || echo -n
         ;;
       *)
-        echo "Unknown command '$1', aborting"
+        printf "${RED}%s${NC}\n" "Unknown command '$1', aborting"
         ;;
     esac
 
-    echo Done
+    printf "${GREEN}%s${NC}\n" Done
   }
 fi

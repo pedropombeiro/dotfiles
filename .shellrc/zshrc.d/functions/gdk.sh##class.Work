@@ -146,13 +146,6 @@ if [[ -d "${GDK_ROOT}" ]]; then
         git stash push -m "Rolled back migration from ${ORIGINAL_BRANCH}"
       fi
 
-      echo "Pruning local branches..."
-      git fetch --all --prune --jobs=10
-      set +e
-      git_prune
-      set -e
-      echo "Done."
-
       printf "${YELLOW}%s${NC}\n" "Updating GDK..."
       gdk update
 
@@ -165,7 +158,14 @@ if [[ -d "${GDK_ROOT}" ]]; then
       printf "${YELLOW}%s${NC}\n" "Running simple test..."
       bin/rspec spec/lib/gitlab/ci/variables/collection_spec.rb
 
-      echo "Rebasing local branches..."
+      printf "${YELLOW}%s${NC}\n" "Pruning local branches..."
+      git fetch --all --prune --jobs=10
+      set +e
+      git_prune
+      set -e
+      printf "${GREEN}%s${NC}\n" "Done."
+
+      printf "${YELLOW}%s${NC}\n" "Rebasing local branches..."
       _rebase-all
       printf "${GREEN}%s${NC}\n" "Done."
 

@@ -388,6 +388,7 @@ mas "Amphetamine", id: 937984704
 mas "Annotate", id: 918207447
 mas "Backdrop", id: 411461952
 mas "DaisyDisk", id: 411643860
+mas "Discovery", id: 1381004916
 mas "EtreCheck", id: 1423715984
 mas "Expressions", id: 913158085
 mas "HazeOver", id: 430798174

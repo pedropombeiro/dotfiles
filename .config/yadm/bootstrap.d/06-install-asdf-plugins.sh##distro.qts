@@ -14,7 +14,7 @@ done
 asdf plugin list | sort | grep -v '^rust$' | grep -v '^golang$' | xargs -I {} bash -c 'asdf global {} $(asdf list {} | sort --ignore-leading-blanks --version-sort --reverse | head -n1)'
 set -e
 
-asdf global golang 1.17.7
+asdf global golang 1.17.8
 
 # Install some useful system tools written in Rust and which don't provide an easy install method in QTS
 asdf global rust 1.58.1

@@ -12,6 +12,7 @@ tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon
 tap "mas-cli/tap"
 tap "minio/stable"
 tap "moul/moul"
+tap "mvp/uhubctl", "https://github.com/mvp/uhubctl"
 tap "profclems/tap"
 tap "zaquestion/tap"
 # Cryptography and SSL/TLS Toolkit
@@ -90,8 +91,6 @@ brew "git-delta"
 brew "git-lfs"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
-# Colorize logfiles and command output
-brew "grc"
 # GNU Pretty Good Privacy (PGP) package
 brew "gnupg", link: false
 # Library access to GnuPG
@@ -102,6 +101,8 @@ brew "graphicsmagick"
 brew "python@3.8"
 # Framework for layout and rendering of i18n text
 brew "pango"
+# Colorize logfiles and command output
+brew "grc"
 # Kubernetes package manager
 brew "helm"
 # Improved top (interactive process viewer)
@@ -232,6 +233,8 @@ brew "jarred-sumner/git-peek/git-peek"
 brew "leipert-projects/git-recon/git-recon"
 # Compare Docker images
 brew "moul/moul/docker-diff"
+# USB hub per-port power control
+brew "mvp/uhubctl/uhubctl"
 cask "0xed"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"

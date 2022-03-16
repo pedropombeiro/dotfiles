@@ -21,6 +21,7 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
     'https://github.com/nathanaelkane/vim-indent-guides'
     'https://github.com/nishigori/increment-activator'
     'https://github.com/preservim/nerdcommenter'
+    'https://github.com/ruanyl/vim-gh-line'
     'https://github.com/ryanoasis/vim-devicons'
     'https://github.com/skywind3000/asyncrun.vim'
     'https://github.com/tpope/vim-commentary'

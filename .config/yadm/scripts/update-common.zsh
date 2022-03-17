@@ -4,8 +4,9 @@ YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pw
 
 source "${YADM_SCRIPTS}/colors.sh"
 
-printf "${YELLOW}%s${NC}" "Updating tldr..."
+printf "${YELLOW}%s${NC}" "Updating tldr... "
 tldr --update
+echo
 
 # Update Oh-my-zsh custom themes and plugins
 DISABLE_AUTO_UPDATE=true source "${HOME}/.oh-my-zsh/oh-my-zsh.sh"

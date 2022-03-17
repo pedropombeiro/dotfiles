@@ -1,4 +1,5 @@
 tap "arkweid/lefthook"
+tap "derailed/k9s"
 tap "dteoh/sqa"
 tap "homebrew/bundle"
 tap "homebrew/cask"

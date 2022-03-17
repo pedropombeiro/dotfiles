@@ -11,7 +11,7 @@ set +e
 for p in bat ctop delta duf dust fd golang golangci-lint jq lazygit neovim ripgrep rust xh; do
   asdf plugin add "${p}"
 done
-asdf plugin list | sort | grep -v '^rust$' | grep -v '^golang$' | xargs -I {} bash -c 'asdf global {} $(asdf list {} | sort --ignore-leading-blanks --version-sort --reverse | head -n1)'
+asdf plugin list | sort | grep -v '^rust$' | grep -v '^golang$' | xargs -r -I {} bash -c 'asdf global {} $(asdf list {} | sort --ignore-leading-blanks --version-sort --reverse | head -n1)'
 set -e
 
 asdf global golang 1.17.8

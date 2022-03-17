@@ -97,12 +97,10 @@ brew "gnupg", link: false
 brew "gpgme"
 # Image processing tools collection
 brew "graphicsmagick"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.8"
-# Framework for layout and rendering of i18n text
-brew "pango"
 # Colorize logfiles and command output
 brew "grc"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.8"
 # Kubernetes package manager
 brew "helm"
 # Improved top (interactive process viewer)
@@ -125,6 +123,8 @@ brew "lazydocker"
 brew "lazygit"
 # Conversion library
 brew "libiconv"
+# Framework for layout and rendering of i18n text
+brew "pango"
 # Curses-based tool for viewing and analyzing log files
 brew "lnav"
 # Clone of ls with colorful output, file type icons, and more
@@ -380,8 +380,6 @@ cask "virtualbox-extension-pack"
 cask "visual-studio-code"
 # Desktop client for WhatsApp
 cask "whatsapp"
-# View output from scripts in the menu bar
-cask "xbar"
 # Video communication and virtual meeting platform
 cask "zoom"
 mas "Amphetamine", id: 937984704

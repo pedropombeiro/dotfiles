@@ -131,7 +131,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
       rm -rf .git/gc.log
       git checkout db/structure.sql
 
-      if ! git diff-index --quiet HEAD --; then
+      if [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]]; then
         printf "${RED}%s${NC}\n" 'Please stash the changes in the current branch before calling fgdku!'
         cd - >/dev/null
         exit 1

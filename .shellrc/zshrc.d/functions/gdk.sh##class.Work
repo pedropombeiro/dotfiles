@@ -190,7 +190,7 @@ END
       fi
 
       printf "${YELLOW}%s${NC}\n" "Warming up web server..."
-      curl -sL http://gdk.localhost:3000 -o /dev/null
+      curl -sL 'http://gdk.test:3000' -o /dev/null
 
       cd - >/dev/null
     )

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-ipinfo completion install
+grep ipinfo ~/.zshrc >/dev/null || ipinfo completion install
 

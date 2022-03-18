@@ -8,27 +8,6 @@ if [[ -d ${GDK_ROOT} && ! -f ${GDK_ROOT}/.envrc ]]; then
 export RAILS_HOSTS="127.0.0.1,localhost,host.docker.internal,gdk.test,gdk.localhost"
 export ENABLE_SPRING=1
 export ENABLE_FDOC=1
-
-if [[ \${ITERM_PROFILE} == 'GDK' && -n \$PS1 ]]; then
-  function _export_op_token() {
-    local varname=\$1
-    echo "Fetching \${varname}..."
-    eval "\${varname}=\$(op --cache item get \$varname --vault Private --fields credential)"
-    export \$varname
-  }
-
-  function setup_gitlab_secrets() {
-    eval \$(op signin --account gitlab)
-
-    _export_op_token GITLAB_COM_TOKEN
-    _export_op_token GITLAB_STAGING_TOKEN
-    _export_op_token GITLAB_GDK_TOKEN
-    echo 'Done'
-
-    op signout
-    unset OP_SESSION_gitlab
-  }
-fi
 EOF
 
   direnv allow "${GDK_ROOT}"

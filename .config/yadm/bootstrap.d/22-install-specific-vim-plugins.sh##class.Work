@@ -6,6 +6,7 @@ source "${SCRIPT_DIR}/install-vim-plugin.sh"
 
 if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
   urls=(
+    'https://github.com/glacambre/firenvim'
     'https://github.com/tpope/vim-rails.git'
   )
   plugins_installed=0

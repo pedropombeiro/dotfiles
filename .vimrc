@@ -12,3 +12,7 @@ source ~/.vim/init/ale.vim
 " --- Plugin options
 
 source ~/.vim/init/plugin-options.vim
+
+if exists('g:started_by_firenvim')
+  source ~/.vim/init/firenvim.vim
+endif

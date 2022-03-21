@@ -3,12 +3,13 @@ source ~/.vim/init/fzf.vim
 "-- Git to Vim --
 
 function OpenBranchCommitedFiles()
-  if !empty(glob(".git/refs/heads/master"))
-    args `git diff --name-only master...`
-  else
-    args `git diff --name-only main...`
-  endif
-  tab all
+  let parent_branch = trim(system("git log --decorate --simplify-by-decoration --oneline | grep -v '(HEAD' | head -n1 | sed 's/.* (\\(.*\\)) .*/\\1/' | sed 's/\\(.*\\), .*/\\1/' | sed 's/origin\\///'"))
+  let cmd = 'git diff --name-only ' . l:parent_branch . '...'
+  let files = systemlist(l:cmd)
+
+  for f in l:files
+    execute 'tabedit ' . l:f
+  endfor
 endfunction
 
 :command Branch call OpenBranchCommitedFiles()

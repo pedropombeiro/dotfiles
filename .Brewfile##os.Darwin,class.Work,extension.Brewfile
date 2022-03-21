@@ -44,6 +44,8 @@ brew "bash"
 brew "bat"
 # Get/set bluetooth power and discoverable state
 brew "blueutil"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.9"
 # Core application library for C
 brew "glib"
 # Manage compile and link flags for libraries
@@ -106,6 +108,8 @@ brew "python@3.8"
 brew "helm"
 # Improved top (interactive process viewer)
 brew "htop"
+# Command-line benchmarking tool
+brew "hyperfine"
 # Update of iperf: measures TCP, UDP, and SCTP bandwidth
 brew "iperf3"
 # Official CLI for the IPinfo IP Address API
@@ -234,8 +238,6 @@ brew "jarred-sumner/git-peek/git-peek"
 brew "leipert-projects/git-recon/git-recon"
 # Compare Docker images
 brew "moul/moul/docker-diff"
-# USB hub per-port power control
-brew "mvp/uhubctl/uhubctl"
 cask "0xed"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"

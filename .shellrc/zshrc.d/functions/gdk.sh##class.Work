@@ -65,12 +65,13 @@ if [[ -d "${GDK_ROOT}" ]]; then
   }
 
   function git_parent() {
-    git show-branch --no-color \
-      | sed "s/].*//" \
-      | grep "\*" \
-      | grep -v "$(git rev-parse --abbrev-ref HEAD)" \
+    # https://stackoverflow.com/a/55238339/209726
+    git log --decorate --simplify-by-decoration --oneline \
+      | grep -v "(HEAD" \
       | head -n1 \
-      | sed "s/^.*\[\(.*\)^[0-9]*/\1/"
+      | sed 's/.* (\(.*\)) .*/\1/' \
+      | sed 's/\(.*\), .*/\1/' \
+      | sed 's/origin\///'
   }
 
   function wait-gdk-mr-merged() {

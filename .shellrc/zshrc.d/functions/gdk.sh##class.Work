@@ -4,74 +4,22 @@ if [[ -d "${GDK_ROOT}" ]]; then
   source ~/.config/yadm/scripts/colors.sh
   source ~/.shellrc/rc.d/aliases.sh
 
+  SCRIPT_DIR="${0:a:h}/scripts"
+
   GITLAB_USERNAME=${USER}
 
-  function _get_default_branch() {
-    default_branch='main'
-    git show-ref refs/remotes/origin/master >/dev/null && default_branch='master'
-    echo $default_branch
-  }
-
-  # Assuming that you have branches named "${GITLAB_USERNAME}/${MR_ID}/${SEQ_ID}-branch_description"
-  # this method will ensure that branches from the same MR will be rebased correctly, keeping the chain order
-  function _rebase-all() {
-    local current_branch="$(git branch --show-current)"
-    local default_branch="$(_get_default_branch)"
-
-    set -e
-
-    local followup_base_branch="${default_branch}"
-    local prev_branch_chain="${current_branch_chain}"
-    local branches=( $(git for-each-ref --sort='refname' --shell --format='%(refname)' refs/heads/${GITLAB_USERNAME} | sed "s;'refs/heads/\(.*\)';\1;") )
-    for branch in ${branches[@]}; do
-      local is_chained_branch=false
-      local base_branch="${default_branch}"
-      if [[ $branch =~ "${GITLAB_USERNAME}/[0-9]+/[0-9]+-[^/]*$" || $branch =~ "${GITLAB_USERNAME}/[0-9]+-[^/]+$" ]]; then
-        base_branch="${followup_base_branch}"
-        is_chained_branch=true
-      fi
-
-      local current_branch_chain="$(echo -n "${branch}" | sed "s;^\(${GITLAB_USERNAME}/[0-9]*\)/.*$;\1;")"
-      if [[ ${current_branch_chain} != ${prev_branch_chain} ]]; then
-        base_branch="${default_branch}"
-      fi
-
-      printf "${YELLOW}%s${NC}\n" "Rebasing ${branch} onto ${base_branch}..."
-      git switch "${base_branch}"
-      git rebase --autostash "${base_branch}" "${branch}"
-
-      prev_branch_chain="${current_branch_chain}"
-      if [[ $is_chained_branch == true ]]; then
-        followup_base_branch="${branch}"
-      else
-        followup_base_branch="${default_branch}"
-      fi
-
-      echo --------
-    done
-
-    git switch "${current_branch}"
-  }
-
   function rebase-all() {
-    (
-      if ! git diff-index --quiet HEAD --; then
-        printf "${RED}%s${NC}\n" 'Please stash the changes in the current branch before calling rebase-all!'
-        exit 1
-      fi
-
-      _rebase-all
-    )
+    ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e rebase_all
   }
 
   function git_parent() {
+    local branch="$1"
+    if [[ -z $branch ]]; then
+      branch="$(git_current_branch)"
+    fi
+
     # https://stackoverflow.com/a/55238339/209726
-    git log --decorate --simplify-by-decoration --oneline \
-      | grep -v "(HEAD" \
-      | head -n1 \
-      | sed 's/.* (\(.*\)) .*/\1/' \
-      | sed 's/\(.*\), .*/\1/' \
-      | sed 's/origin\///'
+    asdf exec ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e "puts compute_parent_branch('${branch}')"
   }
 
   function wait-gdk-mr-merged() {
@@ -139,6 +87,10 @@ if [[ -d "${GDK_ROOT}" ]]; then
       fi
 
       set -eo pipefail
+
+      local tmpFile="$(mktemp)"
+      asdf exec ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e 'puts capture_local_branch_info' > $tmpFile
+
       ORIGINAL_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
       MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A master -- db/schema_migrations/)"
       BRANCH_MIGRATIONS=( $(echo ${MIGRATIONS_DIFF} | xargs basename -a | sort -r) )
@@ -157,7 +109,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
       bundle exec rake rake:assets:precompile
 
       printf "${YELLOW}%s${NC}\n" "Running simple test..."
-      bin/rspec spec/lib/gitlab/ci/variables/collection_spec.rb
+      bin/rspec --failure-exit-code 0 --error-exit-code 0 spec/lib/gitlab/ci/variables/collection_spec.rb
 
       printf "${YELLOW}%s${NC}\n" "Pruning local branches..."
       git fetch --all --prune --jobs=10
@@ -167,12 +119,18 @@ if [[ -d "${GDK_ROOT}" ]]; then
       printf "${GREEN}%s${NC}\n" "Done."
 
       printf "${YELLOW}%s${NC}\n" "Rebasing local branches..."
-      _rebase-all
+      asdf exec ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e "rebase_all_per_capture_info($(cat ${tmpFile}))"
+      rm -f $tmpFile
       printf "${GREEN}%s${NC}\n" "Done."
+
+      if [[ "${ORIGINAL_BRANCH}" != "$(git_main_branch)" ]]; then
+        if ! git rev-parse --abbrev-ref "${ORIGINAL_BRANCH}"; then
+          git switch "${ORIGINAL_BRANCH}"
+        fi
+      fi
 
       gdk restart
 
-      [[ "${ORIGINAL_BRANCH}" == "$(git_main_branch)" ]] || git switch "${ORIGINAL_BRANCH}"
       if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
         printf "${YELLOW}%s${NC}\n" "Applying stash and migrations..."
         git stash pop

@@ -24,6 +24,7 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
     'https://github.com/ruanyl/vim-gh-line'
     'https://github.com/ryanoasis/vim-devicons'
     'https://github.com/skywind3000/asyncrun.vim'
+    'https://github.com/tpope/vim-abolish'
     'https://github.com/tpope/vim-commentary'
     'https://github.com/tpope/vim-dispatch'
     'https://github.com/tpope/vim-endwise'

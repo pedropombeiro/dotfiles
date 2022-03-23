@@ -13,6 +13,7 @@ set history=2000
 set updatetime=1000
 set wildmenu      " set zsh-alike autocomplete behavior
 set wildmode=full
+set expandtab
 set tabpagemax=40 " Max number of tab pages that can be opened from the command line
 set noerrorbells
 set confirm       " Display a confirmation dialog when closing a dirty buffer (Mastering Vim Quickly)

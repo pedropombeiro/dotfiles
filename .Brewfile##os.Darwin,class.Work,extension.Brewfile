@@ -202,8 +202,6 @@ brew "switchaudio-osx"
 brew "syncthing", link: false
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
-# Tool to build, change, and version infrastructure
-brew "terraform"
 # Code-search similar to ack
 brew "the_silver_searcher"
 # Program that allows you to count code, quickly
@@ -290,8 +288,6 @@ cask "google-cloud-sdk"
 cask "gpg-suite"
 # Tool to optimize images to a smaller size
 cask "imageoptim"
-# Power usage monitoring tool enabled for Intel Core processors
-cask "intel-power-gadget"
 # System monitoring app
 cask "istat-menus"
 # Terminal emulator as alternative to Apple's Terminal app
@@ -332,16 +328,12 @@ cask "ngrok"
 cask "notion"
 # Calculator and converter application
 cask "numi"
-# Orchestration with Kubernetes on Apple
-cask "orka"
 # Visual client for Helix Core
 cask "p4v"
 # Administration and development platform for PostgreSQL
 cask "pgadmin4"
 # Home media player
 cask "plex"
-# Command-line shell and scripting language
-cask "powershell6"
 # VPN client focusing on security
 cask "protonvpn"
 # Display image info and preview unsupported formats in QuickLook
@@ -390,7 +382,6 @@ mas "Annotate", id: 918207447
 mas "Backdrop", id: 411461952
 mas "DaisyDisk", id: 411643860
 mas "Discovery", id: 1381004916
-mas "EtreCheck", id: 1423715984
 mas "Expressions", id: 913158085
 mas "HazeOver", id: 430798174
 mas "Keyboard Pilot", id: 402670023

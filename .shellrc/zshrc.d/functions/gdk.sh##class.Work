@@ -47,6 +47,14 @@ if [[ -d "${GDK_ROOT}" ]]; then
     fi
   }
 
+  unalias gswm 2>/dev/null
+
+  function gswm() {
+    undo-migrations
+    git checkout db/
+    git switch "$(git_main_branch)"
+  }
+
   function list-migrations() {
     MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A master -- db/schema_migrations/)"
     echo ${MIGRATIONS_DIFF} | xargs basename -a | sort -r

@@ -2,14 +2,22 @@ source ~/.vim/init/fzf.vim
 
 "-- Git to Vim --
 
+function! TabIsEmpty()
+    return winnr('$') == 1 && len(expand('%')) == 0 && line2byte(line('$') + 1) <= 2
+endfunction
+
 function OpenBranchCommitedFiles()
   let parent_branch = trim(system("git log --decorate --simplify-by-decoration --oneline | grep -v '(HEAD' | head -n1 | sed 's/.* (\\(.*\\)) .*/\\1/' | sed 's/\\(.*\\), .*/\\1/' | sed 's/origin\\///'"))
   let cmd = 'git diff --name-only ' . l:parent_branch . '...'
   let files = systemlist(l:cmd)
+  let started_empty = TabIsEmpty()
 
   for f in l:files
     execute 'tabedit ' . l:f
   endfor
+  if started_empty == 1
+    execute '1tabclose'
+  endif
 endfunction
 
 :command Branch call OpenBranchCommitedFiles()

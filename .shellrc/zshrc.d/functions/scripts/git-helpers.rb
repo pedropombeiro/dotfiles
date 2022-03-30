@@ -23,9 +23,8 @@ def compute_parent_branch(branch_name)
     .gsub(/tag: [^,)]+(, )?/, '')
     .sub(/.* \((.*)\) .*/, '\1')
     .split(', ')
-    .reject do |b|
-      other_remote_names.any? { |remote_name| b.start_with?("#{remote_name}/") }
-    end.min_by(&:length) || compute_default_branch
+    .reject { |b| other_remote_names.any? { |remote_name| b.start_with?("#{remote_name}/") } }
+    .min_by(&:length) || compute_default_branch
 end
 
 class String
@@ -37,27 +36,6 @@ class String
   def magenta; "\033[35m#{self}\033[0m" end
   def cyan;    "\033[36m#{self}\033[0m" end
   def gray;    "\033[37m#{self}\033[0m" end
-end
-
-def capture_local_branch_info
-  unless system('git diff-index --quiet HEAD --')
-    abort 'Please stash the changes in the current branch before calling rebase-all!'.red
-  end
-
-  user_name = ENV['USER']
-  local_branches =
-    `git branch --list`
-    .lines
-    .map { |line| line[2..].rstrip }
-    .select { |b| b.start_with?("#{user_name}/") }
-    .sort
-
-  h = local_branches.to_h { |b| [b, compute_parent_branch(b)] }
-
-  max_length = local_branches.map(&:length).max
-  h.each { |branch, parent_branch| warn("#{branch.ljust(max_length).cyan} => #{parent_branch.green}") }
-
-  h
 end
 
 def rebase_all_per_capture_info(local_branch_info_hash)
@@ -72,5 +50,55 @@ def rebase_all_per_capture_info(local_branch_info_hash)
 end
 
 def rebase_all
-  rebase_all_per_capture_info(capture_local_branch_info)
+  unless system('git diff-index --quiet HEAD --')
+    abort 'Please stash the changes in the current branch before calling rebase-all!'.red
+  end
+
+  user_name = ENV['USER']
+  mr_pattern = /^#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+$/.freeze
+  seq_mr_pattern = /^#{user_name}\/(?<mr_id>\d+)\/(?<mr_seq_nr>\d+)-[a-z0-9\-_]+$/.freeze
+  backport_pattern = /^#{user_name}\/(?<mr_id>\d+)\/(?<milestone>\d+\.\d+)-[a-z0-9\-_]+$/.freeze
+  default_branch = compute_default_branch
+
+  local_branches =
+    `git branch --list`
+    .lines
+    .map { |line| line[2..].rstrip }
+    .select { |branch| branch.start_with?("#{user_name}/") }
+    .sort_by do |branch|
+      seq_mr_match_data = seq_mr_pattern.match(branch)
+      backport_match_data = backport_pattern.match(branch)
+      mr_match_data = mr_pattern.match(branch)
+
+      next [seq_mr_match_data[:mr_id].to_i, 1, seq_mr_match_data[:mr_seq_nr].to_i] if seq_mr_match_data
+      next [backport_match_data[:mr_id].to_i, 2, backport_match_data[:milestone].to_f] if backport_match_data
+      [mr_match_data[:mr_id].to_i, 0] if mr_match_data
+    end
+
+  chain_previous_branch = default_branch
+  chain_mr_id = nil
+  mappings = local_branches.map do |branch|
+    seq_mr_match_data = seq_mr_pattern.match(branch)
+    backport_match_data = backport_pattern.match(branch)
+
+    chain_previous_branch = default_branch if seq_mr_match_data && seq_mr_match_data[:mr_id] != chain_mr_id
+    chain_mr_id = seq_mr_match_data ? seq_mr_match_data[:mr_id] : nil
+
+    if seq_mr_match_data
+      parent_branch = chain_previous_branch
+      chain_previous_branch = branch
+    elsif backport_match_data
+      remote = `git rev-parse --abbrev-ref --symbolic-full-name #{branch}@{u} --`.split('/').first
+      next if $?.exitstatus == 128 # Ignore branch if was deleted upstream
+      parent_branch = "#{remote}/#{backport_match_data[:milestone].gsub('.', '-')}-stable-ee"
+    else
+      parent_branch = default_branch
+    end
+
+    [branch, parent_branch]
+  end
+    .compact
+    .to_h
+
+  rebase_all_per_capture_info mappings if mappings.any?
 end

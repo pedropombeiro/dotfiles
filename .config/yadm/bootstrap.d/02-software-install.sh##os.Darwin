@@ -9,6 +9,9 @@ sudo softwareupdate -i -a
 if ! command -v git >/dev/null; then
   xcode-select --install
 fi
+if [[ $(uname -m) == 'arm64' ]]; then
+  sudo softwareupdate --install-rosetta --agree-to-license
+fi
 
 # install homebrew if it's missing
 if ! command -v brew >/dev/null 2>&1; then
@@ -18,5 +21,5 @@ fi
 
 if [ -f "${HOME}/.Brewfile" ]; then
   printf "${YELLOW}%s${NC}\n" "Updating homebrew bundle"
-  brew bundle --global
+  brew bundle --global || printf "${RED}%s${NC}\n" "Failed to install packages"
 fi

@@ -101,6 +101,7 @@ sudo pmset -b sleep 10
 # Require password immediately after sleep or screen saver begins
 defaults write com.apple.screensaver askForPassword -int 1
 defaults write com.apple.screensaver askForPasswordDelay -int 0
+defaults write com.apple.screensaver idleTime 180
 
 # Save screenshots to the desktop
 defaults write com.apple.screencapture location -string "${HOME}/Desktop"
@@ -240,6 +241,7 @@ defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
 
 # Add defaults to SlowQuitApps
 defaults write com.dteoh.SlowQuitApps invertList -bool YES
+defaults delete com.dteoh.SlowQuitApps whitelist
 defaults write com.dteoh.SlowQuitApps whitelist -array-add us.zoom.xos
 killall SlowQuitApps; /Applications/SlowQuitApps.app/Contents/MacOS/SlowQuitApps & disown
 

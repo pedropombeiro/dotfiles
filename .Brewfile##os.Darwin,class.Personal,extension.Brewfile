@@ -243,7 +243,7 @@ cask "notion"
 # Calculator and converter application
 cask "numi"
 # File system integration
-cask "osxfuse"
+cask "macfuse"
 # Visual client for Helix Core
 cask "p4v"
 # Home media player

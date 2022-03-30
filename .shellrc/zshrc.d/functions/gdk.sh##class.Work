@@ -124,6 +124,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
       printf "${GREEN}%s${NC}\n" "Done."
 
       printf "${YELLOW}%s${NC}\n" "Rebasing local branches..."
+      git checkout
       rebase-all
       printf "${GREEN}%s${NC}\n" "Done."
 

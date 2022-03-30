@@ -23,4 +23,6 @@ printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."
 command -v npm >/dev/null && npm update -g
 
 # Fix GPG agent symlink if broken
-ln -sf /usr/local/MacGPG2/bin/gpg-agent /usr/local/bin/gpg-agent
+if [[ ! -x /usr/local/bin/gpg-agent || $(readlink /usr/local/bin/gpg-agent) != /usr/local/MacGPG2/bin/gpg-agent ]]; then
+  sudo ln -sf /usr/local/MacGPG2/bin/gpg-agent /usr/local/bin/gpg-agent
+fi

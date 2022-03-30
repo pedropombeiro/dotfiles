@@ -14,7 +14,6 @@ tap "mas-cli/tap"
 tap "minio/stable"
 tap "moul/moul"
 tap "mvp/uhubctl", "https://github.com/mvp/uhubctl"
-tap "profclems/tap"
 tap "zaquestion/tap"
 # Cryptography and SSL/TLS Toolkit
 brew "openssl@1.1"
@@ -28,8 +27,6 @@ brew "xz"
 brew "ansible"
 # Checks ansible playbooks for practices and behaviour
 brew "ansible-lint"
-# Collection of portable C++ source libraries
-brew "boost"
 # Record and share terminal sessions
 brew "asciinema"
 # GNU File, Shell, and Text utilities
@@ -44,6 +41,8 @@ brew "bash"
 brew "bat"
 # Get/set bluetooth power and discoverable state
 brew "blueutil"
+# Collection of portable C++ source libraries
+brew "boost"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.9"
 # Core application library for C
@@ -95,15 +94,13 @@ brew "git-lfs"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
 # GNU Pretty Good Privacy (PGP) package
-brew "gnupg", link: false
+brew "gnupg"
 # Library access to GnuPG
 brew "gpgme"
 # Image processing tools collection
 brew "graphicsmagick"
 # Colorize logfiles and command output
 brew "grc"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.8"
 # Kubernetes package manager
 brew "helm"
 # Improved top (interactive process viewer)
@@ -128,8 +125,6 @@ brew "lazydocker"
 brew "lazygit"
 # Conversion library
 brew "libiconv"
-# Framework for layout and rendering of i18n text
-brew "pango"
 # Curses-based tool for viewing and analyzing log files
 brew "lnav"
 # Clone of ls with colorful output, file type icons, and more
@@ -160,6 +155,8 @@ brew "node_exporter", restart_service: true
 brew "packer"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
+# Framework for layout and rendering of i18n text
+brew "pango"
 # CLI for Postgres with auto-completion and syntax highlighting
 brew "pgcli"
 # PostgreSQL syntax beautifier
@@ -170,6 +167,8 @@ brew "pinentry-mac"
 brew "pipenv"
 # Unix pager optimized for psql
 brew "pspg"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.8"
 # File browser
 brew "ranger"
 # Alternative to backtracking PCRE-style regular expression engines
@@ -236,15 +235,12 @@ brew "jarred-sumner/git-peek/git-peek"
 brew "leipert-projects/git-recon/git-recon"
 # Compare Docker images
 brew "moul/moul/docker-diff"
-cask "0xed"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
 # Command-line helper for the 1Password password manager
 cask "1password-cli"
 # Application launcher and productivity software
 cask "alfred"
-# Enable Windows-like alt-tab
-cask "alt-tab"
 # Inspect application bundles
 cask "apparency"
 # Application uninstaller
@@ -310,6 +306,8 @@ cask "little-snitch"
 cask "logitech-camera-settings"
 # Utility for pairing devices with Unifying receivers
 cask "logitech-unifying"
+# Adaptive brightness for external displays
+cask "lunar"
 # Track and update to the latest versions of installed software
 cask "macupdater"
 # Monitors and reports any microphone and camera activity
@@ -363,14 +361,8 @@ cask "syntax-highlight"
 cask "toggl-track"
 # Web browser focusing on security
 cask "tor-browser"
-# Control your data usage on slow or expensive networks
-cask "tripmode"
 # Development environment
 cask "vagrant"
-# Virtualizer for x86 hardware
-cask "virtualbox"
-# Extend the functionality of VirtualBox
-cask "virtualbox-extension-pack"
 # Open-source code editor
 cask "visual-studio-code"
 # Desktop client for WhatsApp
@@ -383,7 +375,9 @@ mas "Backdrop", id: 411461952
 mas "DaisyDisk", id: 411643860
 mas "Discovery", id: 1381004916
 mas "Expressions", id: 913158085
+mas "GarageBand", id: 682658836
 mas "HazeOver", id: 430798174
+mas "iMovie", id: 408981434
 mas "Keyboard Pilot", id: 402670023
 mas "Keynote", id: 409183694
 mas "Mactracker", id: 430255202

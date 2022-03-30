@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+INSTALL_DIR="$(brew --prefix)/share/autojump"
+
+[[ -s "${INSTALL_DIR}/autojump.zsh" ]] && source "${INSTALL_DIR}/autojump.zsh"
+

@@ -8,6 +8,7 @@ if [[ -d ${GDK_ROOT} && ! -f ${GDK_ROOT}/.envrc ]]; then
 export RAILS_HOSTS="127.0.0.1,localhost,host.docker.internal,gdk.test,gdk.localhost"
 export ENABLE_SPRING=1
 export ENABLE_FDOC=1
+export GITLAB_USE_MODEL_LOAD_BALANCING=1
 EOF
 
   direnv allow "${GDK_ROOT}"

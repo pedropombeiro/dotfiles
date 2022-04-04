@@ -7,8 +7,8 @@ source "${SCRIPT_DIR}/install-vim-plugin.sh"
 
 if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
   urls=(
-    'https://github.com/RRethy/vim-illuminate'
     'https://github.com/airblade/vim-gitgutter'
+    'https://github.com/AndrewRadev/splitjoin.vim'
     'https://github.com/bfontaine/Brewfile.vim'
     'https://github.com/dense-analysis/ale'
     'https://github.com/editorconfig/editorconfig-vim'
@@ -21,6 +21,7 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
     'https://github.com/nathanaelkane/vim-indent-guides'
     'https://github.com/nishigori/increment-activator'
     'https://github.com/preservim/nerdcommenter'
+    'https://github.com/RRethy/vim-illuminate'
     'https://github.com/ruanyl/vim-gh-line'
     'https://github.com/ryanoasis/vim-devicons'
     'https://github.com/skywind3000/asyncrun.vim'

@@ -5,7 +5,7 @@
 # this script will ensure that branches from the same MR will be rebased correctly, keeping the chain order
 
 def compute_default_branch
-  system('git show-ref refs/remotes/origin/master >/dev/null') ? 'master' : 'main'
+  system(*%W(git show-ref refs/remotes/origin/master), :out => File::NULL) ? 'master' : 'main'
 end
 
 # compute_parent_branch will determine the closest parent branch,
@@ -43,7 +43,12 @@ def rebase_all_per_capture_info(local_branch_info_hash)
 
   local_branch_info_hash.each do |branch, parent_branch|
     puts 'Rebasing '.brown + branch.cyan + ' onto '.brown + parent_branch.green + '...'.brown
-    break unless system(%(git rebase --autostash "#{parent_branch}" "#{branch}"))
+    unless system(*%W(git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}), :out => File::NULL, :err => File::NULL)
+      puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
+      next
+    end
+
+    break unless system(*%W(git rebase --autostash #{parent_branch} #{branch}))
   end
 
   system("git switch #{current_branch}")
@@ -55,23 +60,23 @@ def rebase_all
   end
 
   user_name = ENV['USER']
-  mr_pattern = /^#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+$/.freeze
-  seq_mr_pattern = /^#{user_name}\/(?<mr_id>\d+)\/(?<mr_seq_nr>\d+)-[a-z0-9\-_]+$/.freeze
-  backport_pattern = /^#{user_name}\/(?<mr_id>\d+)\/(?<milestone>\d+\.\d+)-[a-z0-9\-_]+$/.freeze
+  mr_pattern = /^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+$/.freeze
+  seq_mr_pattern = /^(security-)?#{user_name}\/(?<mr_id>\d+)\/(?<mr_seq_nr>\d+)-[a-z0-9\-_]+$/.freeze
+  backport_pattern = /^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+-(?<milestone>\d+[-\.]\d+)$/.freeze
   default_branch = compute_default_branch
 
   local_branches =
     `git branch --list`
     .lines
     .map { |line| line[2..].rstrip }
-    .select { |branch| branch.start_with?("#{user_name}/") }
+    .select { |branch| branch.start_with?("#{user_name}/") || branch.start_with?("security-#{user_name}/") }
     .sort_by do |branch|
       seq_mr_match_data = seq_mr_pattern.match(branch)
       backport_match_data = backport_pattern.match(branch)
       mr_match_data = mr_pattern.match(branch)
 
       next [seq_mr_match_data[:mr_id].to_i, 1, seq_mr_match_data[:mr_seq_nr].to_i] if seq_mr_match_data
-      next [backport_match_data[:mr_id].to_i, 2, backport_match_data[:milestone].to_f] if backport_match_data
+      next [backport_match_data[:mr_id].to_i, 2, backport_match_data[:milestone].gsub('.', '-').to_f] if backport_match_data
       [mr_match_data[:mr_id].to_i, 0] if mr_match_data
     end
 

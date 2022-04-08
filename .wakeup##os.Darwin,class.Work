@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+#osascript -e 'tell application id "com.runningwithcrayons.Alfred" to run trigger "resume" in workflow "com.pedropombeiro.resumetimeout"'
+SwitchAudioSource -s 'DELL U2720Q'
+launchctl unload "${HOME}/Library/LaunchAgents/com.pedropombeiro.walkingpad.plist"
+launchctl load "${HOME}/Library/LaunchAgents/com.pedropombeiro.walkingpad.plist"
+

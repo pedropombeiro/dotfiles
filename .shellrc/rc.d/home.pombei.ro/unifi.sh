@@ -15,4 +15,8 @@ function loggateway() {
   fi
 }
 
+function logfirewall() {
+  ssh -fn gateway 'tail -fqn 100000 /var/log/iptables' 2>/dev/null | lnav
+}
+
 alias logap='ssh ap "tcpdump -np | sed \"s|, options \[.*\]||\""'

@@ -89,6 +89,8 @@ brew "fio"
 brew "git"
 # Syntax-highlighting pager for git and diff output
 brew "git-delta"
+# Small git utilities
+brew "git-extras"
 # Git extension for versioning large files
 brew "git-lfs"
 # GNU implementation of the famous stream editor

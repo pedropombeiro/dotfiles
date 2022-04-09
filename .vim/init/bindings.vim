@@ -67,3 +67,6 @@ endfunction
 nnoremap <silent> <C-\> :call ToggleNetrw()<CR>
 vnoremap <silent> <C-\> :call ToggleNetrw()<CR>
 
+" Toggle showing special characters
+nnoremap <F2> :<C-U>setlocal lcs=tab:>-,trail:-,eol:$ list! list? <CR>
+

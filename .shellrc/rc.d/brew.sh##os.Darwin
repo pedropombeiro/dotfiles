@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+if command -v brew > /dev/null; then
+  PATH="$(brew --prefix)/sbin:${PATH}"
+  export PATH
+fi
+

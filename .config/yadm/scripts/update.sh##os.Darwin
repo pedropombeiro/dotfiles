@@ -22,6 +22,10 @@ echo -e "fzf\ngolangci-lint\nshellcheck" | xargs -I {} bash -c 'asdf global {} $
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."
 command -v npm >/dev/null && npm update -g
 
+# Update nvim.coc extensions
+printf "${YELLOW}%s${NC}\n" "Updating nvim.coc extensions..."
+nvim -c 'CocUpdateSync|q'
+
 # Fix GPG agent symlink if broken
 if [[ ! -x /usr/local/bin/gpg-agent || $(readlink /usr/local/bin/gpg-agent) != /usr/local/MacGPG2/bin/gpg-agent ]]; then
   sudo ln -sf /usr/local/MacGPG2/bin/gpg-agent /usr/local/bin/gpg-agent

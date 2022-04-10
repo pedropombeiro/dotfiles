@@ -1,0 +1,28 @@
+{
+  "codeLens.enable": true,
+  "solargraph.useBundler": false,
+  "solargraph.diagnostics": true,
+  "solargraph.formatting": true,
+  "languageserver": {
+    "bash": {
+      "command": "bash-language-server",
+      "args": ["start"],
+      "filetypes": ["sh", "zsh"]
+    },
+    "dockerfile": {
+      "command": "docker-langserver",
+      "filetypes": ["dockerfile"],
+      "args": ["--stdio"]
+    },
+    "golang": {
+      "command": "gopls",
+      "rootPatterns": ["go.mod"],
+      "filetypes": ["go"]
+    },
+    "sql": {
+      "command": "sql-language-server",
+      "args" : ["up", "--method", "stdio"],
+      "filetypes": ["sql", "mysql"]
+    }
+  }
+}

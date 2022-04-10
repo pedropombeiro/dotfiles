@@ -1,6 +1,8 @@
 # Turn on mouse support
 #setw -g mouse on
 
+set-option -g focus-events on
+
 # Use the mouse drag to re-order windows
 bind-key -n MouseDrag1Status swap-window -t=
 

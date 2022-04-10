@@ -1,3 +1,5 @@
+"-- FZF --
+
 source ~/.vim/init/fzf.vim
 
 "-- Git to Vim --

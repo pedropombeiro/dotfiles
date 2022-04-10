@@ -49,24 +49,24 @@ nnoremap N Nzz
 let g:NetrwIsOpen=0
 
 function! ToggleNetrw()
-    if g:NetrwIsOpen
-        let i = bufnr("$")
-        while (i >= 1)
-            if (getbufvar(i, "&filetype") == "netrw")
-                silent exe "bwipeout " . i
-            endif
-            let i-=1
-        endwhile
-        let g:NetrwIsOpen=0
-    else
-        let g:NetrwIsOpen=1
-        silent Lexplore
-    endif
+  if g:NetrwIsOpen
+    let i = bufnr("$")
+    while (i >= 1)
+      if (getbufvar(i, "&filetype") == "netrw")
+        silent exe "bwipeout " . i
+      endif
+      let i-=1
+    endwhile
+    let g:NetrwIsOpen=0
+  else
+    let g:NetrwIsOpen=1
+    silent Lexplore
+  endif
 endfunction
 
 nnoremap <silent> <C-\> :call ToggleNetrw()<CR>
 vnoremap <silent> <C-\> :call ToggleNetrw()<CR>
 
 " Toggle showing special characters
-nnoremap <F2> :<C-U>setlocal lcs=tab:>-,trail:-,eol:$ list! list? <CR>
+nnoremap <leader>~ :<C-U>setlocal lcs=tab:>-,trail:-,eol:$ list! list? <CR>
 

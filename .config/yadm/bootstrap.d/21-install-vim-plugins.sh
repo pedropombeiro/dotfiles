@@ -17,6 +17,7 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
     'https://github.com/junegunn/vim-easy-align'
     'https://github.com/kdheepak/lazygit.nvim.git'
     'https://github.com/mtdl9/vim-log-highlighting'
+    'https://github.com/gruvbox-community/gruvbox'
     'https://github.com/nathanaelkane/vim-indent-guides'
     'https://github.com/neoclide/coc.nvim@release'
     'https://github.com/nishigori/increment-activator'
@@ -40,6 +41,7 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
     'https://github.com/tpope/vim-unimpaired'
     'https://github.com/tpope/vim-vinegar'
     'https://github.com/vim-airline/vim-airline'
+    'https://github.com/vim-airline/vim-airline-themes'
     'https://github.com/vim-test/vim-test'
     'https://github.com/wsdjeg/vim-fetch'
   )

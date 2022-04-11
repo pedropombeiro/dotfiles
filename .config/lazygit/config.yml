@@ -42,7 +42,7 @@ gui:
 git:
   paging:
     colorArg: always
-    pager: delta --dark --paging=never --no-gitconfig --syntax-theme 'Monokai Extended' --24-bit-color=never
+    pager: delta --dark --paging=never --no-gitconfig --syntax-theme 'gruvbox-dark' --24-bit-color=never
     useConfig: false
   commit:
     signOff: false

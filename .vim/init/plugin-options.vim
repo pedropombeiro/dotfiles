@@ -2,6 +2,12 @@
 
 source ~/.vim/init/fzf.vim
 
+"-- gruvbox theme --
+
+autocmd vimenter * ++nested colorscheme gruvbox
+let g:gruvbox_contrast_dark = 'hard'
+let g:airline_theme = 'gruvbox'
+
 "-- Git to Vim --
 
 function! TabIsEmpty()

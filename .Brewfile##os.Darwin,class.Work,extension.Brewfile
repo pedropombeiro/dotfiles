@@ -306,8 +306,8 @@ cask "libreoffice"
 cask "little-snitch"
 # Provides access to camera controls
 cask "logitech-camera-settings"
-# Utility for pairing devices with Unifying receivers
-cask "logitech-unifying"
+# Software for Logitech devices
+cask "logitech-options"
 # Adaptive brightness for external displays
 cask "lunar"
 # Track and update to the latest versions of installed software

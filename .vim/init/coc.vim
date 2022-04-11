@@ -172,3 +172,8 @@ nnoremap <silent><nowait> <leader>cj  :<C-u>CocNext<CR>
 nnoremap <silent><nowait> <leader>ck  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <leader>cp  :<C-u>CocListResume<CR>
+
+" -- coc-explorer
+nnoremap <silent> <C-\> <Cmd>CocCommand explorer<CR>
+vnoremap <silent> <C-\> <Cmd>CocCommand explorer<CR>
+

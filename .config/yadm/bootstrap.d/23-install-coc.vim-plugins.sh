@@ -6,6 +6,7 @@ source "${SCRIPT_DIR}/../scripts/colors.sh"
 
 extensions_dir="${HOME}/.config/coc/extensions"
 packages=(
+  coc-explorer
   coc-go
   coc-json
   coc-markdownlint

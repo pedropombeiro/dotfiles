@@ -31,7 +31,7 @@ set spell spelllang=en_us
 set nospell
 
 " netrw customization (https://shapeshed.com/vim-netrw/)
-let g:netrw_liststyle = 3
+let g:netrw_liststyle=1 " wide view
 let g:netrw_browse_split = 3
 let g:netrw_altv = 1
 let g:netrw_winsize = 25
@@ -59,8 +59,6 @@ set hidden
 
 " Make macros render faster (lazy draw)
 set lazyredraw
-
-let g:netrw_liststyle=1 " wide view
 
 " --- theming -------------------------------------------------------------------
 

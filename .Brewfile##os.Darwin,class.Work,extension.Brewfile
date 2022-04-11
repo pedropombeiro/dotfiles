@@ -348,7 +348,6 @@ cask "send-to-kindle"
 cask "skype"
 # Team communication and collaboration software
 cask "slack"
-cask "slowquitapps"
 # Music streaming service
 cask "spotify"
 # Windows manager

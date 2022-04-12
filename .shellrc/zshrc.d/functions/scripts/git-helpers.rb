@@ -39,7 +39,7 @@ class String
 end
 
 def rebase_all_per_capture_info(local_branch_info_hash)
-  current_branch = `git branch --show-current`
+  current_branch = `git branch --show-current`.strip
 
   local_branch_info_hash.each do |branch, parent_branch|
     puts 'Rebasing '.brown + branch.cyan + ' onto '.brown + parent_branch.green + '...'.brown
@@ -51,11 +51,11 @@ def rebase_all_per_capture_info(local_branch_info_hash)
     break unless system(*%W(git rebase --autostash #{parent_branch} #{branch}))
   end
 
-  system("git switch #{current_branch}")
+  system(*%W(git switch #{current_branch}))
 end
 
 def rebase_all
-  unless system('git diff-index --quiet HEAD --')
+  unless system(*%W(git diff-index --quiet HEAD --))
     abort 'Please stash the changes in the current branch before calling rebase-all!'.red
   end
 
@@ -78,6 +78,8 @@ def rebase_all
       next [seq_mr_match_data[:mr_id].to_i, 1, seq_mr_match_data[:mr_seq_nr].to_i] if seq_mr_match_data
       next [backport_match_data[:mr_id].to_i, 2, backport_match_data[:milestone].gsub('.', '-').to_f] if backport_match_data
       [mr_match_data[:mr_id].to_i, 0] if mr_match_data
+
+      []
     end
 
   chain_previous_branch = default_branch

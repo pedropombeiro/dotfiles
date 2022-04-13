@@ -71,6 +71,8 @@ brew "dpkg"
 brew "duf"
 # More intuitive version of du in rust
 brew "dust"
+# Run arbitrary commands when files change
+brew "entr"
 # Perl lib for reading and writing EXIF metadata
 brew "exiftool"
 # Simple, fast and user-friendly alternative to find

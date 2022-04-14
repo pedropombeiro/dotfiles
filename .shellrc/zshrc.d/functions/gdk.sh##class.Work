@@ -108,6 +108,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
       bundle exec rake rake:assets:precompile
 
       printf "${YELLOW}%s${NC}\n" "Running simple test..."
+      bin/spring stop && bundle exec rails db:test:prepare # Work around issue with multiple databases (https://gitlab.com/gitlab-org/gitlab/-/issues/356656)
       bin/rspec --failure-exit-code 0 --error-exit-code 0 spec/lib/gitlab/ci/variables/collection_spec.rb
 
       printf "${YELLOW}%s${NC}\n" "Pruning local branches..."

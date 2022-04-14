@@ -99,3 +99,8 @@ let g:Illuminate_ftblacklist = ['nerdtree']
 "-- LazyGit
 " setup mapping to call :LazyGit
 nnoremap <silent> <leader>gg :LazyGit<CR>
+
+"-- Ranger
+let g:ranger_map_keys = 0
+map <leader>r :Ranger<CR>
+

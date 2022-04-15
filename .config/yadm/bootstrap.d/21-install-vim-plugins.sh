@@ -48,10 +48,11 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
   )
   plugins_installed=0
 
-  if [[ $(ls -1 "${HOME}/.vim/pack/bundle/start" | wc -l) -ne ${#urls[@]} ]]; then
+  DEST_PATH="${HOME}/.vim/pack/bundle/start"
+  if [[ $(ls -1 "${DEST_PATH}" | wc -l) -ne ${#urls[@]} ]]; then
     printf "${YELLOW}%s${NC}\n" 'Change in number of Vim plugins detected, repaving...'
 
-    rm -rf "${HOME}/.vim/pack/bundle/start"
+    rm -rf "${DEST_PATH}"
   fi
 
   for url in ${urls[@]}; do
@@ -62,6 +63,13 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
   done
 
   if [[ $plugins_installed -gt 0 ]]; then
+    # Customize background color of gruvbox theme to pure black
+    if [[ $(uname -s) == 'Darwin' ]]; then
+      sed -i '' 's/1d2021/000000/g' "${DEST_PATH}/gruvbox/colors/gruvbox.vim"
+    else
+      sed -i 's/1d2021/000000/g' "${DEST_PATH}/gruvbox/colors/gruvbox.vim"
+    fi
+
     printf "${YELLOW}%s${NC}\n" 'Updating documentation for Vim plugins...'
     nvim -u NONE -c 'helptags ALL | qa!'
   fi

@@ -78,7 +78,7 @@ nmap ga <Plug>(EasyAlign)
 
 "-- indent-guides
 let g:indent_guides_enable_on_vim_startup = 1
-let g:indent_guides_exclude_filetypes     = ['help', 'nerdtree', 'man']
+let g:indent_guides_exclude_filetypes     = ['help', 'nerdtree', 'man', 'coc-explorer']
 let g:indent_guides_default_mapping       = 0
 let g:indent_guides_guide_size            = 1
 
@@ -94,7 +94,7 @@ let g:editorconfig_blacklist = {
 let g:editorconfig_root_chdir = 1
 
 "-- Illuminate
-let g:Illuminate_ftblacklist = ['nerdtree']
+let g:Illuminate_ftblacklist = ['nerdtree', 'coc-explorer']
 
 "-- LazyGit
 " setup mapping to call :LazyGit

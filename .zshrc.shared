@@ -37,7 +37,7 @@ _load_settings() {
           :
           ;;
         *)
-          if [[ -x "${config}" && ! "${config}" =~ "##" && ! "${config}" =~ "~$" ]]; then
+          if [[ ! "${config}" =~ "##" && ! "${config}" =~ "~$" && -x "${config}" ]]; then
             source $config
           fi
           ;;
@@ -46,7 +46,7 @@ _load_settings() {
 
     if [ -d "$_dir/post" ]; then
       for config in "$_dir"/post/**/*.*sh; do
-        if [[ -x "${config}" && ! "${config}" =~ "##" && ! "${config}" =~ "~$" ]]; then
+        if [[ ! "${config}" =~ "##" && ! "${config}" =~ "~$" && -x "${config}" ]]; then
           source $config
         fi
       done
@@ -58,7 +58,7 @@ _load_settings "$HOME/.shellrc/zshrc.d/configs"
 # Load all files from .shell/rc.d directory
 if [[ -d $HOME/.shellrc/rc.d ]]; then
   for config in $(ls $HOME/.shellrc/rc.d/{,**/}*.sh 2>/dev/null | uniq); do
-    if [[ -x "${config}" && ! "${config}" =~ "##" && ! "${config}" =~ "~$" ]]; then
+    if [[ ! "${config}" =~ "##" && ! "${config}" =~ "~$" && -x "${config}" ]]; then
       source $config
     fi
   done

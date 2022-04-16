@@ -14,18 +14,7 @@ done
 asdf plugin list | sort | grep -vE '^(rust|golang|nodejs)$' | xargs -r -I {} bash -c 'asdf global {} $(asdf list {} | sort --ignore-leading-blanks --version-sort --reverse | head -n1)'
 set -e
 
-asdf global golang 1.17.8
+asdf install golang 1.17.8 && asdf global golang 1.17.8
 asdf install nodejs 17.9.0 && asdf global nodejs 17.9.0
+asdf install rust 1.58.1 && asdf global rust 1.58.1
 
-# Install some useful system tools written in Rust and which don't provide an easy install method in QTS
-asdf global rust 1.58.1
-export TMPDIR=$TEMP
-cargo install \
-  bottom \
-  grc-rs \
-  hyperfine \
-  lsd \
-  procs
-cargo install --git https://github.com/bvaisvil/zenith.git
-cargo install jless --version 0.7.2
-unset TMPDIR

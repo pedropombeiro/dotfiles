@@ -20,5 +20,12 @@ asdf install nodejs 17.9.0 && asdf global nodejs 17.9.0
 # Install some useful system tools written in Rust and which don't provide an easy install method in QTS
 asdf global rust 1.58.1
 export TMPDIR=$TEMP
-cargo install bottom grc-rs lsd procs
+cargo install \
+  bottom \
+  grc-rs \
+  hyperfine \
+  lsd \
+  procs
+cargo install --git https://github.com/bvaisvil/zenith.git
 cargo install jless --version 0.7.2
+unset TMPDIR

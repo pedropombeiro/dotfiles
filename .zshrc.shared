@@ -1,5 +1,13 @@
 #!/usr/bin/env zsh
 
+function source_file() {
+  #start_time=$(gdate +%s.%N)
+  source $1
+  #end_time=$(gdate +%s.%N)
+  #elapsed=$(echo "scale=3; ($end_time - $start_time)" | bc)
+  #echo "Sourced $1 in $elapsed s"
+}
+
 # Skip all this for non-interactive shells
 [[ -z "$PS1" ]] && return
 
@@ -26,29 +34,18 @@ _load_settings() {
   _dir="$1"
   if [[ -d "$_dir" ]]; then
     if [[ -d "$_dir/pre" ]]; then
-      for config in "$_dir"/pre/**/*.*sh; do
-        test -x $config && . $config
+      for config in $(find "$_dir"/pre -mindepth 1 -name '*.*sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) 2>/dev/null); do
+        test -x $config && source_file $config
       done
     fi
 
-    for config in "$_dir"/**/*(N-.); do
-      case "$config" in
-        "$_dir"/(pre|post)/*|*.zwc)
-          :
-          ;;
-        *)
-          if [[ ! "${config}" =~ "##" && ! "${config}" =~ "~$" && -x "${config}" ]]; then
-            source $config
-          fi
-          ;;
-      esac
+    for config in $(find "$_dir" -mindepth 1 -and -not -path '*/pre/**' -and -not -path '*/post/**' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) ); do
+      test -x $config && source_file $config
     done
 
     if [ -d "$_dir/post" ]; then
-      for config in "$_dir"/post/**/*.*sh; do
-        if [[ ! "${config}" =~ "##" && ! "${config}" =~ "~$" && -x "${config}" ]]; then
-          source $config
-        fi
+      for config in $(find "$_dir"/post -mindepth 1 -name '*.*sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) 2>/dev/null); do
+        test -x $config && source_file $config
       done
     fi
   fi
@@ -57,28 +54,22 @@ _load_settings "$HOME/.shellrc/zshrc.d/configs"
 
 # Load all files from .shell/rc.d directory
 if [[ -d $HOME/.shellrc/rc.d ]]; then
-  for config in $(ls $HOME/.shellrc/rc.d/{,**/}*.sh 2>/dev/null | uniq); do
-    if [[ ! "${config}" =~ "##" && ! "${config}" =~ "~$" && -x "${config}" ]]; then
-      source $config
-    fi
+  for config in $(find $HOME/.shellrc/rc.d -mindepth 1 -name '*.sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) 2>/dev/null | uniq); do
+    test -x $config && source_file $config
   done
 fi
 
 # load custom executable functions
-if find "$HOME/.shellrc/zshrc.d/functions" -type f >/dev/null; then
-  for function in $HOME/.shellrc/zshrc.d/functions/*; do
-    if [[ ! "${function}" =~ "##" && ! "${function}" =~ "~$" ]]; then
-      source $function
-    fi
-  done
-fi
+for function in $(find $HOME/.shellrc/zshrc.d/functions -mindepth 1 -maxdepth 1 -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) 2>/dev/null); do
+  source_file $function
+done
 
 if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
-  source $ZSH/oh-my-zsh.sh
+  source_file $ZSH/oh-my-zsh.sh
   unalias duf
   unalias t
 fi
 
 # aliases
-[[ -f ~/.aliases.sh ]] && source ~/.aliases.sh
+[[ -f ~/.aliases.sh ]] && source_file ~/.aliases.sh
 

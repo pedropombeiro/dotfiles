@@ -52,14 +52,14 @@ HIST_STAMPS="yyyy-mm-dd"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 
-# export MANPATH="/usr/local/man:$MANPATH"
+ export MANPATH="${BREW_PREFIX}/man:$MANPATH"
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
 # User configuration
 
-ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=64
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"

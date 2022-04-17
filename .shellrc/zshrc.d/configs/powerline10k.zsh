@@ -13,9 +13,21 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # If set to an empty array, this variable will have no effect.
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
-POWERLEVEL9K_DIR_HOME_FOREGROUND='gray93'
-POWERLEVEL9K_DIR_HOME_SUBFOLDER_FOREGROUND='white'
-POWERLEVEL9K_DIR_DEFAULT_FOREGROUND='gray89'
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir newline vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs history ram time)
+typeset -g POWERLEVEL9K_DIR_HOME_FOREGROUND='gray93'
+typeset -g POWERLEVEL9K_DIR_HOME_SUBFOLDER_FOREGROUND='white'
+typeset -g POWERLEVEL9K_DIR_DEFAULT_FOREGROUND='gray89'
+typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir newline vcs)
+typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
+  status
+  root_indicator
+  direnv                  # direnv status (https://direnv.net/)
+  ranger                  # ranger shell (https://github.com/ranger/ranger)
+  vim_shell               # vim shell indicator (:sh)
+  nix_shell               # nix shell (https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html)
+  background_jobs
+  history
+  ram
+  time
+)
 POWERLEVEL9K_PROMPT_ON_NEWLINE=false
+

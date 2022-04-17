@@ -121,8 +121,6 @@ brew "jless"
 brew "jq"
 # Kubernetes CLI To Manage Your Clusters In Style!
 brew "k9s"
-# Git wrapper for GitLab
-brew "lab"
 # Lazier way to manage everything docker
 brew "lazydocker"
 # Simple terminal UI for git commands

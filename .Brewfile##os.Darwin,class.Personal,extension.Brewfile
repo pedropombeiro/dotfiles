@@ -68,8 +68,6 @@ brew "ipinfo-cli"
 brew "jless"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
-# Git wrapper for GitLab
-brew "lab"
 # Lazier way to manage everything docker
 brew "lazydocker"
 # Simple terminal UI for git commands

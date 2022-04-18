@@ -1,13 +1,5 @@
 #!/usr/bin/env zsh
 
-function source_file() {
-  #start_time=$(gdate +%s.%N)
-  source $1
-  #end_time=$(gdate +%s.%N)
-  #elapsed=$(echo "scale=3; ($end_time - $start_time)" | bc)
-  #echo "Sourced $1 in $elapsed s"
-}
-
 # Skip all this for non-interactive shells
 [[ -z "$PS1" ]] && return
 
@@ -28,17 +20,17 @@ _load_settings() {
   if [[ -d "$_dir" ]]; then
     if [[ -d "$_dir/pre" ]]; then
       for config in $(find "$_dir"/pre -mindepth 1 -name '*.*sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) 2>/dev/null); do
-        test -x $config && source_file $config
+        test -x $config && . $config
       done
     fi
 
     for config in $(find "$_dir" -mindepth 1 -and -not -path '*/pre/**' -and -not -path '*/post/**' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) ); do
-      test -x $config && source_file $config
+      test -x $config && . $config
     done
 
     if [ -d "$_dir/post" ]; then
       for config in $(find "$_dir"/post -mindepth 1 -name '*.*sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) 2>/dev/null); do
-        test -x $config && source_file $config
+        test -x $config && . $config
       done
     fi
   fi
@@ -48,23 +40,23 @@ _load_settings "$HOME/.shellrc/zshrc.d/configs"
 # Load all files from .shell/rc.d directory
 if [[ -d $HOME/.shellrc/rc.d ]]; then
   for config in $(find $HOME/.shellrc/rc.d -mindepth 1 -name '*.sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) 2>/dev/null | uniq); do
-    test -x $config && source_file $config
+    test -x $config && . $config
   done
 fi
 
 # load custom executable functions
 for function in $(find $HOME/.shellrc/zshrc.d/functions -mindepth 1 -maxdepth 1 -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) 2>/dev/null); do
-  source_file $function
+  . $function
 done
 
 if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
   if [ -z "$INTELLIJ_ENVIRONMENT_READER" ]; then
-    source_file $ZSH/oh-my-zsh.sh
+    . $ZSH/oh-my-zsh.sh
     unalias duf
     unalias t
   fi
 fi
 
 # aliases
-[[ -f ~/.aliases.sh ]] && source_file ~/.aliases.sh
+[[ -f ~/.aliases.sh ]] && . ~/.aliases.sh
 

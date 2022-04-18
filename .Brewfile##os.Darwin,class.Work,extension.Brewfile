@@ -107,6 +107,8 @@ brew "graphicsmagick"
 brew "grc"
 # Kubernetes package manager
 brew "helm"
+# Convert source code to formatted text with syntax highlighting
+brew "highlight"
 # Improved top (interactive process viewer)
 brew "htop"
 # Command-line benchmarking tool

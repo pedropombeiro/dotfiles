@@ -54,6 +54,8 @@ brew "gnu-sed"
 brew "gnutls"
 # Colorize logfiles and command output
 brew "grc"
+# Convert source code to formatted text with syntax highlighting
+brew "highlight"
 # Improved top (interactive process viewer)
 brew "htop"
 # Command-line benchmarking tool

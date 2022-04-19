@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
 
+YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
+
+source "${YADM_SCRIPTS}/colors.sh"
+
 set -e
 
 opkg install asciinema bind-dig column coreutils entr \
@@ -17,8 +21,24 @@ pip install tldr neovim-remote nginx-language-server
 
 opkg install nut-upscmd
 
+if [[ ! -d "/share/homes/${USER}/.oh-my-zsh" ]]; then
+  CHSH=no RUNZSH=no KEEP_ZSHRC=yes ZSH=/share/homes/${USER}/.oh-my-zsh sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  printf "${YELLOW}%s${NC}\n" "Oh-my-zsh installed"
+fi
+
 if [[ ! -d $HOME/.asdf ]]; then
-  git clone https://github.com/asdf-vm/asdf.git /share/homes/${USER}/.asdf --branch v0.9.0
+  git clone https://github.com/asdf-vm/asdf.git /share/homes/${USER}/.asdf --branch v0.10.0
   ln -sf /share/homes/${USER}/.asdf /root/.asdf
 fi
+
+INSTALL_DIR=/share/homes/${USER}/opt
+if [[ ! -d ${INSTALL_DIR}/autojump ]]; then
+  printf "${YELLOW}%s${NC}\n" "Installing autojump..."
+  mkdir -p ${INSTALL_DIR}
+  git clone https://github.com/wting/autojump ${INSTALL_DIR}
+  cd ${INSTALL_DIR}/autojump
+  ./install.py --destdir ${INSTALL_DIR}/.autojump
+  cd -
+fi
+unset INSTALL_DIR
 

@@ -20,6 +20,8 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
 
   if [[ $plugins_installed -gt 0 ]]; then
     echo 'Updating documentation for Vim plugins...'
-    nvim -u NONE -c 'helptags ALL' -c q
+    nvim -u NONE -c 'helptags ALL | q'
+    echo 'Installing firenvim...'
+    nvim --headless "+call firenvim#install(0) | q"
   fi
 fi

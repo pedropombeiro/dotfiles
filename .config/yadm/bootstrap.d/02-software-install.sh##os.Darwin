@@ -23,3 +23,9 @@ if [ -f "${HOME}/.Brewfile" ]; then
   printf "${YELLOW}%s${NC}\n" "Updating homebrew bundle"
   brew bundle --global || printf "${RED}%s${NC}\n" "Failed to install packages"
 fi
+
+if [[ ! -f ${HOME}/.fzf.zsh ]]; then
+  printf "${YELLOW}%s${NC}\n" "Installing FZF scripts"
+  $(brew --prefix fzf)/install --no-update-rc --completion --key-bindings
+fi
+

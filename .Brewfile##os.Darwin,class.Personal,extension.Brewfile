@@ -40,6 +40,8 @@ brew "dust"
 brew "fd"
 # Scriptable ping program for checking if multiple hosts are up
 brew "fping"
+# Command-line fuzzy finder written in Go
+brew "fzf"
 # GitHub command-line tool
 brew "gh"
 # Distributed revision control system

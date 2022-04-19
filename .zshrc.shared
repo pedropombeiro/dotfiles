@@ -28,6 +28,12 @@ _load_settings() {
       test -x $config && . $config
     done
 
+    if [[ -f "$ZSH/oh-my-zsh.sh" && -z "$INTELLIJ_ENVIRONMENT_READER" ]]; then
+      . $ZSH/oh-my-zsh.sh
+      unalias duf
+      unalias t
+    fi
+
     if [ -d "$_dir/post" ]; then
       for config in $(find "$_dir"/post -mindepth 1 -name '*.*sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) 2>/dev/null); do
         test -x $config && . $config
@@ -48,14 +54,6 @@ fi
 for function in $(find $HOME/.shellrc/zshrc.d/functions -mindepth 1 -maxdepth 1 -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) 2>/dev/null); do
   . $function
 done
-
-if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
-  if [ -z "$INTELLIJ_ENVIRONMENT_READER" ]; then
-    . $ZSH/oh-my-zsh.sh
-    unalias duf
-    unalias t
-  fi
-fi
 
 # aliases
 [[ -f ~/.aliases.sh ]] && . ~/.aliases.sh

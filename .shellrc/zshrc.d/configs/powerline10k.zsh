@@ -29,5 +29,13 @@ typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   ram
   time
 )
-POWERLEVEL9K_PROMPT_ON_NEWLINE=false
+typeset -g POWERLEVEL9K_PROMPT_ON_NEWLINE=false
+
+# Hot reload allows you to change POWERLEVEL9K options
+# after Powerlevel10k has been initialized. For example,
+# you can type POWERLEVEL9K_FOREGROUND=red and see your
+# prompt turn red. Hot reload can slow down prompt by
+# 1-2 milliseconds, so it's better to keep it turned off
+# unless you really need it.
+typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
 

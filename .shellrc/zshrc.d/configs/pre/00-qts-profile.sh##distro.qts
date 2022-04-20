@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+export CONFIG_HOME=/share/Container
+export HOME=/share/homes/${USER}
+
+# Set initial directory
+cd "${CONFIG_HOME}"
+
+source /opt/etc/profile
+

@@ -13,9 +13,12 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # If set to an empty array, this variable will have no effect.
 # ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
+typeset -g POWERLEVEL9K_MODE='awesome-fontconfig'
+
 typeset -g POWERLEVEL9K_DIR_HOME_FOREGROUND='gray93'
 typeset -g POWERLEVEL9K_DIR_HOME_SUBFOLDER_FOREGROUND='white'
 typeset -g POWERLEVEL9K_DIR_DEFAULT_FOREGROUND='gray89'
+typeset -g POWERLEVEL9K_DIR_NOT_WRITABLE_VISUAL_IDENTIFIER_COLOR=red
 typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir newline vcs)
 typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   status

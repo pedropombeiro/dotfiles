@@ -239,11 +239,16 @@ defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</
 # Add defaults to VS Code
 defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
 
-# Add defaults to SlowQuitApps
-defaults write com.dteoh.SlowQuitApps invertList -bool YES
-defaults delete com.dteoh.SlowQuitApps whitelist
-defaults write com.dteoh.SlowQuitApps whitelist -array-add us.zoom.xos
-killall SlowQuitApps; /Applications/SlowQuitApps.app/Contents/MacOS/SlowQuitApps & disown
+# Disable Apple Music so that the Play button isn't hijacked by it
+launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist
+
+if [[ -f /Applications/SlowQuitApps.app/Contents/MacOS/SlowQuitApps ]]; then
+  # Add defaults to SlowQuitApps
+  defaults write com.dteoh.SlowQuitApps invertList -bool YES
+  defaults delete com.dteoh.SlowQuitApps whitelist
+  defaults write com.dteoh.SlowQuitApps whitelist -array-add us.zoom.xos
+  killall SlowQuitApps; /Applications/SlowQuitApps.app/Contents/MacOS/SlowQuitApps & disown
+fi
 
 # reset the preferences cache
 killall cfprefsd

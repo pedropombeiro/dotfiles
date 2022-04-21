@@ -16,7 +16,9 @@ brew upgrade
 
 printf "${YELLOW}%s${NC}\n" "Updating asdf..."
 asdf plugin-update --all
-echo -e "fzf\ngolangci-lint\nshellcheck" | xargs -I {} bash -c 'asdf global {} $(asdf list {} | sort --ignore-leading-blanks --version-sort --reverse | head -n1)'
+printf "${YELLOW}%s${NC}\n" "Updating asdf plugins..."
+echo -e "golangci-lint\nshellcheck" | xargs -I {} bash -c 'asdf global {} $(asdf list {} | sort --ignore-leading-blanks --version-sort --reverse | head -n1)'
+asdf plugin list --no-run-if-empty | grep -vE '^(hadolint|nodejs|shellcheck)$' | sort | xargs -I {} bash -c 'asdf install {} latest && asdf global {} latest'
 
 # Update npm packages
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."

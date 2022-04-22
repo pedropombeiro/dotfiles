@@ -14,7 +14,7 @@ end
 # have a local tracking branch, then the remote is returned.
 def compute_parent_branch(branch_name)
   remote_names = `git remote`.lines.map(&:chomp)
-  active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u}`.split('/').first
+  active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
   other_remote_names = remote_names - [active_remote_name]
 
   parent_branch_line = `git log --decorate --simplify-by-decoration --oneline #{branch_name}`.lines[1].rstrip

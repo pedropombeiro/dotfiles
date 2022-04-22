@@ -27,7 +27,18 @@
     "sql": {
       "command": "sql-language-server",
       "args" : ["up", "--method", "stdio"],
-      "filetypes": ["sql", "mysql"]
+      "filetypes": ["sql"],
+      "settings": {
+        "connections": [
+          {
+            "name": "GDK postgresql",
+            "adapter": "postgres",
+            "hostname": "${env:HOME}/src/gitlab-development-kit/postgresql",
+            "user": "${env:USER}",
+            "projectPaths": ["${env:HOME}/src/gitlab-development-kit"]
+          }
+        ]
+      }
     }
   }
 }

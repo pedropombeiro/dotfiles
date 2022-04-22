@@ -3,3 +3,4 @@ doctoc
 neovim
 bash-language-server
 dockerfile-language-server-nodejs
+sql-language-server

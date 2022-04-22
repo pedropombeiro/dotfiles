@@ -114,7 +114,7 @@ if [[ -d "${GDK_ROOT}" ]]; then
       printf "${YELLOW}%s${NC}\n" "Pruning local branches..."
       git fetch --all --prune --jobs=10
       set +e
-      git_prune
+      git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | xargs git branch -D
       set -e
       printf "${GREEN}%s${NC}\n" "Done."
 

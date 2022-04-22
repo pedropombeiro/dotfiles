@@ -1,8 +1,13 @@
 {
   "codeLens.enable": true,
-  "solargraph.useBundler": false,
-  "solargraph.diagnostics": true,
+
+  "solargraph.autoformat": true,
   "solargraph.formatting": true,
+  "solargraph.useBundler": true,
+  "solargraph.shell": "zsh",
+  "solargraph.diagnostics": true,
+  "solargraph.hover": true,
+
   "languageserver": {
     "bash": {
       "command": "bash-language-server",

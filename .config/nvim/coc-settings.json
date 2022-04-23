@@ -8,6 +8,15 @@
   "solargraph.diagnostics": true,
   "solargraph.hover": true,
 
+  "explorer.file.showHiddenFiles": true,
+  "explorer.file.reveal.auto": true,
+  "explorer.icon.source": "vim-devicons",
+  "explorer.icon.enableNerdfont": true,
+  "explorer.previewAction.onHover": "content",
+  "explorer.buffer.root.template": "[icon & 1] OPEN EDITORS",
+  "explorer.file.root.template": "[icon & 1] PROJECT ([root])",
+  "explorer.openAction.strategy": "tab",
+
   "languageserver": {
     "bash": {
       "command": "bash-language-server",

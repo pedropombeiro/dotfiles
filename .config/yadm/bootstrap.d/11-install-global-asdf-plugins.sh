@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+type -f asdf >/dev/null 2>&1 || . "${HOME}/.asdf/asdf.sh"
+
 for p in hadolint shellcheck; do
   asdf plugin add "${p}"
 done

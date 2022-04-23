@@ -44,9 +44,9 @@ Install dotfiles:
 
 ```shell
 # Use HTTPS protocol for anonymous access
-yadm clone --bootstrap https://gitlab.com/pedropombeiro/dotfiles.git
-# Replace remote URL
-yadm remote set-url origin git@gitlab.com:pedropombeiro/dotfiles.git
+yadm clone --no-bootstrap https://gitlab.com/pedropombeiro/dotfiles.git && \
+yadm config local.class Personal && \
+yadm bootstrap
 source ~/.zshrc.shared
 ```
 
@@ -55,14 +55,22 @@ See [Installation](#Installation) and then the [fresh install section](#on-a-fre
 ## Linux Debian/Ubuntu
 
 ```shell
-sudo apt install yadm
+sudo apt update && sudo apt install -y yadm
+```
+
+Install dotfiles:
+
+```shell
+# Use HTTPS protocol for anonymous access
+yadm clone --no-bootstrap https://gitlab.com/pedropombeiro/dotfiles.git && \
+yadm config local.class Personal && \
+yadm bootstrap
+source ~/.zshrc.shared
 ```
 
 # Post-install procedure
 
 ```shell
-# Install Parallels Desktop Pro from https://www.parallels.com/products/desktop/pro/
-
 # Symlink the dotfiles in Syncthing
 ~/.config/yadm/scripts/relink-dotfiles.sh
 ```

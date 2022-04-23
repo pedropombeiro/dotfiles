@@ -49,7 +49,7 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
   plugins_installed=0
 
   DEST_PATH="${HOME}/.vim/pack/bundle/start"
-  if [[ $(ls -1 "${DEST_PATH}" | wc -l) -ne ${#urls[@]} ]]; then
+  if [[ $(ls -1 "${DEST_PATH}" 2>/dev/null | wc -l) -ne ${#urls[@]} ]]; then
     printf "${YELLOW}%s${NC}\n" 'Change in number of Vim plugins detected, repaving...'
 
     rm -rf "${DEST_PATH}"
@@ -70,7 +70,7 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
       sed -i 's/1d2021/000000/g' "${DEST_PATH}/gruvbox/colors/gruvbox.vim"
     fi
 
-    printf "${YELLOW}%s${NC}\n" 'Updating documentation for Vim plugins...'
-    nvim -u NONE -c 'helptags ALL | qa!'
+    #printf "${YELLOW}%s${NC}\n" 'Updating documentation for Vim plugins...'
+    #nvim -u NONE -c 'helptags ALL | qa!'
   fi
 fi

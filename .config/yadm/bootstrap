@@ -16,9 +16,9 @@ if [[ ! -d "${BOOTSTRAP_D}" ]]; then
   exit 1
 fi
 
-find -L "${BOOTSTRAP_D}" -type f | sort | \
+find -L "${BOOTSTRAP_D}" \( -type f -or -type l \) -not -name '*##*' -not -name '*~$*' | sort -n | \
   while IFS= read -r bootstrap; do
-    if [[ -x "${bootstrap}" && ! "${bootstrap}" =~ "##" && ! "${bootstrap}" =~ "~$" ]]; then
+    if [[ -x "${bootstrap}" ]]; then
       printf "${YELLOW}%s${NC}\n" "Executing ${bootstrap} ..."
       if ! "${bootstrap}"; then
         echo "Error: bootstrap '${bootstrap}' failed" >&2

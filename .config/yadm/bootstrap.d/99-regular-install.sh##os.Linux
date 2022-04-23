@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 
-echo "source ~/.bash_profile.shared" >> ~/.bash_profile
-echo "source ~/.bashrc.shared" >> ~/.bashrc
-
-rm -f ~/Downloads/*
-
-# Adapt Firefox settings
-def_Pfile=$(cat "$HOME/.mozilla/firefox/profiles.ini" | sed -n -e 's/^.*Path=//p' | head -n 1)
-# Enable FIDO U2F in Firefox
-echo "user_pref(\"security.webauth.u2f\", \"true\");" >> "$HOME/.mozilla/firefox/$def_Pfile/prefs.js"
+if [[ -d $HOME/.mozilla/firefox ]]; then
+  # Adapt Firefox settings
+  def_Pfile=$(cat "$HOME/.mozilla/firefox/profiles.ini" | sed -n -e 's/^.*Path=//p' | head -n 1)
+  # Enable FIDO U2F in Firefox
+  echo "user_pref(\"security.webauth.u2f\", \"true\");" >> "$HOME/.mozilla/firefox/$def_Pfile/prefs.js"
+fi
 
 sudo apt update
 
@@ -23,27 +20,8 @@ sudo timedatectl set-ntp no && \
 # TODO: Add "server ntp.pedropombeiro.com" to /etc/ntp.conf
 
 sudo apt install -y preload gnome-tweak-tool unity-tweak-tool build-essential \
-  gdebi-core httpie network-manager-openvpn-gnome ctop mc moreutils tig \
-  rng-tools asciinema shellcheck
-
-brew install bat fzf
-
-# Install zsh
-sudo apt install -y zsh autojump
-echo "source ~/.zshrc.shared" > ~/.zshrc
-zsh --version
-chsh -s $(which zsh)
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
-# Install Oh-my-zsh https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#git
-sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-
-set +e
-[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes/powerlevel10k" ] || git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes/powerlevel10k"
-[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions" ] || git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting" ] || git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-[ -d "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/you-should-use" ] || git clone https://github.com/MichaelAquilina/zsh-you-should-use.git "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins/you-should-use"
-set -e
+  gdebi-core network-manager-openvpn-gnome moreutils \
+  rng-tools asciinema
 
 # Install fonts for Powerline10k theme
 font_dir="$HOME/.local/share/fonts"
@@ -63,12 +41,7 @@ gsettings set \
 
 sudo apt install -y ccze # https://blog.tersmitten.nl/how-to-colorize-your-log-files-with-ccze.html
 
-download_dir="$HOME/Downloads"
-
-# s-tui (https://github.com/amanusk/s-tui)
-sudo add-apt-repository ppa:amanusk/python-s-tui
-sudo apt-get update
-sudo apt-get install python3-s-tui
+download_dir="$(mktemp -d)"
 
 gsettings set com.ubuntu.user-interface scale-factor "{'': 8, 'DP-1': 16, 'eDP-1': 16}"
 
@@ -79,29 +52,27 @@ ACTION=="change", SUBSYSTEM=="drm", RUN+="/usr/bin/autorandr --batch --change --
 EOF
 
 # brightness-controller
-sudo add-apt-repository ppa:apandada1/brightness-controller && \
-  sudo apt install -y brightness-controller
+#sudo add-apt-repository ppa:apandada1/brightness-controller && \
+  #sudo apt install -y brightness-controller
 
 # ProtonMail Bridge
 cd "${download_dir}" && \
-  wget -O protonmail-bridge.deb https://protonmail.com/download/protonmail-bridge_1.2.6-1_amd64.deb
+  wget -O protonmail-bridge.deb https://protonmail.com/download/bridge/protonmail-bridge_2.1.1-1_amd64.deb
   sudo gdebi protonmail-bridge.deb
 
 # ProtonVPN
 sudo apt install -y openvpn dialog python3-pip python3-setuptools
 sudo pip3 install protonvpn-cli
 
-# Simplenote
-cd "${download_dir}" && \
-  wget -O simplenote.deb https://github.com/Automattic/simplenote-electron/releases/download/v1.1.6/simplenote_1.1.6_amd64.deb
-  sudo gdebi simplenote.deb
+# Ranger
+pip install ranger-fm
 
 # Ledger Nano S
 wget -q -O - https://raw.githubusercontent.com/LedgerHQ/udev-rules/master/add_udev_rules.sh | sudo bash
 sudo apt install -y python3-pip libusb-1.0-0-dev libudev-dev
 sudo pip3 install btchip-python
 
-cd "${download_dir}" && wget -O ledger-live-desktop-linux-x86_64.AppImage https://github.com/LedgerHQ/ledger-live-desktop/releases/download/v1.0.1/ledger-live-desktop-1.0.1-linux-x86_64.AppImage && \
+cd "${download_dir}" && wget -O ledger-live-desktop-linux-x86_64.AppImage https://github.com/LedgerHQ/ledger-live-desktop/releases/download/v2.40.4/ledger-live-desktop-2.40.4-linux-x86_64.AppImage && \
   chmod +x ledger-live-desktop-linux-x86_64.AppImage && \
   sudo mv ledger-live-desktop-linux-x86_64.AppImage /usr/local/bin/
 
@@ -127,7 +98,7 @@ cd "${download_dir}" && \
 #  sudo gdebi skypeforlinux-64.deb
 
 # Pushbullet
-cd "${download_dir}" && wget -O pb-for-desktop.deb https://github.com/sidneys/pb-for-desktop/releases/download/v6.7.7/pb-for-desktop-6.7.7-amd64.deb && \
+cd "${download_dir}" && wget -O pb-for-desktop.deb https://github.com/sidneys/pb-for-desktop/releases/download/v11.0.2/pb-for-desktop-11.0.2-amd64.deb && \
   sudo gdebi pb-for-desktop.deb
 
 sudo apt --fix-broken install -y
@@ -150,7 +121,7 @@ sudo add-apt-repository \
    sudo usermod -a -G docker $LOGNAME
 
 # Docker Compose
-sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose && \
+sudo curl -L https://github.com/docker/compose/releases/download/2.4.1/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose && \
   sudo chmod +x /usr/local/bin/docker-compose
 
 # Beyond Compare 4
@@ -192,11 +163,6 @@ sudo add-apt-repository -y ppa:git-core/ppa && \
   sudo apt update && \
   sudo apt install -y git
 
-# LazyGit
-sudo add-apt-repository ppa:lazygit-team/release && \
-  sudo apt-get update && \
-  sudo apt-get install lazygit
-
 # Ensure we have a common location for gpg between OSX and Linux
 sudo ln -sf /usr/bin/gpg /usr/local/bin/gpg
 
@@ -232,15 +198,6 @@ cd "${download_dir}" && wget -O KeeOtp.zip https://bitbucket.org/devinmartin/kee
   sudo mkdir -p /usr/lib/keepass2/plugins && \
   sudo unzip KeeOtp.zip -d /usr/lib/keepass2/plugins
 
-# Android Studio
-cd "${download_dir}" && wget -O android-studio-ide-linux.zip https://dl.google.com/dl/android/studio/ide-zips/3.1.2.0/android-studio-ide-173.4720617-linux.zip && \
-  sudo unzip android-studio-ide-linux.zip -d /usr/local/
-  cd /usr/local/android-studio/bin/ && \
-  ./studio.sh
-sudo apt install -y libc6:i386 libncurses5:i386 libstdc++6:i386 lib32z1 libbz2-1.0:i386
-## Update SDK
-android update sdk --no-ui --use-sdk-wrapper
-
 # KVM
 sudo apt install -y qemu-kvm libvirt-bin ubuntu-vm-builder bridge-utils
 
@@ -256,21 +213,6 @@ cd "${download_dir}" && wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-l
   sudo unzip ngrok-stable-linux-amd64.zip -d /usr/local/bin/ngrok/
 
 echo "PATH='\$PATH:/usr/local/bin/GitExtensions/:/usr/local/bin/ngrok/'" | tee -a ~/.zshrc
-
-source ~/.zshrc
-
-# Setup udev for Nexus 6P
-sudo usermod -aG plugdev "${LOGNAME}" # https://developer.android.com/studio/run/device.html && \
-  sudo sh -c "echo '# Google Nexus 6P' >> /etc/udev/rules.d/51-android.rules" && \
-  sudo sh -c "echo 'SUBSYSTEM==\"usb\", ATTR{idVendor}==\"18d1\", MODE=\"0664\", GROUP=\"plugdev\"' >> /etc/udev/rules.d/51-android.rules" && \
-  sudo service udev restart
-
-sudo apt install -y jq
-
-# Plexamp
-cd "${download_dir}" && wget -O plexamp-x86_64.AppImage https://plexamp.plex.tv/plexamp.plex.tv/plexamp-1.0.5-x86_64.AppImage && \
-  chmod +x plexamp-x86_64.AppImage && \
-  sudo mv plexamp-x86_64.AppImage /usr/local/bin/
 
 sudo apt install -f -y
 sudo apt autoremove
@@ -298,51 +240,6 @@ sudo mv /var/lib/snapd/desktop/applications/spotify_spotify.desktop /var/lib/sna
 
 # TODO: https://www.bettertechtips.com/linux/track-activities-linux/
 /usr/local/bin/ledger-live-desktop-linux-x86_64.AppImage & disown
-
-###
-### Lenovo ThinkPad-specific settings
-###
-
-# Decrease zoom factor in Firefox
-echo "user_pref(\"layout.css.devPixelsPerPx\", \"1.75\");" >> $HOME/.mozilla/firefox/$def_Pfile/prefs.js
-
-# Fix UI dimensions
-gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 32
-
-git clone git@github.com:PombeirP/autorandr-config.git ~/.autorandr
-
-# https://wiki.archlinux.org/index.php/TLP
-sudo apt install -y tlp acpi-call smartmontools
-sudo systemctl start tlp.service
-sudo systemctl start tlp-sleep.service
-sudo systemctl mask systemd-rfkill.service
-sudo systemctl mask systemd-rfkill.socket
-
-# Fix CPU throttling (https://wiki.archlinux.org/index.php/Lenovo_ThinkPad_X1_Carbon_(Gen_6))
-sudo apt install git virtualenv build-essential python3-dev \
-  libdbus-glib-1-dev libgirepository1.0-dev libcairo2-dev && \
-  cd ~/ && \
-  git clone https://github.com/erpalma/lenovo-throttling-fix.git && \
-  cd lenovo-throttling-fix/ && \
-  sudo ./install.sh
-
-# Allow PowerTop to auto tune at startup
-cat << EOF | sudo tee /etc/systemd/system/powertop.service
-[Unit]
-Description=PowerTOP auto tune
-
-[Service]
-Type=idle
-Environment="TERM=dumb"
-User=admin
-ExecStart=/usr/sbin/powertop --auto-tune
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-systemctl daemon-reload
-systemctl enable powertop.service
 
 ###################################################################
 # Attended configuration

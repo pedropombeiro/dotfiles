@@ -14,6 +14,8 @@ function install_zsh_plugin() {
   fi
 }
 
+type -f asdf >/dev/null 2>&1 || . "${HOME}/.asdf/asdf.sh"
+
 grep '.bash_profile.shared' ${HOME}/.bash_profile >/dev/null 2>&1|| echo "source ~/.bash_profile.shared" >> ${HOME}/.bash_profile
 grep '.bashrc.shared' ${HOME}/.bashrc >/dev/null 2>&1 || echo "source ~/.bashrc.shared" >> ${HOME}/.bashrc
 

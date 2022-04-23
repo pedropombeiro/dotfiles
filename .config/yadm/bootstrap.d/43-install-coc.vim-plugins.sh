@@ -18,7 +18,7 @@ packages=(
   coc-yaml
 )
 
-if [[ $(ls -1 "${extensions_dir}/node_modules" | wc -l) -ne ${#packages[@]} ]]; then
+if [[ $(ls -1 "${extensions_dir}/node_modules" 2>/dev/null | wc -l) -ne ${#packages[@]} ]]; then
   printf "${YELLOW}%s${NC}\n" 'Change in number of Vim CoC plugins detected, repaving...'
 
   rm -rf "${extensions_dir}" 2>/dev/null || touch "${extensions_dir}/.repave"
@@ -36,6 +36,10 @@ if [[ ! -d "${extensions_dir}" || -f "${extensions_dir}/.repave" ]]; then
   fi
 
   printf "${YELLOW}%s${NC}\n" "Installing CoC extensions..."
+  if ! command -v npm >/dev/null; then
+    type -f asdf >/dev/null 2>&1 || . "${HOME}/.asdf/asdf.sh"
+  fi
+
   npm install ${packages[@]} --global-style --ignore-scripts --no-bin-links --no-package-lock --only=prod
   popd
 fi

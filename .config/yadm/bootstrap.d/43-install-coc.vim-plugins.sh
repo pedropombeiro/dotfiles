@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
 
-source "${SCRIPT_DIR}/../scripts/colors.sh"
+source "${YADM_SCRIPTS}/colors.sh"
 
 extensions_dir="${HOME}/.config/coc/extensions"
 packages=(

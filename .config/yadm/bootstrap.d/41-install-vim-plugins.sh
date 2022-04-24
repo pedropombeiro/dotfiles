@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
 
-source "${SCRIPT_DIR}/../scripts/colors.sh"
-source "${SCRIPT_DIR}/install-vim-plugin.sh"
+source "${YADM_SCRIPTS}/colors.sh"
+source "${YADM_SCRIPTS}/install-vim-plugin.sh"
 
 if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
   urls=(

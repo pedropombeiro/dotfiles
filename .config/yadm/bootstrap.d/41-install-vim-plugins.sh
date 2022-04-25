@@ -63,12 +63,7 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
   done
 
   if [[ $plugins_installed -gt 0 ]]; then
-    # Customize background color of gruvbox theme to pure black
-    if [[ $(uname -s) == 'Darwin' ]]; then
-      sed -i '' 's/1d2021/000000/g' "${DEST_PATH}/gruvbox/colors/gruvbox.vim"
-    else
-      sed -i 's/1d2021/000000/g' "${DEST_PATH}/gruvbox/colors/gruvbox.vim"
-    fi
+    source "${YADM_SCRIPTS}/apply-vim-plugin-patches.sh"
 
     #printf "${YELLOW}%s${NC}\n" 'Updating documentation for Vim plugins...'
     #nvim -u NONE -c 'helptags ALL | qa!'

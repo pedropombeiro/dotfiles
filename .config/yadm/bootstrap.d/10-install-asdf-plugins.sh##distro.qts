@@ -12,7 +12,10 @@ set +e
 for p in bat ctop delta duf dust fd golang golangci-lint jq lazygit neovim nodejs ripgrep rust xh; do
   asdf plugin add "${p}"
 done
-asdf plugin list | sort | grep -vE '^(golang|nodejs)$' | xargs -r -I {} bash -c 'VERSION="$(asdf list all {} | sort --ignore-leading-blanks --version-sort --reverse | head -n1)"; asdf install {} $VERSION && asdf global {} $VERSION'
+asdf plugin list | \
+  sort | \
+  grep -vE '^(golang|nodejs)$' | \
+  xargs -r -I {} bash -c 'VERSION="$(asdf list all {} | sort --ignore-leading-blanks --version-sort --reverse | head -n1)"; asdf install {} $VERSION && asdf global {} $VERSION'
 set -e
 
 asdf install golang 1.17.8 && asdf global golang 1.17.8
@@ -20,4 +23,4 @@ asdf install nodejs 17.9.0 && asdf global nodejs 17.9.0
 asdf install rust 1.58.1 && asdf global rust 1.58.1
 
 # Temporarily pin problematic packages
-asdf global ctop 0.7.6 && asdf global delta 0.12.0
+asdf global bat 0.19.0 && asdf global ctop 0.7.6 && asdf global delta 0.12.0

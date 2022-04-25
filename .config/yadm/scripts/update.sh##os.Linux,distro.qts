@@ -11,12 +11,17 @@ printf "${YELLOW}%s${NC}\n" "Updating asdf packages..."
 asdf update
 asdf plugin-update --all
 set +e
-asdf plugin list --no-run-if-empty | grep -vE '^(bat|ctop|delta|dust|fzf|hadolint|jq|nodejs|ripgrep|rust|shellcheck)$' | sort | xargs -I {} bash -c 'asdf install {} latest && asdf global {} latest'
+asdf plugin list | grep -vE '^(bat|ctop|delta|dust|fzf|hadolint|jq|nodejs|ripgrep|rust|shellcheck)$' | \
+  sort | \
+  xargs -r -I {} bash -c 'asdf install {} latest && asdf global {} latest'
 set -e
 asdf reshim golang
 
 printf "${YELLOW}%s${NC}\n" "Updating python packages..."
-pip3 list --not-required --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs --no-run-if-empty -n1 pip3 install -U
+pip3 list --not-required --outdated --format=freeze | \
+  grep -v '^\-e' | \
+  cut -d = -f 1 | \
+  xargs -r -n1 pip3 install -U
 
 # Update nvim.coc extensions
 printf "${YELLOW}%s${NC}\n" "Updating nvim.coc extensions..."

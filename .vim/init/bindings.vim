@@ -47,3 +47,7 @@ nnoremap N Nzz
 " Toggle showing special characters
 nnoremap <leader>~ :<C-U>setlocal lcs=tab:>-,trail:-,eol:$ list! list? <CR>
 
+" Map gp to select recently pasted text
+" (https://vim.fandom.com/wiki/Selecting_your_pasted_text)
+nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
+

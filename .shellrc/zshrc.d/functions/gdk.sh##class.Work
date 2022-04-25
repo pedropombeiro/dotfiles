@@ -83,6 +83,13 @@ if [[ -d "${GDK_ROOT}" ]]; then
       rm -rf .git/gc.log
       git checkout db/structure.sql
 
+      if [[ ! -S $GDK_ROOT/redis/redis.socket ]]; then
+        # Work around issue with Redis socket disappearing by returning to pristine state
+        printf "${YELLOW}%s${NC}\n" 'Redis socket disappeared, running gdk pristine before update...'
+        gdk pristine
+        gdk reconfigure
+      fi
+
       if [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]]; then
         printf "${RED}%s${NC}\n" 'Please stash the changes in the current branch before calling fgdku!'
         cd - >/dev/null
@@ -100,7 +107,16 @@ if [[ -d "${GDK_ROOT}" ]]; then
       fi
 
       printf "${YELLOW}%s${NC}\n" "Updating GDK..."
+      set +e
       gdk update
+      if [[ $? -eq 1 && ! -S $GDK_ROOT/redis/redis.socket ]]; then
+        # Work around issue with Redis socket disappearing by returning to pristine state and retrying the update
+        printf "${YELLOW}%s${NC}\n" 'Redis socket disappeared during update, running gdk pristine before retrying update...'
+        gdk pristine
+        gdk reconfigure
+        gdk update
+      fi
+      set -eo pipefail
 
       git checkout db/structure.sql
       sleep 5

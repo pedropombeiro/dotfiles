@@ -65,7 +65,7 @@ if [ "$(command -v vim)" -o "$(command -v nvim)" ]; then
   if [[ $plugins_installed -gt 0 ]]; then
     source "${YADM_SCRIPTS}/apply-vim-plugin-patches.sh"
 
-    #printf "${YELLOW}%s${NC}\n" 'Updating documentation for Vim plugins...'
-    #nvim -u NONE -c 'helptags ALL | qa!'
+    printf "${YELLOW}%s${NC}\n" 'Updating documentation for Vim plugins...'
+    nvim --headless -u NONE -c 'helptags ALL | qa!'
   fi
 fi

@@ -23,9 +23,5 @@ pip3 list --not-required --outdated --format=freeze | \
   cut -d = -f 1 | \
   xargs -r -n1 pip3 install -U
 
-# Update nvim.coc extensions
-printf "${YELLOW}%s${NC}\n" "Updating nvim.coc extensions..."
-nvim -c 'CocUpdateSync|q'
-
 "${YADM_SCRIPTS}/update-common.zsh"
 

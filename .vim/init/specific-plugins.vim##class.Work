@@ -1,0 +1,2 @@
+Plug 'glacambre/firenvim'
+Plug 'tpope/vim-rails', { 'for': 'ruby' }

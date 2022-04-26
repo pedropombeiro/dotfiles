@@ -26,7 +26,11 @@ fi
 rm -f "${hf_file}"
 
 printf "${YELLOW}%s${NC}\n" "Updating vim plugins..."
-find "${HOME}/.vim/pack" -type d -name .git -print0 | \
-  xargs -r -0 -P 8 -I {} bash -c 'git -C {}/.. reset --hard && git -C {}/.. pull --prune --stat -v --ff-only' && \
-  source "${YADM_SCRIPTS}/apply-vim-plugin-patches.sh" && \
+rm -rf ${HOME}/.vim/pack
+nvim -c 'PlugClean! | PlugUpgrade | PlugUpdate | qa!' && \
   printf "${GREEN}%s${NC}\n" "Done"
+
+# Update nvim.coc extensions
+printf "${YELLOW}%s${NC}\n" "Updating nvim.coc extensions..."
+nvim -c 'CocUpdateSync|q'
+

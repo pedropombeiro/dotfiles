@@ -12,8 +12,6 @@ printf "${YELLOW}%s${NC}\n" "Updating brew..."
 brew update
 brew upgrade
 
-"${YADM_SCRIPTS}/update-common.zsh"
-
 printf "${YELLOW}%s${NC}\n" "Updating asdf..."
 asdf plugin-update --all
 printf "${YELLOW}%s${NC}\n" "Updating asdf plugins..."
@@ -27,12 +25,10 @@ asdf plugin list --no-run-if-empty | \
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."
 command -v npm >/dev/null && npm update -g
 
-# Update nvim.coc extensions
-printf "${YELLOW}%s${NC}\n" "Updating nvim.coc extensions..."
-nvim -c 'CocUpdateSync|q'
-
 # Fix GPG agent symlink if broken
 sys_gpg_agent='/usr/local/bin/gpg-agent'
 if [[ ! -x ${sys_gpg_agent} || $(readlink ${sys_gpg_agent}) != /usr/local/MacGPG2/bin/gpg-agent ]]; then
   sudo ln -sf /usr/local/MacGPG2/bin/gpg-agent ${sys_gpg_agent}
 fi
+
+"${YADM_SCRIPTS}/update-common.zsh"

@@ -9,6 +9,7 @@ else
   let g:firenvim_loaded=1
 endif
 
+source ~/.vim/init/plugins.vim
 source ~/.vim/init/settings.vim
 source ~/.vim/init/bindings.vim
 source ~/.vim/init/coc.vim

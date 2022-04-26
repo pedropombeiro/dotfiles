@@ -63,7 +63,7 @@ if !empty($GDK_ROOT)
   function! TestBranch()
     Dispatch bin/rspec $(git diff --name-only --diff-filter=AM master | grep 'spec/')
   endfunction
-  nnoremap <leader>ra :call TestBranch<CR>
+  nnoremap <leader>ra :call TestBranch()<CR>
 endif
 
 "-- vim-rails.vim

@@ -348,6 +348,8 @@ cask "rancher"
 cask "royal-tsx"
 # Tool for sending personal documents to Kindles from Macs
 cask "send-to-kindle"
+# Screenshot measurement and annotation tool
+cask "shottr"
 # Video chat, voice call and instant messaging application
 cask "skype"
 # Team communication and collaboration software
@@ -375,7 +377,6 @@ cask "whatsapp"
 # Video communication and virtual meeting platform
 cask "zoom"
 mas "Amphetamine", id: 937984704
-mas "Annotate", id: 918207447
 mas "Backdrop", id: 411461952
 mas "DaisyDisk", id: 411643860
 mas "Discovery", id: 1381004916

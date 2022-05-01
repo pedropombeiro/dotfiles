@@ -232,6 +232,16 @@ zprof
 - Configure [`$HOME/.git-peek`](https://awesomeopensource.com/project/Jarred-Sumner/git-peek#private-repositories--choosing-an-editor)
 - `ln -sf ~/Sync/pedro/Briefcase/Backups/MBP16/.pry_history ~/.pry_history` to keep IRB terminal history synced
 
+## Useful commands
+
+### Use vim in YADM Git context
+
+Running vim from inside yadm ensures that integration with fzf.vim works correctly, and the Git worktree is correctly configured:
+
+```shell
+yadm enter vim
+```
+
 # Acknowledgments
 
 - [holman](https://github.com/holman/dotfiles)

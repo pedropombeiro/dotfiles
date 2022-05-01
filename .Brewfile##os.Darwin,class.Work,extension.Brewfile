@@ -213,8 +213,6 @@ brew "the_silver_searcher"
 brew "tokei"
 # Syntax-aware linter for prose
 brew "vale"
-# Vi 'workalike' with many additional features
-brew "vim"
 # Use ViM as PAGER
 brew "vimpager"
 # Executes a program periodically, showing output fullscreen

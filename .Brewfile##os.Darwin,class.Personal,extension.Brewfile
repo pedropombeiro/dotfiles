@@ -122,8 +122,6 @@ brew "syncthing", link: false
 brew "tealdeer"
 # Code-search similar to ack
 brew "the_silver_searcher"
-# Vi 'workalike' with many additional features
-brew "vim"
 # Use ViM as PAGER
 brew "vimpager"
 # Executes a program periodically, showing output fullscreen

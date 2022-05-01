@@ -59,3 +59,13 @@ call SourceIfExists("~/.vim/init/specific-plugins.vim")
 
 " Initialize plugin system
 call plug#end()
+
+" Optional: Auto-install plugins if directory does not yet exist
+if has("nvim")
+  let s:plugged_dir = stdpath('data') . '/plugged'
+else
+  let s:plugged_dir=expand('$HOME/.vim/plugged')
+endif
+if ! isdirectory(s:plugged_dir)
+  PlugInstall
+endif

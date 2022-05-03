@@ -1,5 +1,7 @@
 let g:fzf_buffers_jump = 1
 
+nnoremap <leader>f :FZF<CR>
+
 nmap <leader>fc :Commits<CR>
 nmap <leader>fg :GFiles<CR>
 nmap <leader>fG :GFiles?<CR>

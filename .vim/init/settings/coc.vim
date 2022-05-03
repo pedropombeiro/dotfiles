@@ -19,15 +19,6 @@ set updatetime=500
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
 
-" Always show the signcolumn, otherwise it would shift the text each time
-" diagnostics appear/become resolved.
-"if has("nvim-0.5.0") || has("patch-8.1.1564")
-  "" Recently vim can merge signcolumn and number column into one
-  "set signcolumn=number
-"else
-  "set signcolumn=yes
-"endif
-
 "
 "-- Key bindings
 "
@@ -172,8 +163,3 @@ nnoremap <silent><nowait> <leader>cj  :<C-u>CocNext<CR>
 nnoremap <silent><nowait> <leader>ck  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <leader>cp  :<C-u>CocListResume<CR>
-
-" -- coc-explorer
-nnoremap <silent> <C-\> <Cmd>CocCommand explorer<CR>
-vnoremap <silent> <C-\> <Cmd>CocCommand explorer<CR>
-

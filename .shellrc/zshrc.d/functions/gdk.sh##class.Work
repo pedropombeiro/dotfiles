@@ -50,17 +50,21 @@ if [[ -d "${GDK_ROOT}" ]]; then
   unalias gswm 2>/dev/null
 
   function gswm() {
-    undo-migrations
-    git checkout db/
+    if [[ $PWD/ = ${GDK_ROOT}/* ]]; then
+      undo-migrations
+      git checkout db/
+    fi
     git switch "$(git_main_branch)"
   }
 
   function list-migrations() {
-    MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A master -- db/schema_migrations/)"
+    MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A $(git_main_branch) -- db/schema_migrations/)"
     echo ${MIGRATIONS_DIFF} | xargs basename -a | sort -r
   }
 
   function undo-migrations() {
+    [[ $PWD/ = ${GDK_ROOT}/* ]] || return
+
     (
       set -e
 

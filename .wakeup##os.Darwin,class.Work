@@ -4,5 +4,7 @@
 SwitchAudioSource -s 'DELL U2720Q'
 killall Spotify # Spotify has a bug where it hangs after resume, so let's just kill it
 
+curl -X POST http://ha.home.pombei.ro:8123/api/webhook/work_laptop_resumed
+
 launchctl unload "${HOME}/Library/LaunchAgents/com.pedropombeiro.walkingpad.plist"
 launchctl load "${HOME}/Library/LaunchAgents/com.pedropombeiro.walkingpad.plist"

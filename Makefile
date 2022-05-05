@@ -9,7 +9,7 @@ install:
 
 .PHONY: update
 update:
-	~/.config/yadm/scripts/update.sh
+	@~/.config/yadm/scripts/update.sh
 
 .PHONY: brew-dump
 brew-dump:

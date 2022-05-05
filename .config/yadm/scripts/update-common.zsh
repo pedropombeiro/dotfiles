@@ -34,3 +34,9 @@ nvim -c 'PlugClean! | PlugUpgrade | PlugUpdate | qa!' && \
 printf "${YELLOW}%s${NC}\n" "Updating nvim.coc extensions..."
 nvim -c 'CocUpdateSync|q'
 
+# Run some sanity checks to see if known packages are working properly.
+if ! bash-language-server -v >/dev/null; then
+  # If npm packages are not working correctly, try reinstalling them
+  printf "${RED}%s${NC}" "Run 'cat ~/.default-npm-packages | xargs npm install -g'"
+fi
+

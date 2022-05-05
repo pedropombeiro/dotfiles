@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+killall Busylight_HTTP_Mac # Stop Busylight_HTTP_Mac so that the system is allowed to sleep

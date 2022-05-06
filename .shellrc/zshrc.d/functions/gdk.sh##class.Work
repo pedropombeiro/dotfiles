@@ -57,6 +57,12 @@ if [[ -d "${GDK_ROOT}" ]]; then
     git switch "$(git_main_branch)"
   }
 
+  #
+  # diff-structure outputs a clean patch that I can copy/paste to the SSH session
+  # to get the thin clone up to date with my branch
+  #
+  alias diff-structure="git --no-pager diff --color-words -U0 \$(git_main_branch).. -- db/structure.sql | sed 's/^\[//' | grep -v '@@' | tail -n +5"
+
   function list-migrations() {
     MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A $(git_main_branch) -- db/schema_migrations/)"
     echo ${MIGRATIONS_DIFF} | xargs basename -a | sort -r

@@ -1,2 +1,3 @@
 Plug 'glacambre/firenvim'
+Plug 'tpope/vim-bundler', { 'for': 'ruby' }
 Plug 'tpope/vim-rails', { 'for': 'ruby' }

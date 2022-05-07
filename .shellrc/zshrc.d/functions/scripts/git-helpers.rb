@@ -39,6 +39,8 @@ class String
 end
 
 def rebase_all_per_capture_info(local_branch_info_hash)
+  return unless local_branch_info_hash.any?
+
   current_branch = `git branch --show-current`.strip
 
   local_branch_info_hash.each do |branch, parent_branch|
@@ -54,7 +56,7 @@ def rebase_all_per_capture_info(local_branch_info_hash)
   system(*%W(git switch #{current_branch}))
 end
 
-def rebase_all
+def rebase_mappings
   unless system(*%W(git diff-index --quiet HEAD --))
     abort 'Please stash the changes in the current branch before calling rebase-all!'.red
   end
@@ -106,6 +108,36 @@ def rebase_all
   end
     .compact
     .to_h
+end
 
-  rebase_all_per_capture_info mappings if mappings.any?
+def rebase_all
+  rebase_all_per_capture_info rebase_mappings
+end
+
+def git_push_issue(*args)
+  args = ARGV if args.empty?
+
+  current_branch = `git branch --show-current`.strip
+
+  user_name = ENV['USER']
+  mr_pattern = /^(?<prefix>(security-)?#{user_name})\/(?<mr_id>\d+)\/[a-z0-9\-_]+$/.freeze
+  mr_match_data = mr_pattern.match(current_branch)
+
+  if mr_match_data
+    local_branch_info_hash = rebase_mappings.select { |branch, parent_branch| branch.start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}") }
+
+    local_branch_info_hash.each do |branch, parent_branch|
+      active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
+
+      puts 'Pushing '.brown + branch.cyan + ' to '.brown + active_remote_name.green + '...'.brown
+      unless system(*%W(git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}), :out => File::NULL, :err => File::NULL)
+        puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
+        next
+      end
+
+      break unless system(*%W(git push --force-with-lease #{active_remote_name} #{branch} ) + args)
+    end
+
+    system(*%W(git switch #{current_branch}))
+  end
 end

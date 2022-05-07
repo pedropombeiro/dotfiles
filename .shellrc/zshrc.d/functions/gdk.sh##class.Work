@@ -12,6 +12,13 @@ if [[ -d "${GDK_ROOT}" ]]; then
     ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e rebase_all
   }
 
+  #
+  # The gpif function performs a 'git push --force-with-lease' on all branches related to the current branch's issue.
+  #
+  function gpif() {
+    ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e git_push_issue -- $@
+  }
+
   function git_parent() {
     local branch="$1"
     if [[ -z $branch ]]; then

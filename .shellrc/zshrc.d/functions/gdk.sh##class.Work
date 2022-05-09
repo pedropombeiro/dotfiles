@@ -48,9 +48,10 @@ if [[ -d "${GDK_ROOT}" ]]; then
         -o "merge_request.label=Category:Runner Fleet" \
         -o "merge_request.label=section::ops" \
         -o "merge_request.label=devops::verify" \
-        -o "merge_request.label=group::runner"
+        -o "merge_request.label=group::runner" \
+        "$@"
     else
-      git push --set-upstream $remote "$(git_current_branch)"
+      git push --set-upstream $remote "$(git_current_branch)" "$@"
     fi
   }
 

@@ -77,8 +77,6 @@ brew "entr"
 brew "exiftool"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
-# Command-line fuzzy finder written in Go
-brew "fzf"
 # Validating, recursive, caching DNS resolver
 brew "unbound"
 # GNU Transport Layer Security (TLS) Library
@@ -89,6 +87,8 @@ brew "harfbuzz"
 brew "ffmpeg"
 # I/O benchmark and stress test
 brew "fio"
+# Command-line fuzzy finder written in Go
+brew "fzf"
 # Distributed revision control system
 brew "git"
 # Syntax-highlighting pager for git and diff output
@@ -207,6 +207,8 @@ brew "switchaudio-osx"
 brew "syncthing", link: false
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
+# Modern SSH server for teams managing distributed infrastructure
+brew "teleport"
 # Code-search similar to ack
 brew "the_silver_searcher"
 # Program that allows you to count code, quickly

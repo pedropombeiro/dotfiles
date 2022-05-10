@@ -50,7 +50,22 @@ def rebase_all_per_capture_info(local_branch_info_hash)
       next
     end
 
-    break unless system(*%W(git rebase --autostash #{parent_branch} #{branch}))
+    unless system(*%W(git rebase --autostash #{parent_branch} #{branch}))
+      status = `git status --short`
+      if status.include?('UU doc/update/deprecations.md')
+        puts '  Merge conflict in deprecations.md, regenerating...'.brown
+        system(*%W(bin/rake gitlab:docs:compile_deprecations))
+        break unless system(*%W(git add doc/update/deprecations.md))
+        break unless system({'GIT_EDITOR' => 'true'}, *%W(git rebase --continue))
+      elsif status.include?('UU doc/update/removals.md')
+        puts '  Merge conflict in removals.md, regenerating...'.brown
+        system(*%W(bin/rake gitlab:docs:compile_removals))
+        break unless system(*%W(git add doc/update/removals.md))
+        break unless system({'GIT_EDITOR' => 'true'}, *%W(git rebase --continue))
+      else
+        break
+      end
+    end
   end
 
   system(*%W(git switch #{current_branch}))

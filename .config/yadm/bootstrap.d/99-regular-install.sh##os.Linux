@@ -64,9 +64,6 @@ cd "${download_dir}" && \
 sudo apt install -y openvpn dialog python3-pip python3-setuptools
 sudo pip3 install protonvpn-cli
 
-# Ranger
-pip install ranger-fm
-
 # Ledger Nano S
 wget -q -O - https://raw.githubusercontent.com/LedgerHQ/udev-rules/master/add_udev_rules.sh | sudo bash
 sudo apt install -y python3-pip libusb-1.0-0-dev libudev-dev

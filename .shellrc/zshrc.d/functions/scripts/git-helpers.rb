@@ -62,6 +62,10 @@ def rebase_all_per_capture_info(local_branch_info_hash)
         system(*%W(bin/rake gitlab:docs:compile_removals))
         break unless system(*%W(git add doc/update/removals.md))
         break unless system({'GIT_EDITOR' => 'true'}, *%W(git rebase --continue))
+      elsif  status.include?('UU db/structure.sql')
+        system(*%W(scripts/regenerate-schema))
+        break unless system(*%W(git add db/structure.sql))
+        break unless system({'GIT_EDITOR' => 'true'}, *%W(git rebase --continue))
       else
         break
       end

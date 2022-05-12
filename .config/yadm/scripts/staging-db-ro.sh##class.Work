@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+export PATH="$PATH:/opt/homebrew/bin"
+
+tsh db login --db-user=console-ro --db-name=gitlabhq_production db-secondary
+
+pgcli "$(tsh db config --format=json db-secondary | jq -r '"postgres://" + .user + "@" + .host + ":" + (.port | tostring) + "/" + .database + "?sslrootcert=" + .ca + "&sslcert=" + .cert + "&sslkey=" + .key + "&sslmode=verify-full"')"
+
+tsh db logout --db-user=console-ro --db-name=gitlabhq_production db-secondary

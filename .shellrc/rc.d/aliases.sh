@@ -6,7 +6,11 @@ alias gdp='printf "\`\`\`patch\n%s\n\`\`\`" "$(git diff)" | pbcopy'
 
 # Allow using y alias to run commands in the context of the YADM worktree
 function y() {
-  yadm enter "$SHELL -i -c '$1'"
+  if [ $# -eq 0 ]; then
+    yadm enter "$SHELL"
+  else
+    yadm enter "$SHELL -i -c '$*'"
+  fi
 }
 
 # Delete all remote tracking Git branches where the upstream branch has been deleted

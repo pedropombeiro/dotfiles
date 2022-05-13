@@ -6,8 +6,4 @@ if [[ -d ${HOME}/.rd/bin ]]; then
   export PATH
 fi
 
-if command -v docker > /dev/null; then
-  plugins+=(docker docker-compose)
-elif command -v docker-machine > /dev/null; then
-  plugins+=(docker docker-compose)
-fi
+plugins+=(docker docker-compose)

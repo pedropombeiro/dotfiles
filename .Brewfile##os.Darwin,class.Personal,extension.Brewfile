@@ -102,6 +102,8 @@ brew "pgcli"
 brew "pinentry-mac"
 # PNG image optimizing utility
 brew "pngquant"
+# PDF rendering library (based on the xpdf-3.0 code base)
+brew "poppler"
 # Unix pager optimized for psql
 brew "pspg"
 # File browser

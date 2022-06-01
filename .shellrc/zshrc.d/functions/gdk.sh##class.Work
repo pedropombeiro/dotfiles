@@ -30,9 +30,11 @@ if [[ -d "${GDK_ROOT}" ]]; then
   }
 
   function wait-gdk-mr-merged() {
+    curl -s "http://localhost:8989?action=light&red=100&blue=100"
     while [[ "$(curl -sS https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab/merge_requests/$1 --header "PRIVATE-TOKEN: $GITLAB_COM_TOKEN" | jq -r .state)" != 'merged' ]]; do
       sleep 5
     done
+    curl -s "http://localhost:8989?action=light&green=100"
   }
 
   unalias gpsup 2>/dev/null
@@ -97,6 +99,8 @@ if [[ -d "${GDK_ROOT}" ]]; then
   function fgdku() {
     (
       cd "${GDK_ROOT}/gitlab" || exit 0
+
+      curl -s "http://localhost:8989?action=pulse&green=100"
 
       rm -rf .git/gc.log
       git checkout db/structure.sql
@@ -188,6 +192,8 @@ END
 
       cd - >/dev/null
     )
+
+    curl -s "http://localhost:8989?action=light&green=100"
   }
 
   function _export_op_token() {

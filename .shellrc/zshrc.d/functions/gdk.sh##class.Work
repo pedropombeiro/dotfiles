@@ -146,10 +146,6 @@ if [[ -d "${GDK_ROOT}" ]]; then
       printf "${YELLOW}%s${NC}\n" "Precompiling static assets to ensure graphiql-rails changes are picked up..."
       bundle exec rake rake:assets:precompile
 
-      printf "${YELLOW}%s${NC}\n" "Running simple test..."
-      bin/spring stop && bundle exec rails db:test:prepare # Work around issue with multiple databases (https://gitlab.com/gitlab-org/gitlab/-/issues/356656)
-      bin/rspec --failure-exit-code 0 --error-exit-code 0 spec/lib/gitlab/ci/variables/collection_spec.rb
-
       printf "${YELLOW}%s${NC}\n" "Pruning local branches..."
       git fetch --all --prune --jobs=10
       set +e
@@ -177,6 +173,9 @@ if [[ -d "${GDK_ROOT}" ]]; then
         scripts/regenerate-schema # Ensure we have a clean test DB with any branch migrations done
         git checkout db/structure.sql
       fi
+
+      printf "${YELLOW}%s${NC}\n" "Running simple test..."
+      bin/rspec --failure-exit-code 0 --error-exit-code 0 spec/lib/gitlab/ci/variables/collection_spec.rb
 
       if ps aux | grep RubyMine.app/Contents/MacOS/rubymine | grep -v "grep"; then
         printf "${YELLOW}%s${NC}\n" "Start indexing in RubyMine..."

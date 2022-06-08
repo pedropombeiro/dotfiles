@@ -76,6 +76,7 @@ def rebase_all_per_capture_info(local_branch_info_hash)
 end
 
 def rebase_mappings
+  system(*%W(git checkout db/schema_migrations/))
   unless system(*%W(git diff-index --quiet HEAD --))
     abort 'Please stash the changes in the current branch before calling rebase-all!'.red
   end

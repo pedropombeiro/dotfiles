@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
 #osascript -e 'tell application id "com.runningwithcrayons.Alfred" to run trigger "resume" in workflow "com.pedropombeiro.resumetimeout"'
-SwitchAudioSource -t output -s 'CalDigit TS4 Audio - Rear'
-killall Spotify # Spotify has a bug where it hangs after resume, so let's just kill it
 
 open -a Busylight_HTTP_Mac.app # Reopen Busylight_HTTP_Mac at wake
 
@@ -10,3 +8,5 @@ curl -X POST http://ha.home.pombei.ro:8123/api/webhook/work_laptop_resumed
 
 launchctl unload "${HOME}/Library/LaunchAgents/com.pedropombeiro.walkingpad.plist"
 launchctl load "${HOME}/Library/LaunchAgents/com.pedropombeiro.walkingpad.plist"
+
+SwitchAudioSource -t output -s 'CalDigit TS4 Audio - Rear'

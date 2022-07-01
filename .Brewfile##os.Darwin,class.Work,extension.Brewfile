@@ -288,6 +288,8 @@ cask "google-chrome"
 cask "google-cloud-sdk"
 # Tools to protect your emails and files
 cask "gpg-suite"
+# Companion app for Home Assistant home automation software
+cask "home-assistant"
 # Tool to optimize images to a smaller size
 cask "imageoptim"
 # System monitoring app

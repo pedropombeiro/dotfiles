@@ -2,5 +2,3 @@
 
 killall Busylight_HTTP_Mac # Stop Busylight_HTTP_Mac so that the system is allowed to sleep
 killall Spotify # Spotify has a bug where it hangs after resume, so let's just kill it
-
-curl -X POST http://ha.home.pombei.ro:8123/api/webhook/work_laptop_suspended

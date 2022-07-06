@@ -8,6 +8,7 @@ extensions_dir="${HOME}/.config/coc/extensions"
 packages=(
   coc-explorer
   coc-go
+  coc-homeassistant
   coc-json
   coc-markdownlint
   coc-pyright

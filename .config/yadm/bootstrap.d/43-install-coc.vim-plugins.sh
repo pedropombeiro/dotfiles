@@ -14,7 +14,6 @@ packages=(
   coc-pyright
   coc-sh
   coc-solargraph
-  coc-tabnine
   coc-tsserver
   coc-yaml
 )

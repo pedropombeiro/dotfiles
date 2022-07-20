@@ -48,9 +48,9 @@
           {
             "name": "GDK postgresql",
             "adapter": "postgres",
-            "hostname": "${env:HOME}/src/gitlab-development-kit/postgresql",
+            "hostname": "${env:GDK_ROOT}/postgresql",
             "user": "${env:USER}",
-            "projectPaths": ["${env:HOME}/src/gitlab-development-kit"]
+            "projectPaths": ["${env:GDK_ROOT}"]
           }
         ]
       }

@@ -9,6 +9,7 @@ printf "${YELLOW}%s${NC}\n" "Installing cargo packages..."
 # Install some useful system tools written in Rust and which don't provide an easy install method in QTS
 export TMPDIR=$TEMP
 cargo install \
+  bandwhich \
   bottom \
   grc-rs \
   hyperfine \

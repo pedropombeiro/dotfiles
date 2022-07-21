@@ -266,6 +266,8 @@ cask "qfinder-pro"
 cask "qlimagesize"
 # Imaging utility to install operating systems to a microSD card
 cask "raspberry-pi-imager"
+# Control your tools with a few keystrokes
+cask "raycast"
 # Tool for sending personal documents to Kindles from Macs
 cask "send-to-kindle"
 # Screenshot measurement and annotation tool

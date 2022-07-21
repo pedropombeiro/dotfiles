@@ -348,6 +348,8 @@ cask "protonvpn"
 cask "qlimagesize"
 # Kubernetes and container management on the desktop
 cask "rancher"
+# Control your tools with a few keystrokes
+cask "raycast"
 # Remote management solution
 cask "royal-tsx"
 # Tool for sending personal documents to Kindles from Macs

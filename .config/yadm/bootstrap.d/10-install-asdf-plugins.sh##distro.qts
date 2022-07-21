@@ -12,7 +12,7 @@ set +e
 rm -rf ${HOME}/.asdf/shims
 asdf reshim
 
-for p in bat ctop delta duf dust fd golang golangci-lint jq lazygit neovim nodejs ripgrep rust xh; do
+for p in bat ctop delta duf dust fd golang golangci-lint jq lazygit neovim nodejs ripgrep rust viddy xh; do
   asdf plugin add "${p}"
 done
 asdf plugin list | \

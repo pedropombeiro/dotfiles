@@ -43,12 +43,12 @@ brew "bat"
 brew "blueutil"
 # Collection of portable C++ source libraries
 brew "boost"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.9"
 # Core application library for C
 brew "glib"
 # Manage compile and link flags for libraries
 brew "pkg-config"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.9"
 # Arbitrary precision calculator
 brew "calc"
 # Cross-platform make
@@ -215,6 +215,8 @@ brew "the_silver_searcher"
 brew "tokei"
 # Syntax-aware linter for prose
 brew "vale"
+# Modern watch command
+brew "viddy"
 # Use ViM as PAGER
 brew "vimpager"
 # Executes a program periodically, showing output fullscreen

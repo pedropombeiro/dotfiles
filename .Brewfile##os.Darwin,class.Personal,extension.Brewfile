@@ -124,6 +124,8 @@ brew "syncthing", link: false
 brew "tealdeer"
 # Code-search similar to ack
 brew "the_silver_searcher"
+# Modern watch command
+brew "viddy"
 # Use ViM as PAGER
 brew "vimpager"
 # Executes a program periodically, showing output fullscreen

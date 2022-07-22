@@ -55,6 +55,7 @@
 
 	# https://git-scm.com/docs/git-config#git-config-pushdefault
 	default = simple
+	autoSetupRemote = true
 
 [pull]
 	rebase = true

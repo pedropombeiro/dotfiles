@@ -82,9 +82,9 @@ def rebase_mappings
   end
 
   user_name = ENV['USER']
-  mr_pattern = /^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+$/.freeze
-  seq_mr_pattern = /^(security-)?#{user_name}\/(?<mr_id>\d+)\/(?<mr_seq_nr>\d+)-[a-z0-9\-_]+$/.freeze
-  backport_pattern = /^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+-(?<milestone>\d+[-\.]\d+)$/.freeze
+  mr_pattern = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+$}i.freeze
+  seq_mr_pattern = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/(?<mr_seq_nr>\d+)-[a-z0-9\-_]+$}i.freeze
+  backport_pattern = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+-(?<milestone>\d+[-\.]\d+)$}i.freeze
   default_branch = compute_default_branch
 
   local_branches =

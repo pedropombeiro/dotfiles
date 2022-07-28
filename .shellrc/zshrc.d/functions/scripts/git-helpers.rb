@@ -43,6 +43,13 @@ def rebase_all_per_capture_info(local_branch_info_hash)
 
   current_branch = `git branch --show-current`.strip
 
+  auto_generated_files_hash = {
+    'doc/api/graphql/reference/index.md' => %w[bin/rake gitlab:graphql:compile_docs],
+    'doc/update/deprecations.md' => %w[bin/rake gitlab:docs:compile_deprecations],
+    'doc/update/removals.md' => %w[bin/rake gitlab:docs:compile_removals],
+    'db/structure.sql' => %w[scripts/regenerate-schema]
+  }
+
   local_branch_info_hash.each do |branch, parent_branch|
     puts 'Rebasing '.brown + branch.cyan + ' onto '.brown + parent_branch.green + '...'.brown
     unless system(*%W(git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}), :out => File::NULL, :err => File::NULL)
@@ -50,25 +57,28 @@ def rebase_all_per_capture_info(local_branch_info_hash)
       next
     end
 
-    unless system({'LEFTHOOK' => '0'}, *%W(git rebase --autostash #{parent_branch} #{branch}))
+    unless system({ 'LEFTHOOK' => '0' }, *%W[git rebase --autostash #{parent_branch} #{branch}])
       status = `git status --short`
-      if status.include?('UU doc/update/deprecations.md')
-        puts '  Merge conflict in deprecations.md, regenerating...'.brown
-        system(*%W(bin/rake gitlab:docs:compile_deprecations))
-        break unless system(*%W(git add doc/update/deprecations.md))
-        break unless system({'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0'}, *%W(git rebase --continue))
-      elsif status.include?('UU doc/update/removals.md')
-        puts '  Merge conflict in removals.md, regenerating...'.brown
-        system(*%W(bin/rake gitlab:docs:compile_removals))
-        break unless system(*%W(git add doc/update/removals.md))
-        break unless system({'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0'}, *%W(git rebase --continue))
-      elsif  status.include?('UU db/structure.sql')
-        system(*%W(scripts/regenerate-schema))
-        break unless system(*%W(git add db/structure.sql))
-        break unless system({'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0'}, *%W(git rebase --continue))
-      else
-        break
-      end
+      break unless auto_generated_files_hash
+                   .select { |file, _| status.include?("UU #{file}") }
+                   .any?
+
+      err = false
+      auto_generated_files_hash
+        .select { |file, _| status.include?("UU #{file}") }
+        .each do |file, cmd|
+          puts "  Merge conflict in #{file}, regenerating...".brown
+          system(*cmd)
+          err = true
+
+          break unless system(*%W[git add #{file}])
+
+          break unless system({ 'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0' }, *%w[git rebase --continue])
+
+          err = false
+        end
+
+      break if err
     end
   end
 

@@ -95,3 +95,5 @@ vmap <leader>{ c{<C-R>"}<ESC>
 
 map <leader>` ysiw`
 
+nmap <leader>rf :Dispatch bundle exec rubocop --auto-correct %<CR>
+

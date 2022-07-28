@@ -1,0 +1,3 @@
+" ================ Customizations for GDK ==========================
+
+command CompileDocs Dispatch bundle exec rake gitlab:graphql:compile_docs

@@ -5,7 +5,7 @@
 # this script will ensure that branches from the same MR will be rebased correctly, keeping the chain order
 
 def compute_default_branch
-  system(*%W(git show-ref refs/remotes/origin/master), :out => File::NULL) ? 'master' : 'main'
+  system(*%w[git show-ref refs/remotes/origin/master], out: File::NULL) ? 'master' : 'main'
 end
 
 # compute_parent_branch will determine the closest parent branch,
@@ -52,7 +52,8 @@ def rebase_all_per_capture_info(local_branch_info_hash)
 
   local_branch_info_hash.each do |branch, parent_branch|
     puts 'Rebasing '.brown + branch.cyan + ' onto '.brown + parent_branch.green + '...'.brown
-    unless system(*%W(git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}), :out => File::NULL, :err => File::NULL)
+
+    unless system(*%W(git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}), out: File::NULL, err: File::NULL)
       puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
       next
     end
@@ -86,8 +87,9 @@ def rebase_all_per_capture_info(local_branch_info_hash)
 end
 
 def rebase_mappings
-  system(*%W(git checkout db/schema_migrations/))
-  unless system(*%W(git diff-index --quiet HEAD --))
+  system(*%w(git checkout db/schema_migrations/))
+
+  unless system(*%w(git diff-index --quiet HEAD --))
     abort 'Please stash the changes in the current branch before calling rebase-all!'.red
   end
 
@@ -97,8 +99,7 @@ def rebase_mappings
   backport_pattern = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+-(?<milestone>\d+[-\.]\d+)$}i.freeze
   default_branch = compute_default_branch
 
-  local_branches =
-    `git branch --list`
+  local_branches = `git branch --list`
     .lines
     .map { |line| line[2..].rstrip }
     .select { |branch| branch.start_with?("#{user_name}/") || branch.start_with?("security-#{user_name}/") }
@@ -114,22 +115,32 @@ def rebase_mappings
       []
     end
 
-  chain_previous_branch = default_branch
+  chain_previous_branches = [default_branch]
+  chain_previous_mr_seq_nr = nil
   chain_mr_id = nil
-  mappings = local_branches.map do |branch|
+
+  local_branches.map do |branch|
     seq_mr_match_data = seq_mr_pattern.match(branch)
     backport_match_data = backport_pattern.match(branch)
 
-    chain_previous_branch = default_branch if seq_mr_match_data && seq_mr_match_data[:mr_id] != chain_mr_id
+    chain_previous_branches = [default_branch] if seq_mr_match_data && seq_mr_match_data[:mr_id] != chain_mr_id
     chain_mr_id = seq_mr_match_data ? seq_mr_match_data[:mr_id] : nil
+    chain_mr_seq_nr = seq_mr_match_data ? seq_mr_match_data[:mr_seq_nr] : nil
 
     if seq_mr_match_data
-      parent_branch = chain_previous_branch
-      chain_previous_branch = branch
+      if chain_previous_mr_seq_nr.nil? || chain_mr_seq_nr > chain_previous_mr_seq_nr
+        parent_branch = chain_previous_branches.last
+        chain_previous_branches << branch
+      else
+        parent_branch = chain_previous_branches[-2]
+      end
+
+      chain_previous_mr_seq_nr = chain_mr_seq_nr
     elsif backport_match_data
       remote = `git rev-parse --abbrev-ref --symbolic-full-name #{branch}@{u} --`.split('/').first
       next if $?.exitstatus == 128 # Ignore branch if was deleted upstream
-      parent_branch = "#{remote}/#{backport_match_data[:milestone].gsub('.', '-')}-stable-ee"
+
+      parent_branch = "#{remote}/#{backport_match_data[:milestone].tr('.', '-')}-stable-ee"
     else
       parent_branch = default_branch
     end
@@ -150,22 +161,22 @@ def git_push_issue(*args)
   current_branch = `git branch --show-current`.strip
 
   user_name = ENV['USER']
-  mr_pattern = /^(?<prefix>(security-)?#{user_name})\/(?<mr_id>\d+)\/[a-z0-9\-_]+$/.freeze
+  mr_pattern = %r{^(?<prefix>(security-)?#{user_name})/(?<mr_id>\d+)/[a-z0-9\-_]+$}.freeze
   mr_match_data = mr_pattern.match(current_branch)
 
   if mr_match_data
-    local_branch_info_hash = rebase_mappings.select { |branch, parent_branch| branch.start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}") }
+    local_branch_info_hash = rebase_mappings.select { |branch, _parent_branch| branch.start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}") }
 
     local_branch_info_hash.each do |branch, parent_branch|
       active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
 
       puts 'Pushing '.brown + branch.cyan + ' to '.brown + active_remote_name.green + '...'.brown
-      unless system(*%W(git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}), :out => File::NULL, :err => File::NULL)
+      unless system(*%W(git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}), out: File::NULL, err: File::NULL)
         puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
         next
       end
 
-      break unless system(*%W(git push --force-with-lease #{active_remote_name} #{branch} ) + args)
+      break unless system(*%W[git push --force-with-lease #{active_remote_name} #{branch}] + args)
     end
 
     system(*%W(git switch #{current_branch}))

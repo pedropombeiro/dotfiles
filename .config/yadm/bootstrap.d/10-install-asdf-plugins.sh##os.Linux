@@ -19,7 +19,7 @@ asdf plugin list | sort | grep -vE '^(golang|nodejs)$' | xargs -r -I {} bash -c 
 set -e
 
 asdf install golang 1.17.8 && asdf global golang 1.17.8
-asdf install nodejs 17.9.0 && asdf global nodejs 17.9.0
+asdf install nodejs 18.7.0 && asdf global nodejs 18.7.0
 asdf install delta latest && asdf global delta latest
 asdf install lazygit latest && asdf global lazygit latest
 

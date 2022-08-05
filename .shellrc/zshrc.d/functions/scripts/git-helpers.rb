@@ -44,10 +44,12 @@ def rebase_all_per_capture_info(local_branch_info_hash)
   current_branch = `git branch --show-current`.strip
 
   auto_generated_files_hash = {
+    'app/workers/all_queues.yml' => %w[bin/rake gitlab:sidekiq:all_queues_yml:generate],
+    'config/sidekiq_queues.yml' => %w[bin/rake gitlab:sidekiq:sidekiq_queues_yml:generate],
+    'db/structure.sql' => %w[scripts/regenerate-schema],
     'doc/api/graphql/reference/index.md' => %w[bin/rake gitlab:graphql:compile_docs],
     'doc/update/deprecations.md' => %w[bin/rake gitlab:docs:compile_deprecations],
-    'doc/update/removals.md' => %w[bin/rake gitlab:docs:compile_removals],
-    'db/structure.sql' => %w[scripts/regenerate-schema]
+    'doc/update/removals.md' => %w[bin/rake gitlab:docs:compile_removals]
   }
 
   local_branch_info_hash.each do |branch, parent_branch|
@@ -68,18 +70,18 @@ def rebase_all_per_capture_info(local_branch_info_hash)
       auto_generated_files_hash
         .select { |file, _| status.include?("UU #{file}") }
         .each do |file, cmd|
-          puts "  Merge conflict in #{file}, regenerating...".brown
+          puts "  Merge conflict in #{file.red}, regenerating...".brown
           system(*cmd)
           err = true
 
           break unless system(*%W[git add #{file}])
 
-          break unless system({ 'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0' }, *%w[git rebase --continue])
-
           err = false
         end
 
       break if err
+
+      break unless system({ 'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0' }, *%w[git rebase --continue])
     end
   end
 

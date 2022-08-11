@@ -8,7 +8,7 @@ set -e
 
 opkg install asciinema bind-dig column coreutils entr \
              file findutils-locate flock git git-http grep iftop iotop htop \
-             ncdu nmap nethogs make tar terminfo tmux whois whereis youtube-dl zsh
+             ncdu nmap nethogs make tar terminfo tmux whois whereis yt-dlp zsh
 opkg install procps-ng-ps     # installs a more modern version of ps, supporting command line switches
 opkg install coreutils-mkfifo # required for powerlevel10k ZSH theme
 opkg install coreutils-comm   # required for asdf reshim

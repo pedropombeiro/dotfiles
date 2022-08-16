@@ -7,8 +7,8 @@ noremap <C-q> :qa<CR>
 nnoremap & :&&<CR>
 xnoremap & :&&<CR>
 
-noremap <leader>nt :tabnew<CR>
-noremap <leader>ct :tabclose<CR>
+noremap <leader>tn :tabnew<CR>
+noremap <leader>tc :tabclose<CR>
 noremap <leader>tt :tabs<CR>
 nnoremap <C-s> :w<CR>
 inoremap <C-s> <ESC>:w<CR>

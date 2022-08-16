@@ -1,6 +1,6 @@
 "-- Ranger
 let g:ranger_map_keys = 0
-map <leader>r :Ranger<CR>
+map <leader>R :Ranger<CR>
 
 if has("nvim")
   autocmd TermOpen * :IndentGuidesDisable

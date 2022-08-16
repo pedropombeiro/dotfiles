@@ -9,10 +9,10 @@ if !empty($GDK_ROOT)
   nmap <silent> <leader>rT :TestFile<CR>
   nmap <silent> <leader>ra :TestSuite<CR>
   nmap <silent> <leader>rl :TestLast<CR>
-  nmap <silent> <leader>g  :TestVisit<CR>
+  nmap <silent> <leader>rv :TestVisit<CR>
 
   function! TestBranch()
     Dispatch bin/rspec $(git diff --name-only --diff-filter=AM master | grep 'spec/')
   endfunction
-  nnoremap <leader>ra :call TestBranch()<CR>
+  nnoremap <leader>rb :call TestBranch()<CR>
 endif

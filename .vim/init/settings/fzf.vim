@@ -4,7 +4,7 @@ let g:fzf_buffers_jump = 1
 " [Commands] --expect expression for directly executing the command
 let g:fzf_commands_expect = 'alt-enter,ctrl-x'
 
-nnoremap <leader>f :FZF<CR>
+nnoremap <leader>ff :FZF<CR>
 
 nmap <leader>fc :Commits<CR>
 nmap <leader>fg :GFiles<CR>

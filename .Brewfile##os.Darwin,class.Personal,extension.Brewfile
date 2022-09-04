@@ -56,6 +56,8 @@ brew "gnutls"
 brew "grc"
 # Convert source code to formatted text with syntax highlighting
 brew "highlight"
+# Command-line utility for Home Assistant
+brew "homeassistant-cli"
 # Improved top (interactive process viewer)
 brew "htop"
 # Command-line benchmarking tool
@@ -256,7 +258,7 @@ cask "p4v"
 cask "pgadmin4"
 # Home media player
 cask "plex"
-# Bridges ProtonMail to email clients supporting IMAP and SMTP protocols
+# Bridges Proton Mail to email clients supporting IMAP and SMTP protocols
 cask "protonmail-bridge"
 # VPN client focusing on security
 cask "protonvpn"

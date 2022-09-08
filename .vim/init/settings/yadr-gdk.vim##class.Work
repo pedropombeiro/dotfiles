@@ -1,3 +1,10 @@
 " ================ Customizations for GDK ==========================
 
 command CompileDocs Dispatch bundle exec rake gitlab:graphql:compile_docs
+command CompileDeprecations Dispatch bundle exec rake gitlab:docs:compile_deprecations
+command CompileRemovals Dispatch bundle exec rake gitlab:docs:compile_removals
+command GenerateQueues Dispatch bundle exec rake gitlab:sidekiq:all_queues_yml:generate gitlab:sidekiq:sidekiq_queues_yml:generate
+command GenerateSchema Dispatch scripts/regenerate-schema
+
+command Fgdku wincmd n | wincmd J | resize10 | setlocal nonumber | setlocal norelativenumber |       setlocal laststatus=0 | call termopen('zsh -i -c fgdku') | normal G
+command RebaseAll wincmd n | wincmd J | resize10 | setlocal nonumber | setlocal norelativenumber | setlocal laststatus=0 | call termopen('zsh -i -c rebase-all') | normal G

@@ -61,27 +61,25 @@ def rebase_all_per_capture_info(local_branch_info_hash)
     end
 
     unless system({ 'LEFTHOOK' => '0' }, *%W[git rebase --autostash #{parent_branch} #{branch}])
-      status = `git status --short`
-      break unless auto_generated_files_hash
-                   .select { |file, _| status.include?("UU #{file}") }
-                   .any?
+      begin
+        status = `git status --short`
+        return unless auto_generated_files_hash
+                     .select { |file, _| status.include?("UU #{file}") }
+                     .any?
 
-      err = false
-      auto_generated_files_hash
-        .select { |file, _| status.include?("UU #{file}") }
-        .each do |file, cmd|
-          puts "  Merge conflict in #{file.red}, regenerating...".brown
-          system(*cmd)
-          err = true
+        err = false
+        auto_generated_files_hash
+          .select { |file, _| status.include?("UU #{file}") }
+          .each do |file, cmd|
+            puts "  Merge conflict in #{file.red}, regenerating...".brown
+            system(*cmd)
+            err = true
 
-          break unless system(*%W[git add #{file}])
+            break unless system(*%W[git add #{file}])
 
-          err = false
-        end
-
-      break if err
-
-      break unless system({ 'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0' }, *%w[git rebase --continue])
+            err = false
+          end
+      end while !err && system({ 'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0' }, *%w[git rebase --continue])
     end
   end
 

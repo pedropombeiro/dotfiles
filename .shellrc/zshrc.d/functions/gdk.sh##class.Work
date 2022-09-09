@@ -8,6 +8,10 @@ if [[ -d "${GDK_ROOT}" ]]; then
 
   GITLAB_USERNAME=${USER}
 
+  function gitlab_mr_rate() {
+    ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e gitlab_mr_rate -- ${1:-${GITLAB_USERNAME}}
+  }
+
   function rebase-all() {
     ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e rebase_all
   }

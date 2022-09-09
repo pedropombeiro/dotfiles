@@ -185,3 +185,103 @@ def git_push_issue(*args)
     system(*%W(git switch #{current_branch}))
   end
 end
+
+BASELINE_MR_RATE = 10
+
+def gitlab_mr_rate(*author)
+  author = ARGV if author.empty?
+
+  require 'date'
+  require 'json'
+  require 'net/http'
+
+  uri = URI('https://gitlab.com/api/v4/groups/9970/merge_requests') # gitlab-org
+  params = {
+    author_username: author,
+    state: 'merged',
+    per_page: 100,
+    page: 1
+  }
+
+  mrs = []
+  best_month = nil
+  best_month_mr_rate = 0
+  STDERR.print 'Fetching '
+  loop do
+    STDERR.putc '.'
+
+    net = Net::HTTP.new(uri.host, uri.port)
+    net.use_ssl = true
+
+    uri.query = URI.encode_www_form(params)
+    req = Net::HTTP::Get.new(uri)
+    req['PRIVATE-TOKEN'] = ENV['GITLAB_COM_TOKEN']
+
+    res = net.start { |http| http.request(req) }
+    unless res.code.to_i.between?(200, 299)
+      STDERR.puts res.code
+      STDERR.puts res.body
+      return
+    end
+
+    json_res = JSON.parse(res.body)
+    mrs = mrs +
+      json_res.reject { |mr| mr['merged_at'].nil? }
+              .map do |mr|
+                merged_at = DateTime.iso8601(mr['merged_at'])
+                { id: mr['id'], merged_at: merged_at }
+              rescue => e
+                STDERR.puts mr
+                raise
+              end
+
+    next_page = res['x-next-page']
+    break if next_page.empty?
+
+    params[:page] = next_page
+  end
+
+  STDERR.puts
+  now = DateTime.now
+  mrs_merged_by_month = mrs.group_by { |mr| [now, DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min }
+  mrs_merged_by_month.each do |ym, monthly_mrs|
+    prorated_mr_count = monthly_mrs.count
+    if ym.year == now.year && ym.month == now.month
+      prorated_mr_count = monthly_mrs.count.to_f / ym.day * DateTime.civil(ym.year, ym.month, -1).day
+      indicator = " (in progress - #{prorated_mr_count.to_i} prorated)"
+    end
+
+    if monthly_mrs.count > best_month_mr_rate
+      best_month = ym
+      best_month_mr_rate = monthly_mrs.count
+    end
+
+    msg = "#{ym.strftime('%Y-%m')}: #{monthly_mrs.count.to_s.rjust(3)}"
+    if prorated_mr_count < BASELINE_MR_RATE
+      print msg.red
+      STDERR.print indicator.red if indicator
+    else
+      print msg.green
+      STDERR.print indicator.green if indicator
+    end
+    puts
+  end
+
+  first_mr_at = mrs.map { |mr| mr[:merged_at] }.min
+  last_mr_at = mrs.map { |mr| mr[:merged_at] }.max
+  monthly_average =
+    if last_mr_at.year == first_mr_at.year && last_mr_at.month == first_mr_at.month
+      mrs.count.to_f / ((DateTime.civil(last_mr_at.year, last_mr_at.month, -1) - DateTime.civil(first_mr_at.year, first_mr_at.month, 1)).to_f / 30)
+    else
+      mrs.count.to_f / ((last_mr_at - first_mr_at).to_f / 30)
+    end
+  puts '-' * 12
+  msg = "Average MRs merged per month: #{monthly_average.round}"
+  if monthly_average < BASELINE_MR_RATE
+    puts msg.red
+  else
+    puts msg.green
+  end
+  puts "Total MRs merged: #{mrs.count}"
+  puts "Best month: #{best_month.strftime('%Y-%m')} (#{best_month_mr_rate} MRs)"
+end

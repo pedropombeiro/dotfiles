@@ -319,5 +319,4 @@ mas "Router", id: 1229416813
 mas "Shazam", id: 897118787
 mas "Simplenote", id: 692867256
 mas "Speedtest", id: 1153157709
-mas "TweetDeck", id: 485812721
 mas "WireGuard", id: 1451685025

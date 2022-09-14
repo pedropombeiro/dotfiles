@@ -407,5 +407,4 @@ mas "Pocket", id: 568494494
 mas "Simplenote", id: 692867256
 mas "Speedtest", id: 1153157709
 mas "Time Out", id: 402592703
-mas "TweetDeck", id: 485812721
 mas "WireGuard", id: 1451685025

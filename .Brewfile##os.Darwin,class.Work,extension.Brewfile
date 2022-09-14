@@ -154,7 +154,7 @@ brew "neovim"
 # Control nvim processes using `nvr` command-line tool
 brew "neovim-remote"
 # HTTP(S) server and reverse proxy, and IMAP/POP3 proxy server
-brew "nginx", restart_service: true
+brew "nginx"
 # Prometheus exporter for machine metrics
 brew "node_exporter", restart_service: true
 # Tool for creating identical machine images for multiple platforms
@@ -277,6 +277,7 @@ cask "elgato-control-center"
 cask "elgato-stream-deck"
 # Typeface made for developers
 cask "font-jetbrains-mono"
+# Developer targeted fonts with a high number of glyphs
 cask "font-meslo-lg-nerd-font"
 # GIT client
 cask "fork"
@@ -308,6 +309,8 @@ cask "keepassxc"
 cask "keycastr"
 # Sound clear in online meetings
 cask "krisp"
+# Create, manage and debug system- and user services
+cask "launchcontrol"
 # Office suite
 cask "libreoffice"
 # Host-based application firewall

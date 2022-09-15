@@ -39,7 +39,7 @@ class String
 end
 
 def rebase_all_per_capture_info(local_branch_info_hash)
-  return unless local_branch_info_hash.any?
+  return if local_branch_info_hash.empty?
 
   current_branch = `git branch --show-current`.strip
 
@@ -63,9 +63,9 @@ def rebase_all_per_capture_info(local_branch_info_hash)
     unless system({ 'LEFTHOOK' => '0' }, *%W[git rebase --autostash #{parent_branch} #{branch}])
       begin
         status = `git status --short`
-        return unless auto_generated_files_hash
-                     .select { |file, _| status.include?("UU #{file}") }
-                     .any?
+        return if auto_generated_files_hash
+          .select { |file, _| status.include?("UU #{file}") }
+          .empty?
 
         err = false
         auto_generated_files_hash

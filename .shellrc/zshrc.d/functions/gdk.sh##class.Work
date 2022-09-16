@@ -174,7 +174,9 @@ if [[ -d "${GDK_ROOT}" ]]; then
         fi
       fi
 
-      gdk restart
+      gdk stop
+      pkill -lf 'sidekiq-cluster' # Ensure there are no orphaned sidekiq-cluster (https://gitlab.com/gitlab-org/gitlab-development-kit/-/issues/1455)
+      gdk start
 
       if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
         printf "${YELLOW}%s${NC}\n" "Applying stash and migrations..."

@@ -49,6 +49,6 @@ let g:which_key_exit = ["\<C-q>", "\<C-[>", "\<Esc>"]
 " Executes native commands if keymap is not defined (makes gg work correctly)
 let g:which_key_fallback_to_native_key=1
 
-call which_key#register('<Space>', "g:which_key_map")
-call which_key#register('g', "g:which_key_map_g")
+autocmd! User vim-which-key call which_key#register('<Space>', "g:which_key_map")
+autocmd! User vim-which-key call which_key#register('g', "g:which_key_map_g")
 

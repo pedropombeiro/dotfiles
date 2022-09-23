@@ -28,8 +28,9 @@ Plug 'junegunn/fzf'                               " 🌸 A command-line fuzzy fi
 Plug 'junegunn/fzf.vim'                           " fzf ❤️ vim
 Plug 'junegunn/vim-easy-align'                    " 🌻 A Vim alignment plugin
 Plug 'kdheepak/lazygit.nvim'                      " Plugin for calling lazygit from within neovim.
-Plug 'liuchengxu/vim-which-key'                   " 🌷 Vim plugin that shows keybindings in popup
-Plug 'mtdl9/vim-log-highlighting'                 " A Vim plugin for visually displaying indent levels in code
+Plug 'liuchengxu/vim-which-key',
+      \ { 'on': ['WhichKey', 'WhichKey!'] }       " 🌷 Vim plugin that shows keybindings in popup
+Plug 'mtdl9/vim-log-highlighting'                 " Provides syntax highlighting for generic log files in VIM.
 Plug 'nathanaelkane/vim-indent-guides'            " A Vim plugin for visually displaying indent levels in code
 Plug 'neoclide/coc.nvim', { 'branch': 'release' } " Make your Vim/Neovim as smart as VSCode.
 Plug 'nishigori/increment-activator'              " Vim Plugin for enhance to increment candidates U have defined.

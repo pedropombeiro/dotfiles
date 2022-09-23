@@ -7,4 +7,6 @@ open -a Busylight_HTTP_Mac.app # Reopen Busylight_HTTP_Mac at wake
 launchctl unload "${HOME}/Library/LaunchAgents/com.pedropombeiro.walkingpad.plist"
 launchctl load "${HOME}/Library/LaunchAgents/com.pedropombeiro.walkingpad.plist"
 
+sleep 5
+
 SwitchAudioSource -t output -s 'CalDigit TS4 Audio - Rear'

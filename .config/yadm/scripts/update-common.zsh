@@ -25,14 +25,23 @@ if [[ $mean_time -ge 0.6 ]]; then
 fi
 rm -f "${hf_file}"
 
-printf "${YELLOW}%s${NC}\n" "Updating vim plugins..."
+printf "${YELLOW}%s${NC}\n" "Updating neovim plugins..."
 rm -rf ${HOME}/.vim/pack
-nvim -c 'PlugClean! | PlugUpgrade | PlugUpdate | qa!' && \
+\nvim -c 'PlugClean! | PlugUpgrade | PlugUpdate | qa!' && \
   printf "${GREEN}%s${NC}\n" "Done"
+
+if \vim --version >/dev/null; then
+  printf "${YELLOW}%s${NC}\n" "Updating vim plugins..."
+  \vim -c 'PlugClean! | PlugUpgrade | PlugUpdate | qa!' && \
+    printf "${GREEN}%s${NC}\n" "Done"
+fi
 
 # Update nvim.coc extensions
 printf "${YELLOW}%s${NC}\n" "Updating nvim.coc extensions..."
-nvim -c 'CocUpdateSync|q'
+\nvim -c 'CocUpdateSync|q'
+if \vim --version >/dev/null; then
+  \vim -c 'CocUpdateSync|q'
+fi
 
 # Run some sanity checks to see if known packages are working properly.
 if ! bash-language-server -v >/dev/null; then

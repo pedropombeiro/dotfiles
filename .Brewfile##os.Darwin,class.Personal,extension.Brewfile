@@ -190,6 +190,7 @@ cask "elgato-control-center"
 cask "elgato-stream-deck"
 # Typeface made for developers
 cask "font-jetbrains-mono"
+# Developer targeted fonts with a high number of glyphs
 cask "font-meslo-lg-nerd-font"
 # GIT client
 cask "fork"
@@ -250,8 +251,6 @@ cask "ngrok"
 cask "notion"
 # Calculator and converter application
 cask "numi"
-# File system integration
-cask "macfuse"
 # Visual client for Helix Core
 cask "p4v"
 # Administration and development platform for PostgreSQL

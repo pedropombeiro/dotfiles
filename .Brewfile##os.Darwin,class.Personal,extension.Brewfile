@@ -289,6 +289,8 @@ cask "superduper"
 cask "syncthing"
 # Quicklook extension for source files
 cask "syntax-highlight"
+# Native GUI tool for relational databases
+cask "tableplus"
 # Unpacks archive files
 cask "the-unarchiver"
 # Time tracker

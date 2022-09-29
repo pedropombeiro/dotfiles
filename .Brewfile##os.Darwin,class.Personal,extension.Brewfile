@@ -198,6 +198,8 @@ cask "fork"
 cask "garmin-express"
 # Free and open-source image editor
 cask "gimp"
+# Virtual globe
+cask "google-earth-pro"
 # Tools to protect your emails and files
 cask "gpg-suite"
 # Power usage monitoring tool enabled for Intel Core processors

@@ -40,6 +40,7 @@ Plug 'rmagatti/auto-session'                      " A small automated session ma
 Plug 'ruanyl/vim-gh-line'                         " vim plugin that open the link of current line on github
 Plug 'ryanoasis/vim-devicons'                     " Adds file type icons to Vim plugins such as: NERDTree, vim-airline, CtrlP, unite, Denite, lightline, vim-startify and many more
 Plug 'skywind3000/asyncrun.vim'                   " 🚀 Run Async Shell Commands in Vim 8.0 / NeoVim and Output to the Quickfix Window !!
+Plug 'tmux-plugins/vim-tmux'                      " Vim plugin for .tmux.conf
 Plug 'tpope/vim-abolish'                          " abolish.vim: easily search for, substitute, and abbreviate multiple variants of a word
 Plug 'tpope/vim-commentary'                       " commentary.vim: comment stuff out
 Plug 'tpope/vim-dispatch'                         " dispatch.vim: Asynchronous build and test dispatcher

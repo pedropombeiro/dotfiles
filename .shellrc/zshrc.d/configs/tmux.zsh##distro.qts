@@ -9,8 +9,7 @@ if command -v tmux > /dev/null; then
 
   export ZSH_TMUX_UNICODE=true
   export ZSH_TMUX_CONFIG=~/.shellrc/zshrc.d/configs/tmux.conf
+  export ZSH_TMUX_DEFAULT_SESSION_NAME="$(hostname)"
 
   plugins+=(tmux)
-
-  tmux has-session && tmux rename-session "$(hostname)"
 fi

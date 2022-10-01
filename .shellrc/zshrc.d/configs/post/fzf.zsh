@@ -1,3 +1,3 @@
 #!/usr/bin/env zsh
 
-[ -f ${HOME}/.fzf.zsh ] && source ${HOME}/.fzf.zsh
+zvm_after_init_commands+=('[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh')

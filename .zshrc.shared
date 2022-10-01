@@ -11,12 +11,7 @@ function source_files() {
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-# Which plugins would you like to load?
-# Standard plugins can be found in ~/.oh-my-zsh/plugins/*
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-plugins=(you-should-use zsh-autosuggestions zsh-syntax-highlighting)
+plugins=()
 
 # extra files in $HOME/.shellrc/zshrc.d/configs/pre, $HOME/.shellrc/zshrc.d/configs, and $HOME/.shellrc/zshrc.d/configs/post
 # these are loaded first, second, and third, respectively.
@@ -31,12 +26,6 @@ _load_settings() {
 
     if [[ -f "$ZSH/oh-my-zsh.sh" && -z "$INTELLIJ_ENVIRONMENT_READER" ]]; then
       . $ZSH/oh-my-zsh.sh
-      if alias duf >/dev/null; then
-        unalias duf
-      fi
-      if alias t >/dev/null; then
-        unalias t
-      fi
     fi
 
     if [ -d "$_dir/post" ]; then

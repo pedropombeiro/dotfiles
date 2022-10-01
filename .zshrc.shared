@@ -40,10 +40,15 @@ if [[ -d $HOME/.shellrc/rc.d ]]; then
   source_files $(find $HOME/.shellrc/rc.d -mindepth 1 -name '*.sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) | sort -n 2>/dev/null | uniq)
 fi
 
-# load custom executable functions
-source_files $(find $HOME/.shellrc/zshrc.d/functions -mindepth 1 -maxdepth 1 -name '*.*sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) | sort -n 2>/dev/null)
-
 unfunction source_files
+
+# autoload custom executable functions
+_func_dir="${HOME}/.shellrc/zshrc.d/functions"
+_function_files=( $(find ${_func_dir} -mindepth 1 -maxdepth 1 -not -name '*.zwc' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \)) )
+if [[ ${#_function_files[@]} -gt 0 ]]; then
+  fpath+=("${_func_dir}")
+  autoload -Uz $_function_files[@]
+fi
 
 # aliases
 [[ -f ~/.aliases.sh ]] && . ~/.aliases.sh

@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+if [[ $PWD/ = ${GDK_ROOT}/* ]]; then
+  undo-migrations
+  git checkout db/
+fi
+git switch "$(git_main_branch)"

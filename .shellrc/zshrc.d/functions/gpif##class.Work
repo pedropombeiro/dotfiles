@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+SCRIPT_DIR='~/.shellrc/zshrc.d/functions/scripts'
+GITLAB_USERNAME=${USER}
+
+#
+# The gpif function performs a 'git push --force-with-lease' on all branches related to the current branch's issue.
+#
+ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e git_push_issue -- $@

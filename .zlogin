@@ -35,6 +35,10 @@
     zcompare ${file}
   done
 
+  for file in $(find ${HOME}/.shellrc/zshrc.d/functions -mindepth 1 -maxdepth 1 -not -name '*.zwc' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \)); do
+    zcompare ${file}
+  done
+
 ) &!
 
 # Load all files from .shell/login.d directory

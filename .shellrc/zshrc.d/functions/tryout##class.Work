@@ -1,0 +1,6 @@
+#!/usr/bin/env zsh
+
+# https://gitlab.com/-/snippets/2409633
+# Example command: tryout https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96461
+/usr/bin/curl $1.diff | \
+  git apply && git add --all .

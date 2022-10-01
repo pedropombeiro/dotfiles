@@ -1,0 +1,19 @@
+#!/usr/bin/env zsh
+
+[[ $PWD/ = ${GDK_ROOT}/* ]] || return
+
+(
+  set -e
+
+  source ~/.config/yadm/scripts/colors.sh
+
+  BRANCH_MIGRATIONS=( $(list-migrations) )
+  if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
+    printf "${YELLOW}%s${NC}\n" "Undoing ${#BRANCH_MIGRATIONS[@]} branch migration(s)..."
+    gdk start postgresql
+    for migration in "${BRANCH_MIGRATIONS[@]}"; do
+      bin/rails db:migrate:down:main VERSION="${migration}"
+      bin/rails db:migrate:down:ci VERSION="${migration}"
+    done
+  fi
+)

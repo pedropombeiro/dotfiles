@@ -1,0 +1,61 @@
+#!/usr/bin/env zsh
+
+source ~/.config/yadm/scripts/colors.sh
+
+set -o pipefail
+
+# echo -n "Username (defaults to '${USER}'): "
+# read -r USERNAME
+# echo
+if [[ -z ${USERNAME} ]]; then
+  USERNAME="${USER}"
+fi
+
+POSTGRES_AI_HOST='gitlab-joe-poc.postgres.ai'
+case $1 in
+  create)
+    PASSENTRY="$(grep "localhost:10000:gitlabhq_dblab:${USERNAME}" ~/.pgpass)"
+    if [[ -z ${PASSENTRY} ]]; then
+      # Generate random password
+      PASSWORD="$(openssl rand -base64 20)"
+      export PGPASSWORD="${PASSWORD}"
+    else
+      printf "${GREEN}%s${NC}\n" "Found entry in ~/.pgpass for ${USERNAME}"
+      PASSWORD=$(echo "${PASSENTRY}" | awk -F "\"*:\"*" '{print $5}')
+    fi
+
+    printf "${YELLOW}%s${NC}\n" "Starting a tunnel to ${POSTGRES_AI_HOST}"
+    ssh dblab-joe -f -N
+
+    printf "${YELLOW}%s${NC}\n" "Creating thin clone for ${USERNAME}..."
+    PORT="$(dblab clone create --username "${USERNAME}" --password "${PASSWORD}" | jq -r '.db.port')"
+    LOCAL_PORT=10000
+
+    printf "${YELLOW}%s${NC}\n" "Forwarding local port (${LOCAL_PORT}) to the returned port (${PORT}) at ${POSTGRES_AI_HOST}"
+    ssh -L "${LOCAL_PORT}:localhost:${PORT}" -f -N "gldatabase@${POSTGRES_AI_HOST}"
+
+    printf "${YELLOW}%s${NC}\n" "Connecting psql to the local port (${LOCAL_PORT}) with random password ${PASSWORD}"
+    pgcli -h localhost -p "${LOCAL_PORT}" -U "${USERNAME}" -d gitlabhq_dblab
+    ;;
+  list)
+    printf "${YELLOW}%s${NC}\n" "Listing thin clones for ${USERNAME}"
+    dblab instance status | jq --arg username "${USERNAME}" -r '.cloning.clones[] | select(.db.username == $username) | .id'
+    ;;
+  destroy-all)
+    printf "${YELLOW}%s${NC}\n" "Listing thin clones for ${USERNAME}"
+    IDS=( $(dblab instance status | jq --arg username "${USERNAME}" -r '.cloning.clones[] | select(.db.username == $username) | .id') )
+    for id in "${IDS[@]}"; do
+      printf "${YELLOW}%s${NC}\n" "Destroying clone ${id}..."
+      dblab clone destroy -a "${id}"
+    done
+    ;;
+  stop-ssh)
+    printf "${YELLOW}%s${NC}\n" 'Stopping SSH processes...'
+    ps aux | grep ssh | grep '\-joe' | awk '{print $2}' | xargs kill -9 || echo -n
+    ;;
+  *)
+    printf "${RED}%s${NC}\n" "Unknown command '$1', aborting"
+    ;;
+esac
+
+printf "${GREEN}%s${NC}\n" Done

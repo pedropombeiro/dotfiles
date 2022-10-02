@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-BREW_PREFIX="$(brew --prefix)"
-if [ -f "${BREW_PREFIX}/opt/asdf/asdf.sh" ]; then
+if [ -f "${HOMEBREW_PREFIX}/opt/asdf/asdf.sh" ]; then
   # . $(brew --prefix asdf)/asdf.sh is more generic, but very, very slow
-  . "${BREW_PREFIX}/opt/asdf/asdf.sh"
+  source "${HOMEBREW_PREFIX}/opt/asdf/asdf.sh"
 fi

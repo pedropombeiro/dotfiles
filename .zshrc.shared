@@ -3,9 +3,20 @@
 # Skip all this for non-interactive shells
 [[ -z "$PS1" ]] && return
 
+function zcompare() {
+  if [[ -s ${1} && ( ! -s ${1}.zwc || ${1} -nt ${1}.zwc) ]]; then
+    ( zcompile ${1} ) &!
+  fi
+}
+
 function source_files() {
   local f
-  for f; do test -x "$f" && . "$f"; done
+  for f; do
+    if [ -x "$f" ]; then
+      zcompare "$f"
+      builtin source "$f"
+    fi
+  done
 }
 
 # Path to your oh-my-zsh installation.
@@ -40,6 +51,9 @@ if [[ -d $HOME/.shellrc/rc.d ]]; then
   source_files $(find $HOME/.shellrc/rc.d -mindepth 1 -name '*.sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) | sort -n 2>/dev/null | uniq)
 fi
 
+# aliases
+source_files ~/.aliases.sh
+
 unfunction source_files
 
 # autoload custom executable functions
@@ -49,7 +63,4 @@ if [[ ${#_function_files[@]} -gt 0 ]]; then
   fpath+=("${_func_dir}")
   autoload -Uz $_function_files[@]
 fi
-
-# aliases
-[[ -f ~/.aliases.sh ]] && . ~/.aliases.sh
 

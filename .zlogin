@@ -21,6 +21,8 @@
 
   # zcompile the completion cache; siginificant speedup.
   zcompare ${ZDOTDIR:-${HOME}}/.zcompdump
+  zcompare ${HOME}/.zshrc
+  zcompare ${HOME}/.zshrc.shared
 
   # zcompile all .zsh files in the theme
   for file in ${HOME}/.oh-my-zsh/custom/themes/powerlevel10k/**/*.zsh; do
@@ -32,10 +34,6 @@
   done
 
   for file in ${HOME}/.oh-my-zsh/plugins/{asdf,common-aliases,git,git-extras}/*.zsh; do
-    zcompare ${file}
-  done
-
-  for file in $(find ${HOME}/.shellrc/zshrc.d/functions -mindepth 1 -maxdepth 1 -not -name '*.zwc' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \)); do
     zcompare ${file}
   done
 

@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+# Allow using y alias to run commands in the context of the YADM worktree
+if [ $# -eq 0 ]; then
+  yadm enter "$SHELL"
+else
+  yadm enter "$SHELL -i -c '$*'"
+fi

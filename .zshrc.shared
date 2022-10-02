@@ -4,9 +4,14 @@
 [[ -z "$PS1" ]] && return
 
 function zcompare() {
-  if [[ -s ${1} && ( ! -s ${1}.zwc || ${1} -nt ${1}.zwc) ]]; then
+  if [[ -s ${1} && ( ! -s ${1}.zwc || ${1} -nt ${1}.zwc ) ]]; then
     ( zcompile ${1} ) &!
   fi
+}
+
+function source_file() {
+  zcompare "$1"
+  builtin source "$1"
 }
 
 function source_files() {
@@ -36,7 +41,7 @@ _load_settings() {
     source_files $(find "$_dir" -mindepth 1 -and -not -path '*/pre/**' -and -not -path '*/post/**' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) )
 
     if [[ -f "$ZSH/oh-my-zsh.sh" && -z "$INTELLIJ_ENVIRONMENT_READER" ]]; then
-      . $ZSH/oh-my-zsh.sh
+      source_file $ZSH/oh-my-zsh.sh
     fi
 
     if [ -d "$_dir/post" ]; then

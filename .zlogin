@@ -29,6 +29,10 @@
     zcompare ${file}
   done
 
+  for file in ${HOME}/.oh-my-zsh/lib/*.zsh; do
+    zcompare ${file}
+  done
+
   for file in ${HOME}/.oh-my-zsh/custom/plugins/*/*.zsh; do
     zcompare ${file}
   done

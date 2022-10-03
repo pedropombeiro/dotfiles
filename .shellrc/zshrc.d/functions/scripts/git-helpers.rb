@@ -186,7 +186,7 @@ def git_push_issue(*args)
   end
 end
 
-BASELINE_MR_RATE = 10
+BASELINE_MR_RATE = 6
 
 def gitlab_mr_rate(*author)
   author = ARGV if author.empty?
@@ -277,10 +277,10 @@ def gitlab_mr_rate(*author)
     end
   puts '-' * 12
   msg = "Average MRs merged per month: #{monthly_average.round}"
-  if monthly_average < BASELINE_MR_RATE
-    puts msg.red
-  else
+  if monthly_average > BASELINE_MR_RATE
     puts msg.green
+  else
+    puts msg.red
   end
   puts "Total MRs merged: #{mrs.count}"
   puts "Best month: #{best_month.strftime('%Y-%m')} (#{best_month_mr_rate} MRs)"

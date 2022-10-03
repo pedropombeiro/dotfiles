@@ -16,6 +16,14 @@ find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes" -mindepth 1 -maxdepth 1 -
 find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins" -mindepth 1 -maxdepth 1 -type d -print0 | \
   xargs -r -0 -P 8 -I {} git -C {} pull --prune --stat -v --ff-only
 
+# Delete dead symlinks in ~/.shellrc
+find -L ~/.shellrc -type l -exec rm -f {} \;
+# Delete all zsh word code files, and regenerate them again
+find ~/. -maxdepth 1 -name '*.zwc' -delete
+find ~/.shellrc -name '*.zwc' -delete
+find ~/.oh-my-zsh -name '*.zwc' -delete
+zsh -i -c 'sleep 5' # Allow time for .zlogin to asynchronously regenerate the .zwc files
+
 printf "${YELLOW}%s${NC}\n" "Testing shell instantiation performance..."
 hf_file="$(mktemp)"
 hyperfine --warmup=1 --max-runs 5 'zsh -i -c exit' --export-json "${hf_file}"

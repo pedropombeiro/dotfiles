@@ -6,7 +6,6 @@ if [[ -d ${GDK_ROOT} ]]; then
 
   source "${GDK_ROOT}/support/completions/gdk.bash"
 
-  alias be="bundle exec "
   alias compile_docs="bundle exec rake gitlab:graphql:compile_docs"
   alias guard="SPRING=1 bundle exec guard"
 fi

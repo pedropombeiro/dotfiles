@@ -23,6 +23,8 @@ runner:
   enabled: false
 gdk:
   update_hooks:
+    before:
+      - git -C gitlab config core.fsmonitor true # Improve performance for rebasing/status/etc. Replace with 'scalar register' with Git 2.38
     after:
       - git -C gitlab restore db/structure.sql
   overwrite_changes: true

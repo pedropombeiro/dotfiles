@@ -24,7 +24,7 @@ runner:
 gdk:
   update_hooks:
     before:
-      - git -C gitlab config core.fsmonitor true # Improve performance for rebasing/status/etc. Replace with 'scalar register' with Git 2.38
+      - cd gitlab && scalar register # Improve performance for rebasing/status/etc.
     after:
       - git -C gitlab restore db/structure.sql
   overwrite_changes: true
@@ -49,3 +49,5 @@ if ! delta "${GDK_ROOT}/gdk.yml" "${GDK_ROOT}/gdk.tmp.yml"; then
   cp -f "${GDK_ROOT}/gdk.tmp.yml" "${GDK_ROOT}/gdk.yml"
 fi
 rm -f "${GDK_ROOT}/gdk.tmp.yml"
+
+scalar reconfigure -a

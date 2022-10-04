@@ -8,7 +8,7 @@ source ~/.config/yadm/scripts/colors.sh
   curl -s "http://localhost:8989?action=pulse&green=100"
 
   rm -rf .git/gc.log
-  git checkout db/structure.sql
+  git restore db/structure.sql
 
   if [[ ! -S $GDK_ROOT/redis/redis.socket ]]; then
     # Work around issue with Redis socket disappearing by restarting the GDK
@@ -44,7 +44,7 @@ source ~/.config/yadm/scripts/colors.sh
   fi
   set -eo pipefail
 
-  git checkout db/structure.sql
+  git restore db/structure.sql
   sleep 5
 
   printf "${YELLOW}%s${NC}\n" "Precompiling static assets to ensure graphiql-rails changes are picked up..."
@@ -58,7 +58,7 @@ source ~/.config/yadm/scripts/colors.sh
   printf "${GREEN}%s${NC}\n" "Done."
 
   printf "${YELLOW}%s${NC}\n" "Rebasing local branches..."
-  git checkout
+  git restore :/
   rebase-all
   printf "${GREEN}%s${NC}\n" "Done."
 
@@ -77,7 +77,7 @@ source ~/.config/yadm/scripts/colors.sh
     git stash pop
     bin/rails db:migrate
     scripts/regenerate-schema # Ensure we have a clean test DB with any branch migrations done
-    git checkout db/structure.sql
+    git restore db/structure.sql
   fi
 
   sleep 10

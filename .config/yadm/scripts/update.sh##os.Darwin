@@ -32,11 +32,7 @@ if [[ ! -x ${sys_gpg_agent} || $(readlink ${sys_gpg_agent}) != /usr/local/MacGPG
 fi
 
 if [[ $(yadm config local.class) == 'Work' ]]; then
-  PYTHON_PATH="$(realpath $(brew --prefix)/Frameworks/Python.framework/Versions/Current/Resources/Python.app/Contents/MacOS/Python)"
-  if [[ -f $PYTHON_PATH ]]; then
-    sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add "${PYTHON_PATH}"
-    sudo /usr/libexec/ApplicationFirewall/socketfilterfw --unblockapp  "${PYTHON_PATH}"
-  fi
+  "${YADM_SCRIPTS}/update-work.zsh"
 fi
 
 "${YADM_SCRIPTS}/update-common.zsh"

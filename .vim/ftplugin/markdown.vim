@@ -1,5 +1,6 @@
 " Enable spellchecking
 setlocal spell
 
-" Automatically wrap at 80 characters
-setlocal textwidth=80
+" Automatically wrap at 100 characters
+setlocal textwidth=100
+setlocal colorcolumn=100

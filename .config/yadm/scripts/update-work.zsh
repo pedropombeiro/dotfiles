@@ -51,3 +51,8 @@ fi
 rm -f "${GDK_ROOT}/gdk.tmp.yml"
 
 scalar reconfigure -a
+
+# Ensure firenvim is installed for browsers
+nvim --headless "+call firenvim#install(0) | q"
+echo
+

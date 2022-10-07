@@ -23,7 +23,8 @@ if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then
       cp -R "${HOME}/.config/pgcli" "${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}/.config/"
     fi
 
-    printf "${YELLOW}%s${NC}\n" "Linking pgcli config to ${HOME}..."
-    find "${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}/.config/pgcli" -type f -print0 | xargs -r -0 -n 1 -I {} ln -sf {} "${HOME}/.config/pgcli/"
+    printf "${YELLOW}%s${NC}\n" "Linking pgcli state to ${HOME}..."
+    ln -sf "${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}/.config/pgcli/history" "${HOME}/.config/pgcli/"
+    ln -sf "${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}/.config/pgcli/log" "${HOME}/.config/pgcli/"
   fi
 fi

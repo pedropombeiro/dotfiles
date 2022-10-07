@@ -25,6 +25,8 @@ brew "sqlite"
 brew "xz"
 # Automate deployment, configuration, and upgrading
 brew "ansible"
+# Linter for YAML files
+brew "yamllint"
 # Checks ansible playbooks for practices and behaviour
 brew "ansible-lint"
 # Record and share terminal sessions
@@ -229,8 +231,6 @@ brew "wifi-password"
 brew "xh"
 # Yet Another Dotfiles Manager
 brew "yadm"
-# Linter for YAML files
-brew "yamllint"
 # YubiKey personalization library and tool
 brew "ykpers"
 # Download YouTube videos from the command-line
@@ -396,6 +396,7 @@ mas "iMovie", id: 408981434
 mas "Keyboard Pilot", id: 402670023
 mas "Keynote", id: 409183694
 mas "Mactracker", id: 430255202
+mas "MediaInfo", id: 510620098
 mas "Microsoft To Do", id: 1274495053
 mas "MusicBuddy", id: 563706976
 mas "Next Meeting", id: 1017470484
@@ -403,6 +404,7 @@ mas "Numbers", id: 409203825
 mas "Okta Extension App", id: 1439967473
 mas "Pages", id: 409201541
 mas "PDF Reader Pro Lite", id: 919472673
+mas "PLIST Editor", id: 1157491961
 mas "Pocket", id: 568494494
 mas "Simplenote", id: 692867256
 mas "Speedtest", id: 1153157709

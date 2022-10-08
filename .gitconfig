@@ -94,8 +94,13 @@
 
 [delta]
 	line-numbers = true
-	features		 = decorations
+	features     = decorations
 	side-by-side = true
+	light        = false      # set to true if you're in a terminal w/ a light background color
+	plus-style   = "syntax #012800"
+	minus-style  = "syntax #340001"
+	syntax-theme = gruvbox-dark
+	navigate     = true
 
 [delta "interactive"]
 	keep-plus-minus-markers = false

@@ -5,6 +5,7 @@ gui:
     'pedropombeiro': '#11aaff' # use a light blue for branches beginning with 'pedropombeiro/'
     '_pedropombeiro': '#808080' # use gray for branches beginning with '_pedropombeiro/'
     'tmp': '#404040' # use dark gray for branches beginning with 'tmp/'
+  showIcons: true
   scrollHeight: 2
   scrollPastBottom: true
   mouseEvents: true
@@ -36,7 +37,7 @@ gui:
   skipNoStagedFilesWarning: false
   showListFooter: true
   showFileTree: true
-  showRandomTip: true
+  showRandomTip: false
   showCommandLog: true
   commandLogSize: 8
 git:
@@ -75,7 +76,7 @@ reporting: undetermined
 splashUpdatesIndex: 0
 confirmOnQuit: false
 # determines whether hitting 'esc' will quit the application when there is nothing to cancel/close
-quitOnTopLevelReturn: true
+quitOnTopLevelReturn: false
 keybinding:
   universal:
     quit: q
@@ -100,11 +101,11 @@ keybinding:
     nextBlock-alt2: <tab>
     prevBlock-alt2: <backtab>
     jumpToBlock:
-    - "1"
-    - "2"
-    - "3"
-    - "4"
-    - "5"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
     nextMatch: "n"
     prevMatch: "N"
     startSearch: /
@@ -217,12 +218,12 @@ keybinding:
     update: u
     bulkMenu: b
 os:
-  editCommandTemplate: '{{editor}} +{{line}} {{filename}}'
+  editCommandTemplate: '{{editor}} +{{line}} -- {{filename}}'
   openCommand: open {{filename}}
   openLinkCommand: open {{link}}
-disableStartupPopups: false
+disableStartupPopups: true
 customCommands: []
 services: {}
 notARepository: prompt
-
+promptToReturnFromSubprocess: false # display confirmation when subprocess terminates
 

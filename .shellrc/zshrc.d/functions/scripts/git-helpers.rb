@@ -125,20 +125,22 @@ def rebase_mappings
     mr_match_data = mr_pattern.match(branch)
     backport_match_data = backport_pattern.match(branch)
 
-    if seq_mr_match_data && seq_mr_match_data[:mr_id] != chain_mr_id
-      chain_previous_branches = [default_branch]
-      chain_previous_mr_seq_nr = nil
-    end
+    chain_previous_mr_id = chain_mr_id
 
     if seq_mr_match_data
-      chain_mr_id = seq_mr_match_data ? seq_mr_match_data[:mr_id] : nil
-      chain_mr_seq_nr = seq_mr_match_data ? seq_mr_match_data[:mr_seq_nr].to_i : nil
+      chain_mr_id = seq_mr_match_data[:mr_id]
+      chain_mr_seq_nr = seq_mr_match_data[:mr_seq_nr].to_i
     elsif mr_match_data
-      chain_mr_id = mr_match_data ? mr_match_data[:mr_id] : nil
+      chain_mr_id = mr_match_data[:mr_id]
       chain_mr_seq_nr = 1
     else
       chain_mr_id = nil
       chain_mr_seq_nr = nil
+    end
+
+    if chain_previous_mr_id && chain_mr_id != chain_previous_mr_id
+      chain_previous_branches = [default_branch]
+      chain_previous_mr_seq_nr = nil
     end
 
     if chain_mr_seq_nr

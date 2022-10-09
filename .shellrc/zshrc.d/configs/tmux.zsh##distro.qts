@@ -1,9 +1,8 @@
 #!/usr/bin/env zsh
 
 if command -v tmux > /dev/null; then
-  # Automatically start tmux
-
   if [[ -z $ZSH_TMUX_AUTOSTART ]]; then
+    # Automatically start tmux
     export ZSH_TMUX_AUTOSTART=true
   fi
 

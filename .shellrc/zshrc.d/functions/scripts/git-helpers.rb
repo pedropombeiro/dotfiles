@@ -87,17 +87,18 @@ def rebase_all_per_capture_info(local_branch_info_hash)
 end
 
 def rebase_mappings
-  system(*%w(git checkout db/schema_migrations/))
+  system(*%w(git restore db/schema_migrations/), out: File::NULL)
 
   unless system(*%w(git diff-index --quiet HEAD --))
     abort 'Please stash the changes in the current branch before calling rebase-all!'.red
   end
 
   user_name = ENV['USER']
-  mr_pattern = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+$}i.freeze
-  seq_mr_pattern = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/(?<mr_seq_nr>\d+)-[a-z0-9\-_]+$}i.freeze
-  backport_pattern = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+-(?<milestone>\d+[-\.]\d+)$}i.freeze
   default_branch = compute_default_branch
+
+  mr_pattern       = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+$}i.freeze
+  seq_mr_pattern   = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/(?<mr_seq_nr>\d+)-[a-z0-9\-_]+$}i.freeze
+  backport_pattern = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+-(?<milestone>\d+[-\.]\d+)$}i.freeze
 
   local_branches = `git branch --list`
     .lines
@@ -110,7 +111,7 @@ def rebase_mappings
 
       next [seq_mr_match_data[:mr_id].to_i, 1, seq_mr_match_data[:mr_seq_nr].to_i] if seq_mr_match_data
       next [backport_match_data[:mr_id].to_i, 2, backport_match_data[:milestone].gsub('.', '-').to_f] if backport_match_data
-      [mr_match_data[:mr_id].to_i, 0] if mr_match_data
+      next [mr_match_data[:mr_id].to_i, 1] if mr_match_data
 
       []
     end
@@ -121,16 +122,26 @@ def rebase_mappings
 
   local_branches.map do |branch|
     seq_mr_match_data = seq_mr_pattern.match(branch)
+    mr_match_data = mr_pattern.match(branch)
     backport_match_data = backport_pattern.match(branch)
 
     if seq_mr_match_data && seq_mr_match_data[:mr_id] != chain_mr_id
       chain_previous_branches = [default_branch]
       chain_previous_mr_seq_nr = nil
     end
-    chain_mr_id = seq_mr_match_data ? seq_mr_match_data[:mr_id] : nil
-    chain_mr_seq_nr = seq_mr_match_data ? seq_mr_match_data[:mr_seq_nr] : nil
 
     if seq_mr_match_data
+      chain_mr_id = seq_mr_match_data ? seq_mr_match_data[:mr_id] : nil
+      chain_mr_seq_nr = seq_mr_match_data ? seq_mr_match_data[:mr_seq_nr].to_i : nil
+    elsif mr_match_data
+      chain_mr_id = mr_match_data ? mr_match_data[:mr_id] : nil
+      chain_mr_seq_nr = 1
+    else
+      chain_mr_id = nil
+      chain_mr_seq_nr = nil
+    end
+
+    if chain_mr_seq_nr
       if chain_previous_mr_seq_nr.nil? || chain_mr_seq_nr > chain_previous_mr_seq_nr
         parent_branch = chain_previous_branches.last
         chain_previous_branches << branch

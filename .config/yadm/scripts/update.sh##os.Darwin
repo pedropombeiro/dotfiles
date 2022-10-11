@@ -15,7 +15,8 @@ brew upgrade
 printf "${YELLOW}%s${NC}\n" "Updating asdf..."
 asdf plugin-update --all
 printf "${YELLOW}%s${NC}\n" "Updating asdf plugins..."
-echo -e "golangci-lint\nshellcheck" | xargs -I {} bash -c "asdf global {} $(asdf list {} | sort --ignore-leading-blanks --version-sort --reverse | head -n1)"
+asdf global golangci-lint $(asdf list golangci-lint | sort --ignore-leading-blanks --version-sort --reverse | head -n1)
+asdf global shellcheck $(asdf list shellcheck | sort --ignore-leading-blanks --version-sort --reverse | head -n1)
 asdf plugin list --no-run-if-empty | \
   grep -E '^(fd|golangci-lint|yarn)$' | \
   sort | \

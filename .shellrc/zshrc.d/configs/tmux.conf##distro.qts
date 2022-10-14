@@ -1,5 +1,5 @@
 # Turn on mouse support
-#setw -g mouse on
+set -g mouse on
 
 set-option -g focus-events on
 

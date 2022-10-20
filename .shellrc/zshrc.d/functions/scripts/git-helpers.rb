@@ -96,14 +96,14 @@ def rebase_mappings
   user_name = ENV['USER']
   default_branch = compute_default_branch
 
-  mr_pattern       = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+$}i.freeze
-  seq_mr_pattern   = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/(?<mr_seq_nr>\d+)-[a-z0-9\-_]+$}i.freeze
-  backport_pattern = %r{^(security-)?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+-(?<milestone>\d+[-\.]\d+)$}i.freeze
+  mr_pattern       = %r{^(security[-/])?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+$}i.freeze
+  seq_mr_pattern   = %r{^(security[-/])?#{user_name}\/(?<mr_id>\d+)\/(?<mr_seq_nr>\d+)-[a-z0-9\-_]+$}i.freeze
+  backport_pattern = %r{^(security[-/])?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+-(?<milestone>\d+[-\.]\d+)$}i.freeze
 
   local_branches = `git branch --list`
     .lines
     .map { |line| line[2..].rstrip }
-    .select { |branch| branch.start_with?("#{user_name}/") || branch.start_with?("security-#{user_name}/") }
+    .select { |branch| branch.start_with?("#{user_name}/") || branch.start_with?("security-#{user_name}/") || branch.start_with?("security/#{user_name}/") }
     .sort_by do |branch|
       seq_mr_match_data = seq_mr_pattern.match(branch)
       backport_match_data = backport_pattern.match(branch)
@@ -177,7 +177,7 @@ def git_push_issue(*args)
   current_branch = `git branch --show-current`.strip
 
   user_name = ENV['USER']
-  mr_pattern = %r{^(?<prefix>(security-)?#{user_name})/(?<mr_id>\d+)/[a-z0-9\-_]+$}.freeze
+  mr_pattern = %r{^(?<prefix>(security[-/])?#{user_name})/(?<mr_id>\d+)/[a-z0-9\-_]+$}.freeze
   mr_match_data = mr_pattern.match(current_branch)
 
   if mr_match_data

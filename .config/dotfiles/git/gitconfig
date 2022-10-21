@@ -169,7 +169,3 @@
 	fetchJobs = 2
 [status]
 	submoduleSummary = true
-[scalar]
-	repo = /Users/pedropombeiro/src/gitlab-development-kit/gitlab
-[maintenance]
-	repo = /Users/pedropombeiro/src/gitlab-development-kit/gitlab

@@ -4,5 +4,5 @@
 if [ $# -eq 0 ]; then
   yadm enter "$SHELL"
 else
-  yadm enter "$SHELL -i -c '$*'"
+  yadm enter "$SHELL -i -c 'cd ~ && $*'"
 fi

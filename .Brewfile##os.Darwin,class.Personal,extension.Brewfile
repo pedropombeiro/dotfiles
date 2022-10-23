@@ -12,14 +12,14 @@ tap "showwin/speedtest"
 tap "zaquestion/tap"
 # General-purpose data compression with high compression ratio
 brew "xz"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.10"
 # Record and share terminal sessions
 brew "asciinema"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
 # Extendable version manager with support for Ruby, Node.js, Erlang & more
 brew "asdf"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.9"
 # Shell extension to jump to frequently used directories
 brew "autojump"
 # Clone of cat(1) with syntax highlighting and Git integration
@@ -62,6 +62,8 @@ brew "homeassistant-cli"
 brew "htop"
 # Command-line benchmarking tool
 brew "hyperfine"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.9"
 # Tools and libraries to manipulate images in many formats
 brew "imagemagick"
 # Update of iperf: measures TCP, UDP, and SCTP bandwidth

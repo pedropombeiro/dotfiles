@@ -154,6 +154,10 @@ brew "borgbackup/tap/borgbackup-fuse"
 brew "jarred-sumner/git-peek/git-peek"
 # Reconcile your local git repositories
 brew "leipert-projects/git-recon/git-recon"
+# Password manager that keeps all passwords secure behind one password
+cask "1password"
+# Command-line helper for the 1Password password manager
+cask "1password-cli"
 # Application launcher and productivity software
 cask "alfred"
 # Enable Windows-like alt-tab
@@ -184,8 +188,6 @@ cask "calibre"
 cask "dash"
 # App to build and share containerized applications and microservices
 cask "docker"
-# Client for the Dropbox cloud storage service
-cask "dropbox"
 # Control your Elgato Key Lights
 cask "elgato-control-center"
 # Assign keys, and then decorate and label them
@@ -212,8 +214,6 @@ cask "istat-menus"
 cask "iterm2"
 # Open-source screen recorder built with web technology
 cask "kap"
-# Password manager app
-cask "keepassxc"
 # Sound clear in online meetings
 cask "krisp"
 # Wallet desktop application to maintain multiple cryptocurrencies

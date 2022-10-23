@@ -269,8 +269,6 @@ cask "choosy"
 cask "chromedriver"
 # API documentation browser and code snippet manager
 cask "dash"
-# Client for the Dropbox cloud storage service
-cask "dropbox"
 # Control your Elgato Key Lights
 cask "elgato-control-center"
 # Assign keys, and then decorate and label them
@@ -303,8 +301,6 @@ cask "iterm2"
 cask "jetbrains-toolbox"
 # Open-source screen recorder built with web technology
 cask "kap"
-# Password manager app
-cask "keepassxc"
 # Open-source keystroke visualizer
 cask "keycastr"
 # Sound clear in online meetings

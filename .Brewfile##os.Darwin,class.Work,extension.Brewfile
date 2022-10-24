@@ -157,6 +157,8 @@ brew "neovim"
 brew "neovim-remote"
 # HTTP(S) server and reverse proxy, and IMAP/POP3 proxy server
 brew "nginx"
+# Port scanning utility for large networks
+brew "nmap"
 # Prometheus exporter for machine metrics
 brew "node_exporter", restart_service: true
 # Tool for creating identical machine images for multiple platforms

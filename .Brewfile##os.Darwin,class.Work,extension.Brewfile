@@ -15,8 +15,6 @@ tap "minio/stable"
 tap "moul/moul"
 tap "mvp/uhubctl", "https://github.com/mvp/uhubctl"
 tap "zaquestion/tap"
-# Cryptography and SSL/TLS Toolkit
-brew "openssl@1.1"
 # Library for command-line editing
 brew "readline"
 # Command-line interface for SQLite
@@ -65,6 +63,8 @@ brew "ctop"
 brew "direnv"
 # Tool for exploring each layer in a docker image
 brew "dive"
+# Text processing system for reStructuredText
+brew "docutils", link: false
 # GNU version of the tar archiving utility
 brew "gnu-tar"
 # Debian package management system
@@ -219,6 +219,8 @@ brew "the_silver_searcher"
 brew "tokei"
 # Syntax-aware linter for prose
 brew "vale"
+# Secures, stores, and tightly controls access to secrets
+brew "vault"
 # Modern watch command
 brew "viddy"
 # Use ViM as PAGER

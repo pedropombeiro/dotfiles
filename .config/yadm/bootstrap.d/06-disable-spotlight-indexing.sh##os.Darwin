@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+mkdir -p ~/src
+touch ~/src/.metadata_never_index

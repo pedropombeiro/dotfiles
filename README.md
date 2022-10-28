@@ -37,6 +37,7 @@ Install the YADM and the [Brew package manager](https://brew.sh/):
 
 ```shell
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+eval "$(/opt/homebrew/bin/brew shellenv)"
 brew install yadm
 ```
 
@@ -46,7 +47,7 @@ Install dotfiles:
 # Use HTTPS protocol for anonymous access
 yadm clone --no-bootstrap https://gitlab.com/pedropombeiro/dotfiles.git && \
 yadm config local.class Personal && \
-yadm bootstrap
+yadm bootstrap && \
 source ~/.zshrc.shared
 ```
 
@@ -61,10 +62,9 @@ sudo apt update && sudo apt install -y yadm
 Install dotfiles:
 
 ```shell
-# Use HTTPS protocol for anonymous access
 yadm clone --no-bootstrap https://gitlab.com/pedropombeiro/dotfiles.git && \
 yadm config local.class Personal && \
-yadm bootstrap
+yadm bootstrap && \
 source ~/.zshrc.shared
 ```
 
@@ -215,11 +215,9 @@ zprof
 
 ## Checklist before reinstall
 
-- Backup SSH keys
+- Make Time Machine or SuperDuper! backup
 - Check each app for backup
 - Backup hidden files in repo
-- Backup `/Library/`
-- Backup `~/Library/`
 - Make sure branches in repo are pushed
 - Search for "what folders to backup"
 - Search for "checklist before factory reset"
@@ -230,7 +228,6 @@ zprof
 
 - Add Terminal, iTerm, Visual Studio Code, RubyMine, and GoLand to `System Preferences/Security & Privacy/Privacy/Developer Tools` list, to avoid Apple notarisation checks that cause slowdowns.
 - Configure [`$HOME/.git-peek`](https://awesomeopensource.com/project/Jarred-Sumner/git-peek#private-repositories--choosing-an-editor)
-- `ln -sf ~/Sync/pedro/Briefcase/Backups/MBP16/.pry_history ~/.pry_history` to keep IRB terminal history synced
 
 ## Useful commands
 

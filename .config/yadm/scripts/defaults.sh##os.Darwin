@@ -11,6 +11,10 @@
 # Disable the sound effects on boot
 sudo nvram StartupMute=%01
 
+# Disable 'Wake for network access' and 'Power Nap'
+sudo pmset -a womp 0
+sudo pmset -a powernap 0
+
 # Set Login Window Text
 sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText "If you found this computer, please call +41 787 131 629 or email pedro@pombei.ro"
 

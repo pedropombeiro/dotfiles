@@ -3,11 +3,14 @@
 if [[ -z $HOMEBREW_PREFIX ]]; then
   if command -v brew > /dev/null; then
     HOMEBREW_PREFIX="$(brew --prefix)"
+  elif [[ -d /opt/homebrew ]]; then
+    # Apple Silicon uses a different prefix
+    HOMEBREW_PREFIX='/opt/homebrew'
   fi
 fi
 
 if [[ -n $HOMEBREW_PREFIX ]]; then
-  PATH="${HOMEBREW_PREFIX}/sbin:${PATH}"
+  PATH="${HOMEBREW_PREFIX}/bin:${HOMEBREW_PREFIX}/sbin:${PATH}"
   export PATH
 fi
 

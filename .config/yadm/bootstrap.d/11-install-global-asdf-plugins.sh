@@ -6,7 +6,7 @@ for p in hadolint shellcheck; do
   asdf plugin add "${p}"
 done
 
-asdf install hadolint v2.10.0 && asdf global hadolint v2.10.0
+asdf install hadolint 2.10.0 && asdf global hadolint 2.10.0
 asdf install shellcheck 0.8.0 && asdf global shellcheck 0.8.0
 
 if [[ $(uname -s) != 'Darwin' ]]; then

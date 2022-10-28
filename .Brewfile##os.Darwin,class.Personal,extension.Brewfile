@@ -204,8 +204,6 @@ cask "gimp"
 cask "google-earth-pro"
 # Tools to protect your emails and files
 cask "gpg-suite"
-# Power usage monitoring tool enabled for Intel Core processors
-cask "intel-power-gadget"
 # System monitoring app
 cask "istat-menus"
 # Terminal emulator as alternative to Apple's Terminal app

@@ -160,8 +160,6 @@ cask "1password"
 cask "1password-cli"
 # Application launcher and productivity software
 cask "alfred"
-# Enable Windows-like alt-tab
-cask "alt-tab"
 # Android SDK component
 cask "android-platform-tools"
 # Inspect application bundles

@@ -62,8 +62,6 @@ brew "homeassistant-cli"
 brew "htop"
 # Command-line benchmarking tool
 brew "hyperfine"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.9"
 # Tools and libraries to manipulate images in many formats
 brew "imagemagick"
 # Update of iperf: measures TCP, UDP, and SCTP bandwidth
@@ -110,6 +108,8 @@ brew "pngquant"
 brew "poppler"
 # Unix pager optimized for psql
 brew "pspg"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.9"
 # File browser
 brew "ranger"
 # Search tool like grep and The Silver Searcher
@@ -299,6 +299,8 @@ cask "the-unarchiver"
 cask "toggl-track"
 # Web browser focusing on security
 cask "tor-browser"
+# Trading software
+cask "trader-workstation"
 # Control your data usage on slow or expensive networks
 cask "tripmode"
 # Open-source code editor

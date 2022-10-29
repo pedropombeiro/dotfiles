@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 TEMPFILE="$(mktemp -t .terminfoXXXXXX)"
 cat << EOF > "${TEMPFILE}"
 tmux|tmux terminal multiplexer,
@@ -9,5 +11,5 @@ tmux|tmux terminal multiplexer,
 tmux-256color|tmux with 256 colors,
    use=xterm-256color, use=tmux,
 EOF
-tic -x "${TEMPFILE}"
+tic -o "$(tic -D)" -x "${TEMPFILE}"
 rm -f "${TEMPFILE}"

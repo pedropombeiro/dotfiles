@@ -10,6 +10,8 @@ if command -v tmux > /dev/null; then
   export ZSH_TMUX_CONFIG=~/.shellrc/zshrc.d/configs/tmux.conf
   export ZSH_TMUX_DEFAULT_SESSION_NAME="$(hostname) - $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
   export ZSH_TMUX_ITERM2=true
+  export ZSH_TMUX_TERM="tmux-256color"
+  export ZSH_TMUX_FIXTERM_WITH_256COLOR="$ZSH_TMUX_TERM"
 
   plugins+=(tmux)
 fi

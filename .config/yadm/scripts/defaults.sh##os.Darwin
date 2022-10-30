@@ -3,6 +3,7 @@
 # Inspired from https://github.com/mathiasbynens/dotfiles/blob/master/.macos
 # https://shadowfile.inode.link/blog/2018/06/advanced-defaults1-usage/
 # http://hints.macworld.com/article.php?story=20131123074223584
+# https://github.com/sqrthree/defaults-write
 
 ###############################################################################
 # General UI/UX                                                               #
@@ -164,6 +165,9 @@ defaults write com.apple.finder QLEnableTextSelection -bool true
 
 # Set current folder as default search scope
 defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+
+# Empty Trash securely by default
+defaults write com.apple.finder EmptyTrashSecurely -bool true
 
 ###############################################################################
 # Dock, Dashboard, and hot corners                                            #

@@ -43,9 +43,9 @@
 
 ) &!
 
-# Load all files from .shell/login.d directory
+# Load all files from .shellrc/login.d directory
 if [ -d "${HOME}/.shellrc/login.d" ]; then
-  for file in "${HOME}/.shellrc/login.d/*.sh"; do
+  for file in ${HOME}/.shellrc/login.d/*.sh; do
     source $file
   done
 fi

@@ -67,11 +67,11 @@ map <leader># ysiw#
 vmap <leader># c#{<C-R>"}<ESC>
 
 " ," Surround a word with "quotes"
-map <leader>" ysiw"
+map <leader>" ysiW"
 vmap <leader>" c"<C-R>""<ESC>
 
 " ,' Surround a word with 'single quotes'
-map <leader>' ysiw'
+map <leader>' ysiW'
 vmap <leader>' c'<C-R>"'<ESC>
 
 " <leader>) or <leader>( Surround a word with (parens)
@@ -93,7 +93,7 @@ map <leader>{ ysiw{
 vmap <leader>} c{ <C-R>" }<ESC>
 vmap <leader>{ c{<C-R>"}<ESC>
 
-map <leader>` ysiw`
+map <leader>` ysiW`
 
 nmap <leader>rf :Dispatch bundle exec rubocop --auto-correct %<CR>
 

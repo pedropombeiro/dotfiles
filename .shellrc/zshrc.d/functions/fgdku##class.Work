@@ -5,6 +5,12 @@ source ~/.config/yadm/scripts/colors.sh
 (
   cd "${GDK_ROOT}/gitlab" || exit 0
 
+  if [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]]; then
+    printf "${RED}%s${NC}\n" 'Please stash the changes in the current branch before calling fgdku!'
+    cd - >/dev/null
+    exit 1
+  fi
+
   curl -s "http://localhost:8989?action=pulse&green=100"
 
   rm -rf .git/gc.log
@@ -16,12 +22,6 @@ source ~/.config/yadm/scripts/colors.sh
     # Work around issue with Redis socket disappearing by restarting the GDK
     printf "${YELLOW}%s${NC}\n" 'Redis socket disappeared, running gdk restart before update...'
     gdk restart
-  fi
-
-  if [[ $(git diff --shortstat 2> /dev/null | tail -n1) != "" ]]; then
-    printf "${RED}%s${NC}\n" 'Please stash the changes in the current branch before calling fgdku!'
-    cd - >/dev/null
-    exit 1
   fi
 
   set -eo pipefail

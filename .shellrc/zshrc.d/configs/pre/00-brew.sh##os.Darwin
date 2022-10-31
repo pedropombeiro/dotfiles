@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+[[ -n ${HOMEBREW_PREFIX} ]] || source ~/.shellrc/login.d/brew.sh
+

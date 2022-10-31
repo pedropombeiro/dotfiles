@@ -406,7 +406,6 @@ mas "Pages", id: 409201541
 mas "PDF Reader Pro Lite", id: 919472673
 mas "PLIST Editor", id: 1157491961
 mas "Pocket", id: 568494494
-mas "Simplenote", id: 692867256
 mas "Speedtest", id: 1153157709
 mas "Time Out", id: 402592703
 mas "WireGuard", id: 1451685025

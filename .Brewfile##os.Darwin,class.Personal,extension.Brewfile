@@ -34,14 +34,14 @@ brew "ctop"
 brew "duf"
 # More intuitive version of du in rust
 brew "dust"
+# Run arbitrary commands when files change
+brew "entr"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
 # Scriptable ping program for checking if multiple hosts are up
 brew "fping"
 # Command-line fuzzy finder written in Go
 brew "fzf"
-# GitHub command-line tool
-brew "gh"
 # Distributed revision control system
 brew "git"
 # Syntax-highlighting pager for git and diff output
@@ -186,10 +186,6 @@ cask "calibre"
 cask "dash"
 # App to build and share containerized applications and microservices
 cask "docker"
-# Control your Elgato Key Lights
-cask "elgato-control-center"
-# Assign keys, and then decorate and label them
-cask "elgato-stream-deck"
 # Typeface made for developers
 cask "font-jetbrains-mono"
 # Developer targeted fonts with a high number of glyphs
@@ -305,6 +301,8 @@ cask "visual-studio-code"
 cask "whatsapp"
 # Network protocol analyzer
 cask "wireshark"
+# Application for configuring any YubiKey
+cask "yubico-yubikey-manager"
 # Video communication and virtual meeting platform
 cask "zoom"
 mas "Amphetamine", id: 937984704
@@ -321,6 +319,5 @@ mas "Microsoft To Do", id: 1274495053
 mas "Pocket", id: 568494494
 mas "Router", id: 1229416813
 mas "Shazam", id: 897118787
-mas "Simplenote", id: 692867256
 mas "Speedtest", id: 1153157709
 mas "WireGuard", id: 1451685025

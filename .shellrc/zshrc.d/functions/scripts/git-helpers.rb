@@ -55,62 +55,63 @@ def rebase_all_per_capture_info(local_branch_info_hash)
   local_branch_info_hash.each do |branch, parent_branch|
     puts 'Rebasing '.brown + branch.cyan + ' onto '.brown + parent_branch.green + '...'.brown
 
-    unless system(*%W(git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}), out: File::NULL, err: File::NULL)
+    unless system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
       puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
       next
     end
 
-    unless system({ 'LEFTHOOK' => '0' }, *%W[git rebase --autostash #{parent_branch} #{branch}])
-      begin
-        status = `git status --short`
-        return if auto_generated_files_hash
-          .select { |file, _| status.include?("UU #{file}") }
-          .empty?
+    next if system({ 'LEFTHOOK' => '0' }, *%W[git rebase --autostash #{parent_branch} #{branch}])
 
-        err = false
-        auto_generated_files_hash
-          .select { |file, _| status.include?("UU #{file}") }
-          .each do |file, cmd|
-            puts "  Merge conflict in #{file.red}, regenerating...".brown
-            system(*cmd)
-            err = true
+    loop do
+      status = `git status --short`
+      break unless auto_generated_files_hash.select { |file, _| status.include?("UU #{file}") }.any?
 
-            break unless system(*%W[git add #{file}])
+      err = false
+      auto_generated_files_hash
+        .select { |file, _| status.include?("UU #{file}") }
+        .each do |file, cmd|
+          puts "  Merge conflict in #{file.red}, regenerating...".brown
+          system(*cmd)
+          err = true
 
-            err = false
-          end
-      end while !err && system({ 'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0' }, *%w[git rebase --continue])
+          break unless system(*%W[git add #{file}])
+
+          err = false
+        end
+
+      break unless err || system({ 'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0' }, *%w[git rebase --continue])
     end
   end
 
-  system(*%W(git switch #{current_branch}))
+  system(*%W[git switch #{current_branch}])
 end
 
 def rebase_mappings
-  system(*%w(git restore db/schema_migrations/), out: File::NULL)
+  system(*%w[git restore db/schema_migrations/], out: File::NULL)
 
-  unless system(*%w(git diff-index --quiet HEAD --))
+  unless system(*%w[git diff-index --quiet HEAD --])
     abort 'Please stash the changes in the current branch before calling rebase-all!'.red
   end
 
   user_name = ENV['USER']
   default_branch = compute_default_branch
 
-  mr_pattern       = %r{^(security[-/])?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+$}i.freeze
-  seq_mr_pattern   = %r{^(security[-/])?#{user_name}\/(?<mr_id>\d+)\/(?<mr_seq_nr>\d+)-[a-z0-9\-_]+$}i.freeze
-  backport_pattern = %r{^(security[-/])?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-_]+-(?<milestone>\d+[-\.]\d+)$}i.freeze
+  mr_pattern       = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/[a-z0-9\-_]+$}i.freeze
+  seq_mr_pattern   = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/(?<mr_seq_nr>\d+)-[a-z0-9\-_]+$}i.freeze
+  backport_pattern = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/[a-z0-9\-_]+-(?<milestone>\d+[-.]\d+)$}i.freeze
 
-  local_branches = `git branch --list`
+  local_branches =
+    `git branch --list`
     .lines
     .map { |line| line[2..].rstrip }
-    .select { |branch| branch.start_with?("#{user_name}/") || branch.start_with?("security-#{user_name}/") || branch.start_with?("security/#{user_name}/") }
+    .select { |branch| branch.start_with?("#{user_name}/", "security-#{user_name}/", "security/#{user_name}/") }
     .sort_by do |branch|
       seq_mr_match_data = seq_mr_pattern.match(branch)
       backport_match_data = backport_pattern.match(branch)
       mr_match_data = mr_pattern.match(branch)
 
       next [seq_mr_match_data[:mr_id].to_i, 1, seq_mr_match_data[:mr_seq_nr].to_i] if seq_mr_match_data
-      next [backport_match_data[:mr_id].to_i, 2, backport_match_data[:milestone].gsub('.', '-').to_f] if backport_match_data
+      next [backport_match_data[:mr_id].to_i, 2, backport_match_data[:milestone].tr('.', '-').to_f] if backport_match_data
       next [mr_match_data[:mr_id].to_i, 1] if mr_match_data
 
       []
@@ -163,8 +164,8 @@ def rebase_mappings
 
     [branch, parent_branch]
   end
-    .compact
-    .to_h
+                .compact
+                .to_h
 end
 
 def rebase_all
@@ -180,23 +181,24 @@ def git_push_issue(*args)
   mr_pattern = %r{^(?<prefix>(security[-/])?#{user_name})/(?<mr_id>\d+)/[a-z0-9\-_]+$}.freeze
   mr_match_data = mr_pattern.match(current_branch)
 
-  if mr_match_data
-    local_branch_info_hash = rebase_mappings.select { |branch, _parent_branch| branch.start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}") }
+  return unless mr_match_data
 
-    local_branch_info_hash.each do |branch, parent_branch|
-      active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
+  local_branch_info_hash = rebase_mappings.select { |branch, _parent_branch| branch.start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}") }
 
-      puts 'Pushing '.brown + branch.cyan + ' to '.brown + active_remote_name.green + '...'.brown
-      unless system(*%W(git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}), out: File::NULL, err: File::NULL)
-        puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
-        next
-      end
+  local_branch_info_hash.each do |branch, parent_branch|
+    active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
 
-      break unless system(*%W[git push --force-with-lease #{active_remote_name} #{branch}] + args)
+    puts 'Pushing '.brown + branch.cyan + ' to '.brown + active_remote_name.green + '...'.brown
+
+    unless system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
+      puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
+      next
     end
 
-    system(*%W(git switch #{current_branch}))
+    break unless system(*%W[git push --force-with-lease #{active_remote_name} #{branch}] + args)
   end
+
+  system(*%W(git switch #{current_branch}))
 end
 
 BASELINE_MR_RATE = 6
@@ -219,9 +221,9 @@ def gitlab_mr_rate(*author)
   mrs = []
   best_month = nil
   best_month_mr_rate = 0
-  STDERR.print 'Fetching '
+  $stderr.print 'Fetching '
   loop do
-    STDERR.putc '.'
+    $stderr.putc '.'
 
     net = Net::HTTP.new(uri.host, uri.port)
     net.use_ssl = true
@@ -232,19 +234,19 @@ def gitlab_mr_rate(*author)
 
     res = net.start { |http| http.request(req) }
     unless res.code.to_i.between?(200, 299)
-      STDERR.puts res.code
-      STDERR.puts res.body
+      $stderr.warn res.code
+      $stderr.warn res.body
       return
     end
 
     json_res = JSON.parse(res.body)
-    mrs = mrs +
+    mrs +=
       json_res.reject { |mr| mr['merged_at'].nil? }
               .map do |mr|
                 merged_at = DateTime.iso8601(mr['merged_at'])
                 { id: mr['id'], merged_at: merged_at }
-              rescue => e
-                STDERR.puts mr
+              rescue
+                $stderr.print mr
                 raise
               end
 
@@ -254,7 +256,7 @@ def gitlab_mr_rate(*author)
     params[:page] = next_page
   end
 
-  STDERR.puts
+  $stderr.warn
   now = DateTime.now
   mrs_merged_by_month = mrs.group_by { |mr| [now, DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min }
   mrs_merged_by_month.each do |ym, monthly_mrs|
@@ -270,24 +272,28 @@ def gitlab_mr_rate(*author)
     end
 
     msg = "#{ym.strftime('%Y-%m')}: #{monthly_mrs.count.to_s.rjust(3)}"
+
     if prorated_mr_count < BASELINE_MR_RATE
       print msg.red
-      STDERR.print indicator.red if indicator
+      $stderr.print indicator.red if indicator
     else
       print msg.green
-      STDERR.print indicator.green if indicator
+      $stderr.print indicator.green if indicator
     end
+
     puts
   end
 
   first_mr_at = mrs.map { |mr| mr[:merged_at] }.min
   last_mr_at = mrs.map { |mr| mr[:merged_at] }.max
+
   monthly_average =
     if last_mr_at.year == first_mr_at.year && last_mr_at.month == first_mr_at.month
       mrs.count.to_f / ((DateTime.civil(last_mr_at.year, last_mr_at.month, -1) - DateTime.civil(first_mr_at.year, first_mr_at.month, 1)).to_f / 30)
     else
       mrs.count.to_f / ((last_mr_at - first_mr_at).to_f / 30)
     end
+
   puts '-' * 12
   msg = "Average MRs merged per month: #{monthly_average.round}"
   if monthly_average > BASELINE_MR_RATE

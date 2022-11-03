@@ -38,10 +38,15 @@ class String
   def gray;    "\033[37m#{self}\033[0m" end
 end
 
-def rebase_all_per_capture_info(local_branch_info_hash)
-  return if local_branch_info_hash.empty?
+def rebase_branch(branch, parent_branch)
+  puts 'Rebasing '.brown + branch.cyan + ' onto '.brown + parent_branch.green + '...'.brown
 
-  current_branch = `git branch --show-current`.strip
+  unless system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
+    puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
+    return
+  end
+
+  return if system({ 'LEFTHOOK' => '0' }, *%W[git rebase --update-refs --autostash #{parent_branch} #{branch}])
 
   auto_generated_files_hash = {
     'app/workers/all_queues.yml' => %w[bin/rake gitlab:sidekiq:all_queues_yml:generate],
@@ -52,36 +57,33 @@ def rebase_all_per_capture_info(local_branch_info_hash)
     'doc/update/removals.md' => %w[bin/rake gitlab:docs:compile_removals]
   }
 
-  local_branch_info_hash.each do |branch, parent_branch|
-    puts 'Rebasing '.brown + branch.cyan + ' onto '.brown + parent_branch.green + '...'.brown
+  loop do
+    status = `git status --short`
+    break unless auto_generated_files_hash.select { |file, _| status.include?("UU #{file}") }.any?
 
-    unless system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
-      puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
-      next
-    end
+    err = false
+    auto_generated_files_hash
+      .select { |file, _| status.include?("UU #{file}") }
+      .each do |file, cmd|
+        puts "  Merge conflict in #{file.red}, regenerating...".brown
+        system(*cmd)
+        err = true
 
-    next if system({ 'LEFTHOOK' => '0' }, *%W[git rebase --autostash #{parent_branch} #{branch}])
+        break unless system(*%W[git add #{file}])
 
-    loop do
-      status = `git status --short`
-      break unless auto_generated_files_hash.select { |file, _| status.include?("UU #{file}") }.any?
+        err = false
+      end
 
-      err = false
-      auto_generated_files_hash
-        .select { |file, _| status.include?("UU #{file}") }
-        .each do |file, cmd|
-          puts "  Merge conflict in #{file.red}, regenerating...".brown
-          system(*cmd)
-          err = true
-
-          break unless system(*%W[git add #{file}])
-
-          err = false
-        end
-
-      break unless err || system({ 'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0' }, *%w[git rebase --continue])
-    end
+    break unless err || system({ 'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0' }, *%w[git rebase --continue])
   end
+end
+
+def rebase_all_per_capture_info(local_branch_info_hash)
+  return if local_branch_info_hash.empty?
+
+  current_branch = `git branch --show-current`.strip
+
+  local_branch_info_hash.each { |branch, parent_branch| rebase_branch(branch, parent_branch) }
 
   system(*%W[git switch #{current_branch}])
 end
@@ -162,14 +164,20 @@ def rebase_mappings
       parent_branch = default_branch
     end
 
-    [branch, parent_branch]
+    yield chain_mr_id, branch, parent_branch
   end
                 .compact
                 .to_h
 end
 
 def rebase_all
-  rebase_all_per_capture_info rebase_mappings
+  default_branch = compute_default_branch
+  mappings =
+    rebase_mappings { |chain_mr_id, branch, parent_branch| [chain_mr_id, branch] }
+    .values
+    .map { |branch| [branch, default_branch] }
+    .to_h
+  rebase_all_per_capture_info(mappings)
 end
 
 def git_push_issue(*args)
@@ -183,7 +191,8 @@ def git_push_issue(*args)
 
   return unless mr_match_data
 
-  local_branch_info_hash = rebase_mappings.select { |branch, _parent_branch| branch.start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}") }
+  local_branch_info_hash = rebase_mappings { |chain_mr_id, branch, parent_branch| [branch, parent_branch] }
+    .select { |branch, _parent_branch| branch.start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}") }
 
   local_branch_info_hash.each do |branch, parent_branch|
     active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
@@ -234,8 +243,8 @@ def gitlab_mr_rate(*author)
 
     res = net.start { |http| http.request(req) }
     unless res.code.to_i.between?(200, 299)
-      $stderr.warn res.code
-      $stderr.warn res.body
+      $stderr.print res.code
+      $stderr.print res.body
       return
     end
 
@@ -256,7 +265,7 @@ def gitlab_mr_rate(*author)
     params[:page] = next_page
   end
 
-  $stderr.warn
+  $stderr.print
   now = DateTime.now
   mrs_merged_by_month = mrs.group_by { |mr| [now, DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min }
   mrs_merged_by_month.each do |ym, monthly_mrs|

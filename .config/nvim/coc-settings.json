@@ -14,6 +14,16 @@
   "solargraph.diagnostics": true,
   "solargraph.hover": true,
 
+  "yaml.enable": true,
+  "yaml.format.enable": true,
+  "yaml.validate": true,
+  "yaml.hover": true,
+  "yaml.completion": true,
+  "yaml.schemaStore.enable": true,
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/docker/cli/master/cli/compose/schema/data/config_schema_v3.9.json": "docker-compose*.yml"
+  },
+
   "explorer.file.showHiddenFiles": true,
   "explorer.file.reveal.auto": true,
   "explorer.icon.source": "vim-devicons",

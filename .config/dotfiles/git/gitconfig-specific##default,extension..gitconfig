@@ -2,47 +2,47 @@
 
 [user]
 
-	signingkey = B04C63F91EF312EF
+  signingkey = B04C63F91EF312EF
 
 [core]
-	# Make `git rebase` safer on macOS
-	# More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
-	trustctime = false
+  # Make `git rebase` safer on macOS
+  # More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
+  trustctime = false
 
 [commit]
 
-	# https://help.github.com/articles/signing-commits-using-gpg/
-	gpgsign		= true
+  # https://help.github.com/articles/signing-commits-using-gpg/
+  gpgsign   = true
 
 [difftool "beyondcompare4"]
 
-	cmd							= bcompare \"$LOCAL\" \"$REMOTE\"
-	path						= /usr/bin/bcompare
-	keepTemporaries	= false
-	keepBackup			= false
-	trustExitCode		= true
+  cmd             = bcompare \"$LOCAL\" \"$REMOTE\"
+  path            = /usr/bin/bcompare
+  keepTemporaries = false
+  keepBackup      = false
+  trustExitCode   = true
 
 [merge]
 
-	keepBackup	= false
-	tool				= p4merge
-	guitool			= p4merge
+  keepBackup  = false
+  tool        = p4merge
+  guitool     = p4merge
 
 [mergetool]
 
-	prompt = false
+  prompt = false
 
 [mergetool "p4merge"]
 
-	cmd							= p4merge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
-	keepTemporaries	= false
-	keepBackup			= false
-	trustExitCode		= false
-	path						= /usr/bin/p4merge
+  cmd             = p4merge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
+  keepTemporaries = false
+  keepBackup      = false
+  trustExitCode   = false
+  path            = /usr/bin/p4merge
 
 [alias]
 
-	branch-to	= "!f() {     if command -v \"$1\" >/dev/null; then\n      files=( $(git log master.. --oneline --name-only --pretty='format:' --diff-filter=CRAM | rg \"\\.(rb|go|sh|sql)\" | sort | uniq) ); if [[ $1 == vim ]]; then\n        vim -p ${files[@]}; return 0; fi\n      echo ${files[@]} | xargs \"$1\"; \\\n    else\n      echo \"'$1' is not an executable. Please specify an editor such as 'code'.\" > /dev/stderr; \\\n      return 1; \\\n    fi }; f"
+  branch-to = "!f() {     if command -v \"$1\" >/dev/null; then\n      files=( $(git log master.. --oneline --name-only --pretty='format:' --diff-filter=CRAM | rg \"\\.(rb|go|sh|sql)\" | sort | uniq) ); if [[ $1 == vim ]]; then\n        vim -p ${files[@]}; return 0; fi\n      echo ${files[@]} | xargs \"$1\"; \\\n    else\n      echo \"'$1' is not an executable. Please specify an editor such as 'code'.\" > /dev/stderr; \\\n      return 1; \\\n    fi }; f"
 
 [gpg]
-	program = /usr/local/bin/gpg
+  program = /usr/local/bin/gpg

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-set -x
 YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
 PLIST=/Library/LaunchDaemons/org.custom.keyboard-remap.plist
 

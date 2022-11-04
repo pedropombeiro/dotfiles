@@ -6,6 +6,7 @@ let g:indent_guides_exclude_filetypes     =
         \ 'help',
         \ 'man',
         \ 'nerdtree',
+        \ 'NvimTree',
         \ 'which_key'
       \ ]
 let g:indent_guides_default_mapping       = 0

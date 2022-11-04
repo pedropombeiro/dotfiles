@@ -1,5 +1,6 @@
 "-- Illuminate
 let g:Illuminate_ftblacklist = [
       \ 'coc-explorer',
-      \ 'nerdtree'
+      \ 'nerdtree',
+      \ 'NvimTree'
       \ ]

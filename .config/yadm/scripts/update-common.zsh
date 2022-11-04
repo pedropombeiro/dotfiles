@@ -44,13 +44,6 @@ if \vim --version >/dev/null; then
     printf "${GREEN}%s${NC}\n" "Done"
 fi
 
-# Update nvim.coc extensions
-printf "${YELLOW}%s${NC}\n" "Updating nvim.coc extensions..."
-\nvim -c 'CocUpdateSync|q'
-if \vim --version >/dev/null; then
-  \vim -c 'CocUpdateSync|q'
-fi
-
 # Run some sanity checks to see if known packages are working properly.
 if ! bash-language-server -v >/dev/null; then
   # If npm packages are not working correctly, try reinstalling them

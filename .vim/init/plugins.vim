@@ -34,6 +34,9 @@ if has("nvim")
   Plug 'nvim-tree/nvim-web-devicons'       " optional, for file icons
   Plug 'nvim-tree/nvim-tree.lua'           " A File Explorer For Neovim Written In Lua
 
+  Plug 'folke/lsp-colors.nvim'             " 🌈 Plugin that creates missing LSP diagnostics highlight groups for color schemes that don't yet support the Neovim 0.5 builtin LSP client.
+  Plug 'folke/trouble.nvim'                " 🚦 A pretty diagnostics, references, telescope results, quickfix and location list to help you solve all the trouble your code is causing.
+
   Plug 'junnplus/lsp-setup.nvim'           " A simple wrapper for nvim-lspconfig and mason-lspconfig to easily setup LSP servers.
   Plug 'neovim/nvim-lspconfig'             " Quickstart configs for Nvim LSP
   Plug 'williamboman/mason.nvim'           " Portable package manager for Neovim that runs everywhere Neovim runs. Easily install and manage LSP servers, DAP servers, linters, and formatters.

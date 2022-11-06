@@ -1,10 +1,24 @@
 if has("nvim")
   " -------------------- LSP ---------------------------------
-  nnoremap <silent> gD :lua vim.lsp.buf.declaration()<CR>
-  nnoremap <silent> gd :lua vim.lsp.buf.definition()<CR>
-  nnoremap <silent> <C-]> :lua vim.lsp.buf.definition()<CR>
+  if has_key(plugs, 'trouble.nvim')
+    nnoremap <silent> <leader>xx <cmd>TroubleToggle<cr>
+    nnoremap <silent> <leader>xw <cmd>TroubleToggle workspace_diagnostics<cr>
+    nnoremap <silent> <leader>xd <cmd>TroubleToggle document_diagnostics<cr>
+    nnoremap <silent> <leader>xq <cmd>TroubleToggle quickfix<cr>
+    nnoremap <silent> <leader>xl <cmd>TroubleToggle loclist<cr>
+    nnoremap <silent> <leader>gr <cmd>TroubleToggle lsp_references<cr>
+    nnoremap <silent> <leader>gd <cmd>TroubleToggle lsp_definitions<cr>
+    nnoremap <silent> <C-]> <cmd>TroubleToggle lsp_definitions<cr>
+  else
+    nnoremap <silent> <leader>gd :lua vim.lsp.buf.definition()<CR>
+    nnoremap <silent> <C-]> :lua vim.lsp.buf.definition()<CR>
+    nnoremap <silent> <leader>gr :lua vim.lsp.buf.references()<CR>
+    nnoremap <silent> <leader>xq :lua vim.diagnostic.setloclist()<CR>
+  endif
+
+  nnoremap <silent> <leader>gD :lua vim.lsp.buf.declaration()<CR>
   nnoremap <silent> K :lua vim.lsp.buf.hover()<CR>
-  nnoremap <silent> gi :lua vim.lsp.buf.implementation()<CR>
+  nnoremap <silent> <leader>gi :lua vim.lsp.buf.implementation()<CR>
   nnoremap <silent> <leader>K :lua vim.lsp.buf.signature_help()<CR>
   nnoremap <silent> <leader>wa :lua vim.lsp.buf.add_workspace_folder()<CR>
   nnoremap <silent> <leader>wr :lua vim.lsp.buf.remove_workspace_folder()<CR>
@@ -12,11 +26,9 @@ if has("nvim")
   nnoremap <silent> <leader>gy :lua vim.lsp.buf.type_definition()<CR>
   nnoremap <silent> <leader>cr :lua vim.lsp.buf.rename()<CR>
   nnoremap <silent> <f2> :lua vim.lsp.buf.rename()<CR>
-  nnoremap <silent> gr :lua vim.lsp.buf.references()<CR>
-  nnoremap <silent> <leader>cl :lua vim.diagnostic.open_float()<CR>
+  nnoremap <silent> <leader>d :lua vim.diagnostic.open_float()<CR>
   nnoremap <silent> [g :lua vim.diagnostic.goto_prev()<CR>
   nnoremap <silent> ]g :lua vim.diagnostic.goto_next()<CR>
-  nnoremap <silent> <leader>q :lua vim.diagnostic.setloclist()<CR>
   nnoremap <silent> <leader>cf :lua vim.lsp.buf.format { async = true }<CR>
 
   :lua << EOF

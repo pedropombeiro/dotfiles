@@ -103,9 +103,6 @@ else
   autocmd TerminalOpen * match none  " clear the highlighting if we're a terminal buffer
 endif
 
-" in makefiles, don't expand tabs to spaces, since actual tab characters are needed
-autocmd FileType make set noexpandtab softtabstop=0
-
 " --- show mode in cursor shape -------------------------------------------------------------------
 
 let &t_SI = "\e[5 q"

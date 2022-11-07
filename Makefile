@@ -14,3 +14,5 @@ update:
 .PHONY: brew-dump
 brew-dump:
 	@brew bundle dump -f --global --describe --tap --mas
+
+.PHONY: all test clean

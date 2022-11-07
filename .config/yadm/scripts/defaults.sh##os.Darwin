@@ -9,8 +9,8 @@
 # General UI/UX                                                               #
 ###############################################################################
 
-# Disable the sound effects on boot
-sudo nvram StartupMute=%01
+# Enable the sound effects on boot
+sudo nvram StartupMute=%00
 
 # Disable 'Wake for network access' and 'Power Nap'
 sudo pmset -a womp 0

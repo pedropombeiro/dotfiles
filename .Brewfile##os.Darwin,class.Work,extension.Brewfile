@@ -51,6 +51,8 @@ brew "pkg-config"
 brew "python@3.9"
 # Arbitrary precision calculator
 brew "calc"
+# Linter/analyzer for Makefiles
+brew "checkmake"
 # Cross-platform make
 brew "cmake"
 # Diff your Docker containers

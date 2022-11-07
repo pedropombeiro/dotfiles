@@ -41,6 +41,9 @@ if has("nvim")
   Plug 'neovim/nvim-lspconfig'             " Quickstart configs for Nvim LSP
   Plug 'williamboman/mason.nvim'           " Portable package manager for Neovim that runs everywhere Neovim runs. Easily install and manage LSP servers, DAP servers, linters, and formatters.
   Plug 'williamboman/mason-lspconfig.nvim' " Extension to mason.nvim that makes it easier to use lspconfig with mason.nvim. Strongly recommended for Windows users.
+
+  Plug 'nvim-lua/plenary.nvim'             " plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice.
+  Plug 'jose-elias-alvarez/null-ls.nvim'   " Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
 endif
 Plug 'nishigori/increment-activator'       " Vim Plugin for enhance to increment candidates U have defined.
 Plug 'gruvbox-community/gruvbox'           " Retro groove color scheme for Vim - community maintained edition (with black background)

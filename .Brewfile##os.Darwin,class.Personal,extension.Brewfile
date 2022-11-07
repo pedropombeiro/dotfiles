@@ -26,6 +26,8 @@ brew "autojump"
 brew "bat"
 # Arbitrary precision calculator
 brew "calc"
+# Linter/analyzer for Makefiles
+brew "checkmake"
 # Securely send things from one computer to another
 brew "croc"
 # Top-like interface for container metrics

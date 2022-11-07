@@ -7,7 +7,7 @@ source "${YADM_SCRIPTS}/colors.sh"
 printf "${YELLOW}%s${NC}\n" "Installing asdf plugins..."
 type -f asdf >/dev/null 2>&1 || . "${HOME}/.asdf/asdf.sh"
 set +e
-rm -rf ${HOME}/.asdf/shims
+rm -rf "${HOME}/.asdf/shims"
 asdf reshim
 
 for p in fd golang golangci-lint nodejs yarn ruby; do

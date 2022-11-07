@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
 
@@ -14,7 +14,7 @@ opkg install coreutils-mkfifo # required for powerlevel10k ZSH theme
 opkg install coreutils-comm   # required for asdf reshim
 opkg install coreutils-sort   # required for asdf update script
 opkg install bash sysstat     # required for qnapnodeexporter/grafana
-opkg install lua              # required for nvim plugins
+opkg install lua gzip         # required for nvim plugins
 
 opkg install python3 python3-pip && pip install ranger-fm # Need to edit the path to /opt/bin/python in the script header
 pip install tldr neovim-remote nginx-language-server
@@ -26,18 +26,18 @@ if [[ ! -d "/share/homes/${USER}/.oh-my-zsh" ]]; then
   printf "${YELLOW}%s${NC}\n" "Oh-my-zsh installed"
 fi
 
-if [[ ! -d $HOME/.asdf ]]; then
+if [[ ! -d "$HOME/.asdf" ]]; then
   git clone https://github.com/asdf-vm/asdf.git /share/homes/${USER}/.asdf --branch v0.10.0
   ln -sf /share/homes/${USER}/.asdf /root/.asdf
 fi
 
 INSTALL_DIR=/share/homes/${USER}/opt
-if [[ ! -d ${INSTALL_DIR}/autojump ]]; then
+if [[ ! -d "${INSTALL_DIR}/autojump" ]]; then
   printf "${YELLOW}%s${NC}\n" "Installing autojump..."
-  mkdir -p ${INSTALL_DIR}
-  git clone https://github.com/wting/autojump ${INSTALL_DIR}
-  cd ${INSTALL_DIR}/autojump
-  ./install.py --destdir ${INSTALL_DIR}/.autojump
+  mkdir -p "${INSTALL_DIR}"
+  git clone https://github.com/wting/autojump "${INSTALL_DIR}"
+  cd "${INSTALL_DIR}/autojump"
+  ./install.py --destdir "${INSTALL_DIR}/.autojump"
   cd -
 fi
 unset INSTALL_DIR

@@ -8,8 +8,10 @@ printf "${YELLOW}%s${NC}\n" "Setting up .default-golang-pkgs..."
 
 cat << EOF > ~/.default-golang-pkgs
 github.com/cheat/cheat/cmd/cheat@latest
+github.com/google/yamlfmt/cmd/yamlfmt@latest
 github.com/ipinfo/cli/ipinfo@latest
 github.com/jesseduffield/lazydocker@latest
+github.com/mrtazz/checkmake/cmd/checkmake@latest
 github.com/schollz/croc/v9@latest
 EOF
 

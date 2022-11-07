@@ -19,7 +19,10 @@ call plug#begin()
 
 Plug 'AndrewRadev/splitjoin.vim'           " Switch between single-line and multiline forms of code
 Plug 'RRethy/vim-illuminate'               " illuminate.vim - Vim plugin for automatically highlighting other uses of the word under the cursor. Integrates with Neovim's LSP client for intelligent highlighting.
-Plug 'airblade/vim-gitgutter'              " A Vim plugin which shows git diff markers in the sign column and stages/previews/undoes hunks and partial hunks.
+if !has("nvim")
+  " Replaced by lewis6991/gitsigns.nvim in NeoVim
+  Plug 'airblade/vim-gitgutter'              " A Vim plugin which shows git diff markers in the sign column and stages/previews/undoes hunks and partial hunks.
+endif
 Plug 'bfontaine/Brewfile.vim'              " Brewfile syntax for Vim
 Plug 'editorconfig/editorconfig-vim'       " EditorConfig plugin for Vim
 Plug 'farmergreg/vim-lastplace'            " Intelligently reopen files at your last edit position in Vim.
@@ -44,6 +47,8 @@ if has("nvim")
 
   Plug 'nvim-lua/plenary.nvim'             " plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice.
   Plug 'jose-elias-alvarez/null-ls.nvim'   " Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
+
+  Plug 'lewis6991/gitsigns.nvim'           " Git integration for buffers
 endif
 Plug 'nishigori/increment-activator'       " Vim Plugin for enhance to increment candidates U have defined.
 Plug 'gruvbox-community/gruvbox'           " Retro groove color scheme for Vim - community maintained edition (with black background)

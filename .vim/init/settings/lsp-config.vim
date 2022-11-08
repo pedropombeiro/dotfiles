@@ -29,8 +29,8 @@ if has("nvim")
   nnoremap <silent> <leader>d :lua vim.diagnostic.open_float()<CR>
   nnoremap <silent> [g :lua vim.diagnostic.goto_prev()<CR>
   nnoremap <silent> ]g :lua vim.diagnostic.goto_next()<CR>
-  nnoremap <silent> <leader>ca :lua vim.lsp.buf.code_action()<CR>
-  nnoremap <silent> <leader>cf :lua vim.lsp.buf.formatting()<CR>
+  nnoremap <silent> <leader>la :lua vim.lsp.buf.code_action()<CR>
+  nnoremap <silent> <leader>lf :lua vim.lsp.buf.format { async = true }<CR>
 
   :lua << EOF
     local lspconfig = require('lspconfig')

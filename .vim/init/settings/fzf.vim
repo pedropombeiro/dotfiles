@@ -20,7 +20,7 @@ nmap <leader>f: :History:<CR>
 nmap <leader>f/ :History/<CR>
 
 " Mapping selecting mappings
-nmap <leader><tab> <plug>(fzf-maps-n)
+nmap <leader><tab> :call fzf#vim#commands({'options': [$FZF_DEFAULT_COLOR, '--no-preview']})<CR>
 xmap <leader><tab> <plug>(fzf-maps-x)
 omap <leader><tab> <plug>(fzf-maps-o)
 

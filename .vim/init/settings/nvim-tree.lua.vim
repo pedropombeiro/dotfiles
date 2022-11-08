@@ -5,11 +5,31 @@ if has("nvim")
   vim.g.loaded_netrw = 1
   vim.g.loaded_netrwPlugin = 1
 
-  -- set termguicolors to enable highlight groups
-  vim.opt.termguicolors = true
-
-  -- empty setup using defaults
-  require("nvim-tree").setup()
+  require("nvim-tree").setup({
+    reload_on_bufenter = true,
+    sort_by = "case_sensitive",
+    view = {
+      adaptive_size = true,
+      side = "right",
+    },
+    renderer = {
+      group_empty = true,
+      highlight_git = true,
+      highlight_opened_files = "icon",
+    },
+    filters = {
+      dotfiles = false,
+      custom = { "^.git$" },
+    },
+    actions = {
+      expand_all = {
+        exclude = { ".git" },
+      },
+      open_file = {
+        quit_on_open = true,
+      },
+    },
+  })
 EOF
 
   nnoremap <silent> <C-\> <Cmd>NvimTreeFindFileToggle<CR>

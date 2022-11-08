@@ -70,8 +70,14 @@ Plug 'tpope/vim-sleuth'                    " sleuth.vim: Heuristically set buffe
 Plug 'tpope/vim-speeddating'               " speeddating.vim: use CTRL-A/CTRL-X to increment dates, times, and more
 Plug 'tpope/vim-surround'                  " surround.vim: Delete/change/add parentheses/quotes/XML-tags/much more with ease
 Plug 'tpope/vim-unimpaired'                " unimpaired.vim: Pairs of handy bracket mappings
-Plug 'vim-airline/vim-airline'             " lean & mean status/tabline for vim that's light as air
-Plug 'vim-airline/vim-airline-themes'      " A collection of themes for vim-airline
+if has("nvim")
+  Plug 'kdheepak/tabline.nvim'
+  Plug 'nvim-lualine/lualine.nvim'         " A blazing fast and easy to configure neovim statusline plugin written in pure lua.
+else
+  Plug 'vim-airline/vim-airline'           " lean & mean status/tabline for vim that's light as air
+  Plug 'vim-airline/vim-airline-themes'    " A collection of themes for vim-airline
+endif
+
 Plug 'vim-test/vim-test'                   " Run your tests at the speed of thought
 Plug 'wsdjeg/vim-fetch'                    " Make Vim handle line and column numbers in file names with a minimum of fuss
 

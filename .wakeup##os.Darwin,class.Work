@@ -11,5 +11,6 @@ sleep 5
 
 SwitchAudioSource -t output -s 'CalDigit TS4 Audio - Rear'
 
+sleep 5
+
 killall 'Elgato Control Center'; open -g -a 'Elgato Control Center.app'
-killall 'Stream Deck'; open -F -g -a 'Stream Deck.app'

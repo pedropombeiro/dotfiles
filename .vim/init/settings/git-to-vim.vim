@@ -6,7 +6,7 @@ endfunction
 
 function OpenBranchCommitedFiles()
 
-  let parent_branch = trim(system("git show-branch --current | grep '\*' | grep -v `git rev-parse --abbrev-ref HEAD` | head -n1 | sed 's/[^[]*\\[\\([^]^]*\\).*\\].*/\\1/'"))
+  let parent_branch = trim(system("(git show-branch --current | grep '\*' | grep -v `git rev-parse --abbrev-ref HEAD` | head -n1) 2>/dev/null | sed 's/[^[]*\\[\\([^]^]*\\).*\\].*/\\1/'"))
   let cmd = 'git diff --name-only ' . l:parent_branch . '...'
   let files = systemlist(l:cmd)
   let started_empty = TabIsEmpty()

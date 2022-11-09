@@ -53,6 +53,9 @@ if has("nvim")
   Plug 'jayp0521/mason-null-ls.nvim'         " mason-null-ls bridges mason.nvim with the null-ls plugin - making it easier to use both plugins together.
 
   Plug 'lewis6991/gitsigns.nvim'             " Git integration for buffers
+
+  Plug 'nvim-treesitter/nvim-treesitter',
+    \ {'do': ':TSUpdate'}                    " Nvim Treesitter configurations and abstraction layer
 endif
 Plug 'nishigori/increment-activator'         " Vim Plugin for enhance to increment candidates U have defined.
 Plug 'gruvbox-community/gruvbox'             " Retro groove color scheme for Vim - community maintained edition (with black background)

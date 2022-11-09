@@ -59,7 +59,6 @@ set showcmd      " show the command being typed
 set scrolloff=4  " keep 4 lines off the edges
 set pumheight=10 " popup menu height
 
-set foldmethod=syntax
 set foldlevelstart=99
 
 let $GIT_CONFIG_PARAMETERS="'delta.side-by-side=false'" " Disable .gitconfig's delta option

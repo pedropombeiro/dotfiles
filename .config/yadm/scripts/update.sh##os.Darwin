@@ -32,8 +32,8 @@ if [[ ! -x ${sys_gpg_agent} || $(readlink ${sys_gpg_agent}) != /usr/local/MacGPG
   sudo ln -sf /usr/local/MacGPG2/bin/gpg-agent ${sys_gpg_agent}
 fi
 
+"${YADM_SCRIPTS}/update-common.zsh"
+
 if [[ $(yadm config local.class) == 'Work' ]]; then
   "${YADM_SCRIPTS}/update-work.zsh"
 fi
-
-"${YADM_SCRIPTS}/update-common.zsh"

@@ -31,6 +31,4 @@ asdf install nodejs 17.9.0 && asdf global nodejs 17.9.0
 asdf install rust 1.58.1 && asdf global rust 1.58.1
 
 # Temporarily pin problematic packages
-asdf global bat 0.19.0 && \
-  asdf global ctop 0.7.6 && \
-  asdf global delta 0.12.0
+asdf global delta 0.12.0

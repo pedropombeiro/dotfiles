@@ -9,6 +9,7 @@ if has("nvim")
     extensions = {
       'fugitive',
       'fzf',
+      'man',
       'nvim-tree',
       'quickfix',
     },

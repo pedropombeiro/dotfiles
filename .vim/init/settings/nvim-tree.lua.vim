@@ -19,7 +19,7 @@ if has("nvim")
     },
     filters = {
       dotfiles = false,
-      custom = { "^.git$" },
+      custom = { "^.DS_Store$", "^.git$", ".zwc$" },
     },
     actions = {
       expand_all = {

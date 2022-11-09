@@ -15,6 +15,8 @@ tap "minio/stable"
 tap "moul/moul"
 tap "mvp/uhubctl", "https://github.com/mvp/uhubctl"
 tap "zaquestion/tap"
+# Asciicast to GIF converter
+brew "agg"
 # Library for command-line editing
 brew "readline"
 # Command-line interface for SQLite

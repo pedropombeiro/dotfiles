@@ -32,7 +32,11 @@ Plug 'junegunn/fzf.vim'                    " fzf ❤️ vim
 Plug 'junegunn/vim-easy-align'             " 🌻 A Vim alignment plugin
 Plug 'kdheepak/lazygit.nvim'               " Plugin for calling lazygit from within neovim.
 Plug 'mtdl9/vim-log-highlighting'          " Provides syntax highlighting for generic log files in VIM.
-Plug 'nathanaelkane/vim-indent-guides'     " A Vim plugin for visually displaying indent levels in code
+if has("nvim")
+  Plug 'lukas-reineke/indent-blankline.nvim'  " Indent guides for Neovim
+else
+  Plug 'nathanaelkane/vim-indent-guides'   " A Vim plugin for visually displaying indent levels in code
+endif
 if has("nvim")
   Plug 'nvim-tree/nvim-web-devicons'       " optional, for file icons
   Plug 'nvim-tree/nvim-tree.lua'           " A File Explorer For Neovim Written In Lua

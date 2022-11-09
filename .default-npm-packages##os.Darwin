@@ -1,8 +1,5 @@
 doctoc
 
 neovim
-bash-language-server
-dockerfile-language-server-nodejs
 markdown-toc
 nginxbeautifier
-sql-language-server

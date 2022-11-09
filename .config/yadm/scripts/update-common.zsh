@@ -44,9 +44,3 @@ if \vim --version >/dev/null; then
     printf "${GREEN}%s${NC}\n" "Done"
 fi
 
-# Run some sanity checks to see if known packages are working properly.
-if ! bash-language-server -v >/dev/null; then
-  # If npm packages are not working correctly, try reinstalling them
-  printf "${RED}%s${NC}" "Run 'cat ~/.default-npm-packages | xargs npm install -g'"
-fi
-

@@ -259,6 +259,8 @@ cask "alfred"
 cask "apparency"
 # Application uninstaller
 cask "appcleaner"
+# Multi-track audio editor and recorder
+cask "audacity"
 # Tool to flash OS images to SD cards & USB drives
 cask "balenaetcher"
 # Menu bar icon organizer
@@ -279,6 +281,8 @@ cask "dash"
 cask "elgato-control-center"
 # Assign keys, and then decorate and label them
 cask "elgato-stream-deck"
+# Software custom-built for content creation
+cask "elgato-wave-link"
 # Typeface made for developers
 cask "font-jetbrains-mono"
 # Developer targeted fonts with a high number of glyphs

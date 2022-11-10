@@ -14,7 +14,8 @@ cargo install \
   grc-rs \
   hyperfine \
   lsd \
-  procs
+  procs \
+  tree-sitter-cli
 cargo install jless --version 0.7.2
 unset TMPDIR
 

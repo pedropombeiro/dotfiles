@@ -11,6 +11,7 @@ endif
 set nocompatible
 
 let mapleader = "\<Space>"
+set timeoutlen=500
 
 " Get the defaults that most users want.
 if filereadable(expand("$VIMRUNTIME/defaults.vim"))

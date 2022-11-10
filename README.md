@@ -128,7 +128,6 @@ mackup restore
   - [Google Chrome](https://www.google.com/chrome/)
   - [iTerm2](https://www.iterm2.com/downloads.html)
   - [Kap](https://getkap.co/)
-  - [KeePassXC](https://keepassxc.org/)
   - [Krisp](https://krisp.ai/)
   - [LibreOffice](https://www.libreoffice.org/download/download/)
   - [Little Snitch](https://www.obdev.at/products/littlesnitch/download.html)
@@ -151,14 +150,9 @@ mackup restore
   - [Visual Studio Code](https://code.visualstudio.com/Download)
 - Installed via mas-cli:
   - Amphetamine ([App Store](https://apps.apple.com/us/app/amphetamine/id937984704))
-  - Annotate ([App Store](https://apps.apple.com/us/app/annotate-text-emoji-stickers-shapes-on-photos-screenshots/id994933038))
-  - Keynote ([App Store](https://apps.apple.com/us/app/keynote/id409183694))
-  - Numbers ([App Store](https://apps.apple.com/us/app/numbers/id409203825))
-  - Pages ([App Store](https://apps.apple.com/us/app/pages/id409203825))
   - Pocket ([App Store](https://apps.apple.com/us/app/pocket/id568494494))
   - Toggl Desktop ([App Store](https://apps.apple.com/us/app/toggl-time-tracker-for-work/id957734279))
   - Time Out - Break Reminders ([App Store](https://apps.apple.com/us/app/time-out-break-reminders/id402592703))
-  - TweetDeck ([App Store](https://apps.apple.com/us/app/tweetdeck-by-twitter/id485812721))
   - WhatsApp ([App Store](https://apps.apple.com/us/app/whatsapp-desktop/id1147396723))
 - [Elgato Control Center](https://www.elgato.com/en/gaming/downloads)
 - [Microsoft To Do](https://todo.microsoft.com/tasks/)
@@ -170,7 +164,6 @@ mackup restore
 Setup the following apps:
 
 - Beyond Compare (import settings backup and install command line tools)
-- Dropbox
 - Password application
   - 1Password
   - MacPass

@@ -86,10 +86,13 @@ if has("nvim")
       automatic_installation = false
     })
 
+    ; -- lsp-format.nvim (https://github.com/lukas-reineke/lsp-format.nvim)
+    require("lsp-format").setup {}
+
     lspconfig = require("lspconfig")
     lspconfig.bashls.setup {}
     lspconfig.dockerls.setup {}
-    lspconfig.gopls.setup {}
+    lspconfig.gopls.setup { on_attach = require("lsp-format").on_attach }
     lspconfig.solargraph.setup {}
     lspconfig.taplo.setup {}
     lspconfig.vimls.setup {}

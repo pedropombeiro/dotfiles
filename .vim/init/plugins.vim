@@ -48,6 +48,8 @@ if has("nvim")
   Plug 'neovim/nvim-lspconfig'               " Quickstart configs for Nvim LSP
   Plug 'williamboman/mason.nvim'             " Portable package manager for Neovim that runs everywhere Neovim runs. Easily install and manage LSP servers, DAP servers, linters, and formatters.
 
+  Plug 'lukas-reineke/lsp-format.nvim'       " A wrapper around Neovims native LSP formatting.
+
   Plug 'nvim-lua/plenary.nvim'               " plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice.
   Plug 'jose-elias-alvarez/null-ls.nvim'     " Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
   Plug 'jayp0521/mason-null-ls.nvim'         " mason-null-ls bridges mason.nvim with the null-ls plugin - making it easier to use both plugins together.

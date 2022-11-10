@@ -58,6 +58,8 @@ if has("nvim")
 
   Plug 'nvim-treesitter/nvim-treesitter',
     \ {'do': ':TSUpdate'}                    " Nvim Treesitter configurations and abstraction layer
+
+  Plug 'sindrets/diffview.nvim'              " Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
 endif
 Plug 'nishigori/increment-activator'         " Vim Plugin for enhance to increment candidates U have defined.
 Plug 'gruvbox-community/gruvbox'             " Retro groove color scheme for Vim - community maintained edition (with black background)

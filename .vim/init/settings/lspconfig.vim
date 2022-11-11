@@ -117,6 +117,17 @@ lua << EOF
   lspconfig.vimls.setup {
   }
   lspconfig.yamlls.setup {
-    capabilities = capabilities
+    capabilities = capabilities,
+    settings = {
+      yaml = {
+        hover = true,
+        completion = true,
+        validate = true,
+        schemaStore = {
+          enable = true,
+          url = "https://www.schemastore.org/api/json/catalog.json",
+        },
+      },
+    },
   }
 EOF

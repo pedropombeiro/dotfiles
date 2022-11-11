@@ -47,6 +47,7 @@ if has("nvim")
   Plug 'junnplus/lsp-setup.nvim'             " A simple wrapper for nvim-lspconfig and mason-lspconfig to easily setup LSP servers.
   Plug 'neovim/nvim-lspconfig'               " Quickstart configs for Nvim LSP
   Plug 'williamboman/mason.nvim'             " Portable package manager for Neovim that runs everywhere Neovim runs. Easily install and manage LSP servers, DAP servers, linters, and formatters.
+  Plug 'j-hui/fidget.nvim'                   " Standalone UI for nvim-lsp progress
 
   Plug 'lukas-reineke/lsp-format.nvim'       " A wrapper around Neovims native LSP formatting.
 

@@ -60,8 +60,9 @@ lua << EOF
   end
 
   require("mason").setup()
+  require("fidget").setup {} -- https://github.com/j-hui/fidget.nvim
 
-  ; -- null-ls.nvim (https://github.com/jose-elias-alvarez/null-ls.nvim)
+  -- null-ls.nvim (https://github.com/jose-elias-alvarez/null-ls.nvim)
   local null_ls = require("null-ls")
 
   null_ls.setup({
@@ -90,7 +91,7 @@ lua << EOF
     automatic_installation = false
   })
 
-  ; -- lsp-format.nvim (https://github.com/lukas-reineke/lsp-format.nvim)
+  -- lsp-format.nvim (https://github.com/lukas-reineke/lsp-format.nvim)
   require("lsp-format").setup {}
 
   local capabilities = require('cmp_nvim_lsp').default_capabilities()
@@ -122,8 +123,7 @@ lua << EOF
     capabilities = capabilities
   }
   lspconfig.taplo.setup {}
-  lspconfig.vimls.setup {
-  }
+  lspconfig.vimls.setup {}
   lspconfig.yamlls.setup {
     capabilities = capabilities,
     settings = {

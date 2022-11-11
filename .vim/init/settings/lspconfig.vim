@@ -86,7 +86,7 @@ lua << EOF
   })
 
   require("mason-null-ls").setup({
-    ensure_installed = { "bashls", "gopls", "marksman", "sqlls", "taplo", "vimls", "yamlls" },
+    ensure_installed = { "bashls", "gopls", "jsonls", "marksman", "sqlls", "taplo", "vimls", "yamlls" },
     automatic_installation = false
   })
 
@@ -106,6 +106,14 @@ lua << EOF
   lspconfig.gopls.setup {
     on_attach = require("lsp-format").on_attach,
     capabilities = capabilities
+  }
+  lspconfig.jsonls.setup {
+    settings = {
+      json = {
+        schemas = require('schemastore').json.schemas(),
+        validate = { enable = true },
+      },
+    },
   }
   lspconfig.solargraph.setup {
     capabilities = capabilities

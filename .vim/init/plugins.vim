@@ -82,7 +82,11 @@ Plug 'tmux-plugins/vim-tmux'                 " Vim plugin for .tmux.conf
 Plug 'tpope/vim-abolish'                     " abolish.vim: easily search for, substitute, and abbreviate multiple variants of a word
 Plug 'tpope/vim-commentary'                  " commentary.vim: comment stuff out
 Plug 'tpope/vim-dispatch'                    " dispatch.vim: Asynchronous build and test dispatcher
-Plug 'tpope/vim-endwise'                     " endwise.vim: Wisely add
+if has("nvim")
+  Plug 'RRethy/nvim-treesitter-endwise'      " Wisely add 'end' in Ruby, Vimscript, Lua, etc. Tree-sitter aware alternative to tpope's vim-endwise
+else
+  Plug 'tpope/vim-endwise'                   " endwise.vim: Wisely add
+endif
 Plug 'tpope/vim-eunuch'                      " eunuch.vim: Helpers for UNIX
 Plug 'tpope/vim-fugitive'                    " fugitive.vim: A Git wrapper so awesome, it should be illegal
 Plug 'tpope/vim-repeat'                      " repeat.vim: enable repeating supported plugin maps with '.'

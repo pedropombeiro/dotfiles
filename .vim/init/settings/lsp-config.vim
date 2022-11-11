@@ -35,6 +35,8 @@ nnoremap <silent> ]g :lua vim.diagnostic.goto_next()<CR>
 nnoremap <silent> <leader>la :lua vim.lsp.buf.code_action()<CR>
 nnoremap <silent> <leader>lf :lua vim.lsp.buf.format { async = true }<CR>
 
+exec "source" . expand('<sfile>:p:h') . '/nvim-cmp.nvim'
+
 lua << EOF
   local lspconfig = require('lspconfig')
 
@@ -85,19 +87,37 @@ lua << EOF
   })
 
   require("mason-null-ls").setup({
-    ensure_installed = { "bashls", "gopls", "marksman", "sqls", "taplo", "vimls", "yamlls" },
+    ensure_installed = { "bashls", "gopls", "marksman", "sqlls", "taplo", "vimls", "yamlls" },
     automatic_installation = false
   })
 
   ; -- lsp-format.nvim (https://github.com/lukas-reineke/lsp-format.nvim)
   require("lsp-format").setup {}
 
+  local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+  -- Set up lspconfig.
   lspconfig = require("lspconfig")
-  lspconfig.bashls.setup {}
-  lspconfig.dockerls.setup {}
-  lspconfig.gopls.setup { on_attach = require("lsp-format").on_attach }
-  lspconfig.solargraph.setup {}
+  lspconfig.bashls.setup {
+    capabilities = capabilities
+  }
+  lspconfig.dockerls.setup {
+    capabilities = capabilities
+  }
+  lspconfig.gopls.setup {
+    on_attach = require("lsp-format").on_attach,
+    capabilities = capabilities
+  }
+  lspconfig.solargraph.setup {
+    capabilities = capabilities
+  }
+  lspconfig.sqlls.setup {
+    capabilities = capabilities
+  }
   lspconfig.taplo.setup {}
-  lspconfig.vimls.setup {}
-  lspconfig.yamlls.setup {}
+  lspconfig.vimls.setup {
+  }
+  lspconfig.yamlls.setup {
+    capabilities = capabilities
+  }
 EOF

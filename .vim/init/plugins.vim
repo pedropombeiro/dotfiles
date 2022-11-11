@@ -54,6 +54,14 @@ if has("nvim")
   Plug 'jose-elias-alvarez/null-ls.nvim'     " Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
   Plug 'jayp0521/mason-null-ls.nvim'         " mason-null-ls bridges mason.nvim with the null-ls plugin - making it easier to use both plugins together.
 
+  Plug 'hrsh7th/cmp-nvim-lsp'                " nvim-cmp source for neovim builtin LSP client
+  Plug 'hrsh7th/cmp-buffer'                  " nvim-cmp source for buffer words
+  Plug 'hrsh7th/cmp-path'                    " nvim-cmp source for path
+  Plug 'hrsh7th/cmp-cmdline'                 " nvim-cmp source for vim's cmdline
+  Plug 'hrsh7th/nvim-cmp'                    " A completion plugin for neovim coded in Lua.
+  Plug 'L3MON4D3/LuaSnip'                    " Snippet Engine for Neovim written in Lua.
+  Plug 'saadparwaiz1/cmp_luasnip'            " luasnip completion source for nvim-cmp
+
   Plug 'lewis6991/gitsigns.nvim'             " Git integration for buffers
 
   Plug 'nvim-treesitter/nvim-treesitter',

@@ -1,3 +1,4 @@
+" nvim-lspconfig (https://github.com/neovim/nvim-lspconfig)
 if !has("nvim")
   exit
 endif
@@ -38,8 +39,6 @@ nnoremap <silent> <leader>lf :lua vim.lsp.buf.format { async = true }<CR>
 exec "source" . expand('<sfile>:p:h') . '/nvim-cmp.nvim'
 
 lua << EOF
-  local lspconfig = require('lspconfig')
-
   local on_attach = function(client, bufnr)
     require('completion').on_attach()
 
@@ -97,7 +96,7 @@ lua << EOF
   local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
   -- Set up lspconfig.
-  lspconfig = require("lspconfig")
+  local lspconfig = require("lspconfig")
   lspconfig.bashls.setup {
     capabilities = capabilities
   }

@@ -27,8 +27,8 @@ if [[ ! -d "/share/homes/${USER}/.oh-my-zsh" ]]; then
 fi
 
 if [[ ! -d "$HOME/.asdf" ]]; then
-  git clone https://github.com/asdf-vm/asdf.git /share/homes/${USER}/.asdf --branch v0.10.0
-  ln -sf /share/homes/${USER}/.asdf /root/.asdf
+  git clone https://github.com/asdf-vm/asdf.git "/share/homes/${USER}/.asdf" --branch v0.10.2
+  ln -sf "/share/homes/${USER}/.asdf" /root/.asdf
 fi
 
 INSTALL_DIR=/share/homes/${USER}/opt

@@ -34,13 +34,8 @@ fi
 rm -f "${hf_file}"
 
 printf "${YELLOW}%s${NC}\n" "Updating neovim plugins..."
-rm -rf ${HOME}/.vim/pack
-\nvim -c 'PlugClean! | PlugUpgrade | PlugUpdate | qa!' && \
+rm -rf ${HOME}/.vim
+rm -f ~/.config/nvim/plugin/packer_compiled.lua && \
+  nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync' && \
   printf "${GREEN}%s${NC}\n" "Done"
-
-if \vim --version >/dev/null; then
-  printf "${YELLOW}%s${NC}\n" "Updating vim plugins..."
-  \vim -c 'PlugClean! | PlugUpgrade | PlugUpdate | qa!' && \
-    printf "${GREEN}%s${NC}\n" "Done"
-fi
 

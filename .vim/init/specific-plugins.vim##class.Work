@@ -1,3 +1,0 @@
-Plug 'glacambre/firenvim'
-Plug 'tpope/vim-bundler'
-Plug 'tpope/vim-rails', { 'for': 'ruby' }

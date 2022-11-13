@@ -188,8 +188,8 @@ return require("packer").startup({ function(use)
 
   -- Color scheme
   use {
-    "gruvbox-community/gruvbox", -- Retro groove color scheme for Vim - community maintained edition (with black background)
-    config = get_config("gruvbox")
+    "themercorp/themer.lua", -- A simple, minimal highlighter plugin for neovim
+    config = get_config("themer")
   }
 
   -- Session management

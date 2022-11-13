@@ -1,6 +1,6 @@
 vim.api.nvim_command("autocmd!")
 
-vim.g.mapleader = "\\<Space>"
+vim.g.mapleader = " "
 vim.opt.timeoutlen = 500
 
 -- Get the defaults that most users want.

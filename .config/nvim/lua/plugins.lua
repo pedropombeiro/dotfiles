@@ -240,7 +240,18 @@ return require("packer").startup({ function(use)
     opt = true,
     ft = "ruby"
   }
-  use "vim-test/vim-test" -- Run your tests at the speed of thought
+  use {
+    "nvim-neotest/neotest", -- An extensible framework for interacting with tests within NeoVim.
+    config = get_config("neotest"),
+    requires = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "antoinemadec/FixCursorHold.nvim",
+
+      "nvim-neotest/neotest-go",
+      "olimorris/neotest-rspec",
+    }
+  }
   use "wsdjeg/vim-fetch" -- Make Vim handle line and column numbers in file names with a minimum of fuss
 
   use {

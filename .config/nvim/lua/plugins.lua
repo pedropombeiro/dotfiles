@@ -166,6 +166,16 @@ return require("packer").startup({ function(use)
     end,
   }
 
+  use_with_config {
+    "kosayoda/nvim-lightbulb", -- VSCode 💡 for neovim's built-in LSP.
+    requires = "antoinemadec/FixCursorHold.nvim",
+  }
+  use_with_config {
+    "weilbith/nvim-code-action-menu", -- Pop-up menu for code actions to show meta-information and diff preview
+    cmd = "CodeActionMenu",
+    keys = "<leader>la"
+  }
+
   -- Git
   use_with_config "kdheepak/lazygit.nvim" -- Plugin for calling lazygit from within neovim.
 

@@ -23,7 +23,7 @@ require("lsp-setup").setup({
     ["<leader>gd"] = "TroubleToggle lsp_definitions",
     ["<C-]>"]      = "TroubleToggle lsp_definitions",
     ["<leader>rn"] = "lua vim.lsp.buf.rename()",
-    ["<leader>la"] = "lua vim.lsp.buf.code_action()",
+    --["<leader>la"] = "lua vim.lsp.buf.code_action()", -- Replaced with nvim-code-action-menu
     ["<leader>lf"] = "lua vim.lsp.buf.format({ async = true })",
     ["<leader>wa"] = "lua vim.lsp.buf.add_workspace_folder()",
     ["<leader>wl"] = "lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))",

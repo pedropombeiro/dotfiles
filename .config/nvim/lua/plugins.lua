@@ -52,9 +52,6 @@ return require("packer").startup({ function(use)
   -- Packer can manage itself
   use "wbthomason/packer.nvim"
 
-  use "AndrewRadev/splitjoin.vim" -- Switch between single-line and multiline forms of code
-  use_with_config "editorconfig/editorconfig-vim" -- EditorConfig plugin for Vim
-
   -- Buffer decorations
   use "mtdl9/vim-log-highlighting" -- Provides syntax highlighting for generic log files in VIM.
   use_with_config "yamatsum/nvim-cursorline" -- A plugin for neovim that highlights cursor words and lines
@@ -184,13 +181,12 @@ return require("packer").startup({ function(use)
 
   -- Editor enhancements
   use_with_config "junegunn/vim-easy-align" -- 🌻 A Vim alignment plugin
-
   use_with_config "nishigori/increment-activator" -- Vim Plugin for enhance to increment candidates U have defined.
-
+  use "AndrewRadev/splitjoin.vim" -- Switch between single-line and multiline forms of code
+  use_with_config "editorconfig/editorconfig-vim" -- EditorConfig plugin for Vim
   use "preservim/nerdcommenter" -- Vim plugin for intensely nerdy commenting powers
   use "tpope/vim-commentary" -- commentary.vim: comment stuff out
   use "RRethy/nvim-treesitter-endwise" -- Wisely add 'end' in Ruby, Vimscript, Lua, etc. Tree-sitter aware alternative to tpope's vim-endwise
-
   use "tpope/vim-repeat" -- repeat.vim: enable repeating supported plugin maps with '.'
   use "tpope/vim-speeddating" -- speeddating.vim: use CTRL-A/CTRL-X to increment dates, times, and more
   use "tpope/vim-surround" -- surround.vim: Delete/change/add parentheses/quotes/XML-tags/much more with ease

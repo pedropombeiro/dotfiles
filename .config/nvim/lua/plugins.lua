@@ -244,6 +244,8 @@ return require("packer").startup({ function(use)
   }
   use "wsdjeg/vim-fetch" -- Make Vim handle line and column numbers in file names with a minimum of fuss
 
+  use_with_config "airblade/vim-rooter" -- Changes Vim working directory to project root.
+
   use_with_config {
     "glacambre/firenvim", -- Embed Neovim in Chrome, Firefox & others.
     run = function() vim.fn["firenvim#install"](0) end,

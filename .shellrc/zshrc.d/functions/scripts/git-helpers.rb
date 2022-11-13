@@ -28,14 +28,37 @@ def compute_parent_branch(branch_name)
 end
 
 class String
-  def black;   "\033[30m#{self}\033[0m" end
-  def red;     "\033[31m#{self}\033[0m" end
-  def green;   "\033[1;32m#{self}\033[0m" end
-  def brown;   "\033[33m#{self}\033[0m" end
-  def blue;    "\033[34m#{self}\033[0m" end
-  def magenta; "\033[35m#{self}\033[0m" end
-  def cyan;    "\033[36m#{self}\033[0m" end
-  def gray;    "\033[37m#{self}\033[0m" end
+  def black
+    "\033[30m#{self}\033[0m"
+  end
+
+  def red
+    "\033[31m#{self}\033[0m"
+  end
+
+  def green
+    "\033[1;32m#{self}\033[0m"
+  end
+
+  def brown
+    "\033[33m#{self}\033[0m"
+  end
+
+  def blue
+    "\033[34m#{self}\033[0m"
+  end
+
+  def magenta
+    "\033[35m#{self}\033[0m"
+  end
+
+  def cyan
+    "\033[36m#{self}\033[0m"
+  end
+
+  def gray
+    "\033[37m#{self}\033[0m"
+  end
 end
 
 def rebase_branch(branch, parent_branch)
@@ -113,7 +136,11 @@ def rebase_mappings
       mr_match_data = mr_pattern.match(branch)
 
       next [seq_mr_match_data[:mr_id].to_i, 1, seq_mr_match_data[:mr_seq_nr].to_i] if seq_mr_match_data
-      next [backport_match_data[:mr_id].to_i, 2, backport_match_data[:milestone].tr('.', '-').to_f] if backport_match_data
+
+      if backport_match_data
+        next [backport_match_data[:mr_id].to_i, 2,
+              backport_match_data[:milestone].tr('.', '-').to_f]
+      end
       next [mr_match_data[:mr_id].to_i, 1] if mr_match_data
 
       []
@@ -173,7 +200,7 @@ end
 def rebase_all
   default_branch = compute_default_branch
   mappings =
-    rebase_mappings { |chain_mr_id, branch, parent_branch| [chain_mr_id, branch] }
+    rebase_mappings { |chain_mr_id, branch, _parent_branch| [chain_mr_id, branch] }
     .values
     .map { |branch| [branch, default_branch] }
     .to_h
@@ -191,15 +218,16 @@ def git_push_issue(*args)
 
   return unless mr_match_data
 
-  local_branch_info_hash = rebase_mappings { |chain_mr_id, branch, parent_branch| [branch, parent_branch] }
-    .select { |branch, _parent_branch| branch.start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}") }
+  local_branch_info_hash = rebase_mappings { |_chain_mr_id, branch, parent_branch| [branch, parent_branch] }
+                           .select { |branch, _parent_branch| branch.start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}") }
 
   local_branch_info_hash.each do |branch, parent_branch|
     active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
 
     puts 'Pushing '.brown + branch.cyan + ' to '.brown + active_remote_name.green + '...'.brown
 
-    unless system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
+    unless system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL,
+                                                                                         err: File::NULL)
       puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
       next
     end
@@ -207,7 +235,7 @@ def git_push_issue(*args)
     break unless system(*%W[git push --force-with-lease #{active_remote_name} #{branch}] + args)
   end
 
-  system(*%W(git switch #{current_branch}))
+  system(*%W[git switch #{current_branch}])
 end
 
 BASELINE_MR_RATE = 6
@@ -254,7 +282,7 @@ def gitlab_mr_rate(*author)
               .map do |mr|
                 merged_at = DateTime.iso8601(mr['merged_at'])
                 { id: mr['id'], merged_at: merged_at }
-              rescue
+              rescue StandardError
                 $stderr.print mr
                 raise
               end
@@ -298,7 +326,8 @@ def gitlab_mr_rate(*author)
 
   monthly_average =
     if last_mr_at.year == first_mr_at.year && last_mr_at.month == first_mr_at.month
-      mrs.count.to_f / ((DateTime.civil(last_mr_at.year, last_mr_at.month, -1) - DateTime.civil(first_mr_at.year, first_mr_at.month, 1)).to_f / 30)
+      mrs.count.to_f / ((DateTime.civil(last_mr_at.year, last_mr_at.month,
+                                        -1) - DateTime.civil(first_mr_at.year, first_mr_at.month, 1)).to_f / 30)
     else
       mrs.count.to_f / ((last_mr_at - first_mr_at).to_f / 30)
     end

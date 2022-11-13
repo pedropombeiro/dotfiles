@@ -134,6 +134,12 @@ return require("packer").startup({ function(use)
     }
   }
 
+  use_with_config {
+    "simrat39/symbols-outline.nvim", -- A tree like view for symbols in Neovim using the Language Server Protocol. Supports all your favourite languages.
+    cmd = "SymbolsOutline",
+    keys = "<C-'>"
+  }
+
   -- Snippets
   use { "L3MON4D3/LuaSnip", opt = true } -- Snippet Engine for Neovim written in Lua.
 

@@ -31,6 +31,7 @@ require("lsp-setup").setup({
 
   servers = {
     bashls = {},
+    dockerls = {},
     golangci_lint_ls = {},
     gopls = {},
     jsonls = {

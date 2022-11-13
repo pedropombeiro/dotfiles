@@ -11,10 +11,6 @@ end
 
 local packer_bootstrap = ensure_packer()
 
-local function get_config(name)
-  return string.format('require("config/%s")', name)
-end
-
 -- check if firenvim is active
 local firenvim_active = function()
   return vim.g.started_by_firenvim
@@ -38,55 +34,59 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 return require("packer").startup({ function(use)
+  local function use_with_config(use_params)
+    local plugin_name
+    if type(use_params) == "table" then
+      plugin_name = use_params[1]
+    else
+      plugin_name = use_params
+      use_params = { plugin_name }
+    end
+
+    local config_file = string.match(plugin_name, "^.*/([a-z-]+)")
+    use_params["config"] = string.format('require("config/%s")', config_file)
+    return use(use_params)
+  end
+
   -- Packer can manage itself
   use "wbthomason/packer.nvim"
 
   use "AndrewRadev/splitjoin.vim" -- Switch between single-line and multiline forms of code
-  use {
-    "editorconfig/editorconfig-vim", -- EditorConfig plugin for Vim
-    config = get_config("editorconfig-vim")
-  }
+  use_with_config "editorconfig/editorconfig-vim" -- EditorConfig plugin for Vim
 
   -- Buffer decorations
   use "mtdl9/vim-log-highlighting" -- Provides syntax highlighting for generic log files in VIM.
-  use {
-    "yamatsum/nvim-cursorline", -- A plugin for neovim that highlights cursor words and lines
-    config = get_config("nvim-cursorline"),
-  }
+  use_with_config "yamatsum/nvim-cursorline" -- A plugin for neovim that highlights cursor words and lines
+
   use "lukas-reineke/indent-blankline.nvim" -- Indent guides for Neovim
 
   -- File management
-  use {
+  use_with_config {
     "francoiscabrol/ranger.vim", -- Ranger integration in vim and neovim
-    config = get_config("ranger"),
     opt = true,
     cmd = { "Ranger", "RangerWorkingDirectory" },
     keys = "<leader>R",
     requires = "rbgrouleff/bclose.vim" -- The BClose Vim plugin for deleting a buffer without closing the window
   }
-  use {
+  use_with_config {
     "nvim-tree/nvim-tree.lua", -- A File Explorer For Neovim Written In Lua
     cond = firenvim_not_active,
     requires = "kyazdani42/nvim-web-devicons",
-    config = get_config("nvim-tree"),
   }
 
   -- Search
   use "junegunn/fzf" -- 🌸 A command-line fuzzy finder
-  use {
-    "junegunn/fzf.vim", -- fzf ❤️ vim
-    config = get_config("fzf-vim")
-  }
+  use_with_config "junegunn/fzf.vim" -- fzf ❤️ vim
+
   use "tpope/vim-abolish" -- abolish.vim: easily search for, substitute, and abbreviate multiple variants of a word
 
   -- Linting
   use "folke/lsp-colors.nvim" -- 🌈 Plugin that creates missing LSP diagnostics highlight groups for color schemes that don't yet support the Neovim 0.5 builtin LSP client.
-  use {
+  use_with_config {
     "folke/trouble.nvim", -- 🚦 A pretty diagnostics, references, telescope results, quickfix and location list to help you solve all the trouble your code is causing.
     requires = {
       { "kyazdani42/nvim-web-devicons", opt = true }
     },
-    config = get_config("trouble")
   }
 
   local mason = {
@@ -101,9 +101,8 @@ return require("packer").startup({ function(use)
     "williamboman/mason-lspconfig.nvim",
     requires = { mason },
   }
-  use {
+  use_with_config {
     "junnplus/lsp-setup.nvim", -- A simple wrapper for nvim-lspconfig and mason-lspconfig to easily setup LSP servers.
-    config = get_config("lsp-setup"),
     requires = {
       {
         "neovim/nvim-lspconfig", -- Quickstart configs for Nvim LSP
@@ -124,13 +123,11 @@ return require("packer").startup({ function(use)
     end
   }
 
-  use {
+  use_with_config {
     "jayp0521/mason-null-ls.nvim", -- mason-null-ls bridges mason.nvim with the null-ls plugin - making it easier to use both plugins together.
-    config = get_config("mason-null-ls"),
     requires = {
       {
         "jose-elias-alvarez/null-ls.nvim", -- Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
-        config = get_config("null-ls"),
         requires = {
           "nvim-lua/plenary.nvim" -- plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice.
         }
@@ -143,7 +140,7 @@ return require("packer").startup({ function(use)
   use { "L3MON4D3/LuaSnip", opt = true } -- Snippet Engine for Neovim written in Lua.
 
   -- Completion
-  use {
+  use_with_config {
     "hrsh7th/nvim-cmp", -- A completion plugin for neovim coded in Lua.
     requires = {
       { "hrsh7th/cmp-buffer", after = "nvim-cmp" }, -- nvim-cmp source for buffer words
@@ -152,62 +149,43 @@ return require("packer").startup({ function(use)
       { "saadparwaiz1/cmp_luasnip", after = "nvim-cmp" }, -- luasnip completion source for nvim-cmp
       { "hrsh7th/cmp-cmdline", after = "nvim-cmp" }, -- nvim-cmp source for vim's cmdline
     },
-    config = get_config("nvim-cmp"),
     event = "InsertEnter",
     wants = "LuaSnip",
   }
 
   -- Highlights
-  use {
+  use_with_config {
     "nvim-treesitter/nvim-treesitter", -- Nvim Treesitter configurations and abstraction layer
     run = function()
       local ts_update = require("nvim-treesitter.install").update({ with_sync = true })
       ts_update()
     end,
-    config = get_config("nvim-treesitter"),
   }
 
   -- Git
-  use {
-    "kdheepak/lazygit.nvim", -- Plugin for calling lazygit from within neovim.
-    config = get_config("lazygit"),
-  }
+  use_with_config "kdheepak/lazygit.nvim" -- Plugin for calling lazygit from within neovim.
 
-  use {
+  use_with_config {
     "lewis6991/gitsigns.nvim", -- Git integration for buffers
     requires = { "nvim-lua/plenary.nvim" },
-    config = get_config("gitsigns"),
   }
 
   use "sindrets/diffview.nvim" -- Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
   use "ruanyl/vim-gh-line" -- vim plugin that open the link of current line on github
-  use {
-    "tpope/vim-fugitive", -- fugitive.vim: A Git wrapper so awesome, it should be illegal
-    config = get_config("vim-fugitive")
-  }
+  use_with_config "tpope/vim-fugitive" -- fugitive.vim: A Git wrapper so awesome, it should be illegal
 
   -- Color scheme
-  use {
-    "themercorp/themer.lua", -- A simple, minimal highlighter plugin for neovim
-    config = get_config("themer")
-  }
+  use_with_config "themercorp/themer.lua" -- A simple, minimal highlighter plugin for neovim
 
   -- Session management
   use "farmergreg/vim-lastplace" -- Intelligently reopen files at your last edit position in Vim.
-  use {
-    "rmagatti/auto-session", -- A small automated session manager for Neovim
-    config = get_config("auto-session")
-  }
+  use_with_config "rmagatti/auto-session" -- A small automated session manager for Neovim
 
   -- Editor enhancements
-  use {
-    "junegunn/vim-easy-align", -- 🌻 A Vim alignment plugin
-    config = get_config("vim-easy-align")
-  }
-  use {
-    "nishigori/increment-activator", -- Vim Plugin for enhance to increment candidates U have defined.
-    config = get_config("increment-activator")
-  }
+  use_with_config "junegunn/vim-easy-align" -- 🌻 A Vim alignment plugin
+
+  use_with_config "nishigori/increment-activator" -- Vim Plugin for enhance to increment candidates U have defined.
+
   use "preservim/nerdcommenter" -- Vim plugin for intensely nerdy commenting powers
   use "tpope/vim-commentary" -- commentary.vim: comment stuff out
   use "RRethy/nvim-treesitter-endwise" -- Wisely add 'end' in Ruby, Vimscript, Lua, etc. Tree-sitter aware alternative to tpope's vim-endwise
@@ -240,9 +218,8 @@ return require("packer").startup({ function(use)
     opt = true,
     ft = "ruby"
   }
-  use {
+  use_with_config {
     "nvim-neotest/neotest", -- An extensible framework for interacting with tests within NeoVim.
-    config = get_config("neotest"),
     requires = {
       "nvim-lua/plenary.nvim",
       "nvim-treesitter/nvim-treesitter",
@@ -254,31 +231,22 @@ return require("packer").startup({ function(use)
   }
   use "wsdjeg/vim-fetch" -- Make Vim handle line and column numbers in file names with a minimum of fuss
 
-  use {
+  use_with_config {
     "glacambre/firenvim", -- Embed Neovim in Chrome, Firefox & others.
     run = function() vim.fn["firenvim#install"](0) end,
     opt = true,
     cond = firenvim_active,
-    config = get_config("firenvim")
   }
 
   -- Buffer management
-  use {
+  use_with_config {
     "nvim-lualine/lualine.nvim", -- A blazing fast and easy to configure neovim statusline plugin written in pure lua.
     cond = firenvim_not_active,
     requires = { "kyazdani42/nvim-web-devicons", opt = true },
-    config = get_config("lualine")
   }
-  use {
+  use_with_config {
     "kdheepak/tabline.nvim",
     cond = firenvim_not_active,
-    config = function()
-      require "tabline".setup {}
-      vim.cmd [[
-        set guioptions-=e " Use showtabline in gui vim
-        set sessionoptions+=tabpages,globals " store tabpages and globals in session
-      ]]
-    end,
     requires = {
       { "nvim-lualine/lualine.nvim", opt = true }, -- A blazing fast and easy to configure neovim statusline plugin written in pure lua.
       { "kyazdani42/nvim-web-devicons", opt = true }

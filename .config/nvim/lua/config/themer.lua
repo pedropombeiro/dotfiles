@@ -2,7 +2,7 @@
 --  A simple, minimal highlighter plugin for neovim
 
 require("themer").setup({
-  colorscheme = "gruvbox",
+  colorscheme = vim.env.NVIM_THEME, -- defined in ~/.shellrc/rc.d/theme.sh
   langs = {
     html = true,
     md   = true,

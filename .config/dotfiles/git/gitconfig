@@ -18,7 +18,7 @@
   editor = nvim
 
   # Repaint the screen, discarding any buffered input.  Useful if the file is changing while it is being viewed.
-  pager = less -R
+  pager = delta
 
   excludesfile = ~/.config/dotfiles/git/gitignore-global
 
@@ -102,6 +102,7 @@
   minus-style  = "syntax #340001"
   syntax-theme = gruvbox-dark
   navigate     = true
+  hyperlinks   = true
 
 [delta "interactive"]
   keep-plus-minus-markers = false

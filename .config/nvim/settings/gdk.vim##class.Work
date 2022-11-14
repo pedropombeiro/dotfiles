@@ -8,3 +8,5 @@ command GenerateSchema Dispatch scripts/regenerate-schema
 
 command Fgdku wincmd n | wincmd J | resize10 | setlocal nonumber | setlocal norelativenumber |       setlocal laststatus=0 | call termopen('zsh -i -c fgdku') | normal G
 command RebaseAll wincmd n | wincmd J | resize10 | setlocal nonumber | setlocal norelativenumber | setlocal laststatus=0 | call termopen('zsh -i -c rebase-all') | normal G
+command! -nargs=1 Gsw Git switch <args>
+command Gswm wincmd n | wincmd J | resize10 | setlocal nonumber | setlocal norelativenumber | setlocal laststatus=0 | call termopen('zsh -i -c gswm') | normal G

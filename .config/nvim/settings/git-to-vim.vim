@@ -9,6 +9,8 @@ function OpenBranchCommitedFiles()
   let parent_branch = trim(system("(git show-branch --current | grep '\*' | grep -v `git rev-parse --abbrev-ref HEAD` | head -n1) 2>/dev/null | sed 's/[^[]*\\[\\([^]^]*\\).*\\].*/\\1/'"))
   let cmd = 'git diff --name-only ' . l:parent_branch . '...'
   let files = systemlist(l:cmd)
+  let cmd = 'git diff --name-only'
+  let unstaged_files = systemlist(l:cmd)
   let started_empty = TabIsEmpty()
 
   if started_empty == 0
@@ -18,7 +20,8 @@ function OpenBranchCommitedFiles()
     let started_empty = 1
   endif
 
-  for f in l:files
+  let all_files = uniq(sort(l:files + l:unstaged_files))
+  for f in all_files
     execute 'tabedit ' . l:f
   endfor
   if started_empty == 1

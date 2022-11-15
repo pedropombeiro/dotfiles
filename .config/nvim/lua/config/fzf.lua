@@ -21,6 +21,8 @@ end
 
 map("n", "<leader>ff", "<Cmd>FZF<CR>", { noremap = true })
 
+map("n", "<leader>fb", "<Cmd>Buffers<CR>")
+map("n", "<leader>fw", "<Cmd>Windows<CR>")
 map("n", "<leader>fc", "<Cmd>Commits<CR>")
 map("n", "<leader>fg", "<Cmd>GFiles<CR>")
 map("n", "<leader>fG", "<Cmd>GFiles?<CR>")

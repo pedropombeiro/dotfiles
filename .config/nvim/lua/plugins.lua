@@ -24,7 +24,7 @@ end
 vim.cmd([[
   augroup packer_user_config
     autocmd!
-    autocmd BufWritePost plugins.lua source <afile> | PackerCompile
+    autocmd BufWritePost plugins.lua source <afile> | PackerSync
     autocmd BufWritePost ~/.config/nvim/lua/config/*.lua source <afile> | PackerCompile
   augroup end
 ]])

@@ -1,13 +1,4 @@
-#!/usr/bin/env bash
-
-YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
-PLIST=/Library/LaunchDaemons/org.custom.keyboard-remap.plist
-
-if [[ ! -f $PLIST ]]; then
-  # https://www.grzegorowski.com/how-to-remap-single-mac-keyboard-key
-  sudo mkdir -p /Library/LaunchDaemons
-
-  sudo tee $PLIST > /dev/null <<'EOF'
+<!-- https://www.grzegorowski.com/how-to-remap-single-mac-keyboard-key -->
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -28,6 +19,4 @@ if [[ ! -f $PLIST ]]; then
   </dict>
 </plist>
 EOF
-fi
 
-sudo launchctl load -w $PLIST

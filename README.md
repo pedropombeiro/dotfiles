@@ -1,15 +1,12 @@
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-# Table of Contents
-
-- [Table of Contents](#table-of-contents)
+<!--toc:start-->
 - [Abstract](#abstract)
 - [Prerequisites](#prerequisites)
   - [Mac OS X](#mac-os-x)
+  - [Installation](#installation)
   - [Linux Debian/Ubuntu](#linux-debianubuntu)
 - [Post-install procedure](#post-install-procedure)
-  - [On a fresh installation - Linux](#on-a-fresh-installation---linux)
-  - [On a fresh installation - Mac OS X](#on-a-fresh-installation---mac-os-x)
+  - [On a fresh installation - Linux](#on-a-fresh-installation-linux)
+  - [On a fresh installation - Mac OS X](#on-a-fresh-installation-mac-os-x)
     - [After factory reset](#after-factory-reset)
     - [Mac OS X Settings](#mac-os-x-settings)
     - [Apps to install](#apps-to-install)
@@ -19,9 +16,10 @@
   - [Useful software (not installed by default)](#useful-software-not-installed-by-default)
   - [Checklist before reinstall](#checklist-before-reinstall)
   - [Checklist after install](#checklist-after-install)
+  - [Useful commands](#useful-commands)
+    - [Use vim in YADM Git context](#use-vim-in-yadm-git-context)
 - [Acknowledgments](#acknowledgments)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+<!--toc:end-->
 
 # Abstract
 
@@ -41,6 +39,8 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 brew install yadm
 ```
 
+## Installation
+
 Install dotfiles:
 
 ```shell
@@ -51,7 +51,7 @@ yadm bootstrap && \
 source ~/.zshrc.shared
 ```
 
-See [Installation](#Installation) and then the [fresh install section](#on-a-fresh-installation---mac-os-x) below.
+See the [fresh install section](#on-a-fresh-installation---mac-os-x) below.
 
 ## Linux Debian/Ubuntu
 

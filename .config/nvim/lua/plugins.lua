@@ -140,6 +140,8 @@ return require("packer").startup({ function(use)
     keys = "<C-'>"
   }
 
+  use_with_config "mfussenegger/nvim-lint"
+
   -- Snippets
   use { "L3MON4D3/LuaSnip", opt = true } -- Snippet Engine for Neovim written in Lua.
 

@@ -44,7 +44,7 @@ return require("packer").startup({ function(use)
       use_params = { plugin_name }
     end
 
-    local config_file = string.match(plugin_name, "^.*/([a-z-]+)")
+    local config_file = string.match(plugin_name, "^.*/([a-z-_]+)")
     use_params["config"] = string.format('require("config/%s")', config_file)
     return use(use_params)
   end
@@ -141,6 +141,8 @@ return require("packer").startup({ function(use)
   }
 
   use_with_config "mfussenegger/nvim-lint"
+
+  use_with_config "https://git.sr.ht/~whynothugo/lsp_lines.nvim"
 
   -- Snippets
   use { "L3MON4D3/LuaSnip", opt = true } -- Snippet Engine for Neovim written in Lua.

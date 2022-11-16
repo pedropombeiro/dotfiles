@@ -1,0 +1,2 @@
+// key value server to host readings from desk appliance for Stream Deck (avoids hitting API limits at particle.io)
+--git https://github.com/pedropombeiro/key-value-server

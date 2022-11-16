@@ -14,6 +14,7 @@ for p in fd golang golangci-lint nodejs yarn ruby; do
   asdf plugin add "${p}"
 done
 
+asdf install cargo latest && asdf global cargo latest
 asdf install fd latest && asdf global fd latest
 asdf install golang 1.17.5 && asdf global golang 1.17.5
 asdf install golangci-lint 1.44.0 && asdf global golangci-lint 1.44.0

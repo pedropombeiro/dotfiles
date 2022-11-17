@@ -14,7 +14,7 @@
 #export XH_STYLE=monokai # ~/.shellrc/rc.d/aliases.sh
 
 export BAT_THEME=gruvbox-dark # ~/.config/bat/config (also picked up by delta)
-export HIGHLIGHT_STYLE=base16/gruvbox-dark-medium
+export HIGHLIGHT_STYLE=gruvbox-dark-medium
 export NVIM_THEME=gruvbox # ~/.config/nvim/lua/config/themer.lua
 export XH_STYLE=monokai # ~/.shellrc/rc.d/aliases.sh
 

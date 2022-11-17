@@ -26,6 +26,7 @@ if vim.g.started_by_firenvim then
       au BufEnter gitlab.com_*.txt set filetype=markdown
       au BufEnter github.com_*.txt set filetype=markdown
       au BufEnter reddit.com_*.txt set filetype=markdown
+      au BufEnter build.particle.io_*.txt set filetype=c
     augroup END
   ]])
 end

@@ -258,7 +258,6 @@ return require("packer").startup({ function(use)
   -- Buffer management
   use_with_config {
     "nvim-lualine/lualine.nvim", -- A blazing fast and easy to configure neovim statusline plugin written in pure lua.
-    cond = firenvim_not_active,
     requires = { "kyazdani42/nvim-web-devicons", opt = true },
   }
   use_with_config {

@@ -8,7 +8,7 @@ if [[ -d "${LAUNCH_DAEMONS_DIR}" ]]; then
 fi
 
 for file in ${YADM_CONFIG}/LaunchAgents/*.plist; do
-  cp -f "${file}" "${LAUNCH_DAEMONS_DIR}/"
+  cp -fL "${file}" "${LAUNCH_DAEMONS_DIR}/"
 
   sudo launchctl load -w "${LAUNCH_DAEMONS_DIR}/$(basename "${file}")"
 done

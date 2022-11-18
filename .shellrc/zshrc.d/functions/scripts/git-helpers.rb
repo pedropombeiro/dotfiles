@@ -13,7 +13,7 @@ end
 # for the local branch. In scenarios where the parent branch does not
 # have a local tracking branch, then the remote is returned.
 def compute_parent_branch(branch_name)
-  remote_names = `git remote`.lines.map(&:chomp)
+  remote_names       = `git remote`.lines.map(&:chomp)
   active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
   other_remote_names = remote_names - [active_remote_name]
 
@@ -64,12 +64,14 @@ end
 def rebase_branch(branch, parent_branch)
   puts 'Rebasing '.brown + branch.cyan + ' onto '.brown + parent_branch.green + '...'.brown
 
-  unless system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
+  system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
+  unless Process.last_status.success?
     puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
     return
   end
 
-  return if system({ 'LEFTHOOK' => '0' }, *%W[git rebase --update-refs --autostash #{parent_branch} #{branch}])
+  system({ 'LEFTHOOK' => '0' }, *%W[git rebase --update-refs --autostash #{parent_branch} #{branch}])
+  return if Process.last_status.success?
 
   auto_generated_files_hash = {
     'app/workers/all_queues.yml' => %w[bin/rake gitlab:sidekiq:all_queues_yml:generate],
@@ -92,7 +94,8 @@ def rebase_branch(branch, parent_branch)
         system(*cmd)
         err = true
 
-        break unless system(*%W[git add #{file}])
+        system(*%W[git add #{file}])
+        break unless Process.last_status.success?
 
         err = false
       end
@@ -114,7 +117,8 @@ end
 def rebase_mappings
   system(*%w[git restore db/schema_migrations/], out: File::NULL)
 
-  unless system(*%w[git diff-index --quiet HEAD --])
+  system(*%w[git diff-index --quiet HEAD --])
+  unless Process.last_status.success?
     abort 'Please stash the changes in the current branch before calling rebase-all!'.red
   end
 
@@ -131,9 +135,9 @@ def rebase_mappings
     .map { |line| line[2..].rstrip }
     .select { |branch| branch.start_with?("#{user_name}/", "security-#{user_name}/", "security/#{user_name}/") }
     .sort_by do |branch|
-      seq_mr_match_data = seq_mr_pattern.match(branch)
+      seq_mr_match_data   = seq_mr_pattern.match(branch)
       backport_match_data = backport_pattern.match(branch)
-      mr_match_data = mr_pattern.match(branch)
+      mr_match_data       = mr_pattern.match(branch)
 
       next [seq_mr_match_data[:mr_id].to_i, 1, seq_mr_match_data[:mr_seq_nr].to_i] if seq_mr_match_data
 
@@ -146,30 +150,30 @@ def rebase_mappings
       []
     end
 
-  chain_previous_branches = [default_branch]
+  chain_previous_branches  = [default_branch]
   chain_previous_mr_seq_nr = nil
-  chain_mr_id = nil
+  chain_mr_id              = nil
 
   local_branches.map do |branch|
-    seq_mr_match_data = seq_mr_pattern.match(branch)
-    mr_match_data = mr_pattern.match(branch)
+    seq_mr_match_data   = seq_mr_pattern.match(branch)
+    mr_match_data       = mr_pattern.match(branch)
     backport_match_data = backport_pattern.match(branch)
 
     chain_previous_mr_id = chain_mr_id
 
     if seq_mr_match_data
-      chain_mr_id = seq_mr_match_data[:mr_id]
+      chain_mr_id     = seq_mr_match_data[:mr_id]
       chain_mr_seq_nr = seq_mr_match_data[:mr_seq_nr].to_i
     elsif mr_match_data
-      chain_mr_id = mr_match_data[:mr_id]
+      chain_mr_id     = mr_match_data[:mr_id]
       chain_mr_seq_nr = 1
     else
-      chain_mr_id = nil
+      chain_mr_id     = nil
       chain_mr_seq_nr = nil
     end
 
     if chain_previous_mr_id && chain_mr_id != chain_previous_mr_id
-      chain_previous_branches = [default_branch]
+      chain_previous_branches  = [default_branch]
       chain_previous_mr_seq_nr = nil
     end
 
@@ -184,7 +188,7 @@ def rebase_mappings
       chain_previous_mr_seq_nr = chain_mr_seq_nr
     elsif backport_match_data
       remote = `git rev-parse --abbrev-ref --symbolic-full-name #{branch}@{u} --`.split('/').first
-      next if $?.exitstatus == 128 # Ignore branch if was deleted upstream
+      next if Process.last_status.exitstatus == 128 # Ignore branch if was deleted upstream
 
       parent_branch = "#{remote}/#{backport_match_data[:milestone].tr('.', '-')}-stable-ee"
     else
@@ -218,21 +222,25 @@ def git_push_issue(*args)
 
   return unless mr_match_data
 
-  local_branch_info_hash = rebase_mappings { |_chain_mr_id, branch, parent_branch| [branch, parent_branch] }
-                           .select { |branch, _parent_branch| branch.start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}") }
+  local_branch_info_hash =
+    rebase_mappings { |_chain_mr_id, branch, parent_branch| [branch, parent_branch] }
+    .select do |branch, _parent_branch|
+      branch.start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}")
+    end
 
   local_branch_info_hash.each do |branch, parent_branch|
     active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
 
     puts 'Pushing '.brown + branch.cyan + ' to '.brown + active_remote_name.green + '...'.brown
 
-    unless system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL,
-                                                                                         err: File::NULL)
+    system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
+    unless Process.last_status.success?
       puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
       next
     end
 
-    break unless system(*%W[git push --force-with-lease #{active_remote_name} #{branch}] + args)
+    system(*%W[git push --force-with-lease #{active_remote_name} #{branch}] + args)
+    break unless Process.last_status.success?
   end
 
   system(*%W[git switch #{current_branch}])

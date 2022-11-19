@@ -34,6 +34,7 @@ vim.cmd([[
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- https://github.com/wbthomason/packer.nvim#packernvim
 return require("packer").startup({ function(use)
   local function with_config(use_params)
     local plugin_name
@@ -191,6 +192,51 @@ return require("packer").startup({ function(use)
   use "sindrets/diffview.nvim" -- Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
   use "ruanyl/vim-gh-line" -- vim plugin that open the link of current line on github
   use(with_config "tpope/vim-fugitive") -- fugitive.vim: A Git wrapper so awesome, it should be illegal
+
+  -- DAP
+  use(with_config {
+    "mfussenegger/nvim-dap", -- Debug Adapter Protocol client implementation for Neovim
+    opt = true,
+    keys = {
+      "<S-F5>",
+      "<F5>",
+      "<F7>",
+      "<F8>",
+      "<F9>",
+    },
+    run = ":MasonInstall bash-debug-adapter",
+    requires = {
+      {
+        "theHamsta/nvim-dap-virtual-text",
+        requires = "nvim-treesitter/nvim-treesitter",
+        config = function()
+          require("nvim-dap-virtual-text").setup()
+        end
+      },
+      with_config("rcarriga/nvim-dap-ui"),
+    }
+  })
+  use {
+    "leoluz/nvim-dap-go", -- An extension for nvim-dap providing configurations for launching go debugger (delve) and debugging individual tests
+    config = function()
+      vim.cmd([[ PackerLoad nvim-dap ]])
+      require("dap-go").setup()
+    end,
+    opt = true,
+    requires = "mfussenegger/nvim-dap",
+    ft = "go",
+    run = ":MasonInstall delve go-debug-adapter",
+  }
+  use {
+    "suketa/nvim-dap-ruby", -- An extension for nvim-dap providing configurations for launching debug.rb
+    config = function()
+      vim.cmd([[ PackerLoad nvim-dap ]])
+      require("dap-ruby").setup()
+    end,
+    opt = true,
+    requires = "mfussenegger/nvim-dap",
+    ft = "ruby",
+  }
 
   -- Color scheme
   use(with_config "themercorp/themer.lua") -- A simple, minimal highlighter plugin for neovim

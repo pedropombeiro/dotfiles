@@ -43,7 +43,7 @@ require("lsp-setup").setup({
       },
     },
     marksman = {},
-    solargraph = {},
+    --solargraph = {},
     sumneko_lua = {
       settings = {
         Lua = {

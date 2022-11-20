@@ -36,6 +36,16 @@ vim.g.loaded_netrwPlugin = 1
 
 -- https://github.com/wbthomason/packer.nvim#packernvim
 return require("packer").startup({ function(use)
+  local function with_default_config(module_name, use_params)
+    if type(use_params) ~= "table" then
+      use_params = { use_params }
+    end
+
+    use_params["config"] = string.format('require("%s").setup()', module_name)
+
+    return use_params
+  end
+
   local function with_config(use_params)
     local plugin_name
     if type(use_params) == "table" then
@@ -47,6 +57,7 @@ return require("packer").startup({ function(use)
 
     local config_file = string.match(plugin_name, "^.*/([a-z-_]+)")
     use_params["config"] = string.format('require("config/%s")', config_file)
+
     return use_params
   end
 
@@ -88,12 +99,7 @@ return require("packer").startup({ function(use)
     },
   })
 
-  local mason = {
-    "williamboman/mason.nvim",
-    config = function()
-      require("mason").setup()
-    end
-  }
+  local mason = with_default_config("mason", "williamboman/mason.nvim")
   local mason_lspconfig = {
     -- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
     -- to use to launch those servers.
@@ -115,12 +121,7 @@ return require("packer").startup({ function(use)
     },
   })
 
-  use {
-    "j-hui/fidget.nvim", -- Standalone UI for nvim-lsp progress
-    config = function()
-      require("fidget").setup {}
-    end
-  }
+  use(with_default_config("fidget", "j-hui/fidget.nvim")) -- Standalone UI for nvim-lsp progress
 
   use(with_config {
     "jayp0521/mason-null-ls.nvim", -- mason-null-ls bridges mason.nvim with the null-ls plugin - making it easier to use both plugins together.
@@ -206,13 +207,10 @@ return require("packer").startup({ function(use)
     },
     run = ":MasonInstall bash-debug-adapter",
     requires = {
-      {
+      with_default_config("nvim-dap-virtual-text", {
         "theHamsta/nvim-dap-virtual-text",
         requires = "nvim-treesitter/nvim-treesitter",
-        config = function()
-          require("nvim-dap-virtual-text").setup()
-        end
-      },
+      }),
       with_config("rcarriga/nvim-dap-ui"),
     }
   })

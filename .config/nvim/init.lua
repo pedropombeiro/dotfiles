@@ -1,3 +1,13 @@
+local function try_require(module)
+  local function requiref(module_try)
+    require(module_try)
+  end
+
+  pcall(requiref, module)
+end
+
+try_require("impatient") -- precompile lua scripts for faster startup
+
 vim.api.nvim_command("autocmd!")
 
 vim.g.mapleader = " "

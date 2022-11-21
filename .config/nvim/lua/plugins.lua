@@ -64,6 +64,8 @@ return require("packer").startup({ function(use)
   -- Packer can manage itself
   use "wbthomason/packer.nvim"
 
+  use 'lewis6991/impatient.nvim'
+
   -- Buffer decorations
   use "mtdl9/vim-log-highlighting" -- Provides syntax highlighting for generic log files in VIM.
   use(with_config "yamatsum/nvim-cursorline") -- A plugin for neovim that highlights cursor words and lines

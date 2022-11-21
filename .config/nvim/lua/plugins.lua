@@ -330,4 +330,5 @@ end,
         return require("packer.util").float({ border = "single" })
       end
     }
-  } })
+  }
+})

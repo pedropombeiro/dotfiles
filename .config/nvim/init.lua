@@ -20,10 +20,14 @@ end
 
 -- Inspiration: https://github.com/skwp/dotfiles/blob/master/vim/settings.vim
 local vimsettings = "~/.config/nvim/settings"
-local vimsettingsfiles = vim.fn.split(vim.fn.globpath(vimsettings, "*.vim"), "\n")
+local settingsfiles = vim.fn.split(vim.fn.globpath(vimsettings, "*.{lua,vim}"), "\n")
 
-for _, fpath in ipairs(vimsettingsfiles) do
-  vim.cmd("source" .. fpath)
+for _, fpath in ipairs(settingsfiles) do
+  if fpath:match("[^.]+$") == "lua" then
+    dofile(fpath)
+  else
+    vim.cmd("source" .. fpath)
+  end
 end
 
 -- Load plugins

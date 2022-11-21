@@ -263,7 +263,6 @@ return require("packer").startup({ function(use)
   use "tpope/vim-unimpaired" -- unimpaired.vim: Pairs of handy bracket mappings
 
   -- Other
-  use "skywind3000/asyncrun.vim" -- 🚀 Run Async Shell Commands in Vim 8.0 / NeoVim and Output to the Quickfix Window !!
   use "tmux-plugins/vim-tmux" -- Vim plugin for .tmux.conf
   use {
     "tpope/vim-dispatch", -- dispatch.vim: Asynchronous build and test dispatcher

@@ -82,10 +82,6 @@ return require("packer").startup({ function(use)
   })
   use(with_config {
     "nvim-tree/nvim-tree.lua", -- A File Explorer For Neovim Written In Lua
-    opt = true,
-    keys = "<C-\\>",
-    cmd = { "NvimTreeOpen", "NvimTreeClose", "NvimTreeFocus", "NvimTreeResize", "NvimTreeToggle", "NvimTreeRefresh",
-      "NvimTreeCollapse", "NvimTreeFindFile", "NvimTreeFindFileToggle" },
     cond = firenvim_not_active,
     requires = "kyazdani42/nvim-web-devicons",
   })

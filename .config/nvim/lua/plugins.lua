@@ -250,6 +250,7 @@ return require("packer").startup({ function(use)
   use(with_config "rmagatti/auto-session") -- A small automated session manager for Neovim
 
   -- Editor enhancements
+  use(with_config "NvChad/nvim-colorizer.lua") -- Maintained fork of the fastest Neovim colorizer
   use(with_config "junegunn/vim-easy-align") -- 🌻 A Vim alignment plugin
   use(with_config "nishigori/increment-activator") -- Vim Plugin for enhance to increment candidates U have defined.
   use "AndrewRadev/splitjoin.vim" -- Switch between single-line and multiline forms of code

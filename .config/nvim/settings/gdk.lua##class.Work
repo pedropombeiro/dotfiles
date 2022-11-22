@@ -1,0 +1,15 @@
+---------------- Customizations for GDK --------------------------
+
+vim.api.nvim_create_user_command("CompileDocs", "Dispatch! bundle exec rake gitlab:graphql:compile_docs", {})
+vim.api.nvim_create_user_command("CompileDeprecations", "Dispatch! bundle exec rake gitlab:docs:compile_deprecations",
+  {})
+vim.api.nvim_create_user_command("CompileRemovals", "Dispatch! bundle exec rake gitlab:docs:compile_removals", {})
+vim.api.nvim_create_user_command("GenerateQueues",
+  "Dispatch! bundle exec rake gitlab:sidekiq:all_queues_yml:generate gitlab:sidekiq:sidekiq_queues_yml:generate", {})
+vim.api.nvim_create_user_command("GenerateSchema", "Dispatch! scripts/regenerate-schema", {})
+
+local cmd_prefix = "wincmd n | wincmd J | resize10 | setlocal nonumber | setlocal norelativenumber | setlocal laststatus=0 | "
+vim.api.nvim_create_user_command("Fgdku", cmd_prefix .. "call termopen('zsh -i -c fgdku') | normal G", {})
+vim.api.nvim_create_user_command("RebaseAll", cmd_prefix .. "call termopen('zsh -i -c rebase-all') | normal G", {})
+vim.api.nvim_create_user_command("Gsw", "Git switch <args>", { nargs = 1 })
+vim.api.nvim_create_user_command("Gswm", cmd_prefix .. "call termopen('zsh -i -c gswm') | normal G", {})

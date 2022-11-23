@@ -76,10 +76,17 @@ return packer.startup({ function(use)
   -- Buffer decorations
   use "mtdl9/vim-log-highlighting" -- Provides syntax highlighting for generic log files in VIM.
   use(with_config "yamatsum/nvim-cursorline") -- A plugin for neovim that highlights cursor words and lines
-
   use "lukas-reineke/indent-blankline.nvim" -- Indent guides for Neovim
+  use(with_config "NvChad/nvim-colorizer.lua") -- Maintained fork of the fastest Neovim colorizer
 
   -- File management
+  use {
+    'goolord/alpha-nvim',
+    requires = { 'kyazdani42/nvim-web-devicons' },
+    config = function()
+      require 'alpha'.setup(require 'alpha.themes.theta'.config)
+    end
+  }
   use(with_config {
     "francoiscabrol/ranger.vim", -- Ranger integration in vim and neovim
     opt = true,
@@ -250,10 +257,8 @@ return packer.startup({ function(use)
 
   -- Session management
   use "farmergreg/vim-lastplace" -- Intelligently reopen files at your last edit position in Vim.
-  use(with_config "rmagatti/auto-session") -- A small automated session manager for Neovim
 
   -- Editor enhancements
-  use(with_config "NvChad/nvim-colorizer.lua") -- Maintained fork of the fastest Neovim colorizer
   use(with_config "junegunn/vim-easy-align") -- 🌻 A Vim alignment plugin
   use(with_config "nishigori/increment-activator") -- Vim Plugin for enhance to increment candidates U have defined.
   use "AndrewRadev/splitjoin.vim" -- Switch between single-line and multiline forms of code

@@ -95,8 +95,17 @@ vim.opt.tabstop      = 2
 
 -- highlight trailing whitespace (Mastering Vim Quickly)
 vim.cmd([[
-  autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
-  match ExtraWhitespace /\s\+$/
+  function! HighlightExtraWhitespace()
+    " Don't highlight on these filetypes
+    if &ft =~ 'alpha\|NvimTree'
+      return
+    endif
+
+    highlight ExtraWhitespace ctermbg=red guibg=red
+    match ExtraWhitespace /\s\+$/
+  endfunction
+
+  autocmd BufNewFile,BufRead * call HighlightExtraWhitespace()
 ]])
 
 local save_fmt_augroup = vim.api.nvim_create_augroup("save_fmt", { clear = true })

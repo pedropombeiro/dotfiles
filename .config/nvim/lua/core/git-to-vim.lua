@@ -1,5 +1,6 @@
-"-- Git to Vim --
+-- Git to Vim --
 
+vim.cmd([[
 function! TabIsEmpty()
   return winnr('$') == 1 && len(expand('%')) == 0 && line2byte(line('$') + 1) <= 2
 endfunction
@@ -32,4 +33,4 @@ endfunction
 :command Branch call OpenBranchCommitedFiles()
 
 :nnoremap <leader>ob :Branch<ESC>
-
+]])

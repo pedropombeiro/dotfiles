@@ -20,12 +20,12 @@ local firenvim_not_active = function()
   return not vim.g.started_by_firenvim
 end
 
--- configure Neovim to automatically run :PackerCompile whenever plugins.lua is updated
+-- configure Neovim to automatically run :PackerCompile whenever packer_init.lua or plugin config is updated
 vim.cmd([[
   augroup packer_user_config
     autocmd!
-    autocmd BufWritePost plugins.lua source <afile> | PackerSync
-    autocmd BufWritePost ~/.config/nvim/lua/config/*.lua source <afile> | PackerCompile
+    autocmd BufWritePost packer_init.lua source <afile> | PackerSync
+    autocmd BufWritePost ~/.config/nvim/lua/plugins/*.lua source <afile> | PackerCompile
   augroup end
 ]])
 
@@ -34,8 +34,15 @@ vim.cmd([[
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- Use a protected call so we don't error out on first use
+local status_ok, packer = pcall(require, 'packer')
+if not status_ok then
+  return
+end
+
+-- Install plugins
 -- https://github.com/wbthomason/packer.nvim#packernvim
-return require("packer").startup({ function(use)
+return packer.startup({ function(use)
   local function with_default_config(module_name, use_params)
     if type(use_params) ~= "table" then
       use_params = { use_params }
@@ -56,7 +63,7 @@ return require("packer").startup({ function(use)
     end
 
     local config_file = string.match(plugin_name, "^.*/([a-z-_]+)")
-    use_params["config"] = string.format('require("config/%s")', config_file)
+    use_params["config"] = string.format('require("plugins/%s")', config_file)
 
     return use_params
   end

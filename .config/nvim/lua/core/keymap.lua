@@ -1,7 +1,6 @@
-" --- key bindings -------------------------------------------------------------------
+--- key bindings -------------------------------------------------------------------
 
-set pastetoggle=<f5>
-
+vim.cmd([[
 noremap <C-q> :qa<CR>
 
 nnoremap & :&&<CR>
@@ -96,4 +95,4 @@ vmap <leader>{ c{<C-R>"}<ESC>
 map <leader>` ysiW`
 
 nmap <leader>rf :Dispatch bundle exec rubocop --auto-correct %<CR>
-
+]])

@@ -1,29 +1,17 @@
-local function try_require(module)
-  local function requiref(module_try)
-    require(module_try)
-  end
+pcall(require, "impatient") -- precompile lua scripts for faster startup
 
-  pcall(requiref, module)
-end
-
-try_require("impatient") -- precompile lua scripts for faster startup
-
-vim.api.nvim_command("autocmd!")
+vim.api.nvim_exec("autocmd!", false)
 
 vim.g.mapleader = " "
 vim.opt.timeoutlen = 500
 
 -- Inspiration: https://github.com/skwp/dotfiles/blob/master/vim/settings.vim
-local vimsettings = "~/.config/nvim/settings"
-local settingsfiles = vim.fn.split(vim.fn.globpath(vimsettings, "*.{lua,vim}"), "\n")
+local vimsettings = "~/.config/nvim/lua/core"
+local settingsfiles = vim.fn.split(vim.fn.globpath(vimsettings, "*.lua"), "\n")
 
 for _, fpath in ipairs(settingsfiles) do
-  if fpath:match("[^.]+$") == "lua" then
-    dofile(fpath)
-  else
-    vim.cmd("source" .. fpath)
-  end
+  dofile(fpath)
 end
 
 -- Load plugins
-require("plugins")
+require("packer_init")

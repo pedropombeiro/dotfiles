@@ -43,7 +43,7 @@ vim.opt.modeline  = false
 
 -- Q: Mouse reporting in vim doesn't work for some rows/columns in a big terminal window.
 if vim.fn.has("mouse_sgr") ~= 0 then
-  vim.api.nvim_command("set ttymouse=sgr")
+  vim.cmd("set ttymouse=sgr")
 end
 
 ---------------- Layout --------------------------
@@ -94,10 +94,10 @@ vim.opt.softtabstop  = 2
 vim.opt.tabstop      = 2
 
 -- highlight trailing whitespace (Mastering Vim Quickly)
-vim.api.nvim_exec([[
+vim.cmd([[
   autocmd ColorScheme * highlight ExtraWhitespace ctermbg=red guibg=red
   match ExtraWhitespace /\s\+$/
-]], false)
+]])
 
 local save_fmt_augroup = vim.api.nvim_create_augroup("save_fmt", { clear = true })
 vim.api.nvim_create_autocmd("BufWritePre", {
@@ -110,6 +110,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 local term_helper_augroup = vim.api.nvim_create_augroup("term_helper", { clear = true })
 vim.api.nvim_create_autocmd("TermOpen", {
   pattern = "*",
-  group = save_fmt_augroup,
+  group = term_helper_augroup,
   command = "match none" -- clear the highlighting if we're a terminal buffer
 })

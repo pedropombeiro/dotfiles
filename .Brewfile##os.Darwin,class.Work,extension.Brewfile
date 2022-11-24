@@ -275,6 +275,8 @@ cask "cakebrew"
 cask "choosy"
 # Automated testing of webapps for Google Chrome
 cask "chromedriver"
+# Graphical configurator for Kaleidoscope-powered keyboards
+cask "chrysalis"
 # API documentation browser and code snippet manager
 cask "dash"
 # Control your Elgato Key Lights

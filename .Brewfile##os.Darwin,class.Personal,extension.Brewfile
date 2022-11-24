@@ -22,6 +22,8 @@ brew "coreutils"
 brew "asdf"
 # Shell extension to jump to frequently used directories
 brew "autojump"
+# Bourne-Again SHell, a UNIX command interpreter
+brew "bash"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
 # Arbitrary precision calculator

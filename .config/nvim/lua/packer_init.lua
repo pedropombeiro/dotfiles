@@ -209,6 +209,10 @@ return packer.startup({ function(use)
   use "sindrets/diffview.nvim" -- Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
   use "ruanyl/vim-gh-line" -- vim plugin that open the link of current line on github
   use(with_config "tpope/vim-fugitive") -- fugitive.vim: A Git wrapper so awesome, it should be illegal
+  use(with_config {
+    "shumphrey/fugitive-gitlab.vim", -- A vim extension to fugitive.vim for GitLab support
+    wants = "tpop/vim-fugitive",
+  })
 
   -- DAP
   use(with_config {

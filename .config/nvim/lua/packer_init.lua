@@ -115,12 +115,12 @@ return packer.startup({ function(use)
     },
   })
 
-  local mason = with_default_config("mason", "williamboman/mason.nvim")
-  local mason_lspconfig = {
+  use(with_default_config("mason", "williamboman/mason.nvim")) -- Portable package manager for Neovim that runs everywhere Neovim runs. Easily install and manage LSP servers, DAP servers, linters, and formatters.
+  use {
     -- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
     -- to use to launch those servers.
     "williamboman/mason-lspconfig.nvim",
-    requires = { mason },
+    requires = "williamboman/mason.nvim",
   }
   use(with_config {
     "junnplus/lsp-setup.nvim", -- A simple wrapper for nvim-lspconfig and mason-lspconfig to easily setup LSP servers.
@@ -129,11 +129,11 @@ return packer.startup({ function(use)
         "neovim/nvim-lspconfig", -- Quickstart configs for Nvim LSP
         requires = {
           "hrsh7th/cmp-nvim-lsp", -- nvim-cmp source for neovim builtin LSP client
-          mason_lspconfig,
+          "williamboman/mason-lspconfig.nvim",
           "b0o/schemastore.nvim", -- 🛍 JSON schemas for Neovim
         },
       },
-      mason_lspconfig
+      "williamboman/mason-lspconfig.nvim"
     },
   })
 
@@ -148,7 +148,7 @@ return packer.startup({ function(use)
           "nvim-lua/plenary.nvim" -- plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice.
         }
       },
-      mason,
+      "williamboman/mason.nvim",
     }
   })
 
@@ -225,14 +225,14 @@ return packer.startup({ function(use)
       "<F8>",
       "<F9>",
     },
-    run = ":MasonInstall bash-debug-adapter",
     requires = {
       with_default_config("nvim-dap-virtual-text", {
         "theHamsta/nvim-dap-virtual-text",
         requires = "nvim-treesitter/nvim-treesitter",
       }),
       with_config("rcarriga/nvim-dap-ui"),
-    }
+      "williamboman/mason.nvim",
+    },
   })
   use {
     "leoluz/nvim-dap-go", -- An extension for nvim-dap providing configurations for launching go debugger (delve) and debugging individual tests
@@ -241,9 +241,11 @@ return packer.startup({ function(use)
       require("dap-go").setup()
     end,
     opt = true,
-    requires = "mfussenegger/nvim-dap",
+    requires = {
+      "mfussenegger/nvim-dap",
+      "williamboman/mason.nvim",
+    },
     ft = "go",
-    run = ":MasonInstall delve go-debug-adapter",
   }
   use {
     "suketa/nvim-dap-ruby", -- An extension for nvim-dap providing configurations for launching debug.rb
@@ -347,6 +349,7 @@ end,
       open_fn = function()
         return require("packer.util").float({ border = "single" })
       end
-    }
+    },
+    max_jobs = 20,
   }
 })

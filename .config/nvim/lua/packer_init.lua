@@ -320,6 +320,12 @@ return packer.startup({ function(use)
     cond = firenvim_active,
   })
 
+  use {
+    "iamcco/markdown-preview.nvim", -- markdown preview plugin for (neo)vim
+    ft = "markdown",
+    run = function() vim.fn["mkdp#util#install"]() end, -- install without yarn or npm
+  }
+
   -- Buffer management
   use(with_config {
     "nvim-lualine/lualine.nvim", -- A blazing fast and easy to configure neovim statusline plugin written in pure lua.

@@ -12,3 +12,4 @@ local function openLazyGit()
 end
 
 vim.keymap.set("n", "<leader>gg", openLazyGit, opts)
+vim.keymap.set("n", "<leader>gf", "<Cmd>LazyGitFilter<CR>", opts)

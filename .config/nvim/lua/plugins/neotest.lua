@@ -32,48 +32,50 @@ neotest.setup({
     }),
   },
   icons = {
-    expanded = "",
-    child_prefix = "",
-    child_indent = "",
+    expanded           = "",
+    child_prefix       = "",
+    child_indent       = "",
     final_child_prefix = "",
-    non_collapsible = "",
-    collapsed = "",
+    non_collapsible    = "",
+    collapsed          = "",
 
-    passed = "",
+    passed  = "",
     running = "",
-    failed = "",
+    failed  = "",
     unknown = ""
   },
 })
 
 -- Theming (from https://github.com/nvim-neotest/neotest/blob/master/lua/neotest/config/init.lua)
-local function define_highlights()
-  vim.cmd([[
-  hi default NeotestPassed ctermfg=Green guifg=#b8bb26
-  hi default NeotestFailed ctermfg=Red guifg=#fb4934
-  hi default NeotestRunning ctermfg=Yellow guifg=#fabd2f
-  hi default NeotestSkipped ctermfg=Cyan guifg=#83a598
-  hi default link NeotestTest Normal
-  hi default NeotestNamespace ctermfg=Magenta guifg=#d3869b
-  hi default NeotestFocused gui=bold,underline cterm=bold,underline
-  hi default NeotestFile ctermfg=Cyan guifg=#83a598
-  hi default NeotestDir ctermfg=Cyan guifg=#83a598
-  hi default NeotestIndent ctermfg=Grey guifg=#a89984
-  hi default NeotestExpandMarker ctermfg=Grey guifg=#bdae93
-  hi default NeotestAdapterName ctermfg=Red guifg=#cc241d
-  hi default NeotestWinSelect ctermfg=Cyan guifg=#83a598 gui=bold
-  hi default NeotestMarked ctermfg=Brown guifg=#fe8019 gui=bold
-  hi default NeotestTarget ctermfg=Red guifg=#cc241d
-  hi default link NeotestUnknown Normal
-  ]])
+local function set_hl(name, attr)
+  vim.api.nvim_set_hl(0, name, attr)
+end
+
+local function define_gruvbox_highlights()
+  set_hl("NeotestPassed", { ctermfg = "Green", fg = "#b8bb26" })
+  set_hl("NeotestFailed", { ctermfg = "Red", fg = "#fb4934" })
+  set_hl("NeotestRunning", { ctermfg = "Yellow", fg = "#fabd2f" })
+  set_hl("NeotestSkipped", { ctermfg = "Cyan", fg = "#83a598" })
+  set_hl("NeotestTest", { link = "Normal" })
+  set_hl("NeotestNamespace", { ctermfg = "Magenta", fg = "#d3869b" })
+  set_hl("NeotestFocused", { bold = true, underline = true })
+  set_hl("NeotestFile", { ctermfg = "Cyan", fg = "#83a598" })
+  set_hl("NeotestDir", { ctermfg = "Cyan", fg = "#83a598" })
+  set_hl("NeotestIndent", { ctermfg = "Grey", fg = "#a89984" })
+  set_hl("NeotestExpandMarker", { ctermfg = "Grey", fg = "#bdae93" })
+  set_hl("NeotestAdapterName", { ctermfg = "Red", fg = "#cc241d" })
+  set_hl("NeotestWinSelect", { ctermfg = "Cyan", fg = "#83a598", bold = true })
+  set_hl("NeotestMarked", { ctermfg = "Brown", fg = "#fe8019", bold = true })
+  set_hl("NeotestTarget", { ctermfg = "Red", fg = "#cc241d" })
+  set_hl("NeotestUnknown", { link = "Normal" })
 end
 
 --- Override Neotest default theme
 local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/theme.sh
 if theme == "gruvbox" then
   local augroup = vim.api.nvim_create_augroup("NeotestColorSchemeRefresh", { clear = true })
-  vim.api.nvim_create_autocmd("ColorScheme", { callback = define_highlights, group = augroup })
-  define_highlights()
+  vim.api.nvim_create_autocmd("ColorScheme", { callback = define_gruvbox_highlights, group = augroup })
+  define_gruvbox_highlights()
 end
 
 -- Keymaps

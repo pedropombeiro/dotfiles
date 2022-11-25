@@ -115,12 +115,12 @@ return packer.startup({ function(use)
     },
   })
 
-  use(with_default_config("mason", "williamboman/mason.nvim")) -- Portable package manager for Neovim that runs everywhere Neovim runs. Easily install and manage LSP servers, DAP servers, linters, and formatters.
-  use {
+  local mason = with_default_config("mason", "williamboman/mason.nvim")
+  local mason_lspconfig = {
     -- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
     -- to use to launch those servers.
     "williamboman/mason-lspconfig.nvim",
-    requires = "williamboman/mason.nvim",
+    requires = { mason },
   }
   use(with_config {
     "junnplus/lsp-setup.nvim", -- A simple wrapper for nvim-lspconfig and mason-lspconfig to easily setup LSP servers.
@@ -129,11 +129,11 @@ return packer.startup({ function(use)
         "neovim/nvim-lspconfig", -- Quickstart configs for Nvim LSP
         requires = {
           "hrsh7th/cmp-nvim-lsp", -- nvim-cmp source for neovim builtin LSP client
-          "williamboman/mason-lspconfig.nvim",
+          mason_lspconfig,
           "b0o/schemastore.nvim", -- 🛍 JSON schemas for Neovim
         },
       },
-      "williamboman/mason-lspconfig.nvim"
+      mason_lspconfig
     },
   })
 
@@ -148,7 +148,7 @@ return packer.startup({ function(use)
           "nvim-lua/plenary.nvim" -- plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice.
         }
       },
-      "williamboman/mason.nvim",
+      mason,
     }
   })
 
@@ -231,8 +231,7 @@ return packer.startup({ function(use)
         requires = "nvim-treesitter/nvim-treesitter",
       }),
       with_config("rcarriga/nvim-dap-ui"),
-      "williamboman/mason.nvim",
-    },
+    }
   })
   use {
     "leoluz/nvim-dap-go", -- An extension for nvim-dap providing configurations for launching go debugger (delve) and debugging individual tests
@@ -241,10 +240,7 @@ return packer.startup({ function(use)
       require("dap-go").setup()
     end,
     opt = true,
-    requires = {
-      "mfussenegger/nvim-dap",
-      "williamboman/mason.nvim",
-    },
+    requires = "mfussenegger/nvim-dap",
     ft = "go",
   }
   use {
@@ -319,11 +315,6 @@ return packer.startup({ function(use)
     cond = firenvim_active,
   })
 
-  use {
-    "iamcco/markdown-preview.nvim", -- markdown preview plugin for (neo)vim
-    run = function() vim.fn["mkdp#util#install"]() end, -- install without yarn or npm
-  }
-
   -- Buffer management
   use(with_config {
     "nvim-lualine/lualine.nvim", -- A blazing fast and easy to configure neovim statusline plugin written in pure lua.
@@ -349,7 +340,6 @@ end,
       open_fn = function()
         return require("packer.util").float({ border = "single" })
       end
-    },
-    max_jobs = 20,
+    }
   }
 })

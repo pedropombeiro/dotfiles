@@ -79,10 +79,9 @@ end
 -- Keymaps
 local opts = { noremap = true, silent = true }
 vim.keymap.set("n", "<leader>rt", neotest.run.run, opts)
+vim.keymap.set("n", "<leader>rt", function() neotest.run.run({ strategy = "dap" }) end, opts)
 vim.keymap.set("n", "<leader>rT", function() neotest.run.run(vim.fn.expand("%")) end, opts)
 vim.keymap.set("n", "<leader>rr", neotest.summary.open, opts)
-
---  function! TestBranch()
---    Dispatch bin/rspec $(git diff --name-only --diff-filter=AM master | grep 'spec/')
---  endfunction
---  nnoremap <leader>rb :call TestBranch()<CR>
+vim.keymap.set("n", "<leader>rb",
+  ":Dispatch bin/rspec $(git diff --name-only --diff-filter=AM master | grep 'spec/')<CR>",
+  opts)

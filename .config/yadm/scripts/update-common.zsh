@@ -37,5 +37,5 @@ printf "${YELLOW}%s${NC}\n" "Updating neovim plugins..."
 rm -rf ${HOME}/.vim
 rm -f ~/.config/nvim/plugin/packer_compiled.lua && \
   nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync' && \
-  printf "${GREEN}%s${NC}\n" "Done"
+  printf "\n${GREEN}%s${NC}\n" "Done"
 

@@ -19,4 +19,6 @@ require("symbols-outline").setup {
   },
 }
 
-vim.keymap.set({ "n", "v" }, "<C-'>", "<Cmd>SymbolsOutline<CR>")
+local m = require("mapx").setup { global = "force", whichkey = true }
+m.nnoremap("<C-'>", "<Cmd>SymbolsOutline<CR>", "Toggle symbols window")
+m.vnoremap("<C-'>", "<Cmd>SymbolsOutline<CR>", "Toggle symbols window")

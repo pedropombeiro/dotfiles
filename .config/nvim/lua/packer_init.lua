@@ -73,6 +73,11 @@ return packer.startup({ function(use)
 
   use 'lewis6991/impatient.nvim'
 
+  -- Key mappings management
+
+  use(with_config "b0o/mapx.nvim") -- 🗺 A better way to create key mappings in Neovim
+  use(with_default_config("which-key", "folke/which-key.nvim")) -- 💥 Create key bindings that stick. WhichKey is a lua plugin for Neovim 0.5 that displays a popup with possible keybindings of the command you started typing.
+
   -- Buffer decorations
   use "mtdl9/vim-log-highlighting" -- Provides syntax highlighting for generic log files in VIM.
   use(with_config "yamatsum/nvim-cursorline") -- A plugin for neovim that highlights cursor words and lines
@@ -102,7 +107,7 @@ return packer.startup({ function(use)
 
   -- Search
   use "junegunn/fzf" -- 🌸 A command-line fuzzy finder
-  use(with_config "junegunn/fzf.vim") -- fzf ❤️ vim
+  use(with_config "ibhagwan/fzf-lua") -- Improved fzf.vim written in lua
 
   use "tpope/vim-abolish" -- abolish.vim: easily search for, substitute, and abbreviate multiple variants of a word
 
@@ -192,14 +197,14 @@ return packer.startup({ function(use)
     "kosayoda/nvim-lightbulb", -- VSCode 💡 for neovim's built-in LSP.
     requires = "antoinemadec/FixCursorHold.nvim",
   })
-  use(with_config {
+  use {
     "weilbith/nvim-code-action-menu", -- Pop-up menu for code actions to show meta-information and diff preview
     cmd = "CodeActionMenu",
     keys = "<leader>la"
-  })
+  }
 
   -- Git
-  use(with_config "kdheepak/lazygit.nvim") -- Plugin for calling lazygit from within neovim.
+  use "kdheepak/lazygit.nvim" -- Plugin for calling lazygit from within neovim.
 
   use(with_config {
     "lewis6991/gitsigns.nvim", -- Git integration for buffers
@@ -261,7 +266,7 @@ return packer.startup({ function(use)
   use "farmergreg/vim-lastplace" -- Intelligently reopen files at your last edit position in Vim.
 
   -- Editor enhancements
-  use(with_config "junegunn/vim-easy-align") -- 🌻 A Vim alignment plugin
+  use "junegunn/vim-easy-align" -- 🌻 A Vim alignment plugin
   use(with_config "nishigori/increment-activator") -- Vim Plugin for enhance to increment candidates U have defined.
   use "AndrewRadev/splitjoin.vim" -- Switch between single-line and multiline forms of code
   use(with_config "editorconfig/editorconfig-vim") -- EditorConfig plugin for Vim

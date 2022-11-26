@@ -79,11 +79,14 @@ if theme == "gruvbox" then
 end
 
 -- Keymaps
-local opts = { noremap = true, silent = true }
-vim.keymap.set("n", "<leader>rt", neotest.run.run, opts)
-vim.keymap.set("n", "<leader>rt", function() neotest.run.run({ strategy = "dap" }) end, opts)
-vim.keymap.set("n", "<leader>rT", function() neotest.run.run(vim.fn.expand("%")) end, opts)
-vim.keymap.set("n", "<leader>rr", neotest.summary.open, opts)
-vim.keymap.set("n", "<leader>rb",
+local m = require("mapx").setup { global = "force", whichkey = true }
+m.nname("<leader>r", "Test")
+m.nnoremap("<leader>rt", neotest.run.run, { silent = true }, "Run the nearest test")
+m.nnoremap("<leader>rd", function() neotest.run.run({ strategy = "dap" }) end, { silent = true },
+  "Debug the nearest test")
+m.nnoremap("<leader>rT", function() neotest.run.run(vim.fn.expand("%")) end, { silent = true }, "Run the current file")
+m.nnoremap("<leader>rr", neotest.summary.open, { silent = true }, "Open test summary")
+m.nnoremap("<leader>rb",
   ":Dispatch bin/rspec $(git diff --name-only --diff-filter=AM master | grep 'spec/')<CR>",
-  opts)
+  { silent = true, ft = "ruby" },
+  "Run MR tests")

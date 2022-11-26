@@ -2,11 +2,12 @@
 -- 🚦 A pretty diagnostics, references, telescope results, quickfix and location list to help you solve
 --  all the trouble your code is causing.
 
-local map = vim.keymap.set
-local opts = { noremap = true, silent = true }
+local m = require("mapx").setup { global = "force", whichkey = true }
+local opts = { silent = true }
 
-map("n", "<leader>xx", "<cmd>TroubleToggle<cr>", opts)
-map("n", "<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", opts)
-map("n", "<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", opts)
-map("n", "<leader>xq", "<cmd>TroubleToggle quickfix<cr>", opts)
-map("n", "<leader>xl", "<cmd>TroubleToggle loclist<cr>", opts)
+m.nname("<leader>x", "Trouble 🚦")
+m.nnoremap("<leader>xx", "<cmd>TroubleToggle<cr>", opts, "Toggle Trouble window")
+m.nnoremap("<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", opts, "Toggle workspace diagnostics")
+m.nnoremap("<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", opts, "Toggle document diagnostics")
+m.nnoremap("<leader>xq", "<cmd>TroubleToggle quickfix<cr>", opts, "Toggle quickfix window")
+m.nnoremap("<leader>xl", "<cmd>TroubleToggle loclist<cr>", opts, "Toggle loclist window")

@@ -33,15 +33,16 @@ require("nvim-tree").setup({
   },
 })
 
-local map = vim.keymap.set
-
-map({ "n", "v" }, "<C-\\>", "<Cmd>NvimTreeFindFileToggle<CR>")
+local m = require("mapx").setup { global = "force", whichkey = true }
+m.nnoremap("<C-\\>", "<Cmd>NvimTreeFindFileToggle<CR>", "Toggle file explorer")
+m.vnoremap("<C-\\>", "<Cmd>NvimTreeFindFileToggle<CR>", "Toggle file explorer")
 
 -- Restore URL handling from disabled netrw plugin
+local map = vim.keymap.set
 if vim.fn.has("mac") == 1 then
   map("n", "gx", '<Cmd>call jobstart(["open", expand("<cfile>")], {"detach": v:true})<CR>')
 elseif vim.fn.has("unix") == 1 then
   map("n", "gx", '<Cmd>call jobstart(["xdg-open", expand("<cfile>")], {"detach": v:true})<CR>')
 else
-  map("n", "gx", "<Cmd>lua print(\"Error: gx is not supported on this OS!\")<CR>")
+  map("n", "gx", '<Cmd>lua print("Error: gx is not supported on this OS!")<CR>')
 end

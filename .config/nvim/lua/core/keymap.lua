@@ -1,100 +1,90 @@
 --- key bindings -------------------------------------------------------------------
 
-vim.cmd([[
-noremap <C-q> :qa<CR>
+local m = require("mapx").setup { global = "force", whichkey = true }
 
-nnoremap & :&&<CR>
-xnoremap & :&&<CR>
+m.nnoremap("&", ":&&<CR>")
+m.xnoremap("&", ":&&<CR>")
 
-noremap <leader>tn :tabnew<CR>
-noremap <leader>tc :tabclose<CR>
-noremap <leader>tt :tabs<CR>
-nnoremap <C-s> :w<CR>
-inoremap <C-s> <ESC>:w<CR>
-nnoremap <C-q> :qa<CR>
-inoremap <C-q> <ESC>:qa<CR>
-" Switch between recently edited buffers (Mastering Vim Quickly)
-  nnoremap <C-b> <C-^>
-  inoremap <C-b> <ESC><C-^>
+m.nname("<leader>t", "Tabs")
+m.noremap("<leader>tn", ":tabnew<CR>", "Open new tab")
+m.noremap("<leader>tc", ":tabclose<CR>", "Close tab")
+m.noremap("<leader>tt", ":tabs<CR>", "List tabs")
 
-" Map Esc to normal mode in terminal mode
-tnoremap <leader><ESC> <C-\><C-n>
+m.nnoremap("<C-s>", ":w<CR>")
+m.inoremap("<C-s>", "<Esc>:w<CR>")
+m.nnoremap("<C-q>", ":qa<CR>")
+m.inoremap("<C-q>", "<Esc>:qa<CR>")
+-- Switch between recently edited buffers (Mastering Vim Quickly)
+m.nnoremap("<C-b>", "<C-^>", "Switch to recent buffer")
+m.inoremap("<C-b>", "<Esc><C-^>", "Switch to recent buffer")
 
-" make . work with visually selected lines
-vnoremap . :normal.<CR>
+-- Map Esc to normal mode in terminal mode
+m.tnoremap("<leader><Esc>", "<C-\\><C-n>")
 
-" Center next/previous matches on the screen (Mastering Vim Quickly)
-nnoremap n nzz
-nnoremap N Nzz
+-- make . work with visually selected lines
+m.vnoremap(".", ":normal.<CR>")
 
-" -- Move lines with single key combo (Mastering Vim Quickly)
-  " Normal mode
-  nnoremap <C-j> :m .+1<CR>==
-  nnoremap <C-k> :m .-2<CR>==
+-- Center next/previous matches on the screen (Mastering Vim Quickly)
+m.nnoremap("n", "nzz", "Next match (centered)")
+m.nnoremap("N", "Nzz", "Previous match (centered)")
 
-  " Insert mode
-  inoremap <C-j> <ESC>:m .+1<CR>==gi
-  inoremap <C-k> <ESC>:m .-2<CR>==gi
+---- Move lines with single key combo (Mastering Vim Quickly)
+-- Normal mode
+m.nnoremap("<C-j>", ":m .+1<CR>==", "Move line up")
+m.nnoremap("<C-k>", ":m .-2<CR>==", "Move line down")
 
-  " Visual mode
-  vnoremap <C-j> :m '>+1<CR>gv=gv
-  vnoremap <C-k> :m '<-2<CR>gv=gv
+-- Insert mode
+m.inoremap("<C-j>", "<Esc>:m .+1<CR>==gi", "Move line up")
+m.inoremap("<C-k>", "<Esc>:m .-2<CR>==gi", "Move line down")
 
-" Toggle showing special characters
-nnoremap <leader>~ :<C-U>setlocal lcs=tab:>-,trail:-,eol:$ list! list? <CR>
+-- Visual mode
+m.vnoremap("<C-j>", ":m '>+1<CR>gv=gv", "Move line up")
+m.vnoremap("<C-k>", ":m '<-2<CR>gv=gv", "Move line down")
 
-" Map gp to select recently pasted text
-" (https://vim.fandom.com/wiki/Selecting_your_pasted_text)
-nnoremap <expr> gp '`[' . strpart(getregtype(), 0, 1) . '`]'
+m.nnoremap("<leader>~", ":<C-U>setlocal lcs=tab:>-,trail:-,eol:$ list! list? <CR>", "Toggle special characters")
 
-" ========================================
-" General vim sanity improvements
-" ========================================
-"
-"
-" alias yw to yank the entire word 'yank inner word'
-" even if the cursor is halfway inside the word
-" FIXME: will not properly repeat when you use a dot (tie into repeat.vim)
-nnoremap <leader>yw yiww
+-- Map gp to select recently pasted text
+-- (https://vim.fandom.com/wiki/Selecting_your_pasted_text)
+m.nnoremap("gp", "'`[' . strpart(getregtype(), 0, 1) . '`]'", { expr = true }, "Select last pasted text")
 
-" ,ow = 'overwrite word', replace a word with what's in the yank buffer
-" FIXME: will not properly repeat when you use a dot (tie into repeat.vim)
-nnoremap <leader>ow "_diwhp
+-- ========================================
+-- General vim sanity improvements
+-- ========================================
+--
+--
+-- alias yw to yank the entire word 'yank inner word'
+-- even if the cursor is halfway inside the word
+-- FIXME: will not properly repeat when you use a dot (tie into repeat.vim)
+m.nnoremap("<leader>yw", "yiww", "Yank whole inner word")
 
-" ,# Surround a word with #{ruby interpolation}
-map <leader># ysiw#
-vmap <leader># c#{<C-R>"}<ESC>
+-- ,ow = 'overwrite word', replace a word with what's in the yank buffer
+-- FIXME: will not properly repeat when you use a dot (tie into repeat.vim)
+m.nnoremap("<leader>ow", '_diwhp"', "Overwrite whole word")
 
-" ," Surround a word with "quotes"
-map <leader>" ysiW"
-vmap <leader>" c"<C-R>""<ESC>
+m.map("<leader>#", "ysiw#", "Surround word with #{}")
+m.vmap("<leader>#", 'c#{<C-R>"}<Esc>', "Surround word with #{}")
 
-" ,' Surround a word with 'single quotes'
-map <leader>' ysiW'
-vmap <leader>' c'<C-R>"'<ESC>
+m.map('<leader>"', 'ysiW"', "Surround word with quotes")
+m.vmap('<leader>"', 'c"<C-R>""<Esc>', "Surround word with quotes")
 
-" <leader>) or <leader>( Surround a word with (parens)
-" The difference is in whether a space is put in
-map <leader>( ysiw(
-map <leader>) ysiw)
-vmap <leader>( c( <C-R>" )<ESC>
-vmap <leader>) c(<C-R>")<ESC>
+m.map("<leader>'", "ysiW'", "Surround word with single quotes")
+m.vmap("<leader>'", "c'<C-R>\"'<Esc>", "Surround word with single quotes")
 
-" ,[ Surround a word with [brackets]
-map <leader>] ysiw]
-map <leader>[ ysiw[
-vmap <leader>[ c[ <C-R>" ]<ESC>
-vmap <leader>] c[<C-R>"]<ESC>
+m.map("<leader>`", "ysiW`", "Surround word with ticks")
 
-" <leader>{ Surround a word with {braces}
-map <leader>} ysiw}
-map <leader>{ ysiw{
-vmap <leader>} c{ <C-R>" }<ESC>
-vmap <leader>{ c{<C-R>"}<ESC>
+-- <leader>) or <leader>( Surround a word with (parens)
+-- The difference is in whether a space is put in
+local symbols = { ["("] = ")", ["["] = "]", ["{"] = "}" }
+for open_sym, close_sym in pairs(symbols) do
+  local open_desc = "Surround word with " .. open_sym .. " " .. close_sym
+  local close_desc = "Surround word with " .. open_sym .. close_sym
 
-map <leader>` ysiW`
+  m.map("<leader>" .. open_sym, "ysiw" .. open_sym, open_desc)
+  m.map("<leader>" .. close_sym, "ysiw" .. close_sym, close_desc)
+  m.vmap("<leader>(" .. open_sym, "c" .. open_sym .. '") <C-R>"' .. close_sym .. "<Esc>", open_desc)
+  m.vmap("<leader>)", "c" .. open_sym .. '<C-R>"' .. close_sym .. "<Esc>", close_desc)
+end
 
-nmap <leader>rf :Dispatch bundle exec rubocop --auto-correct %<CR>
+m.nmap("<leader>gr", ":Dispatch bundle exec rubocop --auto-correct %<CR>", { ft = "ruby" }, "Reformat file with Rubocop")
 
-nnoremap gv `[v`]
-]])
+m.nnoremap("gv", "`[v`]", "Select last pasted text")

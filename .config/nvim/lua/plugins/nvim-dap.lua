@@ -48,13 +48,4 @@ dap.configurations.python = {
   },
 }
 
-vim.keymap.set("n", "<S-F5>", dap.close)
-vim.keymap.set("n", "<F5>", dap.continue)
-vim.keymap.set("n", "<F7>", dap.step_into)
-vim.keymap.set("n", "<F8>", dap.step_over)
-vim.keymap.set("n", "<F9>", dap.toggle_breakpoint)
-vim.keymap.set("n", "<leader>dl", function() require("dap-go").debug_last_test() end)
-vim.keymap.set("n", "<leader>dt", function() require("dap-go").debug_test() end)
-vim.keymap.set("n", "<leader>rl", dap.run_last)
-
 vim.fn.sign_define('DapBreakpoint', { text = '🛑', texthl = '', linehl = '', numhl = '' })

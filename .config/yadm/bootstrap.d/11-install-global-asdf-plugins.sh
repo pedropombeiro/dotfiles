@@ -2,14 +2,12 @@
 
 type -f asdf >/dev/null 2>&1 || . "${HOME}/.asdf/asdf.sh"
 
-for p in hadolint shellcheck shfmt stylua; do
+for p in hadolint shellcheck; do
   asdf plugin add "${p}"
 done
 
 asdf install hadolint latest && asdf global hadolint latest
 asdf install shellcheck latest && asdf global shellcheck latest
-asdf install shfmt latest && asdf global shfmt latest
-asdf install stylua latest && asdf global stylua latest
 
 if [[ $(uname -s) != 'Darwin' ]]; then
   asdf plugin add fzf

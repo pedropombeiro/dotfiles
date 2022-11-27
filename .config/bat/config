@@ -5,7 +5,7 @@
 # Specify desired highlighting theme (e.g. "TwoDark"). Run `bat --list-themes`
 # for a list of all available themes
 #--theme="gruvbox-dark"
-# defined in ~/.shellrc/rc.d/theme.sh
+# defined in ~/.shellrc/rc.d/_theme.sh
 
 # Enable this to use italic text on the terminal. This is not supported on all
 # terminal emulators (like tmux, by default):

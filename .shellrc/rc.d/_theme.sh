@@ -15,8 +15,9 @@
 
 export BAT_THEME=gruvbox-dark # ~/.config/bat/config (also picked up by delta)
 export HIGHLIGHT_STYLE=gruvbox-dark-medium
-export NVIM_THEME=gruvbox # ~/.config/nvim/lua/config/themer.lua
+export NVIM_THEME=gruvbox # ~/.config/nvim/lua/plugins/themer.lua
 export XH_STYLE=monokai # ~/.shellrc/rc.d/aliases.sh
+export FZF_DEFAULT_COLOR='--color=bg+:#3c3836,bg:#32302f,spinner:#fb4934,hl:#928374,fg:#ebdbb2,header:#928374,info:#8ec07c,pointer:#fb4934,marker:#fb4934,fg+:#ebdbb2,prompt:#fb4934,hl+:#fb4934' # ~/.shellrc/rc.d/fzf.sh
 
 # - tmux requires installing a plugin to implement a theme, see ~/.shellrc/zshrc.d/configs/tmux-common.conf
 # - delta reads its theme from .config/dotfiles/git/gitconfig (delta.syntax-theme) which does not support environment variables

@@ -53,7 +53,8 @@ class Gruvbox(ColorScheme):
                 else:
                     fg = 167
             if not context.selected and (context.cut or context.copied):
-                fg = 235
+                fg = 175
+                bg = 241
                 attr |= bold
             if context.main_column:
                 if context.selected:

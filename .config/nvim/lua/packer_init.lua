@@ -35,7 +35,7 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 -- Use a protected call so we don't error out on first use
-local status_ok, packer = pcall(require, 'packer')
+local status_ok, packer = pcall(require, "packer")
 if not status_ok then
   return
 end
@@ -71,7 +71,7 @@ return packer.startup({ function(use)
   -- Packer can manage itself
   use "wbthomason/packer.nvim"
 
-  use 'lewis6991/impatient.nvim'
+  use "lewis6991/impatient.nvim"
 
   -- Key mappings management
 
@@ -86,10 +86,10 @@ return packer.startup({ function(use)
 
   -- File management
   use {
-    'goolord/alpha-nvim',
-    requires = { 'kyazdani42/nvim-web-devicons' },
+    "goolord/alpha-nvim",
+    requires = { "kyazdani42/nvim-web-devicons" },
     config = function()
-      require 'alpha'.setup(require 'alpha.themes.theta'.config)
+      require "alpha".setup(require "alpha.themes.theta".config)
     end
   }
   use(with_config {
@@ -104,6 +104,7 @@ return packer.startup({ function(use)
     cond = firenvim_not_active,
     requires = "kyazdani42/nvim-web-devicons",
   })
+  use(with_config "notjedi/nvim-rooter.lua") -- minimal implementation of vim-rooter in lua.
 
   -- Search
   use "junegunn/fzf" -- 🌸 A command-line fuzzy finder

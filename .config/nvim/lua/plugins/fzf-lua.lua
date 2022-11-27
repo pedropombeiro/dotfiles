@@ -1,11 +1,15 @@
 -- fzf-lua (https://github.com/ibhagwan/fzf-lua)
 --  Improved fzf.vim written in lua
 
-require('fzf-lua').setup {
-  fzf_opts = { ['--layout'] = 'reverse-list' },
+require("fzf-lua").setup {
+  winopts = {
+    preview = {
+      layout = "vertical",
+    },
+  },
 }
 
-local m = require('mapx').setup { global = "force", whichkey = true }
+local m = require("mapx").setup { global = "force", whichkey = true }
 
 m.nname("<leader>f", "FZF")
 m.nnoremap("<leader>ff", "<Cmd>lua require('fzf-lua').live_grep_native()<CR>", "FZF")

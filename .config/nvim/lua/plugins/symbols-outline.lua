@@ -18,7 +18,3 @@ require("symbols-outline").setup {
     fold_reset = "R",
   },
 }
-
-local m = require("mapx").setup { global = "force", whichkey = true }
-m.nnoremap("<C-'>", "<Cmd>SymbolsOutline<CR>", "Toggle symbols window")
-m.vnoremap("<C-'>", "<Cmd>SymbolsOutline<CR>", "Toggle symbols window")

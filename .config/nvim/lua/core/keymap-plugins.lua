@@ -38,19 +38,23 @@ local function openLazyGit()
 end
 
 m.nnoremap("<leader>gg", openLazyGit, silent, "Open LazyGit")
-m.nnoremap("<leader>gf", "<Cmd>LazyGitFilter<CR>", "Open LazyGit for current buffer")
+m.nnoremap("<leader>gf", ":LazyGitFilter<CR>", "Open LazyGit for current buffer")
 
 -- nvim-code-action-menu.vim (https://github.com/weilbith/nvim-code-action-menu)
 m.nnoremap("<leader>la", ":CodeActionMenu<CR>", silent, "Open code action menu")
 
 -- Ranger
-m.nnoremap("<leader>R", "<Cmd>Ranger<CR>", "Open Ranger")
+m.nnoremap("<leader>R", ":Ranger<CR>", "Open Ranger")
 
 -- Splitjoin.vim
 wk.register({
   S = { "Split into multi-line form" },
-  J = { "Joing into single-line form" },
+  J = { "Join into single-line form" },
 }, { prefix = "g" })
+
+-- symbols-outline
+m.nnoremap("<C-'>", ":SymbolsOutline<CR>", "Toggle symbols window")
+m.vnoremap("<C-'>", ":SymbolsOutline<CR>", "Toggle symbols window")
 
 -- vim-gh-line
 wk.register({
@@ -58,3 +62,6 @@ wk.register({
   ["gh"] = { "Open blob view in browser" },
   ["go"] = { "Open in browser" },
 }, { prefix = "<leader>" })
+
+-- vim-unimpaired
+m.nname("=", "Unimpaired")

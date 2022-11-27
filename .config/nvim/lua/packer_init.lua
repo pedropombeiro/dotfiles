@@ -94,9 +94,7 @@ return packer.startup({ function(use)
   }
   use(with_config {
     "francoiscabrol/ranger.vim", -- Ranger integration in vim and neovim
-    opt = true,
     cmd = { "Ranger", "RangerWorkingDirectory" },
-    keys = "<leader>R",
     requires = "rbgrouleff/bclose.vim" -- The BClose Vim plugin for deleting a buffer without closing the window
   })
   use(with_config {
@@ -161,7 +159,6 @@ return packer.startup({ function(use)
   use(with_config {
     "simrat39/symbols-outline.nvim", -- A tree like view for symbols in Neovim using the Language Server Protocol. Supports all your favourite languages.
     cmd = "SymbolsOutline",
-    keys = "<C-'>"
   })
 
   use(with_config "mfussenegger/nvim-lint") -- An asynchronous linter plugin for Neovim complementary to the built-in Language Server Protocol support.
@@ -200,8 +197,7 @@ return packer.startup({ function(use)
   })
   use {
     "weilbith/nvim-code-action-menu", -- Pop-up menu for code actions to show meta-information and diff preview
-    cmd = "CodeActionMenu",
-    keys = "<leader>la"
+    cmd = "CodeActionMenu"
   }
 
   -- Git
@@ -224,13 +220,6 @@ return packer.startup({ function(use)
   use(with_config {
     "mfussenegger/nvim-dap", -- Debug Adapter Protocol client implementation for Neovim
     opt = true,
-    keys = {
-      "<S-F5>",
-      "<F5>",
-      "<F7>",
-      "<F8>",
-      "<F9>",
-    },
     requires = {
       with_default_config("nvim-dap-virtual-text", {
         "theHamsta/nvim-dap-virtual-text",

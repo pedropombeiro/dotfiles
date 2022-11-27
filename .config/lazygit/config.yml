@@ -24,13 +24,17 @@ gui:
     optionsTextColor:
       - '#8ec07c'  # aqua
     selectedLineBgColor:
-      - '#32302f'  # bg0_s
-    selectedRangeBgColor:
       - '#458588'  # blue
+    #selectedRangeBgColor:
+      #- '#458588'  # blue
     cherryPickedCommitBgColor:
       - '#458588'  # blue
     cherryPickedCommitFgColor:
       - '#689d6a'  # cyan
+    unstagedChangesColor:
+      - '#fb4934'  # red
+    defaultFgColor:
+      - '#ebdbb2'  # default
   commitLength:
     show: true
   skipNoStagedFilesWarning: false

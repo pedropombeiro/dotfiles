@@ -13,5 +13,6 @@ require("nvim-rooter").setup {
     "*.rb",
     "Makefile",
     "*.mk",
+    "*.sh",
   },
 }

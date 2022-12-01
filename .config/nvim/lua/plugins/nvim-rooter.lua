@@ -7,6 +7,7 @@ require("nvim-rooter").setup {
     ".git",
     ".hg",
     ".svn",
+    "Makefile",
   },
   trigger_patterns = {
     "*.go",

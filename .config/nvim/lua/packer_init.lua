@@ -87,7 +87,7 @@ return packer.startup({ function(use)
   -- File management
   use {
     "goolord/alpha-nvim",
-    requires = { "kyazdani42/nvim-web-devicons" },
+    requires = "kyazdani42/nvim-web-devicons",
     config = function()
       require "alpha".setup(require "alpha.themes.theta".config)
     end
@@ -148,9 +148,8 @@ return packer.startup({ function(use)
     requires = {
       {
         "jose-elias-alvarez/null-ls.nvim", -- Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
-        requires = {
-          "nvim-lua/plenary.nvim" -- plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice.
-        }
+        requires = "nvim-lua/plenary.nvim" -- plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice.
+
       },
       mason,
     }
@@ -205,7 +204,7 @@ return packer.startup({ function(use)
 
   use(with_config {
     "lewis6991/gitsigns.nvim", -- Git integration for buffers
-    requires = { "nvim-lua/plenary.nvim" },
+    requires = "nvim-lua/plenary.nvim",
   })
 
   use "sindrets/diffview.nvim" -- Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
@@ -325,8 +324,8 @@ return packer.startup({ function(use)
     "kdheepak/tabline.nvim",
     cond = firenvim_not_active,
     requires = {
-      { "nvim-lualine/lualine.nvim", opt = true }, -- A blazing fast and easy to configure neovim statusline plugin written in pure lua.
-      { "kyazdani42/nvim-web-devicons", opt = true }
+      "nvim-lualine/lualine.nvim", -- A blazing fast and easy to configure neovim statusline plugin written in pure lua.
+      "kyazdani42/nvim-web-devicons"
     }
   })
 

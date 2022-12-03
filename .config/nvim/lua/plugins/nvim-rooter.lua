@@ -11,6 +11,7 @@ require("nvim-rooter").setup {
   },
   trigger_patterns = {
     "*.go",
+    "*.ino",
     "*.rb",
     "Makefile",
     "*.mk",

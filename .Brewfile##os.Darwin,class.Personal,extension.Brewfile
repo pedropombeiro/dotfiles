@@ -10,6 +10,8 @@ tap "jarred-sumner/git-peek"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
 tap "zaquestion/tap"
+# Arduino command-line interface
+brew "arduino-cli"
 # General-purpose data compression with high compression ratio
 brew "xz"
 # Interpreted, interactive, object-oriented programming language
@@ -148,7 +150,7 @@ brew "xh"
 brew "yadm"
 # Download YouTube videos from the command-line
 brew "youtube-dl"
-# Process YAML documents from the CLI
+# Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
 # Deduplicating archiver with compression and authenticated encryption
 brew "borgbackup/tap/borgbackup-fuse"

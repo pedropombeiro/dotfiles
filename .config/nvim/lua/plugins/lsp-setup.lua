@@ -8,61 +8,80 @@
 --  nnoremap <silent> <leader>xq :lua vim.diagnostic.setloclist()<CR>
 --endif
 
+local function file_exists(name)
+  local f = io.open(name, "r")
+  if f ~= nil then io.close(f) return true else return false end
+end
+
+local servers = {
+  bashls = {},
+  dockerls = {},
+  golangci_lint_ls = {},
+  gopls = {},
+  jsonls = {
+    settings = {
+      json = {
+        schemas = require("schemastore").json.schemas(),
+        validate = { enable = true },
+      },
+    },
+  },
+  marksman = {},
+  --solargraph = {},
+  sumneko_lua = {
+    settings = {
+      Lua = {
+        diagnostics = {
+          globals = { "vim" },
+          neededFileStatus = {
+            ["codestyle-check"] = "Any",
+          },
+        },
+        format = {
+          enable = true,
+          defaultConfig = {
+            indent_style = "space",
+            indent_size = "2",
+            quote_style = "double",
+          },
+        },
+      },
+    },
+  },
+  sqlls = {},
+  taplo = {},
+  vimls = {},
+  yamlls = {
+    settings = {
+      yaml = {
+        hover = true,
+        completion = true,
+        validate = true,
+        schemastore = {
+          enable = true,
+          url = "https://www.schemastore.org/api/json/catalog.json",
+        },
+      },
+    },
+  },
+}
+if file_exists(vim.fn.expand("~/Library/Arduino15/arduino-cli.yaml")) then
+  servers.arduino_language_server = {
+    cmd = {
+      "arduino-language-server",
+      "-cli-config", "~/Library/Arduino15/arduino-cli.yaml", -- Generated with `arduino-cli config init`
+      "-fqbn", "keyboardio:gd32:keyboardio_model_100",
+      "-cli", "arduino-cli",
+      "-clangd", "clangd"
+    }
+  }
+  servers.clangd = {}
+end
+
 require("lsp-setup").setup({
   default_mappings = false,
 
-  servers = {
-    bashls = {},
-    dockerls = {},
-    golangci_lint_ls = {},
-    gopls = {},
-    jsonls = {
-      settings = {
-        json = {
-          schemas = require("schemastore").json.schemas(),
-          validate = { enable = true },
-        },
-      },
-    },
-    marksman = {},
-    --solargraph = {},
-    sumneko_lua = {
-      settings = {
-        Lua = {
-          diagnostics = {
-            globals = { "vim" },
-            neededFileStatus = {
-              ["codestyle-check"] = "Any",
-            },
-          },
-          format = {
-            enable = true,
-            defaultConfig = {
-              indent_style = "space",
-              indent_size = "2",
-              quote_style = "double",
-            },
-          },
-        },
-      },
-    },
-    sqlls = {},
-    taplo = {},
-    vimls = {},
-    yamlls = {
-      settings = {
-        yaml = {
-          hover = true,
-          completion = true,
-          validate = true,
-          schemastore = {
-            enable = true,
-            url = "https://www.schemastore.org/api/json/catalog.json",
-          },
-        },
-      },
-    },
-  }
+  servers = servers,
 })
 
 local m = require("mapx").setup { global = "force", whichkey = true }

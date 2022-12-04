@@ -184,6 +184,8 @@ cask "boom-3d"
 cask "cakebrew"
 # E-books management software
 cask "calibre"
+# Graphical configurator for Kaleidoscope-powered keyboards
+cask "chrysalis"
 # API documentation browser and code snippet manager
 cask "dash"
 # App to build and share containerized applications and microservices

@@ -9,7 +9,6 @@
 require("mason-null-ls").setup({
   automatic_installation = false,
   ensure_installed = {
-    "editorconfig-checker",
     "goimports",
     "hadolint",
     "jq",

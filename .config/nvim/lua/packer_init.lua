@@ -84,6 +84,11 @@ return packer.startup({ function(use)
   use "lukas-reineke/indent-blankline.nvim" -- Indent guides for Neovim
   use(with_config "NvChad/nvim-colorizer.lua") -- Maintained fork of the fastest Neovim colorizer
 
+  use(with_default_config("scrollbar", {
+    "petertriho/nvim-scrollbar", -- Extensible Neovim Scrollbar
+    requires = "lewis6991/gitsigns.nvim", -- Git integration for buffers
+  }))
+
   -- File management
   use {
     "goolord/alpha-nvim",

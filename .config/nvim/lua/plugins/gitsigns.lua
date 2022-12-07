@@ -41,3 +41,5 @@ require("gitsigns").setup({
     m.xmap("ih", ":<C-U>Gitsigns select_hunk<CR>", "Select Git hunk")
   end
 })
+
+require("scrollbar.handlers.gitsigns").setup()

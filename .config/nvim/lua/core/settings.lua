@@ -11,6 +11,8 @@ vim.opt.tabpagemax = 40 -- Max number of tab pages that can be opened from the c
 vim.opt.errorbells = false
 vim.opt.confirm    = true -- Display a confirmation dialog when closing a dirty buffer (Mastering Vim Quickly)
 
+vim.g.loaded_perl_provider = 0 -- disable Perl support
+
 -- This makes vim act like all other editors, buffers can
 -- exist in the background without being in a window.
 -- http://items.sjbach.com/319/configuring-vim-right
@@ -27,6 +29,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   group = vimrc_undofile_augroup,
   command = "setlocal noundofile"
 })
+
 ---------------- Spelling ------------------
 vim.opt.spelllang = "en_us"
 vim.opt.spell = false

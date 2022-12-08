@@ -191,6 +191,10 @@ return packer.startup({ function(use)
       { "hrsh7th/cmp-path", after = "nvim-cmp" }, -- nvim-cmp source for path
       { "saadparwaiz1/cmp_luasnip", after = "nvim-cmp" }, -- luasnip completion source for nvim-cmp
       { "hrsh7th/cmp-cmdline", after = "nvim-cmp" }, -- nvim-cmp source for vim's cmdline
+      {
+        "onsails/lspkind.nvim", -- vscode-like pictograms for neovim lsp completion items
+        requires = "mortepau/codicons.nvim" -- A plugin simplifying the task of working with VS Code codicons in Neovim
+      }
     },
     event = "InsertEnter",
     wants = "LuaSnip",

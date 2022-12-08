@@ -29,16 +29,16 @@ m.nnoremap("ga", "<Plug>(EasyAlign)", silent, "Easy Align")
 m.xnoremap("ga", "<Plug>(EasyAlign)", silent, "Easy Align")
 
 -- LazyGit
-local function openLazyGit()
+local function prepareLazyGit()
   if vim.env.GIT_DIR == vim.fn.expand("~/.local/share/yadm/repo.git") then
     -- Ensure that we're located at the repository root, so that LazyGit correctly displays diffs
     vim.cmd("cd ~")
   end
-  vim.cmd("LazyGit")
 end
 
-m.nnoremap("<leader>gg", openLazyGit, silent, "Open LazyGit")
-m.nnoremap("<leader>gf", ":LazyGitFilter<CR>", "Open LazyGit for current buffer")
+m.nnoremap("<leader>gg", function() prepareLazyGit(); require("lazygit").lazygit() end, silent, "Open LazyGit")
+m.nnoremap("<leader>gf", function() prepareLazyGit(); require("lazygit").lazygitfilter() end,
+  "Open LazyGit for current buffer")
 
 -- nvim-code-action-menu.vim (https://github.com/weilbith/nvim-code-action-menu)
 m.nnoremap("<leader>la", ":CodeActionMenu<CR>", silent, "Open code action menu")

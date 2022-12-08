@@ -215,7 +215,7 @@ return packer.startup({ function(use)
   }
 
   --### Git
-  use "kdheepak/lazygit.nvim" -- Plugin for calling lazygit from within neovim.
+  use(with_config "kdheepak/lazygit.nvim") -- Plugin for calling lazygit from within neovim.
 
   use(with_config {
     "lewis6991/gitsigns.nvim", -- Git integration for buffers

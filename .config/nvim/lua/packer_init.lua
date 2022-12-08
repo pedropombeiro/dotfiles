@@ -68,17 +68,19 @@ return packer.startup({ function(use)
     return use_params
   end
 
-  -- Packer can manage itself
+  --### Packer can manage itself
   use "wbthomason/packer.nvim"
 
-  use "lewis6991/impatient.nvim"
+  use "lewis6991/impatient.nvim" -- Improve startup time for Neovim
 
-  -- Key mappings management
+  --### Key mappings management
 
   use(with_config "b0o/mapx.nvim") -- 🗺 A better way to create key mappings in Neovim
-  use(with_default_config("which-key", "folke/which-key.nvim")) -- 💥 Create key bindings that stick. WhichKey is a lua plugin for Neovim 0.5 that displays a popup with possible keybindings of the command you started typing.
+  --- 💥 Create key bindings that stick. WhichKey is a lua plugin for Neovim 0.5 that displays a popup with
+  --- possible keybindings of the command you started typing.
+  use(with_default_config("which-key", "folke/which-key.nvim"))
 
-  -- Buffer decorations
+  --### Buffer decorations
   use "mtdl9/vim-log-highlighting" -- Provides syntax highlighting for generic log files in VIM.
   use(with_config "yamatsum/nvim-cursorline") -- A plugin for neovim that highlights cursor words and lines
   use "lukas-reineke/indent-blankline.nvim" -- Indent guides for Neovim
@@ -89,7 +91,7 @@ return packer.startup({ function(use)
     requires = "lewis6991/gitsigns.nvim", -- Git integration for buffers
   }))
 
-  -- File management
+  --### File management
   use {
     "goolord/alpha-nvim",
     requires = "kyazdani42/nvim-web-devicons",
@@ -109,16 +111,20 @@ return packer.startup({ function(use)
   })
   use(with_config "notjedi/nvim-rooter.lua") -- minimal implementation of vim-rooter in lua.
 
-  -- Search
+  --### Search
   use "junegunn/fzf" -- 🌸 A command-line fuzzy finder
   use(with_config "ibhagwan/fzf-lua") -- Improved fzf.vim written in lua
 
   use "tpope/vim-abolish" -- abolish.vim: easily search for, substitute, and abbreviate multiple variants of a word
 
-  -- Linting
-  use "folke/lsp-colors.nvim" -- 🌈 Plugin that creates missing LSP diagnostics highlight groups for color schemes that don't yet support the Neovim 0.5 builtin LSP client.
+  --### Linting
+  --- 🌈 Plugin that creates missing LSP diagnostics highlight groups for color schemes that don't yet support
+  --- the Neovim 0.5 builtin LSP client
+  use "folke/lsp-colors.nvim"
   use(with_config {
-    "folke/trouble.nvim", -- 🚦 A pretty diagnostics, references, telescope results, quickfix and location list to help you solve all the trouble your code is causing.
+    --- 🚦 A pretty diagnostics, references, telescope results, quickfix and location list to help you solve all
+    --- the trouble your code is causing.
+    "folke/trouble.nvim",
     requires = {
       { "kyazdani42/nvim-web-devicons", opt = true }
     },
@@ -126,8 +132,8 @@ return packer.startup({ function(use)
 
   local mason = with_default_config("mason", "williamboman/mason.nvim")
   local mason_lspconfig = {
-    -- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
-    -- to use to launch those servers.
+    --- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
+    --- to use to launch those servers.
     "williamboman/mason-lspconfig.nvim",
     requires = { mason },
   }
@@ -149,11 +155,12 @@ return packer.startup({ function(use)
   use(with_default_config("fidget", "j-hui/fidget.nvim")) -- Standalone UI for nvim-lsp progress
 
   use(with_config {
-    "jayp0521/mason-null-ls.nvim", -- mason-null-ls bridges mason.nvim with the null-ls plugin - making it easier to use both plugins together.
+    --- mason-null-ls bridges mason.nvim with the null-ls plugin - making it easier to use both plugins together.
+    "jayp0521/mason-null-ls.nvim",
     requires = {
       {
-        "jose-elias-alvarez/null-ls.nvim", -- Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
-        requires = "nvim-lua/plenary.nvim" -- plenary: full; complete; entire; absolute; unqualified. All the lua functions I don't want to write twice.
+        "jose-elias-alvarez/null-ls.nvim",
+        requires = "nvim-lua/plenary.nvim"
 
       },
       mason,
@@ -161,18 +168,21 @@ return packer.startup({ function(use)
   })
 
   use(with_config {
-    "simrat39/symbols-outline.nvim", -- A tree like view for symbols in Neovim using the Language Server Protocol. Supports all your favourite languages.
+    --- A tree like view for symbols in Neovim using the Language Server Protocol. Supports all your favourite languages.
+    "simrat39/symbols-outline.nvim",
     cmd = "SymbolsOutline",
   })
 
-  use(with_config "mfussenegger/nvim-lint") -- An asynchronous linter plugin for Neovim complementary to the built-in Language Server Protocol support.
+  --- An asynchronous linter plugin for Neovim complementary to the built-in Language Server Protocol support.
+  use(with_config "mfussenegger/nvim-lint")
 
-  use(with_config "https://git.sr.ht/~whynothugo/lsp_lines.nvim") -- lsp_lines is a simple neovim plugin that renders diagnostics using virtual lines on top of the real line of code.
+  --- lsp_lines is a simple neovim plugin that renders diagnostics using virtual lines on top of the real line of code.
+  use(with_config "https://git.sr.ht/~whynothugo/lsp_lines.nvim")
 
-  -- Snippets
+  --### Snippets
   use { "L3MON4D3/LuaSnip", opt = true } -- Snippet Engine for Neovim written in Lua.
 
-  -- Completion
+  --### Completion
   use(with_config {
     "hrsh7th/nvim-cmp", -- A completion plugin for neovim coded in Lua.
     requires = {
@@ -186,7 +196,7 @@ return packer.startup({ function(use)
     wants = "LuaSnip",
   })
 
-  -- Highlights
+  --### Highlights
   use(with_config {
     "nvim-treesitter/nvim-treesitter", -- Nvim Treesitter configurations and abstraction layer
     run = function()
@@ -204,7 +214,7 @@ return packer.startup({ function(use)
     cmd = "CodeActionMenu"
   }
 
-  -- Git
+  --### Git
   use "kdheepak/lazygit.nvim" -- Plugin for calling lazygit from within neovim.
 
   use(with_config {
@@ -212,7 +222,8 @@ return packer.startup({ function(use)
     requires = "nvim-lua/plenary.nvim",
   })
 
-  use "sindrets/diffview.nvim" -- Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
+  --- Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
+  use "sindrets/diffview.nvim"
   use "ruanyl/vim-gh-line" -- vim plugin that open the link of current line on github
   use(with_config "tpope/vim-fugitive") -- fugitive.vim: A Git wrapper so awesome, it should be illegal
   use(with_config {
@@ -220,7 +231,7 @@ return packer.startup({ function(use)
     wants = "tpop/vim-fugitive",
   })
 
-  -- DAP
+  --### DAP
   use(with_config {
     "mfussenegger/nvim-dap", -- Debug Adapter Protocol client implementation for Neovim
     opt = true,
@@ -233,12 +244,13 @@ return packer.startup({ function(use)
     }
   })
   use {
-    "leoluz/nvim-dap-go", -- An extension for nvim-dap providing configurations for launching go debugger (delve) and debugging individual tests
+    --- An extension for nvim-dap providing configurations for launching go debugger (delve)
+    --- and debugging individual tests
+    "leoluz/nvim-dap-go",
     config = function()
       vim.cmd([[ PackerLoad nvim-dap ]])
       require("dap-go").setup()
     end,
-    opt = true,
     requires = "mfussenegger/nvim-dap",
     ft = "go",
   }
@@ -248,31 +260,31 @@ return packer.startup({ function(use)
       vim.cmd([[ PackerLoad nvim-dap ]])
       require("dap-ruby").setup()
     end,
-    opt = true,
     requires = "mfussenegger/nvim-dap",
     ft = "ruby",
   }
 
-  -- Color scheme
+  --### Color scheme
   use(with_config "themercorp/themer.lua") -- A simple, minimal highlighter plugin for neovim
 
-  -- Session management
+  --### Session management
   use "farmergreg/vim-lastplace" -- Intelligently reopen files at your last edit position in Vim.
 
-  -- Editor enhancements
+  --### Editor enhancements
   use "junegunn/vim-easy-align" -- 🌻 A Vim alignment plugin
   use(with_config "nishigori/increment-activator") -- Vim Plugin for enhance to increment candidates U have defined.
   use "AndrewRadev/splitjoin.vim" -- Switch between single-line and multiline forms of code
   use(with_config "editorconfig/editorconfig-vim") -- EditorConfig plugin for Vim
   use "preservim/nerdcommenter" -- Vim plugin for intensely nerdy commenting powers
   use "tpope/vim-commentary" -- commentary.vim: comment stuff out
-  use "RRethy/nvim-treesitter-endwise" -- Wisely add 'end' in Ruby, Vimscript, Lua, etc. Tree-sitter aware alternative to tpope's vim-endwise
+  --- Wisely add 'end' in Ruby, Vimscript, Lua, etc. Tree-sitter aware alternative to tpope's vim-endwise
+  use "RRethy/nvim-treesitter-endwise"
   use "tpope/vim-repeat" -- repeat.vim: enable repeating supported plugin maps with '.'
   use "tpope/vim-speeddating" -- speeddating.vim: use CTRL-A/CTRL-X to increment dates, times, and more
   use "tpope/vim-surround" -- surround.vim: Delete/change/add parentheses/quotes/XML-tags/much more with ease
   use "tpope/vim-unimpaired" -- unimpaired.vim: Pairs of handy bracket mappings
 
-  -- Other
+  --### Other
   use "tmux-plugins/vim-tmux" -- Vim plugin for .tmux.conf
   use {
     "tpope/vim-dispatch", -- dispatch.vim: Asynchronous build and test dispatcher
@@ -284,16 +296,11 @@ return packer.startup({ function(use)
   use "tpope/vim-sleuth" -- sleuth.vim: Heuristically set buffer options
   use {
     "tpope/vim-bundler", -- bundler.vim: Lightweight support for Ruby's Bundler
-    opt = true,
     ft = "ruby",
     cmd = { "Bundle", "Bopen", "Bsplit", "Btabedit" }
   }
   use { "tpope/vim-rails", ft = "ruby" } -- rails.vim: Ruby on Rails power tools
-  use {
-    "bfontaine/Brewfile.vim", -- Brewfile syntax for Vim
-    opt = true,
-    ft = "ruby"
-  }
+  use { "bfontaine/Brewfile.vim", ft = "ruby" } -- Brewfile syntax for Vim
   use(with_config {
     "nvim-neotest/neotest", -- An extensible framework for interacting with tests within NeoVim.
     requires = {
@@ -310,7 +317,6 @@ return packer.startup({ function(use)
   use(with_config {
     "glacambre/firenvim", -- Embed Neovim in Chrome, Firefox & others.
     run = function() vim.fn["firenvim#install"](0) end,
-    opt = true,
     cond = firenvim_active,
   })
 
@@ -320,7 +326,7 @@ return packer.startup({ function(use)
     run = function() vim.fn["mkdp#util#install"]() end, -- install without yarn or npm
   }
 
-  -- Buffer management
+  --### Buffer management
   use(with_config {
     "nvim-lualine/lualine.nvim", -- A blazing fast and easy to configure neovim statusline plugin written in pure lua.
     requires = { "kyazdani42/nvim-web-devicons", opt = true },

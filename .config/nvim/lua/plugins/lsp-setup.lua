@@ -84,6 +84,12 @@ require("lsp-setup").setup({
   servers = servers,
 })
 
+local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+for type, icon in pairs(signs) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+end
+
 local m = require("mapx").setup { global = "force", whichkey = true }
 m.nname("<leader>l", "LSP")
 m.nnoremap("[g", ":lua vim.diagnostic.goto_prev()<CR>", "Next LSP diagnostic")

@@ -14,6 +14,7 @@ require "nvim-treesitter.configs".setup {
     "go",
     "gomod",
     "json",
+    "help",
     "html",
     "lua",
     "make",
@@ -57,9 +58,17 @@ require "nvim-treesitter.configs".setup {
   },
 }
 
-local vim = vim
 local opt = vim.opt
 
-opt.foldmethod = "expr"
-opt.foldexpr = "nvim_treesitter#foldexpr()"
 opt.foldenable = false -- Disable folding at startup.
+-- vim.opt.foldmethod = "expr"
+-- vim.opt.foldexpr   = "nvim_treesitter#foldexpr()"
+---WORKAROUND
+vim.api.nvim_create_autocmd({ "BufEnter", "BufAdd", "BufNew", "BufNewFile", "BufWinEnter" }, {
+  group = vim.api.nvim_create_augroup("TS_FOLD_WORKAROUND", {}),
+  callback = function()
+    vim.opt.foldmethod = "expr"
+    vim.opt.foldexpr   = "nvim_treesitter#foldexpr()"
+  end
+})
+---ENDWORKAROUND

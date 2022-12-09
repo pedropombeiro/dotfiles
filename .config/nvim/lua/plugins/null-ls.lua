@@ -2,11 +2,12 @@
 --  Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
 
 local null_ls      = require("null-ls")
-local code_actions = null_ls.builtins.code_actions
-local completion   = null_ls.builtins.completion
-local diagnostics  = null_ls.builtins.diagnostics
-local formatting   = null_ls.builtins.formatting
-local hover        = null_ls.builtins.hover
+local builtins     = null_ls.builtins
+local code_actions = builtins.code_actions
+local completion   = builtins.completion
+local diagnostics  = builtins.diagnostics
+local formatting   = builtins.formatting
+local hover        = builtins.hover
 
 local sources = {
   code_actions.gitsigns,

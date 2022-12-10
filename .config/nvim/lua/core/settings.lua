@@ -96,6 +96,16 @@ vim.opt.shiftwidth   = 2
 vim.opt.softtabstop  = 2
 vim.opt.tabstop      = 2
 
+vim.opt.listchars = {
+  precedes = '⟨',
+  extends = '⟩',
+  eol = "↵",
+  trail = "·",
+  tab = "│·",
+  nbsp = "␣"
+}
+vim.opt.list = true
+
 -- highlight trailing whitespace (Mastering Vim Quickly)
 vim.cmd([[
   function! HighlightExtraWhitespace()

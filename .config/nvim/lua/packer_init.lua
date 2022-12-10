@@ -183,6 +183,8 @@ return packer.startup({ function(use)
   use { "L3MON4D3/LuaSnip", opt = true } -- Snippet Engine for Neovim written in Lua.
 
   --### Completion
+  use "gelguy/wilder.nvim" -- A more adventurous wildmenu (autocomplete suggestions for : and /)
+
   use(with_config {
     "hrsh7th/nvim-cmp", -- A completion plugin for neovim coded in Lua.
     requires = {

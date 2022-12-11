@@ -56,6 +56,8 @@ m.nnoremap("gp", "'`[' . strpart(getregtype(), 0, 1) . '`]'", { expr = true }, "
 -- ========================================
 --
 --
+m.nnoremap("<leader>yy", ":let @*=expand('%')<CR>", "silent", "Yank file path")
+
 -- alias yw to yank the entire word 'yank inner word'
 -- even if the cursor is halfway inside the word
 -- FIXME: will not properly repeat when you use a dot (tie into repeat.vim)

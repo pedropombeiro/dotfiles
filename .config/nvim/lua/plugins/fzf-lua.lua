@@ -44,13 +44,13 @@ m.nnoremap("fgs", "<Cmd>FzfLua git_status<CR>", "Git status")
 m.nnoremap("fgS", "<Cmd>FzfLua git_stash<CR>", "Git stash")
 
 m.nname("<leader>l", "FZF (LSP)")
-m.nname("<leader>lc", "FZF (LSP code actions)")
-m.nnoremap("<leader>lca", "<Cmd>FzfLua lsp_code_actions<CR>", "Code actions")
 m.nnoremap("<leader>ls", "<Cmd>FzfLua lsp_document_symbols<CR>", "Document symbols")
 m.nnoremap("<leader>lr", "<Cmd>FzfLua lsp_references<CR>", "References")
 m.nnoremap({ "<leader>ld", "<C-]>" }, "<Cmd>FzfLua lsp_definitions<CR>", "Definitions")
 m.nnoremap("<leader>lt", "<Cmd>FzfLua lsp_typedefs<CR>", "Typedefs")
 m.nnoremap("<leader>lws", "<Cmd>FzfLua lsp_live_workspace_symbols<CR>", "Workspace symbols")
+m.nname("<leader>lc", "FZF (LSP code actions)")
+m.nnoremap("<leader>lca", "<Cmd>FzfLua lsp_code_actions<CR>", "Code actions")
 
 fzf.register_ui_select() -- register fzf-lua as the UI interface for vim.ui.select
 

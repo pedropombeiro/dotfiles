@@ -259,7 +259,7 @@ return packer.startup({ function(use)
     --- and debugging individual tests
     "leoluz/nvim-dap-go",
     config = function()
-      vim.cmd([[ PackerLoad nvim-dap ]])
+      vim.cmd([[PackerLoad nvim-dap]])
       require("dap-go").setup()
     end,
     requires = "mfussenegger/nvim-dap",
@@ -268,7 +268,7 @@ return packer.startup({ function(use)
   use {
     "suketa/nvim-dap-ruby", -- An extension for nvim-dap providing configurations for launching debug.rb
     config = function()
-      vim.cmd([[ PackerLoad nvim-dap ]])
+      vim.cmd([[PackerLoad nvim-dap]])
       require("dap-ruby").setup()
     end,
     requires = "mfussenegger/nvim-dap",

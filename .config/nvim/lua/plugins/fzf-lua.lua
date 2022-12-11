@@ -1,7 +1,8 @@
 -- fzf-lua (https://github.com/ibhagwan/fzf-lua)
 --  Improved fzf.vim written in lua
 
-require("fzf-lua").setup {
+local fzf = require("fzf-lua")
+fzf.setup {
   winopts = {
     preview = {
       layout = "vertical",
@@ -50,3 +51,5 @@ m.nnoremap("<leader>lr", "<Cmd>FzfLua lsp_references<CR>", "References")
 m.nnoremap({ "<leader>ld", "<C-]>" }, "<Cmd>FzfLua lsp_definitions<CR>", "Definitions")
 m.nnoremap("<leader>lt", "<Cmd>FzfLua lsp_typedefs<CR>", "Typedefs")
 m.nnoremap("<leader>lws", "<Cmd>FzfLua lsp_live_workspace_symbols<CR>", "Workspace symbols")
+
+fzf.register_ui_select() -- register fzf-lua as the UI interface for vim.ui.select

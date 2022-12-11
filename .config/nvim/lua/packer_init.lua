@@ -212,6 +212,14 @@ return packer.startup({ function(use)
   })
 
   use(with_config {
+    "nvim-treesitter/playground", -- Treesitter playground integrated into Neovim
+    opt = true,
+    cmd = "TSPlaygroundToggle",
+    requires = "nvim-treesitter/nvim-treesitter",
+    run = ":TSInstall query"
+  })
+
+  use(with_config {
     "kosayoda/nvim-lightbulb", -- VSCode 💡 for neovim's built-in LSP.
     requires = "antoinemadec/FixCursorHold.nvim",
   })

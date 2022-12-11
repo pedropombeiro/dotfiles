@@ -21,6 +21,7 @@ colorizer.setup {
   buftypes = {
     "*",
     -- exclude prompt and popup buftypes from highlight
+    "!alpha",
     "!FZF",
     "!NvimTree",
     "!prompt",

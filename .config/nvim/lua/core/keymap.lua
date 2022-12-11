@@ -2,6 +2,10 @@
 
 local m = require("mapx").setup { global = "force", whichkey = true }
 
+-- Workaround: Fix <s-space> being rendered as 32;2u in LazyGit
+-- https://neovim.discourse.group/t/shift-space-escape-sequence-in-term-introduced-between-in-neovim-0-6-and-0-7/2816
+m.tnoremap("<s-space>", "<space>")
+
 m.nnoremap("&", ":&&<CR>")
 m.xnoremap("&", ":&&<CR>")
 

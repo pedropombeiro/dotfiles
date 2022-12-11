@@ -176,9 +176,6 @@ return packer.startup({ function(use)
   --- An asynchronous linter plugin for Neovim complementary to the built-in Language Server Protocol support.
   use(with_config "mfussenegger/nvim-lint")
 
-  --- lsp_lines is a simple neovim plugin that renders diagnostics using virtual lines on top of the real line of code.
-  use(with_config "https://git.sr.ht/~whynothugo/lsp_lines.nvim")
-
   --### Snippets
   use { "L3MON4D3/LuaSnip", opt = true } -- Snippet Engine for Neovim written in Lua.
 

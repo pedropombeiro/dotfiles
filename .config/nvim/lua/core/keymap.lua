@@ -23,7 +23,7 @@ m.nnoremap("<C-b>", "<C-^>", "Switch to recent buffer")
 m.inoremap("<C-b>", "<Esc><C-^>", "Switch to recent buffer")
 
 -- Map Esc to normal mode in terminal mode
-m.tnoremap("<leader><Esc>", "<C-\\><C-n>")
+m.tnoremap("<Esc><Esc>", "<C-\\><C-n>")
 
 -- make . work with visually selected lines
 m.vnoremap(".", ":normal.<CR>")

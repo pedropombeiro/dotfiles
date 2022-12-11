@@ -91,19 +91,19 @@ for type, icon in pairs(signs) do
 end
 
 local m = require("mapx").setup { global = "force", whichkey = true }
-m.nname("<leader>l", "LSP")
 m.nnoremap("[g", ":lua vim.diagnostic.goto_prev()<CR>", "Next LSP diagnostic")
 m.nnoremap("]g", ":lua vim.diagnostic.goto_next()<CR>", "Previous LSP diagnostic")
 m.nnoremap("<f2>", ":lua vim.lsp.buf.rename()<CR>", "Rename symbol")
 m.nnoremap("K", ":lua vim.lsp.buf.hover()<CR>", "Hover")
 m.nnoremap("<leader>K", ":lua vim.lsp.buf.signature_help()<CR>", "Signature help")
---m.nnoremap("<leader>la", ":lua vim.lsp.buf.code_action()<CR>", "List code actions") -- Replaced with nvim-code-action-menu
+m.nname("<leader>l", "LSP")
+--m.nnoremap("<leader>lca", ":lua vim.lsp.buf.code_action()<CR>", "List code actions") -- Replaced with nvim-code-action-menu
 m.nnoremap("<leader>lD", ":lua vim.lsp.buf.declaration()<CR>", "Go to declaration")
 m.nnoremap("<leader>ly", ":lua vim.lsp.buf.type_definition()<CR>", "Go to type definition")
 m.nnoremap("<leader>li", ":lua vim.lsp.buf.implementation()<CR>", "Go to implementation")
-m.nnoremap("<leader>lr", ":TroubleToggle lsp_references<CR>", "References")
-m.nnoremap("<leader>ld", ":TroubleToggle lsp_definitions<CR>", "Definitions")
-m.nnoremap("<C-]>", ":TroubleToggle lsp_definitions<CR>", "Definitions")
+--m.nnoremap("<leader>lr", ":TroubleToggle lsp_references<CR>", "References")
+--m.nnoremap("<leader>ld", ":TroubleToggle lsp_definitions<CR>", "Definitions")
+--m.nnoremap("<C-]>", ":TroubleToggle lsp_definitions<CR>", "Definitions")
 m.nnoremap("<leader>lf", ":lua vim.lsp.buf.format({ async = true })<CR>", "Format buffer")
 m.nname("<leader>lw", "Workspace")
 m.nnoremap("<leader>lwa", ":lua vim.lsp.buf.add_workspace_folder()<CR>", "Add workspace folder")

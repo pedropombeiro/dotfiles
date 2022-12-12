@@ -125,9 +125,9 @@ def rebase_mappings
   user_name = ENV['USER']
   default_branch = compute_default_branch
 
-  mr_pattern       = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/[a-z0-9\-_]+$}i.freeze
-  seq_mr_pattern   = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/(?<mr_seq_nr>\d+)-[a-z0-9\-_]+$}i.freeze
-  backport_pattern = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/[a-z0-9\-_]+-(?<milestone>\d+[-.]\d+)$}i.freeze
+  mr_pattern       = %r{^(security[-/])?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-\+_]+$}i.freeze
+  seq_mr_pattern   = %r{^(security[-/])?#{user_name}\/(?<mr_id>\d+)\/(?<mr_seq_nr>\d+)-[a-z0-9\-\+_]+$}i.freeze
+  backport_pattern = %r{^(security[-/])?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-\+_]+-(?<milestone>\d+[-.]\d+)$}i.freeze
 
   local_branches =
     `git branch --list`
@@ -166,7 +166,7 @@ def rebase_mappings
       chain_mr_seq_nr = seq_mr_match_data[:mr_seq_nr].to_i
     elsif mr_match_data
       chain_mr_id     = mr_match_data[:mr_id]
-      chain_mr_seq_nr = 1
+      chain_mr_seq_nr = nil
     else
       chain_mr_id     = nil
       chain_mr_seq_nr = nil
@@ -195,19 +195,25 @@ def rebase_mappings
       parent_branch = default_branch
     end
 
-    yield chain_mr_id, branch, parent_branch
+    {
+      chain_mr_id: chain_mr_id,
+      chain_mr_seq_nr: chain_mr_seq_nr,
+      branch: branch,
+      parent_branch: parent_branch
+    }
   end
-                .compact
-                .to_h
+end
+
+def branch_sort_key(b)
+  [b[:chain_mr_id] || "", b[:chain_mr_seq_nr].nil? ? 0 : -b[:chain_mr_seq_nr]]
 end
 
 def rebase_all
   default_branch = compute_default_branch
-  mappings =
-    rebase_mappings { |chain_mr_id, branch, _parent_branch| [chain_mr_id, branch] }
-    .values
-    .map { |branch| [branch, default_branch] }
-    .to_h
+  mappings = rebase_mappings
+    .sort { |b1, b2| branch_sort_key(b1) <=> branch_sort_key(b2) }
+    .uniq { |b| "#{b[:chain_mr_id] || b[:branch]}/#{b[:chain_mr_seq_nr].nil? ? Random.rand(1..100000) : 0}" }
+    .to_h { |b| [b[:branch], default_branch] }
   rebase_all_per_capture_info(mappings)
 end
 
@@ -217,15 +223,14 @@ def git_push_issue(*args)
   current_branch = `git branch --show-current`.strip
 
   user_name = ENV['USER']
-  mr_pattern = %r{^(?<prefix>(security[-/])?#{user_name})/(?<mr_id>\d+)/[a-z0-9\-_]+$}.freeze
+  mr_pattern = %r{^(?<prefix>(security[-/])?#{user_name})\/(?<mr_id>\d+)\/[a-z0-9\-\+_]+$}.freeze
   mr_match_data = mr_pattern.match(current_branch)
 
   return unless mr_match_data
 
   local_branch_info_hash =
-    rebase_mappings { |_chain_mr_id, branch, parent_branch| [branch, parent_branch] }
-    .select do |branch, _parent_branch|
-      branch.start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}")
+    rebase_mappings.select do |b|
+      b[:branch].start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}")
     end
 
   local_branch_info_hash.each do |branch, parent_branch|

@@ -177,7 +177,7 @@ return packer.startup({ function(use)
   use(with_config "mfussenegger/nvim-lint")
 
   --### Snippets
-  use { "L3MON4D3/LuaSnip", opt = true } -- Snippet Engine for Neovim written in Lua.
+  use { "hrsh7th/vim-vsnip", opt = true } -- Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
 
   --### Completion
   use "gelguy/wilder.nvim" -- A more adventurous wildmenu (autocomplete suggestions for : and /)
@@ -188,7 +188,7 @@ return packer.startup({ function(use)
       { "hrsh7th/cmp-buffer", after = "nvim-cmp" }, -- nvim-cmp source for buffer words
       { "hrsh7th/cmp-nvim-lsp", after = "nvim-cmp" }, -- nvim-cmp source for neovim builtin LSP client
       { "hrsh7th/cmp-path", after = "nvim-cmp" }, -- nvim-cmp source for path
-      { "saadparwaiz1/cmp_luasnip", after = "nvim-cmp" }, -- luasnip completion source for nvim-cmp
+      { "hrsh7th/cmp-vsnip", after = "nvim-cmp" }, -- nvim-cmp source for vim-vsnip
       { "hrsh7th/cmp-cmdline", after = "nvim-cmp" }, -- nvim-cmp source for vim's cmdline
       {
         "onsails/lspkind.nvim", -- vscode-like pictograms for neovim lsp completion items
@@ -196,7 +196,7 @@ return packer.startup({ function(use)
       }
     },
     event = "InsertEnter",
-    wants = "LuaSnip",
+    wants = "vim-vsnip",
   })
 
   --### Highlights

@@ -27,7 +27,6 @@ local servers = {
     },
   },
   marksman = {},
-  --solargraph = {},
   sumneko_lua = {
     settings = {
       Lua = {
@@ -76,6 +75,9 @@ if file_exists(vim.fn.expand("~/Library/Arduino15/arduino-cli.yaml")) then
     }
   }
   servers.clangd = {}
+end
+if vim.env.GDK_ROOT then
+  servers.solargraph = {}
 end
 
 require("lsp-setup").setup({

@@ -7,6 +7,9 @@ local silent = { silent = true }
 -- vim-commentary
 m.nname("<leader>c", "Commentary")
 
+-- Bclose
+m.nname("<leader>b", "Bclose")
+
 -- DAP
 m.nnoremap("<S-F5>", function() require("dap").close() end, "Close DAP")
 m.nnoremap("<F5>", function() require("dap").continue() end, "Continue execution")

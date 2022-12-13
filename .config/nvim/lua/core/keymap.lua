@@ -56,6 +56,8 @@ m.nnoremap("gp", "'`[' . strpart(getregtype(), 0, 1) . '`]'", { expr = true }, "
 -- ========================================
 --
 --
+m.nname("<leader>y", "Yank")
+
 m.nnoremap("<leader>yy", ":let @*=expand('%')<CR>", "silent", "Yank file path")
 
 -- alias yw to yank the entire word 'yank inner word'
@@ -65,7 +67,7 @@ m.nnoremap("<leader>yw", "yiww", "Yank whole inner word")
 
 -- ,ow = 'overwrite word', replace a word with what's in the yank buffer
 -- FIXME: will not properly repeat when you use a dot (tie into repeat.vim)
-m.nnoremap("<leader>ow", '_diwhp"', "Overwrite whole word")
+m.nnoremap("<leader>ow", '"_diwhp', "Overwrite whole word")
 
 m.map("<leader>#", "ysiw#", "Surround word with #{}")
 m.vmap("<leader>#", 'c#{<C-R>"}<Esc>', "Surround word with #{}")

@@ -31,6 +31,4 @@ function OpenBranchCommitedFiles()
 endfunction
 
 :command Branch call OpenBranchCommitedFiles()
-
-:nnoremap <leader>ob :Branch<ESC>
 ]])

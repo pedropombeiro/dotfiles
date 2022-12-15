@@ -161,7 +161,6 @@ return packer.startup({ function(use)
       {
         "jose-elias-alvarez/null-ls.nvim",
         requires = "nvim-lua/plenary.nvim"
-
       },
       mason,
     }

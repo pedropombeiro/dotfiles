@@ -3,7 +3,12 @@
 --  The goal of nvim-treesitter is both to provide a simple and easy way to use the interface for tree-sitter in Neovim
 --    and to provide some basic functionality such as highlighting based on it:
 
-require "nvim-treesitter.configs".setup {
+local status_ok, configs = pcall(require, "nvim-treesitter.configs")
+if not status_ok then
+  return
+end
+
+configs.setup {
   -- A list of parser names, or "all"
   ensure_installed = {
     "bash",
@@ -53,12 +58,65 @@ require "nvim-treesitter.configs".setup {
     additional_vim_regex_highlighting = false,
 
     disable = function(lang, bufnr) -- Disable in large buffers
+      if lang == "markdown" then
+        return true
+      end
+
       return vim.api.nvim_buf_line_count(bufnr) > 5000
     end,
-  },
 
+    -- additional_vim_regex_highlighting = true,
+    indent = { enable = true, disable = { "python", "css", "rust" } },
+  },
+  autotag = {
+    enable = true,
+    disable = { "xml", "markdown" },
+  },
   endwise = {
     enable = true,
+  },
+  textobjects = {
+    select = {
+      enable = true,
+      -- Automatically jump forward to textobj, similar to targets.vim
+      lookahead = true,
+      keymaps = {
+        -- You can use the capture groups defined in textobjects.scm
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["ac"] = "@class.outer",
+        ["ic"] = "@class.inner"
+      }
+    },
+    move = {
+      enable = true,
+      set_jumps = true,
+      goto_next_start = {
+        ["]m"] = "@function.outer",
+        ["]]"] = "@class.outer"
+      },
+      goto_next_end = {
+        ["]M"] = "@function.outer",
+        ["]["] = "@class.outer"
+      },
+      goto_previous_start = {
+        ["[m"] = "@function.outer",
+        ["[["] = "@class.outer"
+      },
+      goto_previous_end = {
+        ["[M"] = "@function.outer",
+        ["[]"] = "@class.outer"
+      }
+    },
+    swap = {
+      enable = true,
+      swap_next = {
+        ["<leader>."] = "@parameter.inner",
+      },
+      swap_previous = {
+        ["<leader>,"] = "@parameter.inner",
+      },
+    },
   },
 }
 

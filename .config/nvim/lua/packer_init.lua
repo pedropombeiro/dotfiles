@@ -205,6 +205,12 @@ return packer.startup({ function(use)
       local ts_update = require("nvim-treesitter.install").update({ with_sync = true })
       ts_update()
     end,
+    requires = {
+      {
+        -- Syntax aware text-objects, select, move, swap, and peek support.
+        "nvim-treesitter/nvim-treesitter-textobjects", after = "nvim-treesitter"
+      }
+    }
   })
 
   use(with_config {

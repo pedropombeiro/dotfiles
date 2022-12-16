@@ -21,6 +21,9 @@ runner:
   bin: "${HOME}/src/gitlab.com/gitlab-org/gitlab-runner/out/binaries/gitlab-runner"
   config_file: "${HOME}/.gitlab-runner/config.gdk.toml"
   enabled: false
+snowplow_micro:
+  enabled: false
+  port: 9090
 gdk:
   update_hooks:
     before:
@@ -46,6 +49,7 @@ fi
 
 if ! delta "${GDK_ROOT}/gdk.yml" "${GDK_ROOT}/gdk.tmp.yml"; then
   printf "${YELLOW}%s${NC}\n" "Overwriting gdk.yml. Please rerun 'gdk reconfigure'..."
+  cp -f "${GDK_ROOT}/gdk.yml" "${GDK_ROOT}/gdk.prev.yml"
   cp -f "${GDK_ROOT}/gdk.tmp.yml" "${GDK_ROOT}/gdk.yml"
 fi
 rm -f "${GDK_ROOT}/gdk.tmp.yml"

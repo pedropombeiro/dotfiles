@@ -35,8 +35,7 @@ set +e
 install_zsh_plugin 'romkatv/powerlevel10k' 'themes/powerlevel10k'
 install_zsh_plugin 'fdw/ranger-autojump' 'plugins/ranger-autojump'
 install_zsh_plugin 'zsh-users/zsh-autosuggestions' 'plugins/zsh-autosuggestions'
-install_zsh_plugin 'zdharma-continuum/fast-syntax-highlighting' 'plugins/fast-syntax-highlighting'
+install_zsh_plugin 'zsh-users/zsh-syntax-highlighting' 'plugins/zsh-syntax-highlighting'
 install_zsh_plugin 'MichaelAquilina/zsh-you-should-use' 'plugins/you-should-use'
 install_zsh_plugin 'jeffreytse/zsh-vi-mode' 'plugins/zsh-vi-mode'
-install_zsh_plugin 'unixorn/rake-completion.zshplugin' 'plugins/rake-completion.zshplugin'
 set -e

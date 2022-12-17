@@ -152,8 +152,6 @@ return packer.startup({ function(use)
     },
   })
 
-  use(with_default_config("fidget", "j-hui/fidget.nvim")) -- Standalone UI for nvim-lsp progress
-
   use(with_config {
     --- mason-null-ls bridges mason.nvim with the null-ls plugin - making it easier to use both plugins together.
     "jayp0521/mason-null-ls.nvim",

@@ -22,6 +22,6 @@ asdf install golangci-lint 1.44.0 && asdf global golangci-lint 1.44.0
 asdf install nodejs 18.7.0 && asdf global nodejs 18.7.0
 asdf install yarn 1.22.19 && asdf global yarn 1.22.19
 
-asdf install ruby 2.7.5 && asdf global ruby 2.7.5
+asdf install ruby 3.0.5 && asdf global ruby 3.0.5
 set -e
 

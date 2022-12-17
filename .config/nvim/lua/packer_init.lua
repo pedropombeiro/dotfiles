@@ -192,7 +192,6 @@ return packer.startup({ function(use)
         requires = "mortepau/codicons.nvim" -- A plugin simplifying the task of working with VS Code codicons in Neovim
       }
     },
-    event = "InsertEnter",
     wants = "vim-vsnip",
   })
 

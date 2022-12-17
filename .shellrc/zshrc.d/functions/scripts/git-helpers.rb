@@ -125,9 +125,9 @@ def rebase_mappings
   user_name = ENV['USER']
   default_branch = compute_default_branch
 
-  mr_pattern       = %r{^(security[-/])?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-\+_]+$}i.freeze
-  seq_mr_pattern   = %r{^(security[-/])?#{user_name}\/(?<mr_id>\d+)\/(?<mr_seq_nr>\d+)-[a-z0-9\-\+_]+$}i.freeze
-  backport_pattern = %r{^(security[-/])?#{user_name}\/(?<mr_id>\d+)\/[a-z0-9\-\+_]+-(?<milestone>\d+[-.]\d+)$}i.freeze
+  mr_pattern       = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/[a-z0-9\-+_]+$}i.freeze
+  seq_mr_pattern   = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/(?<mr_seq_nr>\d+)-[a-z0-9\-+_]+$}i.freeze
+  backport_pattern = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/[a-z0-9\-+_]+-(?<milestone>\d+[-.]\d+)$}i.freeze
 
   local_branches =
     `git branch --list`
@@ -204,16 +204,16 @@ def rebase_mappings
   end
 end
 
-def branch_sort_key(b)
-  [b[:chain_mr_id] || "", b[:chain_mr_seq_nr].nil? ? 0 : -b[:chain_mr_seq_nr]]
+def branch_sort_key(branch_info)
+  [branch_info[:chain_mr_id] || '', branch_info[:chain_mr_seq_nr].nil? ? 0 : -branch_info[:chain_mr_seq_nr]]
 end
 
 def rebase_all
   default_branch = compute_default_branch
   mappings = rebase_mappings
-    .sort { |b1, b2| branch_sort_key(b1) <=> branch_sort_key(b2) }
-    .uniq { |b| "#{b[:chain_mr_id] || b[:branch]}/#{b[:chain_mr_seq_nr].nil? ? Random.rand(1..100000) : 0}" }
-    .to_h { |b| [b[:branch], default_branch] }
+             .sort { |b1, b2| branch_sort_key(b1) <=> branch_sort_key(b2) }
+             .uniq { |b| "#{b[:chain_mr_id] || b[:branch]}/#{b[:chain_mr_seq_nr].nil? ? Random.rand(1..100_000) : 0}" }
+             .to_h { |b| [b[:branch], default_branch] }
   rebase_all_per_capture_info(mappings)
 end
 
@@ -223,7 +223,7 @@ def git_push_issue(*args)
   current_branch = `git branch --show-current`.strip
 
   user_name = ENV['USER']
-  mr_pattern = %r{^(?<prefix>(security[-/])?#{user_name})\/(?<mr_id>\d+)\/[a-z0-9\-\+_]+$}.freeze
+  mr_pattern = %r{^(?<prefix>(security[-/])?#{user_name})/(?<mr_id>\d+)/[a-z0-9\-+_]+$}.freeze
   mr_match_data = mr_pattern.match(current_branch)
 
   return unless mr_match_data

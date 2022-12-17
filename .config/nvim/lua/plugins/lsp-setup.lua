@@ -89,7 +89,7 @@ if file_exists(vim.fn.expand("~/Library/Arduino15/arduino-cli.yaml")) then
   }
   servers.clangd = {}
 end
-if vim.env.GDK_ROOT then
+if vim.fn.executable("solargraph") == 1 then
   servers.solargraph = {}
 end
 

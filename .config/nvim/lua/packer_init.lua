@@ -152,6 +152,8 @@ return packer.startup({ function(use)
     },
   })
 
+  use 'arkav/lualine-lsp-progress' -- LSP Progress lualine component
+
   use(with_config {
     --- mason-null-ls bridges mason.nvim with the null-ls plugin - making it easier to use both plugins together.
     "jayp0521/mason-null-ls.nvim",

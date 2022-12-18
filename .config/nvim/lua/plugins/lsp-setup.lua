@@ -90,7 +90,11 @@ if file_exists(vim.fn.expand("~/Library/Arduino15/arduino-cli.yaml")) then
   servers.clangd = {}
 end
 if vim.fn.executable("solargraph") == 1 then
-  servers.solargraph = {}
+  servers.solargraph = {
+    flags = {
+      debounce_text_changes = 150,
+    }
+  }
 end
 
 require("lsp-setup").setup({

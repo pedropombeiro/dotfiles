@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
 
-tail -f $1 | \
+tail -f "$1" | \
   bat --paging=never -l log --style='numbers'
 

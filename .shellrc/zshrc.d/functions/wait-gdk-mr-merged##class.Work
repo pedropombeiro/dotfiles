@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
-curl -s "http://localhost:8989?action=light&red=100&blue=100"
-while [[ "$(curl -sS https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab/merge_requests/$1 --header "PRIVATE-TOKEN: $GITLAB_COM_TOKEN" | jq -r .state)" != 'merged' ]]; do
+curl -s 'http://localhost:8989?action=light&red=100&blue=100'
+while [[ "$(curl -sS "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab/merge_requests/$1" --header "PRIVATE-TOKEN: $GITLAB_COM_TOKEN" | jq -r .state)" != 'merged' ]]; do
   sleep 5
 done
-curl -s "http://localhost:8989?action=light&green=100"
+curl -s 'http://localhost:8989?action=light&green=100'

@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 
-GITLAB_USERNAME=${USER}
+GITLAB_USERNAME="${USER}"
 
-local remote=origin
+remote=origin
 
 if git remote get-url $remote | grep gitlab.com > /dev/null; then
   git push --set-upstream $remote "$(git_current_branch)" \

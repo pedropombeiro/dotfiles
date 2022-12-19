@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-local branch="$1"
+branch="$1"
 if [[ -z $branch ]]; then
   branch="$(git_current_branch)"
 fi

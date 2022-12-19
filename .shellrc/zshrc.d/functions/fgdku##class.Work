@@ -11,7 +11,7 @@ source ~/.config/yadm/scripts/colors.sh
     exit 1
   fi
 
-  curl -s "http://localhost:8989?action=pulse&green=100"
+  curl -s 'http://localhost:8989?action=pulse&green=100'
 
   rm -rf .git/gc.log
   git restore db/structure.sql
@@ -34,7 +34,7 @@ source ~/.config/yadm/scripts/colors.sh
     git stash push -m "Rolled back migration from ${ORIGINAL_BRANCH}"
   fi
 
-  printf "${YELLOW}%s${NC}\n" "Updating GDK..."
+  printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
   set +e
   gdk update
   if [[ $? -eq 1 && ! -S $GDK_ROOT/redis/redis.socket ]]; then
@@ -49,10 +49,10 @@ source ~/.config/yadm/scripts/colors.sh
   git restore db/structure.sql
   sleep 5
 
-  printf "${YELLOW}%s${NC}\n" "Precompiling static assets to ensure graphiql-rails changes are picked up..."
+  printf "${YELLOW}%s${NC}\n" 'Precompiling static assets to ensure graphiql-rails changes are picked up...'
   bundle exec rake rake:assets:precompile
 
-  printf "${YELLOW}%s${NC}\n" "Pruning local branches..."
+  printf "${YELLOW}%s${NC}\n" 'Pruning local branches...'
   git fetch --all --prune --jobs=10
   set +e
   git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | xargs git branch -D
@@ -75,7 +75,7 @@ source ~/.config/yadm/scripts/colors.sh
   gdk start
 
   if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
-    printf "${YELLOW}%s${NC}\n" "Applying stash and migrations..."
+    printf "${YELLOW}%s${NC}\n" 'Applying stash and migrations...'
     git stash pop
     bin/rails db:migrate
     scripts/regenerate-schema # Ensure we have a clean test DB with any branch migrations done
@@ -84,11 +84,11 @@ source ~/.config/yadm/scripts/colors.sh
 
   sleep 10
 
-  printf "${YELLOW}%s${NC}\n" "Running simple test..."
+  printf "${YELLOW}%s${NC}\n" 'Running simple test...'
   bin/rspec --failure-exit-code 0 --error-exit-code 0 spec/lib/gitlab/ci/variables/collection_spec.rb
 
-  if ps aux | grep RubyMine.app/Contents/MacOS/rubymine | grep -v "grep"; then
-    printf "${YELLOW}%s${NC}\n" "Start indexing in RubyMine..."
+  if ps aux | grep RubyMine.app/Contents/MacOS/rubymine | grep -v 'grep'; then
+    printf "${YELLOW}%s${NC}\n" 'Start indexing in RubyMine...'
     osascript <<END
       tell application "RubyMine"
         activate
@@ -96,10 +96,10 @@ source ~/.config/yadm/scripts/colors.sh
 END
   fi
 
-  printf "${YELLOW}%s${NC}\n" "Warming up web server..."
+  printf "${YELLOW}%s${NC}\n" 'Warming up web server...'
   curl -sL 'http://gdk.test:3000' -o /dev/null
 
   cd - >/dev/null
 )
 
-curl -s "http://localhost:8989?action=light&green=100"
+curl -s 'http://localhost:8989?action=light&green=100'

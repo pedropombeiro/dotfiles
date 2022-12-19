@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 if [[ "$#" -ne 0 ]]; then
-  cd "$(autojump $@)"
+  cd "$(autojump "$@")"
   return
 fi
 

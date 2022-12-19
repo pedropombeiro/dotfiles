@@ -4,6 +4,6 @@ YADM_CONFIG=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/config_templates" &> /
 LAUNCH_AGENTS_DIR="${HOME}/Library/LaunchAgents/"
 
 if [[ -d "${LAUNCH_AGENTS_DIR}" ]]; then
-  cp -fRL ${YADM_CONFIG}/LaunchAgents/*.plist "${LAUNCH_AGENTS_DIR}/"
+  cp -fRL "${YADM_CONFIG}"/LaunchAgents/*.plist "${LAUNCH_AGENTS_DIR}/"
 fi
 

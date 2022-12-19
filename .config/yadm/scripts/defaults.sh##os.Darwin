@@ -17,7 +17,7 @@ sudo pmset -a womp 0
 sudo pmset -a powernap 0
 
 # Set Login Window Text
-sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText "If you found this computer, please call +41 (0)78 713 16 29 or email pedro@pombei.ro"
+sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText 'If you found this computer, please call +41 78 713 16 29 or email pedro@pombei.ro'
 
 # Set Timezone and Set Clock Using Network Time
 # See `sudo systemsetup -listtimezones` for other values

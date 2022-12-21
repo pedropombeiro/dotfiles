@@ -21,12 +21,19 @@ if vim.g.started_by_firenvim then
 
   vim.opt.guifont = { "MesloLGS Nerd Font", "h22" }
 
-  vim.cmd([[
-    augroup firenvim_targets
-      au BufEnter gitlab.com_*.txt set filetype=markdown
-      au BufEnter github.com_*.txt set filetype=markdown
-      au BufEnter reddit.com_*.txt set filetype=markdown
-      au BufEnter build.particle.io_*.txt set filetype=c
-    augroup END
-  ]])
+  local firenvim_targets_augroup = vim.api.nvim_create_augroup("firenvim_targets", { clear = true })
+  vim.api.nvim_create_autocmd("BufEnter", {
+    pattern = {
+      "gitlab.com_*.txt",
+      "github.com_*.txt",
+      "reddit.com_*.txt"
+    },
+    group = firenvim_targets_augroup,
+    command = "set filetype=markdown"
+  })
+  vim.api.nvim_create_autocmd("BufEnter", {
+    pattern = "build.particle.io_*.txt",
+    group = firenvim_targets_augroup,
+    command = "set filetype=c"
+  })
 end

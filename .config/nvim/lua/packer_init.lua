@@ -152,7 +152,7 @@ return packer.startup({ function(use)
     },
   })
 
-  use 'arkav/lualine-lsp-progress' -- LSP Progress lualine component
+  use "arkav/lualine-lsp-progress" -- LSP Progress lualine component
 
   use(with_config {
     --- mason-null-ls bridges mason.nvim with the null-ls plugin - making it easier to use both plugins together.
@@ -290,8 +290,9 @@ return packer.startup({ function(use)
   use(with_config "nishigori/increment-activator") -- Vim Plugin for enhance to increment candidates U have defined.
   use "AndrewRadev/splitjoin.vim" -- Switch between single-line and multiline forms of code
   use(with_config "editorconfig/editorconfig-vim") -- EditorConfig plugin for Vim
-  use "preservim/nerdcommenter" -- Vim plugin for intensely nerdy commenting powers
-  use "tpope/vim-commentary" -- commentary.vim: comment stuff out
+  -- 🧠 💪 // Smart and powerful comment plugin for neovim. Supports treesitter, dot repeat, left-right/up-down motions,
+  -- hooks, and more
+  use(with_default_config("Comment", "numToStr/Comment.nvim"))
   --- Wisely add 'end' in Ruby, Vimscript, Lua, etc. Tree-sitter aware alternative to tpope's vim-endwise
   use "RRethy/nvim-treesitter-endwise"
   use "tpope/vim-repeat" -- repeat.vim: enable repeating supported plugin maps with '.'

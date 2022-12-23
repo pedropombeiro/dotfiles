@@ -1,6 +1,20 @@
 --- key bindings -------------------------------------------------------------------
 
 local m = require("mapx").setup { global = "force", whichkey = true }
+local wk = require("which-key")
+
+wk.register({
+  ["<C-Q>"] = { "Quit all" },
+  ["<C-S>"] = { "Save file" },
+}, { mode = { "n", "i" } })
+wk.register({
+  ["<C-L>"] = { "Remove highlight" },
+}, { mode = "n" })
+wk.register({
+  ["Y"] = { "Yank lines" },
+}, { mode = "n" })
+
+m.nname("z", "Folds")
 
 -- Workaround: Fix <s-space> being rendered as 32;2u in LazyGit
 -- https://neovim.discourse.group/t/shift-space-escape-sequence-in-term-introduced-between-in-neovim-0-6-and-0-7/2816

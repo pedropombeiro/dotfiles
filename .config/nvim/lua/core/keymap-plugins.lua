@@ -109,3 +109,8 @@ wk.register({
 m.nname("=", "Unimpaired - Paste (reindending)")
 m.nname("<", "Unimpaired - Paste before linewise")
 m.nname(">", "Unimpaired - Paste after linewise")
+
+-- wsdjeg/vim-fetch
+wk.register({
+  ["gF"] = { "Go to file:line under cursor" },
+}, { mode = { "n", "x" } })

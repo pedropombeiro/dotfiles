@@ -35,6 +35,11 @@ m.xnoremap("ga", "<Plug>(EasyAlign)", silent, "Easy Align")
 m.nnoremap("<leader>gg", ":LazyGit<CR>", silent, "Open LazyGit")
 m.nnoremap("<leader>gf", ":LazyGitFilter<CR>", "Open LazyGit for current buffer")
 
+-- git-messenger.vim
+wk.register({
+  ["gm"] = { "Open commit message" }
+}, { prefix = "<leader>" })
+
 -- nvim-code-action-menu.vim (https://github.com/weilbith/nvim-code-action-menu)
 m.nnoremap("<leader>la", ":CodeActionMenu<CR>", silent, "Open code action menu")
 

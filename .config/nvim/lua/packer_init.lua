@@ -237,6 +237,12 @@ return packer.startup({ function(use)
     requires = "nvim-lua/plenary.nvim",
   })
 
+  use {
+    "rhysd/git-messenger.vim", -- Vim and Neovim plugin to reveal the commit messages under the cursor
+    cmd = "GitMessenger",
+    keys = "<leader>gm"
+  }
+
   --- Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
   use "sindrets/diffview.nvim"
   use "ruanyl/vim-gh-line" -- vim plugin that open the link of current line on github

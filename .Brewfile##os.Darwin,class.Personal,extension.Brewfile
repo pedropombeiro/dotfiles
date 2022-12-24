@@ -84,6 +84,8 @@ brew "lazydocker"
 brew "lazygit"
 # Pager program similar to more
 brew "less"
+# Postgres C API library
+brew "libpq"
 # Curses-based tool for viewing and analyzing log files
 brew "lnav"
 # Clone of ls with colorful output, file type icons, and more
@@ -124,8 +126,6 @@ brew "sleepwatcher", restart_service: true
 brew "smartmontools"
 # Command-line interface for https://speedtest.net bandwidth tests
 brew "speedtest-cli"
-# Change macOS audio source from the command-line
-brew "switchaudio-osx"
 # Open source continuous file synchronization application
 brew "syncthing", link: false
 # Very fast implementation of tldr in Rust
@@ -224,10 +224,6 @@ cask "little-snitch"
 cask "logitech-camera-settings"
 # Update your Logitech wireless receivers and selected keyboards
 cask "logitech-firmwareupdatetool"
-# Software for Logitech devices
-cask "logitech-options"
-# Utility for pairing devices with Unifying receivers
-cask "logitech-unifying"
 # Adaptive brightness for external displays
 cask "lunar"
 # File system integration
@@ -283,8 +279,6 @@ cask "slack"
 cask "spotify"
 # Windows manager
 cask "stay"
-# Backup, recovery and cloning software
-cask "superduper"
 # Real time file synchronization software
 cask "syncthing"
 # Quicklook extension for source files
@@ -293,8 +287,6 @@ cask "syntax-highlight"
 cask "tableplus"
 # Unpacks archive files
 cask "the-unarchiver"
-# Time tracker
-cask "toggl-track"
 # Web browser focusing on security
 cask "tor-browser"
 # Trading software

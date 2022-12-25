@@ -148,10 +148,10 @@ brew "wireshark", link: false
 brew "xh"
 # Yet Another Dotfiles Manager
 brew "yadm"
-# Download YouTube videos from the command-line
-brew "youtube-dl"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
+# Fork of youtube-dl with additional features and fixes
+brew "yt-dlp"
 # Deduplicating archiver with compression and authenticated encryption
 brew "borgbackup/tap/borgbackup-fuse"
 # git repo to local editor instantly

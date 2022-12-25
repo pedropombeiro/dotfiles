@@ -47,10 +47,6 @@ m.nnoremap("n", "nzz", "Next match (centered)")
 m.nnoremap("N", "Nzz", "Previous match (centered)")
 
 ---- Move lines with single key combo (Mastering Vim Quickly)
--- Normal mode
-m.nnoremap("<C-j>", ":m .+1<CR>==", "Move line up")
-m.nnoremap("<C-k>", ":m .-2<CR>==", "Move line down")
-
 -- Insert mode
 m.inoremap("<C-j>", "<Esc>:m .+1<CR>==gi", "Move line up")
 m.inoremap("<C-k>", "<Esc>:m .-2<CR>==gi", "Move line down")
@@ -110,3 +106,17 @@ end
 m.nmap("<leader>gr", ":Dispatch bundle exec rubocop --auto-correct %<CR>", { ft = "ruby" }, "Reformat file with Rubocop")
 
 m.nnoremap("gv", "`[v`]", "Select last pasted text")
+
+-- Window movement
+m.nnoremap("<C-h>", "<cmd>wincmd h<CR>", "Move to window to left")
+m.nnoremap("<C-j>", "<cmd>wincmd j<CR>", "Move to window below")
+m.nnoremap("<C-k>", "<cmd>wincmd k<CR>", "Move to window above")
+m.nnoremap("<C-l>", "<cmd>wincmd l<CR>", "Move to window to right")
+m.nnoremap("<C-S-Up>", "<cmd>resize +2<CR>", "Resize window up")
+m.tnoremap("<C-S-Up>", "<cmd>resize +2<CR>", "Resize window up")
+m.nnoremap("<C-S-Left>", "<cmd>vertical resize +2<CR>", "Resize window left")
+m.tnoremap("<C-S-Left>", "<cmd>vertical resize +2<CR>", "Resize window left")
+m.nnoremap("<C-S-Right>", "<cmd>vertical resize -2<CR>", "Resize window right")
+m.tnoremap("<C-S-Right>", "<cmd>vertical resize -2<CR>", "Resize window right")
+m.nnoremap("<C-S-Down>", "<cmd>resize -2<CR>", "Resize window down")
+m.tnoremap("<C-S-Down>", "<cmd>resize -2<CR>", "Resize window down")

@@ -20,6 +20,11 @@ local firenvim_not_active = function()
   return not vim.g.started_by_firenvim
 end
 
+local nvim_tree_available = function()
+  local version = vim.version()
+  return (version.major > 0 or version.minor > 7)
+end
+
 -- configure Neovim to automatically run :PackerCompile whenever packer_init.lua or plugin config is updated
 vim.cmd([[
   augroup packer_user_config
@@ -104,11 +109,13 @@ return packer.startup({ function(use)
     cmd = { "Ranger", "RangerWorkingDirectory" },
     requires = "rbgrouleff/bclose.vim" -- The BClose Vim plugin for deleting a buffer without closing the window
   })
-  use(with_config {
-    "nvim-tree/nvim-tree.lua", -- A File Explorer For Neovim Written In Lua
-    cond = firenvim_not_active,
-    requires = "kyazdani42/nvim-web-devicons",
-  })
+  if nvim_tree_available() then
+    use(with_config {
+      "nvim-tree/nvim-tree.lua", -- A File Explorer For Neovim Written In Lua
+      cond = firenvim_not_active,
+      requires = "kyazdani42/nvim-web-devicons",
+    })
+  end
   use(with_config "notjedi/nvim-rooter.lua") -- minimal implementation of vim-rooter in lua.
 
   --### Search

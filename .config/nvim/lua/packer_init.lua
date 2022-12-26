@@ -117,6 +117,8 @@ return packer.startup({ function(use)
 
   use "tpope/vim-abolish" -- abolish.vim: easily search for, substitute, and abbreviate multiple variants of a word
 
+  use(with_config "axieax/urlview.nvim") -- 🔎 Neovim plugin for viewing all the URLs in a buffer
+
   --### Linting
   --- 🌈 Plugin that creates missing LSP diagnostics highlight groups for color schemes that don't yet support
   --- the Neovim 0.5 builtin LSP client

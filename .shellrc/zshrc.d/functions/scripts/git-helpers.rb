@@ -233,7 +233,10 @@ def git_push_issue(*args)
       b[:branch].start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}")
     end
 
-  local_branch_info_hash.each do |branch, parent_branch|
+  local_branch_info_hash.each do |b|
+    branch = b[:branch]
+    parent_branch = b[:parent_branch]
+
     active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
 
     puts 'Pushing '.brown + branch.cyan + ' to '.brown + active_remote_name.green + '...'.brown

@@ -309,7 +309,7 @@ def gitlab_mr_rate(*author)
     params[:page] = next_page
   end
 
-  $stderr.print
+  puts
   now = DateTime.now
   mrs_merged_by_month = mrs.group_by { |mr| [now, DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min }
   mrs_merged_by_month.each do |ym, monthly_mrs|

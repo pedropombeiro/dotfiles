@@ -253,7 +253,7 @@ return packer.startup({ function(use)
   }
 
   --- Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
-  use "sindrets/diffview.nvim"
+  use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }
   use "ruanyl/vim-gh-line" -- vim plugin that open the link of current line on github
   use(with_config "tpope/vim-fugitive") -- fugitive.vim: A Git wrapper so awesome, it should be illegal
   use(with_config {

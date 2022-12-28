@@ -26,7 +26,7 @@ done
 set -e
 
 asdf install golang 1.18.8 && asdf global golang 1.18.8
-asdf install neovim stable && asdf global neovim stable
+asdf install neovim 0.7.2 && asdf global neovim 0.7.2
 asdf install nodejs 17.9.0 && asdf global nodejs 17.9.0
 asdf install rust 1.58.1 && asdf global rust 1.58.1
 

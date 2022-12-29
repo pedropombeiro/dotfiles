@@ -17,7 +17,7 @@ function OpenBranchCommitedFiles()
   if started_empty == 0
     " Ensure that we close all tabs not related to current branch
     0tabnew
-    2,$tabdo :q
+    2,$tabdo :Bclose
     let started_empty = 1
   endif
 
@@ -26,7 +26,7 @@ function OpenBranchCommitedFiles()
     execute 'tabedit ' . l:f
   endfor
   if started_empty == 1
-    execute '1tabclose'
+    execute 'buffer 1 | Bclose'
   endif
 endfunction
 

@@ -36,6 +36,8 @@ brew "checkmake"
 brew "croc"
 # Top-like interface for container metrics
 brew "ctop"
+# Load/unload environment variables based on $PWD
+brew "direnv"
 # Disk Usage/Free Utility - a better 'df' alternative
 brew "duf"
 # More intuitive version of du in rust

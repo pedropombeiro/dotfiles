@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+export PATH="$PATH:/opt/homebrew/bin"
+
+tsh login --proxy=teleport.gstg.gitlab.net
+
+ssh rails-ro@console-ro-01-sv-gstg
+
+tsh logout

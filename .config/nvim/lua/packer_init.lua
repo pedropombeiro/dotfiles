@@ -88,8 +88,11 @@ return packer.startup({ function(use)
   --### Buffer decorations
   use "mtdl9/vim-log-highlighting" -- Provides syntax highlighting for generic log files in VIM.
   use(with_config "yamatsum/nvim-cursorline") -- A plugin for neovim that highlights cursor words and lines
-  use "lukas-reineke/indent-blankline.nvim" -- Indent guides for Neovim
-  use(with_config "NvChad/nvim-colorizer.lua") -- Maintained fork of the fastest Neovim colorizer
+  use {
+    "lukas-reineke/indent-blankline.nvim", -- Indent guides for Neovim
+    event = "BufReadPre"
+  }
+  use(with_config { "NvChad/nvim-colorizer.lua", event = "BufRead" }) -- Maintained fork of the fastest Neovim colorizer
 
   use(with_default_config("scrollbar", {
     "petertriho/nvim-scrollbar", -- Extensible Neovim Scrollbar
@@ -99,6 +102,7 @@ return packer.startup({ function(use)
   --### File management
   use {
     "goolord/alpha-nvim",
+    event = "VimEnter",
     requires = "kyazdani42/nvim-web-devicons",
     config = function()
       require "alpha".setup(require "alpha.themes.theta".config)
@@ -113,7 +117,7 @@ return packer.startup({ function(use)
     use(with_config {
       "nvim-tree/nvim-tree.lua", -- A File Explorer For Neovim Written In Lua
       cond = firenvim_not_active,
-      requires = "kyazdani42/nvim-web-devicons",
+      requires = { "kyazdani42/nvim-web-devicons", opt = true },
     })
   end
   use(with_config "notjedi/nvim-rooter.lua") -- minimal implementation of vim-rooter in lua.
@@ -124,7 +128,11 @@ return packer.startup({ function(use)
 
   use "tpope/vim-abolish" -- abolish.vim: easily search for, substitute, and abbreviate multiple variants of a word
 
-  use(with_config "axieax/urlview.nvim") -- 🔎 Neovim plugin for viewing all the URLs in a buffer
+  use(with_config {
+    "axieax/urlview.nvim", -- 🔎 Neovim plugin for viewing all the URLs in a buffer
+    keys = "<leader>fu",
+    cmd = "UrlView"
+  })
 
   --### Linting
   --- 🌈 Plugin that creates missing LSP diagnostics highlight groups for color schemes that don't yet support
@@ -134,30 +142,33 @@ return packer.startup({ function(use)
     --- 🚦 A pretty diagnostics, references, telescope results, quickfix and location list to help you solve all
     --- the trouble your code is causing.
     "folke/trouble.nvim",
+    cmd = { "TroubleToggle", "Trouble" },
+    keys = { "<leader>xx", "<leader>xw", "<leader>xd", "<leader>xq", "<leader>xl" },
     requires = {
       { "kyazdani42/nvim-web-devicons", opt = true }
     },
   })
 
-  local mason = with_default_config("mason", "williamboman/mason.nvim")
-  local mason_lspconfig = {
-    --- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
-    --- to use to launch those servers.
-    "williamboman/mason-lspconfig.nvim",
-    requires = { mason },
-  }
+  use(with_default_config("mason", "williamboman/mason.nvim"))
+
   use(with_config {
     "junnplus/lsp-setup.nvim", -- A simple wrapper for nvim-lspconfig and mason-lspconfig to easily setup LSP servers.
+    event = "BufReadPre",
     requires = {
       {
         "neovim/nvim-lspconfig", -- Quickstart configs for Nvim LSP
         requires = {
           "hrsh7th/cmp-nvim-lsp", -- nvim-cmp source for neovim builtin LSP client
-          mason_lspconfig,
+          "williamboman/mason-lspconfig.nvim",
           "b0o/schemastore.nvim", -- 🛍 JSON schemas for Neovim
         },
       },
-      mason_lspconfig
+      {
+        --- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
+        --- to use to launch those servers.
+        "williamboman/mason-lspconfig.nvim",
+        requires = "williamboman/mason.nvim"
+      }
     },
   })
 
@@ -166,12 +177,13 @@ return packer.startup({ function(use)
   use(with_config {
     --- mason-null-ls bridges mason.nvim with the null-ls plugin - making it easier to use both plugins together.
     "jayp0521/mason-null-ls.nvim",
+    event = "BufReadPre",
     requires = {
       {
         "jose-elias-alvarez/null-ls.nvim",
         requires = "nvim-lua/plenary.nvim"
       },
-      mason,
+      "williamboman/mason.nvim",
     }
   })
 
@@ -192,6 +204,7 @@ return packer.startup({ function(use)
 
   use(with_config {
     "hrsh7th/nvim-cmp", -- A completion plugin for neovim coded in Lua.
+    event = "InsertEnter",
     requires = {
       { "hrsh7th/cmp-buffer", after = "nvim-cmp" }, -- nvim-cmp source for buffer words
       { "hrsh7th/cmp-nvim-lsp", after = "nvim-cmp" }, -- nvim-cmp source for neovim builtin LSP client
@@ -203,12 +216,16 @@ return packer.startup({ function(use)
         requires = "mortepau/codicons.nvim" -- A plugin simplifying the task of working with VS Code codicons in Neovim
       }
     },
-    wants = "vim-vsnip",
+    wants = {
+      "vim-vsnip",
+      "nvim-lspconfig"
+    }
   })
 
   --### Highlights
   use(with_config {
     "nvim-treesitter/nvim-treesitter", -- Nvim Treesitter configurations and abstraction layer
+    event = "BufWinEnter",
     run = function()
       local ts_update = require("nvim-treesitter.install").update({ with_sync = true })
       ts_update()
@@ -216,18 +233,20 @@ return packer.startup({ function(use)
     requires = {
       {
         -- Syntax aware text-objects, select, move, swap, and peek support.
-        "nvim-treesitter/nvim-treesitter-textobjects", after = "nvim-treesitter"
+        "nvim-treesitter/nvim-treesitter-textobjects",
+        after = "nvim-treesitter"
       }
     }
   })
-
-  use(with_config {
+  use {
     "nvim-treesitter/playground", -- Treesitter playground integrated into Neovim
-    opt = true,
-    cmd = "TSPlaygroundToggle",
-    requires = "nvim-treesitter/nvim-treesitter",
-    run = ":TSInstall query"
-  })
+    cmd = "TSPlaygroundToggle"
+  }
+  use {
+    --- Wisely add 'end' in Ruby, Vimscript, Lua, etc. Tree-sitter aware alternative to tpope's vim-endwise
+    "RRethy/nvim-treesitter-endwise",
+    event = "InsertEnter"
+  }
 
   use(with_config {
     "kosayoda/nvim-lightbulb", -- VSCode 💡 for neovim's built-in LSP.
@@ -243,6 +262,7 @@ return packer.startup({ function(use)
 
   use(with_config {
     "lewis6991/gitsigns.nvim", -- Git integration for buffers
+    event = "BufReadPre",
     requires = "nvim-lua/plenary.nvim",
   })
 
@@ -253,7 +273,7 @@ return packer.startup({ function(use)
   }
 
   --- Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
-  use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }
+  use { "sindrets/diffview.nvim", requires = "nvim-lua/plenary.nvim" }
   use "ruanyl/vim-gh-line" -- vim plugin that open the link of current line on github
   use(with_config "tpope/vim-fugitive") -- fugitive.vim: A Git wrapper so awesome, it should be illegal
   use(with_config {
@@ -264,13 +284,17 @@ return packer.startup({ function(use)
   --### DAP
   use(with_config {
     "mfussenegger/nvim-dap", -- Debug Adapter Protocol client implementation for Neovim
-    opt = true,
+    cmd = { "BreakpointToggle", "Debug", "DapREPL" },
     requires = {
       with_default_config("nvim-dap-virtual-text", {
         "theHamsta/nvim-dap-virtual-text",
         requires = "nvim-treesitter/nvim-treesitter",
+        opt = true
       }),
-      with_config("rcarriga/nvim-dap-ui"),
+      with_config {
+        "rcarriga/nvim-dap-ui",
+        opt = true
+      }
     }
   })
   use {
@@ -308,8 +332,6 @@ return packer.startup({ function(use)
   -- 🧠 💪 // Smart and powerful comment plugin for neovim. Supports treesitter, dot repeat, left-right/up-down motions,
   -- hooks, and more
   use(with_default_config("Comment", "numToStr/Comment.nvim"))
-  --- Wisely add 'end' in Ruby, Vimscript, Lua, etc. Tree-sitter aware alternative to tpope's vim-endwise
-  use "RRethy/nvim-treesitter-endwise"
   use "tpope/vim-repeat" -- repeat.vim: enable repeating supported plugin maps with '.'
   use "tpope/vim-speeddating" -- speeddating.vim: use CTRL-A/CTRL-X to increment dates, times, and more
   use "tpope/vim-surround" -- surround.vim: Delete/change/add parentheses/quotes/XML-tags/much more with ease
@@ -323,7 +345,6 @@ return packer.startup({ function(use)
     cmd = { "Dispatch", "Make", "Focus", "Start" }
   }
   use "tpope/vim-eunuch" -- eunuch.vim: Helpers for UNIX
-  use "tpope/vim-sensible" -- sensible.vim: Defaults everyone can agree on
   use "tpope/vim-sleuth" -- sleuth.vim: Heuristically set buffer options
   use {
     "tpope/vim-bundler", -- bundler.vim: Lightweight support for Ruby's Bundler
@@ -334,13 +355,14 @@ return packer.startup({ function(use)
   use { "bfontaine/Brewfile.vim", ft = "ruby" } -- Brewfile syntax for Vim
   use(with_config {
     "nvim-neotest/neotest", -- An extensible framework for interacting with tests within NeoVim.
+    ft = { "go", "ruby" },
     requires = {
-      "nvim-lua/plenary.nvim",
-      "nvim-treesitter/nvim-treesitter",
-      "antoinemadec/FixCursorHold.nvim",
+      { "nvim-lua/plenary.nvim", opt = true },
+      { "nvim-treesitter/nvim-treesitter", opt = true },
+      { "antoinemadec/FixCursorHold.nvim", opt = true },
 
-      "nvim-neotest/neotest-go",
-      "olimorris/neotest-rspec",
+      { "nvim-neotest/neotest-go" },
+      { "olimorris/neotest-rspec" },
     }
   })
   use "wsdjeg/vim-fetch" -- Make Vim handle line and column numbers in file names with a minimum of fuss
@@ -360,16 +382,21 @@ return packer.startup({ function(use)
   --### Buffer management
   use(with_config {
     "nvim-lualine/lualine.nvim", -- A blazing fast and easy to configure neovim statusline plugin written in pure lua.
+    event = "VimEnter",
     requires = { "kyazdani42/nvim-web-devicons", opt = true },
   })
   use(with_config {
     "kdheepak/tabline.nvim",
+    event = "VimEnter",
     cond = firenvim_not_active,
     requires = {
-      "nvim-lualine/lualine.nvim", -- A blazing fast and easy to configure neovim statusline plugin written in pure lua.
-      "kyazdani42/nvim-web-devicons"
+      { "nvim-lualine/lualine.nvim", opt = true },
+      { "kyazdani42/nvim-web-devicons", opt = true }
     }
   })
+
+  -- Profiling
+  use { "dstein64/vim-startuptime", cmd = "StartupTime", config = [[vim.g.startuptime_tries = 10]] }
 
   -- Automatically set up your configuration after cloning packer.nvim
   -- Put this at the end after all plugins

@@ -1,15 +1,16 @@
 --- General config ------------------------------------------------------------------
 
 vim.opt.shortmess:append("I")
-vim.opt.swapfile   = false -- disable the swapfile
-vim.opt.history    = 2000
-vim.opt.updatetime = 1000
-vim.opt.wildmenu   = true -- set zsh-alike autocomplete behavior
-vim.opt.wildmode   = "full"
-vim.opt.expandtab  = true
-vim.opt.tabpagemax = 40 -- Max number of tab pages that can be opened from the command line
-vim.opt.errorbells = false
-vim.opt.confirm    = true -- Display a confirmation dialog when closing a dirty buffer (Mastering Vim Quickly)
+vim.opt.smartindent = true
+vim.opt.swapfile    = false -- disable the swapfile
+vim.opt.history     = 2000
+vim.opt.updatetime  = 1000
+vim.opt.wildmenu    = true -- set zsh-alike autocomplete behavior
+vim.opt.wildmode    = "full"
+vim.opt.expandtab   = true
+vim.opt.tabpagemax  = 40 -- Max number of tab pages that can be opened from the command line
+vim.opt.errorbells  = false
+vim.opt.confirm     = true -- Display a confirmation dialog when closing a dirty buffer (Mastering Vim Quickly)
 
 vim.g.loaded_perl_provider = 0 -- disable Perl support
 
@@ -97,8 +98,8 @@ vim.opt.softtabstop  = 2
 vim.opt.tabstop      = 2
 
 vim.opt.listchars = {
-  precedes = '⟨',
-  extends = '⟩',
+  precedes = "⟨",
+  extends = "⟩",
   eol = "↵",
   trail = "·",
   tab = "│·",

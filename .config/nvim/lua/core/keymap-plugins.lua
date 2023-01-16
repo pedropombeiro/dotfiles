@@ -115,6 +115,17 @@ m.nname("=", "Unimpaired - Paste (reindending)")
 m.nname("<", "Unimpaired - Paste before linewise")
 m.nname(">", "Unimpaired - Paste after linewise")
 
+-- urlview
+local function open_buffer_urlview()
+  if vim.fn.expand("%:p") == vim.fn.stdpath("config") .. "/lua/packer_init.lua" then
+    vim.cmd [[UrlView packer]]
+  else
+    vim.cmd [[UrlView]]
+  end
+end
+
+m.nnoremap("<leader>fu", open_buffer_urlview, silent, "List buffer URLs", "buffer")
+
 -- wsdjeg/vim-fetch
 wk.register({
   ["gF"] = { "Go to file:line under cursor" },

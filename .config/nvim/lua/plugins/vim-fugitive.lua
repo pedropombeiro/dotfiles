@@ -5,10 +5,15 @@
 -- This means that your buffer listing can quickly become swamped with
 -- fugitive buffers. This prevents this from becomming an issue:
 
-local fugitive_augroup = vim.api.nvim_create_augroup("fugitive", { clear = true })
+return {
+  "tpope/vim-fugitive",
+  config = function()
+    local fugitive_augroup = vim.api.nvim_create_augroup("fugitive", { clear = true })
 
-vim.api.nvim_create_autocmd("BufReadPost", {
-  pattern = "fugitive://*",
-  group = fugitive_augroup,
-  command = "set bufhidden=delete"
-})
+    vim.api.nvim_create_autocmd("BufReadPost", {
+      pattern = "fugitive://*",
+      group = fugitive_augroup,
+      command = "set bufhidden=delete"
+    })
+  end
+}

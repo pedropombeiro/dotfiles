@@ -1,30 +1,12 @@
-vim.api.nvim_exec("autocmd!", false)
+pcall(require, "impatient") -- precompile lua scripts for faster startup
 
--- disable netrw at the very start of init.lua
---  (strongly advised so that nvim-tree can take over directory loading)
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
+vim.api.nvim_exec("autocmd!", false)
 
 vim.g.mapleader = " "
 vim.opt.timeoutlen = 500
 
 -- Load plugins
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
-end
-vim.opt.rtp:prepend(lazypath)
-
--- Install plugins
--- https://github.com/folke/lazy.nvim
-require("lazy").setup("plugins")
+require("packer_init")
 
 -- Inspiration: https://github.com/skwp/dotfiles/blob/master/vim/settings.vim
 local vimsettings = "~/.config/nvim/lua/core"

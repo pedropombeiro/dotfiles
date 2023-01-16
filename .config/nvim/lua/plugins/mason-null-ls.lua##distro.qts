@@ -6,29 +6,19 @@
 --    - translate between null-ls source names and mason.nvim package names (e.g. haml_lint <-> haml-lint)
 --  **Note: this plugin uses the null-ls source names in the APIs it exposes - not mason.nvim package names.
 
-return {
-  "jayp0521/mason-null-ls.nvim",
-  dependencies = {
-    "jose-elias-alvarez/null-ls.nvim",
-    "williamboman/mason.nvim",
+require("mason-null-ls").setup({
+  automatic_installation = false,
+  ensure_installed = {
+    "editorconfig-checker",
+    "goimports",
+    "hadolint",
+    "jq",
+    "markdownlint",
+    "shellcheck",
+    "shfmt",
+    "stylua",
+    "vint",
+    "yamlfmt",
+    "yamllint",
   },
-  config = function()
-    require("mason").setup()
-    require("mason-null-ls").setup({
-      automatic_installation = false,
-      ensure_installed = {
-        "editorconfig-checker",
-        "goimports",
-        "hadolint",
-        "jq",
-        "markdownlint",
-        "shellcheck",
-        "shfmt",
-        "stylua",
-        "vint",
-        "yamlfmt",
-        "yamllint",
-      },
-    })
-  end
-}
+})

@@ -1,7 +1,7 @@
 --- key bindings -------------------------------------------------------------------
 
-local m = require("mapx").setup { global = "force", whichkey = true }
 local wk = require("which-key")
+local m = require("mapx").setup { global = "force", whichkey = true }
 
 wk.register({
   ["<C-Q>"] = { "Quit all" },

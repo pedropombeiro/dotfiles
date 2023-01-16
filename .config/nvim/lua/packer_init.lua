@@ -83,7 +83,7 @@ return packer.startup({ function(use)
   use(with_config "b0o/mapx.nvim") -- 🗺 A better way to create key mappings in Neovim
   --- 💥 Create key bindings that stick. WhichKey is a lua plugin for Neovim 0.5 that displays a popup with
   --- possible keybindings of the command you started typing.
-  use(with_default_config("which-key", "folke/which-key.nvim"))
+  use(with_config "folke/which-key.nvim")
 
   --### Buffer decorations
   use "mtdl9/vim-log-highlighting" -- Provides syntax highlighting for generic log files in VIM.
@@ -138,7 +138,7 @@ return packer.startup({ function(use)
   --- 🌈 Plugin that creates missing LSP diagnostics highlight groups for color schemes that don't yet support
   --- the Neovim 0.5 builtin LSP client
   use "folke/lsp-colors.nvim"
-  use(with_config {
+  use(with_default_config("trouble", {
     --- 🚦 A pretty diagnostics, references, telescope results, quickfix and location list to help you solve all
     --- the trouble your code is causing.
     "folke/trouble.nvim",
@@ -147,7 +147,7 @@ return packer.startup({ function(use)
     requires = {
       { "kyazdani42/nvim-web-devicons", opt = true }
     },
-  })
+  }))
 
   use(with_default_config("mason", "williamboman/mason.nvim"))
 

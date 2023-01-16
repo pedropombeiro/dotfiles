@@ -61,6 +61,14 @@ wk.register({
 m.nnoremap("<C-'>", ":SymbolsOutline<CR>", "Toggle symbols window")
 m.vnoremap("<C-'>", ":SymbolsOutline<CR>", "Toggle symbols window")
 
+-- Trouble
+m.nname("<leader>x", "Trouble 🚦")
+m.nnoremap("<leader>xx", "<cmd>TroubleToggle<cr>", opts, "Toggle Trouble window")
+m.nnoremap("<leader>xw", "<cmd>TroubleToggle workspace_diagnostics<cr>", opts, "Toggle workspace diagnostics")
+m.nnoremap("<leader>xd", "<cmd>TroubleToggle document_diagnostics<cr>", opts, "Toggle document diagnostics")
+m.nnoremap("<leader>xq", "<cmd>TroubleToggle quickfix<cr>", opts, "Toggle quickfix window")
+m.nnoremap("<leader>xl", "<cmd>TroubleToggle loclist<cr>", opts, "Toggle loclist window")
+
 -- vim-gh-line
 wk.register({
   ["gb"] = { "Open blame view in browser" },

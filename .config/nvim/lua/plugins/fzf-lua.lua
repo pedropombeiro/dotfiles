@@ -37,7 +37,7 @@ m.nnoremap("<leader>fgc", "<Cmd>FzfLua git_commits<CR>", "Git commits")
 m.nnoremap("<leader>fgC", "<Cmd>FzfLua git_bcommits<CR>", "Git commits (buffer)")
 m.nnoremap("<leader>fgg",
   function()
-    require('fzf-lua').live_grep({ prompt = 'GitGrep❯ ', cmd = 'git grep --line-number --column --color=always' })
+    require("fzf-lua").live_grep({ prompt = "GitGrep❯ ", cmd = "git grep --line-number --column --color=always" })
   end, "Git grep")
 m.nnoremap("<leader>fgf", "<Cmd>FzfLua git_files<CR>", "Git files")
 m.nnoremap("<leader>fgs", "<Cmd>FzfLua git_status<CR>", "Git status")

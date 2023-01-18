@@ -1,3 +1,11 @@
 #!/usr/bin/env zsh
 
-bundle exec rspec $(git diff --name-only --diff-filter=AM master | grep 'spec/')
+git diff --name-only "$(git merge-base master "$(git rev-parse --abbrev-ref HEAD)")" | \
+  awk '/.rb$/ && !/spec\/factories/' | \
+  sed -e 's/^app\/controllers/spec\/requests/' \
+      -e 's/^app/spec/' \
+      -e '/_spec.rb$/!s/.rb$/_spec.rb/' \
+      -e 's/^lib/spec\/lib/' | \
+  sort | \
+  uniq | \
+  xargs -n 100000 bundle exec rspec

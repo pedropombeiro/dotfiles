@@ -43,6 +43,11 @@ wk.register({
 -- nvim-code-action-menu.vim (https://github.com/weilbith/nvim-code-action-menu)
 m.nnoremap("<leader>la", ":CodeActionMenu<CR>", silent, "Open code action menu")
 
+-- Packer
+m.nname("<leader>p", "Packer")
+m.nnoremap("<leader>ps", ":PackerStatus<CR>", "Packer status")
+m.nnoremap("<leader>pu", ":PackerSync<CR>", "Packer sync")
+
 -- Ranger
 m.nnoremap("<leader>R", ":Ranger<CR>", "Open Ranger")
 

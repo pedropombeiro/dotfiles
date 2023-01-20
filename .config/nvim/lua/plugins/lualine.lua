@@ -15,13 +15,18 @@ return {
   opts = {
     options = {
       icons_enabled = true,
+      ignore_focus = { "lazy", "neotest-summary", "Outline", "Trouble" },
+      disabled_filetypes = { "lazy", "neotest-summary", "Outline", "Trouble" },
+      globalstatus = true,
     },
 
     extensions = {
       "fugitive",
       "man",
+      "nvim-dap-ui",
       "nvim-tree",
       "quickfix",
+      "symbols-outline",
     },
 
     sections = {

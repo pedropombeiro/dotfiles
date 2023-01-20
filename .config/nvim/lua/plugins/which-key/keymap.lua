@@ -1,7 +1,7 @@
 --- key bindings -------------------------------------------------------------------
 
 local wk = require("which-key")
-local m = require("mapx").setup { global = "force", whichkey = true }
+local m = require("mapx")
 
 wk.register({
   ["<C-Q>"] = { "Quit all" },
@@ -47,6 +47,10 @@ m.nnoremap("n", "nzz", "Next match (centered)")
 m.nnoremap("N", "Nzz", "Previous match (centered)")
 
 ---- Move lines with single key combo (Mastering Vim Quickly)
+-- Normal mode
+m.nnoremap("<C-j>", "<Esc>:m .+1<CR>==", "Move line up")
+m.nnoremap("<C-k>", "<Esc>:m .-2<CR>==", "Move line down")
+
 -- Insert mode
 m.inoremap("<C-j>", "<Esc>:m .+1<CR>==gi", "Move line up")
 m.inoremap("<C-k>", "<Esc>:m .-2<CR>==gi", "Move line down")

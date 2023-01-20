@@ -6,10 +6,15 @@ if theme == nil then
   theme = "gruvbox-material-dark-soft"
 end
 
-require("themer").setup({
-  colorscheme = theme,
-  langs = {
-    html = true,
-    md   = true,
-  },
-})
+return {
+  "themercorp/themer.lua",
+  lazy = false,
+  priority = 1000, -- make sure to load this before all the other start plugins
+  opts = {
+    colorscheme = theme,
+    langs = {
+      html = true,
+      md   = true,
+    },
+  }
+}

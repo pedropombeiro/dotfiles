@@ -108,10 +108,10 @@ m.nmap("<leader>gr", ":Dispatch bundle exec rubocop --auto-correct %<CR>", { ft 
 m.nnoremap("gv", "`[v`]", "Select last pasted text")
 
 -- Window movement
-m.nnoremap("<C-h>", "<cmd>wincmd h<CR>", "Move to window to left")
-m.nnoremap("<C-j>", "<cmd>wincmd j<CR>", "Move to window below")
-m.nnoremap("<C-k>", "<cmd>wincmd k<CR>", "Move to window above")
-m.nnoremap("<C-l>", "<cmd>wincmd l<CR>", "Move to window to right")
+m.nnoremap("<C-S-h>", "<cmd>wincmd h<CR>", "Move to window to left")
+m.nnoremap("<C-S-j>", "<cmd>wincmd j<CR>", "Move to window below")
+m.nnoremap("<C-S-k>", "<cmd>wincmd k<CR>", "Move to window above")
+m.nnoremap("<C-S-l>", "<cmd>wincmd l<CR>", "Move to window to right")
 m.nnoremap("<C-S-Up>", "<cmd>resize +2<CR>", "Resize window up")
 m.tnoremap("<C-S-Up>", "<cmd>resize +2<CR>", "Resize window up")
 m.nnoremap("<C-S-Left>", "<cmd>vertical resize +2<CR>", "Resize window left")

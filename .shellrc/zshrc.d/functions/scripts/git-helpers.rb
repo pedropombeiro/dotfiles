@@ -358,3 +358,30 @@ def gitlab_mr_rate(*author)
   puts "Total MRs merged: #{mrs.count}"
   puts "Best month: #{best_month.strftime('%Y-%m')} (#{best_month_mr_rate} MRs)"
 end
+
+def changed_branch_files(format: nil)
+  current_branch = `git branch --show-current`.strip
+  parent_branch = compute_parent_branch(current_branch)
+
+  change_log = `git diff --diff-filter=AM -U0 #{parent_branch}..#{current_branch} | grep -E '^(---|\\+\\+\\+|@@)'`.lines
+  changed_files =
+    change_log.reject { |line| line.start_with?('@@') } # discard diff header
+              .map { |line| line.slice(4..-1).chomp }
+              .reject { |file| file == '/dev/null' } # discard deletions
+              .map { |file| file.slice(2..-1) } # discard b/
+              .uniq
+
+  changed_files.map do |file|
+    index = change_log.index { |line| line.include?("b/#{file}") }
+    line = change_log[index + 1].split[2].slice(1..-1).to_i
+
+    case format
+    when :vim
+      "+#{line} #{file}"
+    when :jetbrains
+      "--line #{line} #{file}"
+    else
+      "#{file}:#{line}"
+    end
+  end
+end

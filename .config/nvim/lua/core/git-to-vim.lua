@@ -7,10 +7,9 @@ endfunction
 
 function OpenBranchCommitedFiles()
 
-  let parent_branch = trim(system("(git show-branch --current | grep '\*' | grep -v `git rev-parse --abbrev-ref HEAD` | head -n1) 2>/dev/null | sed 's/[^[]*\\[\\([^]^]*\\).*\\].*/\\1/'"))
-  let cmd = 'git diff --name-only ' . l:parent_branch . '...'
+  let cmd = 'ruby -r ~/.shellrc/zshrc.d/functions/scripts/git-helpers.rb -e "puts changed_branch_files(format: :vim)"'
   let files = systemlist(l:cmd)
-  let cmd = 'git diff --name-only'
+  let cmd = 'git diff --name-only --diff-filter=AMU'
   let unstaged_files = systemlist(l:cmd)
   let started_empty = TabIsEmpty()
 
@@ -23,7 +22,7 @@ function OpenBranchCommitedFiles()
 
   let all_files = uniq(sort(l:files + l:unstaged_files))
   for f in all_files
-    execute 'tabedit ' . l:f
+    execute 'edit ' . l:f
   endfor
   if started_empty == 1
     execute 'buffer 1 | Bclose'

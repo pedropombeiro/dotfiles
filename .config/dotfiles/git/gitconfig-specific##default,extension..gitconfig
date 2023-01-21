@@ -42,7 +42,7 @@
 
 [alias]
 
-  branch-to = "!f() {     if command -v \"$1\" >/dev/null; then\n      files=( $(git log --oneline --name-only --pretty='format:' --diff-filter=CRAM $($SHELL -ci 'git_main_branch').. -- | rg \"\\.(rb|go|sh|sql)\" | sort | uniq) ); if [[ $1 == vim ]]; then\n        vim -p ${files[@]}; return 0; fi\n      echo ${files[@]} | xargs \"$1\"; \\\n    else\n      echo \"'$1' is not an executable. Please specify an editor such as 'code'.\" > /dev/stderr; \\\n      return 1; \\\n    fi }; f"
+  branch-to = "!f() {     if command -v \"$1\" >/dev/null; then\n       if [[ $1 == vim ]]; then\n       nvim -c Branch; return 0; fi\n      ruby -r ~/.shellrc/zshrc.d/functions/scripts/git-helpers.rb -e 'puts changed_branch_files(format: :jetbrains)' | xargs \"$1\"; \\\n    else\n      echo \"'$1' is not an executable. Please specify an editor such as 'code'.\" > /dev/stderr; \\\n      return 1; \\\n    fi }; f"
 
 [gpg]
   program = /usr/local/bin/gpg

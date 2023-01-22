@@ -6,7 +6,8 @@ return {
   dependencies = "junegunn/fzf", -- 🌸 A command-line fuzzy finder
   cmd = "FzfLua",
   keys = {
-    { "<leader>ff", "<Cmd>FzfLua live_grep_native<CR>", desc = "Live grep (rg)" },
+    { "<leader>ff", "<Cmd>FzfLua files<CR>", desc = "Files" },
+    { "<leader>fg", "<Cmd>FzfLua live_grep_native<CR>", desc = "Live grep (rg)" },
     { "<leader>fF", "<Cmd>FzfLua resume<CR>", desc = "Resume last FZF command/query" },
     { "<leader><Tab>", "<Cmd>FzfLua keymaps<CR>", desc = "Keymaps" },
     { "<leader>fb", "<Cmd>FzfLua buffers<CR>", desc = "Buffers" },

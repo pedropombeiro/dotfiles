@@ -3,8 +3,8 @@
 
 return {
   "lukas-reineke/indent-blankline.nvim", -- Indent guides for Neovim
-  event = "BufReadPre",
-  config = {
+  event = "BufReadPost",
+  opts = {
     char = "│",
     filetype_exclude = { "help", "alpha", "dashboard", "neo-tree", "Trouble", "lazy" },
     show_trailing_blankline_indent = false,

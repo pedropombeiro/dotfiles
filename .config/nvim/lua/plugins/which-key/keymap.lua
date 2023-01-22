@@ -26,7 +26,6 @@ m.xnoremap("&", ":&&<CR>")
 m.nname("<leader>t", "Tabs")
 m.noremap("<leader>tn", ":tabnew<CR>", "Open new tab")
 m.noremap("<leader>tc", ":tabclose<CR>", "Close tab")
-m.noremap("<leader>tt", ":tabs<CR>", "List tabs")
 
 m.nnoremap("<C-s>", ":w<CR>")
 m.inoremap("<C-s>", "<Esc>:w<CR>")
@@ -81,6 +80,7 @@ m.nnoremap("<leader>yw", "yiww", "Yank whole inner word")
 
 -- ,ow = 'overwrite word', replace a word with what's in the yank buffer
 -- FIXME: will not properly repeat when you use a dot (tie into repeat.vim)
+m.nname("<leader>o", "Overwrite")
 m.nnoremap("<leader>ow", '"_diwhp', "Overwrite whole word")
 
 m.map("<leader>#", "ysiw#", "Surround word with #{}")

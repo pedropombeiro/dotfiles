@@ -5,7 +5,7 @@
 return {
   "folke/which-key.nvim",
   lazy = true,
-  config = function()
+  init = function()
     require("plugins/which-key.keymap")
     require("plugins/which-key.keymap-plugins")
   end

@@ -28,28 +28,11 @@ return {
 
   "ruanyl/vim-gh-line", -- vim plugin that open the link of current line on github
 
-  --### DAP
-  {
-    --- An extension for nvim-dap providing configurations for launching go debugger (delve)
-    --- and debugging individual tests
-    "leoluz/nvim-dap-go",
-    config = true,
-    dependencies = "mfussenegger/nvim-dap",
-    ft = "go",
-  },
-  {
-    "suketa/nvim-dap-ruby", -- An extension for nvim-dap providing configurations for launching debug.rb
-    config = true,
-    dependencies = "mfussenegger/nvim-dap",
-    ft = "ruby",
-  },
-
   --### Session management
   "farmergreg/vim-lastplace", -- Intelligently reopen files at your last edit position in Vim.
 
   --### Editor enhancements
-  "junegunn/vim-easy-align", -- 🌻 A Vim alignment plugin
-  "AndrewRadev/splitjoin.vim", -- Switch between single-line and multiline forms of code
+  { "AndrewRadev/splitjoin.vim", keys = { "gS", "gJ" } }, -- Switch between single-line and multiline forms of code
   { "tpope/vim-repeat", keys = "." }, -- repeat.vim: enable repeating supported plugin maps with '.'
   "tpope/vim-speeddating", -- speeddating.vim: C,TRL-A/CTRL-X to increment dates, times, and more
   {

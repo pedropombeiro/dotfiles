@@ -1,5 +1,9 @@
 #!/usr/bin/env zsh
 
+#
+# `test-mr` runs all the tests in the current branch
+#
+
 git diff --name-only "$(git merge-base master "$(git rev-parse --abbrev-ref HEAD)")" | \
   awk '/.rb$/ && !/spec\/factories/' | \
   sed -e 's/^app\/controllers/spec\/requests/' \

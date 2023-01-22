@@ -1,5 +1,9 @@
 #!/usr/bin/env zsh
 
+#
+# `git_parent` returns the parent of the active branch
+#
+
 branch="$1"
 if [[ -z $branch ]]; then
   branch="$(git_current_branch)"

@@ -1,5 +1,14 @@
 #!/usr/bin/env zsh
 
+#
+# `thin-clone` opens a connection to a postgres.ai terminal
+# Usage:
+# - thin-clone create
+# - thin-clone list
+# - thin-clone destroy-all
+# - thin-clone stop-ssh
+#
+
 source ~/.config/yadm/scripts/colors.sh
 
 set -o pipefail

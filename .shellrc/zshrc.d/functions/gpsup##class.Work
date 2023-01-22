@@ -1,18 +1,23 @@
 #!/usr/bin/env zsh
 
+#
+# `gpsup` pushes the current branch and creates a merge request with appropriate defaults
+# if the target remote is at gitlab.com
+#
+
 GITLAB_USERNAME="${USER}"
 
 remote=origin
 
-if git remote get-url $remote | grep gitlab.com > /dev/null; then
-  git push --set-upstream $remote "$(git_current_branch)" \
+if git remote get-url "${remote}" | grep gitlab.com > /dev/null; then
+  git push --set-upstream "${remote}" "$(git_current_branch)" \
     -o merge_request.create \
-    -o "merge_request.target=$(git_parent)" \
-    -o "merge_request.assign=${GITLAB_USERNAME}" \
-    -o "merge_request.label=Category:Runner Fleet" \
-    -o "merge_request.label=section::ops" \
-    -o "merge_request.label=devops::verify" \
-    -o "merge_request.label=group::runner" \
+    -o merge_request.target="$(git_parent)" \
+    -o merge_request.assign="${GITLAB_USERNAME}" \
+    -o merge_request.label="Category:Runner Fleet" \
+    -o merge_request.label="section::ops" \
+    -o merge_request.label="devops::verify" \
+    -o merge_request.label="group::runner" \
     "$@"
 else
   git push --set-upstream $remote "$(git_current_branch)" "$@"

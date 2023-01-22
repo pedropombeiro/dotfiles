@@ -1,5 +1,9 @@
 #!/usr/bin/env zsh
 
+#
+# `undo-migrations` undoes the migrations from the current branch
+#
+
 [[ $PWD/ = ${GDK_ROOT}/* ]] || return
 
 (

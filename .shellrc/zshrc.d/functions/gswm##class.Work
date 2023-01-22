@@ -1,5 +1,9 @@
 #!/usr/bin/env zsh
 
+#
+# `gswm` switches to the main branch, undoing any migrations from the current branch, if needed
+#
+
 if [[ $PWD/ = ${GDK_ROOT}/* ]]; then
   undo-migrations
   git restore db/

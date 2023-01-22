@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh
 
 #
-# diff-structure outputs a clean patch that I can copy/paste (using `diff-structure | pbcopy`) to the SSH session
+# `diff-structure` outputs a clean patch that can be copy/pasted (using `diff-structure | pbcopy`) to the SSH session
 # to get the thin clone up to date with my branch
 #
+
 git --no-pager diff -U0 "$(git_main_branch).." -- db/structure.sql | \
   grep '^+[^+]' | \
   sed 's/^+\(.*\)/\1/'

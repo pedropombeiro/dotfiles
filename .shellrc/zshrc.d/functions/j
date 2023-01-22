@@ -1,5 +1,9 @@
 #!/usr/bin/env zsh
 
+#
+# `j` is an aliad to autojump
+#
+
 if [[ "$#" -ne 0 ]]; then
   cd "$(autojump "$@")"
   return

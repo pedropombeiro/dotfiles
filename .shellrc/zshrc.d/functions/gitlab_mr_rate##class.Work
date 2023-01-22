@@ -1,5 +1,9 @@
 #!/usr/bin/env zsh
 
+#
+# `gitlab_mr_rate` calculates the MR rate of a given GitLab user (defaults to $USER)
+#
+
 SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
 GITLAB_USERNAME="${USER}"
 

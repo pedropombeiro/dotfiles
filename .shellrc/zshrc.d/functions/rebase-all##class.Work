@@ -1,6 +1,10 @@
 #!/usr/bin/env zsh
 
+#
+# `rebase-all` rebases all branches matching the "${GILAB_USERNAME}/<MR_ID>/<BRANCH_NAME>",
+# striving to keep the branch dependencies intact
+#
+
 SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
-GITLAB_USERNAME="${USER}"
 
 ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e rebase_all

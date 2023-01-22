@@ -1,6 +1,10 @@
 #!/usr/bin/env zsh
 
-# https://gitlab.com/-/snippets/2409633
+#
+# `tryout` applies a patch given the MR URL
 # Example command: tryout https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96461
+# Source: https://gitlab.com/-/snippets/2409633
+#
+
 /usr/bin/curl "${1%%#*}.diff" | \
   git apply && git add --all .

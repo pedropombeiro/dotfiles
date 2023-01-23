@@ -30,11 +30,23 @@ return {
     },
 
     sections = {
+      lualine_a = { "mode" },
+      lualine_b = { "branch" },
       lualine_c = {
+        {
+          "diagnostics",
+          symbols = {
+            error = " ",
+            warn = " ",
+            hint = " ",
+            info = " ",
+          },
+        },
+        { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
         {
           "filename",
           show_filename_only = false,
-          path = 3,
+          path = 1,
           shorting_target = 80,
         },
         {
@@ -60,7 +72,22 @@ return {
           timer = { progress_enddelay = 500, spinner = 1000, lsp_client_name_enddelay = 1000 },
           spinner_symbols = { "🌑 ", "🌒 ", "🌓 ", "🌔 ", "🌕 ", "🌖 ", "🌗 ", "🌘 " },
         }
-      }
+      },
+      lualine_x = {
+        {
+          "diff",
+          symbols = {
+            added = " ",
+            modified = " ",
+            removed = " ",
+          }
+        },
+        "encoding",
+        "fileformat",
+        "filetype"
+      },
+      lualine_y = { "progress" },
+      lualine_z = { "location" }
     }
   }
 }

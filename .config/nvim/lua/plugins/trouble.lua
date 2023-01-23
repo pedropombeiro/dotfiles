@@ -16,5 +16,5 @@ return {
   init = function()
     require("mapx").nname("<leader>x", "Trouble 🚦")
   end,
-  config = true
+  opts = { use_diagnostic_signs = true },
 }

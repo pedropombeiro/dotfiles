@@ -22,6 +22,15 @@ return {
 
   --### Snippets
   { "hrsh7th/vim-vsnip", lazy = true }, -- Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
+  {
+    "rafamadriz/friendly-snippets",
+    ft = { "dockerfile", "go", "lua", "ruby" },
+    init = function()
+      vim.g.vsnip_filetypes = {
+        ruby = { "rails" }
+      }
+    end
+  },
 
   --### Completion
   { "gelguy/wilder.nvim", config = true }, -- A more adventurous wildmenu autocomplete suggestions for : and /

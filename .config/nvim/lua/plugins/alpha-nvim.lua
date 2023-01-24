@@ -174,6 +174,7 @@ return {
         { type = "text", val = "Quick links", opts = { hl = "SpecialComment", position = "center" } },
         { type = "padding", val = 1 },
         dashboard.button("e", "  New file", "<cmd>ene<CR>"),
+        dashboard.button("b", "  Open branch files", "<cmd>Branch<CR>"),
         dashboard.button("SPC f f", "  Find file"),
         dashboard.button("SPC f g", "  Live grep"),
         dashboard.button("c", "  Configuration", "<cmd>cd ~ | e $MYVIMRC | NvimTreeFindFileToggle<CR>"),

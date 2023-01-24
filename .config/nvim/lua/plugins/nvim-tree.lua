@@ -40,6 +40,15 @@ return {
       group_empty = true,
       highlight_git = true,
       highlight_opened_files = "icon",
+      icons = {
+        git_placement = "signcolumn",
+        show = {
+          file         = true,
+          folder       = false,
+          folder_arrow = true,
+          git          = true,
+        },
+      },
     },
     filters = {
       dotfiles = false,
@@ -56,6 +65,16 @@ return {
     update_focused_file = {
       enable = true,
       update_cwd = false,
+    },
+    diagnostics = {
+      enable = true,
+      show_on_dirs = true,
+      icons = {
+        hint    = "",
+        info    = "",
+        warning = "",
+        error   = "",
+      },
     },
   }
 }

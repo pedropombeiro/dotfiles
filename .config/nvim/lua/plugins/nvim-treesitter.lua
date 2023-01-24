@@ -1,6 +1,8 @@
 --  The goal of nvim-treesitter is both to provide a simple and easy way to use the interface for tree-sitter in Neovim
 --    and to provide some basic functionality such as highlighting based on it:
 
+local config = require("config")
+
 return {
   {
     "nvim-treesitter/nvim-treesitter-textobjects", -- Syntax aware text-objects, select, move, swap, and peek support.
@@ -13,7 +15,7 @@ return {
     config = function()
       require("treesitter-context").setup()
 
-      vim.api.nvim_set_hl(0, "TreesitterContextBottom", { underline = true, sp = "#32302f" }) -- Gruvbox Dark bg0_s
+      vim.api.nvim_set_hl(0, "TreesitterContextBottom", { underline = true, sp = config.theme.bg0_s })
     end,
   },
 

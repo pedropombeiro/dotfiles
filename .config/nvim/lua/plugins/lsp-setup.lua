@@ -23,6 +23,7 @@ local keys = {
     desc = "List workspace folders",
   },
 }
+local config = require("config")
 
 return {
   "junnplus/lsp-setup.nvim",
@@ -50,7 +51,14 @@ return {
     }
   },
   init = function()
-    local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+    local signs = {
+      ---@diagnostic disable: undefined-field
+      Error = config.icons.diagnostics.error .. " ",
+      Warn  = config.icons.diagnostics.warning .. " ",
+      Hint  = config.icons.diagnostics.hint .. " ",
+      Info  = config.icons.diagnostics.info .. " "
+      ---@diagnostic enable: undefined-field
+    }
     for type, icon in pairs(signs) do
       local hl = "DiagnosticSign" .. type
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })

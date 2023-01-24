@@ -48,6 +48,7 @@ return {
     }, neotest_ns)
 
     local neotest = require("neotest")
+    local config = require("config")
     neotest.setup({
       adapters = {
         require("neotest-go") {
@@ -67,17 +68,19 @@ return {
         }),
       },
       icons = {
-        expanded           = "",
+        ---@diagnostic disable: undefined-field
+        expanded           = config.icons.folder.expanded,
         child_prefix       = "",
         child_indent       = "",
         final_child_prefix = "",
         non_collapsible    = "",
-        collapsed          = "",
+        collapsed          = config.icons.folder.collapsed,
 
-        passed  = "",
-        running = "",
-        failed  = "",
-        unknown = ""
+        passed  = config.icons.tests.passed,
+        running = config.icons.tests.running,
+        failed  = config.icons.tests.failed,
+        unknown = config.icons.tests.unknown
+        ---@diagnostic enable: undefined-field
       },
     })
 
@@ -87,31 +90,34 @@ return {
     end
 
     ---@format disable-next
-    local function define_gruvbox_highlights()
-      set_hl("NeotestPassed",       { ctermfg = "Green",   fg = "#b8bb26" })
-      set_hl("NeotestFailed",       { ctermfg = "Red",     fg = "#fb4934" })
-      set_hl("NeotestRunning",      { ctermfg = "Yellow",  fg = "#fabd2f" })
-      set_hl("NeotestSkipped",      { ctermfg = "Cyan",    fg = "#83a598" })
-      set_hl("NeotestTest",         { link    = "Normal" })
-      set_hl("NeotestNamespace",    { ctermfg = "Magenta", fg = "#d3869b" })
-      set_hl("NeotestFocused",      { bold    = true, underline = true })
-      set_hl("NeotestFile",         { ctermfg = "Cyan",    fg = "#83a598" })
-      set_hl("NeotestDir",          { ctermfg = "Cyan",    fg = "#83a598" })
-      set_hl("NeotestIndent",       { ctermfg = "Grey",    fg = "#a89984" })
-      set_hl("NeotestExpandMarker", { ctermfg = "Grey",    fg = "#bdae93" })
-      set_hl("NeotestAdapterName",  { ctermfg = "Red",     fg = "#cc241d" })
-      set_hl("NeotestWinSelect",    { ctermfg = "Cyan",    fg = "#83a598", bold = true })
-      set_hl("NeotestMarked",       { ctermfg = "Brown",   fg = "#fe8019", bold = true })
-      set_hl("NeotestTarget",       { ctermfg = "Red",     fg = "#cc241d" })
-      set_hl("NeotestUnknown",      { link    = "Normal" })
+    local function define_highlights()
+      ---@diagnostic disable: undefined-field
+      set_hl("NeotestPassed", { ctermfg = "Green", fg = config.theme.colors.green })
+      set_hl("NeotestFailed", { ctermfg = "Red", fg = config.theme.colors.dark_red })
+      set_hl("NeotestRunning", { ctermfg = "Yellow", fg = config.theme.colors.dark_yellow })
+      set_hl("NeotestSkipped", { ctermfg = "Cyan", fg = config.theme.colors.dark_blue })
+      set_hl("NeotestTest", { link = "Normal" })
+      set_hl("NeotestNamespace", { ctermfg = "Magenta", fg = config.theme.colors.purple })
+      set_hl("NeotestFocused", { bold = true, underline = true })
+      set_hl("NeotestFile", { ctermfg = "Cyan", fg = config.theme.colors.dark_blue })
+      set_hl("NeotestDir", { ctermfg = "Cyan", fg = config.theme.colors.dark_blue })
+      set_hl("NeotestIndent", { ctermfg = "Grey", fg = config.theme.colors.fg4 })
+      set_hl("NeotestExpandMarker", { ctermfg = "Grey", fg = config.theme.colors.fg3 })
+      set_hl("NeotestAdapterName", { ctermfg = "Red", fg = config.theme.colors.red })
+      set_hl("NeotestWinSelect", { ctermfg = "Cyan", fg = config.theme.colors.dark_blue, bold = true })
+      set_hl("NeotestMarked", { ctermfg = "Brown", fg = config.theme.colors.dark_orange, bold = true })
+      set_hl("NeotestTarget", { ctermfg = "Red", fg = config.theme.colors.red })
+      set_hl("NeotestUnknown", { link = "Normal" })
+      ---@diagnostic enable: undefined-field
     end
 
     --- Override Neotest default theme
     local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
-    if theme == "gruvbox" then
+    ---@diagnostic disable-next-line: undefined-field
+    if theme == config.theme.name then
       local augroup = vim.api.nvim_create_augroup("NeotestColorSchemeRefresh", { clear = true })
-      vim.api.nvim_create_autocmd("ColorScheme", { callback = define_gruvbox_highlights, group = augroup })
-      define_gruvbox_highlights()
+      vim.api.nvim_create_autocmd("ColorScheme", { callback = define_highlights, group = augroup })
+      define_highlights()
     end
   end
 }

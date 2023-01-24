@@ -3,7 +3,8 @@
 
 local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
 if theme == nil then
-  theme = "gruvbox-material-dark-soft"
+  local config = require("config")
+  theme = config.theme.name
 end
 
 return {

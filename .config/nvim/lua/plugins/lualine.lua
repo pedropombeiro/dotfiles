@@ -1,12 +1,7 @@
 -- lualine.nvim (https://github.com/nvim-lualine/lualine.nvim)
 --  A blazing fast and easy to configure neovim statusline plugin written in pure lua.
 
--- Color for LSP highlights (gruvbox dark)
-local colors = {
-  cyan = "#8ec07c",
-  magenta = "#d3869b",
-  blue = "#458588",
-}
+local config = require("config")
 
 return {
   "nvim-lualine/lualine.nvim",
@@ -36,10 +31,12 @@ return {
         {
           "diagnostics",
           symbols = {
-            error = " ",
-            warn = " ",
-            hint = " ",
-            info = " ",
+            ---@diagnostic disable: undefined-field
+            hint  = config.icons.diagnostics.hint .. " ",
+            info  = config.icons.diagnostics.info .. " ",
+            warn  = config.icons.diagnostics.warning .. " ",
+            error = config.icons.diagnostics.error .. " ",
+            ---@diagnostic enable: undefined-field
           },
         },
         { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
@@ -52,12 +49,14 @@ return {
         {
           "lsp_progress",
           colors = {
-            percentage      = colors.cyan,
-            title           = colors.blue,
-            message         = colors.blue,
-            spinner         = colors.cyan,
-            lsp_client_name = colors.magenta,
+            ---@diagnostic disable: undefined-field
+            percentage      = config.theme.colors.cyan,
+            title           = config.theme.colors.blue,
+            message         = config.theme.colors.blue,
+            spinner         = config.theme.colors.cyan,
+            lsp_client_name = config.theme.colors.purple,
             use             = true,
+            ---@diagnostic enable: undefined-field
           },
           separators = {
             component = " ",
@@ -77,9 +76,11 @@ return {
         {
           "diff",
           symbols = {
-            added = " ",
-            modified = " ",
-            removed = " ",
+            ---@diagnostic disable: undefined-field
+            added    = config.icons.symbols.added .. " ",
+            modified = config.icons.symbols.modified .. " ",
+            removed  = config.icons.symbols.removed .. " ",
+            ---@diagnostic enable: undefined-field
           }
         },
         "encoding",

@@ -6,6 +6,8 @@ if (version.major == 0 and version.minor < 8) then
   return nil
 end
 
+local config = require("config")
+
 return {
   "nvim-tree/nvim-tree.lua",
   cond = function() return not vim.g.started_by_firenvim end,
@@ -48,6 +50,14 @@ return {
           folder_arrow = true,
           git          = true,
         },
+        glyphs = {
+          folder = {
+            ---@diagnostic disable: undefined-field
+            arrow_closed = config.icons.folder.collapsed,
+            arrow_open   = config.icons.folder.expanded,
+            ---@diagnostic enable: undefined-field
+          }
+        },
       },
     },
     filters = {
@@ -70,10 +80,12 @@ return {
       enable = true,
       show_on_dirs = true,
       icons = {
-        hint    = "",
-        info    = "",
-        warning = "",
-        error   = "",
+        ---@diagnostic disable: undefined-field
+        hint    = config.icons.diagnostics.hint,
+        info    = config.icons.diagnostics.info,
+        warning = config.icons.diagnostics.warning,
+        error   = config.icons.diagnostics.error,
+        ---@diagnostic enable: undefined-field
       },
     },
   }

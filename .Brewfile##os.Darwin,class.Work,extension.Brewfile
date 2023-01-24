@@ -89,6 +89,8 @@ brew "unbound"
 brew "gnutls"
 # OpenType text shaping engine
 brew "harfbuzz"
+# Framework for layout and rendering of i18n text
+brew "pango"
 # Play, record, convert, and stream audio and video
 brew "ffmpeg"
 # I/O benchmark and stress test
@@ -103,6 +105,10 @@ brew "git-delta"
 brew "git-extras"
 # Git extension for versioning large files
 brew "git-lfs"
+# Audit git repos for secrets
+brew "gitleaks"
+# Open-source GitLab command-line tool
+brew "glab"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
 # GNU Pretty Good Privacy (PGP) package
@@ -167,8 +173,6 @@ brew "node_exporter", restart_service: true
 brew "packer"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
-# Framework for layout and rendering of i18n text
-brew "pango"
 # CLI for Postgres with auto-completion and syntax highlighting
 brew "pgcli"
 # PostgreSQL syntax beautifier
@@ -189,6 +193,8 @@ brew "re2"
 brew "remake"
 # Search tool like grep and The Silver Searcher
 brew "ripgrep"
+# Prevent committing secret keys into your source code
+brew "ripsecrets"
 # Readline wrapper: adds readline support to tools that lack it
 brew "rlwrap"
 # Standard unix software packaging tool
@@ -241,7 +247,7 @@ brew "yadm"
 brew "ykpers"
 # Download YouTube videos from the command-line
 brew "youtube-dl"
-# Process YAML documents from the CLI
+# Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
@@ -327,6 +333,8 @@ cask "little-snitch"
 cask "logitech-camera-settings"
 # Software for Logitech devices
 cask "logitech-options"
+# Screen and video recording software
+cask "loom"
 # Adaptive brightness for external displays
 cask "lunar"
 # Track and update to the latest versions of installed software
@@ -375,8 +383,6 @@ cask "slack"
 cask "spotify"
 # Windows manager
 cask "stay"
-# Backup, recovery and cloning software
-cask "superduper"
 # Real time file synchronization software
 cask "syncthing"
 # Quicklook extension for source files

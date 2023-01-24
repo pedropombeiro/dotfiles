@@ -27,14 +27,34 @@ zsh -i -c 'sleep 5' # Allow time for .zlogin to asynchronously regenerate the .z
 printf "${YELLOW}%s${NC}\n" "Testing shell instantiation performance..."
 hf_file="$(mktemp)"
 hyperfine --warmup=1 --max-runs 5 'zsh -i -c exit' --export-json "${hf_file}"
-mean_time=$(jq '.results[].median' "${hf_file}")
-if [[ $mean_time -ge 0.6 ]]; then
+mean_time=$(jq -r '.results[].median' "${hf_file}")
+if awk "BEGIN {exit !($mean_time >= 0.6)}"; then
   printf "${RED}%s${NC}\n" "Zsh performance is too slow!"
 fi
-rm -f "${hf_file}"
 
 printf "${YELLOW}%s${NC}\n" "Updating neovim plugins..."
 rm -rf "${HOME}/.vim"
 nvim --headless "+Lazy! sync" +qa && \
   printf "\n${GREEN}%s${NC}\n" "Done"
+
+printf "${YELLOW}%s${NC}\n" "Testing Neovim startup performance..."
+benchmark_filepath="${HOME}/.cache/nvim/.startup-time.txt"
+
+hyperfine --warmup 5 --export-json "${hf_file}" 'nvim --headless +qa'
+nvim_benchmark="$(jq -r '.results[].median' "${hf_file}")"
+
+if [[ -f ${benchmark_filepath} ]]; then
+  prev_benchmark="$(cat "${benchmark_filepath}")"
+
+  if awk "BEGIN {exit !($nvim_benchmark >= $prev_benchmark * 1.1)}"; then
+    printf "${RED}%s${NC}\n" "Neovim startup time increased over 10% compared to previous run..."
+  else
+    echo "${nvim_benchmark}" > "${benchmark_filepath}"
+  fi
+  echo "Previous median startup time: $(awk "BEGIN { print $prev_benchmark * 1000 }")ms"
+else
+  echo "${nvim_benchmark}" > "${benchmark_filepath}"
+fi
+
+rm -f "${hf_file}"
 

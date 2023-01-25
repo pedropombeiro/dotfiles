@@ -4,7 +4,11 @@
 # `git_parent` returns the parent of the active branch
 #
 
+SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
+
 branch="$1"
 if [[ -z $branch ]]; then
   branch="$(git_current_branch)"
 fi
+
+ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e "puts compute_parent_branch('$branch')"

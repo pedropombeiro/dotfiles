@@ -9,5 +9,6 @@ if [[ -d ${GDK_ROOT} ]]; then
   alias compile_docs="bundle exec rake gitlab:graphql:compile_docs"
   alias guard="SPRING=1 bundle exec guard"
   unalias gswm
+  unalias gpsup
 fi
 

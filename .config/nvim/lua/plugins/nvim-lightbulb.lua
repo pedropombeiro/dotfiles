@@ -3,7 +3,7 @@
 
 return {
   "kosayoda/nvim-lightbulb",
-  event = "VeryLazy",
+  event = "BufReadPre",
   dependencies = "antoinemadec/FixCursorHold.nvim",
   opts = {
     autocmd = { enabled = true }

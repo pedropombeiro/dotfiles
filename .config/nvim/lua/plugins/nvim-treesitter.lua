@@ -15,13 +15,14 @@ return {
     config = function()
       require("treesitter-context").setup()
 
+      ---@diagnostic disable-next-line: undefined-field
       vim.api.nvim_set_hl(0, "TreesitterContextBottom", { underline = true, sp = config.theme.bg0_s })
     end,
   },
 
   {
     "nvim-treesitter/nvim-treesitter",
-    event = "BufWinEnter",
+    event = "BufReadPost",
     dependencies = {
       {
         "RRethy/nvim-treesitter-endwise", --- Wisely add 'end' in Ruby, Vimscript, Lua, etc.

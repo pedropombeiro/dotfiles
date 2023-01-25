@@ -4,6 +4,7 @@
 local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
 if theme == nil then
   local config = require("config")
+  ---@diagnostic disable-next-line: undefined-field
   theme = config.theme.name
 end
 
@@ -13,9 +14,15 @@ return {
   priority = 1000, -- make sure to load this before all the other start plugins
   opts = {
     colorscheme = theme,
-    langs = {
-      html = true,
-      md   = true,
+    plugins = {
+      treesitter = true,
+      indentline = true,
+      barbar = false,
+      bufferline = false,
+      cmp = true,
+      gitsigns = true,
+      lsp = true,
+      telescope = false,
     },
   }
 }

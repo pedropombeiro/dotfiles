@@ -11,7 +11,7 @@ local config = require("config")
 return {
   "nvim-tree/nvim-tree.lua",
   cond = function() return not vim.g.started_by_firenvim end,
-  event = "VeryLazy",
+  cmd = { "NvimTreeFocus", "NvimTreeToggle", "NvimTreeFindFileToggle" },
   dependencies = "kyazdani42/nvim-web-devicons",
   keys = {
     { "<C-\\>", "<Cmd>NvimTreeFindFileToggle<CR>", mode = { "n", "v" }, desc = "Toggle file explorer" },

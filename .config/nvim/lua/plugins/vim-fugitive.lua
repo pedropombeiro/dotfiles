@@ -3,7 +3,9 @@
 
 return {
   "tpope/vim-fugitive",
-  event = "VeryLazy",
+  cmd = {
+    "Git", "Gedit", "Gdiffsplit", "Gvdiffsplit", "Gread", "Gwrite", "Ggrep", "GMove", "GDelete"
+  },
   init = function()
     local fugitive_augroup = vim.api.nvim_create_augroup("fugitive", { clear = true })
 

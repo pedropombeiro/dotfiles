@@ -2,7 +2,10 @@ return {
   --### Key mappings management
 
   --### Buffer decorations
-  "mtdl9/vim-log-highlighting", -- Provides syntax highlighting for generic log files in VIM.
+  {
+    "mtdl9/vim-log-highlighting", -- Provides syntax highlighting for generic log files in VIM.
+    ft = "log",
+  },
 
   {
     "petertriho/nvim-scrollbar", -- Extensible Neovim Scrollbar
@@ -11,14 +14,13 @@ return {
   },
 
   --### Search
-  "tpope/vim-abolish", -- abolish.vim: easily search for, substitute, and abbreviate multiple variants of a word
+  {
+    "tpope/vim-abolish", -- abolish.vim: easily search for, substitute, and abbreviate multiple variants of a word
+    event = "BufReadPost",
+  },
 
   --### Linting
-  --- 🌈 Plugin that creates missing LSP diagnostics highlight groups for color schemes that don't yet support
-  --- the Neovim 0.5 builtin LSP client
-  "folke/lsp-colors.nvim",
-
-  "arkav/lualine-lsp-progress", -- LSP Progress lualine component
+  { "arkav/lualine-lsp-progress", event = "BufReadPost" }, -- LSP Progress lualine component
 
   --### Snippets
   { "hrsh7th/vim-vsnip", lazy = true }, -- Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
@@ -35,28 +37,46 @@ return {
   --### Completion
   { "gelguy/wilder.nvim", config = true }, -- A more adventurous wildmenu autocomplete suggestions for : and /
 
-  "ruanyl/vim-gh-line", -- vim plugin that open the link of current line on github
+  {
+    "ruanyl/vim-gh-line", -- vim plugin that open the link of current line on github
+    event = "BufReadPost",
+  },
 
   --### Session management
-  "farmergreg/vim-lastplace", -- Intelligently reopen files at your last edit position in Vim.
+  {
+    "farmergreg/vim-lastplace", -- Intelligently reopen files at your last edit position in Vim.
+    event = "BufReadPre",
+  },
 
   --### Editor enhancements
   { "AndrewRadev/splitjoin.vim", keys = { "gS", "gJ" } }, -- Switch between single-line and multiline forms of code
   { "tpope/vim-repeat", keys = "." }, -- repeat.vim: enable repeating supported plugin maps with '.'
-  "tpope/vim-speeddating", -- speeddating.vim: C,TRL-A/CTRL-X to increment dates, times, and more
+  {
+    "tpope/vim-speeddating", -- speeddating.vim: C,TRL-A/CTRL-X to increment dates, times, and more
+    event = "BufReadPost",
+  },
   {
     "tpope/vim-surround", -- surround.vim: Delete/change/add parentheses/quotes/XML-tags/much more with ease
-    event = "VeryLazy",
+    event = "BufReadPost",
   },
 
   --### Other
-  "tmux-plugins/vim-tmux", -- Vim plugin for .tmux.conf
+  { "tmux-plugins/vim-tmux", ft = "tmux" }, -- Vim plugin for .tmux.conf
   {
     "tpope/vim-dispatch", -- dispatch.vim: Asynchronous build and test dispatcher
     cmd = { "Dispatch", "Make", "Focus", "Start" }
   },
-  "tpope/vim-eunuch", -- eunuch.vim: Helpers for UNIX
-  "tpope/vim-sleuth", -- sleuth.vim: Heuristically set buffer options
+  {
+    "tpope/vim-eunuch", -- eunuch.vim: Helpers for UNIX
+    cmd = {
+      "Remove", "Delete", "Move", "Chmod", "Mkdir", "Cfind", "Clocate", "Lfind", "Llocate", "Wall", "SudoWrite",
+      "SudoEdit"
+    }
+  },
+  {
+    "tpope/vim-sleuth", -- sleuth.vim: Heuristically set buffer options
+    event = "BufReadPre",
+  },
   {
     "tpope/vim-bundler", -- bundler.vim: Lightweight support for Ruby's Bundler
     ft = "ruby",

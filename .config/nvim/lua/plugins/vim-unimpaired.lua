@@ -3,7 +3,7 @@
 
 return {
   "tpope/vim-unimpaired",
-  event = "VeryLazy",
+  event = "BufReadPost",
   init = function()
     local wk = require("which-key")
     local m = require("mapx")

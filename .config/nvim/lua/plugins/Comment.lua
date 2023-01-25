@@ -4,6 +4,5 @@
 
 return {
   "numToStr/Comment.nvim",
-  keys = { "gc", "gcc", "gb", "gbc" },
   config = true
 }

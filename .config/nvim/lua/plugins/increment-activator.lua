@@ -3,6 +3,7 @@
 
 return {
   "nishigori/increment-activator",
+  event = "BufReadPost",
   init = function()
     vim.g.increment_activator_filetype_candidates = {
       ["_"] = {

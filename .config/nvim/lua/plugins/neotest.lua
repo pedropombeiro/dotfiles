@@ -5,8 +5,10 @@
 local keys = {
   { "<leader>rt", function() require("neotest").run.run() end,                     desc = "Run the nearest test" },
   { "<leader>rd", function() require("neotest").run.run({ strategy = "dap" }) end, desc = "Debug the nearest test" },
-  { "<leader>rT", function() require("neotest").run.run(vim.fn.expand("%")) end,   desc = "Run the current file" },
+  { "<leader>rf", function() require("neotest").run.run(vim.fn.expand("%")) end,   desc = "Run the current file" },
+  { "<leader>rl", function() require("neotest").run.run_last() end,                desc = "Repeat last test run" },
   { "<leader>rr", function() require("neotest").summary.open() end,                desc = "Open test summary" },
+  { "<leader>ro", function() require("neotest").output.open({ enter = true }) end, desc = "Open test output" },
 }
 
 return {

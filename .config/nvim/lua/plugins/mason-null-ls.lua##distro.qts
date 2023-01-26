@@ -24,9 +24,7 @@ return {
       "shellcheck",
       "shfmt",
       "stylua",
-      "vint",
       "yamlfmt",
-      "yamllint",
     },
   }
 }

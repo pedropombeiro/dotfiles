@@ -12,7 +12,7 @@ set +e
 rm -rf "${HOME}/.asdf/shims"
 asdf reshim
 
-for p in bat ctop delta duf dust fd golang golangci-lint jq lazygit neovim nodejs ripgrep xh; do
+for p in bat ctop delta duf dust fd golang golangci-lint jq lazygit nodejs ripgrep xh; do
   asdf plugin add "${p}"
 done
 asdf plugin list | sort | grep -vE '^(golang|nodejs)$' | xargs -r -I {} bash -c 'VERSION="$(asdf list all {} | sort --ignore-leading-blanks --version-sort --reverse | head -n1)"; asdf install {} $VERSION && asdf global {} $VERSION'

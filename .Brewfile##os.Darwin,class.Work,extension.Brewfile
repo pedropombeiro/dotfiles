@@ -9,6 +9,7 @@ tap "homebrew/cask-versions"
 tap "homebrew/core"
 tap "homebrew/services"
 tap "jarred-sumner/git-peek"
+tap "jdxcode/tap"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "mas-cli/tap"
 tap "minio/stable"
@@ -33,8 +34,6 @@ brew "ansible-lint"
 brew "asciinema"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
-# Extendable version manager with support for Ruby, Node.js, Erlang & more
-brew "asdf"
 # Shell extension to jump to frequently used directories
 brew "autojump"
 # Bourne-Again SHell, a UNIX command interpreter
@@ -251,6 +250,8 @@ brew "youtube-dl"
 brew "yq"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
+# Multi-language runtime manager
+brew "jdxcode/tap/rtx"
 # Reconcile your local git repositories
 brew "leipert-projects/git-recon/git-recon"
 # Compare Docker images

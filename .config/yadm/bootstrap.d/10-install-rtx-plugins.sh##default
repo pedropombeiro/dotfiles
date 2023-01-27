@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
+
+source "${YADM_SCRIPTS}/colors.sh"
+
+printf "${YELLOW}%s${NC}\n" "Installing rtx plugins..."
+type -f rtx >/dev/null 2>&1 || eval "$(rtx activate bash)"
+set +e
+
+mkdir -p ~/.config/rtx
+touch ~/.config/rtx/config.toml
+export RTX_MISSING_RUNTIME_BEHAVIOR=autoinstall
+
+for p in fd golang golangci-lint nodejs yarn ruby; do
+  rtx plugin install "${p}"
+done
+
+rtx global cargo@latest
+rtx global fd@latest
+rtx global golang@1.17.5
+rtx global golangci-lint@1.44.0
+
+rtx global nodejs@18.7.0
+rtx global yarn@1.22.19
+
+rtx global ruby@3.0.5
+set -e
+
+unset RTX_MISSING_RUNTIME_BEHAVIOR

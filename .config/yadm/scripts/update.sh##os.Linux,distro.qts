@@ -7,15 +7,13 @@ source "${YADM_SCRIPTS}/colors.sh"
 printf "${YELLOW}%s${NC}\n" "Updating Entware packages..."
 opkg update && opkg upgrade
 
-printf "${YELLOW}%s${NC}\n" "Updating asdf packages..."
-asdf update
-asdf plugin-update --all
+printf "${YELLOW}%s${NC}\n" "Updating rtx packages..."
+rtx self-update
 set +e
-asdf plugin list | grep -vE '^(bat|ctop|dust|fzf|golang|hadolint|jq|nodejs|ripgrep|rust|shellcheck)$' |
-  sort |
-  xargs -r -I {} bash -c 'asdf install {} latest && asdf global {} latest'
+rtx plugin ls | grep -vE '^(bat|ctop|dust|fzf|golang|hadolint|jq|nodejs|ripgrep|rust|shellcheck)$' | \
+  sort | \
+  xargs -r -I {} bash -c 'rtx global {}@latest'
 set -e
-asdf reshim golang
 
 printf "${YELLOW}%s${NC}\n" "Updating python packages..."
 pip3 list --outdated --format=json | jq -r '.[] | .name+"="+.latest_version' |

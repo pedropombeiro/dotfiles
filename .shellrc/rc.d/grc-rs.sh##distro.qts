@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-PATH="$PATH:$(asdf where rust)/bin"
+source "$(rtx where rust 2>& /dev/null)/env"
 
 command -v grc-rs >/dev/null && eval "$(grc-rs --aliases)"

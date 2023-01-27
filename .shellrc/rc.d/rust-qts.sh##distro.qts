@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-ASDF_RUST="$(asdf where rust)"
-RUST_BIN="${ASDF_RUST}/bin"
-if [[ -d ${RUST_BIN} ]]; then
-  PATH="${PATH}:${RUST_BIN}"
-  TMPDIR="$TEMP"
+TMPDIR="$TEMP"
+export TMPDIR
 
-  export PATH
-  export TMPDIR
-fi
+export PATH="$PATH:$(rtx where rust 2>& /dev/null)/bin"

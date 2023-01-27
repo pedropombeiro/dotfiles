@@ -10,4 +10,4 @@ printf "${YELLOW}%s${NC}\n" "Installing cargo packages..."
 cargo install \
   grc-rs \
   tree-sitter-cli
-cargo install jless --version 0.7.2
+cargo install --version ^0.7 -- jless

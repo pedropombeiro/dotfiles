@@ -7,21 +7,18 @@ tap "homebrew/cask-versions"
 tap "homebrew/core"
 tap "homebrew/services"
 tap "jarred-sumner/git-peek"
+tap "jdxcode/tap"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
 tap "zaquestion/tap"
-# Arduino command-line interface
-brew "arduino-cli"
 # General-purpose data compression with high compression ratio
 brew "xz"
+# Arduino command-line interface
+brew "arduino-cli"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.10"
 # Record and share terminal sessions
 brew "asciinema"
-# GNU File, Shell, and Text utilities
-brew "coreutils"
-# Extendable version manager with support for Ruby, Node.js, Erlang & more
-brew "asdf"
 # Shell extension to jump to frequently used directories
 brew "autojump"
 # Bourne-Again SHell, a UNIX command interpreter
@@ -32,6 +29,8 @@ brew "bat"
 brew "calc"
 # Linter/analyzer for Makefiles
 brew "checkmake"
+# GNU File, Shell, and Text utilities
+brew "coreutils"
 # Securely send things from one computer to another
 brew "croc"
 # Top-like interface for container metrics
@@ -158,6 +157,8 @@ brew "yt-dlp"
 brew "borgbackup/tap/borgbackup-fuse"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
+# Multi-language runtime manager
+brew "jdxcode/tap/rtx"
 # Reconcile your local git repositories
 brew "leipert-projects/git-recon/git-recon"
 # Password manager that keeps all passwords secure behind one password

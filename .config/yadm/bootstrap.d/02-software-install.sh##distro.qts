@@ -11,8 +11,6 @@ opkg install asciinema bind-dig column coreutils entr \
              ncdu nmap nethogs make tar terminfo tmux whois whereis yt-dlp zsh
 opkg install procps-ng-ps     # installs a more modern version of ps, supporting command line switches
 opkg install coreutils-mkfifo # required for powerlevel10k ZSH theme
-opkg install coreutils-comm   # required for asdf reshim
-opkg install coreutils-sort   # required for asdf update script
 opkg install bash sysstat     # required for qnapnodeexporter/grafana
 opkg install lua gzip         # required for nvim plugins
 
@@ -26,9 +24,9 @@ if [[ ! -d "/share/homes/${USER}/.oh-my-zsh" ]]; then
   printf "${YELLOW}%s${NC}\n" "Oh-my-zsh installed"
 fi
 
-if [[ ! -d "$HOME/.asdf" ]]; then
-  git clone https://github.com/asdf-vm/asdf.git "/share/homes/${USER}/.asdf" --branch v0.11.1
-  ln -sf "/share/homes/${USER}/.asdf" /root/.asdf
+if [[ ! -x "${HOME}/.local/share/rtx/bin/rtx" ]]; then
+  curl https://rtx.jdxcode.com/install.sh | sh
+  ln -sf "/share/homes/${USER}/.local" /root/
 fi
 
 INSTALL_DIR=/share/homes/${USER}/opt

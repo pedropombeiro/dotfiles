@@ -104,7 +104,7 @@ source ~/.config/yadm/scripts/colors.sh
   printf "${YELLOW}%s${NC}\n" 'Running simple test...'
   bin/rspec --failure-exit-code 0 --error-exit-code 0 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb
 
-  if ps aux | grep RubyMine.app/Contents/MacOS/rubymine | grep -v 'grep'; then
+  if pgrep rubymine; then
     printf "${YELLOW}%s${NC}\n" 'Start indexing in RubyMine...'
     osascript <<END
       tell application "RubyMine"

@@ -37,7 +37,7 @@
     zcompare ${file}
   done
 
-  for file in ${HOME}/.oh-my-zsh/plugins/{asdf,common-aliases,git,git-extras}/*.zsh; do
+  for file in ${HOME}/.oh-my-zsh/plugins/{common-aliases,git,git-extras,history-substring-search}/*.zsh; do
     zcompare ${file}
   done
 

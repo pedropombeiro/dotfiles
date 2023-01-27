@@ -87,7 +87,8 @@ source ~/.config/yadm/scripts/colors.sh
   fi
 
   gdk stop
-  pkill -lf 'sidekiq-cluster' # Ensure there are no orphaned sidekiq-cluster (https://gitlab.com/gitlab-org/gitlab-development-kit/-/issues/1455)
+  # Ensure there are no orphaned sidekiq-cluster (https://gitlab.com/gitlab-org/gitlab-development-kit/-/issues/1455)
+  pkill -lf 'sidekiq-cluster' || echo 'No stray sidekiq-cluster found'
   gdk start
 
   if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then

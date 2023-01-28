@@ -14,7 +14,7 @@ if [ ! -d ~/.oh-my-zsh ]; then
   sudo apt-get install -y zsh
   echo 'source ~/.zshrc.shared' > ~/.zshrc
   zsh --version
-  chsh -s $(which zsh)
+  chsh -s "$(which zsh)"
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
 

@@ -2,5 +2,5 @@
 
 PATH="$PATH:$(asdf where rust)/bin"
 
-command -v grc-rs >/dev/null && eval $(grc-rs --aliases)
+command -v grc-rs >/dev/null && eval "$(grc-rs --aliases)"
 

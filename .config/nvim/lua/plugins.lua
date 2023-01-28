@@ -35,8 +35,6 @@ return {
   },
 
   --### Completion
-  { "gelguy/wilder.nvim", config = true }, -- A more adventurous wildmenu autocomplete suggestions for : and /
-
   {
     "ruanyl/vim-gh-line", -- vim plugin that open the link of current line on github
     event = "BufReadPost",

@@ -291,8 +291,6 @@ cask "tableplus"
 cask "the-unarchiver"
 # Web browser focusing on security
 cask "tor-browser"
-# Trading software
-cask "trader-workstation"
 # Control your data usage on slow or expensive networks
 cask "tripmode"
 # Open-source code editor

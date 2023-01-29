@@ -86,7 +86,7 @@ return {
 
   {
     "iamcco/markdown-preview.nvim", -- markdown preview plugin for (neo)vim
-    cmd = { "MarkdownPreview", "MarkdownPreviewToggle" },
+    ft = "markdown",
     build = function() vim.fn["mkdp#util#install"]() end, -- install without yarn or npm
   },
 }

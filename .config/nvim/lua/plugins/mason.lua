@@ -6,7 +6,7 @@ return {
   "williamboman/mason.nvim",
   cmd = { "Mason", "MasonLog", "MasonInstall", "MasonUninstall", "MasonUninstallAll" },
   config = function()
-    require("fzf-lua") -- initialize fzf-lua in order to use its select UI
+    require("telescope") -- initialize telescope in order to use its select UI
 
     require("mason").setup()
   end

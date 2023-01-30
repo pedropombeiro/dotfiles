@@ -4,12 +4,21 @@
 # `test-mr` runs all the tests in the current branch
 #
 
-git diff --name-only "$(git merge-base master "$(git rev-parse --abbrev-ref HEAD)")" | \
-  awk '/.rb$/ && !/spec\/factories/' | \
-  sed -e 's/^app\/controllers/spec\/requests/' \
-      -e 's/^app/spec/' \
-      -e '/_spec.rb$/!s/.rb$/_spec.rb/' \
-      -e 's/^lib/spec\/lib/' | \
-  sort | \
-  uniq | \
-  xargs -n 100000 bundle exec rspec
+test_files=(
+  $(git diff --name-only "$(git merge-base master "$(git rev-parse --abbrev-ref HEAD)")" | \
+    awk '/.rb$/ && !/spec\/factories/' | \
+    sed -e 's/^app\/controllers/spec\/requests/' \
+        -e 's/^app/spec/' \
+        -e '/_spec.rb$/!s/.rb$/_spec.rb/' \
+        -e 's/^lib/spec\/lib/' | \
+    sort | \
+    uniq)
+  )
+valid_test_files=()
+for (( i=0; i<${#test_files[@]}; i++ )); do
+  if [[ -f "${test_files[$i]}" ]]; then
+    valid_test_files+=("${test_files[$i]}")
+  fi
+done
+
+bundle exec rspec "${valid_test_files[@]}"

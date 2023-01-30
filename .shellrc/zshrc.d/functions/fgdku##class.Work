@@ -68,6 +68,9 @@ source ~/.config/yadm/scripts/colors.sh
   printf "${YELLOW}%s${NC}\n" 'Precompiling static assets to ensure graphiql-rails changes are picked up...'
   bundle exec rake rake:assets:precompile
 
+  printf "${YELLOW}%s${NC}\n" 'Running simple test...'
+  bin/rspec --failure-exit-code 0 --error-exit-code 0 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb
+
   printf "${YELLOW}%s${NC}\n" 'Pruning local branches...'
   git fetch --all --prune --jobs=10
   set +e
@@ -78,6 +81,7 @@ source ~/.config/yadm/scripts/colors.sh
   printf "${YELLOW}%s${NC}\n" "Rebasing local branches..."
   git restore :/
   rebase-all
+  g status --porcelain | grep '^UU ' >/dev/null && return 1
   printf "${GREEN}%s${NC}\n" "Done."
 
   if [[ "${ORIGINAL_BRANCH}" != "$(git_main_branch)" ]]; then
@@ -98,11 +102,6 @@ source ~/.config/yadm/scripts/colors.sh
     scripts/regenerate-schema # Ensure we have a clean test DB with any branch migrations done
     git restore db/structure.sql
   fi
-
-  sleep 10
-
-  printf "${YELLOW}%s${NC}\n" 'Running simple test...'
-  bin/rspec --failure-exit-code 0 --error-exit-code 0 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb
 
   if pgrep rubymine; then
     printf "${YELLOW}%s${NC}\n" 'Start indexing in RubyMine...'

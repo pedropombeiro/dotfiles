@@ -23,7 +23,7 @@ return {
         cmp = true,
         gitsigns = true,
         lsp = true,
-        telescope = false,
+        telescope = true,
       },
     }
   end

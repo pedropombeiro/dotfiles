@@ -8,7 +8,7 @@ return {
     cmd = { 'Mason', 'MasonLog', 'MasonUpdate', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll' },
     build = ':MasonUpdate', -- :MasonUpdate updates registry contents
     config = function()
-      require('fzf-lua')    -- initialize fzf-lua in order to use its select UI
+      require('telescope')  -- initialize telescope in order to use its select UI
 
       require('mason').setup()
     end

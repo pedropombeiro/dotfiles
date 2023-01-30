@@ -32,7 +32,7 @@ return {
         local m = require('mapx')
         local opts = { silent = true }
 
-        require('fzf-lua') -- initialize fzf-lua in order to use its select UI
+        require('telescope') -- initialize telescope in order to use its select UI
 
         m.nnoremap('<leader>fu', open_buffer_urlview, opts, 'List buffer URLs', 'buffer')
       end

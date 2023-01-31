@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+stderr() {
+  echo "$@" 1>&2
+}
+
+stderr "Pipeline downloader for Merge Request!"
+
+if [[ $# -lt 1 ]]; then
+  stderr "usage: $0 <merge-request-id> [grep syntax...]"
+  exit 1
+fi
+
+OUTPUT_DIR=tmp/pipelines
+mkdir -p "$OUTPUT_DIR"
+
+MAX_JOBS=10
+PROJECT_URL=https://gitlab.com/gitlab-org/gitlab
+MR_JSON=$(curl "$PROJECT_URL/-/merge_requests/$1.json")
+PIPELINE_ID=$(echo "$MR_JSON" | jq '.pipeline_id' )
+PIPELINE_JSON="$OUTPUT_DIR/$PIPELINE_ID.json"
+
+[[ -e "$PIPELINE_JSON" ]] || curl "$PROJECT_URL/-/pipelines/$PIPELINE_ID.json" | sponge "$PIPELINE_JSON"
+
+PIPELINE_STATUS=$(jq -r '.details.status.text' < "$PIPELINE_JSON")
+
+while read JOB_ID JOB_STATUS JOB_BUILD_PATH JOB_NAME; do
+  if [[ "$JOB_BUILD_PATH" == "x" ]]; then
+    stderr "$JOB_NAME/$JOB_STATUS: no build trace"
+    continue
+  fi
+
+  if [[ "$JOB_STATUS" != "failed" ]]; then
+    continue
+  fi
+
+  # Replace / \ space : with => _
+  JOB_SAFE_NAME="${JOB_NAME//[\/\: ]/_}"
+
+  JOB_TRACE_LOG="$OUTPUT_DIR/$PIPELINE_ID/$JOB_SAFE_NAME.log"
+  if [[ -e "$JOB_TRACE_LOG" ]]; then
+    continue
+  fi
+
+  # Wait for a single job before starting new one
+  [[ $(jobs | wc -l) -ge $MAX_JOBS ]] && wait -n
+
+  stderr "$JOB_NAME/$JOB_STATUS: downloading trace..."
+  mkdir -p "$OUTPUT_DIR/$PIPELINE_ID"
+
+  # Download and strip bash color codes
+  curl -L "$PROJECT_URL/-/jobs/$JOB_ID/raw" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2};?)?)?[mGK]//g" | sponge "$JOB_TRACE_LOG" &
+done < <(jq -r '.details | .stages | .[] | .groups | .[] | .jobs | .[] | [.id, .status.text, .build_path // "-", .name] | join("\t")' < "$PIPELINE_JSON")
+
+wait
+
+stderr "Finished. Pipeline ${PIPELINE_ID}/${PIPELINE_STATUS} was downloaded."
+
+if [[ -n "$2" ]]; then
+  shift
+
+  grep -r "$@" "$OUTPUT_DIR/$PIPELINE_ID/"
+fi
+

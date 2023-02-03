@@ -11,7 +11,7 @@ printf "${YELLOW}%s${NC}\n" "Updating asdf packages..."
 asdf update
 asdf plugin-update --all
 set +e
-asdf plugin list | grep -vE '^(bat|ctop|delta|dust|fzf|hadolint|jq|nodejs|ripgrep|rust|shellcheck)$' | \
+asdf plugin list | grep -vE '^(bat|ctop|dust|fzf|hadolint|jq|nodejs|ripgrep|rust|shellcheck)$' | \
   sort | \
   xargs -r -I {} bash -c 'asdf install {} latest && asdf global {} latest'
 set -e

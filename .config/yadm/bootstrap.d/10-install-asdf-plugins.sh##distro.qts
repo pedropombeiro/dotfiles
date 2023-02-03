@@ -12,7 +12,8 @@ set +e
 rm -rf "${HOME}/.asdf/shims"
 asdf reshim
 
-for p in bat ctop delta duf dust fd golang golangci-lint jq lazygit nodejs ripgrep rust viddy xh; do
+asdf plugin add delta https://github.com/pedropombeiro/asdf-delta
+for p in bat ctop duf dust fd golang golangci-lint jq lazygit nodejs ripgrep rust viddy xh; do
   asdf plugin add "${p}"
 done
 for plugin in $(asdf plugin list | sort | grep -vE '^(golang|nodejs|rust)$'); do
@@ -30,4 +31,3 @@ asdf install nodejs 17.9.0 && asdf global nodejs 17.9.0
 
 # Temporarily pin problematic packages
 asdf install rust 1.58.1 && asdf global rust 1.58.1
-asdf global delta 0.12.0

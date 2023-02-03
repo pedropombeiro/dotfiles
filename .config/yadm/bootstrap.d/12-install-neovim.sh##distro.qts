@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
+
+source "${YADM_SCRIPTS}/colors.sh"
+
+printf "${YELLOW}%s${NC}\n" "Installing Neovim..."
+
+neovim_version='0.8.3-glibc'
+# Neovim >= 0.8.0 uses glibc 2.29, so we'll replace it with a version built on Ubuntu 18.04
+# Install it into Entware tree structure, even if it does not originate from Entware
+neovim_install_dir="$(/sbin/getcfg Entware Install_Path -f /etc/config/qpkg.conf)"
+tempdir="$(mktemp -d)"
+wget "http://github.com/pedropombeiro/neovim/releases/download/v${neovim_version}/nvim-linux64.tar.gz" -O "${tempdir}/nvim-linux64.tar.gz"
+cd "${tempdir}"
+tar xzvf nvim-linux64.tar.gz
+cp -rf "${tempdir}"/nvim-linux64/* "${neovim_install_dir}/"
+chown -R admin:administrators "${neovim_install_dir}"
+cd -
+rm -rf "${tempdir}"

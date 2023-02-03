@@ -27,20 +27,7 @@ set -e
 
 asdf install golang 1.18.8 && asdf global golang 1.18.8
 asdf install nodejs 17.9.0 && asdf global nodejs 17.9.0
-asdf install rust 1.58.1 && asdf global rust 1.58.1
-
-neovim_version='0.8.0'
-# Neovim >= 0.8.0 uses glibc 2.29, so we'll replace it with a version built on Ubuntu 18.04
-# Install it into Entware tree structure, even if it does not originate from Entware
-neovim_install_dir="$(/sbin/getcfg Entware Install_Path -f /etc/config/qpkg.conf)"
-tempdir="$(mktemp -d)"
-wget "http://github.com/antoineco/neovim-neovim/releases/download/v${neovim_version}/nvim-linux64.tar.gz" -O "${tempdir}/nvim-linux64.tar.gz"
-cd "${tempdir}"
-tar xzvf nvim-linux64.tar.gz
-cp -rf "${tempdir}"/nvim-linux64/* "${neovim_install_dir}/"
-chown -R admin:administrators "${neovim_install_dir}"
-cd -
-rm -rf "${tempdir}"
 
 # Temporarily pin problematic packages
+asdf install rust 1.58.1 && asdf global rust 1.58.1
 asdf global delta 0.12.0

@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
+
+source "${YADM_SCRIPTS}/colors.sh"
+
+printf "${YELLOW}%s${NC}\n" "Installing helper tools..."
+
+target_dir="${HOME}/opt"
+temp_dir="$(mktemp -d)"
+
+bandwhich_version=0.20.0
+bottom_version=0.8.0
+hyperfine_version=1.15.0
+lnav_version=0.11.1
+lsd_version=0.23.1
+qnapexporter_version=1.0.4
+procs_version=0.13.4
+
+function extract_zip() {
+  unzip -o -j "${temp_dir}/package.zip" -d "${target_dir}" "$1"
+}
+
+function extract_tar() {
+  if [[ $1 == *"/"* ]]; then
+    tar xzvf "${temp_dir}/package.tar.gz" --directory="${target_dir}" --strip-components=1 "$1" --no-same-owner
+  else
+    tar xzvf "${temp_dir}/package.tar.gz" --directory="${target_dir}" "$1" --no-same-owner
+  fi
+}
+
+wget "https://github.com/imsnif/bandwhich/releases/download/${bandwhich_version}/bandwhich-v${bandwhich_version}-x86_64-unknown-linux-musl.tar.gz" -O "${temp_dir}/package.tar.gz"
+extract_tar 'bandwhich'
+
+wget "https://github.com/ClementTsang/bottom/releases/download/${bottom_version}/bottom_x86_64-unknown-linux-gnu2-17.tar.gz" -O "${temp_dir}/package.tar.gz"
+extract_tar 'btm'
+
+archive_name="hyperfine-v${hyperfine_version}-x86_64-unknown-linux-musl"
+wget "https://github.com/sharkdp/hyperfine/releases/download/v${hyperfine_version}/${archive_name}.tar.gz" -O "${temp_dir}/package.tar.gz"
+extract_tar "${archive_name}/hyperfine"
+
+wget "https://github.com/tstack/lnav/releases/download/v${lnav_version}/lnav-${lnav_version}-x86_64-linux-musl.zip" -O "${temp_dir}/package.zip"
+extract_zip "lnav-${lnav_version}/lnav"
+
+archive_name="lsd-${lsd_version}-x86_64-unknown-linux-musl"
+wget "https://github.com/Peltoche/lsd/releases/download/${lsd_version}/${archive_name}.tar.gz" -O "${temp_dir}/package.tar.gz"
+extract_tar "${archive_name}/lsd"
+
+wget "https://github.com/dalance/procs/releases/download/v${procs_version}/procs-v${procs_version}-x86_64-linux.zip" -O "${temp_dir}/package.zip"
+extract_zip procs
+
+wget "https://gitlab.com/api/v4/projects/23572952/packages/generic/qnapexporter/${qnapexporter_version}/qnapexporter" -O "${target_dir}"
+
+rm -rf "${temp_dir}"

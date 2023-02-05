@@ -128,10 +128,12 @@ return {
       }
     end
 
+    local version = vim.version()
     local header = {
       type = "text",
       val = {
-        [[                               __                ]],
+        [[                               __     ]] ..
+            version.major .. "." .. version.minor .. "." .. version.patch .. [[      ]],
         [[  ___     ___    ___   __  __ /\_\    ___ ___    ]],
         [[ / _ `\  / __`\ / __`\/\ \/\ \\/\ \  / __` __`\  ]],
         [[/\ \/\ \/\  __//\ \_\ \ \ \_/ |\ \ \/\ \/\ \/\ \ ]],

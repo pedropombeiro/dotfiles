@@ -118,7 +118,7 @@ return {
 
         local shortcut = tostring(i + start - 1)
 
-        local file_button_el = file_button(fn, shortcut, short_fn, opts.autocd)
+        local file_button_el = file_button(fn:gsub("#", '\\#'), shortcut, short_fn, opts.autocd)
         tbl[i] = file_button_el
       end
       return {

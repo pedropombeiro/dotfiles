@@ -81,7 +81,7 @@ source ~/.config/yadm/scripts/colors.sh
   printf "${YELLOW}%s${NC}\n" "Rebasing local branches..."
   git restore :/
   rebase-all
-  g status --porcelain | grep '^UU ' >/dev/null && return 1
+  git status --porcelain | grep '^UU ' >/dev/null && return 1
   printf "${GREEN}%s${NC}\n" "Done."
 
   if [[ "${ORIGINAL_BRANCH}" != "$(git_main_branch)" ]]; then

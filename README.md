@@ -45,7 +45,7 @@ Install dotfiles:
 
 ```shell
 # Use HTTPS protocol for anonymous access
-yadm clone --no-bootstrap https://gitlab.com/pedropombeiro/dotfiles.git && \
+yadm clone --no-bootstrap https://github.com/pedropombeiro/dotfiles.git && \
 yadm config local.class Personal && \
 yadm bootstrap && \
 source ~/.zshrc.shared
@@ -62,7 +62,7 @@ sudo apt update && sudo apt install -y yadm
 Install dotfiles:
 
 ```shell
-yadm clone --no-bootstrap https://gitlab.com/pedropombeiro/dotfiles.git && \
+yadm clone --no-bootstrap https://github.com/pedropombeiro/dotfiles.git && \
 yadm config local.class Personal && \
 yadm bootstrap && \
 source ~/.zshrc.shared

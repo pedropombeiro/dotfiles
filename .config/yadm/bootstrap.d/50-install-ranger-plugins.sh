@@ -22,7 +22,7 @@ urls=(
   'https://github.com/laggardkernel/ranger-fzf-marks'
   'https://github.com/maximtrp/ranger-archives'
   'https://github.com/pedropombeiro/ranger-fzf'
-  'https://gitlab.com/pedropombeiro/ranger-fzf-ripgrep'
+  'https://github.com/pedropombeiro/ranger-fzf-ripgrep'
 )
 if [[ $(find "${plugins_dir}" -mindepth 1 -maxdepth 1 -type d -not -name '__*' | wc -l) -ne ${#urls[@]} ]]; then
   printf "${YELLOW}%s${NC}\n" 'Change in number of Ranger plugins detected, repaving...'

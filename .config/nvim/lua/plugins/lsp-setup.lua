@@ -27,9 +27,10 @@ local config = require("config")
 
 return {
   "junnplus/lsp-setup.nvim",
-  event = "BufReadPre",
+  event = { "BufReadPre", "BufNewFile" },
   keys = keys,
   dependencies = {
+    "b0o/schemastore.nvim", -- 🛍  JSON schemas for Neovim
     {
       "neovim/nvim-lspconfig", -- Quickstart configs for Nvim LSP
       dependencies = {
@@ -40,7 +41,6 @@ return {
           "williamboman/mason-lspconfig.nvim",
           dependencies = "williamboman/mason.nvim",
         },
-        "b0o/schemastore.nvim", -- 🛍  JSON schemas for Neovim
       },
     },
     {
@@ -95,7 +95,7 @@ return {
         },
       },
       marksman = {},
-      sumneko_lua = {
+      lua_ls = {
         settings = {
           Lua = {
             runtime = {

@@ -15,19 +15,5 @@ return {
   },
   opts = {
     automatic_installation = false,
-    ensure_installed = {
-      "goimports",
-      "hadolint",
-      "jq",
-      "markdownlint",
-      "rubocop",
-      "shellcheck",
-      "shfmt",
-      "stylua",
-      "vale",
-      "vint",
-      "yamlfmt",
-      "yamllint",
-    }
   }
 }

@@ -10,6 +10,7 @@ local config = require("config")
 
 return {
   "nvim-tree/nvim-tree.lua",
+  tag = 'nightly', -- optional, updated every week. (see issue #1193)
   cond = function() return not vim.g.started_by_firenvim end,
   cmd = { "NvimTreeFocus", "NvimTreeToggle", "NvimTreeFindFileToggle" },
   dependencies = "kyazdani42/nvim-web-devicons",

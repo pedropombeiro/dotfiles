@@ -14,7 +14,6 @@ bottom_version=0.8.0
 hyperfine_version=1.15.0
 lnav_version=0.11.1
 lsd_version=0.23.1
-qnapexporter_version=1.0.6
 procs_version=0.13.4
 
 function extract_zip() {
@@ -49,7 +48,7 @@ extract_tar "${archive_name}/lsd"
 wget "https://github.com/dalance/procs/releases/download/v${procs_version}/procs-v${procs_version}-x86_64-linux.zip" -O "${temp_dir}/package.zip"
 extract_zip procs
 
-wget "https://github.com/pedropombeiro/qnapexporter/releases/download/v${qnapexporter_version}/qnapexporter.tar.gz" -O "${temp_dir}/package.tar.gz"
+wget "https://github.com/pedropombeiro/qnapexporter/releases/latest/download/qnapexporter.tar.gz" -O "${temp_dir}/package.tar.gz"
 extract_tar qnapexporter
 
 rm -rf "${temp_dir}"

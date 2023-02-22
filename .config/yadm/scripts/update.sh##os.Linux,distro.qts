@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
 source "${YADM_SCRIPTS}/colors.sh"
 
@@ -11,17 +11,16 @@ printf "${YELLOW}%s${NC}\n" "Updating asdf packages..."
 asdf update
 asdf plugin-update --all
 set +e
-asdf plugin list | grep -vE '^(bat|ctop|dust|fzf|golang|hadolint|jq|nodejs|ripgrep|rust|shellcheck)$' | \
-  sort | \
+asdf plugin list | grep -vE '^(bat|ctop|dust|fzf|golang|hadolint|jq|nodejs|ripgrep|rust|shellcheck)$' |
+  sort |
   xargs -r -I {} bash -c 'asdf install {} latest && asdf global {} latest'
 set -e
 asdf reshim golang
 
 printf "${YELLOW}%s${NC}\n" "Updating python packages..."
-pip3 list --outdated --format=json | jq -r '.[] | .name+"="+.latest_version' | \
-  grep -v '^-e' | \
-  cut -d = -f 1 | \
+pip3 list --outdated --format=json | jq -r '.[] | .name+"="+.latest_version' |
+  grep -v '^-e' |
+  cut -d = -f 1 |
   xargs -r -n1 pip3 install -U || printf "${RED}%s${NC}\n" "Failed to update Python packages!"
 
 "${YADM_SCRIPTS}/update-common.zsh"
-

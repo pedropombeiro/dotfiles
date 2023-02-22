@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # .bashrc
-if [[ $- != *i* ]] ; then
+if [[ $- != *i* ]]; then
   # shell is non-interactive. be done now!
   return
 fi

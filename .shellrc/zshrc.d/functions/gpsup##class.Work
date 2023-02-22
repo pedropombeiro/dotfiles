@@ -9,7 +9,7 @@ GITLAB_USERNAME="${USER}"
 
 remote=origin
 
-if git remote get-url "${remote}" | grep gitlab.com > /dev/null; then
+if git remote get-url "${remote}" | grep gitlab.com >/dev/null; then
   git push --set-upstream "${remote}" "$(git_current_branch)" \
     -o merge_request.create \
     -o merge_request.target="$(git_parent)" \

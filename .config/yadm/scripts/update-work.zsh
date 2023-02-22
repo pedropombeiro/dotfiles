@@ -55,4 +55,3 @@ fi
 rm -f "${GDK_ROOT}/gdk.tmp.yml"
 
 scalar reconfigure -a
-

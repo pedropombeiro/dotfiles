@@ -7,4 +7,3 @@ if [[ -d "${INSTALL_DIR}" ]]; then
     export PATH="${INSTALL_DIR}/bin/:${INSTALL_DIR}/sbin/:${PATH}"
   fi
 fi
-

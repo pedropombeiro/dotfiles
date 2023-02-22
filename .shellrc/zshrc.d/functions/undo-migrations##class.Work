@@ -11,7 +11,7 @@
 
   source ~/.config/yadm/scripts/colors.sh
 
-  BRANCH_MIGRATIONS=( $(list-migrations) )
+  BRANCH_MIGRATIONS=($(list-migrations))
   if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
     printf "${YELLOW}%s${NC}\n" "Undoing ${#BRANCH_MIGRATIONS[@]} branch migration(s)..."
     gdk start postgresql

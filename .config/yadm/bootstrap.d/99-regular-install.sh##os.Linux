@@ -3,8 +3,8 @@
 sudo apt update
 
 #sudo timedatectl set-local-rtc 1 # needed when dual-booting with Windows
-sudo timedatectl set-ntp no && \
-  timedatectl && \
+sudo timedatectl set-ntp no &&
+  timedatectl &&
   sudo apt install -y ntp
 # TODO: Add "server ntp.pedropombeiro.com" to /etc/ntp.conf
 
@@ -32,21 +32,21 @@ gsettings set \
 sudo apt --fix-broken install -y
 
 # Docker CE
-sudo apt update && \
-sudo apt install -y \
+sudo apt update &&
+  sudo apt install -y \
     apt-transport-https \
     ca-certificates \
     curl \
     software-properties-common
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - &&
-sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+  sudo add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
-   edge" && \
-   sudo apt update && \
-   sudo apt install -y docker-ce && \
-   sudo docker run hello-world && \
-   sudo usermod -a -G docker $LOGNAME
+   edge" &&
+  sudo apt update &&
+  sudo apt install -y docker-ce &&
+  sudo docker run hello-world &&
+  sudo usermod -a -G docker $LOGNAME
 
 # GPG
 sudo apt install -y gnupg gnupg-agent
@@ -84,7 +84,7 @@ gsettings set org.gnome.desktop.peripherals.touchpad click-method 'areas'
 # Create SSH key for github.com and gitlab.com
 # https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519.pub -C "noreply@pedro.pombei.ro"
-xclip -sel clip < ~/.ssh/id_ed25519.pub
+xclip -sel clip <~/.ssh/id_ed25519.pub
 echo "Add the SSH key from keyboard to your GitLab account. Opening browser..."
 open https://gitlab.com/profile/keys
 echo "Press Return when done"

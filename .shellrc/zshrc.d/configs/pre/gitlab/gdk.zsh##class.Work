@@ -1,10 +1,10 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 GDK_ROOT="${HOME}/src/gitlab-development-kit"
 [[ -d ${GDK_ROOT} ]] && export GDK_ROOT
 
 if [[ -d ${GDK_ROOT} && ! -f ${GDK_ROOT}/.envrc ]]; then
-  cat << EOF > "${GDK_ROOT}/.envrc"
+  cat <<EOF >"${GDK_ROOT}/.envrc"
 export RAILS_HOSTS="127.0.0.1,localhost,host.docker.internal,gdk.test,gdk.localhost"
 export SPRING=1
 export ENABLE_SPRING=1
@@ -16,4 +16,3 @@ EOF
 
   direnv allow "${GDK_ROOT}"
 fi
-

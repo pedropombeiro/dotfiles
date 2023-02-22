@@ -25,10 +25,10 @@ typeset -g POWERLEVEL9K_DIR_NOT_WRITABLE_VISUAL_IDENTIFIER_COLOR=red
 typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir newline vcs)
 typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   status
-  direnv                  # direnv status (https://direnv.net/)
-  ranger                  # ranger shell (https://github.com/ranger/ranger)
-  vim_shell               # vim shell indicator (:sh)
-  nix_shell               # nix shell (https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html)
+  direnv    # direnv status (https://direnv.net/)
+  ranger    # ranger shell (https://github.com/ranger/ranger)
+  vim_shell # vim shell indicator (:sh)
+  nix_shell # nix shell (https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html)
   background_jobs
   history
   ram
@@ -43,4 +43,3 @@ typeset -g POWERLEVEL9K_PROMPT_ON_NEWLINE=false
 # 1-2 milliseconds, so it's better to keep it turned off
 # unless you really need it.
 typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
-

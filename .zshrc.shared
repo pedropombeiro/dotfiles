@@ -68,4 +68,3 @@ if [[ ${#_function_files[@]} -gt 0 ]]; then
   fpath+=("${_func_dir}")
   autoload -Uz $_function_files[@]
 fi
-

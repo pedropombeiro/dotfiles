@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 function loggatewayjson() {
-  ssh gateway "tail -f -n 100 /var/log/ulog/syslogemu.log" | \
-    rg "kernel:" | \
-    sed "s/]IN/] IN/" | \
+  ssh gateway "tail -f -n 100 /var/log/ulog/syslogemu.log" |
+    rg "kernel:" |
+    sed "s/]IN/] IN/" |
     jq --unbuffered -R '. | rtrimstr(" ") | split(": ") | {date: (.[0] | split(" ") | .[0:4] | join(" "))} + (.[1] | capture("\\[.+\\] \\[(?<rule>.*)\\].*")) + ((.[1] | capture("\\[.+\\] (?<rest>.*)") | .rest | split(" ") | map(select(startswith("[") == false) | split("=") | {(.[0]): .[1]})) | (reduce .[] as $item ({}; . + $item)))'
 }
 

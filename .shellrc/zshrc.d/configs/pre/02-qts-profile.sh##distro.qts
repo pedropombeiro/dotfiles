@@ -9,4 +9,3 @@ if [[ ${SHLVL} -le 1 ]]; then
 fi
 
 source /opt/etc/profile
-

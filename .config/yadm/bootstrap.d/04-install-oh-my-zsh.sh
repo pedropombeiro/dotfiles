@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
 source "${YADM_SCRIPTS}/colors.sh"
 
@@ -16,8 +16,8 @@ function install_zsh_plugin() {
 
 type -f asdf >/dev/null 2>&1 || . "${HOME}/.asdf/asdf.sh"
 
-grep '.bash_profile.shared' "${HOME}/.bash_profile" >/dev/null 2>&1|| echo "source ~/.bash_profile.shared" >> "${HOME}/.bash_profile"
-grep '.bashrc.shared' "${HOME}/.bashrc" >/dev/null 2>&1 || echo "source ~/.bashrc.shared" >> "${HOME}/.bashrc"
+grep '.bash_profile.shared' "${HOME}/.bash_profile" >/dev/null 2>&1 || echo "source ~/.bash_profile.shared" >>"${HOME}/.bash_profile"
+grep '.bashrc.shared' "${HOME}/.bashrc" >/dev/null 2>&1 || echo "source ~/.bashrc.shared" >>"${HOME}/.bashrc"
 
 if [[ ! -d "${HOME}/.oh-my-zsh/" ]]; then
   # Install Oh-my-zsh
@@ -28,7 +28,7 @@ if [[ ! -d "${HOME}/.oh-my-zsh/" ]]; then
     chmod o-w,g-w /usr/local/share/zsh /usr/local/share/zsh/site-functions
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended --keep-zshrc
   fi
-  echo "source ~/.zshrc.shared" > "${HOME}/.zshrc"
+  echo "source ~/.zshrc.shared" >"${HOME}/.zshrc"
 fi
 
 set +e

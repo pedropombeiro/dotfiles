@@ -29,7 +29,7 @@ sudo systemsetup -setnetworktimeserver ntp.pombei.ro
 defaults write NSGlobalDomain AppleFirstWeekday -dict 'gregorian' 1
 
 # System - Allow 'locate' command
-sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist > /dev/null 2>&1
+sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist >/dev/null 2>&1
 
 # Expand save panel by default
 defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true

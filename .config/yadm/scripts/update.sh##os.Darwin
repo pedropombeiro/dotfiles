@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
 source "${YADM_SCRIPTS}/colors.sh"
 
@@ -15,11 +15,11 @@ brew upgrade
 printf "${YELLOW}%s${NC}\n" "Updating asdf..."
 asdf plugin-update --all
 printf "${YELLOW}%s${NC}\n" "Updating asdf plugins..."
-asdf global golangci-lint $(asdf list golangci-lint | sort --ignore-leading-blanks --version-sort --reverse | head -n1)
-asdf global shellcheck $(asdf list shellcheck | sort --ignore-leading-blanks --version-sort --reverse | head -n1)
-asdf plugin list --no-run-if-empty | \
-  grep -E '^(fd|golangci-lint|yarn)$' | \
-  sort | \
+asdf global golangci-lint "$(asdf list golangci-lint | sort --ignore-leading-blanks --version-sort --reverse | head -n1)"
+asdf global shellcheck "$(asdf list shellcheck | sort --ignore-leading-blanks --version-sort --reverse | head -n1)"
+asdf plugin list --no-run-if-empty |
+  grep -E '^(fd|golangci-lint|yarn)$' |
+  sort |
   xargs -I {} bash -c 'asdf install {} latest && asdf global {} latest'
 
 # Update npm packages

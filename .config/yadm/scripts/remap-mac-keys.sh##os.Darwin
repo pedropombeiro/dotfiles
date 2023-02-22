@@ -4,7 +4,6 @@
 FROM='"HIDKeyboardModifierMappingSrc"'
 TO='"HIDKeyboardModifierMappingDst"'
 
-PLIST=/Library/LaunchDaemons/org.custom.keyboard-remap.plist
 function Map { # FROM TO
   CMD="${CMD:+${CMD},}{${FROM}: ${1}, ${TO}: ${2}}"
 }

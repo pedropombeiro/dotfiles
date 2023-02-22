@@ -2,4 +2,3 @@
 
 PATH="${HOME}/opt:${PATH}"
 export PATH
-

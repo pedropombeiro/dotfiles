@@ -7,4 +7,3 @@ if ! echo "${PATH}" | grep "${INSTALL_DIR}" >/dev/null; then
   export PATH="${PATH}:${INSTALL_DIR}/bin/"
 fi
 autoload -U compinit && compinit -u
-

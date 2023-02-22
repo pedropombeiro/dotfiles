@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 if [[ -f "${HOMEBREW_PREFIX}/opt/asdf/libexec/asdf.sh" ]]; then
   source "${HOMEBREW_PREFIX}/opt/asdf/libexec/asdf.sh"
 else

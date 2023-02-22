@@ -192,7 +192,7 @@ conf.kubectl
 
 # sensors command
 ^([/\w\.]+\/)?sensors\b
-conf.sensors 
+conf.sensors
 
 # systemctl command
 ^([/\w\.]+\/)?systemctl\b
@@ -297,5 +297,3 @@ conf.irclog
 # log file
 \b\w+\b.*log\b
 conf.log
-
-

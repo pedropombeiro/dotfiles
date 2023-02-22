@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 
-YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
 source "${YADM_SCRIPTS}/colors.sh"
 
 plugins_dir="${HOME}/.config/ranger/plugins"
 
 function install-ranger-plugin() {
-  local proj="$(basename $1)"
+  local proj
+  proj="$(basename "$1")"
+
   local target_dir="${plugins_dir}/${proj}"
   if [[ ! -d "${target_dir}" ]]; then
     mkdir -p "$(dirname "${target_dir}")"

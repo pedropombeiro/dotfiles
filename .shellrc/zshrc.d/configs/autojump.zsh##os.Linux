@@ -3,4 +3,3 @@
 INSTALL_DIR="/usr/share/autojump"
 
 [[ -s "${INSTALL_DIR}/autojump.zsh" ]] && source "${INSTALL_DIR}/autojump.zsh"
-

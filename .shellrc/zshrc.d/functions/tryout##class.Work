@@ -6,5 +6,5 @@
 # Source: https://gitlab.com/-/snippets/2409633
 #
 
-/usr/bin/curl "${1%%#*}.diff" | \
+/usr/bin/curl "${1%%#*}.diff" |
   git apply && git add --all .

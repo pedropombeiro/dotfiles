@@ -1,1 +1,3 @@
+#!/usr/bin/env zsh
+
 bindkey ' ' magic-space # Auto-expand commands on pressing space

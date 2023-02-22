@@ -5,6 +5,6 @@
 # to get the thin clone up to date with my branch
 #
 
-git --no-pager diff -U0 "$(git_main_branch).." -- db/structure.sql | \
-  grep '^+[^+]' | \
+git --no-pager diff -U0 "$(git_main_branch).." -- db/structure.sql |
+  grep '^+[^+]' |
   sed 's/^+\(.*\)/\1/'

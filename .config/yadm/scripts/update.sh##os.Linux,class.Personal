@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-YADM_SCRIPTS=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )/../scripts" &> /dev/null && pwd )
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
 # Update apps
 sudo apt update
@@ -11,4 +11,3 @@ brew update
 brew upgrade
 
 source "${YADM_SCRIPTS}/update-common.sh"
-

@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/zricethezav/gitleaks
+    rev: v8.15.3
+    hooks:
+      - id: gitleaks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-executables-have-shebangs
+      - id: check-json
+      - id: check-symlinks
+      - id: check-yaml
+        exclude: '^\.local/share/.*'
+      - id: double-quote-string-fixer
+      - id: end-of-file-fixer
+        exclude: '^\.local/share/.*'
+      - id: trailing-whitespace
+        exclude: '^\.local/share/.*'

@@ -11,4 +11,3 @@ if [[ -d ${GDK_ROOT} ]]; then
   unalias gswm
   unalias gpsup
 fi
-

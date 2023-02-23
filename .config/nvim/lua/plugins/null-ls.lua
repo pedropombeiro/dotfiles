@@ -22,7 +22,7 @@ return {
       return fn(utils)
     end
 
-    local sources = {
+    local sources      = {
       code_actions.gitsigns,
       code_actions.shellcheck,
 
@@ -38,8 +38,10 @@ return {
       diagnostics.golangci_lint,
       diagnostics.hadolint,
       diagnostics.jsonlint,
+      diagnostics.markdownlint,
       --diagnostics.semgrep,
       diagnostics.shellcheck,
+      diagnostics.vale,
       diagnostics.yamllint,
       diagnostics.zsh,
 
@@ -61,9 +63,7 @@ return {
       debug = false,
       debounce = 150,
       save_after_format = false,
-
       sources = sources,
-
       -- Here we set a conditional to call the rubocop formatter.
       -- If we have a Gemfile in the project, we call "bundle exec rubocop", if not we only call "rubocop".
       conditional(function(utils)
@@ -74,7 +74,6 @@ return {
             })
             or formatting.rubocop
       end),
-
       -- Same as above, but with diagnostics.rubocop to make sure we use the proper rubocop version for the project
       conditional(function(utils)
         return utils.root_has_file("Gemfile")

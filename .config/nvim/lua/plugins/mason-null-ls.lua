@@ -15,5 +15,14 @@ return {
   },
   opts = {
     automatic_installation = false,
+    ensure_installed = {
+      "actionlint",
+      "docker-compose-language-service",
+      "jsonlint",
+      "markdownlint",
+      "vale",
+      "yamlfmt",
+      "yamllint",
+    }
   }
 }

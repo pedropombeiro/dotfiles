@@ -56,7 +56,10 @@ return {
       formatting.taplo,
       formatting.yamlfmt,
 
-      hover.printenv,
+      hover.dictionary,
+      hover.printenv.with({
+        extra_filetypes = { "bash", "zsh", "markdown" },
+      }),
     }
 
     null_ls.setup({

@@ -10,10 +10,10 @@ bind-key -n MouseDrag1Status swap-window -t=
 set -g xterm-keys on
 
 # Enable italics in tmux (as per https://weibeld.net/terminals-and-shells/italics.html)
-set -g default-terminal "tmux-256color"
+set -g default-terminal $ZSH_TMUX_TERM
 set -as terminal-overrides ',xterm*:sitm=\E[3m'
 
 bind-key -n Home send Escape "OH"
 bind-key -n End send Escape "OF"
 
-source ~/.shellrc/zshrc.d/configs/tmux-common.conf
+source $HOME/.shellrc/zshrc.d/configs/tmux-common.conf

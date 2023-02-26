@@ -133,7 +133,7 @@ return {
       type = "text",
       val = {
         [[                               __     ]] ..
-            version.major .. "." .. version.minor .. "." .. version.patch .. [[      ]],
+        version.major .. "." .. version.minor .. "." .. version.patch .. [[      ]],
         [[  ___     ___    ___   __  __ /\_\    ___ ___    ]],
         [[ / _ `\  / __`\ / __`\/\ \/\ \\/\ \  / __` __`\  ]],
         [[/\ \/\ \/\  __//\ \_\ \ \ \_/ |\ \ \/\ \/\ \/\ \ ]],
@@ -173,7 +173,7 @@ return {
     local buttons = {
       type = "group",
       val = {
-        { type = "text", val = "Quick links", opts = { hl = "SpecialComment", position = "center" } },
+        { type = "text",    val = "Quick links", opts = { hl = "SpecialComment", position = "center" } },
         { type = "padding", val = 1 },
         dashboard.button("e", "  New file", "<cmd>ene<CR>"),
         dashboard.button("b", "  Open branch files", "<cmd>Branch<CR>"),
@@ -182,6 +182,7 @@ return {
         dashboard.button("SPC f r", "  Live grep"),
         dashboard.button("c", "  Configuration", "<cmd>cd ~ | e $MYVIMRC | NvimTreeFindFileToggle<CR>"),
         dashboard.button("l", "  Plugin manager", "<cmd>Lazy!<CR>"),
+        dashboard.button("m", "  Mason", "<cmd>Mason<CR>"),
         dashboard.button("q", "  Quit", "<cmd>qa<CR>"),
       },
       position = "center",

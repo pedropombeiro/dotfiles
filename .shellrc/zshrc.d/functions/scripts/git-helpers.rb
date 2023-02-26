@@ -257,35 +257,56 @@ end
 BASELINE_MR_RATE = 6
 
 def gitlab_mr_rate(*author)
-  author = ARGV if author.empty?
+  author = ARGV[0] if author.empty?
 
   require 'date'
   require 'json'
   require 'net/http'
 
-  uri = URI('https://gitlab.com/api/v4/groups/9970/merge_requests') # gitlab-org
-  params = {
-    author_username: author,
-    state: 'merged',
-    per_page: 100,
-    page: 1
+  uri = URI('https://gitlab.com/api/graphql')
+  headers = {
+    'Authorization' => "Bearer #{ENV['GITLAB_COM_TOKEN']}",
+    'Content-Type' => 'application/json',
+    'Accept' => 'application/json'
   }
 
   mrs = []
+  start_cursor = 'null'
   best_month = nil
   best_month_mr_rate = 0
+  total_time_to_merge = 0
   $stderr.print 'Fetching '
   loop do
     $stderr.putc '.'
 
+    params = {
+      'query':
+      <<-GQL
+        query {
+          group(fullPath: "gitlab-org") {
+            mergeRequests(
+              authorUsername: "#{author}",
+              state: merged,
+              includeSubgroups: true,
+              after: #{start_cursor}
+            ) {
+              totalTimeToMerge
+              pageInfo {
+                endCursor
+                hasNextPage
+              }
+              nodes {
+                mergedAt
+              }
+            }
+          }
+        }
+      GQL
+    }
     net = Net::HTTP.new(uri.host, uri.port)
     net.use_ssl = true
+    res = net.post(uri.path, params.to_json, headers)
 
-    uri.query = URI.encode_www_form(params)
-    req = Net::HTTP::Get.new(uri)
-    req['PRIVATE-TOKEN'] = ENV['GITLAB_COM_TOKEN']
-
-    res = net.start { |http| http.request(req) }
     unless res.code.to_i.between?(200, 299)
       $stderr.print res.code
       $stderr.print res.body
@@ -293,20 +314,20 @@ def gitlab_mr_rate(*author)
     end
 
     json_res = JSON.parse(res.body)
+    merge_requests = json_res.dig(*%w[data group mergeRequests])
     mrs +=
-      json_res.reject { |mr| mr['merged_at'].nil? }
-              .map do |mr|
-                merged_at = DateTime.iso8601(mr['merged_at'])
-                { id: mr['id'], merged_at: merged_at }
-              rescue StandardError
-                $stderr.print mr
-                raise
-              end
+      merge_requests['nodes'].map do |mr|
+        { merged_at: DateTime.iso8601(mr['mergedAt']) }
+      rescue StandardError
+        $stderr.print mr
+        raise
+      end
 
-    next_page = res['x-next-page']
-    break if next_page.empty?
+    total_time_to_merge = merge_requests['totalTimeToMerge']
+    page_info = merge_requests['pageInfo']
+    break unless page_info['hasNextPage']
 
-    params[:page] = next_page
+    start_cursor = "\"#{page_info['endCursor']}\""
   end
 
   puts
@@ -355,6 +376,7 @@ def gitlab_mr_rate(*author)
   else
     puts msg.red
   end
+  puts "Average per MR: #{(total_time_to_merge / (60 * 60 * 24) / mrs.count).round(1)} days"
   puts "Total MRs merged: #{mrs.count}"
   puts "Best month: #{best_month.strftime('%Y-%m')} (#{best_month_mr_rate} MRs)"
 end

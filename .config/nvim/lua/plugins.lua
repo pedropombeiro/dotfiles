@@ -23,7 +23,7 @@ return {
   { "arkav/lualine-lsp-progress", event = "BufReadPost" }, -- LSP Progress lualine component
 
   --### Snippets
-  { "hrsh7th/vim-vsnip", lazy = true }, -- Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
+  { "hrsh7th/vim-vsnip",          lazy = true }, -- Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
   {
     "rafamadriz/friendly-snippets",
     ft = { "dockerfile", "go", "lua", "ruby" },
@@ -48,7 +48,7 @@ return {
 
   --### Editor enhancements
   { "AndrewRadev/splitjoin.vim", keys = { "gS", "gJ" } }, -- Switch between single-line and multiline forms of code
-  { "tpope/vim-repeat", keys = "." }, -- repeat.vim: enable repeating supported plugin maps with '.'
+  { "tpope/vim-repeat",          keys = "." }, -- repeat.vim: enable repeating supported plugin maps with '.'
   {
     "tpope/vim-speeddating", -- speeddating.vim: C,TRL-A/CTRL-X to increment dates, times, and more
     event = "BufReadPost",
@@ -57,9 +57,10 @@ return {
     "tpope/vim-surround", -- surround.vim: Delete/change/add parentheses/quotes/XML-tags/much more with ease
     event = "BufReadPost",
   },
+  { 'tummetott/unimpaired.nvim', config = true }, -- LUA port of tpope's famous vim-unimpaired plugin
 
   --### Other
-  { "tmux-plugins/vim-tmux", ft = "tmux" }, -- Vim plugin for .tmux.conf
+  { "tmux-plugins/vim-tmux",     ft = "tmux" }, -- Vim plugin for .tmux.conf
   {
     "tpope/vim-dispatch", -- dispatch.vim: Asynchronous build and test dispatcher
     cmd = { "Dispatch", "Make", "Focus", "Start" }
@@ -80,7 +81,7 @@ return {
     ft = "ruby",
     cmd = { "Bundle", "Bopen", "Bsplit", "Btabedit" }
   },
-  { "tpope/vim-rails", ft = "ruby" }, -- rails.vim: Ruby on Rails power tools
+  { "tpope/vim-rails",        ft = "ruby" }, -- rails.vim: Ruby on Rails power tools
   { "bfontaine/Brewfile.vim", ft = "ruby" }, -- Brewfile syntax for Vim
   "wsdjeg/vim-fetch", -- Make Vim handle line and column numbers in file names with a minimum of fuss
 

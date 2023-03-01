@@ -94,10 +94,9 @@ return {
 
           return vim.api.nvim_buf_line_count(bufnr) > 5000
         end,
-
         -- additional_vim_regex_highlighting = true,
-        indent = { enable = true, disable = { "python", "css", "rust" } },
       },
+      indent = { enable = true, disable = { "python", "css", "rust" } },
       autotag = {
         enable = true,
         disable = { "xml", "markdown" },

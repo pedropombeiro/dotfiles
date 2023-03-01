@@ -2,7 +2,7 @@
 
 set -o pipefail
 
-export PATH="$PATH:/opt/homebrew/bin"
+export PATH="$PATH:/usr/local/bin:/opt/homebrew/bin"
 
 tsh login --proxy=teleport.gstg.gitlab.net
 

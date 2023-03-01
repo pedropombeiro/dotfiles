@@ -22,7 +22,7 @@ typeset -g POWERLEVEL9K_USER_ICON="\uF415" # 
 typeset -g POWERLEVEL9K_ROOT_ICON='#'
 typeset -g POWERLEVEL9K_SUDO_ICON=$'\uF09C' # 
 typeset -g POWERLEVEL9K_DIR_NOT_WRITABLE_VISUAL_IDENTIFIER_COLOR=red
-typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir newline vcs)
+typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir dir_writable newline vcs)
 typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   status
   direnv    # direnv status (https://direnv.net/)

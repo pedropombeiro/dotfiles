@@ -14,10 +14,13 @@ brew upgrade
 
 printf "${YELLOW}%s${NC}\n" "Updating rtx plugins..."
 type -f rtx >/dev/null 2>&1 || eval "$(rtx activate bash)"
+export RTX_MISSING_RUNTIME_BEHAVIOR=autoinstall
 rtx plugin ls | \
   grep -Ev '^(golang|ruby|nodejs)$' | \
   sort | \
-  xargs -I {} bash -c 'rtx global {}@latest'
+  sed -E 's/(.*)/\1@latest/' | \
+  xargs rtx global
+unset RTX_MISSING_RUNTIME_BEHAVIOR
 
 # Update npm packages
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."

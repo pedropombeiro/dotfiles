@@ -261,14 +261,6 @@ def gitlab_mr_rate(*author)
 
   require 'date'
   require 'json'
-  require 'net/http'
-
-  uri = URI('https://gitlab.com/api/graphql')
-  headers = {
-    'Authorization' => "Bearer #{ENV['GITLAB_COM_TOKEN']}",
-    'Content-Type' => 'application/json',
-    'Accept' => 'application/json'
-  }
 
   mrs = []
   start_cursor = 'null'
@@ -276,12 +268,11 @@ def gitlab_mr_rate(*author)
   best_month_mr_rate = 0
   total_time_to_merge = 0
   $stderr.print 'Fetching '
+
   loop do
     $stderr.putc '.'
 
-    params = {
-      'query':
-      <<-GQL
+    res = `glab api graphql -f query='
         query {
           group(fullPath: "gitlab-org") {
             mergeRequests(
@@ -291,29 +282,19 @@ def gitlab_mr_rate(*author)
               after: #{start_cursor}
             ) {
               totalTimeToMerge
+              nodes {
+                mergedAt
+              }
               pageInfo {
                 endCursor
                 hasNextPage
               }
-              nodes {
-                mergedAt
-              }
             }
           }
-        }
-      GQL
-    }
-    net = Net::HTTP.new(uri.host, uri.port)
-    net.use_ssl = true
-    res = net.post(uri.path, params.to_json, headers)
+        }'`
+    return if $?.exitstatus != 0
 
-    unless res.code.to_i.between?(200, 299)
-      $stderr.print res.code
-      $stderr.print res.body
-      return
-    end
-
-    json_res = JSON.parse(res.body)
+    json_res = JSON.parse(res)
     merge_requests = json_res.dig(*%w[data group mergeRequests])
     mrs +=
       merge_requests['nodes'].map do |mr|

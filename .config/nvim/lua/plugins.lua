@@ -1,6 +1,4 @@
 return {
-  --### Key mappings management
-
   --### Buffer decorations
   {
     "mtdl9/vim-log-highlighting", -- Provides syntax highlighting for generic log files in VIM.
@@ -8,7 +6,7 @@ return {
   },
 
   {
-    "petertriho/nvim-scrollbar", -- Extensible Neovim Scrollbar
+    "petertriho/nvim-scrollbar",              -- Extensible Neovim Scrollbar
     dependencies = "lewis6991/gitsigns.nvim", -- Git integration for buffers
     event = "BufReadPost",
   },
@@ -48,9 +46,9 @@ return {
 
   --### Editor enhancements
   { "AndrewRadev/splitjoin.vim", keys = { "gS", "gJ" } }, -- Switch between single-line and multiline forms of code
-  { "tpope/vim-repeat",          keys = "." }, -- repeat.vim: enable repeating supported plugin maps with '.'
+  { "tpope/vim-repeat",          keys = "." },            -- repeat.vim: enable repeating supported plugin maps with '.'
   {
-    "tpope/vim-speeddating", -- speeddating.vim: C,TRL-A/CTRL-X to increment dates, times, and more
+    "tpope/vim-speeddating",                              -- speeddating.vim: C,TRL-A/CTRL-X to increment dates, times, and more
     event = "BufReadPost",
   },
   {
@@ -62,7 +60,7 @@ return {
   --### Other
   { "tmux-plugins/vim-tmux",     ft = "tmux" }, -- Vim plugin for .tmux.conf
   {
-    "tpope/vim-dispatch", -- dispatch.vim: Asynchronous build and test dispatcher
+    "tpope/vim-dispatch",                       -- dispatch.vim: Asynchronous build and test dispatcher
     cmd = { "Dispatch", "Make", "Focus", "Start" }
   },
   {
@@ -83,11 +81,13 @@ return {
   },
   { "tpope/vim-rails",        ft = "ruby" }, -- rails.vim: Ruby on Rails power tools
   { "bfontaine/Brewfile.vim", ft = "ruby" }, -- Brewfile syntax for Vim
-  "wsdjeg/vim-fetch", -- Make Vim handle line and column numbers in file names with a minimum of fuss
+  "wsdjeg/vim-fetch",                        -- Make Vim handle line and column numbers in file names with a minimum of fuss
 
   {
-    "iamcco/markdown-preview.nvim", -- markdown preview plugin for (neo)vim
+    "iamcco/markdown-preview.nvim",                       -- markdown preview plugin for (neo)vim
     ft = "markdown",
     build = function() vim.fn["mkdp#util#install"]() end, -- install without yarn or npm
   },
+
+  { 'NoahTheDuke/vim-just', ft = "just" }
 }

@@ -128,10 +128,23 @@ vim.api.nvim_create_autocmd("BufWritePre", {
   command = ":%s/\\s\\+$//e" -- remove trailing whitespace on save (Mastering Vim Quickly)
 })
 
-
 local term_helper_augroup = vim.api.nvim_create_augroup("term_helper", { clear = true })
 vim.api.nvim_create_autocmd("TermOpen", {
   pattern = "*",
   group = term_helper_augroup,
   command = "match none" -- clear the highlighting if we're a terminal buffer
+})
+
+local justfile_open_augroup = vim.api.nvim_create_augroup("justfile_open", { clear = true })
+vim.api.nvim_create_autocmd("BufEnter", {
+  pattern = "*",
+  group = justfile_open_augroup,
+  callback = function()
+    if vim.api.nvim_get_option('makeprg') == 'make' then
+      local justfile = vim.fn.findfile('.justfile', vim.fn.expand('%:p') .. ';')
+      if #justfile > 0 then
+        vim.opt_local.makeprg = 'just'
+      end
+    end
+  end
 })

@@ -27,7 +27,6 @@ function source_files() {
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-autoload -U compinit; compinit
 autoload -U bashcompinit && bashcompinit
 
 plugins=()

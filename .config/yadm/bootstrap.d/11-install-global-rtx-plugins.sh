@@ -4,6 +4,7 @@ type -f rtx >/dev/null 2>&1 || eval "$(rtx activate bash)"
 
 export RTX_MISSING_RUNTIME_BEHAVIOR=autoinstall
 
+rtx global just@latest
 rtx global hadolint@latest
 rtx global shellcheck@latest
 

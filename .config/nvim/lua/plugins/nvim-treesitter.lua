@@ -27,7 +27,7 @@ return {
       {
         "RRethy/nvim-treesitter-endwise", --- Wisely add 'end' in Ruby, Vimscript, Lua, etc.
         event = "InsertEnter"
-      },
+      }
     },
     build = function()
       local ts_update = require("nvim-treesitter.install").update({ with_sync = true })
@@ -59,34 +59,27 @@ return {
         "vim",
         "yaml"
       },
-
       -- Install parsers synchronously (only applied to `ensure_installed`)
       sync_install = false,
-
       -- Automatically install missing parsers when entering buffer
       -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
       auto_install = false,
-
       -- List of parsers to ignore installing (for "all")
       ignore_install = {
         "java",
         "javascript"
       },
-
       endwise = {
         enable = true,
       },
-
       highlight = {
         -- `false` will disable the whole extension
         enable = true,
-
         -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
         -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
         -- Using this option may slow down your editor, and you may see some duplicate highlights.
         -- Instead of true it can also be a list of languages
         additional_vim_regex_highlighting = false,
-
         disable = function(lang, bufnr) -- Disable in large buffers
           if lang == "markdown" then
             return true
@@ -108,39 +101,39 @@ return {
           lookahead = true,
           keymaps = {
             -- You can use the capture groups defined in textobjects.scm
-            ["af"] = "@function.outer",
-            ["if"] = "@function.inner",
-            ["ac"] = "@class.outer",
-            ["ic"] = "@class.inner"
+                ["af"] = "@function.outer",
+                ["if"] = "@function.inner",
+                ["ac"] = "@class.outer",
+                ["ic"] = "@class.inner"
           }
         },
         move = {
           enable = true,
           set_jumps = true,
           goto_next_start = {
-            ["]m"] = "@function.outer",
-            ["]]"] = "@class.outer"
+                ["]m"] = "@function.outer",
+                ["]]"] = "@class.outer"
           },
           goto_next_end = {
-            ["]M"] = "@function.outer",
-            ["]["] = "@class.outer"
+                ["]M"] = "@function.outer",
+                ["]["] = "@class.outer"
           },
           goto_previous_start = {
-            ["[m"] = "@function.outer",
-            ["[["] = "@class.outer"
+                ["[m"] = "@function.outer",
+                ["[["] = "@class.outer"
           },
           goto_previous_end = {
-            ["[M"] = "@function.outer",
-            ["[]"] = "@class.outer"
+                ["[M"] = "@function.outer",
+                ["[]"] = "@class.outer"
           }
         },
         swap = {
           enable = true,
           swap_next = {
-            ["<leader>."] = "@parameter.inner",
+                ["<leader>."] = "@parameter.inner",
           },
           swap_previous = {
-            ["<leader>,"] = "@parameter.inner",
+                ["<leader>,"] = "@parameter.inner",
           },
         },
       },

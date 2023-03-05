@@ -11,9 +11,8 @@ elif command -v rtx >/dev/null; then
 fi
 
 if [[ -n $RTX_SHELL ]]; then
-  if [ ! -f ~/.config/zsh/site-functions ]; then
-    mkdir -p ~/.config/zsh/site-functions
+  if [ ! -f  ~/.config/zsh/site-functions/_rtx ]; then
     rtx complete -s zsh > ~/.config/zsh/site-functions/_rtx
+    rm -f '~/.zcompdump*' >/dev/null 2>&1
   fi
-  fpath+=(~/.config/zsh/site-functions)
 fi

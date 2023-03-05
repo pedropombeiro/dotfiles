@@ -1,4 +1,5 @@
 fd            latest
+github-cli    latest
 golang        1.19.5
 golangci-lint latest
 just          latest

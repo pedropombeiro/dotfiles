@@ -6,6 +6,7 @@ duf           latest
 dust          latest
 fd            latest
 fzf           latest
+github-cli    latest
 gitleaks      latest
 golang        1.19.5
 golangci-lint latest

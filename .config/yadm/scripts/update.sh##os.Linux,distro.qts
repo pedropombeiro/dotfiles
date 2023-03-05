@@ -9,7 +9,7 @@ opkg update && opkg upgrade
 
 printf "${YELLOW}%s${NC}\n" "Updating rtx packages..."
 rtx self-update
-RTX_MISSING_RUNTIME_BEHAVIOR=autoinstall rtx install
+(cd ~ && rtx install --install-missing)
 
 printf "${YELLOW}%s${NC}\n" "Updating python packages..."
 pip3 list --outdated --format=json | jq -r '.[] | .name+"="+.latest_version' |

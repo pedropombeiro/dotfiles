@@ -13,8 +13,7 @@ brew update
 brew upgrade
 
 printf "${YELLOW}%s${NC}\n" "Updating rtx plugins..."
-type -f rtx >/dev/null 2>&1 || eval "$(rtx activate bash)"
-RTX_MISSING_RUNTIME_BEHAVIOR=autoinstall rtx install
+(cd ~ && rtx install --install-missing)
 
 # Update npm packages
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."

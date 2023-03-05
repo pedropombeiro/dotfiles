@@ -1,0 +1,13 @@
+bat           latest
+ctop          latest
+delta         latest
+duf           latest
+dust          latest
+fd            latest
+golang        1.19.5
+golangci-lint latest
+jq            latest
+lazygit       latest
+nodejs        18.7.0
+ripgrep       latest
+xh            latest

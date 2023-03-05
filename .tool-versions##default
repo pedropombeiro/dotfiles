@@ -1,0 +1,7 @@
+fd            latest
+golang        1.19.5
+golangci-lint latest
+just          latest
+nodejs        18.7.0
+ruby          3.0.5
+yarn          1.22.19

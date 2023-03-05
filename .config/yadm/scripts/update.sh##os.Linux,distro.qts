@@ -9,14 +9,7 @@ opkg update && opkg upgrade
 
 printf "${YELLOW}%s${NC}\n" "Updating rtx packages..."
 rtx self-update
-set +e
-export RTX_MISSING_RUNTIME_BEHAVIOR=autoinstall
-rtx plugin ls | grep -vE '^(bat|ctop|dust|fzf|golang|hadolint|jq|nodejs|ripgrep|rust|shellcheck)$' | \
-  sort | \
-  sed -E 's/(.*)/\1@latest/' | \
-  xargs rtx global
-unset RTX_MISSING_RUNTIME_BEHAVIOR
-set -e
+RTX_MISSING_RUNTIME_BEHAVIOR=autoinstall rtx install
 
 printf "${YELLOW}%s${NC}\n" "Updating python packages..."
 pip3 list --outdated --format=json | jq -r '.[] | .name+"="+.latest_version' |

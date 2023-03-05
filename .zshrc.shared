@@ -27,8 +27,6 @@ function source_files() {
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-autoload -U bashcompinit && bashcompinit
-
 plugins=()
 
 # extra files in $HOME/.shellrc/zshrc.d/configs/pre, $HOME/.shellrc/zshrc.d/configs, and $HOME/.shellrc/zshrc.d/configs/post

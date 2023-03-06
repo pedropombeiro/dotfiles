@@ -8,7 +8,7 @@ printf "${YELLOW}%s${NC}\n" "Updating Entware packages..."
 opkg update && opkg upgrade
 
 printf "${YELLOW}%s${NC}\n" "Updating rtx packages..."
-rtx self-update
+yes | rtx self-update
 (cd ~ && rtx install --install-missing)
 
 printf "${YELLOW}%s${NC}\n" "Updating python packages..."

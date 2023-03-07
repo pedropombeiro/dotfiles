@@ -20,6 +20,7 @@ return {
       "docker-compose-language-service",
       "jsonlint",
       "markdownlint",
+      "shfmt",
       "vale",
       "yamlfmt",
       "yamllint",

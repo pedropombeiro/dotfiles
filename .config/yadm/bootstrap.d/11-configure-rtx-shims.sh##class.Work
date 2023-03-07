@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# rtx shims are needed for key-value-server plist and for RubyMine debugger
+rtx settings set experimental true
+rtx settings set shims_dir "${HOME}/.rtx/shims"

@@ -8,7 +8,7 @@
     <string>key-value-server</string>
     <key>ProgramArguments</key>
     <array>
-      <string>key-value-server</string>
+      <string>/Users/pedropombeiro/.rtx/shims/key-value-server</string>
       <string>--host</string>
       <string>0.0.0.0</string>
       <string>--port</string>

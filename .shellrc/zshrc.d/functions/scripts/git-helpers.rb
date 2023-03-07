@@ -61,55 +61,56 @@ class String
   end
 end
 
-def rebase_branch(branch, parent_branch)
-  puts 'Rebasing '.brown + branch.cyan + ' onto '.brown + parent_branch.green + '...'.brown
-
-  system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
-  unless Process.last_status.success?
-    puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
-    return
-  end
-
-  system({ 'LEFTHOOK' => '0' }, *%W[git rebase --update-refs --autostash #{parent_branch} #{branch}])
-  return if Process.last_status.success?
-
-  auto_generated_files_hash = {
-    'app/workers/all_queues.yml' => %w[bin/rake gitlab:sidekiq:all_queues_yml:generate],
-    'config/sidekiq_queues.yml' => %w[bin/rake gitlab:sidekiq:sidekiq_queues_yml:generate],
-    'db/structure.sql' => %w[scripts/regenerate-schema],
-    'doc/api/graphql/reference/index.md' => %w[bin/rake gitlab:graphql:compile_docs],
-    'doc/update/deprecations.md' => %w[bin/rake gitlab:docs:compile_deprecations],
-    'doc/update/removals.md' => %w[bin/rake gitlab:docs:compile_removals]
-  }
-
-  loop do
-    status = `git status --short`
-    break unless auto_generated_files_hash.select { |file, _| status.include?("UU #{file}") }.any?
-
-    err = false
-    auto_generated_files_hash
-      .select { |file, _| status.include?("UU #{file}") }
-      .each do |file, cmd|
-        puts "  Merge conflict in #{file.red}, regenerating...".brown
-        system(*cmd)
-        err = true
-
-        system(*%W[git add #{file}])
-        break unless Process.last_status.success?
-
-        err = false
-      end
-
-    break unless err || system({ 'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0' }, *%w[git rebase --continue])
-  end
-end
-
 def rebase_all_per_capture_info(local_branch_info_hash)
   return if local_branch_info_hash.empty?
 
   current_branch = `git branch --show-current`.strip
 
-  local_branch_info_hash.each { |branch, parent_branch| rebase_branch(branch, parent_branch) }
+  local_branch_info_hash.each do |branch, parent_branch|
+    puts 'Rebasing '.brown + branch.cyan + ' onto '.brown + parent_branch.green + '...'.brown
+
+    system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
+    unless Process.last_status.success?
+      puts '  Skipping since '.red + parent_branch.green + ' does not exist.'.red
+      return
+    end
+
+    system({ 'LEFTHOOK' => '0' }, *%W[git rebase --update-refs --autostash #{parent_branch} #{branch}])
+    next if Process.last_status.success?
+
+    auto_generated_files_hash = {
+      'app/workers/all_queues.yml' => %w[bin/rake gitlab:sidekiq:all_queues_yml:generate],
+      'config/sidekiq_queues.yml' => %w[bin/rake gitlab:sidekiq:sidekiq_queues_yml:generate],
+      'db/structure.sql' => %w[scripts/regenerate-schema],
+      'doc/api/graphql/reference/index.md' => %w[bin/rake gitlab:graphql:compile_docs],
+      'doc/update/deprecations.md' => %w[bin/rake gitlab:docs:compile_deprecations],
+      'doc/update/removals.md' => %w[bin/rake gitlab:docs:compile_removals]
+    }
+
+    loop do
+      status = `git status --short`
+      break unless auto_generated_files_hash.select { |file, _| status.include?("UU #{file}") }.any?
+
+      err = false
+      auto_generated_files_hash
+        .select { |file, _| status.include?("UU #{file}") }
+        .each do |file, cmd|
+          puts "  Merge conflict in #{file.red}, regenerating...".brown
+          system(*cmd)
+          err = true
+
+          system(*%W[git add #{file}])
+          break unless Process.last_status.success?
+
+          err = false
+        end
+
+      break unless err || system({ 'GIT_EDITOR' => 'true', 'LEFTHOOK' => '0' }, *%w[git rebase --continue])
+    end
+
+    # There is a merge conflict that needs to be resolved by the user, exit now
+    return
+  end
 
   system(*%W[git switch #{current_branch}])
 end

@@ -71,17 +71,16 @@ return {
       },
       icons = {
         ---@diagnostic disable: undefined-field
-        expanded           = config.icons.folder.expanded,
+        expanded           = config.icons.expander.expanded,
         child_prefix       = "",
         child_indent       = "",
         final_child_prefix = "",
         non_collapsible    = "",
-        collapsed          = config.icons.folder.collapsed,
-
-        passed  = config.icons.tests.passed,
-        running = config.icons.tests.running,
-        failed  = config.icons.tests.failed,
-        unknown = config.icons.tests.unknown
+        collapsed          = config.icons.expander.collapsed,
+        passed             = config.icons.tests.passed,
+        running            = config.icons.tests.running,
+        failed             = config.icons.tests.failed,
+        unknown            = config.icons.tests.unknown
         ---@diagnostic enable: undefined-field
       },
     })

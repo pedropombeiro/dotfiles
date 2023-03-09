@@ -14,16 +14,14 @@ return {
       disabled_filetypes = { "lazy", "neotest-summary", "Outline", "Trouble" },
       globalstatus = true,
     },
-
     extensions = {
       "fugitive",
       "man",
       "nvim-dap-ui",
-      "nvim-tree",
+      "neo-tree",
       "quickfix",
       "symbols-outline",
     },
-
     sections = {
       lualine_a = { "mode" },
       lualine_b = { "branch" },

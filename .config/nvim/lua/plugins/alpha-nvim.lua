@@ -180,7 +180,7 @@ return {
         dashboard.button("SPC f f", "  Find file"),
         dashboard.button("SPC f h", "  History"),
         dashboard.button("SPC f r", "  Live grep"),
-        dashboard.button("c", "  Configuration", "<cmd>cd ~ | e $MYVIMRC | NvimTreeFindFileToggle<CR>"),
+        dashboard.button("c", "  Configuration", "<cmd>cd ~ | e $MYVIMRC | Neotree focus<CR>"),
         dashboard.button("l", "󰒲  Plugin manager", "<cmd>Lazy!<CR>"),
         dashboard.button("m", "  Mason", "<cmd>Mason<CR>"),
         dashboard.button("q", "  Quit", "<cmd>qa<CR>"),

@@ -18,6 +18,10 @@ return {
   },
   icons = {
     folder = {
+      collapsed = "",
+      expanded  = "",
+    },
+    expander = {
       collapsed = "",
       expanded  = "",
     },

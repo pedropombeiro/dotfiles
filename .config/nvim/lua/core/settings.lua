@@ -117,7 +117,7 @@ vim.cmd([[
   augroup TrailingSpace
     au!
     autocmd BufNewFile,BufRead * call HighlightExtraWhitespace()
-    autocmd FileType alpha,NvimTree highlight clear ExtraWhitespace
+    autocmd FileType alpha,neo-tree highlight clear ExtraWhitespace
   augroup END
 ]])
 

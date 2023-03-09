@@ -1,8 +1,6 @@
 --  The goal of nvim-treesitter is both to provide a simple and easy way to use the interface for tree-sitter in Neovim
 --    and to provide some basic functionality such as highlighting based on it:
 
-local config = require("config")
-
 return {
   {
     "nvim-treesitter/nvim-treesitter-textobjects", -- Syntax aware text-objects, select, move, swap, and peek support.
@@ -13,6 +11,8 @@ return {
     "nvim-treesitter/nvim-treesitter-context", -- Show code context
     event = "BufReadPre",
     config = function()
+      local config = require("config")
+
       require("treesitter-context").setup()
 
       ---@diagnostic disable-next-line: undefined-field

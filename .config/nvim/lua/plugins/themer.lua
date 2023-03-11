@@ -4,8 +4,8 @@
 return {
   "themercorp/themer.lua",
   lazy = false,
-  priority = 1000,               -- make sure to load this before all the other start plugins
-  opts = function(_)
+  priority = 1000,                   -- make sure to load this before all the other start plugins
+  opts = function()
     local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
     if theme == nil then
       local config = require("config")
@@ -19,7 +19,7 @@ return {
         treesitter = true,
         indentline = true,
         barbar = false,
-        bufferline = false,
+        bufferline = true,
         cmp = true,
         gitsigns = true,
         lsp = true,

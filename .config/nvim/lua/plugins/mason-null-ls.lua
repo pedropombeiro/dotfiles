@@ -21,6 +21,7 @@ return {
       "jsonlint",
       "markdownlint",
       "shfmt",
+      "shellcheck",
       "vale",
       "yamlfmt",
       "yamllint",

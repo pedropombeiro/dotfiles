@@ -5,11 +5,11 @@ return {
   "goolord/alpha-nvim",
   dependencies = "kyazdani42/nvim-web-devicons",
   event = "VimEnter",
-  config = function()
+  opts = function()
     -- originally authored by @AdamWhittingham
     local path_ok, plenary_path = pcall(require, "plenary.path")
     if not path_ok then
-      return
+      return {}
     end
 
     local dashboard = require("alpha.themes.dashboard")
@@ -217,6 +217,6 @@ return {
       nvim_web_devicons = nvim_web_devicons,
     }
 
-    require("alpha").setup(opts.config)
+    return opts.config
   end
 }

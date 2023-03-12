@@ -1,7 +1,7 @@
 vim.api.nvim_exec("autocmd!", false)
 
 vim.g.mapleader = " "
-vim.opt.timeoutlen = 500
+vim.opt.timeoutlen = 0
 
 -- disable netrw at the very start of init.lua
 --  (strongly advised so that nvim-tree can take over directory loading)

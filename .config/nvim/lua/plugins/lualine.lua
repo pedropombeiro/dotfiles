@@ -12,14 +12,14 @@ return {
       options = {
         icons_enabled = true,
         ignore_focus = { "lazy", "neotest-summary", "Outline", "Trouble" },
-        disabled_filetypes = { "lazy", "neotest-summary", "Outline", "Trouble" },
+        disabled_filetypes = { statusline = { "alpha", "lazy", "neotest-summary", "Outline", "Trouble" } },
         globalstatus = true,
       },
       extensions = {
         "fugitive",
         "man",
-        "nvim-dap-ui",
         "neo-tree",
+        "nvim-dap-ui",
         "quickfix",
         "symbols-outline",
       },

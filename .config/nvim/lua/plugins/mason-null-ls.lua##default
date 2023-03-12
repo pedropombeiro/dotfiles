@@ -14,7 +14,7 @@ return {
     "williamboman/mason.nvim",
   },
   opts = {
-    automatic_installation = false,
+    automatic_installation = true,
     ensure_installed = {
       "actionlint",
       "docker-compose-language-service",
@@ -24,7 +24,6 @@ return {
       "shellcheck",
       "vale",
       "yamlfmt",
-      "yamllint",
     }
   }
 }

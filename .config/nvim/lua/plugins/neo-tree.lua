@@ -41,46 +41,42 @@ return {
       end
     end
   end,
-  config = function()
-    local config = require("config")
-
+  opts = function()
     ---@diagnostic disable: undefined-field
-    vim.fn.sign_define("DiagnosticSignError", { text = config.icons.diagnostics.error, texthl = "DiagnosticSignError" })
-    vim.fn.sign_define("DiagnosticSignWarn", { text = config.icons.diagnostics.warning, texthl = "DiagnosticSignWarn" })
-    vim.fn.sign_define("DiagnosticSignInfo", { text = config.icons.diagnostics.info, texthl = "DiagnosticSignInfo" })
-    vim.fn.sign_define("DiagnosticSignHint", { text = config.icons.diagnostics.hint, texthl = "DiagnosticSignHint" })
+    local icons = require("config").icons
     ---@diagnostic enable: undefined-field
 
-    require("neo-tree").setup({
+    vim.fn.sign_define("DiagnosticSignError", { text = icons.diagnostics.error, texthl = "DiagnosticSignError" })
+    vim.fn.sign_define("DiagnosticSignWarn", { text = icons.diagnostics.warning, texthl = "DiagnosticSignWarn" })
+    vim.fn.sign_define("DiagnosticSignInfo", { text = icons.diagnostics.info, texthl = "DiagnosticSignInfo" })
+    vim.fn.sign_define("DiagnosticSignHint", { text = icons.diagnostics.hint, texthl = "DiagnosticSignHint" })
+
+    return {
       default_component_configs = {
         icon = {
-          ---@diagnostic disable: undefined-field
-          folder_closed = config.icons.folder.collapsed,
-          folder_open   = config.icons.folder.expanded
-          ---@diagnostic enable: undefined-field
+          folder_closed = icons.folder.collapsed,
+          folder_open   = icons.folder.expanded
         },
         indent = {
-          ---@diagnostic disable: undefined-field
-          expander_collapsed = config.icons.expander.collapsed,
-          expander_expanded = config.icons.expander.expanded,
-          ---@diagnostic enable: undefined-field
+          expander_collapsed = icons.expander.collapsed,
+          expander_expanded  = icons.expander.expanded,
         },
       },
       filesystem = {
         bind_to_cwd = false,
         follow_current_file = true,
         filtered_items = {
-          hide_dotfiles = false,
+          hide_dotfiles   = false,
           hide_gitignored = true,
-          hide_hidden = true, -- only works on Windows for hidden files/directories
-          hide_by_name = {
+          hide_hidden     = true, -- only works on Windows for hidden files/directories
+          hide_by_name    = {
             ".git",
             "node_modules",
           },
           hide_by_pattern = { -- uses glob style patterns
             "*.zwc",
           },
-          never_show = { -- remains hidden even if visible is toggled to true, this overrides always_show
+          never_show      = { -- remains hidden even if visible is toggled to true, this overrides always_show
             ".DS_Store",
             "thumbs.db"
           },
@@ -92,7 +88,7 @@ return {
           ["<space>"] = "none",
         },
       },
-    })
+    }
   end,
   deactivate = function()
     vim.cmd([[Neotree close]])

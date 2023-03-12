@@ -1,30 +1,31 @@
 --- General config ------------------------------------------------------------------
 
 vim.opt.shortmess:append("I")
-vim.opt.smartindent          = true
-vim.opt.swapfile             = false -- disable the swapfile
-vim.opt.history              = 2000
-vim.opt.updatetime           = 1000
-vim.opt.wildmenu             = true -- set zsh-alike autocomplete behavior
-vim.opt.wildmode             = "full"
-vim.opt.expandtab            = true
-vim.opt.tabpagemax           = 40 -- Max number of tab pages that can be opened from the command line
-vim.opt.errorbells           = false
-vim.opt.confirm              = true -- Display a confirmation dialog when closing a dirty buffer (Mastering Vim Quickly)
+vim.opt.smartindent           = true
+vim.opt.swapfile              = false -- disable the swapfile
+vim.opt.history               = 2000
+vim.opt.updatetime            = 1000
+vim.opt.wildmenu              = true -- set zsh-alike autocomplete behavior
+vim.opt.wildmode              = "full"
+vim.opt.expandtab             = true
+vim.opt.tabpagemax            = 40   -- Max number of tab pages that can be opened from the command line
+vim.opt.errorbells            = false
+vim.opt.confirm               = true -- Display a confirmation dialog when closing a dirty buffer (Mastering Vim Quickly)
 
-vim.g.loaded_perl_provider   = 0 -- disable Perl support
+vim.g.loaded_perl_provider    = 0    -- disable Perl support
+vim.g.loaded_python3_provider = 0    -- disable python3 provider, we don't need python plugins
 
 -- This makes vim act like all other editors, buffers can
 -- exist in the background without being in a window.
 -- http://items.sjbach.com/319/configuring-vim-right
-vim.opt.hidden               = true
+vim.opt.hidden                = true
 
 -- Make macros render faster (lazy draw)
-vim.opt.lazyredraw           = true
+vim.opt.lazyredraw            = true
 
 ---------------- Persistent Undo ------------------
-vim.opt.undofile             = true
-local vimrc_undofile_augroup = vim.api.nvim_create_augroup("vimrc_undofile", { clear = true })
+vim.opt.undofile              = true
+local vimrc_undofile_augroup  = vim.api.nvim_create_augroup("vimrc_undofile", { clear = true })
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "/tmp/*",
   group = vimrc_undofile_augroup,
@@ -53,13 +54,13 @@ end
 ---------------- Layout --------------------------
 
 vim.opt.title          = false -- change terms title
-vim.opt.number         = true -- show line numbers
-vim.opt.ruler          = true -- show ruler in status line
-vim.opt.showmode       = true -- always show mode
-vim.opt.laststatus     = 2 -- always show status line
-vim.opt.showcmd        = true -- show the command being typed
-vim.opt.scrolloff      = 4 -- keep 4 lines off the edges
-vim.opt.pumheight      = 10 -- popup menu height
+vim.opt.number         = true  -- show line numbers
+vim.opt.ruler          = true  -- show ruler in status line
+vim.opt.showmode       = true  -- always show mode
+vim.opt.laststatus     = 2     -- always show status line
+vim.opt.showcmd        = true  -- show the command being typed
+vim.opt.scrolloff      = 4     -- keep 4 lines off the edges
+vim.opt.pumheight      = 10    -- popup menu height
 
 vim.opt.foldlevelstart = 99
 

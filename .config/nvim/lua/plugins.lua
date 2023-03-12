@@ -17,11 +17,8 @@ return {
     event = "BufReadPost",
   },
 
-  --### Linting
-  { "arkav/lualine-lsp-progress", event = "BufReadPost" }, -- LSP Progress lualine component
-
   --### Snippets
-  { "hrsh7th/vim-vsnip",          lazy = true }, -- Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
+  { "hrsh7th/vim-vsnip",         lazy = true }, -- Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
   {
     "rafamadriz/friendly-snippets",
     ft = { "dockerfile", "go", "lua", "ruby" },

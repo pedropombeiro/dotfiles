@@ -32,10 +32,14 @@ return {
     end
   },
 
-  --### Completion
+  --### Navigation
   {
     "ruanyl/vim-gh-line", -- vim plugin that open the link of current line on github
-    event = "BufReadPost",
+    keys = {
+      { "<leader>gb", "<Plug>(gh-line-blame)", desc = "Open blame view in browser" },
+      { "<leader>gh", "<Plug>(gh-line)",       desc = "Open blob view in browser" },
+      { "<leader>go", "<Plug>(gh-repo)",       desc = "Open in browser" },
+    }
   },
 
   --### Session management

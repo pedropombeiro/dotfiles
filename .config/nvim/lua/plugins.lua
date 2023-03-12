@@ -44,6 +44,17 @@ return {
     "farmergreg/vim-lastplace", -- Intelligently reopen files at your last edit position in Vim.
     event = "BufReadPre",
   },
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre",
+    opts = { options = { "buffers", "curdir", "tabpages", "winsize", "help", "globals" } },
+    -- stylua: ignore
+    keys = {
+      { "<leader>qs", function() require("persistence").load() end,                desc = "Restore session" },
+      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore last session" },
+      { "<leader>qd", function() require("persistence").stop() end,                desc = "Don't save current session" },
+    },
+  },
 
   --### Editor enhancements
   { "AndrewRadev/splitjoin.vim", keys = { "gS", "gJ" } }, -- Switch between single-line and multiline forms of code

@@ -177,6 +177,7 @@ return {
         { type = "padding", val = 1 },
         dashboard.button("e", "  New file", "<cmd>ene<CR>"),
         dashboard.button("b", "  Open branch files", "<cmd>Branch<CR>"),
+        dashboard.button("s", " " .. " Restore Session", [[:lua require("persistence").load() <CR>]]),
         dashboard.button("SPC f f", "  Find file"),
         dashboard.button("SPC f h", "  History"),
         dashboard.button("SPC f r", "  Live grep"),

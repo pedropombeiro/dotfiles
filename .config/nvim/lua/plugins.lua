@@ -18,7 +18,7 @@ return {
   },
 
   --### Snippets
-  { "hrsh7th/vim-vsnip",         lazy = true }, -- Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
+  { "hrsh7th/vim-vsnip", lazy = true }, -- Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
   {
     "rafamadriz/friendly-snippets",
     ft = { "dockerfile", "go", "lua", "ruby" },
@@ -57,10 +57,20 @@ return {
   },
 
   --### Editor enhancements
-  { "AndrewRadev/splitjoin.vim", keys = { "gS", "gJ" } }, -- Switch between single-line and multiline forms of code
-  { "tpope/vim-repeat",          keys = "." },            -- repeat.vim: enable repeating supported plugin maps with '.'
   {
-    "tpope/vim-speeddating",                              -- speeddating.vim: C,TRL-A/CTRL-X to increment dates, times, and more
+    "Wansmer/treesj", -- Neovim plugin for splitting/joining blocks of code
+    keys = {
+      { "gJ", ":TSJJoin<CR>",  desc = "Join into single-line form" },
+      { "gS", ":TSJSplit<CR>", desc = "Split into multi-line form" },
+    },
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = {
+      use_default_keymaps = false,
+    },
+  },
+  { "tpope/vim-repeat",  keys = "." }, -- repeat.vim: enable repeating supported plugin maps with '.'
+  {
+    "tpope/vim-speeddating",           -- speeddating.vim: CTRL-A/CTRL-X to increment dates, times, and more
     event = "BufReadPost",
   },
   {

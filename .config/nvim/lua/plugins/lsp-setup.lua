@@ -29,11 +29,11 @@ return {
   event = { "BufReadPre", "BufNewFile" },
   keys = keys,
   dependencies = {
-    "b0o/schemastore.nvim",             -- 🛍  JSON schemas for Neovim
+    "b0o/schemastore.nvim",     -- 🛍  JSON schemas for Neovim
     {
-      "neovim/nvim-lspconfig",          -- Quickstart configs for Nvim LSP
+      "neovim/nvim-lspconfig",  -- Quickstart configs for Nvim LSP
       dependencies = {
-        "hrsh7th/cmp-nvim-lsp",         -- nvim-cmp source for neovim builtin LSP client
+        "hrsh7th/cmp-nvim-lsp", -- nvim-cmp source for neovim builtin LSP client
         {
           --- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
           --- to use to launch those servers.
@@ -112,7 +112,7 @@ return {
               -- Get the language server to recognize the `vim` global
               globals = { "vim" },
               neededFileStatus = {
-                    ["codestyle-check"] = "Any",
+                ["codestyle-check"] = "Any",
               },
             },
             workspace = {
@@ -155,7 +155,7 @@ return {
       servers.arduino_language_server = {
         cmd = {
           "arduino-language-server",
-          "-cli-config", "~/Library/Arduino15/arduino-cli.yaml",       -- Generated with `arduino-cli config init`
+          "-cli-config", "~/Library/Arduino15/arduino-cli.yaml", -- Generated with `arduino-cli config init`
           "-fqbn", "keyboardio:gd32:keyboardio_model_100",
           "-cli", "arduino-cli",
           "-clangd", "clangd"

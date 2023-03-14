@@ -3,6 +3,7 @@ return {
     name = "gruvbox-material-dark-soft",
     colors = {
       bg0_s       = "#32302f", -- Gruvbox Dark bg0_s
+      gray        = "#928374",
       fg3         = "#bdae93",
       fg4         = "#a89984",
       dark_blue   = "#83a598",

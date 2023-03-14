@@ -53,16 +53,14 @@ end
 
 ---------------- Layout --------------------------
 
-vim.opt.title          = false -- change terms title
-vim.opt.number         = true  -- show line numbers
-vim.opt.ruler          = true  -- show ruler in status line
-vim.opt.showmode       = true  -- always show mode
-vim.opt.laststatus     = 2     -- always show status line
-vim.opt.showcmd        = true  -- show the command being typed
-vim.opt.scrolloff      = 4     -- keep 4 lines off the edges
-vim.opt.pumheight      = 10    -- popup menu height
-
-vim.opt.foldlevelstart = 99
+vim.opt.title      = false                                           -- change terms title
+vim.opt.number     = true                                            -- show line numbers
+vim.opt.ruler      = true                                            -- show ruler in status line
+vim.opt.showmode   = true                                            -- always show mode
+vim.opt.laststatus = 2                                               -- always show status line
+vim.opt.showcmd    = true                                            -- show the command being typed
+vim.opt.scrolloff  = 4                                               -- keep 4 lines off the edges
+vim.opt.pumheight  = 10                                              -- popup menu height
 
 vim.fn.setenv("GIT_CONFIG_PARAMETERS", "'delta.side-by-side=false'") -- Disable .gitconfig's delta option
 

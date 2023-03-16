@@ -37,6 +37,8 @@ brew "croc"
 brew "ctop"
 # Load/unload environment variables based on $PWD
 brew "direnv"
+# Command-line DNS client
+brew "dog"
 # Disk Usage/Free Utility - a better 'df' alternative
 brew "duf"
 # More intuitive version of du in rust
@@ -59,6 +61,8 @@ brew "git-extras"
 brew "gnu-sed"
 # GNU Transport Layer Security (TLS) Library
 brew "gnutls"
+# Ping, but with a graph
+brew "gping"
 # Colorize logfiles and command output
 brew "grc"
 # Convert source code to formatted text with syntax highlighting

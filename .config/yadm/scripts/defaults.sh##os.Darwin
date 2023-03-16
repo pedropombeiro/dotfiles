@@ -236,8 +236,8 @@ defaults write com.apple.dock persistent-apps -array-add "<dict><key>tile-data</
 killall Dock
 
 # Add defaults to Fork
-mkdir -p "${HOME}/src"
-defaults write com.DanPristupov.Fork defaultSourceFolder -string "${HOME}/src"
+mkdir -p "${HOME}/Developer"
+defaults write com.DanPristupov.Fork defaultSourceFolder -string "${HOME}/Developer"
 defaults write com.DanPristupov.Fork pageGuideLinePosition -int 72
 defaults write com.DanPristupov.Fork useMonospaceInCommitDescription -bool true
 

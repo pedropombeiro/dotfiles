@@ -14,7 +14,7 @@
     <key>Label</key>
     <string>walkingpad.restserver.py</string>
     <key>WorkingDirectory</key>
-    <string>/Users/pedropombeiro/src/github.com/huserben/walkingpad</string>
+    <string>/Users/pedropombeiro/Developer/github.com/huserben/walkingpad</string>
     <key>ProgramArguments</key>
     <array>
       <string>/opt/homebrew/bin/python3</string>

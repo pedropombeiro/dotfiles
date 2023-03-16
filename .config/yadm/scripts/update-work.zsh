@@ -21,7 +21,7 @@ if [[ -n ${GDK_ROOT} ]]; then
 hostname: gdk.test
 port: 3000
 runner:
-  bin: "${HOME}/src/gitlab.com/gitlab-org/gitlab-runner/out/binaries/gitlab-runner"
+  bin: "${HOME}/Developer/gitlab.com/gitlab-org/gitlab-runner/out/binaries/gitlab-runner"
   config_file: "${HOME}/.gitlab-runner/config.gdk.toml"
   enabled: false
 snowplow_micro:

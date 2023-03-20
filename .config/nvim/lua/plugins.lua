@@ -74,8 +74,9 @@ return {
     event = "BufReadPost",
   },
   {
-    "tpope/vim-surround", -- surround.vim: Delete/change/add parentheses/quotes/XML-tags/much more with ease
+    "kylechui/nvim-surround", -- Add/change/delete surrounding delimiter pairs with ease. Written with ❤️ in Lua.
     event = "BufReadPost",
+    config = true
   },
   { 'tummetott/unimpaired.nvim', config = true }, -- LUA port of tpope's famous vim-unimpaired plugin
 

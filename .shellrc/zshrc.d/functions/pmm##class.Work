@@ -3,4 +3,4 @@
 # Usage: pmm pipeline
 curl -s 'https://gitlab.com/gitlab-com/www-gitlab-com/-/raw/master/data/stages.yml' | \
   yq '.stages.[].groups.[] | select(.name | test("(?i)'"$*"'")) | {"name": .name, "person": .pmm}' -o=json | \
-  jq -r '. | { name: .name, person: (.person | if type == "array" then .[] else . end) } | (.name + ": " + .person)'
+  jq -r '. | { name: .name, person: (.person | if type == "array" then .[] elif type == "null" then "None" else . end) } | (.name + ": " + .person)'

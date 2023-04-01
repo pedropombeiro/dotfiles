@@ -28,6 +28,16 @@ return {
       }
     end
   },
+  {
+    "aduros/ai.vim", -- Generate and edit text in Neovim using OpenAI and GPT.
+    keys = {
+      { "<leader>=", ":AI ",              mode = { "n", "v" }, desc = "Perform action with OpenAI" },
+      { "<C-=>",     "<Esc><Cmd>AI<CR>a", mode = "i",          desc = "Autocomplete with OpenAI" },
+    },
+    init = function()
+      vim.g.ai_no_mappings = 1
+    end
+  },
 
   --### Navigation
   {

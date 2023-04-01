@@ -12,10 +12,10 @@ temp_dir="$(mktemp -d)"
 bandwhich_version=0.20.0
 bottom_version=0.8.0
 croc_version=9.6.4
-hyperfine_version=1.15.0
+hyperfine_version=1.16.1
 lnav_version=0.11.1
 lsd_version=0.23.1
-procs_version=0.13.4
+procs_version=0.14.0
 
 function download_and_extract() {
   printf "${GREEN}%s${NC}\n" "Downloading $1..."

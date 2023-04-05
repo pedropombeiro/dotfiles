@@ -135,8 +135,6 @@ brew "sleepwatcher", restart_service: true
 brew "smartmontools"
 # Command-line interface for https://speedtest.net bandwidth tests
 brew "speedtest-cli"
-# Open source continuous file synchronization application
-brew "syncthing", link: false
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
 # Code-search similar to ack

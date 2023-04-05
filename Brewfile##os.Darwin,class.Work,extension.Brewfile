@@ -214,8 +214,6 @@ brew "socat"
 brew "speedtest-cli"
 # Change macOS audio source from the command-line
 brew "switchaudio-osx"
-# Open source continuous file synchronization application
-brew "syncthing", link: false
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
 # Modern SSH server for teams managing distributed infrastructure

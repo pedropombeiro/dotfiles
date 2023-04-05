@@ -11,8 +11,12 @@ tap "jdxcode/tap"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
 tap "zaquestion/tap"
+# Command-line interface for SQLite
+brew "sqlite"
 # General-purpose data compression with high compression ratio
 brew "xz"
+# Automate deployment, configuration, and upgrading
+brew "ansible"
 # Arduino command-line interface
 brew "arduino-cli"
 # Interpreted, interactive, object-oriented programming language
@@ -59,6 +63,8 @@ brew "git-delta"
 brew "git-extras"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
+# Validating, recursive, caching DNS resolver
+brew "unbound"
 # GNU Transport Layer Security (TLS) Library
 brew "gnutls"
 # Ping, but with a graph
@@ -73,8 +79,6 @@ brew "homeassistant-cli"
 brew "htop"
 # Command-line benchmarking tool
 brew "hyperfine"
-# Tools and libraries to manipulate images in many formats
-brew "imagemagick"
 # Update of iperf: measures TCP, UDP, and SCTP bandwidth
 brew "iperf3"
 # Official CLI for the IPinfo IP Address API
@@ -298,6 +302,8 @@ cask "the-unarchiver"
 cask "tor-browser"
 # Control your data usage on slow or expensive networks
 cask "tripmode"
+# Virtual machines UI using QEMU
+cask "utm"
 # Open-source code editor
 cask "visual-studio-code"
 # Desktop client for WhatsApp

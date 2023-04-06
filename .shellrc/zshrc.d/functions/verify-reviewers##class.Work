@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+#
+# `verify-reviewers` checks the Verify group maintainers to determine which maintainer is best suited to be assigned a review
+#
+
+SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
+
+ruby -r "${SCRIPT_DIR}/gitlab-helpers.rb" -e 'pick_reviewer_for_group("gitlab-org/maintainers/cicd-verify")'

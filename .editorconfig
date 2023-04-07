@@ -40,3 +40,6 @@ max_line_length = 120
 # Tab indentation (no size specified)
 [.gitconfig]
 max_line_length = 120
+
+[*.lua]
+quote_style = single

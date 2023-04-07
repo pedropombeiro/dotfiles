@@ -4,13 +4,13 @@
 
 return {
   {
-    "williamboman/mason.nvim",
-    cmd = { "Mason", "MasonLog", "MasonUpdate", "MasonInstall", "MasonUninstall", "MasonUninstallAll" },
-    build = ":MasonUpdate", -- :MasonUpdate updates registry contents
+    'williamboman/mason.nvim',
+    cmd = { 'Mason', 'MasonLog', 'MasonUpdate', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll' },
+    build = ':MasonUpdate', -- :MasonUpdate updates registry contents
     config = function()
-      require("fzf-lua")    -- initialize fzf-lua in order to use its select UI
+      require('fzf-lua')    -- initialize fzf-lua in order to use its select UI
 
-      require("mason").setup()
+      require('mason').setup()
     end
   },
   {

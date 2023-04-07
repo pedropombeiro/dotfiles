@@ -2,54 +2,54 @@
 --  A blazing fast and easy to configure neovim statusline plugin written in pure lua.
 
 return {
-  "nvim-lualine/lualine.nvim",
-  event = "VeryLazy",
+  'nvim-lualine/lualine.nvim',
+  event = 'VeryLazy',
   dependencies = {
-    { "arkav/lualine-lsp-progress", lazy = true, event = "BufReadPost" }, -- LSP Progress lualine component
-    "kyazdani42/nvim-web-devicons",
+    { 'arkav/lualine-lsp-progress', lazy = true, event = 'BufReadPost' }, -- LSP Progress lualine component
+    'kyazdani42/nvim-web-devicons',
   },
   opts = function()
-    local config = require("config")
+    local config = require('config')
 
     return {
       options = {
         icons_enabled = true,
-        ignore_focus = { "lazy", "neotest-summary", "Outline", "Trouble" },
-        disabled_filetypes = { statusline = { "alpha", "lazy", "neotest-summary", "Outline", "Trouble" } },
+        ignore_focus = { 'lazy', 'neotest-summary', 'Outline', 'Trouble' },
+        disabled_filetypes = { statusline = { 'alpha', 'lazy', 'neotest-summary', 'Outline', 'Trouble' } },
         globalstatus = true,
       },
       extensions = {
-        "fugitive",
-        "man",
-        "neo-tree",
-        "nvim-dap-ui",
-        "quickfix",
-        "symbols-outline",
+        'fugitive',
+        'man',
+        'neo-tree',
+        'nvim-dap-ui',
+        'quickfix',
+        'symbols-outline',
       },
       sections = {
-        lualine_a = { "mode" },
-        lualine_b = { "branch" },
+        lualine_a = { 'mode' },
+        lualine_b = { 'branch' },
         lualine_c = {
           {
-            "diagnostics",
+            'diagnostics',
             symbols = {
               ---@diagnostic disable: undefined-field
-              hint  = config.icons.diagnostics.hint .. " ",
-              info  = config.icons.diagnostics.info .. " ",
-              warn  = config.icons.diagnostics.warning .. " ",
-              error = config.icons.diagnostics.error .. " ",
+              hint  = config.icons.diagnostics.hint .. ' ',
+              info  = config.icons.diagnostics.info .. ' ',
+              warn  = config.icons.diagnostics.warning .. ' ',
+              error = config.icons.diagnostics.error .. ' ',
               ---@diagnostic enable: undefined-field
             },
           },
-          { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+          { 'filetype', icon_only = true, separator = '', padding = { left = 1, right = 0 } },
           {
-            "filename",
+            'filename',
             show_filename_only = false,
             path = 1,
             shorting_target = 80,
           },
           {
-            "lsp_progress",
+            'lsp_progress',
             colors = {
               ---@diagnostic disable: undefined-field
               percentage      = config.theme.colors.cyan,
@@ -61,36 +61,36 @@ return {
               ---@diagnostic enable: undefined-field
             },
             separators = {
-              component = " ",
-              progress = " | ",
-              percentage = { pre = "", post = "%% " },
-              title = { pre = "", post = ": " },
-              lsp_client_name = { pre = "[", post = "]" },
-              spinner = { pre = "", post = "" },
-              message = { pre = "(", post = ")", commenced = "In Progress", completed = "Completed" },
+              component = ' ',
+              progress = ' | ',
+              percentage = { pre = '', post = '%% ' },
+              title = { pre = '', post = ': ' },
+              lsp_client_name = { pre = '[', post = ']' },
+              spinner = { pre = '', post = '' },
+              message = { pre = '(', post = ')', commenced = 'In Progress', completed = 'Completed' },
             },
-            display_components = { "lsp_client_name", "spinner", { "title", "percentage", "message" } },
+            display_components = { 'lsp_client_name', 'spinner', { 'title', 'percentage', 'message' } },
             timer = { progress_enddelay = 500, spinner = 1000, lsp_client_name_enddelay = 1000 },
-            spinner_symbols = { "🌑 ", "🌒 ", "🌓 ", "🌔 ", "🌕 ", "🌖 ", "🌗 ", "🌘 " },
+            spinner_symbols = { '🌑 ', '🌒 ', '🌓 ', '🌔 ', '🌕 ', '🌖 ', '🌗 ', '🌘 ' },
           }
         },
         lualine_x = {
           {
-            "diff",
+            'diff',
             symbols = {
               ---@diagnostic disable: undefined-field
-              added    = config.icons.symbols.added .. " ",
-              modified = config.icons.symbols.modified .. " ",
-              removed  = config.icons.symbols.removed .. " ",
+              added    = config.icons.symbols.added .. ' ',
+              modified = config.icons.symbols.modified .. ' ',
+              removed  = config.icons.symbols.removed .. ' ',
               ---@diagnostic enable: undefined-field
             }
           },
-          "encoding",
-          "fileformat",
-          "filetype"
+          'encoding',
+          'fileformat',
+          'filetype'
         },
-        lualine_y = { "progress" },
-        lualine_z = { "location" }
+        lualine_y = { 'progress' },
+        lualine_z = { 'location' }
       }
     }
   end

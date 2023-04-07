@@ -2,13 +2,13 @@
 --  A simple, minimal highlighter plugin for neovim
 
 return {
-  "themercorp/themer.lua",
+  'themercorp/themer.lua',
   lazy = false,
   priority = 1000,                   -- make sure to load this before all the other start plugins
   opts = function()
     local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
     if theme == nil then
-      local config = require("config")
+      local config = require('config')
       ---@diagnostic disable-next-line: undefined-field
       theme = config.theme.name
     end

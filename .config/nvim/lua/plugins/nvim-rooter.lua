@@ -2,22 +2,22 @@
 --  minimal implementation of vim-rooter in lua.
 
 return {
-  "notjedi/nvim-rooter.lua",
+  'notjedi/nvim-rooter.lua',
   opts = {
     manual = false,
     rooter_patterns = {
-      ".git",
-      ".hg",
-      ".svn",
-      "Makefile",
+      '.git',
+      '.hg',
+      '.svn',
+      'Makefile',
     },
     trigger_patterns = {
-      "*.go",
-      "*.ino",
-      "*.rb",
-      "Makefile",
-      "*.mk",
-      "*.sh",
+      '*.go',
+      '*.ino',
+      '*.rb',
+      'Makefile',
+      '*.mk',
+      '*.sh',
     },
   }
 }

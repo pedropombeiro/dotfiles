@@ -3,10 +3,10 @@
 --   a popup with possible keybindings of the command you started typing.
 
 return {
-  "folke/which-key.nvim",
+  'folke/which-key.nvim',
   lazy = true,
   init = function()
-    require("plugins/which-key.keymap")
-    require("plugins/which-key.keymap-plugins")
+    require('plugins/which-key.keymap')
+    require('plugins/which-key.keymap-plugins')
   end
 }

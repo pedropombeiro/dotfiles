@@ -2,10 +2,10 @@
 --  Maintained fork of the fastest Neovim colorizer
 
 return {
-  "NvChad/nvim-colorizer.lua",
-  event = "BufReadPre",
+  'NvChad/nvim-colorizer.lua',
+  event = 'BufReadPre',
   opts = {
-    filetypes = { "*", "!lazy" },
+    filetypes = { '*', '!lazy' },
     user_default_options = {
       RGB = true,          -- #RGB hex codes
       RRGGBB = true,       -- #RRGGBB hex codes
@@ -17,22 +17,22 @@ return {
       css = false,         -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
       css_fn = false,      -- Enable all CSS *functions*: rgb_fn, hsl_fn
       -- Available modes for `mode`: foreground, background,  virtualtext
-      mode = "background", -- Set the display mode.
+      mode = 'background', -- Set the display mode.
     },
     -- all the sub-options of filetypes apply to buftypes
     buftypes = {
-      "*",
+      '*',
       -- exclude prompt and popup buftypes from highlight
-      "!FZF",
-      "!neo-tree",
-      "!Outline",
-      "!Trouble",
-      "!alpha",
-      "!lazy",
-      "!neotest-summary",
-      "!nofile",
-      "!popup",
-      "!prompt",
+      '!FZF',
+      '!neo-tree',
+      '!Outline',
+      '!Trouble',
+      '!alpha',
+      '!lazy',
+      '!neotest-summary',
+      '!nofile',
+      '!popup',
+      '!prompt',
     }
   }
 }

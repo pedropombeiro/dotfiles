@@ -2,12 +2,12 @@
 --  The BClose Vim plugin for deleting a buffer without closing the window
 
 return {
-  "rbgrouleff/bclose.vim",
-  cmd = "Bclose",
+  'rbgrouleff/bclose.vim',
+  cmd = 'Bclose',
   keys = {
-    { "<leader>bd", "<Cmd>Bclose<CR>", desc = "Close buffer" }
+    { '<leader>bd', '<Cmd>Bclose<CR>', desc = 'Close buffer' }
   },
   init = function()
-    require("mapx").nname("<leader>b", "Bclose")
+    require('mapx').nname('<leader>b', 'Bclose')
   end
 }

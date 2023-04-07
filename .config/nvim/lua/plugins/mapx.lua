@@ -2,8 +2,8 @@
 --  🗺 A better way to create key mappings in Neovim
 
 return {
-  "b0o/mapx.nvim",
+  'b0o/mapx.nvim',
   lazy = true,
-  dependencies = "folke/which-key.nvim",
-  opts = { global = "force", whichkey = true }
+  dependencies = 'folke/which-key.nvim',
+  opts = { global = 'force', whichkey = true }
 }

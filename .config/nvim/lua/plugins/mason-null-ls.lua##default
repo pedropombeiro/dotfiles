@@ -7,25 +7,25 @@
 --  **Note: this plugin uses the null-ls source names in the APIs it exposes - not mason.nvim package names.
 
 return {
-  "jayp0521/mason-null-ls.nvim",
-  event = "BufReadPre",
+  'jayp0521/mason-null-ls.nvim',
+  event = 'BufReadPre',
   dependencies = {
-    "jose-elias-alvarez/null-ls.nvim",
-    "williamboman/mason.nvim",
+    'jose-elias-alvarez/null-ls.nvim',
+    'williamboman/mason.nvim',
   },
   opts = {
     automatic_installation = true,
     ensure_installed = {
-      "actionlint",
-      "docker-compose-language-service",
-      "jsonlint",
-      "lua_ls",
-      "markdownlint",
-      "shfmt",
-      "shellcheck",
-      "stylua",
-      "vale",
-      "yamlfmt",
+      'actionlint',
+      'docker-compose-language-service',
+      'jsonlint',
+      'lua_ls',
+      'markdownlint',
+      'shfmt',
+      'shellcheck',
+      'stylua',
+      'vale',
+      'yamlfmt',
     }
   }
 }

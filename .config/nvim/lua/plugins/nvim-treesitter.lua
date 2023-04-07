@@ -3,66 +3,66 @@
 
 return {
   {
-    "nvim-treesitter/nvim-treesitter-textobjects", -- Syntax aware text-objects, select, move, swap, and peek support.
-    event = "BufReadPre",
+    'nvim-treesitter/nvim-treesitter-textobjects', -- Syntax aware text-objects, select, move, swap, and peek support.
+    event = 'BufReadPre',
   },
 
   {
-    "nvim-treesitter/nvim-treesitter-context", -- Show code context
-    event = "BufReadPre",
+    'nvim-treesitter/nvim-treesitter-context', -- Show code context
+    event = 'BufReadPre',
     config = function()
       ---@diagnostic disable-next-line: undefined-field
-      local colors = require("config").theme.colors
+      local colors = require('config').theme.colors
 
-      require("treesitter-context").setup()
+      require('treesitter-context').setup()
 
-      vim.api.nvim_set_hl(0, "TreesitterContextBottom", { underline = true, sp = colors.bg0_s })
+      vim.api.nvim_set_hl(0, 'TreesitterContextBottom', { underline = true, sp = colors.bg0_s })
     end,
   },
 
   {
-    "nvim-treesitter/nvim-treesitter",
-    event = "BufReadPost",
+    'nvim-treesitter/nvim-treesitter',
+    event = 'BufReadPost',
     dependencies = {
       {
-        "RRethy/nvim-treesitter-endwise", --- Wisely add 'end' in Ruby, Vimscript, Lua, etc.
-        event = "InsertEnter"
+        'RRethy/nvim-treesitter-endwise', --- Wisely add 'end' in Ruby, Vimscript, Lua, etc.
+        event = 'InsertEnter'
       },
       {
-        "JoosepAlviste/nvim-ts-context-commentstring", -- Neovim treesitter plugin for setting the commentstring based on the cursor location in a file.
-        event = "InsertEnter"
+        'JoosepAlviste/nvim-ts-context-commentstring', -- Neovim treesitter plugin for setting the commentstring based on the cursor location in a file.
+        event = 'InsertEnter'
       },
-      "HiPhish/nvim-ts-rainbow2", -- Rainbow delimiters for Neovim through Tree-sitter
+      'HiPhish/nvim-ts-rainbow2', -- Rainbow delimiters for Neovim through Tree-sitter
     },
     build = function()
-      local ts_update = require("nvim-treesitter.install").update({ with_sync = true })
+      local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
       ts_update()
     end,
     config = function()
       local opts = {
         -- A list of parser names, or "all"
         ensure_installed = {
-          "bash",
-          "diff",
-          "dockerfile",
-          "git_rebase",
-          "gitignore",
-          "go",
-          "gomod",
-          "json",
-          "help",
-          "html",
-          "lua",
-          "make",
-          "markdown",
-          "markdown_inline",
-          "python",
-          "regex",
-          "ruby",
-          "sql",
-          "toml",
-          "vim",
-          "yaml"
+          'bash',
+          'diff',
+          'dockerfile',
+          'git_rebase',
+          'gitignore',
+          'go',
+          'gomod',
+          'json',
+          'help',
+          'html',
+          'lua',
+          'make',
+          'markdown',
+          'markdown_inline',
+          'python',
+          'regex',
+          'ruby',
+          'sql',
+          'toml',
+          'vim',
+          'yaml'
         },
         -- Install parsers synchronously (only applied to `ensure_installed`)
         sync_install = false,
@@ -71,8 +71,8 @@ return {
         auto_install = false,
         -- List of parsers to ignore installing (for "all")
         ignore_install = {
-          "java",
-          "javascript"
+          'java',
+          'javascript'
         },
         endwise = {
           enable = true,
@@ -80,9 +80,9 @@ return {
         rainbow = {
           enable = true,
           -- Which query to use for finding delimiters
-          query = "rainbow-parens",
+          query = 'rainbow-parens',
           -- Highlight the entire buffer all at once
-          strategy = require "ts-rainbow".strategy.global,
+          strategy = require 'ts-rainbow'.strategy.global,
         },
         context_commentstring = { enable = true, enable_autocmd = false },
         highlight = {
@@ -94,7 +94,7 @@ return {
           -- Instead of true it can also be a list of languages
           additional_vim_regex_highlighting = false,
           disable = function(lang, bufnr) -- Disable in large buffers
-            if lang == "markdown" then
+            if lang == 'markdown' then
               return true
             end
 
@@ -102,10 +102,10 @@ return {
           end,
           -- additional_vim_regex_highlighting = true,
         },
-        indent = { enable = true, disable = { "python", "css", "rust" } },
+        indent = { enable = true, disable = { 'python', 'css', 'rust' } },
         autotag = {
           enable = true,
-          disable = { "xml", "markdown" },
+          disable = { 'xml', 'markdown' },
         },
         textobjects = {
           select = {
@@ -114,45 +114,45 @@ return {
             lookahead = true,
             keymaps = {
               -- You can use the capture groups defined in textobjects.scm
-              ["af"] = "@function.outer",
-              ["if"] = "@function.inner",
-              ["ac"] = "@class.outer",
-              ["ic"] = "@class.inner"
+              ['af'] = '@function.outer',
+              ['if'] = '@function.inner',
+              ['ac'] = '@class.outer',
+              ['ic'] = '@class.inner'
             }
           },
           move = {
             enable = true,
             set_jumps = true,
             goto_next_start = {
-              ["]m"] = "@function.outer",
-              ["]]"] = "@class.outer"
+              [']m'] = '@function.outer',
+              [']]'] = '@class.outer'
             },
             goto_next_end = {
-              ["]M"] = "@function.outer",
-              ["]["] = "@class.outer"
+              [']M'] = '@function.outer',
+              [']['] = '@class.outer'
             },
             goto_previous_start = {
-              ["[m"] = "@function.outer",
-              ["[["] = "@class.outer"
+              ['[m'] = '@function.outer',
+              ['[['] = '@class.outer'
             },
             goto_previous_end = {
-              ["[M"] = "@function.outer",
-              ["[]"] = "@class.outer"
+              ['[M'] = '@function.outer',
+              ['[]'] = '@class.outer'
             }
           },
           swap = {
             enable = true,
             swap_next = {
-              ["<leader>."] = "@parameter.inner",
+              ['<leader>.'] = '@parameter.inner',
             },
             swap_previous = {
-              ["<leader>,"] = "@parameter.inner",
+              ['<leader>,'] = '@parameter.inner',
             },
           },
         },
       }
 
-      require("nvim-treesitter.configs").setup(opts)
+      require('nvim-treesitter.configs').setup(opts)
     end
   }
 }

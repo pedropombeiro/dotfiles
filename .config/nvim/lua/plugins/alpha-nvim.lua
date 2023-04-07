@@ -2,17 +2,17 @@
 --  a lua powered greeter like vim-startify / dashboard-nvim
 
 return {
-  "goolord/alpha-nvim",
-  dependencies = "kyazdani42/nvim-web-devicons",
-  event = "VimEnter",
+  'goolord/alpha-nvim',
+  dependencies = 'kyazdani42/nvim-web-devicons',
+  event = 'VimEnter',
   opts = function()
     -- originally authored by @AdamWhittingham
-    local path_ok, plenary_path = pcall(require, "plenary.path")
+    local path_ok, plenary_path = pcall(require, 'plenary.path')
     if not path_ok then
       return {}
     end
 
-    local dashboard = require("alpha.themes.dashboard")
+    local dashboard = require('alpha.themes.dashboard')
     local cdir = vim.fn.getcwd()
     local if_nil = vim.F.if_nil
 
@@ -22,8 +22,8 @@ return {
     }
 
     local function get_extension(fn)
-      local match = fn:match("^.+(%..+)$")
-      local ext = ""
+      local match = fn:match('^.+(%..+)$')
+      local ext = ''
       if match ~= nil then
         ext = match:sub(2)
       end
@@ -31,7 +31,7 @@ return {
     end
 
     local function icon(fn)
-      local nwd = require("nvim-web-devicons")
+      local nwd = require('nvim-web-devicons')
       local ext = get_extension(fn)
       return nwd.get_icon(fn, ext, { default = true })
     end
@@ -44,33 +44,33 @@ return {
       if nvim_web_devicons.enabled then
         local ico, hl = icon(fn)
         local hl_option_type = type(nvim_web_devicons.highlight)
-        if hl_option_type == "boolean" then
+        if hl_option_type == 'boolean' then
           if hl and nvim_web_devicons.highlight then
             table.insert(fb_hl, { hl, 0, 3 })
           end
         end
-        if hl_option_type == "string" then
+        if hl_option_type == 'string' then
           table.insert(fb_hl, { nvim_web_devicons.highlight, 0, 3 })
         end
-        ico_txt = ico .. "  "
+        ico_txt = ico .. '  '
       else
-        ico_txt = ""
+        ico_txt = ''
       end
-      local cd_cmd = (autocd and " | cd %:p:h" or "")
-      local file_button_el = dashboard.button(sc, ico_txt .. short_fn, "<cmd>e " .. fn .. cd_cmd .. " <CR>")
-      local fn_start = short_fn:match(".*[/\\]")
+      local cd_cmd = (autocd and ' | cd %:p:h' or '')
+      local file_button_el = dashboard.button(sc, ico_txt .. short_fn, '<cmd>e ' .. fn .. cd_cmd .. ' <CR>')
+      local fn_start = short_fn:match('.*[/\\]')
       if fn_start ~= nil then
-        table.insert(fb_hl, { "Comment", #ico_txt - 2, #fn_start + #ico_txt })
+        table.insert(fb_hl, { 'Comment', #ico_txt - 2, #fn_start + #ico_txt })
       end
       file_button_el.opts.hl = fb_hl
       return file_button_el
     end
 
-    local default_mru_ignore = { "gitcommit" }
+    local default_mru_ignore = { 'gitcommit' }
 
     local mru_opts = {
       ignore = function(path, ext)
-        return (string.find(path, "COMMIT_EDITMSG")) or (vim.tbl_contains(default_mru_ignore, ext))
+        return (string.find(path, 'COMMIT_EDITMSG')) or (vim.tbl_contains(default_mru_ignore, ext))
       end,
       autocd = false
     }
@@ -104,9 +104,9 @@ return {
       for i, fn in ipairs(oldfiles) do
         local short_fn
         if cwd then
-          short_fn = vim.fn.fnamemodify(fn, ":.")
+          short_fn = vim.fn.fnamemodify(fn, ':.')
         else
-          short_fn = vim.fn.fnamemodify(fn, ":~")
+          short_fn = vim.fn.fnamemodify(fn, ':~')
         end
 
         if #short_fn > target_width then
@@ -118,11 +118,11 @@ return {
 
         local shortcut = tostring(i + start - 1)
 
-        local file_button_el = file_button(fn:gsub("#", '\\#'), shortcut, short_fn, opts.autocd)
+        local file_button_el = file_button(fn:gsub('#', '\\#'), shortcut, short_fn, opts.autocd)
         tbl[i] = file_button_el
       end
       return {
-        type = "group",
+        type = 'group',
         val = tbl,
         opts = {},
       }
@@ -130,10 +130,10 @@ return {
 
     local version = vim.version()
     local header = {
-      type = "text",
+      type = 'text',
       val = {
         [[                               __     ]] ..
-        version.major .. "." .. version.minor .. "." .. version.patch .. [[      ]],
+        version.major .. '.' .. version.minor .. '.' .. version.patch .. [[      ]],
         [[  ___     ___    ___   __  __ /\_\    ___ ___    ]],
         [[ / _ `\  / __`\ / __`\/\ \/\ \\/\ \  / __` __`\  ]],
         [[/\ \/\ \/\  __//\ \_\ \ \ \_/ |\ \ \/\ \/\ \/\ \ ]],
@@ -141,27 +141,27 @@ return {
         [[ \/_/\/_/\/____/\/___/  \/__/    \/_/\/_/\/_/\/_/]],
       },
       opts = {
-        position = "center",
-        hl = "Type",
+        position = 'center',
+        hl = 'Type',
         -- wrap = "overflow";
       },
     }
 
     local section_mru = {
-      type = "group",
+      type = 'group',
       val = {
         {
-          type = "text",
-          val = " Recent files",
+          type = 'text',
+          val = ' Recent files',
           opts = {
-            hl = "SpecialComment",
+            hl = 'SpecialComment',
             shrink_margin = false,
-            position = "center",
+            position = 'center',
           },
         },
-        { type = "padding", val = 1 },
+        { type = 'padding', val = 1 },
         {
-          type = "group",
+          type = 'group',
           val = function()
             return { mru(0, cdir) }
           end,
@@ -171,39 +171,39 @@ return {
     }
 
     local buttons = {
-      type = "group",
+      type = 'group',
       val = {
-        { type = "text",    val = "↯ Quick links", opts = { hl = "SpecialComment", position = "center" } },
-        { type = "padding", val = 1 },
-        dashboard.button("e", "  New file", "<cmd>ene<CR>"),
-        dashboard.button("b", "  Open branch files", "<cmd>Branch<CR>"),
-        dashboard.button("s", " " .. " Restore Session", [[:lua require("persistence").load() <CR>]]),
-        dashboard.button("SPC f f", "  Find file"),
-        dashboard.button("SPC f h", "  History"),
-        dashboard.button("SPC f r", "  Live grep"),
-        dashboard.button("c", "  Configuration", "<cmd>cd ~ | e $MYVIMRC | Neotree focus<CR>"),
-        dashboard.button("l", "󰒲  Plugin manager", "<cmd>Lazy!<CR>"),
-        dashboard.button("m", "  Mason", "<cmd>Mason<CR>"),
-        dashboard.button("q", "  Quit", "<cmd>qa<CR>"),
+        { type = 'text',    val = '↯ Quick links', opts = { hl = 'SpecialComment', position = 'center' } },
+        { type = 'padding', val = 1 },
+        dashboard.button('e', '  New file', '<cmd>ene<CR>'),
+        dashboard.button('b', '  Open branch files', '<cmd>Branch<CR>'),
+        dashboard.button('s', ' ' .. ' Restore Session', [[:lua require("persistence").load() <CR>]]),
+        dashboard.button('SPC f f', '  Find file'),
+        dashboard.button('SPC f h', '  History'),
+        dashboard.button('SPC f r', '  Live grep'),
+        dashboard.button('c', '  Configuration', '<cmd>cd ~ | e $MYVIMRC | Neotree focus<CR>'),
+        dashboard.button('l', '󰒲  Plugin manager', '<cmd>Lazy!<CR>'),
+        dashboard.button('m', '  Mason', '<cmd>Mason<CR>'),
+        dashboard.button('q', '  Quit', '<cmd>qa<CR>'),
       },
-      position = "center",
+      position = 'center',
     }
 
     local config = {
       layout = {
-        { type = "padding", val = 2 },
+        { type = 'padding', val = 2 },
         header,
-        { type = "padding", val = 2 },
+        { type = 'padding', val = 2 },
         section_mru,
-        { type = "padding", val = 2 },
+        { type = 'padding', val = 2 },
         buttons,
       },
       opts = {
         margin = 5,
         setup = function()
-          vim.api.nvim_create_autocmd("DirChanged", {
-            pattern = "*",
-            callback = function() require("alpha").redraw() end,
+          vim.api.nvim_create_autocmd('DirChanged', {
+            pattern = '*',
+            callback = function() require('alpha').redraw() end,
           })
         end,
       },

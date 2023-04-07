@@ -2,7 +2,7 @@
 --  A plugin for neovim that highlights cursor words and lines
 
 return {
-  "yamatsum/nvim-cursorline",
+  'yamatsum/nvim-cursorline',
   opts = {
     cursorline = {
       enable = true,

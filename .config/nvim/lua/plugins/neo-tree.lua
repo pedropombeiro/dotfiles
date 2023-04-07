@@ -2,54 +2,54 @@
 --  Neovim plugin to manage the file system and other tree like structures.
 
 return {
-  "nvim-neo-tree/neo-tree.nvim",
-  branch = "v2.x",
+  'nvim-neo-tree/neo-tree.nvim',
+  branch = 'v2.x',
   cond = function() return not vim.g.started_by_firenvim end,
-  cmd = "Neotree",
+  cmd = 'Neotree',
   dependencies = {
-    "nvim-lua/plenary.nvim",
-    "kyazdani42/nvim-web-devicons", -- not strictly required, but recommended
-    "MunifTanjim/nui.nvim",
+    'nvim-lua/plenary.nvim',
+    'kyazdani42/nvim-web-devicons', -- not strictly required, but recommended
+    'MunifTanjim/nui.nvim',
   },
   keys = {
     {
-      "<C-\\>",
-      "<Cmd>Neotree filesystem toggle reveal position=right<CR>",
-      mode = { "n", "v" },
-      desc = "Toggle file explorer"
+      '<C-\\>',
+      '<Cmd>Neotree filesystem toggle reveal position=right<CR>',
+      mode = { 'n', 'v' },
+      desc = 'Toggle file explorer'
     },
     {
-      "gx", -- Restore URL handling from disabled netrw plugin
+      'gx', -- Restore URL handling from disabled netrw plugin
       function()
-        if vim.fn.has("mac") == 1 then
-          vim.cmd [[call jobstart(["open", expand("<cfile>")], {"detach": v:true})<CR>]]
-        elseif vim.fn.has("unix") == 1 then
-          vim.cmd [[call jobstart(["xdg-open", expand("<cfile>")], {"detach": v:true})<CR>]]
+        if vim.fn.has('mac') == 1 then
+          vim.cmd [[call jobstart(['open', expand('<cfile>')], {'detach': v:true})<CR>]]
+        elseif vim.fn.has('unix') == 1 then
+          vim.cmd [[call jobstart(['xdg-open', expand('<cfile>')], {'detach': v:true})<CR>]]
         else
-          print("Error: gx is not supported on this OS!")
+          print('Error: gx is not supported on this OS!')
         end
       end,
-      "Open URL"
+      'Open URL'
     },
   },
   init = function()
     vim.g.neo_tree_remove_legacy_commands = 1
     if vim.fn.argc() == 1 then
       local stat = vim.loop.fs_stat(vim.fn.argv(0))
-      if stat and stat.type == "directory" then
-        require("neo-tree")
+      if stat and stat.type == 'directory' then
+        require('neo-tree')
       end
     end
   end,
   opts = function()
     ---@diagnostic disable: undefined-field
-    local icons = require("config").icons
+    local icons = require('config').icons
     ---@diagnostic enable: undefined-field
 
-    vim.fn.sign_define("DiagnosticSignError", { text = icons.diagnostics.error, texthl = "DiagnosticSignError" })
-    vim.fn.sign_define("DiagnosticSignWarn", { text = icons.diagnostics.warning, texthl = "DiagnosticSignWarn" })
-    vim.fn.sign_define("DiagnosticSignInfo", { text = icons.diagnostics.info, texthl = "DiagnosticSignInfo" })
-    vim.fn.sign_define("DiagnosticSignHint", { text = icons.diagnostics.hint, texthl = "DiagnosticSignHint" })
+    vim.fn.sign_define('DiagnosticSignError', { text = icons.diagnostics.error, texthl = 'DiagnosticSignError' })
+    vim.fn.sign_define('DiagnosticSignWarn', { text = icons.diagnostics.warning, texthl = 'DiagnosticSignWarn' })
+    vim.fn.sign_define('DiagnosticSignInfo', { text = icons.diagnostics.info, texthl = 'DiagnosticSignInfo' })
+    vim.fn.sign_define('DiagnosticSignHint', { text = icons.diagnostics.hint, texthl = 'DiagnosticSignHint' })
 
     return {
       default_component_configs = {
@@ -71,22 +71,22 @@ return {
           hide_gitignored = true,
           hide_hidden     = true, -- only works on Windows for hidden files/directories
           hide_by_name    = {
-            ".git",
-            "node_modules",
+            '.git',
+            'node_modules',
           },
           hide_by_pattern = { -- uses glob style patterns
-            "*.zwc",
+            '*.zwc',
           },
           never_show      = { -- remains hidden even if visible is toggled to true, this overrides always_show
-            ".DS_Store",
-            "thumbs.db"
+            '.DS_Store',
+            'thumbs.db'
           },
         }
       },
       window = {
-        position = "right",
+        position = 'right',
         mappings = {
-          ["<space>"] = "none",
+          ['<space>'] = 'none',
         },
       },
     }

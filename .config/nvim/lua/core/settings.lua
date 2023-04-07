@@ -84,7 +84,7 @@ vim.opt.incsearch    = true -- Find the next match as we type the search
 vim.opt.hlsearch     = true -- Highlight searches by default
 vim.opt.ignorecase   = true -- Ignore case when searching...
 vim.opt.smartcase    = true -- ...unless we type a capital
-vim.opt.grepprg      = 'rg --vimgrep --smart-case --follow'
+vim.opt.grepprg      = 'rg --vimgrep --smart-case --follow '
 
 ---------------- Format --------------------------
 
@@ -99,7 +99,6 @@ vim.opt.tabstop      = 2
 vim.opt.listchars    = {
   precedes = '⟨',
   extends = '⟩',
-  eol = '↵',
   trail = '·',
   tab = '│·',
   nbsp = '␣'

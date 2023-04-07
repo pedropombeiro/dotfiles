@@ -91,6 +91,35 @@ return {
   { 'tummetott/unimpaired.nvim', config = true }, -- LUA port of tpope's famous vim-unimpaired plugin
 
   --### Other
+  {
+    'rcarriga/nvim-notify', -- A fancy, configurable, notification manager for NeoVim
+    event = 'VeryLazy',
+    opts = function()
+      local config = require('config')
+
+      return {
+        timeout = 3000,
+        max_height = function()
+          return math.floor(vim.o.lines * 0.75)
+        end,
+        max_width = function()
+          return math.floor(vim.o.columns * 0.75)
+        end,
+        icons = {
+          ---@diagnostic disable: undefined-field
+          DEBUG = config.icons.diagnostics.debug,
+          TRACE = config.icons.diagnostics.trace,
+          INFO = config.icons.diagnostics.info,
+          WARN = config.icons.diagnostics.warning,
+          ERROR = config.icons.diagnostics.error,
+          ---@diagnostic enable: undefined-field
+        }
+      }
+    end,
+    config = function()
+      vim.notify = require('notify')
+    end
+  },
   { 'tmux-plugins/vim-tmux',     ft = 'tmux' }, -- Vim plugin for .tmux.conf
   {
     'tpope/vim-dispatch',                       -- dispatch.vim: Asynchronous build and test dispatcher

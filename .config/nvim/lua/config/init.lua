@@ -27,7 +27,9 @@ return {
       expanded  = '',
     },
     diagnostics = {
+      debug   = '',
       hint    = '',
+      trace   = '✎',
       info    = '',
       warning = '',
       error   = '',

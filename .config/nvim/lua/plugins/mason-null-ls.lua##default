@@ -19,9 +19,11 @@ return {
       "actionlint",
       "docker-compose-language-service",
       "jsonlint",
+      "lua_ls",
       "markdownlint",
       "shfmt",
       "shellcheck",
+      "stylua",
       "vale",
       "yamlfmt",
     }

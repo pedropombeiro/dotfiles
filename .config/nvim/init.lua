@@ -1,3 +1,7 @@
+if vim.fn.has('nvim-0.9') == 1 then
+  vim.loader.enable() -- Enable experimental |lua-loader| that byte-compiles and caches lua files.
+end
+
 vim.api.nvim_exec('autocmd!', false)
 
 vim.g.mapleader = ' '

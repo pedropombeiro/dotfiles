@@ -50,7 +50,7 @@ return {
           'go',
           'gomod',
           'json',
-          'help',
+          'vimdoc',
           'html',
           'lua',
           'make',

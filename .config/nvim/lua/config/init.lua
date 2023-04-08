@@ -23,8 +23,8 @@ return {
       expanded  = '',
     },
     expander = {
-      collapsed = '',
-      expanded  = '',
+      collapsed = '',
+      expanded  = '',
     },
     diagnostics = {
       debug   = '',

@@ -10,7 +10,7 @@ local function setFoldOptions()
   vim.opt.foldlevel      = 99
   vim.opt.foldlevelstart = 99
   vim.opt.foldenable     = true
-  vim.opt.fillchars      = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+  vim.opt.fillchars      = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
 end
 
 local function fold_virt_text_handler(virtText, lnum, endLnum, width, truncate)
@@ -42,57 +42,74 @@ local function fold_virt_text_handler(virtText, lnum, endLnum, width, truncate)
 end
 
 return {
-  'kevinhwang91/nvim-ufo',
-  dependencies = {
-    'kevinhwang91/promise-async',
-    'neovim/nvim-lspconfig',
-  },
-  event = 'BufRead',
-  ft = {
-    'bash',
-    'go',
-    'json',
-    'lua',
-    'markdown',
-    'ruby',
-    'yaml',
-  },
-  keys = {
-    { 'zR', function() require('ufo').openAllFolds() end,  mode = { 'n', 'v' }, desc = 'Open All Folds', },
-    { 'zM', function() require('ufo').closeAllFolds() end, mode = { 'n', 'v' }, desc = 'Close All Folds', },
-    {
-      'K',
-      function()
-        local winid = require('ufo').peekFoldedLinesUnderCursor()
-        if not winid then
-          vim.lsp.buf.hover()
-        end
-      end,
-      mode = { 'n', 'v' }
-    }
-  },
-  opts = function()
-    setFoldOptions()
-
-    --- Override foldcolumn colors to match theme
-    local config = require('config')
-    local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
-    ---@diagnostic disable: undefined-field
-    if theme == config.theme.name then
-      local function set_hl(name, attr)
-        vim.api.nvim_set_hl(0, name, attr)
-      end
-
-      set_hl('FoldColumn', { ctermbg = 'none', bg = 'none', ctermfg = 'gray', fg = config.theme.colors.gray })
-      ---@diagnostic enable: undefined-field
+  {
+    'luukvbaal/statuscol.nvim', -- Status column plugin that provides a configurable 'statuscolumn' and click handlers.
+    event = { 'BufRead', 'BufNewFile' },
+    config = function()
+      local builtin = require('statuscol.builtin')
+      require('statuscol').setup({
+        relculright = true,
+        segments = {
+          { text = { builtin.foldfunc },      click = 'v:lua.ScFa' },
+          { text = { '%s' },                  click = 'v:lua.ScSa' },
+          { text = { builtin.lnumfunc, ' ' }, click = 'v:lua.ScLa' }
+        }
+      })
     end
+  },
+  {
+    'kevinhwang91/nvim-ufo',
+    dependencies = {
+      'kevinhwang91/promise-async',
+      'neovim/nvim-lspconfig',
+    },
+    event = { 'BufRead', 'BufNewFile' },
+    ft = {
+      'bash',
+      'go',
+      'json',
+      'lua',
+      'markdown',
+      'ruby',
+      'yaml',
+    },
+    keys = {
+      { 'zR', function() require('ufo').openAllFolds() end,  mode = { 'n', 'v' }, desc = 'Open All Folds', },
+      { 'zM', function() require('ufo').closeAllFolds() end, mode = { 'n', 'v' }, desc = 'Close All Folds', },
+      {
+        'K',
+        function()
+          local winid = require('ufo').peekFoldedLinesUnderCursor()
+          if not winid then
+            vim.lsp.buf.hover()
+          end
+        end,
+        mode = { 'n', 'v' }
+      }
+    },
+    opts = function()
+      setFoldOptions()
 
-    return {
-      close_fold_kinds       = { 'imports' },
-      fold_virt_text_handler = fold_virt_text_handler,
-      provider_selector      = function(bufnr, filetype, buftype)
-        return { 'treesitter', 'indent' }
+      --- Override foldcolumn colors to match theme
+      local config = require('config')
+      local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
+      ---@diagnostic disable: undefined-field
+      if theme == config.theme.name then
+        local function set_hl(name, attr)
+          vim.api.nvim_set_hl(0, name, attr)
+        end
+
+        set_hl('FoldColumn', { ctermbg = 'none', bg = 'none', ctermfg = 'gray', fg = config.theme.colors.gray })
+        ---@diagnostic enable: undefined-field
       end
-    }
-  end,
+
+      return {
+        close_fold_kinds       = { 'imports' },
+        fold_virt_text_handler = fold_virt_text_handler,
+        provider_selector      = function(bufnr, filetype, buftype)
+          return { 'treesitter', 'indent' }
+        end
+      }
+    end,
+  }
 }

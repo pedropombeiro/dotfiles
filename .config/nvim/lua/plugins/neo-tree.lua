@@ -60,6 +60,7 @@ return {
         indent = {
           expander_collapsed = icons.expander.collapsed,
           expander_expanded  = icons.expander.expanded,
+          expander_highlight = 'NeoTreeExpander',
         },
       },
       filesystem = {

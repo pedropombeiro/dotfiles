@@ -13,6 +13,26 @@ return {
       theme = config.theme.name
     end
 
+    if theme == 'gruvbox-material-dark-soft' then
+      -- Some colors in the soft scheme need adjusting, in order to have an acceptable contrast
+      local function define_highlights()
+        vim.cmd [[
+        highlight DiffAdd ctermbg=4 guibg=#32361a
+        highlight DiffChange ctermbg=5 guibg=#282828 guifg=#d79921 gui=reverse
+        highlight DiffDelete ctermfg=12 ctermbg=6 gui=bold guibg=#3c1f1e
+        highlight DiffText cterm=bold ctermbg=9 gui=bold guibg=#7daea3
+      ]]
+      end
+
+      local augroup = vim.api.nvim_create_augroup('ThemerColorSchemeRefresh', { clear = true })
+      vim.api.nvim_create_autocmd(
+        { 'BufRead', 'BufNewFile' },
+        {
+          callback = define_highlights,
+          group = augroup,
+        })
+    end
+
     return {
       colorscheme = theme,
       plugins = {

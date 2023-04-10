@@ -59,9 +59,9 @@ return {
         ---@diagnostic disable: undefined-field
         local icons = require('config').icons.diagnostics
         ---@diagnostic enable: undefined-field
-        local ret = (diag.error and icons.error .. diag.error .. ' ' or '')
-            .. (diag.warning and icons.warning .. diag.warning or '')
-        return vim.trim(ret)
+        local ret = (diag.error and (icons.error .. ' ' .. diag.error) or '')
+            .. (diag.warning and (icons.warning .. ' ' .. diag.warning) or '')
+        return ret
       end,
       offsets = {
         {

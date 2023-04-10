@@ -67,8 +67,8 @@ return {
         {
           filetype = 'neo-tree',
           text = 'Neo-tree',
-          highlight = 'Directory',
-          text_align = 'left',
+          highlight = 'BufferLineBuffer',
+          text_align = 'center',
         },
       },
     },

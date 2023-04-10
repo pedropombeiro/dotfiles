@@ -21,4 +21,5 @@ for ((i = 0; i < ${#test_files[@]}; i++)); do
   fi
 done
 
+echo "bundle exec rspec ${valid_test_files[@]}"
 bundle exec rspec "${valid_test_files[@]}"

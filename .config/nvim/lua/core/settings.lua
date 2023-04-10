@@ -83,51 +83,30 @@ vim.api.nvim_create_autocmd('InsertLeave', {
 
 ---------------- Search --------------------------
 
-vim.opt.incsearch    = true -- Find the next match as we type the search
-vim.opt.hlsearch     = true -- Highlight searches by default
-vim.opt.ignorecase   = true -- Ignore case when searching...
-vim.opt.smartcase    = true -- ...unless we type a capital
-vim.opt.grepprg      = 'rg --vimgrep --smart-case --follow '
+vim.opt.incsearch         = true -- Find the next match as we type the search
+vim.opt.hlsearch          = true -- Highlight searches by default
+vim.opt.ignorecase        = true -- Ignore case when searching...
+vim.opt.smartcase         = true -- ...unless we type a capital
+vim.opt.grepprg           = 'rg --vimgrep --smart-case --follow '
 
 ---------------- Format --------------------------
 
-vim.opt.encoding     = 'utf-8'
-vim.opt.termencoding = 'utf-8'
-vim.opt.fileformats  = 'unix,dos,mac' -- supported formats
-vim.opt.bomb         = false          -- don't use a BOM
-vim.opt.shiftwidth   = 2
-vim.opt.softtabstop  = 2
-vim.opt.tabstop      = 2
+vim.opt.encoding          = 'utf-8'
+vim.opt.termencoding      = 'utf-8'
+vim.opt.fileformats       = 'unix,dos,mac' -- supported formats
+vim.opt.bomb              = false          -- don't use a BOM
+vim.opt.shiftwidth        = 2
+vim.opt.softtabstop       = 2
+vim.opt.tabstop           = 2
 
-vim.opt.listchars    = {
+vim.opt.listchars         = {
   precedes = '⟨',
   extends = '⟩',
   trail = '·',
   tab = '│·',
   nbsp = '␣'
 }
-vim.opt.list         = true
-
--- highlight trailing whitespace (Mastering Vim Quickly)
-vim.cmd([[
-  function! HighlightExtraWhitespace()
-    highlight ExtraWhitespace ctermbg=red guibg=red
-    match ExtraWhitespace /\s\+$/
-  endfunction
-
-  augroup TrailingSpace
-    au!
-    autocmd BufNewFile,BufRead * call HighlightExtraWhitespace()
-    autocmd FileType alpha,help,neo-tree highlight clear ExtraWhitespace
-  augroup END
-]])
-
-local save_fmt_augroup = vim.api.nvim_create_augroup('save_fmt', { clear = true })
-vim.api.nvim_create_autocmd('BufWritePre', {
-  pattern = '*',
-  group = save_fmt_augroup,
-  command = ':%s/\\s\\+$//e' -- remove trailing whitespace on save (Mastering Vim Quickly)
-})
+vim.opt.list              = true
 
 local term_helper_augroup = vim.api.nvim_create_augroup('term_helper', { clear = true })
 vim.api.nvim_create_autocmd('TermOpen', {

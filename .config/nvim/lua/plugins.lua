@@ -89,6 +89,11 @@ return {
     config = true
   },
   { 'tummetott/unimpaired.nvim', config = true }, -- LUA port of tpope's famous vim-unimpaired plugin
+  {
+    'echasnovski/mini.trailspace',
+    version = '*',
+    config = function() require('mini.trailspace').setup({}) end,
+  },
 
   --### Other
   {

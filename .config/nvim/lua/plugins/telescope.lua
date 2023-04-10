@@ -110,6 +110,7 @@ return {
         build = 'make'
       }
     },
+    cmd = 'Telescope',
     keys = keys,
     init = function()
       local m = require('mapx')

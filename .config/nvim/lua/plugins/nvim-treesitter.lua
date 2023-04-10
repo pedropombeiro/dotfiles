@@ -38,8 +38,8 @@ return {
       local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
       ts_update()
     end,
-    config = function()
-      local opts = {
+    opts = function()
+      return {
         -- A list of parser names, or "all"
         ensure_installed = {
           'bash',
@@ -151,7 +151,8 @@ return {
           },
         },
       }
-
+    end,
+    config = function(_, opts)
       require('nvim-treesitter.configs').setup(opts)
     end
   }

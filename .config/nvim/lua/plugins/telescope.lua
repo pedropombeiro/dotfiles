@@ -104,7 +104,27 @@ return {
       m.nname('<leader>l', 'Telescope (LSP)')
       m.nname('<leader>lc', 'Telescope (LSP code actions)')
     end,
-    config = function()
+    opts = {
+      defaults = {
+        layout_strategy = 'vertical',
+        layout_config = {
+          vertical = { width = 0.7 }
+        },
+        mappings = {
+          i = {
+            -- map actions.which_key to <C-h> (default: <C-/>)
+            -- actions.which_key shows the mappings for your picker,
+            -- e.g. git_{create, delete, ...}_branch for the git_branches picker
+            ['<C-h>'] = 'which_key',
+            ['<Esc>'] = 'close', -- directly close on Escape
+            ['<c-t>'] = function(...)
+              return require('trouble.providers.telescope').open_with_trouble(...)
+            end,
+          }
+        }
+      }
+    },
+    config = function(_, opts)
       local config = require('config')
       local function set_hl(name, attr)
         vim.api.nvim_set_hl(0, name, attr)
@@ -113,26 +133,7 @@ return {
       set_hl('TelescopePromptTitle', { fg = config.theme.colors.dark_orange })
       set_hl('TelescopePromptBorder', { fg = config.theme.colors.dark_orange })
 
-      require('telescope').setup({
-        defaults = {
-          layout_strategy = 'vertical',
-          layout_config = {
-            vertical = { width = 0.7 }
-          },
-          mappings = {
-            i = {
-              -- map actions.which_key to <C-h> (default: <C-/>)
-              -- actions.which_key shows the mappings for your picker,
-              -- e.g. git_{create, delete, ...}_branch for the git_branches picker
-              ['<C-h>'] = 'which_key',
-              ['<Esc>'] = 'close', -- directly close on Escape
-              ['<c-t>'] = function(...)
-                return require('trouble.providers.telescope').open_with_trouble(...)
-              end,
-            }
-          }
-        }
-      })
+      require('telescope').setup(opts)
 
       require('telescope').load_extension 'fzf'
       require('telescope').load_extension 'lazy'

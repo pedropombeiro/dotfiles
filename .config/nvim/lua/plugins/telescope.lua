@@ -59,9 +59,24 @@ local keys = {
     end,
     desc = 'Git grep'
   },
-  { '<leader>fgf', '<Cmd>Telescope git_files<CR>',                     desc = 'Git files' },
-  { '<leader>fgs', '<Cmd>Telescope git_status<CR>',                    desc = 'Git status' },
-  { '<leader>fgS', '<Cmd>Telescope git_stash<CR>',                     desc = 'Git stash' },
+  { '<leader>fgf', '<Cmd>Telescope git_files<CR>', desc = 'Git files' },
+  { '<leader>fgS', '<Cmd>Telescope git_stash<CR>', desc = 'Git stash' },
+  {
+    '<leader>fgs',
+    function()
+      local opts = {}
+      local top_level = vim.fn.system('git rev-parse --show-toplevel')
+
+      if top_level ~= vim.fn.expand('~') then
+        opts = {
+          expand_dir = false -- if editing the dotfiles repo, do not show untracked files to avoid timeout
+        }
+      end
+
+      require('telescope.builtin').git_status(opts)
+    end,
+    desc = 'Git status',
+  },
 
   -- LSP operations
   { '<leader>ls',  '<Cmd>Telescope lsp_document_symbols<CR>',          desc = 'Document symbols' },

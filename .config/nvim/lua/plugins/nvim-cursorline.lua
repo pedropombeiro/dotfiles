@@ -3,6 +3,10 @@
 
 return {
   'yamatsum/nvim-cursorline',
+  init = function()
+    -- Disable cursorline for TelescopePrompt
+    vim.cmd [[ au FileType TelescopePrompt* setlocal nocursorline ]]
+  end,
   opts = {
     cursorline = {
       enable = true,

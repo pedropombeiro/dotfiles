@@ -33,7 +33,6 @@ if awk "BEGIN {exit !($mean_time >= 0.6)}"; then
 fi
 
 printf "${YELLOW}%s${NC}\n" "Updating neovim plugins..."
-rm -rf "${HOME}/.vim"
 nvim --headless '+Lazy! sync' +qa && \
   nvim --headless -c 'autocmd User MasonUpdateAllComplete quitall' -c 'MasonUpdate' -c 'MasonUpdateAll' && \
   printf "\n${GREEN}%s${NC}\n" "Done"

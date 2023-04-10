@@ -67,19 +67,7 @@ vim.opt.diffopt:append('linematch:60')
 
 vim.fn.setenv('GIT_CONFIG_PARAMETERS', "'delta.side-by-side=false'") -- Disable .gitconfig's delta option
 
--- Relative line number (Mastering Vim Quickly)
-vim.opt.relativenumber = true
-local toggle_relative_number_augroup = vim.api.nvim_create_augroup('toggle_relative_number', { clear = true })
-vim.api.nvim_create_autocmd('InsertEnter', {
-  pattern = '*',
-  group = toggle_relative_number_augroup,
-  command = 'setlocal norelativenumber'
-})
-vim.api.nvim_create_autocmd('InsertLeave', {
-  pattern = '*',
-  group = toggle_relative_number_augroup,
-  command = 'setlocal relativenumber'
-})
+vim.opt.relativenumber    = true
 
 ---------------- Search --------------------------
 
@@ -112,7 +100,8 @@ local term_helper_augroup = vim.api.nvim_create_augroup('term_helper', { clear =
 vim.api.nvim_create_autocmd('TermOpen', {
   pattern = '*',
   group = term_helper_augroup,
-  command = 'match none' -- clear the highlighting if we're a terminal buffer
+  command =
+  'match none | setlocal nonumber norelativenumber' -- clear the highlighting and line numbers if we're a terminal buffer
 })
 
 local justfile_open_augroup = vim.api.nvim_create_augroup('justfile_open', { clear = true })

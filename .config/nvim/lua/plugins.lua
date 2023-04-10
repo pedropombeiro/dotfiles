@@ -68,6 +68,10 @@ return {
 
   --### Editor enhancements
   {
+    'sitiom/nvim-numbertoggle', -- Neovim plugin to automatically toggle between relative and absolute line numbers.
+    event = 'BufReadPost',
+  },
+  {
     'Wansmer/treesj', -- Neovim plugin for splitting/joining blocks of code
     keys = {
       { 'gJ', ':TSJJoin<CR>',  desc = 'Join into single-line form' },

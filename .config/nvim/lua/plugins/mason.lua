@@ -7,11 +7,7 @@ return {
     'williamboman/mason.nvim',
     cmd = { 'Mason', 'MasonLog', 'MasonUpdate', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll' },
     build = ':MasonUpdate', -- :MasonUpdate updates registry contents
-    config = function()
-      require('telescope')  -- initialize telescope in order to use its select UI
-
-      require('mason').setup()
-    end
+    config = true
   },
   {
     'RubixDev/mason-update-all', -- Easily update all Mason packages with one command

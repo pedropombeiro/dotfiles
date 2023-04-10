@@ -88,7 +88,6 @@ return {
     version = false, -- telescope did only one release, so use HEAD for now
     dependencies = {
       'nvim-lua/plenary.nvim',
-      'nvim-telescope/telescope-ui-select.nvim',    -- It sets vim.ui.select to telescope.
       'tsakirist/telescope-lazy.nvim',              -- Telescope extension that provides handy functionality about plugins installed via lazy.nvim
       'nvim-telescope/telescope-symbols.nvim',      -- Provides its users with the ability of picking symbols and insert them at point.
       {
@@ -132,18 +131,10 @@ return {
               end,
             }
           }
-        },
-        extensions = {
-          ['ui-select'] = {
-            -- require("telescope.themes").get_dropdown {
-            -- even more opts
-            -- }
-          }
         }
       })
 
       require('telescope').load_extension 'fzf'
-      require('telescope').load_extension 'ui-select'
       require('telescope').load_extension 'lazy'
     end
   }

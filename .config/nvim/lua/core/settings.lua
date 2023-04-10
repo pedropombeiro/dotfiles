@@ -56,7 +56,6 @@ end
 vim.opt.title      = false -- change terms title
 vim.opt.number     = true  -- show line numbers
 vim.opt.ruler      = true  -- show ruler in status line
-vim.opt.showmode   = true  -- always show mode
 vim.opt.laststatus = 2     -- always show status line
 vim.opt.showcmd    = true  -- show the command being typed
 vim.opt.scrolloff  = 4     -- keep 4 lines off the edges

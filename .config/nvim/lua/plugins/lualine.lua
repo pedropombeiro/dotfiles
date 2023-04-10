@@ -8,14 +8,19 @@ return {
     { 'arkav/lualine-lsp-progress', lazy = true, event = 'BufReadPost' }, -- LSP Progress lualine component
     'kyazdani42/nvim-web-devicons',
   },
+  init = function()
+    vim.opt.showmode = false -- The mode is shown in Lualine anyway
+  end,
   opts = function()
     local config = require('config')
 
     return {
       options = {
         icons_enabled = true,
-        ignore_focus = { 'lazy', 'neotest-summary', 'Outline', 'Trouble' },
-        disabled_filetypes = { statusline = { 'alpha', 'lazy', 'neotest-summary', 'Outline', 'Trouble' } },
+        ignore_focus = { 'lazy', 'neotest-summary', 'Outline', 'TelescopePrompt', 'Trouble' },
+        disabled_filetypes = {
+          statusline = { 'alpha', 'lazy', 'neotest-summary', 'Outline', 'Trouble' },
+        },
         globalstatus = true,
       },
       extensions = {

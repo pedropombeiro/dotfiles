@@ -19,5 +19,9 @@ return {
       '*.mk',
       '*.sh',
     },
+    exclude_filetypes = {
+      ['vimdoc'] = true,
+      ['neo-tree'] = true,
+    },
   }
 }

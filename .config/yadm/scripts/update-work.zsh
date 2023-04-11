@@ -7,13 +7,6 @@ source "${YADM_SCRIPTS}/colors.sh"
 # Create rtx shims for key-value-server plist and for RubyMine debugger
 rtx reshim
 
-# Ensure Python is allowed to serve HTTP pages, so that the Walking Pad app is accessible to Home Assistant/Grafana
-PYTHON_PATH="$(realpath $(brew --prefix)/Frameworks/Python.framework/Versions/Current/Resources/Python.app/Contents/MacOS/Python)"
-if [[ -f $PYTHON_PATH ]]; then
-  sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add "${PYTHON_PATH}"
-  sudo /usr/libexec/ApplicationFirewall/socketfilterfw --unblockapp "${PYTHON_PATH}"
-fi
-
 # Populate gdk.yml
 if [[ -n ${GDK_ROOT} ]]; then
   cat << EOF > ${GDK_ROOT}/gdk.tmp.yml

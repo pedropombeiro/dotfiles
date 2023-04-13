@@ -8,4 +8,3 @@
 \setenv PAGER 'pspg -s 17'
 \pset border 2
 \pset linestyle unicode
-\pset enable_seqscan OFF

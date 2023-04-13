@@ -201,12 +201,12 @@ def pick_reviewer(candidates)
 
   puts Terminal::Table.new(
     title: 'Reviewers',
-    headings: ['Username', 'Availability', 'Requested MR reviews', 'Assigned MRs'],
+    headings: ['Username', 'Availability', 'Assigned MRs', 'Requested MR reviews'],
     rows: candidates.map do |c|
       availability = c.dig(*%w[status availability])
       assigned_count = c.dig(*%w[assignedMergeRequests count])
       requested_count = c.dig(*%w[reviewRequestedMergeRequests count])
-      ["@#{c['username']} (#{c['name']})", availability, requested_count, assigned_count]
+      ["@#{c['username']} (#{c['name']})", availability, assigned_count, requested_count]
     end
   )
 

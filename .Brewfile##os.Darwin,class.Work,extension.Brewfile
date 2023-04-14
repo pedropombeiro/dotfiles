@@ -32,8 +32,6 @@ brew "yamllint"
 brew "ansible-lint"
 # Record and share terminal sessions
 brew "asciinema"
-# GNU File, Shell, and Text utilities
-brew "coreutils"
 # Shell extension to jump to frequently used directories
 brew "autojump"
 # Bourne-Again SHell, a UNIX command interpreter
@@ -58,6 +56,8 @@ brew "checkmake"
 brew "cmake"
 # Diff your Docker containers
 brew "container-diff"
+# GNU File, Shell, and Text utilities
+brew "coreutils"
 # Securely send things from one computer to another
 brew "croc"
 # Top-like interface for container metrics
@@ -66,6 +66,8 @@ brew "ctop"
 brew "direnv"
 # Tool for exploring each layer in a docker image
 brew "dive"
+# Platform keystore credential helper for Docker
+brew "docker-credential-helper"
 # Text processing system for reStructuredText
 brew "docutils", link: false
 # GNU version of the tar archiving utility
@@ -163,7 +165,7 @@ brew "ncdu"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # HTTP(S) server and reverse proxy, and IMAP/POP3 proxy server
-brew "nginx"
+brew "nginx", restart_service: true
 # Port scanning utility for large networks
 brew "nmap"
 # Prometheus exporter for machine metrics
@@ -272,6 +274,8 @@ cask "balenaetcher"
 cask "bartender"
 # Compare files and folders
 cask "beyond-compare"
+# Prevents your sleeping computer from connecting to Bluetooth accessories
+cask "bluesnooze"
 # Volume booster and equalizer software
 cask "boom-3d"
 # GUI app for Homebrew
@@ -320,6 +324,8 @@ cask "jetbrains-toolbox"
 cask "kap"
 # Open-source keystroke visualizer
 cask "keycastr"
+# Interface for reading and syncing eBooks
+cask "kindle"
 # Sound clear in online meetings
 cask "krisp"
 # Create, manage and debug system- and user services
@@ -403,9 +409,7 @@ mas "Backdrop", id: 411461952
 mas "DaisyDisk", id: 411643860
 mas "Discovery", id: 1381004916
 mas "Expressions", id: 913158085
-mas "GarageBand", id: 682658836
 mas "HazeOver", id: 430798174
-mas "iMovie", id: 408981434
 mas "Keyboard Pilot", id: 402670023
 mas "Keynote", id: 409183694
 mas "Mactracker", id: 430255202

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Usage: glt_info pipeline
+curl -s 'https://gitlab.com/gitlab-com/www-gitlab-com/-/raw/master/data/stages.yml' | \
+  yq '.stages.[].groups.[] | select(.name | test("(?i)'"$*"'")) | {"name": .name, "slack_channel": .slack.channel, "pmm": .pmm, "pm": .pm, "tech_writer": .tech_writer, "appsec_engineer": .appsec_engineer, "categories": .categories }' -o=json

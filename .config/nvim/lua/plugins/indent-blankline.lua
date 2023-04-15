@@ -17,7 +17,7 @@ return {
   },
   {
     'echasnovski/mini.indentscope', -- Visualize and work with indent scope
-    version = '*',
+    version = false,
     event = { 'BufReadPre', 'BufNewFile' },
     init = function()
       vim.api.nvim_create_autocmd('FileType', {

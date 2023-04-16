@@ -174,7 +174,12 @@ return {
       end
 
       require('neodev').setup({
-        -- add any options here, or leave empty to use the default settings
+        library = {
+          plugins = { 'plenary.nvim', 'neotest' },
+          types = true,
+        },
+        runtime_path = true,
+        experimental = { pathStrict = true }
       })
 
       require('lsp-setup').setup({
@@ -195,6 +200,6 @@ return {
     -- 💻 Neovim setup for init.lua and plugin development with full signature help, docs and completion for the nvim lua API.
     'folke/neodev.nvim',
     lazy = true,
-    opts = { experimental = { pathStrict = true } },
+    ft = { 'lua' },
   }
 }

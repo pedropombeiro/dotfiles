@@ -2,6 +2,15 @@
 --  Git integration for buffers
 
 local on_attach = function(bufnr)
+  local name = vim.api.nvim_buf_get_name(bufnr)
+  if vim.fn.expand('%:t') == 'lsp.log' or vim.bo.filetype == 'help' then
+    return false
+  end
+  local size = vim.fn.getfsize(name)
+  if size > 1024 * 1024 * 5 then
+    return false
+  end
+
   local gs = package.loaded.gitsigns
   local m = require('mapx')
 
@@ -70,12 +79,34 @@ return {
   event = 'BufReadPre',
   opts = {
     signs = {
-      add = { text = '▎' },
-      change = { text = '▎' },
-      delete = { text = '契' },
-      topdelete = { text = '契' },
-      changedelete = { text = '▎' },
-      untracked = { text = '▎' },
+      add          = { text = '▌', show_count = true },
+      change       = { text = '▌', show_count = true },
+      delete       = { text = '▐', show_count = true },
+      topdelete    = { text = '▛', show_count = true },
+      changedelete = { text = '▚', show_count = true },
+      untracked    = { text = '▎' },
+    },
+    update_debounce = 500,
+    sign_priority = 10,
+    numhl = false,
+    signcolumn = true,
+    count_chars = {
+      [1] = '',
+      [2] = '₂',
+      [3] = '₃',
+      [4] = '₄',
+      [5] = '₅',
+      [6] = '₆',
+      [7] = '₇',
+      [8] = '₈',
+      [9] = '₉',
+      ['+'] = '₊',
+    },
+    diff_opts = {
+      internal = true,
+      algorithm = 'patience',
+      indent_heuristic = true,
+      linematch = 60,
     },
     on_attach = on_attach,
     yadm = {

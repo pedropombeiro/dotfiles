@@ -38,6 +38,7 @@ return {
       added    = '',
       modified = '',
       removed  = '',
+      renamed  = '',
     },
     tests = {
       passed  = '',

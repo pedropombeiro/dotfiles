@@ -62,6 +62,16 @@ return {
           expander_expanded  = icons.expander.expanded,
           expander_highlight = 'NeoTreeExpander',
         },
+        modified = {
+          symbol = icons.symbols.modified,
+        },
+        git_status = {
+          symbols = {
+            -- Change type
+            deleted = icons.symbols.removed,   -- this can only be used in the git_status source
+            renamed = icons.symbols.renamed,   -- this can only be used in the git_status source
+          }
+        },
       },
       filesystem = {
         bind_to_cwd = false,
@@ -82,7 +92,18 @@ return {
             '.DS_Store',
             'thumbs.db'
           },
-        }
+        },
+        find_args = {
+          fd = {
+            '-uu',
+            '--exclude',
+            '.git',
+            '--exclude',
+            'node_modules',
+            '--exclude',
+            'target',
+          },
+        },
       },
       window = {
         position = 'right',

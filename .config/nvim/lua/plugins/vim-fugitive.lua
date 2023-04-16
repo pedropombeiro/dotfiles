@@ -7,6 +7,8 @@ return {
     'Git', 'Gedit', 'Gdiffsplit', 'Gvdiffsplit', 'Gread', 'Gwrite', 'Ggrep', 'GMove', 'GDelete'
   },
   init = function()
+    vim.g.fugitive_legacy_commands = 0
+
     local fugitive_augroup = vim.api.nvim_create_augroup('fugitive', { clear = true })
 
     vim.api.nvim_create_autocmd('BufReadPost', {

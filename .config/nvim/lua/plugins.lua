@@ -103,6 +103,7 @@ return {
   {
     'rcarriga/nvim-notify', -- A fancy, configurable, notification manager for NeoVim
     event = 'VeryLazy',
+    priority = 60,
     opts = function()
       local config = require('config')
 

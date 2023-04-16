@@ -22,9 +22,9 @@ return {
 
   {
     'andymass/vim-matchup',
-    event = 'BufReadPre',
+    lazy = true, -- we let treesitter manage this
     init = function()
-      -- may set any options here
+      vim.g.matchup_matchparen_deferred = 1
       vim.g.matchup_matchparen_offscreen = { method = 'popup' }
     end
   },

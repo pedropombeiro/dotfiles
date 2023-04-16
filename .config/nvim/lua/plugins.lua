@@ -92,11 +92,7 @@ return {
     event = 'BufReadPost',
     config = true
   },
-  {
-    'echasnovski/mini.bracketed', -- Neovim Lua plugin to go forward/backward with square brackets.
-    version = false,
-    config = function() require('mini.bracketed').setup({}) end,
-  },
+  { 'tummetott/unimpaired.nvim', config = true }, -- LUA port of tpope's famous vim-unimpaired plugin
   {
     'echasnovski/mini.trailspace',
     version = false,
@@ -133,9 +129,9 @@ return {
       vim.notify = require('notify')
     end
   },
-  { 'tmux-plugins/vim-tmux',  ft = 'tmux' }, -- Vim plugin for .tmux.conf
+  { 'tmux-plugins/vim-tmux',     ft = 'tmux' }, -- Vim plugin for .tmux.conf
   {
-    'tpope/vim-dispatch',                    -- dispatch.vim: Asynchronous build and test dispatcher
+    'tpope/vim-dispatch',                       -- dispatch.vim: Asynchronous build and test dispatcher
     cmd = { 'Dispatch', 'Make', 'Focus', 'Start' }
   },
   {

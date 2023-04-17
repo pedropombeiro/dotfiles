@@ -5,19 +5,28 @@ return {
   'hrsh7th/nvim-cmp',
   event = 'InsertEnter',
   dependencies = {
-    'hrsh7th/cmp-buffer',                  -- nvim-cmp source for buffer words
-    'hrsh7th/cmp-nvim-lsp',                -- nvim-cmp source for neovim builtin LSP client
-    'hrsh7th/cmp-nvim-lua',                -- nvim-cmp source for nvim lua
-    'hrsh7th/cmp-path',                    -- nvim-cmp source for path
-    'hrsh7th/cmp-vsnip',                   -- nvim-cmp source for vim-vsnip
-    'hrsh7th/cmp-nvim-lsp-signature-help', -- nvim-cmp source for displaying function signatures with the current parameter emphasized
-    'hrsh7th/cmp-cmdline',                 -- nvim-cmp source for vim's cmdline
-    { 'hrsh7th/vim-vsnip',                 lazy = true },
+    'hrsh7th/cmp-buffer',                                 -- nvim-cmp source for buffer words
+    'hrsh7th/cmp-nvim-lsp',                               -- nvim-cmp source for neovim builtin LSP client
+    'hrsh7th/cmp-nvim-lua',                               -- nvim-cmp source for nvim lua
+    'hrsh7th/cmp-path',                                   -- nvim-cmp source for path
+    'hrsh7th/cmp-vsnip',                                  -- nvim-cmp source for vim-vsnip
+    'hrsh7th/cmp-nvim-lsp-signature-help',                -- nvim-cmp source for displaying function signatures with the current parameter emphasized
+    'hrsh7th/cmp-cmdline',                                -- nvim-cmp source for vim's cmdline
+    { 'hrsh7th/vim-vsnip',                 lazy = true }, -- Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
     { 'williamboman/mason-lspconfig.nvim', lazy = true },
     {
       'onsails/lspkind.nvim',                 -- vscode-like pictograms for neovim lsp completion items
       dependencies = 'mortepau/codicons.nvim' -- A plugin simplifying the task of working with VS Code codicons in Neovim
-    }
+    },
+    {
+      'rafamadriz/friendly-snippets', -- Set of preconfigured snippets for different languages.
+      ft = { 'dockerfile', 'go', 'lua', 'ruby' },
+      init = function()
+        vim.g.vsnip_filetypes = {
+          ruby = { 'rails' }
+        }
+      end
+    },
   },
   opts = function()
     local cmp = require('cmp')

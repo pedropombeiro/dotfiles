@@ -78,7 +78,7 @@ return {
       { 'zR', function() require('ufo').openAllFolds() end,  mode = { 'n', 'v' }, desc = 'Open All Folds', },
       { 'zM', function() require('ufo').closeAllFolds() end, mode = { 'n', 'v' }, desc = 'Close All Folds', },
       {
-        'K',
+        '<leader>k',
         function()
           local winid = require('ufo').peekFoldedLinesUnderCursor()
           if not winid then
@@ -107,7 +107,7 @@ return {
       return {
         close_fold_kinds       = { 'imports' },
         fold_virt_text_handler = fold_virt_text_handler,
-        provider_selector      = function(bufnr, filetype, buftype)
+        provider_selector      = function()
           return { 'treesitter', 'indent' }
         end
       }

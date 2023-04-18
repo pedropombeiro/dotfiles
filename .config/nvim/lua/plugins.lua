@@ -24,6 +24,7 @@ return {
       { '<leader>=', ':AI ',              mode = { 'n', 'v' }, desc = 'Perform action with OpenAI' },
       { '<C-=>',     '<Esc><Cmd>AI<CR>a', mode = 'i',          desc = 'Autocomplete with OpenAI' },
     },
+    cmd = { 'AI' },
     init = function()
       vim.g.ai_no_mappings = 1
     end
@@ -74,7 +75,7 @@ return {
   },
   { 'tpope/vim-repeat',          keys = '.' }, -- repeat.vim: enable repeating supported plugin maps with '.'
   {
-    'tpope/vim-speeddating',           -- speeddating.vim: CTRL-A/CTRL-X to increment dates, times, and more
+    'tpope/vim-speeddating',                   -- speeddating.vim: CTRL-A/CTRL-X to increment dates, times, and more
     event = 'BufReadPost',
   },
   {
@@ -120,9 +121,9 @@ return {
       vim.notify = require('notify')
     end
   },
-  { 'tmux-plugins/vim-tmux',  ft = 'tmux' },    -- Vim plugin for .tmux.conf
+  { 'tmux-plugins/vim-tmux',  ft = 'tmux' }, -- Vim plugin for .tmux.conf
   {
-    'tpope/vim-dispatch',                       -- dispatch.vim: Asynchronous build and test dispatcher
+    'tpope/vim-dispatch',                    -- dispatch.vim: Asynchronous build and test dispatcher
     cmd = { 'Dispatch', 'Make', 'Focus', 'Start' }
   },
   {

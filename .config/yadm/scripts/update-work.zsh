@@ -7,6 +7,9 @@ source "${YADM_SCRIPTS}/colors.sh"
 # Create rtx shims for key-value-server plist and for RubyMine debugger
 rtx reshim
 
+printf "${YELLOW}%s${NC}\n" "Pruning rtx..."
+(cd ${GDK_ROOT}/gitlab && rtx prune)
+
 # Populate gdk.yml
 if [[ -n ${GDK_ROOT} ]]; then
   cat << EOF > ${GDK_ROOT}/gdk.tmp.yml

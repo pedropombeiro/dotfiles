@@ -107,11 +107,7 @@ source ~/.config/yadm/scripts/colors.sh
 
   if pgrep rubymine; then
     printf "${YELLOW}%s${NC}\n" 'Start indexing in RubyMine...'
-    osascript <<END
-      tell application "RubyMine"
-        activate
-      end tell
-END
+    osascript -e 'tell application "RubyMine" to activate'
   fi
 
   printf "${YELLOW}%s${NC}\n" 'Warming up web server...'

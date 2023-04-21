@@ -8,3 +8,4 @@ pre-commit    latest
 ruby          3.0.5
 yarn          1.22.19
 rust          latest
+glab          latest

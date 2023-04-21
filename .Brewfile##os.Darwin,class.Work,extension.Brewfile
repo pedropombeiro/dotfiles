@@ -108,8 +108,6 @@ brew "git-extras"
 brew "git-lfs"
 # Audit git repos for secrets
 brew "gitleaks"
-# Open-source GitLab command-line tool
-brew "glab"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
 # GNU Pretty Good Privacy (PGP) package

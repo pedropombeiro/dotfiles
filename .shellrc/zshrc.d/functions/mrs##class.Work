@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
+
+ruby -r "${SCRIPT_DIR}/gitlab-helpers.rb" -e 'retrieve_mrs'

@@ -216,3 +216,81 @@ end
 def pick_reviewer_for_group(group_path)
   pick_reviewer(retrieve_group_owners(group_path))
 end
+
+def retrieve_mrs
+  require('json')
+
+  res = `glab api graphql -f query='
+    query authoredMergeRequests {
+      currentUser {
+        authoredMergeRequests(state: opened, sort: UPDATED_DESC) {
+          nodes {
+            reference
+            webUrl
+            title
+            createdAt
+            updatedAt
+            approved
+            approvalsRequired
+            approvalsLeft
+            detailedMergeStatus
+            squashOnMerge
+            reviewers {
+              nodes {
+                username
+              }
+            }
+            headPipeline {
+              status
+            }
+          }
+        }
+      }
+    }
+  '`
+  return if $CHILD_STATUS != 0
+
+  mrs = JSON.parse(res).dig(*%w[data currentUser authoredMergeRequests nodes])
+
+  require 'terminal-table'
+  require 'time'
+
+  Terminal::Table::Style.defaults = { border: :unicode_round }
+  pipeline_aliases = { 'SUCCESS' => '✅', 'FAILED' => '❌', 'RUNNING' => '🔄' }
+  any_rebase = mrs.any? { |mr| mr['shouldBeRebased'] }
+  headings = ['Reference', 'Updated', 'Merge status', 'Pipeline', 'Squash']
+  headings << 'Should rebase' if any_rebase
+  headings += ['Approvals', 'Reviewers', 'Title/URL']
+
+  puts Terminal::Table.new(
+    title: 'Merge requests'.blue,
+    headings: headings.map(&:green),
+    rows: mrs.map do |mr|
+      updated_at = Time.parse(mr['updatedAt'])
+      title = mr['title']
+      merge_status = mr['detailedMergeStatus']
+      squash = mr['squashOnMerge'] ? '✔️' : '❌'
+      should_be_rebased = mr['shouldBeRebased'] ? 'Y' : ''
+      approvals_left = mr['approvalsLeft']
+      approvals_required = mr['approvalsRequired']
+      pipeline_status = mr.dig(*%w[headPipeline status])
+      reviewers = mr.dig(*%w[reviewers nodes]).map { |node| node['username'] }
+
+      row = [
+        mr['reference'],
+        updated_at,
+        merge_status,
+        pipeline_aliases.fetch(pipeline_status, pipeline_status),
+        { value: squash, alignment: :center }
+      ]
+      row << should_be_rebased if any_rebase
+      row + [
+        { value: "#{approvals_required - approvals_left}/#{approvals_required}", alignment: :right },
+        reviewers.map(&:cyan).join("\n"),
+        "#{title}\n  #{mr['webUrl'].green}\n "
+      ]
+    end
+  )
+
+  nil
+end

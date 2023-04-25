@@ -24,7 +24,7 @@ return {
             highlight  = { underline = true, sp = 'green' },
             auto_close = true, -- whether or not close this group if it doesn't contain the current buffer
             matcher    = function(buf)
-              return buf.filename:match('%.md') or buf.filename:match('%.txt')
+              return buf.name:match('%.md') or buf.name:match('%.txt')
             end
           },
           {
@@ -47,7 +47,7 @@ return {
             icon       = '',                             -- Optional
             auto_close = true,                              -- whether or not close this group if it doesn't contain the current buffer
             matcher    = function(buf)                      -- Mandatory
-              return buf.filename:match('%_test') or buf.filename:match('%_spec')
+              return buf.name:match('%_test') or buf.name:match('%_spec')
             end,
           },
         }
@@ -65,9 +65,9 @@ return {
       end,
       offsets = {
         {
-          filetype = 'neo-tree',
-          text = 'Neo-tree',
-          highlight = 'BufferLineBuffer',
+          filetype   = 'neo-tree',
+          text       = 'Neo-tree',
+          highlight  = 'BufferLineBuffer',
           text_align = 'center',
         },
       },

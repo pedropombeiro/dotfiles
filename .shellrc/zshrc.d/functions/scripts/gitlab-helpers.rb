@@ -228,6 +228,7 @@ def retrieve_mrs
             reference
             webUrl
             title
+            sourceBranch
             createdAt
             updatedAt
             approved
@@ -235,6 +236,7 @@ def retrieve_mrs
             approvalsLeft
             detailedMergeStatus
             squashOnMerge
+            conflicts
             reviewers {
               nodes {
                 username
@@ -258,9 +260,12 @@ def retrieve_mrs
   Terminal::Table::Style.defaults = { border: :unicode_round }
   pipeline_aliases = { 'SUCCESS' => '✅', 'FAILED' => '❌', 'RUNNING' => '🔄' }
   any_rebase = mrs.any? { |mr| mr['shouldBeRebased'] }
-  headings = ['Reference', 'Updated', 'Merge status', 'Pipeline', 'Squash']
+  any_conflicts = mrs.any? { |mr| mr['conflicts'] }
+  headings = ['Reference', 'Updated', 'Merge status']
+  headings += %w[Pipeline Squash]
   headings << 'Should rebase' if any_rebase
-  headings += ['Approvals', 'Reviewers', 'Title/URL']
+  headings << 'Conflicts' if any_conflicts
+  headings += ['Approvals', 'Reviewers', 'Title/URL/Source branch']
 
   puts Terminal::Table.new(
     title: 'Merge requests'.blue,
@@ -270,6 +275,7 @@ def retrieve_mrs
       title = mr['title']
       merge_status = mr['detailedMergeStatus']
       squash = mr['squashOnMerge'] ? '✔️' : '❌'
+      conflicts = mr['conflicts'] ? '❌' : '✔️'
       should_be_rebased = mr['shouldBeRebased'] ? 'Y' : ''
       approvals_left = mr['approvalsLeft']
       approvals_required = mr['approvalsRequired']
@@ -284,10 +290,11 @@ def retrieve_mrs
         { value: squash, alignment: :center }
       ]
       row << should_be_rebased if any_rebase
+      row << conflicts if any_conflicts
       row + [
         { value: "#{approvals_required - approvals_left}/#{approvals_required}", alignment: :right },
         reviewers.map(&:cyan).join("\n"),
-        "#{title}\n  #{mr['webUrl'].green}\n "
+        "#{title}\n  #{mr['webUrl'].green}\n  #{mr['sourceBranch']}\n "
       ]
     end
   )

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
 SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
+GITLAB_USERNAME="${USER}"
 
-ruby -r "${SCRIPT_DIR}/gitlab-helpers.rb" -e 'retrieve_mrs'
+ruby -r "${SCRIPT_DIR}/gitlab-helpers.rb" -e 'retrieve_mrs' -- "${1:-${GITLAB_USERNAME}}"

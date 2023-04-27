@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'English'
+require 'tty-link'
 
 class String
   def black
@@ -34,6 +35,10 @@ class String
 
   def gray
     "\033[37m#{self}\033[0m"
+  end
+
+  def with_hyperlink(url)
+    ' ' * (length - lstrip.length) + TTY::Link.link_to(strip, url) + ' ' * (length - rstrip.length)
   end
 end
 
@@ -156,6 +161,7 @@ def retrieve_group_owners(group_path)
             user {
               name
               username
+              webUrl
               bot
               state
               status {
@@ -192,23 +198,37 @@ def filter_sort_reviewers(candidates)
 end
 
 def pick_reviewer(candidates)
-  require 'terminal-table'
+  require 'tty-table'
 
   candidates = filter_sort_reviewers(candidates)
 
   puts "Chosen reviewer: @#{candidates.first['username']}"
   puts
 
-  puts Terminal::Table.new(
-    title: 'Reviewers',
-    headings: ['Username', 'Availability', 'Assigned MRs', 'Requested MR reviews'],
+  table = TTY::Table.new(
+    header: ['Username', 'Availability', 'Assigned MRs', 'Requested MR reviews'],
     rows: candidates.map do |c|
       availability = c.dig(*%w[status availability])
       assigned_count = c.dig(*%w[assignedMergeRequests count])
       requested_count = c.dig(*%w[reviewRequestedMergeRequests count])
-      ["@#{c['username']} (#{c['name']})", availability, assigned_count, requested_count]
+      [c['username'], availability, assigned_count, requested_count]
     end
   )
+  render =
+    table.render(:unicode) do |renderer|
+      renderer.filter = lambda { |val, row_index, col_index|
+        next val if row_index.zero?
+
+        candidate = candidates[row_index - 1]
+        case col_index
+        when 0
+          val.with_hyperlink(candidate['webUrl'])
+        else
+          val
+        end
+      }
+    end
+  puts render
 
   nil
 end
@@ -240,9 +260,11 @@ def retrieve_mrs
             reviewers {
               nodes {
                 username
+                webUrl
               }
             }
             headPipeline {
+              path
               status
             }
           }
@@ -254,24 +276,24 @@ def retrieve_mrs
 
   mrs = JSON.parse(res).dig(*%w[data currentUser authoredMergeRequests nodes])
 
-  require 'terminal-table'
+  require 'tty-table'
   require 'time'
 
-  Terminal::Table::Style.defaults = { border: :unicode_round }
   pipeline_aliases = { 'SUCCESS' => '✅', 'FAILED' => '❌', 'RUNNING' => '🔄' }
   any_rebase = mrs.any? { |mr| mr['shouldBeRebased'] }
   any_conflicts = mrs.any? { |mr| mr['conflicts'] }
-  headings = ['Reference', 'Updated', 'Merge status']
+  headings = ['Reference', 'Merge status']
+  pipeline_col_index = headings.count
   headings += %w[Pipeline Squash]
   headings << 'Should rebase' if any_rebase
   headings << 'Conflicts' if any_conflicts
-  headings += ['Approvals', 'Reviewers', 'Title/URL/Source branch']
+  headings += ['Approvals', 'Reviewers', 'Title', 'Source branch']
+  reviewers_col_index = headings.count - 3
+  title_col_index = headings.count - 2
 
-  puts Terminal::Table.new(
-    title: 'Merge requests'.blue,
-    headings: headings.map(&:green),
+  table = TTY::Table.new(
+    header: headings.map(&:green),
     rows: mrs.map do |mr|
-      updated_at = Time.parse(mr['updatedAt'])
       title = mr['title']
       merge_status = mr['detailedMergeStatus']
       squash = mr['squashOnMerge'] ? '✔️' : '❌'
@@ -280,11 +302,10 @@ def retrieve_mrs
       approvals_left = mr['approvalsLeft']
       approvals_required = mr['approvalsRequired']
       pipeline_status = mr.dig(*%w[headPipeline status])
-      reviewers = mr.dig(*%w[reviewers nodes]).map { |node| node['username'] }
+      reviewers = mr.dig(*%w[reviewers nodes]).map { |reviewer| "@#{reviewer['username']}" }
 
       row = [
         mr['reference'],
-        updated_at,
         merge_status,
         pipeline_aliases.fetch(pipeline_status, pipeline_status),
         { value: squash, alignment: :center }
@@ -293,11 +314,39 @@ def retrieve_mrs
       row << conflicts if any_conflicts
       row + [
         { value: "#{approvals_required - approvals_left}/#{approvals_required}", alignment: :right },
-        reviewers.map(&:cyan).join("\n"),
-        "#{title}\n  #{mr['webUrl'].green}\n  #{mr['sourceBranch']}\n "
+        reviewers.map(&:cyan).join(', '),
+        title,
+        mr['sourceBranch'].green
       ]
     end
   )
+
+  render =
+    table.render(:unicode, padding: [0, 1]) do |renderer|
+      renderer.filter = lambda { |val, row_index, col_index|
+        next val if row_index.zero?
+
+        mr = mrs[row_index - 1]
+        case col_index
+        when 0
+          val.with_hyperlink(mr['webUrl'])
+        when pipeline_col_index
+          val.with_hyperlink("https://gitlab.com#{mr.dig('headPipeline', 'path')}")
+        when reviewers_col_index
+          reviewers = mr.dig(*%w[reviewers nodes])
+          new_val = reviewers.map do |reviewer|
+            "@#{reviewer['username']}".cyan.with_hyperlink(reviewer['webUrl'])
+          end.join(', ')
+
+          " #{new_val}#{' ' * (val.length - val.strip.length - 1)}"
+        when title_col_index
+          val.with_hyperlink(mr['webUrl'])
+        else
+          val
+        end
+      }
+    end
+  puts render
 
   nil
 end

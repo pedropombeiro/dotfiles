@@ -338,7 +338,7 @@ def retrieve_mrs(*args)
   )
 
   render =
-    table.render(:unicode, padding: [0, 1]) do |renderer|
+    table.render(:unicode, width: 1000, padding: [0, 1]) do |renderer|
       renderer.filter = lambda { |val, row_index, col_index|
         next val if row_index.zero?
 

@@ -166,6 +166,7 @@ def retrieve_group_owners(group_path)
               state
               status {
                 availability
+                message
               }
               reviewRequestedMergeRequests(state: opened) {
                 count
@@ -191,6 +192,7 @@ def filter_sort_reviewers(candidates)
     .sort_by do |c|
       [
         c.dig(*%w[status availability]) == 'BUSY' ? 1 : 0,
+        c.dig(*%w[status message]) ? 1 : 0,
         c.dig(*%w[assignedMergeRequests count]),
         c.dig(*%w[reviewRequestedMergeRequests count])
       ]
@@ -202,20 +204,28 @@ def pick_reviewer(candidates)
 
   candidates = filter_sort_reviewers(candidates)
 
-  puts "Chosen reviewer: @#{candidates.first['username']}"
+  candidate = candidates.first
+  puts "Chosen reviewer: @#{candidate['username'].with_hyperlink(candidate['webUrl'])}"
   puts
 
   table = TTY::Table.new(
-    header: ['Username', 'Availability', 'Assigned MRs', 'Requested MR reviews'],
+    header: ['Username', 'Availability', 'Message', 'Assigned MRs', 'Requested MR reviews'].map(&:green),
     rows: candidates.map do |c|
       availability = c.dig(*%w[status availability])
+      message = c.dig(*%w[status message])
       assigned_count = c.dig(*%w[assignedMergeRequests count])
       requested_count = c.dig(*%w[reviewRequestedMergeRequests count])
-      [c['username'], availability, assigned_count, requested_count]
+      [
+        "@#{c['username']}",
+        availability,
+        message,
+        { value: assigned_count, alignment: :right },
+        { value: requested_count, alignment: :right }
+      ]
     end
   )
   render =
-    table.render(:unicode) do |renderer|
+    table.render(:unicode, padding: [0, 1]) do |renderer|
       renderer.filter = lambda { |val, row_index, col_index|
         next val if row_index.zero?
 
@@ -237,13 +247,15 @@ def pick_reviewer_for_group(group_path)
   pick_reviewer(retrieve_group_owners(group_path))
 end
 
-def retrieve_mrs
+def retrieve_mrs(*args)
+  username = ARGV[0] if args.empty?
+
   require('json')
 
   res = `glab api graphql -f query='
     query authoredMergeRequests {
-      currentUser {
-        authoredMergeRequests(state: opened, sort: UPDATED_DESC) {
+      user(username: "#{username}") {
+    authoredMergeRequests(state: opened, assigneeUsername: "#{username}", sort: UPDATED_DESC) {
           nodes {
             reference
             webUrl
@@ -274,7 +286,11 @@ def retrieve_mrs
   '`
   return if $CHILD_STATUS != 0
 
-  mrs = JSON.parse(res).dig(*%w[data currentUser authoredMergeRequests nodes])
+  mrs = JSON.parse(res).dig(*%w[data user authoredMergeRequests nodes])
+  unless mrs
+    puts res
+    exit 1
+  end
 
   require 'tty-table'
   require 'time'

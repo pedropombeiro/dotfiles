@@ -40,9 +40,9 @@ return {
       'gx', -- Restore URL handling from disabled netrw plugin
       function()
         if vim.fn.has('mac') == 1 then
-          vim.cmd [[call jobstart(['open', expand('<cfile>')], {'detach': v:true})<CR>]]
+          vim.cmd [[call jobstart(['open', expand('<cfile>')], {'detach': v:true})]]
         elseif vim.fn.has('unix') == 1 then
-          vim.cmd [[call jobstart(['xdg-open', expand('<cfile>')], {'detach': v:true})<CR>]]
+          vim.cmd [[call jobstart(['xdg-open', expand('<cfile>')], {'detach': v:true})]]
         else
           print('Error: gx is not supported on this OS!')
         end

@@ -40,6 +40,20 @@ class String
   def with_hyperlink(url)
     ' ' * (length - lstrip.length) + TTY::Link.link_to(strip, url) + ' ' * (length - rstrip.length)
   end
+
+  def truncate(length, options = {})
+    text = dup
+    options[:omission] ||= '...'
+
+    length_with_room_for_omission = length - options[:omission].length
+    stop = if options[:separator]
+             (text.rindex(options[:separator], length_with_room_for_omission) || length_with_room_for_omission)
+           else
+             length_with_room_for_omission
+           end
+
+    (chars.length > length ? text[0...stop] + options[:omission] : text).to_s
+  end
 end
 
 BASELINE_MR_RATE = 6
@@ -310,7 +324,7 @@ def retrieve_mrs(*args)
   table = TTY::Table.new(
     header: headings.map(&:green),
     rows: mrs.map do |mr|
-      title = mr['title']
+      title = mr['title'].truncate(72)
       merge_status = mr['detailedMergeStatus']
       squash = mr['squashOnMerge'] ? '✔️' : '❌'
       conflicts = mr['conflicts'] ? '❌' : '✔️'
@@ -332,7 +346,7 @@ def retrieve_mrs(*args)
         { value: "#{approvals_required - approvals_left}/#{approvals_required}", alignment: :right },
         reviewers.map(&:cyan).join(', '),
         title,
-        mr['sourceBranch'].green
+        mr['sourceBranch'].truncate(50).green
       ]
     end
   )

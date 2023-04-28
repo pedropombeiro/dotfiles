@@ -146,8 +146,8 @@ return {
         vim.api.nvim_set_hl(0, name, attr)
       end
       set_hl('TelescopeTitle', { fg = config.theme.colors.green })
-      set_hl('TelescopePromptTitle', { fg = config.theme.colors.dark_orange })
-      set_hl('TelescopePromptBorder', { fg = config.theme.colors.dark_orange })
+      set_hl('TelescopePromptTitle', { fg = config.theme.colors.orange })
+      set_hl('TelescopePromptBorder', { fg = config.theme.colors.orange })
 
       require('telescope').setup(opts)
 

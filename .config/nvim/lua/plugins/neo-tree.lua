@@ -10,6 +10,24 @@ return {
     'nvim-lua/plenary.nvim',
     'kyazdani42/nvim-web-devicons', -- not strictly required, but recommended
     'MunifTanjim/nui.nvim',
+    {
+      's1n7ax/nvim-window-picker',
+      config = function()
+        local config = require('config')
+
+        require 'window-picker'.setup({
+          use_winbar = 'always',
+          -- the foreground (text) color of the picker
+          fg_color = config.theme.colors.fg,
+          -- if you have include_current_win == true, then current_win_hl_color will
+          -- be highlighted using this background color
+          current_win_hl_color = config.theme.colors.orange_bg,
+          -- all the windows except the curren window will be highlighted using this
+          -- color
+          other_win_hl_color = config.theme.colors.green_bg,
+        })
+      end,
+    }
   },
   keys = {
     {
@@ -68,8 +86,8 @@ return {
         git_status = {
           symbols = {
             -- Change type
-            deleted = icons.symbols.removed,   -- this can only be used in the git_status source
-            renamed = icons.symbols.renamed,   -- this can only be used in the git_status source
+            deleted = icons.symbols.removed, -- this can only be used in the git_status source
+            renamed = icons.symbols.renamed, -- this can only be used in the git_status source
           }
         },
       },

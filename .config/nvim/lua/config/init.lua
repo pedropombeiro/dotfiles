@@ -4,12 +4,15 @@ return {
     colors = {
       bg0_s       = '#32302f', -- Gruvbox Dark bg0_s
       gray        = '#928374',
+      fg          = '#ebdbb2',
       fg3         = '#bdae93',
       fg4         = '#a89984',
       dark_blue   = '#83a598',
       blue        = '#458588',
       cyan        = '#8ec07c',
-      dark_orange = '#fe8019',
+      green_bg    = '#98971a',
+      orange_bg   = '#d65d0e',
+      orange      = '#fe8019',
       dark_red    = '#fb4934',
       red         = '#cc241d',
       dark_yellow = '#fabd2f',

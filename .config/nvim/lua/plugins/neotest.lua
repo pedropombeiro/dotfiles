@@ -106,7 +106,7 @@ return {
       set_hl('NeotestExpandMarker', { ctermfg = 'Grey', fg = config.theme.colors.fg3 })
       set_hl('NeotestAdapterName', { ctermfg = 'Red', fg = config.theme.colors.red })
       set_hl('NeotestWinSelect', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue, bold = true })
-      set_hl('NeotestMarked', { ctermfg = 'Brown', fg = config.theme.colors.dark_orange, bold = true })
+      set_hl('NeotestMarked', { ctermfg = 'Brown', fg = config.theme.colors.orange, bold = true })
       set_hl('NeotestTarget', { ctermfg = 'Red', fg = config.theme.colors.red })
       set_hl('NeotestUnknown', { link = 'Normal' })
       ---@diagnostic enable: undefined-field

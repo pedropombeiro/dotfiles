@@ -11,6 +11,26 @@ return {
     { '<leader>xd', '<cmd>TroubleToggle document_diagnostics<cr>',  desc = 'Toggle document diagnostics' },
     { '<leader>xq', '<cmd>TroubleToggle quickfix<cr>',              desc = 'Toggle quickfix window' },
     { '<leader>xl', '<cmd>TroubleToggle loclist<cr>',               desc = 'Toggle loclist window' },
+    {
+      '[X',
+      function() require('trouble').first({ skip_groups = true, jump = true }); end,
+      desc = 'First Trouble 🚦 item',
+    },
+    {
+      '[x',
+      function() require('trouble').previous({ skip_groups = true, jump = true }); end,
+      desc = 'Previous Trouble 🚦 item',
+    },
+    {
+      ']x',
+      function() require('trouble').next({ skip_groups = true, jump = true }); end,
+      desc = 'Next Trouble 🚦 item',
+    },
+    {
+      ']X',
+      function() require('trouble').last({ skip_groups = true, jump = true }); end,
+      desc = 'Last Trouble 🚦 item',
+    },
   },
   dependencies = 'kyazdani42/nvim-web-devicons',
   init = function()

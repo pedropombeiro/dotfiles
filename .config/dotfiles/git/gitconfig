@@ -167,6 +167,7 @@
 [fetch]
   parallel = 8
   prune = true
+  showForcedUpdates = true
 [submodule]
   fetchJobs = 2
 [status]

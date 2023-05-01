@@ -312,12 +312,12 @@ def retrieve_mrs(*args)
   pipeline_aliases = { 'SUCCESS' => '✅', 'FAILED' => '❌', 'RUNNING' => '🔄' }
   any_rebase = mrs.any? { |mr| mr['shouldBeRebased'] }
   any_conflicts = mrs.any? { |mr| mr['conflicts'] }
-  headings = ['Reference', 'Merge status']
+  headings = ['Ref.', 'Merge status']
   pipeline_col_index = headings.count
   headings += %w[Pipeline Squash]
   headings << 'Should rebase' if any_rebase
   headings << 'Conflicts' if any_conflicts
-  headings += ['Approvals', 'Reviewers', 'Title', 'Source branch']
+  headings += ['Appr.', 'Reviewers', 'Title', 'Source branch']
   reviewers_col_index = headings.count - 3
   title_col_index = headings.count - 2
 
@@ -332,7 +332,7 @@ def retrieve_mrs(*args)
       approvals_left = mr['approvalsLeft']
       approvals_required = mr['approvalsRequired']
       pipeline_status = mr.dig(*%w[headPipeline status])
-      reviewers = mr.dig(*%w[reviewers nodes]).map { |reviewer| "@#{reviewer['username']}" }
+      reviewers = mr.dig(*%w[reviewers nodes]).map { |reviewer| reviewer['username'] }
 
       row = [
         mr['reference'],
@@ -365,7 +365,7 @@ def retrieve_mrs(*args)
         when reviewers_col_index
           reviewers = mr.dig(*%w[reviewers nodes])
           new_val = reviewers.map do |reviewer|
-            "@#{reviewer['username']}".cyan.with_hyperlink(reviewer['webUrl'])
+            reviewer['username'].cyan.with_hyperlink(reviewer['webUrl'])
           end.join(', ')
 
           " #{new_val}#{' ' * (val.length - val.strip.length - 1)}"

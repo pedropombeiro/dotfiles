@@ -43,7 +43,7 @@ class String
 
   def truncate(length, options = {})
     text = dup
-    options[:omission] ||= '...'
+    options[:omission] ||= '…'
 
     length_with_room_for_omission = length - options[:omission].length
     stop = if options[:separator]

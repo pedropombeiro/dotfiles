@@ -97,7 +97,7 @@ def gitlab_mr_rate(*author)
     return if $CHILD_STATUS != 0
 
     json_res = JSON.parse(res)
-    merge_requests = json_res.dig(*%w[data group mergeRequests])
+    merge_requests = json_res.dig('data', 'group', 'mergeRequests')
     mrs +=
       merge_requests['nodes'].map do |mr|
         { merged_at: DateTime.iso8601(mr['mergedAt']) }
@@ -205,10 +205,10 @@ def filter_sort_reviewers(candidates)
     .filter { |c| c['state'] == 'active' }
     .sort_by do |c|
       [
-        c.dig(*%w[status availability]) == 'BUSY' ? 1 : 0,
-        c.dig(*%w[status message]) ? 1 : 0,
-        c.dig(*%w[assignedMergeRequests count]),
-        c.dig(*%w[reviewRequestedMergeRequests count])
+        c.dig('status', 'availability') == 'BUSY' ? 1 : 0,
+        c.dig('status', 'message') ? 1 : 0,
+        c.dig('assignedMergeRequests', 'count'),
+        c.dig('reviewRequestedMergeRequests', 'count')
       ]
     end
 end
@@ -225,10 +225,10 @@ def pick_reviewer(candidates)
   table = TTY::Table.new(
     header: ['Username', 'Availability', 'Message', 'Assigned MRs', 'Requested MR reviews'].map(&:green),
     rows: candidates.map do |c|
-      availability = c.dig(*%w[status availability])
-      message = c.dig(*%w[status message])
-      assigned_count = c.dig(*%w[assignedMergeRequests count])
-      requested_count = c.dig(*%w[reviewRequestedMergeRequests count])
+      availability = c.dig('status', 'availability')
+      message = c.dig('status', 'message')
+      assigned_count = c.dig('assignedMergeRequests', 'count')
+      requested_count = c.dig('reviewRequestedMergeRequests', 'count')
       [
         "@#{c['username']}",
         availability,
@@ -316,6 +316,7 @@ def retrieve_mrs(*args)
   require 'time'
 
   pipeline_aliases = { 'SUCCESS' => '✅', 'FAILED' => '❌', 'RUNNING' => '🔄' }
+  merge_status_aliases = { 'CI_STILL_RUNNING' => 'CI_STILL_RUNNING'.green }
   any_rebase = mrs.any? { |mr| mr['shouldBeRebased'] }
   any_conflicts = mrs.any? { |mr| mr['conflicts'] }
   headings = ['Ref.', 'Merge status']
@@ -331,14 +332,14 @@ def retrieve_mrs(*args)
     header: headings.map(&:green),
     rows: mrs.map do |mr|
       title = mr['title'].truncate(69)
-      merge_status = mr['detailedMergeStatus']
+      merge_status = merge_status_aliases.fetch(mr['detailedMergeStatus'], mr['detailedMergeStatus'])
       squash = mr['squashOnMerge'] ? '✔️' : '❌'
       conflicts = mr['conflicts'] ? '❌' : '✔️'
       should_be_rebased = mr['shouldBeRebased'] ? 'Y' : ''
       approvals_left = mr['approvalsLeft']
       approvals_required = mr['approvalsRequired']
-      pipeline_status = mr.dig(*%w[headPipeline status])
-      reviewers = mr.dig(*%w[reviewers nodes]).map { |reviewer| reviewer['username'] }
+      pipeline_status = mr.dig('headPipeline', 'status')
+      reviewers = mr.dig('reviewers', 'nodes').map { |reviewer| reviewer['username'] }
 
       row = [
         mr['reference'],
@@ -369,7 +370,7 @@ def retrieve_mrs(*args)
         when pipeline_col_index
           val.with_hyperlink("https://gitlab.com#{mr.dig('headPipeline', 'path')}")
         when reviewers_col_index
-          reviewers = mr.dig(*%w[reviewers nodes])
+          reviewers = mr.dig('reviewers', 'nodes')
           new_val = reviewers.map do |reviewer|
             format_reviewer_name(reviewer['username'], reviewers.count).with_hyperlink(reviewer['webUrl'])
           end.join(', ')

@@ -261,6 +261,12 @@ def pick_reviewer_for_group(group_path)
   pick_reviewer(retrieve_group_owners(group_path))
 end
 
+def format_reviewer_name(name, count)
+  name = name.truncate(7) unless count < 3
+
+  name.cyan
+end
+
 def retrieve_mrs(*args)
   username = ARGV[0] if args.empty?
 
@@ -344,7 +350,7 @@ def retrieve_mrs(*args)
       row << conflicts if any_conflicts
       row + [
         { value: "#{approvals_required - approvals_left}/#{approvals_required}", alignment: :right },
-        reviewers.map(&:cyan).join(', '),
+        reviewers.map { |name| format_reviewer_name(name, reviewers.count) }.join(', '),
         title,
         mr['sourceBranch'].truncate(50).green
       ]
@@ -365,7 +371,7 @@ def retrieve_mrs(*args)
         when reviewers_col_index
           reviewers = mr.dig(*%w[reviewers nodes])
           new_val = reviewers.map do |reviewer|
-            reviewer['username'].cyan.with_hyperlink(reviewer['webUrl'])
+            format_reviewer_name(reviewer['username'], reviewers.count).with_hyperlink(reviewer['webUrl'])
           end.join(', ')
 
           " #{new_val}#{' ' * (val.length - val.strip.length - 1)}"

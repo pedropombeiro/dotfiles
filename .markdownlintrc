@@ -22,7 +22,7 @@
   },
   // MD007/ul-indent - Unordered list indentation
   "MD007": {
-    "indent": 4
+    "indent": 2
   },
   // MD025/single-title/single-h1 - Multiple top-level headings in the same document
   "MD025": {

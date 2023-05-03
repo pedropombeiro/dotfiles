@@ -324,7 +324,7 @@ def retrieve_mrs(*args)
   table = TTY::Table.new(
     header: headings.map(&:green),
     rows: mrs.map do |mr|
-      title = mr['title'].truncate(72)
+      title = mr['title'].truncate(69)
       merge_status = mr['detailedMergeStatus']
       squash = mr['squashOnMerge'] ? '✔️' : '❌'
       conflicts = mr['conflicts'] ? '❌' : '✔️'

@@ -31,7 +31,7 @@ brew update
 brew upgrade
 
 printf "${YELLOW}%s${NC}\n" "Updating rtx plugins..."
-(cd ~ && rtx install --install-missing)
+(cd ~ && rtx plugins update && rtx install --install-missing)
 
 # Update npm packages
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."

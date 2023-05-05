@@ -46,13 +46,20 @@ class String
     options[:omission] ||= '…'
 
     length_with_room_for_omission = length - options[:omission].length
+
+    (chars.length > length ? trim(text, length_with_room_for_omission, options) : text).to_s
+  end
+
+  private
+
+  def trim(text, length_with_room_for_omission, options)
     stop = if options[:separator]
              (text.rindex(options[:separator], length_with_room_for_omission) || length_with_room_for_omission)
            else
              length_with_room_for_omission
            end
 
-    (chars.length > length ? text[0...stop] + options[:omission] : text).to_s
+    text[0...stop] + options[:omission]
   end
 end
 
@@ -262,7 +269,9 @@ def pick_reviewer_for_group(group_path)
 end
 
 def format_reviewer_name(name, count)
-  name = name.truncate(7) unless count < 3
+  max_length = 22
+
+  name = name.truncate(max_length / count) if count > 1
 
   name.cyan
 end
@@ -319,12 +328,12 @@ def retrieve_mrs(*args)
   merge_status_aliases = { 'CI_STILL_RUNNING' => 'CI_STILL_RUNNING'.green }
   any_rebase = mrs.any? { |mr| mr['shouldBeRebased'] }
   any_conflicts = mrs.any? { |mr| mr['conflicts'] }
-  headings = ['Ref.', 'Merge status']
+  headings = ['Reference'.truncate(7), 'Merge status']
   pipeline_col_index = headings.count
   headings += %w[Pipeline Squash]
   headings << 'Should rebase' if any_rebase
   headings << 'Conflicts' if any_conflicts
-  headings += ['Appr.', 'Reviewers', 'Title', 'Source branch']
+  headings += ['Approvals'.truncate(5), 'Reviewers', 'Title', 'Source branch']
   reviewers_col_index = headings.count - 3
   title_col_index = headings.count - 2
 
@@ -332,7 +341,9 @@ def retrieve_mrs(*args)
     header: headings.map(&:green),
     rows: mrs.map do |mr|
       title = mr['title'].truncate(69)
-      merge_status = merge_status_aliases.fetch(mr['detailedMergeStatus'], mr['detailedMergeStatus'])
+      merge_status = merge_status_aliases.fetch(mr['detailedMergeStatus'],
+                                                mr['detailedMergeStatus'])
+        .truncate(21)
       squash = mr['squashOnMerge'] ? '✔️' : '❌'
       conflicts = mr['conflicts'] ? '❌' : '✔️'
       should_be_rebased = mr['shouldBeRebased'] ? 'Y' : ''

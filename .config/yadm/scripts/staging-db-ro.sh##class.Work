@@ -3,11 +3,12 @@
 set -o pipefail
 
 export PATH="$PATH:/usr/local/bin:/opt/homebrew/bin"
+export TELEPORT_USE_LOCAL_SSH_AGENT=false
 
-tsh login --no-use-local-ssh-agent --proxy=teleport.gstg.gitlab.net
-tsh db login --no-use-local-ssh-agent --db-user=console-ro --db-name=gitlabhq_production db-secondary-ci
+tsh login --proxy=staging.teleport.gitlab.net
+tsh db login --db-user=console-ro --db-name=gitlabhq_production db-ci-replica-gstg
 
-pgcli "$(tsh db config --format=json db-secondary-ci | jq -r '"postgres://" + .user + "@" + .host + ":" + (.port | tostring) + "/" + .database + "?sslrootcert=" + .ca + "&sslcert=" + .cert + "&sslkey=" + .key + "&sslmode=verify-full"')"
+pgcli "$(tsh db config --format=json db-ci-replica-gstg | jq -r '"postgres://" + .user + "@" + .host + ":" + (.port | tostring) + "/" + .database + "?sslrootcert=" + .ca + "&sslcert=" + .cert + "&sslkey=" + .key + "&sslmode=verify-full"')"
 
 tsh db logout
 

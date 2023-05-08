@@ -3,8 +3,9 @@
 set -o pipefail
 
 export PATH="$PATH:/usr/local/bin:/opt/homebrew/bin"
+export TELEPORT_USE_LOCAL_SSH_AGENT=false
 
-tsh login --no-use-local-ssh-agent --proxy=teleport.gstg.gitlab.net
+tsh login --proxy=staging.teleport.gitlab.net
 
 tsh ssh rails-ro@console-ro-01-sv-gstg
 

@@ -1,14 +1,18 @@
--- Ranger.vim (https://github.com/francoiscabrol/ranger.vim)
---  Ranger integration in vim and neovim
+-- Ranger.nvim (https://github.com/kelly-lin/ranger.nvim)
+--  Ranger plugin for neovim
 
 return {
-  'francoiscabrol/ranger.vim',
-  cmd = { 'Ranger', 'RangerWorkingDirectory' },
-  dependencies = 'rbgrouleff/bclose.vim', -- The BClose Vim plugin for deleting a buffer without closing the window
+  'kelly-lin/ranger.nvim',
   keys = {
-    { '<leader>R', ':Ranger<CR>', desc = 'Open Ranger' }
+    {
+      '<leader>R',
+      function()
+        require('ranger-nvim').open(true)
+      end,
+      desc = 'Open Ranger'
+    }
   },
-  init = function()
-    vim.g.ranger_map_keys = 0
-  end
+  config = function()
+    require('ranger-nvim').setup({ replace_netrw = false })
+  end,
 }

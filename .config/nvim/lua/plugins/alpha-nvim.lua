@@ -152,7 +152,7 @@ return {
       val = {
         {
           type = 'text',
-          val = ' Recent files',
+          val = ' Recent files',
           opts = {
             hl = 'SpecialComment',
             shrink_margin = false,
@@ -178,8 +178,8 @@ return {
         dashboard.button('e', '  New file', '<cmd>ene<CR>'),
         dashboard.button('b', '  Open branch files', '<cmd>Branch<CR>'),
         dashboard.button('s', ' ' .. ' Restore Session', [[:lua require("persistence").load() <CR>]]),
-        dashboard.button('SPC f f', '  Find file'),
-        dashboard.button('SPC f h', '  History'),
+        dashboard.button('SPC f f', '󰈞  Find file'),
+        dashboard.button('SPC f h', '  History'),
         dashboard.button('SPC f r', '  Live grep'),
         dashboard.button('c', '  Configuration', '<cmd>cd ~ | e $MYVIMRC | Neotree focus<CR>'),
         dashboard.button('l', '󰒲  Plugin manager', '<cmd>Lazy!<CR>'),

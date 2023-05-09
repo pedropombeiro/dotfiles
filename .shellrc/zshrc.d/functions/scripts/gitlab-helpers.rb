@@ -63,7 +63,7 @@ class String
   end
 end
 
-BASELINE_MR_RATE = 6
+BASELINE_MR_RATE = 13
 
 def gitlab_mr_rate(*author)
   author = ARGV[0] if author.empty?

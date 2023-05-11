@@ -118,6 +118,7 @@ end
 def rebase_mappings
   system(*%w[git restore db/schema_migrations/], out: File::NULL)
 
+  system(*%w[git status], out: File::NULL, err: File::NULL) # Refresh status, as `scalar` seems to be outdated after a pull
   system(*%w[git diff-index --quiet HEAD --])
   unless Process.last_status.success?
     abort 'Please stash the changes in the current branch before calling rebase-all!'.red

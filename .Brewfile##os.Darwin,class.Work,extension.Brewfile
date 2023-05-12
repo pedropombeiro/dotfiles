@@ -218,6 +218,8 @@ brew "switchaudio-osx"
 brew "tealdeer"
 # Modern SSH server for teams managing distributed infrastructure
 brew "teleport"
+# Send macOS User Notifications from the command-line
+brew "terminal-notifier"
 # Code-search similar to ack
 brew "the_silver_searcher"
 # Program that allows you to count code, quickly
@@ -324,7 +326,7 @@ cask "kap"
 cask "keycastr"
 # Interface for reading and syncing eBooks
 cask "kindle"
-# Sound clear in online meetings
+# Noise cancelling application
 cask "krisp"
 # Create, manage and debug system- and user services
 cask "launchcontrol"

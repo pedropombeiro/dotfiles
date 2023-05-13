@@ -35,7 +35,7 @@ return {
       {
         'rcarriga/nvim-dap-ui', --  A UI for nvim-dap
         keys = {
-          { '<leader>de',  function() require('dapui').eval() end,    mode = 'v',            desc = 'Evaluate with DAP' },
+          { '<leader>de',  function() require('dapui').eval() end,    desc = 'Evaluate with DAP', mode = 'v' },
           { '<leader>dui', function() require('dapui').toggle() end,  desc = 'Toggle DAP UI' },
           { '<leader>dro', function() require('dap').repl.open() end, desc = 'Open REPL' },
         },

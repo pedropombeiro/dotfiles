@@ -91,7 +91,7 @@ return {
   {
     'echasnovski/mini.trailspace',
     version = false,
-    config = function() require('mini.trailspace').setup({}) end,
+    opts = {},
   },
 
   --### Other
@@ -127,7 +127,7 @@ return {
   },
   { 'tmux-plugins/vim-tmux',     ft = 'tmux' }, -- Vim plugin for .tmux.conf
   {
-    'tpope/vim-dispatch',                    -- dispatch.vim: Asynchronous build and test dispatcher
+    'tpope/vim-dispatch',                       -- dispatch.vim: Asynchronous build and test dispatcher
     cmd = { 'Dispatch', 'Make', 'Focus', 'Start' }
   },
   {

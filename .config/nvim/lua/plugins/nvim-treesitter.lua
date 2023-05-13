@@ -33,9 +33,8 @@ return {
     'nvim-treesitter/nvim-treesitter',
     event = 'BufReadPost',
     dependencies = {
-      'RRethy/nvim-treesitter-endwise',              --- Wisely add 'end' in Ruby, Vimscript, Lua, etc.
-      'JoosepAlviste/nvim-ts-context-commentstring', -- Neovim treesitter plugin for setting the commentstring based on the cursor location in a file.
-      'HiPhish/nvim-ts-rainbow2',                    -- Rainbow delimiters for Neovim through Tree-sitter
+      'RRethy/nvim-treesitter-endwise', --- Wisely add 'end' in Ruby, Vimscript, Lua, etc.
+      'HiPhish/nvim-ts-rainbow2',       -- Rainbow delimiters for Neovim through Tree-sitter
     },
     build = function()
       local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
@@ -90,7 +89,6 @@ return {
           -- Highlight the entire buffer all at once
           strategy = require 'ts-rainbow'.strategy.global,
         },
-        context_commentstring = { enable = true, enable_autocmd = false },
         highlight = {
           -- `false` will disable the whole extension
           enable = true,

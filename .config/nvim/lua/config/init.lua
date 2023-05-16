@@ -22,8 +22,10 @@ return {
   },
   icons = {
     folder = {
-      collapsed = '',
-      expanded  = '',
+      empty      = '󰜌',
+      empty_open = '󰜌',
+      collapsed  = '',
+      expanded   = '',
     },
     expander = {
       collapsed = '',
@@ -31,7 +33,7 @@ return {
     },
     diagnostics = {
       debug   = '',
-      hint    = '',
+      hint    = '',
       trace   = '✎',
       info    = '',
       warning = '',
@@ -41,7 +43,8 @@ return {
       added    = '',
       modified = '',
       removed  = '',
-      renamed  = '',
+      renamed  = '󰁕',
+      unstaged = '󰄱',
     },
     tests = {
       passed  = '',

@@ -72,8 +72,10 @@ return {
     return {
       default_component_configs = {
         icon = {
-          folder_closed = icons.folder.collapsed,
-          folder_open   = icons.folder.expanded
+          folder_empty      = icons.folder.empty,
+          folder_empty_open = icons.folder.empty_open,
+          folder_closed     = icons.folder.collapsed,
+          folder_open       = icons.folder.expanded
         },
         indent = {
           expander_collapsed = icons.expander.collapsed,
@@ -86,8 +88,10 @@ return {
         git_status = {
           symbols = {
             -- Change type
-            deleted = icons.symbols.removed, -- this can only be used in the git_status source
-            renamed = icons.symbols.renamed, -- this can only be used in the git_status source
+            deleted  = icons.symbols.removed, -- this can only be used in the git_status source
+            renamed  = icons.symbols.renamed, -- this can only be used in the git_status source
+            -- Status type
+            unstaged = icons.symbols.unstaged,
           }
         },
       },

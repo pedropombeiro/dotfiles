@@ -18,10 +18,10 @@ return {
     end
   end,
   opts = function()
-    local config = require('config')
-    local colors = config.theme.colors
+    local config           = require('config')
+    local colors           = config.theme.colors
     local diagnostic_icons = config.icons.diagnostics
-    local symbol_icons = config.icons.symbols
+    local symbol_icons     = config.icons.symbols
 
     return {
       options = {
@@ -62,6 +62,10 @@ return {
             show_filename_only = false,
             path = 1,
             shorting_target = 80,
+            symbols = {
+              modified = symbol_icons.modified,
+              readonly = symbol_icons.readonly, -- Text to show when the file is non-modifiable or readonly.
+            }
           },
           {
             'lsp_progress',

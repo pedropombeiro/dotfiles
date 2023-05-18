@@ -22,8 +22,8 @@ return {
   },
   icons = {
     folder = {
-      empty      = '󰜌',
-      empty_open = '󰜌',
+      empty      = '',
+      empty_open = '',
       collapsed  = '',
       expanded   = '',
     },

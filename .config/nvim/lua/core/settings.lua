@@ -62,9 +62,9 @@ opt.title      = false -- change terms title
 opt.number     = true  -- show line numbers
 opt.ruler      = true  -- show ruler in status line
 opt.laststatus = 2     -- always show status line
-opt.showcmd    = true  -- show the command being typed
 opt.scrolloff  = 4     -- keep 4 lines off the edges
 opt.pumheight  = 10    -- popup menu height
+opt.signcolumn = 'yes' -- Always show the signcolumn, otherwise it would shift the text each time
 
 -- enable a second-stage diff on individual hunks to provide much more accurate diffs.
 opt.diffopt:append('linematch:60')

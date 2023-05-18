@@ -9,10 +9,19 @@ return {
     { 'kyazdani42/nvim-web-devicons', lazy = true },
   },
   init = function()
-    vim.opt.showmode = false -- The mode is shown in Lualine anyway
+    local opt = vim.opt
+
+    opt.showmode = false                 -- The mode is shown in Lualine anyway
+    opt.showcmd = false                  -- The selected line count is already shown in Lualine
+    if vim.fn.has('nvim-0.9') == 1 then
+      opt.shortmess:append({ S = true }) -- do not show search count message when searching
+    end
   end,
   opts = function()
     local config = require('config')
+    local colors = config.theme.colors
+    local diagnostic_icons = config.icons.diagnostics
+    local symbol_icons = config.icons.symbols
 
     return {
       options = {
@@ -40,10 +49,10 @@ return {
             'diagnostics',
             symbols = {
               ---@diagnostic disable: undefined-field
-              hint  = config.icons.diagnostics.hint .. ' ',
-              info  = config.icons.diagnostics.info .. ' ',
-              warn  = config.icons.diagnostics.warning .. ' ',
-              error = config.icons.diagnostics.error .. ' ',
+              hint  = diagnostic_icons.hint .. ' ',
+              info  = diagnostic_icons.info .. ' ',
+              warn  = diagnostic_icons.warning .. ' ',
+              error = diagnostic_icons.error .. ' ',
               ---@diagnostic enable: undefined-field
             },
           },
@@ -58,11 +67,11 @@ return {
             'lsp_progress',
             colors = {
               ---@diagnostic disable: undefined-field
-              percentage      = config.theme.colors.cyan,
-              title           = config.theme.colors.blue,
-              message         = config.theme.colors.blue,
-              spinner         = config.theme.colors.cyan,
-              lsp_client_name = config.theme.colors.purple,
+              percentage      = colors.cyan,
+              title           = colors.blue,
+              message         = colors.blue,
+              spinner         = colors.cyan,
+              lsp_client_name = colors.purple,
               use             = true,
               ---@diagnostic enable: undefined-field
             },
@@ -82,7 +91,7 @@ return {
         },
         lualine_x = {
           {
-            function() return config.icons.diagnostics.debug .. '  ' .. require('dap').status() end,
+            function() return diagnostic_icons.debug .. '  ' .. require('dap').status() end,
             cond = function() return package.loaded['dap'] and require('dap').status() ~= '' end,
           },
           {
@@ -93,9 +102,9 @@ return {
             'diff',
             symbols = {
               ---@diagnostic disable: undefined-field
-              added    = config.icons.symbols.added .. ' ',
-              modified = config.icons.symbols.modified .. ' ',
-              removed  = config.icons.symbols.removed .. ' ',
+              added    = symbol_icons.added .. ' ',
+              modified = symbol_icons.modified .. ' ',
+              removed  = symbol_icons.removed .. ' ',
               ---@diagnostic enable: undefined-field
             }
           },
@@ -104,6 +113,7 @@ return {
           'filetype'
         },
         lualine_y = {
+          'selectioncount',
           { 'searchcount', maxcount = 999, timeout = 500, },
         },
         lualine_z = {

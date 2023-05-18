@@ -17,9 +17,9 @@ return {
     return {
       options = {
         icons_enabled = true,
-        ignore_focus = { 'neotest-summary', 'lazygit', 'TelescopePrompt', 'Trouble' },
+        ignore_focus = { 'neotest-summary', 'lazygit', 'TelescopePrompt' },
         disabled_filetypes = {
-          statusline = { 'alpha', 'neotest-summary', 'Trouble' },
+          statusline = { 'alpha', 'neotest-summary' },
         },
         globalstatus = true,
       },
@@ -30,6 +30,7 @@ return {
         'neo-tree',
         'nvim-dap-ui',
         'symbols-outline',
+        'trouble'
       },
       sections = {
         lualine_a = { 'mode' },

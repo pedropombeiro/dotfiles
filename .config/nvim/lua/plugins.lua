@@ -85,13 +85,13 @@ return {
   {
     'kylechui/nvim-surround', -- Add/change/delete surrounding delimiter pairs with ease. Written with ❤️ in Lua.
     event = 'BufReadPost',
-    config = true
+    opts = {}
   },
-  { 'tummetott/unimpaired.nvim', config = true }, -- LUA port of tpope's famous vim-unimpaired plugin
+  { 'tummetott/unimpaired.nvim', opts = {} }, -- LUA port of tpope's famous vim-unimpaired plugin
   {
     'echasnovski/mini.trailspace',
     version = false,
-    opts = {},
+    opts = {}
   },
 
   --### Other

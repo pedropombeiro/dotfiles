@@ -7,11 +7,11 @@ return {
     'williamboman/mason.nvim',
     cmd = { 'Mason', 'MasonLog', 'MasonUpdate', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll' },
     build = ':MasonUpdate', -- :MasonUpdate updates registry contents
-    config = true
+    opts = {}
   },
   {
     'RubixDev/mason-update-all', -- Easily update all Mason packages with one command
     cmd = { 'MasonUpdateAll' },
-    config = true
+    opts = {}
   }
 }

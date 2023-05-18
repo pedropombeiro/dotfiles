@@ -7,13 +7,6 @@ return {
     { '<leader>fu', desc = 'List buffer URLs' }
   },
   cmd = 'UrlView',
-  opts = {
-    default_action = 'system',
-    jump = {
-      prev = '[U',
-      next = ']U',
-    },
-  },
   init = function()
     local urlview_augroup = vim.api.nvim_create_augroup('urlview', { clear = true })
 
@@ -36,5 +29,11 @@ return {
       end
     })
   end,
-  config = true
+  opts = {
+    default_action = 'system',
+    jump = {
+      prev = '[U',
+      next = ']U',
+    },
+  },
 }

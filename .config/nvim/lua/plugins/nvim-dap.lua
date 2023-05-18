@@ -11,16 +11,16 @@ return {
       { '<leader>dt', function() require('dap-go').debug_test() end,      desc = 'Debug Go test' },
       { '<leader>rl', function() require('dap-go').run_last() end,        desc = 'Run last Go test' },
     },
-    config = true,
     dependencies = 'mfussenegger/nvim-dap',
     ft = 'go',
+    opts = {},
   },
 
   {
     'suketa/nvim-dap-ruby', -- An extension for nvim-dap providing configurations for launching debug.rb
-    config = true,
     dependencies = 'mfussenegger/nvim-dap',
     ft = 'ruby',
+    opts = {},
   },
 
   {
@@ -30,7 +30,7 @@ return {
       {
         'theHamsta/nvim-dap-virtual-text',
         dependencies = 'nvim-treesitter/nvim-treesitter',
-        config = true
+        opts = {}
       },
       {
         'rcarriga/nvim-dap-ui', --  A UI for nvim-dap

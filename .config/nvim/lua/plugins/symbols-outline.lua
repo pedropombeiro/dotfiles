@@ -5,7 +5,7 @@ return {
   'simrat39/symbols-outline.nvim',
   cmd = 'SymbolsOutline',
   keys = {
-    { "<C-'>", ':SymbolsOutline<CR>', mode = { 'n', 'v' }, desc = 'Toggle symbols window' }
+    { "<C-'>", ':SymbolsOutline<CR>', mode = { 'n', 'v' }, desc = 'Toggle symbols window', silent = true }
   },
   opts = {
     auto_close = false,

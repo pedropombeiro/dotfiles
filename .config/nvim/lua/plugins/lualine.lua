@@ -17,9 +17,9 @@ return {
     return {
       options = {
         icons_enabled = true,
-        ignore_focus = { 'neotest-summary', 'Outline', 'TelescopePrompt', 'Trouble' },
+        ignore_focus = { 'neotest-summary', 'TelescopePrompt', 'Trouble' },
         disabled_filetypes = {
-          statusline = { 'alpha', 'neotest-summary', 'Outline', 'Trouble' },
+          statusline = { 'alpha', 'neotest-summary', 'Trouble' },
         },
         globalstatus = true,
       },

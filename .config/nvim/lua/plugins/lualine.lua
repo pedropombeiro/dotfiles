@@ -103,8 +103,13 @@ return {
           'fileformat',
           'filetype'
         },
-        lualine_y = { 'progress' },
-        lualine_z = { 'location' }
+        lualine_y = {
+          { 'searchcount', maxcount = 999, timeout = 500, },
+        },
+        lualine_z = {
+          'progress',
+          'location',
+        }
       }
     }
   end

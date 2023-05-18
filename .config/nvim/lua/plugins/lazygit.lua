@@ -4,10 +4,10 @@
 return {
   'kdheepak/lazygit.nvim',
   keys = {
-    { '<leader>gg', ':LazyGit<CR>',       desc = 'Open LazyGit' },
-    { '<leader>gf', ':LazyGitFilter<CR>', desc = 'Open LazyGit for current buffer' }
+    { '<leader>gg', ':LazyGit<CR>',                  desc = 'Open LazyGit' },
+    { '<leader>gf', ':LazyGitFilterCurrentFile<CR>', desc = 'Open LazyGit for current file' }
   },
-  cmd = { 'LazyGit', 'LazyGitFilter' },
+  cmd = { 'LazyGit', 'LazyGitFilter', 'LazyGitFilterCurrentFile' },
   init = function()
     if vim.fn.has('mac') == 1 then -- Ensure that LazyGit uses same config dir on macOS as in Linux
       vim.api.nvim_create_autocmd({ 'BufEnter', 'BufAdd', 'BufNew', 'BufNewFile', 'BufWinEnter' }, {

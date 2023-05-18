@@ -29,7 +29,6 @@ return {
         'lazy',
         'neo-tree',
         'nvim-dap-ui',
-        'quickfix',
         'symbols-outline',
       },
       sections = {

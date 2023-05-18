@@ -1,30 +1,35 @@
 --- General config ------------------------------------------------------------------
 
-vim.opt.shortmess:append('I')
-vim.opt.smartindent           = true
-vim.opt.swapfile              = false -- disable the swapfile
-vim.opt.history               = 2000
-vim.opt.updatetime            = 1000
-vim.opt.wildmenu              = true -- set zsh-alike autocomplete behavior
-vim.opt.wildmode              = 'full'
-vim.opt.expandtab             = true
-vim.opt.tabpagemax            = 40   -- Max number of tab pages that can be opened from the command line
-vim.opt.errorbells            = false
-vim.opt.confirm               = true -- Display a confirmation dialog when closing a dirty buffer (Mastering Vim Quickly)
+local opt = vim.opt
 
-vim.g.loaded_perl_provider    = 0    -- disable Perl support
-vim.g.loaded_python3_provider = 0    -- disable python3 provider, we don't need python plugins
+opt.shortmess:append('I')
+opt.smartindent               = true
+opt.swapfile                  = false -- disable the swapfile
+opt.history                   = 2000
+opt.updatetime                = 1000
+opt.completeopt               = 'menu,menuone,noselect'
+opt.wildmenu                  = true  -- set zsh-alike autocomplete behavior
+opt.wildmode                  = 'longest:full,full'
+opt.winminwidth               = 5     -- Minimum window width
+opt.wrap                      = false -- Disable line wrap
+opt.expandtab                 = true
+opt.tabpagemax                = 40    -- Max number of tab pages that can be opened from the command line
+opt.errorbells                = false
+opt.confirm                   = true  -- Display a confirmation dialog when closing a dirty buffer (Mastering Vim Quickly)
+
+vim.g.loaded_perl_provider    = 0     -- disable Perl support
+vim.g.loaded_python3_provider = 0     -- disable python3 provider, we don't need python plugins
 
 -- This makes vim act like all other editors, buffers can
 -- exist in the background without being in a window.
 -- http://items.sjbach.com/319/configuring-vim-right
-vim.opt.hidden                = true
+opt.hidden                    = true
 
 -- Make macros render faster (lazy draw)
-vim.opt.lazyredraw            = true
+opt.lazyredraw                = true
 
 ---------------- Persistent Undo ------------------
-vim.opt.undofile              = true
+opt.undofile                  = true
 local vimrc_undofile_augroup  = vim.api.nvim_create_augroup('vimrc_undofile', { clear = true })
 vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = '/tmp/*',
@@ -33,8 +38,8 @@ vim.api.nvim_create_autocmd('BufWritePre', {
 })
 
 ---------------- Spelling ------------------
-vim.opt.spelllang        = 'en_us'
-vim.opt.spell            = false
+opt.spelllang            = 'en_us'
+opt.spell                = false
 
 -- netrw customization (https://shapeshed.com/vim-netrw/)
 vim.g.netrw_liststyle    = 1 -- wide view
@@ -43,8 +48,8 @@ vim.g.netrw_altv         = 1
 vim.g.netrw_winsize      = 25
 
 ---------------- Security --------------------------
-vim.opt.modelines        = 0
-vim.opt.modeline         = false
+opt.modelines            = 0
+opt.modeline             = false
 
 -- Q: Mouse reporting in vim doesn't work for some rows/columns in a big terminal window.
 if vim.fn.has('mouse_sgr') ~= 0 then
@@ -53,47 +58,48 @@ end
 
 ---------------- Layout --------------------------
 
-vim.opt.title      = false -- change terms title
-vim.opt.number     = true  -- show line numbers
-vim.opt.ruler      = true  -- show ruler in status line
-vim.opt.laststatus = 2     -- always show status line
-vim.opt.showcmd    = true  -- show the command being typed
-vim.opt.scrolloff  = 4     -- keep 4 lines off the edges
-vim.opt.pumheight  = 10    -- popup menu height
+opt.title      = false -- change terms title
+opt.number     = true  -- show line numbers
+opt.ruler      = true  -- show ruler in status line
+opt.laststatus = 2     -- always show status line
+opt.showcmd    = true  -- show the command being typed
+opt.scrolloff  = 4     -- keep 4 lines off the edges
+opt.pumheight  = 10    -- popup menu height
 
 -- enable a second-stage diff on individual hunks to provide much more accurate diffs.
-vim.opt.diffopt:append('linematch:60')
+opt.diffopt:append('linematch:60')
 
 vim.fn.setenv('GIT_CONFIG_PARAMETERS', "'delta.side-by-side=false'") -- Disable .gitconfig's delta option
 
-vim.opt.relativenumber    = true
+opt.relativenumber        = true
 
 ---------------- Search --------------------------
 
-vim.opt.incsearch         = true -- Find the next match as we type the search
-vim.opt.hlsearch          = true -- Highlight searches by default
-vim.opt.ignorecase        = true -- Ignore case when searching...
-vim.opt.smartcase         = true -- ...unless we type a capital
-vim.opt.grepprg           = 'rg --vimgrep --smart-case --follow '
+opt.incsearch             = true -- Find the next match as we type the search
+opt.hlsearch              = true -- Highlight searches by default
+opt.ignorecase            = true -- Ignore case when searching...
+opt.smartcase             = true -- ...unless we type a capital
+opt.grepformat            = '%f:%l:%c:%m'
+opt.grepprg               = 'rg --vimgrep --smart-case --follow '
 
 ---------------- Format --------------------------
 
-vim.opt.encoding          = 'utf-8'
-vim.opt.termencoding      = 'utf-8'
-vim.opt.fileformats       = 'unix,dos,mac' -- supported formats
-vim.opt.bomb              = false          -- don't use a BOM
-vim.opt.shiftwidth        = 2
-vim.opt.softtabstop       = 2
-vim.opt.tabstop           = 2
+opt.encoding              = 'utf-8'
+opt.termencoding          = 'utf-8'
+opt.fileformats           = 'unix,dos,mac' -- supported formats
+opt.bomb                  = false          -- don't use a BOM
+opt.shiftwidth            = 2
+opt.softtabstop           = 2
+opt.tabstop               = 2
 
-vim.opt.listchars         = {
+opt.listchars             = {
   precedes = '⟨',
   extends = '⟩',
   trail = '·',
   tab = '│·',
   nbsp = '␣'
 }
-vim.opt.list              = true
+opt.list                  = true
 
 local term_helper_augroup = vim.api.nvim_create_augroup('term_helper', { clear = true })
 vim.api.nvim_create_autocmd('TermOpen', {

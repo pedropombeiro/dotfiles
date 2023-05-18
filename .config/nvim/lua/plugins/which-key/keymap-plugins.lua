@@ -7,8 +7,8 @@ m.nname('<leader>g', 'Git')
 
 -- Lazy.nvim
 m.nname('<leader>p', 'Package Manager')
-m.nnoremap('<leader>ps', ':Lazy<CR>', 'Status')
-m.nnoremap('<leader>pu', ':Lazy sync<CR>', 'Sync')
+m.nnoremap('<leader>ps', ':Lazy<CR>', 'Status', { silent = true })
+m.nnoremap('<leader>pu', ':Lazy sync<CR>', 'Sync', { silent = true })
 
 -- wsdjeg/vim-fetch
 wk.register({

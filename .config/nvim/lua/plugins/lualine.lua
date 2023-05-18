@@ -17,15 +17,16 @@ return {
     return {
       options = {
         icons_enabled = true,
-        ignore_focus = { 'lazy', 'neotest-summary', 'Outline', 'TelescopePrompt', 'Trouble' },
+        ignore_focus = { 'neotest-summary', 'Outline', 'TelescopePrompt', 'Trouble' },
         disabled_filetypes = {
-          statusline = { 'alpha', 'lazy', 'neotest-summary', 'Outline', 'Trouble' },
+          statusline = { 'alpha', 'neotest-summary', 'Outline', 'Trouble' },
         },
         globalstatus = true,
       },
       extensions = {
         'fugitive',
         'man',
+        'lazy',
         'neo-tree',
         'nvim-dap-ui',
         'quickfix',
@@ -80,6 +81,10 @@ return {
           }
         },
         lualine_x = {
+          {
+            require('lazy.status').updates,
+            cond = require('lazy.status').has_updates,
+          },
           {
             'diff',
             symbols = {

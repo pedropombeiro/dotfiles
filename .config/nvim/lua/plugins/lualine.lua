@@ -19,7 +19,7 @@ return {
         icons_enabled = true,
         ignore_focus = { 'neotest-summary', 'lazygit', 'TelescopePrompt' },
         disabled_filetypes = {
-          statusline = { 'alpha', 'neotest-summary' },
+          statusline = { 'alpha', 'mason', 'neotest-summary' },
         },
         globalstatus = true,
       },

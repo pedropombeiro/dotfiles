@@ -5,8 +5,8 @@ return {
   'nvim-lualine/lualine.nvim',
   event = 'VeryLazy',
   dependencies = {
-    { 'arkav/lualine-lsp-progress', lazy = true, event = 'BufReadPost' }, -- LSP Progress lualine component
-    'kyazdani42/nvim-web-devicons',
+    { 'arkav/lualine-lsp-progress',   lazy = true, event = 'BufReadPost' }, -- LSP Progress lualine component
+    { 'kyazdani42/nvim-web-devicons', lazy = true },
   },
   init = function()
     vim.opt.showmode = false -- The mode is shown in Lualine anyway

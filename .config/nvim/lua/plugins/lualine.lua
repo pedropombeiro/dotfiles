@@ -82,6 +82,10 @@ return {
         },
         lualine_x = {
           {
+            function() return config.icons.diagnostics.debug .. '  ' .. require('dap').status() end,
+            cond = function() return package.loaded['dap'] and require('dap').status() ~= '' end,
+          },
+          {
             require('lazy.status').updates,
             cond = require('lazy.status').has_updates,
           },

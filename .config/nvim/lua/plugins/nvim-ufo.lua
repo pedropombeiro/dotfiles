@@ -2,6 +2,9 @@
 --  Not UFO in the sky, but an ultra fold in Neovim.
 
 local function setFoldOptions()
+  local config = require('config')
+  local expander_icons = config.icons.expander
+
   if vim.fn.has('nvim-0.9') == 1 then
     vim.opt.foldcolumn = '1'
   else
@@ -10,7 +13,9 @@ local function setFoldOptions()
   vim.opt.foldlevel      = 99
   vim.opt.foldlevelstart = 99
   vim.opt.foldenable     = true
-  vim.opt.fillchars      = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
+  vim.opt.fillchars      =
+      [[eob: ,fold: ,foldopen:]] .. expander_icons.expanded ..
+      [[,foldsep: ,foldclose:]] .. expander_icons.collapsed
 end
 
 local function fold_virt_text_handler(virtText, lnum, endLnum, width, truncate)

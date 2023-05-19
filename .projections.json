@@ -1,0 +1,26 @@
+{
+  ".config/nvim/ftdetect/*.lua": {
+    "type": "ftdetect"
+  },
+  ".config/nvim/ftdetect/*.vim": {
+    "type": "ftdetect"
+  },
+  ".config/nvim/ftplugin/*.lua": {
+    "type": "ftplugin"
+  },
+  ".config/nvim/ftplugin/*.vim": {
+    "type": "ftplugin"
+  },
+  ".config/nvim/lua/plugins.lua": {
+    "type": "plugin"
+  },
+  ".config/nvim/lua/plugins/*.lua": {
+    "type": "plugin"
+  },
+  ".config/nvim/lua/config/init.lua": {
+    "type": "config"
+  },
+  "README.md": {
+    "type": "doc"
+  }
+}

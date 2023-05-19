@@ -146,6 +146,7 @@ return {
     ft = 'ruby',
     cmd = { 'Bundle', 'Bopen', 'Bsplit', 'Btabedit' }
   },
+  'tpope/vim-projectionist',                 -- Granular project configuration
   { 'tpope/vim-rails',        ft = 'ruby' }, -- rails.vim: Ruby on Rails power tools
   { 'bfontaine/Brewfile.vim', ft = 'ruby' }, -- Brewfile syntax for Vim
   'wsdjeg/vim-fetch',                        -- Make Vim handle line and column numbers in file names with a minimum of fuss

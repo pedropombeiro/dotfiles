@@ -11,7 +11,6 @@ return {
     'hrsh7th/cmp-path',                                   -- nvim-cmp source for path
     'hrsh7th/cmp-vsnip',                                  -- nvim-cmp source for vim-vsnip
     'hrsh7th/cmp-nvim-lsp-signature-help',                -- nvim-cmp source for displaying function signatures with the current parameter emphasized
-    'hrsh7th/cmp-cmdline',                                -- nvim-cmp source for vim's cmdline
     { 'hrsh7th/vim-vsnip',                 lazy = true }, -- Snippet plugin for vim/nvim that supports LSP/VSCode's snippet format.
     { 'williamboman/mason-lspconfig.nvim', lazy = true },
     {
@@ -106,7 +105,6 @@ return {
             end,
           },
         },
-        { name = 'cmdline' },
         { name = 'path' },
         { name = 'nvim_lsp_signature_help' },
       }),
@@ -120,18 +118,6 @@ return {
     cmp.setup.filetype('gitcommit', {
       sources = {
         { name = 'buffer' },
-      }
-    })
-
-    cmp.setup.cmdline({ '/', '?' }, {
-      sources = {
-        { name = 'buffer' }
-      }
-    })
-
-    cmp.setup.cmdline(':', {
-      sources = {
-        { name = 'cmdline' }
       }
     })
   end

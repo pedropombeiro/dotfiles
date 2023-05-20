@@ -22,5 +22,32 @@
   },
   "README.md": {
     "type": "doc"
+  },
+  ".config/yadm/bootstrap.d/*.sh": {
+    "type": "yadm"
+  },
+  ".config/yadm/scripts/*.sh": {
+    "type": "yadm"
+  },
+  ".ssh/config": {
+    "type": "ssh"
+  },
+  ".zshrc": {
+    "type": "zsh"
+  },
+  ".zshrc.shared": {
+    "type": "zsh"
+  },
+  ".shellrc/zshrc.d/configs/*.zsh": {
+    "type": "zsh"
+  },
+  ".shellrc/rc.d/*.sh": {
+    "type": "zsh"
+  },
+  ".shellrc/zshrc.d/functions/*.": {
+    "type": "zshfn"
+  },
+  ".shellrc/zshrc.d/functions/scripts/*.rb": {
+    "type": "zshfn"
   }
 }

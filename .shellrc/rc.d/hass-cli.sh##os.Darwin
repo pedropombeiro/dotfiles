@@ -1,5 +1,0 @@
-#!/usr/bin/env sh
-
-if [ -f "${HOME}/.hass-cli.env" ]; then
-  . "${HOME}/.hass-cli.env"
-fi

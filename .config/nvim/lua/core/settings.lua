@@ -116,9 +116,32 @@ vim.api.nvim_create_autocmd('BufEnter', {
   pattern = '*',
   group = justfile_open_augroup,
   callback = function()
+    local function find_file_upwards(filename)
+      local current_dir = vim.fn.expand('%:p')
+      local file_path = vim.api.nvim_call_function('findfile', { filename, current_dir })
+      if file_path ~= '' then
+        return vim.api.nvim_call_function('fnamemodify', { file_path, ':p' })
+      end
+      while current_dir ~= '/' do
+        local parent_dir = vim.api.nvim_call_function('fnamemodify', { current_dir, ':h' })
+        if parent_dir == current_dir then
+          -- Reached the root directory
+          break
+        end
+        current_dir = parent_dir
+        file_path = vim.api.nvim_call_function('findfile', { filename, current_dir })
+        if file_path ~= '' then
+          return vim.api.nvim_call_function('fnamemodify', { file_path, ':p' })
+        end
+      end
+      return ''
+    end
+
     if vim.api.nvim_get_option('makeprg') == 'make' then
-      local justfile = vim.fn.findfile('.justfile', vim.fn.expand('%:p') .. ';')
-      if #justfile > 0 then
+      local makefile = find_file_upwards('Makefile')
+      local justfile = find_file_upwards('.justfile')
+
+      if #justfile > 0 and (#makefile == 0 or #justfile > #makefile) then
         vim.opt_local.makeprg = 'just'
       end
     end

@@ -12,7 +12,7 @@ opkg install asciinema bind-dig column coreutils entr \
 opkg install procps-ng-ps     # installs a more modern version of ps, supporting command line switches
 opkg install coreutils-mkfifo # required for powerlevel10k ZSH theme
 opkg install bash sysstat     # required for qnapnodeexporter/grafana
-opkg install lua gzip neovim  # required for nvim plugins
+opkg install lua gzip         # required for nvim plugins
 
 opkg install python3 python3-pip && pip install --use-pep517 ranger-fm # Need to edit the path to /opt/bin/python in the script header
 pip install --use-pep517 neovim-remote tldr

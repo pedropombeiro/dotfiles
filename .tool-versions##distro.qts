@@ -16,6 +16,7 @@ jless         latest
 jq            latest
 just          latest
 lazygit       latest
+neovim        latest
 nodejs        17.9.1
 pre-commit    latest
 ripgrep       latest

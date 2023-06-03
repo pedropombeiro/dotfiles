@@ -1,7 +1,7 @@
 bat           latest
 bottom        latest
 ctop          latest
-delta         latest
+delta         0.15.1
 dive          latest
 duf           latest
 dust          latest

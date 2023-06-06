@@ -83,6 +83,11 @@ return {
         unknown            = config.icons.tests.unknown
         ---@diagnostic enable: undefined-field
       },
+      quickfix = {
+        open = function()
+          vim.cmd('Trouble quickfix')
+        end,
+      },
     })
 
     -- Theming (from https://github.com/nvim-neotest/neotest/blob/master/lua/neotest/config/init.lua)

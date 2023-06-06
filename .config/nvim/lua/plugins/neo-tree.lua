@@ -95,6 +95,7 @@ return {
           }
         },
       },
+      sources = { 'filesystem', 'buffers', 'git_status', 'document_symbols' },
       filesystem = {
         bind_to_cwd = false,
         follow_current_file = true,

@@ -96,7 +96,7 @@ m.map('<leader>`', 'ysiW`', 'Surround word with ticks')
 
 -- <leader>) or <leader>( Surround a word with (parens)
 -- The difference is in whether a space is put in
-local symbols = { ['('] = ')',['['] = ']',['{'] = '}' }
+local symbols = { ['('] = ')', ['['] = ']', ['{'] = '}' }
 for open_sym, close_sym in pairs(symbols) do
   local open_desc = 'Surround word with ' .. open_sym .. ' ' .. close_sym
   local close_desc = 'Surround word with ' .. open_sym .. close_sym

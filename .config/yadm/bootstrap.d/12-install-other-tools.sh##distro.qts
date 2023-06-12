@@ -10,7 +10,6 @@ target_dir="${HOME}/opt"
 temp_dir="$(mktemp -d)"
 
 bandwhich_version=0.20.0
-bottom_version=0.8.0
 croc_version=9.6.4
 hyperfine_version=1.16.1
 lnav_version=0.11.1
@@ -46,7 +45,6 @@ function extract_tar() {
 }
 
 download_and_extract "https://github.com/imsnif/bandwhich/releases/download/${bandwhich_version}/bandwhich-v${bandwhich_version}-x86_64-unknown-linux-musl.tar.gz" bandwhich
-download_and_extract "https://github.com/ClementTsang/bottom/releases/download/${bottom_version}/bottom_x86_64-unknown-linux-gnu2-17.tar.gz" btm
 download_and_extract "https://github.com/schollz/croc/releases/download/v${croc_version}/croc_${croc_version}_Linux-64bit.tar.gz" croc
 
 archive_name="hyperfine-v${hyperfine_version}-x86_64-unknown-linux-musl"

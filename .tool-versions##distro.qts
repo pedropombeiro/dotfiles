@@ -25,3 +25,4 @@ shellcheck    latest
 shfmt         latest
 viddy         latest
 xh            latest
+hyperfine     latest

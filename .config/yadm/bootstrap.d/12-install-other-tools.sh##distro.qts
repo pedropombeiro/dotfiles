@@ -11,7 +11,6 @@ temp_dir="$(mktemp -d)"
 
 bandwhich_version=0.20.0
 croc_version=9.6.4
-hyperfine_version=1.16.1
 lnav_version=0.11.1
 lsd_version=0.23.1
 procs_version=0.14.0
@@ -47,8 +46,6 @@ function extract_tar() {
 download_and_extract "https://github.com/imsnif/bandwhich/releases/download/${bandwhich_version}/bandwhich-v${bandwhich_version}-x86_64-unknown-linux-musl.tar.gz" bandwhich
 download_and_extract "https://github.com/schollz/croc/releases/download/v${croc_version}/croc_${croc_version}_Linux-64bit.tar.gz" croc
 
-archive_name="hyperfine-v${hyperfine_version}-x86_64-unknown-linux-musl"
-download_and_extract "https://github.com/sharkdp/hyperfine/releases/download/v${hyperfine_version}/${archive_name}.tar.gz" "${archive_name}/hyperfine"
 download_and_extract "https://github.com/tstack/lnav/releases/download/v${lnav_version}/lnav-${lnav_version}-x86_64-linux-musl.zip" "lnav-${lnav_version}/lnav"
 
 archive_name="lsd-${lsd_version}-x86_64-unknown-linux-musl"

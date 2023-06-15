@@ -8,11 +8,13 @@
 GITLAB_USERNAME="${USER}"
 
 remote=origin
+milestone=$(glab api 'https://gitlab.com/api/v4/groups/9970/milestones?state=active' | jq -r '[.[] | select(.due_date | strptime("%Y-%m-%d") | mktime > now)] | .[0].title')
 
 if git remote get-url "${remote}" | grep gitlab.com >/dev/null; then
   git push --set-upstream "${remote}" "$(git_current_branch)" \
     -o merge_request.create \
     -o merge_request.target="$(git_parent)" \
+    -o merge_request.milestone="$milestone" \
     -o merge_request.assign="${GITLAB_USERNAME}" \
     -o merge_request.label="Category:Runner Fleet" \
     -o merge_request.label="section::ci" \

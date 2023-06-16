@@ -30,6 +30,10 @@ brew "ansible"
 brew "yamllint"
 # Checks ansible playbooks for practices and behaviour
 brew "ansible-lint"
+# Arduino command-line interface
+brew "arduino-cli"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.10"
 # Record and share terminal sessions
 brew "asciinema"
 # Shell extension to jump to frequently used directories
@@ -54,6 +58,12 @@ brew "calc"
 brew "checkmake"
 # Cross-platform make
 brew "cmake"
+# Validating, recursive, caching DNS resolver
+brew "unbound"
+# GNU Transport Layer Security (TLS) Library
+brew "gnutls"
+# Container runtimes on MacOS (and Linux) with minimal setup
+brew "colima"
 # Diff your Docker containers
 brew "container-diff"
 # GNU File, Shell, and Text utilities
@@ -66,10 +76,12 @@ brew "ctop"
 brew "direnv"
 # Tool for exploring each layer in a docker image
 brew "dive"
+# Pack, ship and run any application as a lightweight container
+brew "docker"
 # Platform keystore credential helper for Docker
 brew "docker-credential-helper"
 # Text processing system for reStructuredText
-brew "docutils", link: false
+brew "docutils"
 # GNU version of the tar archiving utility
 brew "gnu-tar"
 # Debian package management system
@@ -84,10 +96,6 @@ brew "entr"
 brew "exiftool"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
-# Validating, recursive, caching DNS resolver
-brew "unbound"
-# GNU Transport Layer Security (TLS) Library
-brew "gnutls"
 # OpenType text shaping engine
 brew "harfbuzz"
 # Framework for layout and rendering of i18n text
@@ -108,6 +116,8 @@ brew "git-extras"
 brew "git-lfs"
 # Audit git repos for secrets
 brew "gitleaks"
+# Open-source GitLab command-line tool
+brew "glab"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
 # GNU Pretty Good Privacy (PGP) package
@@ -118,6 +128,8 @@ brew "gpgme"
 brew "graphicsmagick"
 # Colorize logfiles and command output
 brew "grc"
+# Free Kerberos 5 implementation
+brew "heimdal"
 # Kubernetes package manager
 brew "helm"
 # Convert source code to formatted text with syntax highlighting
@@ -180,6 +192,8 @@ brew "pgformatter"
 brew "pinentry-mac"
 # Python dependency management tool
 brew "pipenv"
+# Object-relational database system
+brew "postgresql@13"
 # Unix pager optimized for psql
 brew "pspg"
 # Interpreted, interactive, object-oriented programming language
@@ -370,8 +384,6 @@ cask "plex"
 cask "protonvpn"
 # Display image info and preview unsupported formats in QuickLook
 cask "qlimagesize"
-# Kubernetes and container management on the desktop
-cask "rancher"
 # Control your tools with a few keystrokes
 cask "raycast"
 # Remote management solution
@@ -398,8 +410,6 @@ cask "toggl-track"
 cask "tor-browser"
 # Development environment
 cask "vagrant"
-# Open-source code editor
-cask "visual-studio-code"
 # Desktop client for WhatsApp
 cask "whatsapp"
 # Video communication and virtual meeting platform

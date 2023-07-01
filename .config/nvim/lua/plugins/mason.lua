@@ -8,10 +8,5 @@ return {
     cmd = { 'Mason', 'MasonLog', 'MasonUpdate', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll' },
     build = ':MasonUpdate', -- :MasonUpdate updates registry contents
     opts = {}
-  },
-  {
-    'RubixDev/mason-update-all', -- Easily update all Mason packages with one command
-    cmd = { 'MasonUpdateAll' },
-    opts = {}
   }
 }

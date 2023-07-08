@@ -123,6 +123,8 @@ brew "poppler"
 brew "pspg"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.9"
+# QR Code generation
+brew "qrencode"
 # File browser
 brew "ranger"
 # Search tool like grep and The Silver Searcher

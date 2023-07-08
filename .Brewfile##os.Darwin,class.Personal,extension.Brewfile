@@ -19,10 +19,10 @@ brew "xz"
 brew "ansible"
 # Arduino command-line interface
 brew "arduino-cli"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.10"
 # Record and share terminal sessions
 brew "asciinema"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.10"
 # Shell extension to jump to frequently used directories
 brew "autojump"
 # Bourne-Again SHell, a UNIX command interpreter
@@ -219,7 +219,7 @@ cask "istat-menus"
 cask "iterm2"
 # Open-source screen recorder built with web technology
 cask "kap"
-# Sound clear in online meetings
+# Noise cancelling application
 cask "krisp"
 # Wallet desktop application to maintain multiple cryptocurrencies
 cask "ledger-live"
@@ -250,8 +250,6 @@ cask "musescore"
 cask "muzzle"
 # WiFi site survey software and WiFi scanner
 cask "netspot"
-# Reverse proxy, secure introspectable tunnels to localhost
-cask "ngrok"
 # App to write, plan, collaborate, and get organized
 cask "notion"
 # Calculator and converter application

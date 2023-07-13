@@ -9,7 +9,7 @@ fd            latest
 fzf           latest
 github-cli    latest
 gitleaks      latest
-golang        1.19.5
+go            1.19.5
 golangci-lint latest
 hadolint      latest
 jless         latest
@@ -17,7 +17,7 @@ jq            latest
 just          latest
 lazygit       latest
 neovim        latest
-nodejs        17.9.1
+node          17
 pre-commit    latest
 ripgrep       latest
 rust          1.58.1

@@ -30,10 +30,10 @@ brew "yamllint"
 brew "ansible-lint"
 # Arduino command-line interface
 brew "arduino-cli"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.10"
 # Record and share terminal sessions
 brew "asciinema"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.10"
 # Shell extension to jump to frequently used directories
 brew "autojump"
 # Bourne-Again SHell, a UNIX command interpreter
@@ -300,7 +300,7 @@ cask "chromedriver"
 cask "chrysalis"
 # API documentation browser and code snippet manager
 cask "dash"
-# Control your Elgato Key Lights
+# Control your Elgato key lights
 cask "elgato-control-center"
 # Assign keys, and then decorate and label them
 cask "elgato-stream-deck"
@@ -342,7 +342,7 @@ cask "kindle"
 cask "krisp"
 # Create, manage and debug system- and user services
 cask "launchcontrol"
-# Office suite
+# Free cross-platform office suite, fresh version
 cask "libreoffice"
 # Host-based application firewall
 cask "little-snitch"
@@ -406,8 +406,6 @@ cask "syntax-highlight"
 cask "toggl-track"
 # Web browser focusing on security
 cask "tor-browser"
-# Development environment
-cask "vagrant"
 # Desktop client for WhatsApp
 cask "whatsapp"
 # Video communication and virtual meeting platform

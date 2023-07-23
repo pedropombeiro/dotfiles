@@ -152,6 +152,8 @@ brew "lazydocker"
 brew "lazygit"
 # Conversion library
 brew "libiconv"
+# Postgres C API library
+brew "libpq", link: true
 # Curses-based tool for viewing and analyzing log files
 brew "lnav"
 # Clone of ls with colorful output, file type icons, and more
@@ -314,8 +316,6 @@ cask "font-meslo-lg-nerd-font"
 cask "fork"
 # Free and open-source image editor
 cask "gimp"
-# Displays all your GitLab activities in one place
-cask "gitdock"
 # Web browser
 cask "google-chrome"
 # Set of tools to manage resources and applications hosted on Google Cloud

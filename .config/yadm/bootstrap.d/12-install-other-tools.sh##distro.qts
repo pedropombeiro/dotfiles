@@ -23,9 +23,14 @@ function download_and_extract() {
   printf "${GREEN}%s${NC}" "Extracting... "
   if [[ ${filename##*.} == 'zip' ]]; then
     extract_zip "$2"
-  else
+  elif [[ ${filename##*.} == 'gz' ]]; then
     extract_tar "$2"
+  else
+    extract_tarball "$2"
   fi
+
+  version="$($(basename "$2") --version 2>/dev/null)"
+  [[ $? -eq 0 ]] && echo "$version"
 }
 
 function extract_zip() {
@@ -35,7 +40,8 @@ function extract_zip() {
 
 function extract_tar() {
   if [[ $1 == *"/"* ]]; then
-    tar xzvf "${temp_dir}/package.gz" --directory="${target_dir}" --strip-components=1 "$1" --no-same-owner
+    components=$(tr -dc '/' <<< "$1" | awk '{ print length; }')
+    tar xzvf "${temp_dir}/package.gz" --directory="${target_dir}" --strip-components="$components" "$1" --no-same-owner
   else
     tar xzvf "${temp_dir}/package.gz" --directory="${target_dir}" "$1" --no-same-owner
   fi
@@ -43,7 +49,19 @@ function extract_tar() {
   rm -f "${temp_dir}/package.*"
 }
 
+function extract_tarball() {
+  if [[ $1 == *"/"* ]]; then
+    components=$(tr -dc '/' <<< "$1" | awk '{ print length; }')
+    tar xjvf "${temp_dir}/package.tbz" --directory="${target_dir}" --strip-components="$components" "$1" --no-same-owner
+  else
+    tar xjvf "${temp_dir}/package.tbz" --directory="${target_dir}" "$1" --no-same-owner
+  fi
+
+  rm -f "${temp_dir}/package.*"
+}
+
 download_and_extract "https://github.com/imsnif/bandwhich/releases/download/${bandwhich_version}/bandwhich-v${bandwhich_version}-x86_64-unknown-linux-musl.tar.gz" bandwhich
+download_and_extract "https://github.com/aristocratos/btop/releases/latest/download/btop-x86_64-linux-musl.tbz" ./btop/bin/btop
 download_and_extract "https://github.com/schollz/croc/releases/download/v${croc_version}/croc_${croc_version}_Linux-64bit.tar.gz" croc
 
 download_and_extract "https://github.com/tstack/lnav/releases/download/v${lnav_version}/lnav-${lnav_version}-x86_64-linux-musl.zip" "lnav-${lnav_version}/lnav"

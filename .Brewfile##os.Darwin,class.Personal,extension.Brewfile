@@ -27,6 +27,8 @@ brew "autojump"
 brew "bash"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
+# Resource monitor. C++ version and continuation of bashtop and bpytop
+brew "btop"
 # Arbitrary precision calculator
 brew "calc"
 # Linter/analyzer for Makefiles
@@ -221,7 +223,7 @@ cask "kap"
 cask "krisp"
 # Wallet desktop application to maintain multiple cryptocurrencies
 cask "ledger-live"
-# Office suite
+# Free cross-platform office suite, fresh version
 cask "libreoffice"
 # Host-based application firewall
 cask "little-snitch"

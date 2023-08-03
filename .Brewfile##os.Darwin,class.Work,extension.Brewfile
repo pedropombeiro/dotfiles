@@ -44,6 +44,8 @@ brew "bat"
 brew "blueutil"
 # Collection of portable C++ source libraries
 brew "boost"
+# Resource monitor. C++ version and continuation of bashtop and bpytop
+brew "btop"
 # Core application library for C
 brew "glib"
 # Manage compile and link flags for libraries

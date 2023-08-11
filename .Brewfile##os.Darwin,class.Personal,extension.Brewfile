@@ -219,8 +219,6 @@ cask "istat-menus"
 cask "iterm2"
 # Open-source screen recorder built with web technology
 cask "kap"
-# Noise cancelling application
-cask "krisp"
 # Wallet desktop application to maintain multiple cryptocurrencies
 cask "ledger-live"
 # Free cross-platform office suite, fresh version

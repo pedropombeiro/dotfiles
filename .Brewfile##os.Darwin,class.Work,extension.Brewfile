@@ -340,8 +340,6 @@ cask "kap"
 cask "keycastr"
 # Interface for reading and syncing eBooks
 cask "kindle"
-# Noise cancelling application
-cask "krisp"
 # Create, manage and debug system- and user services
 cask "launchcontrol"
 # Free cross-platform office suite, fresh version

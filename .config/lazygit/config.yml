@@ -165,7 +165,7 @@ keybinding:
     files:
         commitChanges: "c"
         commitChangesWithoutHook: "w" # commit changes without pre-commit hook
-        amendLastCommit: "A"
+        amendLastCommit: null # "A"
         commitChangesWithEditor: "C"
         ignoreFile: "i"
         refreshFiles: "r"
@@ -198,7 +198,7 @@ keybinding:
         squashAboveCommits: "S"
         moveDownCommit: "<c-j>" # move commit down one
         moveUpCommit: "<c-k>" # move commit up one
-        amendToCommit: "A"
+        amendToCommit: null # "A"
         pickCommit: "p" # pick commit (when mid-rebase)
         revertCommit: "t"
         cherryPickCopy: "c"
@@ -224,3 +224,14 @@ keybinding:
         init: "i"
         update: "u"
         bulkMenu: "b"
+customCommands:
+    - key: "A"
+      context: "commits"
+      command: 'git revise -- "{{.SelectedLocalCommit.Sha}}"'
+      stream: true
+      description: "Git-revise selected commit with staged changes"
+    - key: "A"
+      context: "files"
+      command: 'git revise -- HEAD'
+      stream: true
+      description: "Git-revise last commit with staged changes"

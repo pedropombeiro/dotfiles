@@ -114,6 +114,8 @@ brew "git-delta"
 brew "git-extras"
 # Git extension for versioning large files
 brew "git-lfs"
+# Rebase alternative for easy & efficient in-memory rebases and fixups
+brew "git-revise"
 # Audit git repos for secrets
 brew "gitleaks"
 # Open-source GitLab command-line tool

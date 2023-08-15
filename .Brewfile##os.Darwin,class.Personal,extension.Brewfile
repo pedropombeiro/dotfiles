@@ -61,6 +61,8 @@ brew "git"
 brew "git-delta"
 # Small git utilities
 brew "git-extras"
+# Rebase alternative for easy & efficient in-memory rebases and fixups
+brew "git-revise"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
 # Validating, recursive, caching DNS resolver

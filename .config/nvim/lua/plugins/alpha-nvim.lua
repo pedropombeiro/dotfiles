@@ -4,6 +4,9 @@
 return {
   'goolord/alpha-nvim',
   dependencies = 'kyazdani42/nvim-web-devicons',
+  cond = function()
+    return not vim.g.started_by_firenvim
+  end,
   event = 'VimEnter',
   opts = function()
     -- originally authored by @AdamWhittingham

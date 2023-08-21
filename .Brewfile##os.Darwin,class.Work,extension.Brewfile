@@ -52,8 +52,6 @@ brew "glib"
 brew "pkg-config"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.9"
-# Arbitrary precision calculator
-brew "calc"
 # Linter/analyzer for Makefiles
 brew "checkmake"
 # Cross-platform make

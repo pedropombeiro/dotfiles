@@ -29,8 +29,6 @@ brew "bash"
 brew "bat"
 # Resource monitor. C++ version and continuation of bashtop and bpytop
 brew "btop"
-# Arbitrary precision calculator
-brew "calc"
 # Linter/analyzer for Makefiles
 brew "checkmake"
 # GNU File, Shell, and Text utilities

@@ -30,7 +30,10 @@ return {
     event = { 'BufReadPre', 'BufNewFile' },
     keys = keys,
     dependencies = {
-      'b0o/schemastore.nvim',     -- 🛍  JSON schemas for Neovim
+      {
+        'b0o/SchemaStore.nvim', -- 🛍  JSON schemas for Neovim
+        version = false,        -- last release is way too old
+      },
       {
         'neovim/nvim-lspconfig',  -- Quickstart configs for Nvim LSP
         dependencies = {
@@ -94,9 +97,16 @@ return {
         golangci_lint_ls = {},
         gopls = {},
         jsonls = {
+          -- lazy-load schemastore when needed
+          on_new_config = function(new_config)
+            new_config.settings.json.schemas = new_config.settings.json.schemas or {}
+            vim.list_extend(new_config.settings.json.schemas, require('schemastore').json.schemas())
+          end,
           settings = {
             json = {
-              schemas = require('schemastore').json.schemas(),
+              format = {
+                enable = true,
+              },
               validate = { enable = true },
             },
           },
@@ -140,14 +150,36 @@ return {
         taplo = {},
         vimls = {},
         yamlls = {
+          -- Have to add this for yamlls to understand that we support line folding
+          capabilities = {
+            textDocument = {
+              foldingRange = {
+                dynamicRegistration = false,
+                lineFoldingOnly = true,
+              },
+            },
+          },
+          -- lazy-load schemastore when needed
+          on_new_config = function(new_config)
+            new_config.settings.yaml.schemas = new_config.settings.yaml.schemas or {}
+            vim.list_extend(new_config.settings.yaml.schemas, require('schemastore').yaml.schemas())
+          end,
           settings = {
+            redhat = { telemetry = { enabled = false } },
             yaml = {
+              keyOrdering = false,
+              format = {
+                enable = true,
+              },
               hover = true,
               completion = true,
               validate = true,
               schemastore = {
-                enable = true,
-                url = 'https://www.schemastore.org/api/json/catalog.json',
+                -- Must disable built-in schemaStore support to use
+                -- schemas from SchemaStore.nvim plugin
+                enable = false,
+                -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
+                url = '',
               },
             },
           },

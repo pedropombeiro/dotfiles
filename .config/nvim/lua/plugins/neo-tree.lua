@@ -12,21 +12,38 @@ return {
     'MunifTanjim/nui.nvim',
     {
       's1n7ax/nvim-window-picker',
-      config = function()
-        local config = require('config')
+      name = 'window-picker',
+      event = 'VeryLazy',
+      version = '2.*',
+      opts = function()
+        local colors = require('config').theme.colors
 
-        require 'window-picker'.setup({
+        return {
           use_winbar = 'always',
-          -- the foreground (text) color of the picker
-          fg_color = config.theme.colors.fg,
-          -- if you have include_current_win == true, then current_win_hl_color will
-          -- be highlighted using this background color
-          current_win_hl_color = config.theme.colors.orange_bg,
-          -- all the windows except the curren window will be highlighted using this
-          -- color
-          other_win_hl_color = config.theme.colors.green_bg,
-        })
-      end,
+          highlights = {
+            statusline = {
+              focused = {
+                fg = colors.fg,
+                bg = colors.orange_bg,
+              },
+              unfocused = {
+                fg = colors.fg,
+                bg = colors.green_bg,
+              },
+            },
+            winbar = {
+              focused = {
+                fg = colors.fg,
+                bg = colors.orange_bg,
+              },
+              unfocused = {
+                fg = colors.fg,
+                bg = colors.green_bg,
+              },
+            }
+          }
+        }
+      end
     }
   },
   keys = {

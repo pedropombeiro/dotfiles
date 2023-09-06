@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+source ~/.config/yadm/scripts/colors.sh
+
+set -o pipefail
+
+for id in $(glab api "/todos?type=MergeRequest" --paginate | jq '.[] | select((.target.state == "closed" or .target.state == "merged") and .action_name == "review_requested") | .id'); do
+  glab api /todos/$id/mark_as_done -X POST --silent
+done
+
+printf "${GREEN}%s${NC}\n" Done

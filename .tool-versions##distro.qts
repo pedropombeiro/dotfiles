@@ -16,7 +16,6 @@ jless         latest
 jq            latest
 just          latest
 lazygit       latest
-neovim        latest
 node          17
 pre-commit    latest
 ripgrep       latest

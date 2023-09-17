@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 alias lg='lazygit --use-config-dir ~/.config/lazygit'
+alias lzd='lazydocker'
 alias gdp='printf "\`\`\`patch\n%s\n\`\`\`" "$(git diff)" | pbcopy'
 
 # Delete all remote tracking Git branches where the upstream branch has been deleted

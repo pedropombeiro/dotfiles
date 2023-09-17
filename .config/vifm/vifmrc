@@ -440,6 +440,7 @@ nnoremap <a-i> :sync<cr>
 nnoremap <a-o> :sync %c<cr>
 " Swap panes
 nnoremap <c-u> <c-w>x
+nnoremap dfa :!yadm add -f %c<cr>
 
 " ------------------------------------------------------------------------------
 " Various customization examples
@@ -465,6 +466,3 @@ set grepprg='rg --line-number %i %a %s'
 
 " Activate screen/tmux support
 " screen!
-
-" Icons
-source $HOME/.config/vifm/icons

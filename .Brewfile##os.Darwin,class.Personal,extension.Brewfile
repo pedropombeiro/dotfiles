@@ -143,6 +143,8 @@ brew "tealdeer"
 brew "the_silver_searcher"
 # Modern watch command
 brew "viddy"
+# Ncurses-based file manager with vi-like keybindings
+brew "vifm"
 # Use ViM as PAGER
 brew "vimpager"
 # Executes a program periodically, showing output fullscreen
@@ -171,7 +173,7 @@ brew "jdxcode/tap/rtx"
 brew "leipert-projects/git-recon/git-recon"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
-# Command-line helper for the 1Password password manager
+# Command-line interface for 1Password
 cask "1password-cli"
 # Application launcher and productivity software
 cask "alfred"
@@ -302,7 +304,7 @@ cask "tripmode"
 cask "utm"
 # Open-source code editor
 cask "visual-studio-code"
-# Desktop client for WhatsApp
+# Native desktop client for WhatsApp
 cask "whatsapp"
 # Network protocol analyzer
 cask "wireshark"

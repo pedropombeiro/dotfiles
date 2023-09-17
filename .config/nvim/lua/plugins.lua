@@ -160,5 +160,9 @@ return {
     build = function() vim.fn['mkdp#util#install']() end, -- install without yarn or npm
   },
 
-  { 'NoahTheDuke/vim-just', ft = 'just' }
+  { 'NoahTheDuke/vim-just', ft = 'just' },
+  {
+    'vifm/vifm.vim',
+    cmd = { 'Vifm' }
+  }
 }

@@ -246,6 +246,8 @@ brew "vale"
 brew "vault"
 # Modern watch command
 brew "viddy"
+# Ncurses-based file manager with vi-like keybindings
+brew "vifm"
 # Use ViM as PAGER
 brew "vimpager"
 # Executes a program periodically, showing output fullscreen

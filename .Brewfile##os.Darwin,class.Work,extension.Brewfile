@@ -260,10 +260,10 @@ brew "xh"
 brew "yadm"
 # YubiKey personalization library and tool
 brew "ykpers"
-# Download YouTube videos from the command-line
-brew "youtube-dl"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
+# Fork of youtube-dl with additional features and fixes
+brew "yt-dlp"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
 # Multi-language runtime manager

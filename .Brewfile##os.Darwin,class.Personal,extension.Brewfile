@@ -235,6 +235,8 @@ cask "lunar"
 cask "macfuse"
 # Track and update to the latest versions of installed software
 cask "macupdater"
+# Display technical and tag data for video and audio files
+cask "mediainfo"
 # Monitors and reports any microphone and camera activity
 cask "micro-snitch"
 # Provides updates to various Microsoft products
@@ -314,7 +316,7 @@ mas "GarageBand", id: 682658836
 mas "iMovie", id: 408981434
 mas "Keyboard Pilot", id: 402670023
 mas "Keynote", id: 409183694
-mas "Kindle", id: 405399194
+mas "Kindle Classic", id: 405399194
 mas "Mactracker", id: 430255202
 mas "Microsoft To Do", id: 1274495053
 mas "Pocket", id: 568494494

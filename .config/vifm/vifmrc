@@ -441,6 +441,7 @@ nnoremap <a-o> :sync %c<cr>
 " Swap panes
 nnoremap <c-u> <c-w>x
 nnoremap dfa :!yadm add -f %c<cr>
+nnoremap du :!ncdu<cr>
 
 " ------------------------------------------------------------------------------
 " Various customization examples

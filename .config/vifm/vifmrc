@@ -30,6 +30,8 @@ elseif $EDITOR != ''
 endif
 
 set millerview
+set milleroptions=lsize:1,csize:2,rsize:3,rpreview:all
+set dotdirs=treeleafsparent
 only
 
 " This makes vifm perform file operations on its own instead of relying on
@@ -45,10 +47,11 @@ set syscalls
 " I recommend not changing this until you are familiar with vifm.
 " This probably shouldn't be an option.
 set trash
+set trashdir="~/.local/share/vifm/Trash"
 
 " What should be saved automatically on restarting vifm.  Drop "savedirs"
 " value if you don't want vifm to remember last visited directories for you.
-set vifminfo=dhistory,savedirs,chistory,state,tui,shistory,
+set vifminfo=dhistory,chistory,state,tui,shistory,
             \phistory,fhistory,dirstack,registers,bookmarks,bmarks
 
 " This is how many directories to store in the directory history.
@@ -79,6 +82,10 @@ set norunexec
 " See man date or man strftime for details.
 set timefmt='%Y/%m/%d %H:%M'
 
+" Print relative line number in front of each file name
+" when 'lsview' option is turned off.
+set relativenumber
+
 " Show list of matches on tab completion in command-line mode
 set wildmenu
 
@@ -88,6 +95,8 @@ set wildstyle=popup
 " Display suggestions in normal, visual and view modes for keys, marks and
 " registers (at most 5 files).  In other view, when available.
 set suggestoptions=normal,visual,view,otherpane,keys,marks,registers
+
+set tuioptions=psvlu
 
 " Ignore case in search patterns unless it contains at least one uppercase
 " letter
@@ -408,8 +417,8 @@ nnoremap yd :!printf %d | pbcopy<cr>
 " Yank current file path into the clipboard (escape spaces)
 nnoremap yf :!printf %f:p:gs? ?\\ ? | pbcopy<cr>
 
-" View preview in Quick Look
-nnoremap <space> :!qlmanage -p %f > /dev/null 2>&1<cr>
+" Use space to select files
+nnoremap <space> t
 
 " Mappings for faster renaming
 nnoremap I cw<c-a>
@@ -417,9 +426,9 @@ nnoremap cc cw<c-u>
 nnoremap A cw
 
 " As above, but without the file extension
-" nnoremap I cW<c-a>
-" nnoremap cc cW<c-u>
-" nnoremap A cW
+nnoremap I cW<c-a>
+nnoremap cc cW<c-u>
+nnoremap A cW
 
 " Open editor to edit vifmrc and apply settings after returning to vifm
 nnoremap ,c :write | edit $MYVIFMRC | restart full<cr>
@@ -444,7 +453,12 @@ nnoremap <a-i> :sync<cr>
 nnoremap <a-o> :sync %c<cr>
 " Swap panes
 nnoremap <c-u> <c-w>x
+
 nnoremap dfa :!yadm add -f %c<cr>
+
+" Ranger-like sibling navigation
+nnoremap <silent> [[ :siblprev!<cr>
+nnoremap <silent> ]] :siblnext!<cr>
 
 " ------------------------------------------------------------------------------
 " Various customization examples

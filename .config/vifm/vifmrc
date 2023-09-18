@@ -379,6 +379,7 @@ filetype * open
 " ------------------------------------------------------------------------------
 
 nnoremap <c-q> :quit<cr>
+nnoremap qq :quit<cr>
 nnoremap <space>gg :!lazygit<cr>
 
 " Start shell in current directory

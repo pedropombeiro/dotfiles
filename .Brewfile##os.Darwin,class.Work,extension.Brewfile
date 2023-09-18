@@ -200,8 +200,6 @@ brew "postgresql@13"
 brew "pspg"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.8"
-# File browser
-brew "ranger"
 # Alternative to backtracking PCRE-style regular expression engines
 brew "re2"
 # GNU Make with improved error handling, tracing, and a debugger

@@ -127,8 +127,6 @@ brew "pspg"
 brew "python@3.9"
 # QR Code generation
 brew "qrencode"
-# File browser
-brew "ranger"
 # Search tool like grep and The Silver Searcher
 brew "ripgrep"
 # Monitors sleep, wakeup, and idleness of a Mac

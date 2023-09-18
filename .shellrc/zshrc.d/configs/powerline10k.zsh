@@ -26,7 +26,6 @@ typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir dir_writable newline vcs)
 typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   status
   direnv    # direnv status (https://direnv.net/)
-  ranger    # ranger shell (https://github.com/ranger/ranger)
   vim_shell # vim shell indicator (:sh)
   nix_shell # nix shell (https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html)
   background_jobs

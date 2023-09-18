@@ -142,6 +142,8 @@ mark h ~/
 "  see `:help vifm-macros` and `:help vifm-filename-modifiers` for more
 
 command! df df -h %m 2> /dev/null
+command! du ncdu
+command! lg lazygit
 " Diff for selections in the current pane if it contains more than one file, otherwise
 " diff the file in the left (upper) pane with the file in the right (lower) pane
 command! diff : if expand('%%c') == expand('%%f')
@@ -156,6 +158,7 @@ command! diff : if expand('%%c') == expand('%%f')
 command! FZFfind :set noquickview | :execute 'goto' fnameescape(term('fd -H | fzf --height 10 2>/dev/tty'))
 command! zip zip -r %c.zip %f
 command! run !! ./%f
+command! just !!just %a
 command! make !!make %a
 command! mkcd :mkdir %a | cd %a
 command! reload :write | restart full
@@ -442,7 +445,6 @@ nnoremap <a-o> :sync %c<cr>
 " Swap panes
 nnoremap <c-u> <c-w>x
 nnoremap dfa :!yadm add -f %c<cr>
-nnoremap du :!ncdu<cr>
 
 " ------------------------------------------------------------------------------
 " Various customization examples

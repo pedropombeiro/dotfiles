@@ -213,9 +213,3 @@ fileviewer *.json bat --color=always --style="plain" --language=json -- %c
 
 fileviewer *[^/] bat --color=always --style="plain" -- %c
 " fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %c
-
-" Open all other files with default system programs (you can also remove all
-" :file[x]type commands above to ensure they don't interfere with system-wide
-" settings).  Use of the line below results in ignoring 'vi[x]cmd' option for
-" unknown file types on l/Enter keys.
-filetype * open

@@ -32,8 +32,8 @@ nnoremap S :sort<cr>
 nnoremap w :if layoutis('only') | vsplit | endif | view!<cr>
 vnoremap w :view<cr>gv
 
-" Open file in neovim
-nnoremap o :!nvim %f<cr>
+" Open file using its default program
+nnoremap o :!open %f<cr>
 
 " Open file in the background using its default program
 nnoremap gb :!open -g %f<cr>

@@ -23,6 +23,7 @@ return {
     buftypes = {
       '*',
       -- exclude prompt and popup buftypes from highlight
+      '!Fm',
       '!FZF',
       '!neo-tree',
       '!Outline',

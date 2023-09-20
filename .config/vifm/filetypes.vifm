@@ -106,7 +106,7 @@ filetype {*.xhtml,*.html,*.htm},<text/html>
 fileviewer {*.xhtml,*.html,*.htm},<text/html> w3m -dump -T text/html
 
 " Object
-filetype {*.o},<application/x-object> nm %f | bat --color=always --style="plain"
+filetype {*.o},<application/x-object> nm %f | bat --color=always --style="plain" --theme gruvbox-dark-vifm
 
 " Man page
 filetype {*.[1-8]},<text/troff> man ./%c
@@ -206,10 +206,10 @@ fileviewer {*.docx},
 " Or leave it for automatic detection
 
 filetype {vi*rc,*.vifm,*.vim} nvim
-fileviewer {vi*rc,*.vifm,*.vim} bat --color=always --style="plain" --language=VimL -- %c
+fileviewer {vi*rc,*.vifm,*.vim} bat --color=always --style="plain" --language=VimL --theme gruvbox-dark-vifm -- %c
 
 filetype *.json cat %f | jless
-fileviewer *.json bat --color=always --style="plain" --language=json -- %c
+fileviewer *.json bat --color=always --style="plain" --language=json --theme gruvbox-dark-vifm -- %c
 
-fileviewer *[^/] bat --color=always --style="plain" -- %c
+fileviewer *[^/] bat --color=always --style="plain" --theme gruvbox-dark-vifm -- %c
 " fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %c

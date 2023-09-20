@@ -21,10 +21,10 @@ elseif $EDITOR != ''
 endif
 
 " Mimic Ranger layout
+only
 set millerview
 set milleroptions=lsize:1,csize:2,rsize:3,rpreview:all
 set dotdirs=treeleafsparent
-only
 
 " Print relative line number in front of each file name
 " when 'lsview' option is turned off.
@@ -47,7 +47,7 @@ set trashdir="~/.local/share/vifm/Trash"
 
 " What should be saved automatically on restarting vifm.  Drop "savedirs"
 " value if you don't want vifm to remember last visited directories for you.
-set vifminfo=dhistory,chistory,state,tui,shistory,
+set vifminfo=dhistory,chistory,state,shistory,
             \phistory,fhistory,dirstack,registers,bookmarks,bmarks
 
 " This is how many directories to store in the directory history.

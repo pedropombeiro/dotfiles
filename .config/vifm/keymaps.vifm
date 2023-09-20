@@ -27,9 +27,20 @@ nnoremap s :shell<cr>
 " Display sorting dialog
 nnoremap S :sort<cr>
 
+" Toggle single pane/double pane layout
+nnoremap W : if layoutis('only')
+         \ |   execute 'set nomillerview'
+         \ |   execute 'vsplit'
+         \ |   execute 'wincmd w'
+         \ |   execute 'set nomillerview'
+         \ |   execute 'wincmd w'
+         \ | else
+         \ |   execute 'only'
+         \ |   execute 'set millerview'
+         \ |   execute 'set dotdirs=nonrootparent,treeleafsparent'
+         \ | endif<cr>
 " Toggle visibility of preview window
-" nnoremap w :view<cr>
-nnoremap w :if layoutis('only') | vsplit | endif | view!<cr>
+nnoremap w :view<cr>
 vnoremap w :view<cr>gv
 
 " Open file using its default program

@@ -1,5 +1,4 @@
-" vim: filetype=vim :
-" Sample configuration file for vifm on OSX (last updated: 2 April, 2023)
+" Inspired from sample configuration file for vifm on OSX (last updated: 2 April, 2023)
 
 " ------------------------------------------------------------------------------
 " Main settings

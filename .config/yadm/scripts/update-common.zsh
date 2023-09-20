@@ -24,6 +24,8 @@ find ~/.shellrc -name '*.zwc' -delete
 find ~/.oh-my-zsh -name '*.zwc' -delete
 zsh -i -c 'sleep 5' # Allow time for .zlogin to asynchronously regenerate the .zwc files
 
+bat cache --build # Ensure any custom themes and syntax definition files are compiled
+
 printf "${YELLOW}%s${NC}\n" "Testing shell instantiation performance..."
 hf_file="$(mktemp)"
 hyperfine --warmup=1 --max-runs 5 'zsh -i -c exit' --export-json "${hf_file}"

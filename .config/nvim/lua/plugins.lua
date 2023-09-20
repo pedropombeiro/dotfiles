@@ -172,7 +172,18 @@ return {
 
   { 'NoahTheDuke/vim-just', ft = 'just' },
   {
-    'vifm/vifm.vim',
-    cmd = { 'Vifm' }
+    'is0n/fm-nvim',
+    event = 'VeryLazy',
+    keys = {
+      { '<leader>F', ':Vifm %:p:h<CR>', desc = 'Open File Manager (vifm)' }
+    },
+    opts = {
+      ui = {
+        float = {
+          -- Floating window border (see ':h nvim_open_win')
+          border = 'single'
+        }
+      }
+    }
   }
 }

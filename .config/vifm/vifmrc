@@ -108,7 +108,7 @@ set scrolloff=4
 set slowfs=curlftpfs
 
 " Set custom status line look
-set statusline="  Hint: %z%= %A %10u:%-7g %15s %20d  "
+set statusline="%5*  Hint: %z%=%0*%1* %A%0* %2*%10u:%-7g%0* %3*%15s%0* %4*%20d%0*  "
 
 " List of color schemes to try (picks the first one supported by the terminal)
 colorscheme gruvbox Default-256 Default

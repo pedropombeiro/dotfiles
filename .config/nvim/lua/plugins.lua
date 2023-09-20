@@ -102,11 +102,24 @@ return {
     cond = function()
       return not vim.g.started_by_firenvim
     end,
+    keys = {
+      { '<leader>fn', ':Telescope notify<CR>', 'Notifications' },
+      {
+        '<leader>un',
+        function()
+          require('notify').dismiss({ silent = true, pending = true })
+        end,
+        desc = 'Dismiss all Notifications',
+      }
+    },
     opts = function()
       local config = require('config')
 
+      vim.notify = require('notify')
+
       return {
         timeout = 3000,
+        top_down = false,
         max_height = function()
           return math.floor(vim.o.lines * 0.75)
         end,
@@ -117,15 +130,12 @@ return {
           ---@diagnostic disable: undefined-field
           DEBUG = config.icons.diagnostics.debug,
           TRACE = config.icons.diagnostics.trace,
-          INFO = config.icons.diagnostics.info,
-          WARN = config.icons.diagnostics.warning,
+          INFO  = config.icons.diagnostics.info,
+          WARN  = config.icons.diagnostics.warning,
           ERROR = config.icons.diagnostics.error,
           ---@diagnostic enable: undefined-field
         }
       }
-    end,
-    config = function()
-      vim.notify = require('notify')
     end
   },
   { 'tmux-plugins/vim-tmux',     ft = 'tmux' }, -- Vim plugin for .tmux.conf

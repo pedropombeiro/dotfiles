@@ -76,6 +76,11 @@ nnoremap ,C :!nvim --remote-tab-silent $MYVIFMRC &<cr>
 " Toggle wrap setting on ,w key
 nnoremap ,w :set wrap!<cr>
 
+nnoremap +w :chmod +w<cr>
+nnoremap -w :chmod -w<cr>
+nnoremap +x :chmod +x<cr>
+nnoremap -x :chmod -x<cr>
+
 " Example of standard two-panel file managers mappings
 nnoremap <f3> :!bat %f<cr>
 nnoremap <f4> :edit<cr>

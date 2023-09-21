@@ -50,10 +50,16 @@ nnoremap o :!open %f<cr>
 nnoremap gb :!open -g %f<cr>
 
 " Yank current directory path into the clipboard
-nnoremap yd :!printf %d | pbcopy<cr>
+nnoremap yd :!echo -n %d | pbcopy %i<cr>:echo expand('%"d') "is yanked to clipboard"<cr>
 
 " Yank current file path into the clipboard (escape spaces)
-nnoremap yf :!printf %f:p:gs? ?\\ ? | pbcopy<cr>
+nnoremap yf :!echo -n %c:p | pbcopy %i<cr>:echo expand('%"c:p') "is yanked to clipboard"<cr>
+
+" yank current filename without path into the clipboard
+nnoremap yn :!echo -n %c | pbcopy %i<cr>:echo expand('%"c') "is yanked to clipboard"<cr>
+
+" yank root of current file's name into the clipboard
+nnoremap yr :!echo -n %c:r | pbcopy %i<cr>:echo expand('%"c:r') "is yanked to clipboard"<cr>
 
 " Make t also move the selection down
 nnoremap t tj

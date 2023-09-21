@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 #
-#`list-migrations` lists the migrations in the current branch
+# `list-migrations` lists the migrations in the current branch
 #
 
 MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A "$(git_main_branch)" -- db/schema_migrations/)"

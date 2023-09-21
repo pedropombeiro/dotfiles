@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+#
+# `lg` opens lazygit, invoking 'yadm enter' if needed
+#
+
+if [[ "$PWD" == "$HOME" ]]; then
+  y lazygit --use-config-dir ~/.config/lazygit
+else
+  lazygit --use-config-dir ~/.config/lazygit
+fi

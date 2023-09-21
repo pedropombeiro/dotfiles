@@ -55,8 +55,8 @@ nnoremap yd :!printf %d | pbcopy<cr>
 " Yank current file path into the clipboard (escape spaces)
 nnoremap yf :!printf %f:p:gs? ?\\ ? | pbcopy<cr>
 
-" Use space to select files
-nnoremap <space> t
+" Make t also move the selection down
+nnoremap t tj
 
 " Mappings for faster renaming
 nnoremap I cw<c-a>

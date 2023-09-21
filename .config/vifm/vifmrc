@@ -147,6 +147,8 @@ source $VIFM/keymaps.vifm
 " Various customization examples
 " ------------------------------------------------------------------------------
 
+" Use fd instead of find
+set findprg='fd %p'
 " Use rg instead of grep
 set grepprg='rg --line-number %i %a %s'
 

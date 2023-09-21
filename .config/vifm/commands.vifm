@@ -20,9 +20,13 @@
 
 command! df df -h %m 2> /dev/null
 command! du !ncdu
-command! Lazygit :execute 'cd' fnameescape(system('git rev-parse --show-toplevel'))
-               \ | execute '!lazygit'
-               \ | execute "normal ''"
+command! Lazygit :if expand('%d') == expand('$HOME')
+               \ |  execute '!yadm enter lazygit'
+               \ |  execute "normal ''"
+               \ |else
+               \ |  execute '!lazygit'
+               \ |  execute "normal ''"
+               \ |endif
 " Diff for selections in the current pane if it contains more than one file, otherwise
 " diff the file in the left (upper) pane with the file in the right (lower) pane
 command! diff : if expand('%%c') == expand('%%f')

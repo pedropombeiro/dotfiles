@@ -142,6 +142,7 @@ source $VIFM/keymaps.vifm
 
 " Filter-out build and temporary files
 " filter! {*.lo,*.o,*.d,*.class,*.pyc,*.pyo,.*~}
+filter /(.*\.zwc|^\.DS_Store|^\.localized)$/
 
 " ------------------------------------------------------------------------------
 " Various customization examples

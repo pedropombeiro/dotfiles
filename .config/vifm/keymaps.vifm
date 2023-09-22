@@ -19,6 +19,7 @@
 nnoremap <c-q> :quit<cr>
 nnoremap qq :quit<cr>
 nnoremap <space>gg :Lazygit<cr>
+nnoremap '~ :cdgitroot<cr>
 nnoremap <space>ff :FZFfind<cr>
 
 " Start shell in current directory

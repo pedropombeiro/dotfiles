@@ -25,6 +25,7 @@ command! Lazygit :if term('git rev-parse --show-toplevel >/dev/null 2>&1 && echo
                \ |else
                \ |  execute '!lazygit'
                \ |endif
+command! cdgitroot :execute 'cd' fnameescape(system('git rev-parse --show-toplevel 2>/dev/null || echo $HOME'))
 " Diff for selections in the current pane if it contains more than one file, otherwise
 " diff the file in the left (upper) pane with the file in the right (lower) pane
 command! diff : if expand('%%c') == expand('%%f')

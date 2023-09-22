@@ -211,5 +211,5 @@ fileviewer {vi*rc,*.vifm,*.vim} bat --color=always --style="plain" --language=Vi
 filetype *.json cat %f | jless
 fileviewer *.json bat --color=always --style="plain" --language=json --theme gruvbox-dark-vifm -- %c
 
-fileviewer *[^/] bat --color=always --style="plain" --theme gruvbox-dark-vifm -- %c
+fileviewer {.*[^/],*[^/]} bat --color=always --style="plain" --theme gruvbox-dark-vifm -- %c
 " fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %c

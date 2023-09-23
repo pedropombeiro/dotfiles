@@ -150,10 +150,10 @@ fileviewer {*.torrent},<application/x-bittorrent>
 
 " Extract zip files
 filetype {*.zip},<application/zip,application/java-archive>
-       \ mkdir %f:r && tar -vxf %f --directory %f:r
+       \ mkdir %f:r && unzip %f -d %f:r
 fileviewer {*.zip,*.jar,*.war,*.ear},
           \<application/zip,application/java-archive>
-          \ tar -tf %f
+          \ zip -sf %f
 
 " Extract tar archives
 filetype {*.tar,*.tar.bz2,*.tbz2,*.tgz,*.tar.gz,*.tar.xz,*.txz,*.tar.zst,

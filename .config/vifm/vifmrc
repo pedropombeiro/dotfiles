@@ -129,6 +129,7 @@ mark h ~/
 source $VIFM/commands.vifm
 source $VIFM/filetypes.vifm
 source $VIFM/keymaps.vifm
+source $VIFM/local.vifm
 
 " ------------------------------------------------------------------------------
 " Panel configuration examples

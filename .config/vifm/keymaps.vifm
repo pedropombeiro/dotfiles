@@ -77,8 +77,8 @@ nnoremap A cW
 
 " Open editor to edit vifmrc and apply settings after returning to vifm
 nnoremap ,c :write | edit $MYVIFMRC | restart full<cr>
-" Open neovim to edit vifmrc
-nnoremap ,C :!nvim --remote-tab-silent $MYVIFMRC &<cr>
+nnoremap ,f :write | edit $VIFM/filetypes.vifm | restart full<cr>
+nnoremap ,k :write | edit $VIFM/keymaps.vifm | restart full<cr>
 
 " Toggle wrap setting on ,w key
 nnoremap ,w :set wrap!<cr>

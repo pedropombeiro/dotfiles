@@ -42,5 +42,5 @@ command! zip zip -r %c.zip %f
 command! run !! ./%f
 command! just !!just %a
 command! make !!make %a
-command! mkcd :mkdir %a | cd %a
+command! mkcd :mkdir -p %a | cd %a
 command! reload :write | restart full

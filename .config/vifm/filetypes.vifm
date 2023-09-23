@@ -65,6 +65,8 @@ filetype {*.djvu},<image/vnd.djvu> open -a MacDjView.app
 filetype {*.db,*.sqlite3} sqlite3 %c
 fileviewer {*.db,*.sqlite3} sqlite3 %c .tables
 
+fileviewer {.justfile,*.justfile,justfile} just --justfile %c --list
+
 " Audio
 filetype {*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus,
          \*.aac,*.mpga},

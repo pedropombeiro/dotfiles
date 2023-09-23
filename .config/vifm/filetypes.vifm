@@ -61,6 +61,10 @@ filetype {*.ps,*.eps,*.ps.gz},<application/postscript> open -a Preview.app
 " Djvu
 filetype {*.djvu},<image/vnd.djvu> open -a MacDjView.app
 
+" sqllite databases
+filetype {*.db,*.sqlite3} sqlite3 %c
+fileviewer {*.db,*.sqlite3} sqlite3 %c .tables
+
 " Audio
 filetype {*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus,
          \*.aac,*.mpga},

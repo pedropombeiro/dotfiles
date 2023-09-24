@@ -108,7 +108,7 @@ set scrolloff=4
 set slowfs=curlftpfs
 
 " Set custom status line look
-set statusline="%5*  %f: %{extcached('file_info', expand('%c'), expand('file --brief --preserve-date %c'))}%=%0*%1* %A %0* %2*%10u:%-7g %0* %3*%15E %0* %4*%20d %0*  "
+set statusline="%5*  %f: %{extcached('file_info', expand('%c'), expand('file --brief --preserve-date %c'))}%=%0*%6*%{extcached('git_branch', expand('%d'), expand('git_branch'))}%1* %A %0* %2*%10u:%-7g  %0*%3* %10E %0* %4*%20d %0*  "
 
 " List of color schemes to try (picks the first one supported by the terminal)
 colorscheme gruvbox Default-256 Default

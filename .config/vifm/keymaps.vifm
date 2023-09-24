@@ -62,8 +62,9 @@ nnoremap yn :!echo -n %c | pbcopy %i<cr>:echo expand('%"c') "is yanked to clipbo
 " yank root of current file's name into the clipboard
 nnoremap yr :!echo -n %c:r | pbcopy %i<cr>:echo expand('%"c:r') "is yanked to clipboard"<cr>
 
-" Make t also move the selection down
+" Make t also move the selection up/down
 nnoremap t tj
+nnoremap T tk
 
 " Mappings for faster renaming
 nnoremap I cw<c-a>

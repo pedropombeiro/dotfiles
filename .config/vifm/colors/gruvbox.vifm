@@ -31,7 +31,7 @@ highlight Socket     cterm=bold ctermfg=223 ctermbg=default
 
 " Custom status line colors
 highlight User1 ctermbg=none ctermfg=66
-highlight User2 ctermbg=none ctermfg=109 cterm=bold
-highlight User3 ctermbg=none ctermfg=108 cterm=bold
+highlight User2 ctermbg=172 ctermfg=223 cterm=bold
+highlight User3 ctermbg=none ctermfg=66 cterm=bold
 highlight User4 ctermbg=none ctermfg=1 cterm=bold
 highlight User5 ctermbg=235 ctermfg=245 cterm=none

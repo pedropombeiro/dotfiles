@@ -65,7 +65,9 @@ filetype {*.djvu},<image/vnd.djvu> open -a MacDjView.app
 filetype {*.sqlite*},<application/vnd.sqlite3> sqlite3 %c
 fileviewer {*.sqlite*},<application/vnd.sqlite3> file --brief --preserve-date %c && echo && sqlite3 %c .tables
 
-fileviewer {.justfile,*.justfile,justfile} just --justfile %c --list
+fileviewer {.justfile,*.justfile,justfile} just --justfile %c --list &&
+            \ echo "----------------------" &&
+            \ bat --color=always --style="plain" --theme gruvbox-dark-vifm %c
 
 " Audio
 filetype {*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus,
@@ -211,6 +213,9 @@ fileviewer {*.docx},
 " fileviewer *.c,*.h highlight -O ansi -s dante %c
 "
 " Or leave it for automatic detection
+
+fileviewer {.pryrc,.irb_history} bat --color=always --style="plain" --language=ruby --theme gruvbox-dark-vifm -- %c
+fileviewer {.psqlrc,.pspg_history,.psql_history,.sqlite_history} bat --color=always --style="plain" --language=sql --theme gruvbox-dark-vifm -- %c
 
 filetype {vi*rc,*.vifm,*.vim} nvim
 fileviewer {vi*rc,*.vifm,*.vim} bat --color=always --style="plain" --language=VimL --theme gruvbox-dark-vifm -- %c

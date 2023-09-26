@@ -55,6 +55,7 @@ set history=1000
 
 set scrolloff=4
 set tabstop=2
+set nowrap " Disable wrapping on preview window by default
 
 " Automatically resolve symbolic links on l or Enter.
 set nofollowlinks

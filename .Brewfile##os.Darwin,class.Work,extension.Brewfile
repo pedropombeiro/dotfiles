@@ -210,8 +210,6 @@ brew "ripgrep"
 brew "ripsecrets"
 # Readline wrapper: adds readline support to tools that lack it
 brew "rlwrap"
-# Standard unix software packaging tool
-brew "rpm"
 # Collection of tools for managing UNIX services
 brew "runit"
 # Command-line tool for the Amazon S3 service
@@ -274,7 +272,7 @@ brew "leipert-projects/git-recon/git-recon"
 brew "moul/moul/docker-diff"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
-# Command-line helper for the 1Password password manager
+# Command-line interface for 1Password
 cask "1password-cli"
 # Application launcher and productivity software
 cask "alfred"
@@ -404,7 +402,7 @@ cask "syntax-highlight"
 cask "toggl-track"
 # Web browser focusing on security
 cask "tor-browser"
-# Desktop client for WhatsApp
+# Native desktop client for WhatsApp
 cask "whatsapp"
 # Video communication and virtual meeting platform
 cask "zoom"

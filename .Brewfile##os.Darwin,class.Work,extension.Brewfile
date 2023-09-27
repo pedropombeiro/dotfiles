@@ -398,8 +398,6 @@ cask "stay"
 cask "syncthing"
 # Quicklook extension for source files
 cask "syntax-highlight"
-# Time tracker
-cask "toggl-track"
 # Web browser focusing on security
 cask "tor-browser"
 # Native desktop client for WhatsApp

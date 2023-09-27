@@ -246,6 +246,8 @@ brew "viddy"
 brew "vifm"
 # Use ViM as PAGER
 brew "vimpager"
+# Pager/text based browser
+brew "w3m"
 # Executes a program periodically, showing output fullscreen
 brew "watch"
 # Internet file retriever

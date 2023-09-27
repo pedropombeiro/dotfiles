@@ -111,7 +111,7 @@ filetype {*.xhtml,*.html,*.htm},<text/html>
        \ open -a Google\ Chrome.app,
        \ {Open in vim}
        \ nvim,
-fileviewer {*.xhtml,*.html,*.htm},<text/html> w3m -dump -T text/html,file --brief --preserve-date
+fileviewer {*.xhtml,*.html,*.htm},<text/html> w3m -dump -T text/html, bat --color=always --style="plain" --theme gruvbox-dark-vifm -- %c
 
 " Object
 filetype {*.o},<application/x-object> nm %f | bat --color=always --style="plain" --theme gruvbox-dark-vifm
@@ -223,7 +223,7 @@ fileviewer {vi*rc,*.vifm,*.vim} bat --color=always --style="plain" --language=Vi
 filetype {*.json},
          \<application/json> cat %f | jless
 fileviewer {*.json},
-           \<application/json> bat --color=always --style="plain" --language=json --theme gruvbox-dark-vifm -- %c
+           \<application/json> cat %c | jq | bat --color=always --style="plain" --language=json --theme gruvbox-dark-vifm -
 
 fileviewer <text/*> bat --color=always --style="plain" --theme gruvbox-dark-vifm -- %c
 fileviewer <application/*>,{*.ttf} file --brief --preserve-date --uncompress

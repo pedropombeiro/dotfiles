@@ -124,7 +124,7 @@ fileviewer {*.[1-8]},<text/troff> man ./%c | col -b
 filetype {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*>
        \ open -a Preview.app,
 fileviewer {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*>
-    \ tput cup %py %px > $_P9K_TTY && /Users/pedro/.iterm2/imgcat --width %pw --height %ph %c:p > $_P9K_TTY
+    \ tput cup %py %px > $_P9K_TTY && $HOME/.iterm2/imgcat --width %pw --height %ph %c:p > $_P9K_TTY
 
 " MD5
 filetype *.md5

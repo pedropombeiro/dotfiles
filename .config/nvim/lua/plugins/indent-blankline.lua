@@ -7,6 +7,7 @@ local symbol = '│'
 return {
   {
     'lukas-reineke/indent-blankline.nvim', -- Indent guides for Neovim
+    main = 'ibl',
     event = { 'BufReadPre', 'BufNewFile' },
     opts = {
       char = symbol,

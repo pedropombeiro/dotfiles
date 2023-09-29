@@ -201,6 +201,10 @@ fileviewer {*.docx},
            \vnd.openxmlformats-officedocument.wordprocessingml.document>
          \ pandoc -s -t markdown -- %f
 
+" PLIST files
+filetype {*.plist}, open -a 'PLIST Editor.app'
+fileviewer {*.plist}, plutil -p -- %f
+
 " Syntax highlighting in preview
 "
 " Explicitly set highlight type for some extensions

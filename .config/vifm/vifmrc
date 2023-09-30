@@ -33,6 +33,8 @@ set timeoutlen=1000000
 " Print relative line number in front of each file name
 " when 'lsview' option is turned off.
 set relativenumber
+" Minimal number of characters for line number field.
+set numberwidth=2
 
 " This makes vifm perform file operations on its own instead of relying on
 " standard utilities like `cp`.  While using `cp` and alike is a more universal

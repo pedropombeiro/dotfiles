@@ -8,11 +8,23 @@ return {
     'is0n/fm-nvim',
     event = 'VeryLazy',
     keys = {
-      { '<leader>F', ':Vifm %:p:h<CR>', desc = 'Open File Manager (vifm)' }
+      {
+        '<leader>F',
+        function()
+          if vim.api.nvim_buf_get_name(0) == '' then
+            vim.cmd [[Vifm --select %:p:h]]
+          else
+            vim.cmd [[Vifm --select %]]
+          end
+        end,
+        desc = 'Open File Manager (vifm)',
+      }
     },
     opts = {
       ui = {
         float = {
+          height    = 0.9,
+          width     = 0.9,
           -- Floating window border (see ':h nvim_open_win')
           border = 'single'
         }

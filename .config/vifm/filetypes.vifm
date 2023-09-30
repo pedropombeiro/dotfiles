@@ -204,6 +204,9 @@ fileviewer {*.docx},
 filetype {*.plist}, open -a 'PLIST Editor.app'
 fileviewer {*.plist}, plutil -p -- %f
 
+" .ssh/config
+fileviewer {{**/.ssh/*config*}} bat --color=always --style="plain" --language='SSH Config' --theme gruvbox-dark-vifm -- %c
+
 " .git/objects
 fileviewer {{**/.git/objects/**/*}}
             \ file --brief --preserve-date --uncompress -- %c &&

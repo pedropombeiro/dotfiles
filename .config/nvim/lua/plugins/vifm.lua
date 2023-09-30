@@ -7,7 +7,19 @@ return {
   {
     'is0n/fm-nvim',
     event = 'VeryLazy',
+    init = function()
+      if vim.fn.has('mac') == 1 then -- Ensure that LazyGit uses same config dir on macOS as in Linux
+        vim.api.nvim_create_autocmd({ 'BufEnter', 'BufAdd', 'BufNew', 'BufNewFile', 'BufWinEnter' }, {
+          group = vim.api.nvim_create_augroup('LAZYGIT_CUSTOM_CONFIG', {}),
+          callback = function()
+            vim.g.lazygit_use_custom_config_file_path = 1
+            vim.g.lazygit_config_file_path = vim.fn.expand('~/.config/lazygit/config.yml')
+          end
+        })
+      end
+    end,
     keys = {
+      { '<leader>gg', ':Lazygit<CR>', desc = 'Open LazyGit' },
       {
         '<leader>F',
         function()
@@ -23,8 +35,8 @@ return {
     opts = {
       ui = {
         float = {
-          height    = 0.9,
-          width     = 0.9,
+          height = 0.9,
+          width  = 0.9,
           -- Floating window border (see ':h nvim_open_win')
           border = 'single'
         }

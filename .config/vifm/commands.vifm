@@ -21,7 +21,7 @@
 command! df df -h %m 2> /dev/null
 command! du !ncdu
 command! Lazygit : if term('git rev-parse --show-toplevel >/dev/null 2>&1 && echo 1 || echo 0') == 0
-               \ |   execute '!yadm enter lazygit'
+               \ |   execute '!cd ~ && yadm enter lazygit'
                \ | else
                \ |   execute '!lazygit'
                \ | endif

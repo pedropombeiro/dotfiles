@@ -23,11 +23,14 @@ return {
       {
         '<leader>F',
         function()
+          -- Signal to vifm that we don't want image previews, since we can't really calculate the correct offset of the popup
+          vim.env._DISABLE_VIFM_IMGPREVIEW = '1'
           if vim.api.nvim_buf_get_name(0) == '' then
             vim.cmd [[Vifm --select %:p:h]]
           else
             vim.cmd [[Vifm --select %]]
           end
+          vim.env._DISABLE_VIFM_IMGPREVIEW = ''
         end,
         desc = 'Open File Manager (vifm)',
       }

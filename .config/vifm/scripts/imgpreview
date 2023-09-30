@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+FILEPATH=$1
+
+if [[ -z $_DISABLE_VIFM_IMGPREVIEW ]]; then
+  PX=$2
+  PY=$3
+  PW=$4
+  PH=$5
+
+  tput cup "$PY" "$PX" > "$_P9K_TTY"
+  "$HOME/.iterm2/imgcat" --width "$PW" --height "$PH" "$FILEPATH" > "$_P9K_TTY"
+else
+  file --brief --preserve-date "$FILEPATH"
+fi

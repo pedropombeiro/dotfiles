@@ -124,6 +124,7 @@ colorscheme gruvbox Default-256 Default
 
 mark c ~/.config/
 mark h ~/
+mark z ~/.config/vifm/
 
 " ------------------------------------------------------------------------------
 " Source other vimrc files

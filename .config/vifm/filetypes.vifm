@@ -204,6 +204,12 @@ fileviewer {*.docx},
 filetype {*.plist}, open -a 'PLIST Editor.app'
 fileviewer {*.plist}, plutil -p -- %f
 
+" .git/objects
+fileviewer {{**/.git/objects/**/*}}
+            \ file --brief --preserve-date --uncompress -- %c &&
+            \ echo "----------------------" &&
+            \ git cat-file -p %d:t%f
+
 " Syntax highlighting in preview
 "
 " Explicitly set highlight type for some extensions

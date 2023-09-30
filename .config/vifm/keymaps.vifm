@@ -16,11 +16,14 @@
 "  %u uses command's output to build a file list
 "  see `:help vifm-macros` and `:help vifm-filename-modifiers` for more
 
+nnoremap <space> <nop>
+nnoremap <wait> <space>gg :Lazygit<cr>
+nnoremap <wait> <space>ff :FZFfind<cr>
+
 nnoremap <c-q> :quit<cr>
 nnoremap qq :quit<cr>
-nnoremap <space>gg :Lazygit<cr>
+
 nnoremap '~ :cdgitroot<cr>
-nnoremap <space>ff :FZFfind<cr>
 
 " Start shell in current directory
 nnoremap s :shell<cr>

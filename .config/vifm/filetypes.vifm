@@ -235,10 +235,12 @@ fileviewer {.psqlrc,.pspg_history,.psql_history,.sqlite_history} bat --color=alw
 filetype {vi*rc,*.vifm,*.vim} nvim
 fileviewer {vi*rc,*.vifm,*.vim} bat --color=always --style="plain" --language=VimL --theme gruvbox-dark-vifm -- %d/%c
 
-filetype {*.json},
-         \<application/json> cat %f | jless
+filetype {*.json},<application/json>
+           \ {Browse with jless} cat %f | jless,
+           \ {Open in vim} nvim,
 fileviewer {*.json},
-           \<application/json> cat %d/%c | jq | bat --color=always --style="plain" --language=json --theme gruvbox-dark-vifm -
+           \<application/json>
+           \ cat %d/%c | jq | bat --color=always --style="plain" --language=json --theme gruvbox-dark-vifm -,
 
 fileviewer <text/*> bat --color=always --style="plain" --theme gruvbox-dark-vifm -- %d/%c
 fileviewer <application/*>,{*.ttf} file --brief --preserve-date --uncompress

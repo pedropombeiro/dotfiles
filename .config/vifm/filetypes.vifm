@@ -53,7 +53,7 @@ filetype {*.pdf},<application/pdf>
        \ open -a Preview.app,
        \ {Open in Skim}
        \ open -a Skim.app,
-fileviewer {*.pdf},<application/pdf> pdftotext -nopgbrk %c -
+fileviewer {*.pdf},<application/pdf> pdftotext -nopgbrk %d/%c -
 
 " PostScript
 filetype {*.ps,*.eps,*.ps.gz},<application/postscript> open -a Preview.app
@@ -62,12 +62,12 @@ filetype {*.ps,*.eps,*.ps.gz},<application/postscript> open -a Preview.app
 filetype {*.djvu},<image/vnd.djvu> open -a MacDjView.app
 
 " sqllite databases
-filetype {*.sqlite*},<application/vnd.sqlite3> sqlite3 %c
-fileviewer {*.sqlite*},<application/vnd.sqlite3> file --brief --preserve-date %c && echo && sqlite3 %c .tables
+filetype {*.sqlite*},<application/vnd.sqlite3> sqlite3 %d/%c
+fileviewer {*.sqlite*},<application/vnd.sqlite3> file --brief --preserve-date %d/%c && echo && sqlite3 %d/%c .tables
 
-fileviewer {.justfile,*.justfile,justfile} just --justfile %c --list &&
+fileviewer {.justfile,*.justfile,justfile} just --justfile %d/%c --list &&
             \ echo "----------------------" &&
-            \ bat --color=always --style="plain" --theme gruvbox-dark-vifm %c
+            \ bat --color=always --style="plain" --theme gruvbox-dark-vifm %d/%c
 
 " Audio
 filetype {*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus,
@@ -82,7 +82,7 @@ filetype {*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus,
 fileviewer {*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus,
            \*.aac,*.mpga},
           \<audio/*>
-         \ ffprobe -hide_banner -pretty %c 2>&1,file --brief --preserve-date
+         \ ffprobe -hide_banner -pretty %d/%c 2>&1,file --brief --preserve-date
 
 " Video
 filetype {*.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
@@ -99,7 +99,7 @@ fileviewer {*.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
            \*.fl[icv],*.m2v,*.mov,*.webm,*.ts,*.mts,*.m4v,*.r[am],*.qt,*.divx,
            \*.as[fx],*.unknown_video},
           \<video/*>
-         \ ffprobe -hide_banner -pretty %c 2>&1,file --brief --preserve-date
+         \ ffprobe -hide_banner -pretty %d/%c 2>&1,file --brief --preserve-date
 
 " Web
 filetype {*.xhtml,*.html,*.htm},<text/html>
@@ -111,19 +111,19 @@ filetype {*.xhtml,*.html,*.htm},<text/html>
        \ open -a Google\ Chrome.app,
        \ {Open in vim}
        \ nvim,
-fileviewer {*.xhtml,*.html,*.htm},<text/html> w3m -dump -T text/html, bat --color=always --style="plain" --theme gruvbox-dark-vifm -- %c
+fileviewer {*.xhtml,*.html,*.htm},<text/html> w3m -dump -T text/html, bat --color=always --style="plain" --theme gruvbox-dark-vifm -- %d/%c
 
 " Object
 filetype {*.o},<application/x-object> nm %f | bat --color=always --style="plain" --theme gruvbox-dark-vifm
 
 " Man page
-filetype {*.[1-8]},<text/troff> man ./%c
-fileviewer {*.[1-8]},<text/troff> man ./%c | col -b
+filetype {*.[1-8]},<text/troff> man ./%d/%c
+fileviewer {*.[1-8]},<text/troff> man ./%d/%c | col -b
 
 " Image
 filetype {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*>
        \ open -a Preview.app,
-fileviewer {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*> imgpreview %c:p %px %py %pw %ph
+fileviewer {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*> imgpreview %d/%c:p %px %py %pw %ph
 
 " MD5
 filetype *.md5
@@ -148,8 +148,8 @@ filetype *.sha512
 " Torrent
 filetype {*.torrent},<application/x-bittorrent> open -a Transmission.app
 fileviewer {*.torrent},<application/x-bittorrent>
-         \ dumptorrent -v %c,
-         \ transmission-show %c
+         \ dumptorrent -v %d/%c,
+         \ transmission-show %d/%c
 
 " Extract zip files
 filetype {*.zip},<application/zip,application/java-archive>
@@ -177,7 +177,7 @@ fileviewer *.gz gunzip --list %f
 
 " Extract rar files
 filetype *.rar unrar x -y -c- -ad %f %s
-fileviewer *.rar unrar lb %c
+fileviewer *.rar unrar lb %d/%c
 
 " Mount .dmg archives
 filetype *.dmg open
@@ -205,14 +205,14 @@ filetype {*.plist}, open -a 'PLIST Editor.app'
 fileviewer {*.plist}, plutil -p -- %f
 
 " .ssh/config
-fileviewer {{**/.ssh/*config*}} bat --color=always --style="plain" --language='SSH Config' --theme gruvbox-dark-vifm -- %c
+fileviewer {{**/.ssh/*config*}} bat --color=always --style="plain" --language='SSH Config' --theme gruvbox-dark-vifm -- %d/%c
 
 " Nginx configs
-fileviewer {{**/nginx/*.conf}} bat --color=always --style="plain" --language='nginx' --theme gruvbox-dark-vifm -- %c
+fileviewer {{**/nginx/*.conf}} bat --color=always --style="plain" --language='nginx' --theme gruvbox-dark-vifm -- %d/%c
 
 " .git/objects
 fileviewer {{**/.git/objects/**/*}}
-            \ file --brief --preserve-date --uncompress -- %c &&
+            \ file --brief --preserve-date --uncompress -- %d/%c &&
             \ echo "----------------------" &&
             \ git cat-file -p %d:t%f
 
@@ -221,25 +221,25 @@ fileviewer {{**/.git/objects/**/*}}
 " Explicitly set highlight type for some extensions
 "
 " 256-color terminal
-" fileviewer *.[ch],*.[ch]pp,*.html,*.css,*.less,*.js,*.java,*.go,*.py,*.coffee,*.dart,*.lua,*.md,*.rb,*.ts,*.php,*.cs,*.vim,*.conf,*.swift,*.json,*.xml highlight -O xterm256 -s dante %c --force
-" fileviewer Makefile,Makefile.* highlight -O xterm256 -s dante --syntax make %c
+" fileviewer *.[ch],*.[ch]pp,*.html,*.css,*.less,*.js,*.java,*.go,*.py,*.coffee,*.dart,*.lua,*.md,*.rb,*.ts,*.php,*.cs,*.vim,*.conf,*.swift,*.json,*.xml highlight -O xterm256 -s dante %d/%c --force
+" fileviewer Makefile,Makefile.* highlight -O xterm256 -s dante --syntax make %d/%c
 "
 " 16-color terminal
-" fileviewer *.c,*.h highlight -O ansi -s dante %c
+" fileviewer *.c,*.h highlight -O ansi -s dante %d/%c
 "
 " Or leave it for automatic detection
 
-fileviewer {.pryrc,.irb_history} bat --color=always --style="plain" --language=ruby --theme gruvbox-dark-vifm -- %c
-fileviewer {.psqlrc,.pspg_history,.psql_history,.sqlite_history} bat --color=always --style="plain" --language=sql --theme gruvbox-dark-vifm -- %c
+fileviewer {.pryrc,.irb_history} bat --color=always --style="plain" --language=ruby --theme gruvbox-dark-vifm -- %d/%c
+fileviewer {.psqlrc,.pspg_history,.psql_history,.sqlite_history} bat --color=always --style="plain" --language=sql --theme gruvbox-dark-vifm -- %d/%c
 
 filetype {vi*rc,*.vifm,*.vim} nvim
-fileviewer {vi*rc,*.vifm,*.vim} bat --color=always --style="plain" --language=VimL --theme gruvbox-dark-vifm -- %c
+fileviewer {vi*rc,*.vifm,*.vim} bat --color=always --style="plain" --language=VimL --theme gruvbox-dark-vifm -- %d/%c
 
 filetype {*.json},
          \<application/json> cat %f | jless
 fileviewer {*.json},
-           \<application/json> cat %c | jq | bat --color=always --style="plain" --language=json --theme gruvbox-dark-vifm -
+           \<application/json> cat %d/%c | jq | bat --color=always --style="plain" --language=json --theme gruvbox-dark-vifm -
 
-fileviewer <text/*> bat --color=always --style="plain" --theme gruvbox-dark-vifm -- %c
+fileviewer <text/*> bat --color=always --style="plain" --theme gruvbox-dark-vifm -- %d/%c
 fileviewer <application/*>,{*.ttf} file --brief --preserve-date --uncompress
-" fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %c
+" fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %d/%c

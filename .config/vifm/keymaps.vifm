@@ -80,12 +80,13 @@ nnoremap cc cW<c-u>
 nnoremap A cW
 
 " Open editor to edit vifmrc and apply settings after returning to vifm
-nnoremap ,c :write | edit $MYVIFMRC | restart full<cr>
-nnoremap ,f :write | edit $VIFM/filetypes.vifm | restart full<cr>
-nnoremap ,k :write | edit $VIFM/keymaps.vifm | restart full<cr>
+nnoremap <space>, :write | edit $MYVIFMRC | restart full<cr>
+nnoremap <space>c :write | edit $VIFM/commands.vifm | restart full<cr>
+nnoremap <space>f :write | edit $VIFM/filetypes.vifm | restart full<cr>
+nnoremap <space>k :write | edit $VIFM/keymaps.vifm | restart full<cr>
 
-" Toggle wrap setting on ,w key
-nnoremap ,w :set wrap!<cr>
+" Toggle wrap setting on <space>w key
+nnoremap <space>w :set wrap!<cr>
 
 nnoremap +w :chmod +w<cr>
 nnoremap -w :chmod -w<cr>

@@ -44,7 +44,7 @@
   ".shellrc/rc.d/*.sh": {
     "type": "zsh"
   },
-  ".shellrc/zshrc.d/functions/*.": {
+  ".shellrc/zshrc.d/functions/*": {
     "type": "zshfn"
   },
   ".shellrc/zshrc.d/functions/scripts/*.rb": {

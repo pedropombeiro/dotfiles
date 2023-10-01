@@ -12,7 +12,7 @@ gitleaks      latest
 go            1.19.5
 golangci-lint latest
 hadolint      latest
-jless         latest
+jless         0.7.2
 jq            latest
 just          latest
 lazydocker    latest

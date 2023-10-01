@@ -15,6 +15,7 @@ hadolint      latest
 jless         latest
 jq            latest
 just          latest
+lazydocker    latest
 lazygit       latest
 neovim        latest
 node          17

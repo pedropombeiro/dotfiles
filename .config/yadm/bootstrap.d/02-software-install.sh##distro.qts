@@ -29,6 +29,8 @@ if [[ ! -x "${HOME}/.local/share/rtx/bin/rtx" ]]; then
   ln -sf "/share/homes/${USER}/.local" /root/
 fi
 
+rtx plugins add https://github.com/comdotlinux/asdf-lazydocker.git
+
 INSTALL_DIR=/share/homes/${USER}/opt
 if [[ ! -d "${INSTALL_DIR}/autojump" ]]; then
   printf "${YELLOW}%s${NC}\n" "Installing autojump..."

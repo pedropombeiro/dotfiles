@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# This script serves as a bridge between psql and pgcli. When the pgai gem calls psql, this script will translate the arguments and call pgcli in its place
+#
+
+export PGPASSWORD=$(echo "$1" | sed 's/host=\([^[:space:]]*\) port=\([^[:space:]]*\) user=\([^[:space:]]*\) dbname=\([^[:space:]]*\) password=\([^[:space:]]*\)/\5/')
+pgcli $(echo "$1" | sed 's/host=\([^[:space:]]*\) port=\([^[:space:]]*\) user=\([^[:space:]]*\) dbname=\([^[:space:]]*\) password=\([^[:space:]]*\)/--host \1 --port \2 --user \3 --dbname \4/')
+

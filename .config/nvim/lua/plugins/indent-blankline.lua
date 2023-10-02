@@ -10,10 +10,10 @@ return {
     main = 'ibl',
     event = { 'BufReadPre', 'BufNewFile' },
     opts = {
-      char = symbol,
-      filetype_exclude = filetype_exclude,
-      show_trailing_blankline_indent = false,
-      show_current_context = false,
+      indent = {
+        char = symbol
+      },
+      exclude = { filetypes = filetype_exclude },
     },
   },
   {
@@ -32,7 +32,7 @@ return {
       symbol = symbol,
       options = { try_as_border = true },
       draw = {
-        animation = function(next, total)
+        animation = function(next, _total)
           return 5
         end
       }

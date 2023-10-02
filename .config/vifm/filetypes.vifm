@@ -2,6 +2,8 @@
 " File types association
 " ------------------------------------------------------------------------------
 
+let $BAT_CONFIG_PATH=expand('$HOME/.config/bat/vifm.config')
+
 " :filetype pattern1,pattern2 defaultprogram,program2
 " :fileviewer pattern1,pattern2 consoleviewer
 "
@@ -67,7 +69,7 @@ fileviewer {*.sqlite*},<application/vnd.sqlite3> file --brief --preserve-date %d
 
 fileviewer {.justfile,*.justfile,justfile} just --justfile %d/%c --list &&
             \ echo "----------------------" &&
-            \ bat --color=always --style="plain" --theme gruvbox-dark-vifm %d/%c
+            \ bat %d/%c
 
 " Audio
 filetype {*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus,
@@ -111,10 +113,10 @@ filetype {*.xhtml,*.html,*.htm},<text/html>
        \ open -a Google\ Chrome.app,
        \ {Open in vim}
        \ nvim,
-fileviewer {*.xhtml,*.html,*.htm},<text/html> w3m -dump -T text/html, bat --color=always --style="plain" --theme gruvbox-dark-vifm -- %d/%c
+fileviewer {*.xhtml,*.html,*.htm},<text/html> w3m -dump -T text/html, bat -- %d/%c
 
 " Object
-filetype {*.o},<application/x-object> nm %f | bat --color=always --style="plain" --theme gruvbox-dark-vifm
+filetype {*.o},<application/x-object> nm %f | bat --file-name %f
 
 " Man page
 filetype {*.[1-8]},<text/troff> man ./%d/%c
@@ -205,10 +207,10 @@ filetype {*.plist}, open -a 'PLIST Editor.app'
 fileviewer {*.plist}, plutil -p -- %f
 
 " .ssh/config
-fileviewer {{**/.ssh/*config*}} bat --color=always --style="plain" --language='SSH Config' --theme gruvbox-dark-vifm -- %d/%c
+fileviewer {{**/.ssh/*config*}} bat --language='SSH Config' -- %d/%c
 
 " Nginx configs
-fileviewer {{**/nginx/*.conf}} bat --color=always --style="plain" --language='nginx' --theme gruvbox-dark-vifm -- %d/%c
+fileviewer {{**/nginx/*.conf}} bat --language='nginx' -- %d/%c
 
 " .git/objects
 fileviewer {{**/.git/objects/**/*}}
@@ -229,19 +231,19 @@ fileviewer {{**/.git/objects/**/*}}
 "
 " Or leave it for automatic detection
 
-fileviewer {.pryrc,.irb_history} bat --color=always --style="plain" --language=ruby --theme gruvbox-dark-vifm -- %d/%c
-fileviewer {.psqlrc,.pspg_history,.psql_history,.sqlite_history} bat --color=always --style="plain" --language=sql --theme gruvbox-dark-vifm -- %d/%c
+fileviewer {.pryrc,.irb_history} bat --language=ruby -- %d/%c
+fileviewer {.psqlrc,.pspg_history,.psql_history,.sqlite_history} bat --language=sql -- %d/%c
 
 filetype {vi*rc,*.vifm,*.vim} nvim
-fileviewer {vi*rc,*.vifm,*.vim} bat --color=always --style="plain" --language=VimL --theme gruvbox-dark-vifm -- %d/%c
+fileviewer {vi*rc,*.vifm,*.vim} bat --language=VimL -- %d/%c
 
 filetype {*.json},<application/json>
            \ {Browse with jless} cat %f | jless,
            \ {Open in vim} nvim,
 fileviewer {*.json},
            \<application/json>
-           \ cat %d/%c | jq | bat --color=always --style="plain" --language=json --theme gruvbox-dark-vifm -,
+           \ cat %d/%c | jq | bat --language=json --file-name %c -,
 
-fileviewer <text/*> bat --color=always --style="plain" --theme gruvbox-dark-vifm -- %d/%c
+fileviewer <text/*> bat -- %d/%c
 fileviewer <application/*>,{*.ttf} file --brief --preserve-date --uncompress
 " fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %d/%c

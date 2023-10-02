@@ -37,6 +37,17 @@ command! diff : if expand('%%c') == expand('%%f')
             \ | else
             \ |   execute '!$EDITOR -d %%f'
             \ | endif
+" Diff for selections in the current pane if it contains more than one file, otherwise
+" diff the file in the left (upper) pane with the file in the right (lower) pane
+command! bcomp : if expand('%%c') == expand('%%f')
+             \ |   if paneisat('right') && paneisat('bottom')
+             \ |     execute '!bcomp %%C %%c'
+             \ |   else
+             \ |     execute '!bcomp %%c %%C'
+             \ |   endif
+             \ | else
+             \ |   execute '!bcomp %%f'
+             \ | endif
 command! FZFfind :set noquickview | :execute 'goto' fnameescape(term('fd -H | fzf --height 10 2>/dev/tty'))
 command! zip zip -r %c.zip %f
 command! run !! ./%f

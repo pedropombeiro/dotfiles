@@ -231,7 +231,7 @@ fileviewer {{**/.git/objects/**/*}}
 "
 " Or leave it for automatic detection
 
-fileviewer {.pryrc,.irb_history} bat --language=ruby -- %d/%c
+fileviewer {.pryrc,.irb_history,*.ru} bat --language=ruby -- %d/%c
 fileviewer {.psqlrc,.pspg_history,.psql_history,.sqlite_history} bat --language=sql -- %d/%c
 
 filetype {vi*rc,*.vifm,*.vim} nvim

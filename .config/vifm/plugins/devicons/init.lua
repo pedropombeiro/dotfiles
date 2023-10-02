@@ -17,20 +17,22 @@ local icons = {
   types        = ' :dir:/, :exe:, :reg:, :link:,| :fifo:,= :sock:',
 
   -- various file names
-  other        = ' ::../::, ::.*.sh,,*.sh,,.*.zsh,,*.zsh,,.*.bash,,*.bash::, ::*.pl::, ::*.lock,,.*.lock::, ::*.nix::,' ..
-      ' ::*.db,,*.sqlite*::,󰡨 ::.*.Dockerfile,,Dockerfile,,.dockerignore,,docker-compose.yml,,docker-compose.*.yml::,' ..
-      '󰄤 ::*.pem,,*.crt,,*.p12::,󰌱 ::*.log::, ::*.otf,,*.ttf::',
+  other        = ' ::../::, ::.*.sh,,*.sh,,.*.zsh,,*.zsh,,.*.bash,,*.bash::, ::*.pl::, ::.lock,,*.lock,,.*.lock::,' ..
+      ' ::*.nix::, ::*.db,,*.sqlite*::,󰡨 ::.*.Dockerfile,,Dockerfile,,.dockerignore,,docker-compose.yml,,docker-compose.*.yml::,' ..
+      ' ::*.key,,key.pem,,*key.pem::,󰄤 ::*.pem,,*.crt,,*.p12::,󰌱 ::*.log::, ::*.otf,,*.ttf::',
   git          = ' ::.gitignore,,.gitattributes::, ::.git/,,*.git/::, ::.gitlab-ci.yml::',
   config       = ' ::.gitconfig,,*.conf,,*.ini,,CMakeLists.txt,,*.cmake,,*.toml,,.*.yml,,.*.yaml,,*.yml,,*.yaml,,' ..
       'vifmrc,,*.vifm::',
   editorconfig = ' ::.editorconfig::',
-  cxx          = ' ::*.cpp,,*.cc::, ::*.h,,*.hpp,,*.hh::, ::*.c::',
+  cxx          = ' ::*.cpp,,*.cc,,*.ino::, ::*.h,,*.hpp,,*.hh::, ::*.c::',
   golang       = ' ::*.go::',
   json         = ' ::*.json::',
   lua          = ' ::*.lua::',
+  javascript   = ' ::*.js::',
   makefile     = ' ::Makefile,,*.mk::',
+  php          = '󰌟 ::*.php::',
   python       = ' ::*.py::',
-  ruby         = ' ::*.rb,,Gemfile,,*.gemspec::',
+  ruby         = ' ::*.rb,,Gemfile,,*.gemspec,,*.ru::',
   vim          = ' ::.vimrc,,*.vim::',
   docs         = ' ::copying::, ::LICENSE::, ::*.md::,󰈙 ::*.txt::',
   ebooks       = ' ::*.epub,,*.fb2,,*.djvu::, ::*.pdf::',
@@ -42,7 +44,7 @@ local icons = {
       '*.tb2,,*.tbz,,*.tbz2,,*.tgz,,*.tlz,,*.trz,,*.txz,,*.tz,,' ..
       '*.tz2,,*.xz,,*.z,,*.zip,,*.zoo::',
   images       = ' ::*.bmp,,*.gif,,*.jpeg,,*.jpg,,*.ico,,*.png,,*.ppm,,' ..
-      '*.tga,,*.tif,,*.tiff,,*.xbm,,*.xcf,,*.xpm,,*.xspf,,' ..
+      '*.tga,,*.tif,,*.tiff,,*.webp,,*.xbm,,*.xcf,,*.xpm,,*.xspf,,' ..
       '*.xwd::,󰜡 ::*.svg,,*.svgz::',
   audio        = ' ::*.aac,,*.anx,,*.asf,,*.au,,*.axa,,*.flac,,*.m2a,,*.m4a,,' ..
       '*.mid,,*.midi,,*.mp3,,*.mpc,,*.oga,,*.ogg,,*.ogx,,*.ra,,' ..

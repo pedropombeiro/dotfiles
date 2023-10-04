@@ -71,6 +71,10 @@ fileviewer {.justfile,*.justfile,justfile} just --justfile %d/%c --list &&
             \ echo "----------------------" &&
             \ bat %d/%c
 
+" Text files
+filetype {*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> nvim
+fileviewer {*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> bat -- %d/%c
+
 " Audio
 filetype {*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus,
          \*.aac,*.mpga},
@@ -244,6 +248,5 @@ fileviewer {*.json},
            \<application/json>
            \ cat %d/%c | jq | bat --language=json --file-name %c -,
 
-fileviewer <text/*> bat -- %d/%c
 fileviewer <application/*>,{*.ttf} file --brief --preserve-date --uncompress
 " fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %d/%c

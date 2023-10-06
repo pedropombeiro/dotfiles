@@ -30,8 +30,11 @@ highlight Fifo       cterm=none ctermfg=172 ctermbg=default
 highlight Socket     cterm=bold ctermfg=223 ctermbg=default
 
 " Custom status line colors
-highlight User1 ctermbg=235 ctermfg=109 cterm=bold
-highlight User2 ctermbg=235 ctermfg=223 cterm=none
-highlight User3 ctermbg=235 ctermfg=236 cterm=none
-highlight User4 ctermbg=236 ctermfg=109 cterm=none
-highlight User5 ctermbg=109 ctermfg=234 cterm=none
+highlight User1 cterm=bold ctermfg=109 ctermbg=235
+highlight User2 cterm=none ctermfg=223 ctermbg=235
+highlight User3 cterm=none ctermfg=236 ctermbg=235
+highlight User4 cterm=none ctermfg=109 ctermbg=236
+highlight User5 cterm=none ctermfg=234 ctermbg=109
+highlight User6 cterm=none ctermfg=248 ctermbg=235
+highlight User7 cterm=none ctermfg=66  ctermbg=236
+highlight User8 cterm=none ctermfg=239 ctermbg=109

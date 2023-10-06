@@ -116,7 +116,7 @@ set slowfs=curlftpfs
 
 " Set custom status line look
 set statusline="%1*%{extcached('git_branch', expand('%d'), expand('git_branch'))} %{extcached('readlink', expand('%c'), expand('readlink %c'))} %=
-                \%2* %d %3*%4*  %10E %5*  %A   %10u:%-7g  "
+                \%6*%2* %d %3*%7* %4* %10E %8* %5* %A %8* %5* %10u:%-7g  "
 " Show number of hidden files in ruler
 set rulerformat=' %P  %2l:%S%[  󰘓 +%x %]'
 

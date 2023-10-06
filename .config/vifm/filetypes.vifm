@@ -72,10 +72,6 @@ fileviewer {.justfile,*.justfile,justfile} just --justfile %d/%c --list &&
             \ echo "----------------------" &&
             \ bat %d/%c
 
-" Text files
-filetype {*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> nvim
-fileviewer {*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> bat -- %d/%c
-
 " Audio
 filetype {*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus,
          \*.aac,*.mpga},
@@ -236,7 +232,7 @@ fileviewer {{**/.git/objects/**/*}}
 "
 " Or leave it for automatic detection
 
-fileviewer {.pryrc,.irb_history,*.ru} bat --language=ruby -- %d/%c
+fileviewer {.pryrc,.irb_history,Dangerfile,*.ru},<text/x-ruby> bat --language=Ruby -- %d/%c
 
 filetype {vi*rc,*.vifm,*.vim} nvim
 fileviewer {vi*rc,*.vifm,*.vim} bat --language=VimL -- %d/%c
@@ -246,7 +242,7 @@ filetype {*.json},<application/json>
            \ {Open in vim} nvim,
 fileviewer {*.json},
            \<application/json>
-           \ cat %d/%c | jq | bat --language=json --file-name %c -,
+           \ cat %d/%c | jq | bat --language=JSON --file-name %c -,
 
 fileviewer <application/x-executable,application/x-pie-executable,application/x-mach-binary>
             \ file --brief --preserve-date --uncompress -- %d/%c &&
@@ -254,3 +250,7 @@ fileviewer <application/x-executable,application/x-pie-executable,application/x-
             \ ldd --verbose %f 2>/dev/null || otool -L %f 2>/dev/null
 fileviewer {*.ttf} file --brief --preserve-date --uncompress
 " fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %d/%c
+
+" Text files
+filetype {*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> nvim
+fileviewer {*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> bat -- %d/%c

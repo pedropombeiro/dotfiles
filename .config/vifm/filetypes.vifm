@@ -248,5 +248,9 @@ fileviewer {*.json},
            \<application/json>
            \ cat %d/%c | jq | bat --language=json --file-name %c -,
 
-fileviewer <application/*>,{*.ttf} file --brief --preserve-date --uncompress
+fileviewer <application/x-executable,application/x-pie-executable,application/x-mach-binary>
+            \ file --brief --preserve-date --uncompress -- %d/%c &&
+            \ echo "----------------------" &&
+            \ ldd --verbose %f 2>/dev/null || otool -L %f 2>/dev/null
+fileviewer {*.ttf} file --brief --preserve-date --uncompress
 " fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %d/%c

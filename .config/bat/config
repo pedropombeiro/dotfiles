@@ -25,6 +25,7 @@
 #--map-syntax ".ignore:Git Ignore"
 --map-syntax "*.ino:C++"
 --map-syntax='*.env:DotENV'
+--map-syntax='.dockerignore:Git Ignore'
 --map-syntax='.Brewfile:Ruby'
 --map-syntax='.pryrc:Ruby'
 --map-syntax='.irb_history:Ruby'

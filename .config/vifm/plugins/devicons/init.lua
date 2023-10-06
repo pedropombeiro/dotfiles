@@ -17,7 +17,7 @@ local icons = {
   types        = ' :dir:/, :exe:, :reg:, :link:,| :fifo:,= :sock:',
 
   -- various file names
-  other        = ' ::../::, ::.*.sh,,*.sh,,.*.zsh,,*.zsh,,.*.bash,,*.bash::, ::*.pl::, ::.lock,,*.lock,,.*.lock::,' ..
+  other        = ' ::../::, ::.*.sh,,*.sh,,.*.zsh,,*.zsh,,.*.bash,,*.bash::, ::*.pl::, ::lock,,.lock,,*.lock,,.*.lock::,' ..
       ' ::*.nix::, ::*.db,,*.sqlite*::,󰡨 ::.*.Dockerfile,,Dockerfile,,.dockerignore,,docker-compose.yml,,docker-compose.*.yml::,' ..
       ' ::*.key,,key.pem,,*key.pem::,󰄤 ::*.pem,,*.crt,,*.p12::,󰌱 ::*.log::, ::*.otf,,*.ttf::',
   git          = ' ::.gitignore,,.gitattributes::, ::.git/,,*.git/::, ::.gitlab-ci.yml::',

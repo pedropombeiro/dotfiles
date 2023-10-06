@@ -63,9 +63,10 @@ filetype {*.ps,*.eps,*.ps.gz},<application/postscript> open -a Preview.app
 " Djvu
 filetype {*.djvu},<image/vnd.djvu> open -a MacDjView.app
 
-" sqllite databases
+" sql databases
 filetype {*.sqlite*},<application/vnd.sqlite3> sqlite3 %d/%c
 fileviewer {*.sqlite*},<application/vnd.sqlite3> file --brief --preserve-date %d/%c && echo && sqlite3 %d/%c .tables
+fileviewer {.psqlrc,.pspg_history,.psql_history,.sqlite_history} bat --language=SQL -- %d/%c
 
 fileviewer {.justfile,*.justfile,justfile} just --justfile %d/%c --list &&
             \ echo "----------------------" &&
@@ -236,7 +237,6 @@ fileviewer {{**/.git/objects/**/*}}
 " Or leave it for automatic detection
 
 fileviewer {.pryrc,.irb_history,*.ru} bat --language=ruby -- %d/%c
-fileviewer {.psqlrc,.pspg_history,.psql_history,.sqlite_history} bat --language=sql -- %d/%c
 
 filetype {vi*rc,*.vifm,*.vim} nvim
 fileviewer {vi*rc,*.vifm,*.vim} bat --language=VimL -- %d/%c

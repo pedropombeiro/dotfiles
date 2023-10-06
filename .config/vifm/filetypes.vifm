@@ -56,6 +56,13 @@ filetype {*.pdf},<application/pdf>
        \ {Open in Skim}
        \ open -a Skim.app,
 fileviewer {*.pdf},<application/pdf> pdftotext -nopgbrk %d/%c -
+" Epub
+filetype {*.epub},<application/epub+zip>
+       \ {Open in epr}
+       \ epr %d/%c,
+       \ {Open in Preview}
+       \ open -a Preview.app,
+fileviewer {*.epub},<application/epub+zip> epr -d %d/%c
 
 " PostScript
 filetype {*.ps,*.eps,*.ps.gz},<application/postscript> open -a Preview.app

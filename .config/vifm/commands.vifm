@@ -18,10 +18,10 @@
 "  %u uses command's output to build a file list
 "  see `:help vifm-macros` and `:help vifm-filename-modifiers` for more
 
-command! df df -h %m 2> /dev/null
-command! du !ncdu
+command! df df -h %m 2>/dev/null
+command! du ncdu
 command! Lazygit : if term('git rev-parse --show-toplevel >/dev/null 2>&1 && echo 1 || echo 0') == 0
-               \ |   execute '!cd ~ && yadm enter lazygit'
+               \ |   execute '!lazygit --work-tree $HOME --git-dir ~/.local/share/yadm/repo.git/'
                \ | else
                \ |   execute '!lazygit'
                \ | endif

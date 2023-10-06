@@ -125,6 +125,7 @@ fileviewer {*.xhtml,*.html,*.htm},<text/html> w3m -dump -T text/html, bat -- %d/
 
 " Object
 filetype {*.o},<application/x-object> nm %f | bat --file-name %f
+fileviewer {*.o},<application/x-object> nm %f | bat --file-name %f
 
 " Man page
 filetype {*.[1-8]},<text/troff> man ./%d/%c
@@ -257,5 +258,5 @@ fileviewer {*.ttf} file --brief --preserve-date --uncompress
 " fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %d/%c
 
 " Text files
-filetype {*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> nvim
-fileviewer {*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> bat -- %d/%c
+filetype {*.ac,*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> nvim
+fileviewer {*.ac,*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> bat -- %d/%c

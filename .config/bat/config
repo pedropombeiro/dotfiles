@@ -26,6 +26,10 @@
 --map-syntax "*.ino:C++"
 --map-syntax='*.env:DotENV'
 --map-syntax='.dockerignore:Git Ignore'
+--map-syntax='*.ac:CMake'
+--map-syntax='Makefile.*:Makefile'
+--map-syntax='*.m4:Makefile'
+--map-syntax='*.mk:Makefile'
 --map-syntax='.Brewfile:Ruby'
 --map-syntax='.pryrc:Ruby'
 --map-syntax='.irb_history:Ruby'

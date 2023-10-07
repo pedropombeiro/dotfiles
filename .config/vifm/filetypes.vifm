@@ -127,14 +127,10 @@ fileviewer {*.xhtml,*.html,*.htm},<text/html> w3m -dump -T text/html, bat -- %d/
 filetype {*.o},<application/x-object> nm %f | bat --file-name %f
 fileviewer {*.o},<application/x-object> nm %f | bat --file-name %f
 
-" Man page
-filetype {*.[1-8]},<text/troff> man ./%d/%c
-fileviewer {*.[1-8]},<text/troff> man ./%d/%c | col -b
-
 " Image
 filetype {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*>
        \ open -a Preview.app,
-fileviewer {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*> imgpreview %d/%c:p %px %py %pw %ph
+fileviewer {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*> imgpreview %d/%c %px %py %pw %ph
 
 " MD5
 filetype *.md5
@@ -246,17 +242,25 @@ filetype {vi*rc,*.vifm,*.vim} nvim
 fileviewer {vi*rc,*.vifm,*.vim} bat --language=VimL -- %d/%c
 
 filetype {*.json},<application/json>
-           \ {Browse with jless} cat %f | jless,
+           \ {Browse with jless} cat %c | jless,
            \ {Open in vim} nvim,
 fileviewer {*.json},
            \<application/json>
            \ cat %d/%c | jq | bat --language=JSON --file-name %c -,
 
 fileviewer <application/x-executable,application/x-pie-executable,application/x-mach-binary>
-            \ dumpexe %d/%c
+            \ dumpexe %c
 fileviewer {*.ttf} file --brief --preserve-date --uncompress
 " fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %d/%c
+
+" Log files
+filetype {*.log,*.log.[1-9]} nvim
+fileviewer {*.log,*.log.[1-9]} bat --language log -- %d/%c
 
 " Text files
 filetype {*.ac,*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> nvim
 fileviewer {*.ac,*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> bat -- %d/%c
+
+" Man page
+filetype {*.[1-8]},<text/troff> man ./%d/%c
+fileviewer {*.[1-8]},<text/troff> man ./%d/%c | col -b

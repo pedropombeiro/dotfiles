@@ -18,6 +18,10 @@
 "  %u uses command's output to build a file list
 "  see `:help vifm-macros` and `:help vifm-filename-modifiers` for more
 
+" autojump integration
+autocmd DirEnter * echo system(expand('autojump --add %d >/dev/null'))
+command! j :execute 'goto' fnameescape(term('autojump --complete %a | sed -E "s/.*__[0-9]+__//" | uniq | fzf --header="Autojump" --header-first --no-multi --no-sort --inline-info 2>/dev/tty'))
+
 command! df df -h %m 2>/dev/null
 command! du ncdu
 command! Lazygit : if term('git rev-parse --show-toplevel >/dev/null 2>&1 && echo 1 || echo 0') == 0

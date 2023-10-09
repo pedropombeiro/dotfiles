@@ -77,6 +77,9 @@ fileviewer {.psqlrc,.pspg_history,.psql_history,.sqlite_history} bat --language=
 
 fileviewer {.justfile,*.justfile,justfile} just --justfile %d/%c --list &&
             \ echo "----------------------" &&
+            \ echo "Evaluated variables:" &&
+            \ just --justfile %d/%c --evaluate &&
+            \ echo "----------------------" &&
             \ bat %d/%c
 
 " Audio

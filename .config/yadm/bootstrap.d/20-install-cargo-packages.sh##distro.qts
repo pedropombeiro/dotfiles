@@ -8,6 +8,4 @@ printf "${YELLOW}%s${NC}\n" "Installing cargo packages..."
 
 # Install some useful system tools written in Rust and which don't provide an easy install method in QTS
 cargo install \
-  grc-rs \
-  tree-sitter-cli
-cargo install --version ^0.7 -- jless
+  grc-rs

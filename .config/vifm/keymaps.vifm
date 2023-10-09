@@ -24,6 +24,13 @@ nnoremap <c-q> :quit<cr>
 nnoremap qq :quit<cr>
 
 nnoremap '~ :cdgitroot<cr>
+nnoremap <space>fb :bmarks<cr>
+nnoremap <space>fc :command<cr>
+nnoremap <space>fd :dirs<cr>
+nnoremap <space>fh :history<cr>
+nnoremap <space>fF :copen<cr>
+nnoremap <space>fp :plugins<cr>
+nnoremap <space>f" :register<cr>
 
 " Start shell in current directory
 nnoremap s :shell<cr>

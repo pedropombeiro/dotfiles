@@ -52,7 +52,7 @@ command! bcomp : if expand('%%c') == expand('%%f')
              \ | else
              \ |   execute '!bcomp %%f'
              \ | endif
-command! FZFfind :set noquickview | :execute 'goto' fnameescape(term('fd -H | fzf --height 10 2>/dev/tty'))
+command! FZFfind :set noquickview | :execute 'goto' fnameescape(term('fd -H | fzf --header="Find files" --header-first --no-multi 2>/dev/tty'))
 command! zip zip -r %c.zip %f
 command! run !! ./%f
 command! just !!just %a

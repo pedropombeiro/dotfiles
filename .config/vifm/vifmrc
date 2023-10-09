@@ -26,6 +26,9 @@ set millerview
 set milleroptions=lsize:1,csize:2,rsize:3,rpreview:all
 set dotdirs=treeleafsparent
 
+" Show title in host terminal
+set title
+
 " Set a realy high number so that we don't timeout (important for <space> for
 " instance).
 set timeoutlen=1000000

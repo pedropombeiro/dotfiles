@@ -92,7 +92,8 @@ return {
           folder_empty      = icons.folder.empty,
           folder_empty_open = icons.folder.empty_open,
           folder_closed     = icons.folder.collapsed,
-          folder_open       = icons.folder.expanded
+          folder_open       = icons.folder.expanded,
+          default           = ''
         },
         indent = {
           expander_collapsed = icons.expander.collapsed,

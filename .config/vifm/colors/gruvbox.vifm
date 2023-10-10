@@ -8,13 +8,13 @@ highlight Border     cterm=none ctermfg=235 ctermbg=default
 
 highlight TopLine    cterm=none ctermfg=214 ctermbg=235
 highlight TopLineSel cterm=bold ctermfg=214 ctermbg=237
-highlight LineNr     cterm=none ctermfg=242 ctermbg=default
+highlight LineNr     cterm=none ctermfg=239 ctermbg=default
 
 highlight Win        cterm=none ctermfg=223 ctermbg=default
 "highlight OtherWin   cterm=none ctermfg=223 ctermbg=236
 highlight AuxWin     cterm=bold ctermfg=223 ctermbg=235
 highlight Directory  cterm=bold ctermfg=109 ctermbg=default
-highlight CurrLine   cterm=bold,inverse ctermfg=default ctermbg=default
+highlight CurrLine   cterm=bold ctermfg=default ctermbg=239
 highlight OtherLine  cterm=bold ctermfg=default ctermbg=236
 highlight Selected   cterm=none ctermfg=223 ctermbg=237
 

@@ -1,4 +1,5 @@
 " gruvbox color scheme approximation for vifm
+" https://github.com/morhetz/gruvbox#dark-mode-1
 
 " Reset all styles first
 highlight clear
@@ -11,9 +12,10 @@ highlight LineNr     cterm=none ctermfg=242 ctermbg=default
 
 highlight Win        cterm=none ctermfg=223 ctermbg=default
 "highlight OtherWin   cterm=none ctermfg=223 ctermbg=236
+highlight AuxWin     cterm=bold ctermfg=223 ctermbg=235
 highlight Directory  cterm=bold ctermfg=109 ctermbg=default
 highlight CurrLine   cterm=bold,inverse ctermfg=default ctermbg=default
-highlight OtherLine  cterm=bold ctermfg=default ctermbg=235
+highlight OtherLine  cterm=bold ctermfg=default ctermbg=236
 highlight Selected   cterm=none ctermfg=223 ctermbg=237
 
 highlight JobLine    cterm=bold ctermfg=116 ctermbg=238

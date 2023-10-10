@@ -45,7 +45,7 @@ return {
       removed  = '',
       renamed  = '󰁕',
       unstaged = '󰄱',
-      readonly = '',
+      readonly = '',
     },
     tests = {
       passed  = '',

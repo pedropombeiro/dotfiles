@@ -14,24 +14,24 @@ Usage examples:
 
 -- TODO: more fine-grained representation and detailed formatting in format()
 local icons = {
-  types        = ' :dir:/, :exe:, :reg:, :link:,| :fifo:,= :sock:',
+  types        = ' :dir:/, :exe:, :reg:, :link:,| :fifo:,= :sock:',
 
   -- various file names
   other        = ' ::../::, ::.*.sh,,*.sh,,.*.zsh,,*.zsh,,.*.bash,,*.bash::, ::*.pl::, ::lock,,.lock,,*.lock,,.*.lock::,' ..
-      ' ::*.nix::, ::*.db,,*.sqlite*::,󰡨 ::.*.Dockerfile,,Dockerfile,,.dockerignore,,docker-compose.yml,,docker-compose.*.yml::,' ..
+      ' ::*.nix::, ::*.db,,*.sqlite*::,󰡨 ::.*.Dockerile,,Dockerfile,,.dockerignore,,docker-compose.yml,,docker-compose.*.yml::,' ..
       ' ::*.key,,key.pem,,*key.pem::,󰄤 ::*.pem,,*.crt,,*.p12::,󰌱 ::*.log::, ::*.otf,,*.ttf::',
   git          = ' ::.gitignore,,.gitattributes::, ::.git/,,*.git/::, ::.gitlab-ci.yml::',
   config       = ' ::.gitconfig,,*.conf,,*.ini,,CMakeLists.txt,,*.cmake,,*.toml,,.*.yml,,.*.yaml,,*.yml,,*.yaml,,' ..
       'vifmrc,,*.vifm::',
   editorconfig = ' ::.editorconfig::',
   cxx          = ' ::*.cpp,,*.cc,,*.ino::, ::*.h,,*.hpp,,*.hh::, ::*.c::',
-  golang       = ' ::*.go::',
+  golang       = ' ::*.go::',
   json         = ' ::*.json::',
   lua          = ' ::*.lua::',
   javascript   = ' ::*.js::',
   makefile     = ' ::Makefile,,*.mk::',
-  php          = '󰌟 ::*.php::',
-  python       = ' ::*.py::',
+  php          = ' ::*.php::',
+  python       = ' ::*.py::',
   ruby         = ' ::*.rb,,Gemfile,,*.gemspec,,*.ru::',
   vim          = ' ::.vimrc,,*.vim::',
   docs         = ' ::copying::, ::LICENSE::, ::*.md::,󰈙 ::*.txt::',

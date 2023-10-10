@@ -3,19 +3,19 @@
 local opt = vim.opt
 
 opt.shortmess:append({ W = true, I = true, c = true })
-opt.smartindent               = true
-opt.swapfile                  = false -- disable the swapfile
-opt.history                   = 2000
-opt.updatetime                = 1000
-opt.completeopt               = 'menu,menuone,noselect'
-opt.wildmenu                  = true  -- set zsh-alike autocomplete behavior
-opt.wildmode                  = 'longest:full,full'
-opt.winminwidth               = 5     -- Minimum window width
-opt.wrap                      = false -- Disable line wrap
-opt.expandtab                 = true
-opt.tabpagemax                = 40    -- Max number of tab pages that can be opened from the command line
-opt.errorbells                = false
-opt.confirm                   = true  -- Display a confirmation dialog when closing a dirty buffer (Mastering Vim Quickly)
+opt.smartindent = true
+opt.swapfile    = false -- disable the swapfile
+opt.history     = 2000
+opt.updatetime  = 1000
+opt.completeopt = 'menu,menuone,noselect'
+opt.wildmenu    = true  -- set zsh-alike autocomplete behavior
+opt.wildmode    = 'longest:full,full'
+opt.winminwidth = 5     -- Minimum window width
+opt.wrap        = false -- Disable line wrap
+opt.expandtab   = true
+opt.tabpagemax  = 40    -- Max number of tab pages that can be opened from the command line
+opt.errorbells  = false
+opt.confirm     = true  -- Display a confirmation dialog when closing a dirty buffer (Mastering Vim Quickly)
 
 vim.g.loaded_perl_provider    = 0     -- disable Perl support
 vim.g.loaded_python3_provider = 0     -- disable python3 provider, we don't need python plugins
@@ -23,10 +23,10 @@ vim.g.loaded_python3_provider = 0     -- disable python3 provider, we don't need
 -- This makes vim act like all other editors, buffers can
 -- exist in the background without being in a window.
 -- http://items.sjbach.com/319/configuring-vim-right
-opt.hidden                    = true
+opt.hidden     = true
 
 -- Make macros render faster (lazy draw)
-opt.lazyredraw                = true
+opt.lazyredraw = true
 
 ---------------- Persistent Undo ------------------
 opt.undofile                  = true
@@ -38,8 +38,8 @@ vim.api.nvim_create_autocmd('BufWritePre', {
 })
 
 ---------------- Spelling ------------------
-opt.spelllang            = 'en_us'
-opt.spell                = false
+opt.spelllang = 'en_us'
+opt.spell     = false
 
 -- netrw customization (https://shapeshed.com/vim-netrw/)
 vim.g.netrw_liststyle    = 1 -- wide view
@@ -48,8 +48,8 @@ vim.g.netrw_altv         = 1
 vim.g.netrw_winsize      = 25
 
 ---------------- Security --------------------------
-opt.modelines            = 0
-opt.modeline             = false
+opt.modelines = 0
+opt.modeline  = false
 
 -- Q: Mouse reporting in vim doesn't work for some rows/columns in a big terminal window.
 if vim.fn.has('mouse_sgr') ~= 0 then
@@ -73,35 +73,35 @@ opt.diffopt:append('linematch:60')
 
 vim.fn.setenv('GIT_CONFIG_PARAMETERS', "'delta.side-by-side=false'") -- Disable .gitconfig's delta option
 
-opt.relativenumber        = true
+opt.relativenumber = true
 
 ---------------- Search --------------------------
 
-opt.incsearch             = true -- Find the next match as we type the search
-opt.hlsearch              = true -- Highlight searches by default
-opt.ignorecase            = true -- Ignore case when searching...
-opt.smartcase             = true -- ...unless we type a capital
-opt.grepformat            = '%f:%l:%c:%m'
-opt.grepprg               = 'rg --vimgrep --smart-case --follow '
+opt.incsearch  = true -- Find the next match as we type the search
+opt.hlsearch   = true -- Highlight searches by default
+opt.ignorecase = true -- Ignore case when searching...
+opt.smartcase  = true -- ...unless we type a capital
+opt.grepformat = '%f:%l:%c:%m'
+opt.grepprg    = 'rg --vimgrep --smart-case --follow '
 
 ---------------- Format --------------------------
 
-opt.encoding              = 'utf-8'
-opt.termencoding          = 'utf-8'
-opt.fileformats           = 'unix,dos,mac' -- supported formats
-opt.bomb                  = false          -- don't use a BOM
-opt.shiftwidth            = 2
-opt.softtabstop           = 2
-opt.tabstop               = 2
+opt.encoding     = 'utf-8'
+opt.termencoding = 'utf-8'
+opt.fileformats  = 'unix,dos,mac' -- supported formats
+opt.bomb         = false          -- don't use a BOM
+opt.shiftwidth   = 2
+opt.softtabstop  = 2
+opt.tabstop      = 2
 
-opt.listchars             = {
+opt.list         = true
+opt.listchars    = {
   precedes = '⟨',
-  extends = '⟩',
-  trail = '·',
-  tab = '│·',
-  nbsp = '␣'
+  extends  = '⟩',
+  trail    = '·',
+  tab      = '│·',
+  nbsp     = '␣'
 }
-opt.list                  = true
 
 local term_helper_augroup = vim.api.nvim_create_augroup('term_helper', { clear = true })
 vim.api.nvim_create_autocmd('TermOpen', {

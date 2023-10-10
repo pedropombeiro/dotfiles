@@ -136,7 +136,7 @@ return {
                 callSnippet = 'Replace',
               },
               format = {
-                enable = true,
+                enable = false,
                 defaultConfig = {
                   indent_style = 'space',
                   indent_size = '2',

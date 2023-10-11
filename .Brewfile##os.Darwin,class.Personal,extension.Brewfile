@@ -17,6 +17,8 @@ brew "xz"
 brew "ansible"
 # Arduino command-line interface
 brew "arduino-cli"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.12"
 # Record and share terminal sessions
 brew "asciinema"
 # Interpreted, interactive, object-oriented programming language
@@ -37,6 +39,8 @@ brew "coreutils"
 brew "croc"
 # Top-like interface for container metrics
 brew "ctop"
+# Get a file from an HTTP, HTTPS or FTP server
+brew "curl"
 # Load/unload environment variables based on $PWD
 brew "direnv"
 # Command-line DNS client
@@ -123,8 +127,6 @@ brew "pngquant"
 brew "poppler"
 # Unix pager optimized for psql
 brew "pspg"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.9"
 # QR Code generation
 brew "qrencode"
 # Search tool like grep and The Silver Searcher

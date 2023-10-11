@@ -70,6 +70,8 @@ brew "coreutils"
 brew "croc"
 # Top-like interface for container metrics
 brew "ctop"
+# Get a file from an HTTP, HTTPS or FTP server
+brew "curl"
 # Load/unload environment variables based on $PWD
 brew "direnv"
 # Tool for exploring each layer in a docker image

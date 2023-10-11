@@ -3,6 +3,7 @@
 " ------------------------------------------------------------------------------
 
 let $BAT_CONFIG_PATH=expand('$HOME/.config/bat/vifm.config')
+let $BAT_THEME='gruvbox-dark-vifm'
 
 " :filetype pattern1,pattern2 defaultprogram,program2
 " :fileviewer pattern1,pattern2 consoleviewer

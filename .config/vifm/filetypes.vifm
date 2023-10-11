@@ -267,3 +267,6 @@ fileviewer {*.ac,*.c,*.cpp,*.h,*.hpp,*.go,*.py,*.rb,*.txt},<text/*> bat -- %d/%c
 " Man page
 filetype {*.[1-8]},<text/troff> man ./%d/%c
 fileviewer {*.[1-8]},<text/troff> man ./%d/%c | col -b
+
+" Fallback
+filetype * open

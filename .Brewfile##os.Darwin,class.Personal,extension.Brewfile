@@ -312,6 +312,7 @@ cask "wireshark"
 cask "yubico-yubikey-manager"
 # Video communication and virtual meeting platform
 cask "zoom"
+mas "1Password for Safari", id: 1569813296
 mas "Amphetamine", id: 937984704
 mas "Developer", id: 640199958
 mas "Discovery", id: 1381004916

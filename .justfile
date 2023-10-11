@@ -11,7 +11,10 @@ default: pull update
     ~/.config/yadm/scripts/update.sh
 
 @brew-dump:
-    brew bundle dump -f --global --describe
+    brew bundle dump --file ~/.Brewfile --global --describe --force
+
+@brew-cleanup:
+    brew bundle cleanup ~/.Brewfile --force --file
 
 @wifi-traffic:
     ssh ap-u6pro.infra.pombei.ro "tcpdump -np"

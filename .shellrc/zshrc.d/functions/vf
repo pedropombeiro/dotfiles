@@ -2,7 +2,9 @@
 
 # Add a `vf` function to zsh that opens vifm either at the given directory or
 # at the one autojump suggests
-if [ "$1" != "" ]; then
+if [ "$2" != "" ]; then
+  vifm "$@"
+elif [ "$1" != "" ]; then
   if [ -d "$1" ]; then
     vifm "$1"
   elif [ -f "$1" ]; then

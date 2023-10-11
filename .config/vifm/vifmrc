@@ -20,11 +20,13 @@ elseif $EDITOR != ''
   let &vicmd = $EDITOR
 endif
 
-" Mimic Ranger layout
-only
-set millerview
+if expand('%D') == expand('$HOME') || expand('%d') == expand('%D')
+  " Mimic Ranger layout
+  only
+  set millerview
+  set dotdirs=treeleafsparent
+endif
 set milleroptions=lsize:1,csize:2,rsize:3,rpreview:all
-set dotdirs=treeleafsparent
 
 " Show title in host terminal
 set title

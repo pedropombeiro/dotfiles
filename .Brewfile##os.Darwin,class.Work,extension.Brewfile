@@ -50,8 +50,6 @@ brew "btop"
 brew "glib"
 # Manage compile and link flags for libraries
 brew "pkg-config"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.9"
 # Linter/analyzer for Makefiles
 brew "checkmake"
 # Cross-platform make

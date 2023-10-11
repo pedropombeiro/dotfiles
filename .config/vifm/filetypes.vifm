@@ -245,8 +245,8 @@ filetype {vi*rc,*.vifm,*.vim} nvim
 fileviewer {vi*rc,*.vifm,*.vim} bat --language=VimL -- %d/%c
 
 filetype {*.json},<application/json>
-           \ {Browse with jless} jless %c,
            \ {Open in vim} nvim,
+           \ {Browse with jless} jless %c,
 fileviewer {*.json},
            \<application/json>
            \ cat %d/%c | jq | bat --language=JSON --file-name %c -,

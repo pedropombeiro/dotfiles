@@ -31,6 +31,7 @@ nnoremap <space>fh :history<cr>
 nnoremap <space>fF :copen<cr>
 nnoremap <space>fp :plugins<cr>
 nnoremap <space>f" :register<cr>
+nnoremap <space><cr> :file<cr>
 
 " Start shell in current directory
 nnoremap s :shell<cr>

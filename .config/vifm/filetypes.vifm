@@ -75,12 +75,11 @@ filetype {*.sqlite*},<application/vnd.sqlite3> sqlite3 %d/%c
 fileviewer {*.sqlite*},<application/vnd.sqlite3> file --brief --preserve-date %d/%c && echo && sqlite3 %d/%c .tables
 fileviewer {.psqlrc,.pspg_history,.psql_history,.sqlite_history} bat --language=SQL -- %d/%c
 
-fileviewer {.justfile,*.justfile,justfile} just --justfile %d/%c --list &&
-            \ echo "----------------------" &&
+fileviewer {.justfile,*.justfile,justfile}
+            \ just --justfile %d/%c --list,
+            \ bat %d/%c,
             \ echo "Evaluated variables:" &&
-            \ just --justfile %d/%c --evaluate &&
-            \ echo "----------------------" &&
-            \ bat %d/%c
+            \ just --justfile %d/%c --evaluate,
 
 " Audio
 filetype {*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus,
@@ -133,7 +132,9 @@ fileviewer {*.o},<application/x-object> nm %f | bat --file-name %f
 " Image
 filetype {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*>
        \ open -a Preview.app,
-fileviewer {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*> imgpreview %d/%c %px %py %pw %ph
+fileviewer {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*>
+       \ file --brief --preserve-date --uncompress -- %d/%c,
+       \ imgpreview %d/%c %px %py %pw %ph,
 
 " MD5
 filetype *.md5

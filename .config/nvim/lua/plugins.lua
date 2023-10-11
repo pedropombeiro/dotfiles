@@ -93,6 +93,7 @@ return {
     version = false,
     opts = {}
   },
+  { 'RaafatTurki/hex.nvim', opts = {} }, -- hex editing done right
 
   --### Other
   {

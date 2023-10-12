@@ -90,6 +90,8 @@ brew "duf"
 brew "dust"
 # Run arbitrary commands when files change
 brew "entr"
+# Command-line EPUB reader
+brew "epr"
 # Perl lib for reading and writing EXIF metadata
 brew "exiftool"
 # Simple, fast and user-friendly alternative to find
@@ -190,10 +192,14 @@ brew "pandoc"
 brew "pgcli"
 # PostgreSQL syntax beautifier
 brew "pgformatter"
+# Parallel gzip
+brew "pigz"
 # Pinentry for GPG on Mac
 brew "pinentry-mac"
 # Python dependency management tool
 brew "pipenv"
+# PDF rendering library (based on the xpdf-3.0 code base)
+brew "poppler"
 # Object-relational database system
 brew "postgresql@13"
 # Unix pager optimized for psql

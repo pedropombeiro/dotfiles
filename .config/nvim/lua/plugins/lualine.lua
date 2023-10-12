@@ -2,7 +2,8 @@
 --  A blazing fast and easy to configure neovim statusline plugin written in pure lua.
 
 return {
-  'nvim-lualine/lualine.nvim',
+  'pedropombeiro/lualine.nvim',
+  branch = 'git_dir',
   event = 'VeryLazy',
   dependencies = {
     { 'arkav/lualine-lsp-progress',   lazy = true, event = 'BufReadPost' }, -- LSP Progress lualine component

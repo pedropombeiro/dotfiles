@@ -107,7 +107,7 @@ nnoremap -x :chmod -x<cr>
 " Example of standard two-panel file managers mappings
 nnoremap <f3> :!bat %f<cr>
 nnoremap <f4> :edit<cr>
-nnoremap <f5> :copy<cr>
+nnoremap <f5> :reload<cr>
 nnoremap <f6> :move<cr>
 nnoremap <f7> :mkdir<space>
 nnoremap <f8> :delete<cr>

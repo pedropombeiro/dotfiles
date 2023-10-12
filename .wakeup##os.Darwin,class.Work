@@ -7,11 +7,15 @@ open -a Busylight_HTTP_Mac.app # Reopen Busylight_HTTP_Mac at wake
 launchctl unload "${HOME}/Library/LaunchAgents/com.pedropombeiro.walkingpad.plist"
 launchctl load "${HOME}/Library/LaunchAgents/com.pedropombeiro.walkingpad.plist"
 
+# Restart Control Center, since it regularly loses connection with the Key Lights and gets confused
+killall 'Elgato Control Center'
+open -g -a 'Elgato Control Center.app'
+
+# Restart Stream Deck on hub, since half of the times it only shows wallpaper after resuming
+if ! uhubctl --action cycle --location 2-1.1.2 --port 1 | grep 'Elgato Stream Deck'; then
+  terminal-notifier -title 'uhubctl' -message 'Failed to cycle power to Elgato Stream Deck' -sound boop -ignoreDnD
+fi
+
 sleep 5
 
 SwitchAudioSource -t output -s 'CalDigit TS4 Audio - Rear'
-
-sleep 5
-
-killall 'Elgato Control Center'
-open -g -a 'Elgato Control Center.app'

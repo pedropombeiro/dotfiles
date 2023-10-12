@@ -278,6 +278,8 @@ brew "jdxcode/tap/rtx"
 brew "leipert-projects/git-recon/git-recon"
 # Compare Docker images
 brew "moul/moul/docker-diff"
+# USB hub per-port power control
+brew "mvp/uhubctl/uhubctl"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
 # Command-line interface for 1Password

@@ -7,7 +7,7 @@ if vim.env.GIT_DIR == nil then
   local configdir = vim.fn.expand('~/.config')
 
   if cwd == homedir or string.sub(cwd, 1, #configdir) == configdir then
-    vim.env.GIT_DIR = vim.fn.expand('~/.local/share/yadm/repo.git')
-    vim.cmd('cd ~')
+    vim.env.GIT_DIR = vim.fn.systemlist('yadm introspect repo')[1]
+    vim.cmd('cd ' .. homedir)
   end
 end

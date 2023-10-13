@@ -6,7 +6,6 @@ return {
   branch = 'git_dir',
   event = 'VeryLazy',
   dependencies = {
-    { 'arkav/lualine-lsp-progress',   lazy = true, event = 'BufReadPost' }, -- LSP Progress lualine component
     { 'kyazdani42/nvim-web-devicons', lazy = true },
   },
   init = function()
@@ -20,7 +19,6 @@ return {
   end,
   opts = function()
     local config           = require('config')
-    local colors           = config.theme.colors
     local diagnostic_icons = config.icons.diagnostics
     local symbol_icons     = config.icons.symbols
 
@@ -67,31 +65,6 @@ return {
               modified = symbol_icons.modified,
               readonly = symbol_icons.readonly, -- Text to show when the file is non-modifiable or readonly.
             }
-          },
-          {
-            'lsp_progress',
-            colors = {
-              ---@diagnostic disable: undefined-field
-              percentage      = colors.cyan,
-              title           = colors.blue,
-              message         = colors.blue,
-              spinner         = colors.cyan,
-              lsp_client_name = colors.purple,
-              use             = true,
-              ---@diagnostic enable: undefined-field
-            },
-            separators = {
-              component = ' ',
-              progress = ' | ',
-              percentage = { pre = '', post = '%% ' },
-              title = { pre = '', post = ': ' },
-              lsp_client_name = { pre = '[', post = ']' },
-              spinner = { pre = '', post = '' },
-              message = { pre = '(', post = ')', commenced = 'In Progress', completed = 'Completed' },
-            },
-            display_components = { 'lsp_client_name', 'spinner', { 'title', 'percentage', 'message' } },
-            timer = { progress_enddelay = 500, spinner = 1000, lsp_client_name_enddelay = 1000 },
-            spinner_symbols = { '🌑 ', '🌒 ', '🌓 ', '🌔 ', '🌕 ', '🌖 ', '🌗 ', '🌘 ' },
           }
         },
         lualine_x = {
@@ -119,7 +92,7 @@ return {
         },
         lualine_y = {
           'selectioncount',
-          { 'searchcount', maxcount = 999, timeout = 500, },
+          { 'searchcount', maxcount = 999, timeout = 500 },
         },
         lualine_z = {
           'progress',

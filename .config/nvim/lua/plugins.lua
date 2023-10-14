@@ -68,7 +68,6 @@ return {
       { 'gJ', ':TSJJoin<CR>',  desc = 'Join into single-line form' },
       { 'gS', ':TSJSplit<CR>', desc = 'Split into multi-line form' },
     },
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
     opts = {
       use_default_keymaps = false,
     },

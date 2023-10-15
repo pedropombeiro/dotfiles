@@ -64,6 +64,9 @@ nnoremap o :!open %f<cr>
 " Open file in the background using its default program
 nnoremap gb :!open -g %f<cr>
 
+noremap gc :bcomp<cr>
+noremap gd :diff %f<cr>
+
 " Yank current directory path into the clipboard
 nnoremap yd :!echo -n %d | pbcopy %i<cr>:echo expand('%"d') "is yanked to clipboard"<cr>
 

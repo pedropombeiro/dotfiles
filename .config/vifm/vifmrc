@@ -20,7 +20,7 @@ elseif $EDITOR != ''
   let &vicmd = $EDITOR
 endif
 
-if expand('%D') == expand('$HOME') || expand('%d') == expand('%D')
+if expand('%D') == expand('$PWD')
   " Mimic Ranger layout
   only
   set millerview

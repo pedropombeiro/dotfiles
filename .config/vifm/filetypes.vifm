@@ -255,6 +255,7 @@ fileviewer {*.json},
 
 fileviewer <application/x-executable,application/x-pie-executable,application/x-mach-binary>
             \ dumpexe %c
+fileviewer <application/x-sharedlib> dumplib %c
 fileviewer {*.ttf} file --brief --preserve-date --uncompress
 " fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %d/%c
 

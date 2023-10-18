@@ -2,8 +2,7 @@
 --  A blazing fast and easy to configure neovim statusline plugin written in pure lua.
 
 return {
-  'pedropombeiro/lualine.nvim',
-  branch = 'git_dir',
+  'nvim-lualine/lualine.nvim',
   event = 'VeryLazy',
   dependencies = {
     { 'kyazdani42/nvim-web-devicons', lazy = true },

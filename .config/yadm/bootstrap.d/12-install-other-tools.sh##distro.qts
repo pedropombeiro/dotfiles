@@ -6,14 +6,14 @@ source "${YADM_SCRIPTS}/colors.sh"
 
 printf "${YELLOW}%s${NC}\n" "Installing helper tools..."
 
-target_dir="${HOME}/opt"
+target_dir="${HOME}/opt/bin"
 temp_dir="$(mktemp -d)"
 
 bandwhich_version=0.20.0
 croc_version=9.6.5
 lnav_version=0.11.2
 lsd_version=1.0.0
-procs_version=0.14.0
+procs_version=0.14.2
 
 function download_and_extract() {
   printf "${GREEN}%s${NC}\n" "Downloading $1..."

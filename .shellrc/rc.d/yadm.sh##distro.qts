@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-PATH="${HOME}/opt:${PATH}"
+PATH="${HOME}/opt/bin:${PATH}"
 export PATH

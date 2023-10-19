@@ -17,7 +17,7 @@ pip3 list --outdated --format=json | jq -r '.[] | .name+"="+.latest_version' |
   cut -d = -f 1 |
   xargs -r -n1 pip3 install --use-pep517 -U || printf "${RED}%s${NC}\n" "Failed to update Python packages!"
 
-wget -q https://raw.githubusercontent.com/git/git/master/contrib/git-jump/git-jump -O "$HOME/opt/git-jump"
-chmod +x "$HOME/opt/git-jump"
+wget -q https://raw.githubusercontent.com/git/git/master/contrib/git-jump/git-jump -O "$HOME/opt/bin/git-jump"
+chmod +x "$HOME/opt/bin/git-jump"
 
 "${YADM_SCRIPTS}/update-common.zsh"

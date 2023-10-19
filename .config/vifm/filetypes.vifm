@@ -127,8 +127,7 @@ filetype {*.xhtml,*.html,*.htm},<text/html>
 fileviewer {*.xhtml,*.html,*.htm},<text/html> w3m -dump -T text/html, bat -- %d/%c
 
 " Object
-filetype {*.o},<application/x-object> nm %f | bat --file-name %f
-fileviewer {*.o},<application/x-object> nm %f | bat --file-name %f
+fileviewer {*.o,*.a},<application/x-object> nm %f | bat --file-name %f
 
 " Image
 filetype {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*>

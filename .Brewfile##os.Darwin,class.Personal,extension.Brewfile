@@ -9,14 +9,12 @@ tap "jdxcode/tap"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
 tap "zaquestion/tap"
+# Arduino command-line interface
+brew "arduino-cli"
 # Command-line interface for SQLite
 brew "sqlite"
 # General-purpose data compression with high compression ratio
 brew "xz"
-# Automate deployment, configuration, and upgrading
-brew "ansible"
-# Arduino command-line interface
-brew "arduino-cli"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.12"
 # Record and share terminal sessions
@@ -98,7 +96,7 @@ brew "lazygit"
 # Pager program similar to more
 brew "less"
 # Postgres C API library
-brew "libpq"
+brew "libpq", link: true
 # Curses-based tool for viewing and analyzing log files
 brew "lnav"
 # Clone of ls with colorful output, file type icons, and more
@@ -262,12 +260,8 @@ cask "notion"
 cask "numi"
 # Visual client for Helix Core
 cask "p4v"
-# Administration and development platform for PostgreSQL
-cask "pgadmin4"
 # Home media player
 cask "plex"
-# Bridges Proton Mail to email clients supporting IMAP and SMTP protocols
-cask "protonmail-bridge"
 # VPN client focusing on security
 cask "protonvpn"
 # NAS management application

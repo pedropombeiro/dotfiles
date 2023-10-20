@@ -20,6 +20,8 @@ elseif $EDITOR != ''
   let &vicmd = $EDITOR
 endif
 
+set shell=/bin/sh " Speed up previews
+
 if expand('%D') == expand('$PWD')
   " Mimic Ranger layout
   only

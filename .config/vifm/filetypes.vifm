@@ -252,10 +252,9 @@ fileviewer {*.json},
            \<application/json>
            \ cat %d/%c | jq | bat --language=JSON --file-name %c -,
 
-fileviewer <application/x-executable,application/x-pie-executable,application/x-mach-binary>
+fileviewer {*.exe},<application/x-executable,application/x-pie-executable,application/x-mach-binary>
             \ dumpexe %c
 fileviewer <application/x-sharedlib> dumplib %c
-fileviewer {*.ttf} file --brief --preserve-date --uncompress
 " fileviewer *[^/] pygmentize -O "style=gruvbox-dark" -f terminal256 -g %d/%c
 
 " Log files
@@ -272,3 +271,4 @@ fileviewer {*.[1-8]},<text/troff> man ./%d/%c | col -b
 
 " Fallback
 filetype * open
+fileviewer * file --brief --preserve-date --uncompress -- %d/%c

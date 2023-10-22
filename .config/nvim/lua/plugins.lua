@@ -171,5 +171,5 @@ return {
     build = function() vim.fn['mkdp#util#install']() end, -- install without yarn or npm
   },
 
-  { 'NoahTheDuke/vim-just', ft = 'just' },
+  { 'NoahTheDuke/vim-just', event = { 'BufReadPre', 'BufNewFile' }, ft = 'just' },
 }

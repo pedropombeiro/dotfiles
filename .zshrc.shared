@@ -5,7 +5,7 @@
 
 function zcompare() {
   if [[ -s ${1} && ( ! -s ${1}.zwc || ${1} -nt ${1}.zwc ) ]]; then
-    ( zcompile ${1} ) &!
+    zcompile ${1}
   fi
 }
 
@@ -17,10 +17,7 @@ function source_file() {
 function source_files() {
   local f
   for f; do
-    if [ -x "$f" ]; then
-      zcompare "$f"
-      builtin source "$f"
-    fi
+    test -x "$f" && source_file "$f"
   done
 }
 
@@ -57,7 +54,7 @@ if [[ -d $HOME/.shellrc/rc.d ]]; then
 fi
 
 # aliases
-source_files ~/.aliases.sh
+source_file ~/.aliases.sh
 
 unfunction source_files
 

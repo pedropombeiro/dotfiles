@@ -139,6 +139,8 @@ brew "speedtest-cli"
 brew "tealdeer"
 # Code-search similar to ack
 brew "the_silver_searcher"
+# Syntax-aware linter for prose
+brew "vale"
 # Modern watch command
 brew "viddy"
 # Ncurses-based file manager with vi-like keybindings

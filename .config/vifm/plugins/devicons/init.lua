@@ -49,7 +49,7 @@ local icons = {
   audio        = ' ::*.aac,,*.anx,,*.asf,,*.au,,*.axa,,*.flac,,*.m2a,,*.m4a,,' ..
       '*.mid,,*.midi,,*.mp3,,*.mpc,,*.oga,,*.ogg,,*.ogx,,*.ra,,' ..
       '*.ram,,*.rm,,*.spx,,*.wav,,*.wma,,*.ac3::',
-  media        = ' ::*.avi,,*.ts,,*.axv,,*.divx,,*.m2v,,*.m4p,,*.m4v,,.mka,,' ..
+  media        = ' ::*.avi,,*.ts,,*.axv,,*.divx,,*.m2v,,*.m4p,,*.m4v,,.mka,,' ..
       '*.mkv,,*.mov,,*.mp4,,*.flv,,*.mp4v,,*.mpeg,,*.mpg,,*.nuv,,' ..
       '*.ogv,,*.pbm,,*.pgm,,*.qt,,*.vob,,*.wmv,,*.xvid,,*.webm::',
   office       = '󰈬 ::*.doc,,*.docx::, ::*.xls,,*.xlsm,,*.xlsx::,' ..

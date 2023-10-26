@@ -79,8 +79,8 @@ return {
       end
 
       return {
-        lsp_fallback = true,
-        async = false,
+        lsp_fallback = false, -- LSP formatting on Ruby and Go files has proven to delete the first word of the changed line, so let's disable it
+        async = true,
         timeout_ms = 2000,
       }
     end,

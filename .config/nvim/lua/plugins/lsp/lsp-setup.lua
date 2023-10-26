@@ -150,7 +150,7 @@ return {
                 callSnippet = 'Replace',
               },
               format = {
-                enable = false,
+                enable = true,
                 defaultConfig = {
                   indent_style = 'space',
                   indent_size = '2',
@@ -246,7 +246,15 @@ return {
         on_attach = function(client, _)
           -- Support custom the on_attach function for global
           -- Formatting on save as default
-          require('lsp-setup.utils').format_on_save(client)
+          if client.supports_method('textDocument/formatting') then
+            local lsp_format_augroup = vim.api.nvim_create_augroup('LspFormat', { clear = true })
+            vim.api.nvim_create_autocmd('BufWritePre', {
+              group = lsp_format_augroup,
+              callback = function()
+                vim.lsp.buf.format({ async = false })
+              end,
+            })
+          end
         end,
         -- Global capabilities
         capabilities = vim.lsp.protocol.make_client_capabilities(),

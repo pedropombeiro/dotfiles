@@ -29,6 +29,20 @@ return {
       mode = { 'v' },
       desc = 'Format selection',
     },
+    {
+      ']of',
+      function()
+        vim.b.disable_autoformat = true
+      end,
+      desc = 'Disable autoformat-on-save',
+    },
+    {
+      '[of',
+      function()
+        vim.b.disable_autoformat = false
+      end,
+      desc = 'Enable autoformat-on-save',
+    },
   },
   opts = {
     -- stylua: ignore
@@ -53,11 +67,18 @@ return {
       sql             = { { 'pg_format', 'sql_formatter' } },
       toml            = { 'taplo' },
     },
-    format_on_save = {
-      lsp_fallback = true,
-      async = false,
-      timeout_ms = 2000,
-    },
+    format_on_save = function(bufnr)
+      -- Disable with a global or buffer-local variable
+      if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
+        return
+      end
+
+      return {
+        lsp_fallback = true,
+        async = false,
+        timeout_ms = 2000,
+      }
+    end,
     -- Customize formatters
     formatters = {
       lua = {

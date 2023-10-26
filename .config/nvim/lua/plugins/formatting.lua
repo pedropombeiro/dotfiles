@@ -72,6 +72,11 @@ return {
       if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
         return
       end
+      -- Disable autoformat for files in a certain path
+      local bufname = vim.api.nvim_buf_get_name(bufnr)
+      if bufname:match('/node_modules/') or bufname:match('/vendor/') then
+        return
+      end
 
       return {
         lsp_fallback = true,

@@ -95,7 +95,21 @@ return {
         bashls = {},
         dockerls = {},
         golangci_lint_ls = {},
-        gopls = {},
+        gopls = {
+          settings = {
+            gopls = {
+              hints = {
+                rangeVariableTypes = true,
+                parameterNames = true,
+                constantValues = true,
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                compositeLiteralTypes = true,
+                functionTypeParameters = true,
+              },
+            },
+          },
+        },
         jsonls = {
           -- lazy-load schemastore when needed
           on_new_config = function(new_config)
@@ -142,6 +156,15 @@ return {
                   indent_size = '2',
                   quote_style = 'single',
                 },
+              },
+              hint = {
+                enable = false,
+                arrayIndex = 'Auto',
+                await = true,
+                paramName = 'All',
+                paramType = true,
+                semicolon = 'SameLine',
+                setType = false,
               },
             },
           },
@@ -216,6 +239,9 @@ return {
 
       require('lsp-setup').setup({
         default_mappings = false,
+        inlay_hints = {
+          enabled = false, -- TODO: Enable on Neovim 0.10+
+        },
         -- Global on_attach
         on_attach = function(client, _)
           -- Support custom the on_attach function for global

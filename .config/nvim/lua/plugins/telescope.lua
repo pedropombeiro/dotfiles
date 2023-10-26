@@ -2,6 +2,7 @@
 --  Find, Filter, Preview, Pick. All lua, all the time.
 
 ---@format disable-next
+-- stylua: ignore
 local keys = {
   -- File operations
   { '<leader>ff',    '<Cmd>Telescope find_files<CR>', desc = 'Files' },
@@ -103,12 +104,12 @@ return {
     version = false, -- telescope did only one release, so use HEAD for now
     dependencies = {
       'nvim-lua/plenary.nvim',
-      'tsakirist/telescope-lazy.nvim',              -- Telescope extension that provides handy functionality about plugins installed via lazy.nvim
-      'nvim-telescope/telescope-symbols.nvim',      -- Provides its users with the ability of picking symbols and insert them at point.
+      'tsakirist/telescope-lazy.nvim', -- Telescope extension that provides handy functionality about plugins installed via lazy.nvim
+      'nvim-telescope/telescope-symbols.nvim', -- Provides its users with the ability of picking symbols and insert them at point.
       {
         'nvim-telescope/telescope-fzf-native.nvim', -- FZF sorter for telescope written in c
-        build = 'make'
-      }
+        build = 'make',
+      },
     },
     cmd = 'Telescope',
     keys = keys,
@@ -124,7 +125,7 @@ return {
       defaults = {
         layout_strategy = 'vertical',
         layout_config = {
-          vertical = { width = 0.7 }
+          vertical = { width = 0.7 },
         },
         mappings = {
           i = {
@@ -136,9 +137,9 @@ return {
             ['<c-t>'] = function(...)
               return require('trouble.providers.telescope').open_with_trouble(...)
             end,
-          }
-        }
-      }
+          },
+        },
+      },
     },
     config = function(_, opts)
       local config = require('config')
@@ -151,8 +152,8 @@ return {
 
       require('telescope').setup(opts)
 
-      require('telescope').load_extension 'fzf'
-      require('telescope').load_extension 'lazy'
-    end
-  }
+      require('telescope').load_extension('fzf')
+      require('telescope').load_extension('lazy')
+    end,
+  },
 }

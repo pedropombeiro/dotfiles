@@ -11,6 +11,7 @@ return {
       return
     end
 
+    -- stylua: ignore start
     local builtins     = null_ls.builtins
     local code_actions = builtins.code_actions
     local completion   = builtins.completion
@@ -21,8 +22,9 @@ return {
       local utils = require('null-ls.utils').make_conditional_utils()
       return fn(utils)
     end
+    -- stylua: ignore end
 
-    local sources      = {
+    local sources = {
       code_actions.gitsigns,
       code_actions.shellcheck,
 
@@ -45,16 +47,7 @@ return {
       diagnostics.yamllint,
       diagnostics.zsh,
 
-      formatting.fixjson,
-      formatting.markdown_toc,
-      formatting.markdownlint,
       formatting.nginx_beautifier,
-      formatting.pg_format,
-      formatting.prettier,
-      formatting.shfmt,
-      formatting.sql_formatter,
-      formatting.taplo,
-      formatting.yamlfmt,
 
       hover.dictionary,
     }
@@ -70,19 +63,19 @@ return {
         return utils.root_has_file('Gemfile')
             and formatting.rubocop.with({
               command = 'bundle',
-              args = vim.list_extend({ 'exec', 'rubocop' }, formatting.rubocop._opts.args)
+              args = vim.list_extend({ 'exec', 'rubocop' }, formatting.rubocop._opts.args),
             })
-            or formatting.rubocop
+          or formatting.rubocop
       end),
       -- Same as above, but with diagnostics.rubocop to make sure we use the proper rubocop version for the project
       conditional(function(utils)
         return utils.root_has_file('Gemfile')
             and diagnostics.rubocop.with({
               command = 'bundle',
-              args = vim.list_extend({ 'exec', 'rubocop' }, diagnostics.rubocop._opts.args)
+              args = vim.list_extend({ 'exec', 'rubocop' }, diagnostics.rubocop._opts.args),
             })
-            or diagnostics.rubocop
+          or diagnostics.rubocop
       end),
     })
-  end
+  end,
 }

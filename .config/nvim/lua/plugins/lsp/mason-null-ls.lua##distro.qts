@@ -18,8 +18,10 @@ return {
     ensure_installed = {
       'actionlint',
       'docker-compose-language-service',
+      'fixjson',
       'jsonlint',
       'markdownlint',
+      'prettier',
       'shfmt',
       'shellcheck',
       'vale',

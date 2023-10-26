@@ -2,6 +2,7 @@
 --   A simple wrapper for nvim-lspconfig and mason-lspconfig to easily setup LSP servers.
 
 ---@format disable-next
+-- stylua: ignore
 local keys = {
   { '[g',          ':lua vim.diagnostic.goto_prev()<CR>',           desc = 'Next LSP diagnostic' },
   { ']g',          ':lua vim.diagnostic.goto_next()<CR>',           desc = 'Previous LSP diagnostic' },
@@ -15,8 +16,8 @@ local keys = {
   --{ "<leader>lr",  ":TroubleToggle lsp_references<CR>",             desc = "References" },
   --{ "<leader>ld",  ":TroubleToggle lsp_definitions<CR>",            desc = "Definitions" },
   --{ "<C-]>",       ":TroubleToggle lsp_definitions<CR>",            desc = "Definitions" },
-  { '<leader>lf',  ':lua vim.lsp.buf.format({ async = true })<CR>', desc = 'Format buffer' },
-  { '<leader>lwa', ':lua vim.lsp.buf.add_workspace_folder()<CR>',   desc = 'Add workspace folder' },
+  -- { '<leader>lf',  ':lua vim.lsp.buf.format({ async = true })<CR>', desc = 'Format buffer' },
+  { '<leader>lwa', ':lua vim.lsp.buf.add_workspace_folder()<CR>', desc = 'Add workspace folder' },
   {
     '<leader>lwl',
     ':lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>',
@@ -32,10 +33,10 @@ return {
     dependencies = {
       {
         'b0o/SchemaStore.nvim', -- 🛍  JSON schemas for Neovim
-        version = false,        -- last release is way too old
+        version = false, -- last release is way too old
       },
       {
-        'neovim/nvim-lspconfig',  -- Quickstart configs for Nvim LSP
+        'neovim/nvim-lspconfig', -- Quickstart configs for Nvim LSP
         dependencies = {
           'hrsh7th/cmp-nvim-lsp', -- nvim-cmp source for neovim builtin LSP client
           {
@@ -51,7 +52,7 @@ return {
         --- to use to launch those servers.
         'williamboman/mason-lspconfig.nvim',
         dependencies = 'williamboman/mason.nvim',
-      }
+      },
     },
     init = function()
       local config = require('config')
@@ -59,9 +60,9 @@ return {
       local signs = {
         ---@diagnostic disable: undefined-field
         Error = config.icons.diagnostics.error .. ' ',
-        Warn  = config.icons.diagnostics.warning .. ' ',
-        Hint  = config.icons.diagnostics.hint .. ' ',
-        Info  = config.icons.diagnostics.info .. ' '
+        Warn = config.icons.diagnostics.warning .. ' ',
+        Hint = config.icons.diagnostics.hint .. ' ',
+        Info = config.icons.diagnostics.info .. ' ',
         ---@diagnostic enable: undefined-field
       }
       for type, icon in pairs(signs) do
@@ -119,7 +120,7 @@ return {
           settings = {
             json = {
               format = {
-                enable = true,
+                enable = false,
               },
               validate = { enable = true },
             },
@@ -150,7 +151,7 @@ return {
                 callSnippet = 'Replace',
               },
               format = {
-                enable = true,
+                enable = false,
                 defaultConfig = {
                   indent_style = 'space',
                   indent_size = '2',
@@ -192,7 +193,7 @@ return {
             yaml = {
               keyOrdering = false,
               format = {
-                enable = true,
+                enable = false,
               },
               hover = true,
               completion = true,
@@ -210,13 +211,14 @@ return {
       }
       if file_exists(vim.fn.expand('~/Library/Arduino15/arduino-cli.yaml')) then
         servers.arduino_language_server = {
+          -- stylua: ignore
           cmd = {
             'arduino-language-server',
             '-cli-config', '~/Library/Arduino15/arduino-cli.yaml', -- Generated with `arduino-cli config init`
             '-fqbn', 'keyboardio:gd32:keyboardio_model_100',
             '-cli', 'arduino-cli',
             '-clangd', 'clangd'
-          }
+          },
         }
         servers.clangd = {}
       end
@@ -224,7 +226,7 @@ return {
         servers.solargraph = {
           flags = {
             debounce_text_changes = 150,
-          }
+          },
         }
       end
 
@@ -234,7 +236,7 @@ return {
           types = true,
         },
         runtime_path = true,
-        experimental = { pathStrict = true }
+        experimental = { pathStrict = true },
       })
 
       require('lsp-setup').setup({
@@ -242,30 +244,16 @@ return {
         inlay_hints = {
           enabled = false, -- TODO: Enable on Neovim 0.10+
         },
-        -- Global on_attach
-        on_attach = function(client, _)
-          -- Support custom the on_attach function for global
-          -- Formatting on save as default
-          if client.supports_method('textDocument/formatting') then
-            local lsp_format_augroup = vim.api.nvim_create_augroup('LspFormat', { clear = true })
-            vim.api.nvim_create_autocmd('BufWritePre', {
-              group = lsp_format_augroup,
-              callback = function()
-                vim.lsp.buf.format({ async = false })
-              end,
-            })
-          end
-        end,
         -- Global capabilities
         capabilities = vim.lsp.protocol.make_client_capabilities(),
         servers = servers,
       })
-    end
+    end,
   },
   {
     -- 💻 Neovim setup for init.lua and plugin development with full signature help, docs and completion for the nvim lua API.
     'folke/neodev.nvim',
     lazy = true,
     ft = { 'lua' },
-  }
+  },
 }

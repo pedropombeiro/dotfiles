@@ -18,14 +18,17 @@ return {
     ensure_installed = {
       'actionlint',
       'docker-compose-language-service',
+      'fixjson',
       'jsonlint',
       'lua_ls',
       'markdownlint',
+      'prettier',
       'shfmt',
       'shellcheck',
       'stylua',
+      'taplo',
       'vale',
       'yamlfmt',
-    }
-  }
+    },
+  },
 }

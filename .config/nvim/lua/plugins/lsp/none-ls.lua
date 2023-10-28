@@ -16,7 +16,6 @@ return {
     local code_actions = builtins.code_actions
     local completion   = builtins.completion
     local diagnostics  = builtins.diagnostics
-    local formatting   = builtins.formatting
     local hover        = builtins.hover
     local conditional  = function(fn)
       local utils = require('null-ls.utils').make_conditional_utils()
@@ -50,8 +49,6 @@ return {
       diagnostics.yamllint,
       diagnostics.zsh,
 
-      formatting.nginx_beautifier,
-
       hover.dictionary,
     }
 
@@ -60,16 +57,6 @@ return {
       debounce = 150,
       save_after_format = false,
       sources = sources,
-      -- Here we set a conditional to call the rubocop formatter.
-      -- If we have a Gemfile in the project, we call "bundle exec rubocop", if not we only call "rubocop".
-      conditional(function(utils)
-        return utils.root_has_file('Gemfile')
-            and formatting.rubocop.with({
-              command = 'bundle',
-              args = vim.list_extend({ 'exec', 'rubocop' }, formatting.rubocop._opts.args),
-            })
-          or formatting.rubocop
-      end),
       -- Same as above, but with diagnostics.rubocop to make sure we use the proper rubocop version for the project
       conditional(function(utils)
         return utils.root_has_file('Gemfile')

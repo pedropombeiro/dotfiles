@@ -60,6 +60,7 @@ return {
       markdown        = { 'markdown-toc', 'markdownlint' },
       graphql         = { 'prettier' },
       lua             = { 'stylua' },
+      nginx           = { 'nginx' },
       python          = { 'isort', 'black' },
       ruby            = { 'rubocop' },
       sh              = { 'shellcheck', 'shfmt' },
@@ -88,6 +89,12 @@ return {
     formatters = {
       lua = {
         prepend_args = { '--verify' },
+      },
+      nginx = {
+        command = 'nginxbeautifier',
+        args = { '-i', '-o', '$FILENAME' },
+        stdin = false,
+        require_cwd = false,
       },
     },
   },

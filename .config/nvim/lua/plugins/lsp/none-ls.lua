@@ -40,6 +40,9 @@ return {
       diagnostics.golangci_lint,
       diagnostics.hadolint,
       diagnostics.jsonlint,
+      diagnostics.luacheck.with({
+        extra_args = { '--globals', 'vim' },
+      }),
       diagnostics.markdownlint,
       --diagnostics.semgrep,
       diagnostics.shellcheck,

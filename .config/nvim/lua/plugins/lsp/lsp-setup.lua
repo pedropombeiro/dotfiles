@@ -119,9 +119,7 @@ return {
           end,
           settings = {
             json = {
-              format = {
-                enable = false,
-              },
+              format = { enable = false },
               validate = { enable = true },
             },
           },
@@ -136,6 +134,7 @@ return {
                 version = 'LuaJIT',
               },
               diagnostics = {
+                enable = true,
                 -- Get the language server to recognize the `vim` global
                 globals = { 'vim' },
                 neededFileStatus = {

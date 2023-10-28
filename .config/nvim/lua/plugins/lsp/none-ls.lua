@@ -51,21 +51,5 @@ return {
 
       hover.dictionary,
     }
-
-    null_ls.setup({
-      debug = false,
-      debounce = 150,
-      save_after_format = false,
-      sources = sources,
-      -- Same as above, but with diagnostics.rubocop to make sure we use the proper rubocop version for the project
-      conditional(function(utils)
-        return utils.root_has_file('Gemfile')
-            and diagnostics.rubocop.with({
-              command = 'bundle',
-              args = vim.list_extend({ 'exec', 'rubocop' }, diagnostics.rubocop._opts.args),
-            })
-          or diagnostics.rubocop
-      end),
-    })
   end,
 }

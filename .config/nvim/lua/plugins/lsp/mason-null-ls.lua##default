@@ -21,7 +21,7 @@ return {
       'fixjson',
       'jsonlint',
       'lua_ls',
-      'markdownlint',
+      'markdownlint-cli2',
       'prettier',
       'shfmt',
       'shellcheck',

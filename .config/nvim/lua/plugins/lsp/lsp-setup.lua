@@ -82,6 +82,10 @@ return {
       --  nnoremap <silent> <leader>xq :lua vim.diagnostic.setloclist()<CR>
       --endif
 
+      if vim.fn.has('mac') ~= 1 then
+        vim.env.DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = 1 -- Needed for marksman LSP on systems missing ICU libraries
+      end
+
       local function file_exists(name)
         local f = io.open(name, 'r')
         if f ~= nil then

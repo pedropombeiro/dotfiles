@@ -5,7 +5,7 @@ end
 vim.api.nvim_exec2('autocmd!', {})
 
 vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.maplocalleader = ','
 vim.opt.timeoutlen = 0
 
 -- disable netrw at the very start of init.lua

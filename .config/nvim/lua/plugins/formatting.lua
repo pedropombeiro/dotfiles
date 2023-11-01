@@ -92,7 +92,7 @@ return {
       },
       nginx = {
         command = 'nginxbeautifier',
-        args = { '-i', '-o', '$FILENAME' },
+        args = { '-s', '2', '-i', '-o', '$FILENAME' },
         stdin = false,
         require_cwd = false,
       },

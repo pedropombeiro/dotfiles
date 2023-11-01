@@ -9,7 +9,7 @@ launchctl load "${HOME}/Library/LaunchAgents/com.pedropombeiro.walkingpad.plist"
 
 # Restart Control Center, since it regularly loses connection with the Key Lights and gets confused
 killall 'Elgato Control Center'
-open -g -a 'Elgato Control Center.app'
+# open -g -a 'Elgato Control Center.app'
 
 # Restart Stream Deck on hub, since half of the times it only shows wallpaper after resuming
 if ! uhubctl --action cycle --location 2-1.1.2 --port 1 | grep 'Elgato Stream Deck'; then

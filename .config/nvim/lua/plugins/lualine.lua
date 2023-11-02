@@ -29,6 +29,7 @@ return {
           statusline = { 'alpha', 'Fm', 'mason', 'neotest-summary' },
         },
         globalstatus = true,
+        theme = 'gruvbox-material',
       },
       extensions = {
         'fugitive',
@@ -37,7 +38,7 @@ return {
         'neo-tree',
         'nvim-dap-ui',
         'symbols-outline',
-        'trouble'
+        'trouble',
       },
       sections = {
         lualine_a = { 'mode' },
@@ -63,13 +64,17 @@ return {
             symbols = {
               modified = symbol_icons.modified,
               readonly = symbol_icons.readonly, -- Text to show when the file is non-modifiable or readonly.
-            }
-          }
+            },
+          },
         },
         lualine_x = {
           {
-            function() return diagnostic_icons.debug .. '  ' .. require('dap').status() end,
-            cond = function() return package.loaded['dap'] and require('dap').status() ~= '' end,
+            function()
+              return diagnostic_icons.debug .. '  ' .. require('dap').status()
+            end,
+            cond = function()
+              return package.loaded['dap'] and require('dap').status() ~= ''
+            end,
           },
           {
             require('lazy.status').updates,
@@ -83,11 +88,11 @@ return {
               modified = symbol_icons.modified .. ' ',
               removed  = symbol_icons.removed .. ' ',
               ---@diagnostic enable: undefined-field
-            }
+            },
           },
           'encoding',
           'fileformat',
-          'filetype'
+          'filetype',
         },
         lualine_y = {
           'selectioncount',
@@ -96,8 +101,8 @@ return {
         lualine_z = {
           'progress',
           'location',
-        }
-      }
+        },
+      },
     }
-  end
+  end,
 }

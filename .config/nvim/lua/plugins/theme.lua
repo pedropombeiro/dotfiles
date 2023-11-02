@@ -16,7 +16,8 @@ return {
     if theme == 'gruvbox-material-dark' then
       local function define_highlights()
         vim.cmd([[
-          highlight FloatBorder guifg=#458588
+          -- Change border for float windows (normally grey)
+          highlight FloatBorder ctermfg=66 guifg=#458588
         ]])
       end
 

@@ -16,8 +16,13 @@ return {
     if theme == 'gruvbox-material-dark' then
       local function define_highlights()
         vim.cmd([[
-          -- Change border for float windows (normally grey)
+          " Change border for float windows (normally grey)
           highlight FloatBorder ctermfg=66 guifg=#458588
+
+          " Change border for LSP elements, to make them more recognizable (same colors as the bat gruvbox theme)
+          highlight @field    ctermfg=167 guifg=#fb4934
+          highlight @constant ctermfg=109 guifg=#83a598
+          highlight @string   ctermfg=142 guifg=#b8bb26
         ]])
       end
 

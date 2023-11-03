@@ -251,6 +251,23 @@ return {
         capabilities = vim.lsp.protocol.make_client_capabilities(),
         servers = servers,
       })
+
+      local install_dir = '/share/homes/admin/opt/vscode-home-assistant'
+      if vim.fn.finddir(install_dir) then
+        local lspconfig = require('lspconfig.configs')
+        local util = require('lspconfig/util')
+
+        -- add the default config for homeassistant
+        lspconfig.homeassistant = {
+          default_config = {
+            cmd = { install_dir .. '/node_modules/.bin/ts-node', install_dir .. '/out/server/server.js', '--stdio' },
+            filetypes = { 'yaml' },
+            root_dir = util.root_pattern('configuration.yaml'),
+            settings = {}
+          },
+        }
+        lspconfig.homeassistant.setup({})
+      end
     end,
   },
   {

@@ -14,16 +14,18 @@ return {
     end
 
     if theme == 'gruvbox-material-dark' then
-      local function define_highlights()
-        vim.cmd([[
-          " Change border for float windows (normally grey)
-          highlight FloatBorder ctermfg=66 guifg=#458588
+      local function set_hl(name, attr)
+        vim.api.nvim_set_hl(0, name, attr)
+      end
 
-          " Change border for LSP elements, to make them more recognizable (same colors as the bat gruvbox theme)
-          highlight @field    ctermfg=167 guifg=#fb4934
-          highlight @constant ctermfg=109 guifg=#83a598
-          highlight @string   ctermfg=142 guifg=#b8bb26
-        ]])
+      local function define_highlights()
+        -- Change border for float windows (normally grey)
+        set_hl('FloatBorder', { ctermfg = 66, fg = '#458588' })
+
+        -- Change border for LSP elements, to make them more recognizable (same colors as the bat gruvbox theme)
+        set_hl('@field', { ctermfg = 167, fg = '#fb4934' })
+        set_hl('@constant', { ctermfg = 109, fg = '#83a598' })
+        set_hl('@string', { ctermfg = 142, fg = '#b8bb26' })
       end
 
       local augroup = vim.api.nvim_create_augroup('ThemerColorSchemeRefresh', { clear = true })

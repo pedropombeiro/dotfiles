@@ -11,13 +11,13 @@ return {
 
     return {
       icons = {
-        folder_closed = config.icons.folder.collapsed,
-        folder_open = config.icons.folder.expanded,
+        folder_closed = config.ui.icons.folder.collapsed,
+        folder_open = config.ui.icons.folder.expanded,
       },
       signs = {
-        fold_closed = config.icons.expander.collapsed,
-        fold_open = config.icons.expander.expanded,
+        fold_closed = config.ui.icons.expander.collapsed,
+        fold_open = config.ui.icons.expander.expanded,
       },
     }
-  end
+  end,
 }

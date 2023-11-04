@@ -4,7 +4,9 @@
 return {
   'nvim-neo-tree/neo-tree.nvim',
   branch = 'v3.x',
-  cond = function() return not vim.g.started_by_firenvim end,
+  cond = function()
+    return not vim.g.started_by_firenvim
+  end,
   cmd = 'Neotree',
   dependencies = {
     'nvim-lua/plenary.nvim',
@@ -40,31 +42,31 @@ return {
                 fg = colors.fg,
                 bg = colors.green_bg,
               },
-            }
-          }
+            },
+          },
         }
-      end
-    }
+      end,
+    },
   },
   keys = {
     {
       '<C-\\>',
       '<Cmd>Neotree filesystem toggle reveal position=right<CR>',
       mode = { 'n', 'v' },
-      desc = 'Toggle file explorer'
+      desc = 'Toggle file explorer',
     },
     {
       'gx', -- Restore URL handling from disabled netrw plugin
       function()
         if vim.fn.has('mac') == 1 then
-          vim.cmd [[call jobstart(['open', expand('<cfile>')], {'detach': v:true})]]
+          vim.cmd([[call jobstart(['open', expand('<cfile>')], {'detach': v:true})]])
         elseif vim.fn.has('unix') == 1 then
-          vim.cmd [[call jobstart(['xdg-open', expand('<cfile>')], {'detach': v:true})]]
+          vim.cmd([[call jobstart(['xdg-open', expand('<cfile>')], {'detach': v:true})]])
         else
           print('Error: gx is not supported on this OS!')
         end
       end,
-      'Open URL'
+      'Open URL',
     },
   },
   init = function()
@@ -78,7 +80,7 @@ return {
   end,
   opts = function()
     ---@diagnostic disable: undefined-field
-    local icons = require('config').icons
+    local icons = require('config').ui.icons
     ---@diagnostic enable: undefined-field
 
     vim.fn.sign_define('DiagnosticSignError', { text = icons.diagnostics.error, texthl = 'DiagnosticSignError' })
@@ -89,15 +91,15 @@ return {
     return {
       default_component_configs = {
         icon = {
-          folder_empty      = icons.folder.empty,
+          folder_empty = icons.folder.empty,
           folder_empty_open = icons.folder.empty_open,
-          folder_closed     = icons.folder.collapsed,
-          folder_open       = icons.folder.expanded,
-          default           = ''
+          folder_closed = icons.folder.collapsed,
+          folder_open = icons.folder.expanded,
+          default = '',
         },
         indent = {
           expander_collapsed = icons.expander.collapsed,
-          expander_expanded  = icons.expander.expanded,
+          expander_expanded = icons.expander.expanded,
           expander_highlight = 'NeoTreeExpander',
         },
         modified = {
@@ -106,32 +108,32 @@ return {
         git_status = {
           symbols = {
             -- Change type
-            deleted  = icons.symbols.removed, -- this can only be used in the git_status source
-            renamed  = icons.symbols.renamed, -- this can only be used in the git_status source
+            deleted = icons.symbols.removed, -- this can only be used in the git_status source
+            renamed = icons.symbols.renamed, -- this can only be used in the git_status source
             -- Status type
             unstaged = icons.symbols.unstaged,
-          }
+          },
         },
       },
       document_symbols = {
         kinds = {
-          File          = { icon = '󰈙', hl = 'Tag' },
-          Namespace     = { icon = '󰌗', hl = 'Include' },
-          Package       = { icon = '󰏖', hl = 'Label' },
-          Class         = { icon = '󰌗', hl = 'Include' },
-          Property      = { icon = '󰆧', hl = '@property' },
-          Enum          = { icon = '󰒻', hl = '@number' },
-          Function      = { icon = '󰊕', hl = 'Function' },
-          String        = { icon = '󰀬', hl = 'String' },
-          Number        = { icon = '󰎠', hl = 'Number' },
-          Array         = { icon = '󰅪', hl = 'Type' },
-          Object        = { icon = '󰅩', hl = 'Type' },
-          Key           = { icon = '󰌋', hl = '' },
-          Struct        = { icon = '󰌗', hl = 'Type' },
-          Operator      = { icon = '󰆕', hl = 'Operator' },
+          File = { icon = '󰈙', hl = 'Tag' },
+          Namespace = { icon = '󰌗', hl = 'Include' },
+          Package = { icon = '󰏖', hl = 'Label' },
+          Class = { icon = '󰌗', hl = 'Include' },
+          Property = { icon = '󰆧', hl = '@property' },
+          Enum = { icon = '󰒻', hl = '@number' },
+          Function = { icon = '󰊕', hl = 'Function' },
+          String = { icon = '󰀬', hl = 'String' },
+          Number = { icon = '󰎠', hl = 'Number' },
+          Array = { icon = '󰅪', hl = 'Type' },
+          Object = { icon = '󰅩', hl = 'Type' },
+          Key = { icon = '󰌋', hl = '' },
+          Struct = { icon = '󰌗', hl = 'Type' },
+          Operator = { icon = '󰆕', hl = 'Operator' },
           TypeParameter = { icon = '󰊄', hl = 'Type' },
-          StaticMethod  = { icon = '󰠄 ', hl = 'Function' },
-        }
+          StaticMethod = { icon = '󰠄 ', hl = 'Function' },
+        },
       },
       sources = { 'filesystem', 'buffers', 'git_status', 'document_symbols' },
       open_files_do_not_replace_types = { 'terminal', 'Trouble', 'qf', 'Outline' },
@@ -140,19 +142,19 @@ return {
         follow_current_file = { enabled = true },
         use_libuv_file_watcher = true,
         filtered_items = {
-          hide_dotfiles   = false,
+          hide_dotfiles = false,
           hide_gitignored = true,
-          hide_hidden     = true, -- only works on Windows for hidden files/directories
-          hide_by_name    = {
+          hide_hidden = true, -- only works on Windows for hidden files/directories
+          hide_by_name = {
             '.git',
             'node_modules',
           },
           hide_by_pattern = { -- uses glob style patterns
             '*.zwc',
           },
-          never_show      = { -- remains hidden even if visible is toggled to true, this overrides always_show
+          never_show = { -- remains hidden even if visible is toggled to true, this overrides always_show
             '.DS_Store',
-            'thumbs.db'
+            'thumbs.db',
           },
         },
         find_args = {

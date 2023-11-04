@@ -2,6 +2,7 @@
 --  An extensible framework for interacting with tests within NeoVim.
 
 ---@format disable-next
+-- stylua: ignore
 local keys = {
   { '<leader>rt', function() require('neotest').run.run() end,                     desc = 'Run the nearest test' },
   { '<leader>rd', function() require('neotest').run.run({ strategy = 'dap' }) end, desc = 'Debug the nearest test' },
@@ -28,9 +29,9 @@ return {
           '<leader>rb',
           ":Dispatch bin/rspec $(git diff --name-only --diff-filter=AM master | grep 'spec/')<CR>",
           desc = 'Run MR tests',
-        }
-      }
-    }
+        },
+      },
+    },
   },
   init = function()
     -- Keymaps
@@ -51,14 +52,15 @@ return {
 
     local neotest = require('neotest')
     local config = require('config')
+    local icons = config.ui.icons
     neotest.setup({
       adapters = {
-        require('neotest-go') {
+        require('neotest-go')({
           experimental = {
             test_table = true,
           },
-          args = { '-count=1', '-timeout=60s' }
-        },
+          args = { '-count=1', '-timeout=60s' },
+        }),
         require('neotest-rspec')({
           rspec_cmd = function()
             return vim.tbl_flatten({
@@ -66,21 +68,21 @@ return {
               'exec',
               'rspec',
             })
-          end
+          end,
         }),
       },
       icons = {
         ---@diagnostic disable: undefined-field
-        expanded           = config.icons.expander.expanded,
-        child_prefix       = '',
-        child_indent       = '',
+        expanded = icons.expander.expanded,
+        child_prefix = '',
+        child_indent = '',
         final_child_prefix = '',
-        non_collapsible    = '',
-        collapsed          = config.icons.expander.collapsed,
-        passed             = config.icons.tests.passed,
-        running            = config.icons.tests.running,
-        failed             = config.icons.tests.failed,
-        unknown            = config.icons.tests.unknown
+        non_collapsible = '',
+        collapsed = icons.expander.collapsed,
+        passed = icons.tests.passed,
+        running = icons.tests.running,
+        failed = icons.tests.failed,
+        unknown = icons.tests.unknown,
         ---@diagnostic enable: undefined-field
       },
       quickfix = {
@@ -125,5 +127,5 @@ return {
       vim.api.nvim_create_autocmd('ColorScheme', { callback = define_highlights, group = augroup })
       define_highlights()
     end
-  end
+  end,
 }

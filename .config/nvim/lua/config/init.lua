@@ -23,39 +23,39 @@ return {
   },
   ui = {
     border = 'rounded',
+    icons = {
+      folder = {
+        empty      = '',
+        empty_open = '',
+        collapsed  = '',
+        expanded   = '',
+      },
+      expander = {
+        collapsed = '',
+        expanded  = '',
+      },
+      diagnostics = {
+        debug   = '',
+        hint    = '',
+        trace   = '✎',
+        info    = '',
+        warning = '',
+        error   = '',
+      },
+      symbols = {
+        added    = '',
+        modified = '',
+        removed  = '',
+        renamed  = '󰁕',
+        unstaged = '󰄱',
+        readonly = '',
+      },
+      tests = {
+        passed  = '',
+        running = '',
+        failed  = '',
+        unknown = ''
+      }
+    },
   },
-  icons = {
-    folder = {
-      empty      = '',
-      empty_open = '',
-      collapsed  = '',
-      expanded   = '',
-    },
-    expander = {
-      collapsed = '',
-      expanded  = '',
-    },
-    diagnostics = {
-      debug   = '',
-      hint    = '',
-      trace   = '✎',
-      info    = '',
-      warning = '',
-      error   = '',
-    },
-    symbols = {
-      added    = '',
-      modified = '',
-      removed  = '',
-      renamed  = '󰁕',
-      unstaged = '󰄱',
-      readonly = '',
-    },
-    tests = {
-      passed  = '',
-      running = '',
-      failed  = '',
-      unknown = ''
-    }
-  }
 }

@@ -6,7 +6,7 @@ return {
   },
 
   {
-    'petertriho/nvim-scrollbar',              -- Extensible Neovim Scrollbar
+    'petertriho/nvim-scrollbar', -- Extensible Neovim Scrollbar
     dependencies = 'lewis6991/gitsigns.nvim', -- Git integration for buffers
     event = 'BufReadPost',
   },
@@ -20,6 +20,7 @@ return {
   --### Snippets
   {
     'aduros/ai.vim', -- Generate and edit text in Neovim using OpenAI and GPT.
+    -- stylua: ignore
     keys = {
       { '<leader>=', ':AI ',              mode = { 'n', 'v' }, desc = 'Perform action with OpenAI' },
       { '<C-=>',     '<Esc><Cmd>AI<CR>a', mode = 'i',          desc = 'Autocomplete with OpenAI' },
@@ -27,7 +28,7 @@ return {
     cmd = { 'AI' },
     init = function()
       vim.g.ai_no_mappings = 1
-    end
+    end,
   },
 
   --### Navigation
@@ -35,9 +36,9 @@ return {
     'ruanyl/vim-gh-line', -- vim plugin that open the link of current line on github
     keys = {
       { '<leader>gb', '<Plug>(gh-line-blame)', desc = 'Open blame view in browser' },
-      { '<leader>gh', '<Plug>(gh-line)',       desc = 'Open blob view in browser' },
-      { '<leader>go', '<Plug>(gh-repo)',       desc = 'Open in browser' },
-    }
+      { '<leader>gh', '<Plug>(gh-line)', desc = 'Open blob view in browser' },
+      { '<leader>go', '<Plug>(gh-repo)', desc = 'Open in browser' },
+    },
   },
 
   --### Session management
@@ -64,6 +65,7 @@ return {
   },
   {
     'Wansmer/treesj', -- Neovim plugin for splitting/joining blocks of code
+    -- stylua: ignore
     keys = {
       { 'gJ', ':TSJJoin<CR>',  desc = 'Join into single-line form' },
       { 'gS', ':TSJSplit<CR>', desc = 'Split into multi-line form' },
@@ -84,13 +86,13 @@ return {
   {
     'kylechui/nvim-surround', -- Add/change/delete surrounding delimiter pairs with ease. Written with ❤️ in Lua.
     event = 'BufReadPost',
-    opts = {}
+    opts = {},
   },
   { 'tummetott/unimpaired.nvim', opts = {} }, -- LUA port of tpope's famous vim-unimpaired plugin
   {
     'echasnovski/mini.trailspace',
     version = false,
-    opts = {}
+    opts = {},
   },
   { 'RaafatTurki/hex.nvim', opts = {} }, -- hex editing done right
 
@@ -110,10 +112,11 @@ return {
           require('notify').dismiss({ silent = true, pending = true })
         end,
         desc = 'Dismiss all Notifications',
-      }
+      },
     },
     opts = function()
       local config = require('config')
+      local icons = config.ui.icons.diagnostics
 
       vim.notify = require('notify')
 
@@ -128,27 +131,37 @@ return {
         end,
         icons = {
           ---@diagnostic disable: undefined-field
-          DEBUG = config.icons.diagnostics.debug,
-          TRACE = config.icons.diagnostics.trace,
-          INFO  = config.icons.diagnostics.info,
-          WARN  = config.icons.diagnostics.warning,
-          ERROR = config.icons.diagnostics.error,
+          DEBUG = icons.debug,
+          TRACE = icons.trace,
+          INFO = icons.info,
+          WARN = icons.warning,
+          ERROR = icons.error,
           ---@diagnostic enable: undefined-field
-        }
+        },
       }
-    end
+    end,
   },
-  { 'tmux-plugins/vim-tmux',     ft = 'tmux' }, -- Vim plugin for .tmux.conf
+  { 'tmux-plugins/vim-tmux', ft = 'tmux' }, -- Vim plugin for .tmux.conf
   {
-    'tpope/vim-dispatch',                       -- dispatch.vim: Asynchronous build and test dispatcher
-    cmd = { 'Dispatch', 'Make', 'Focus', 'Start' }
+    'tpope/vim-dispatch', -- dispatch.vim: Asynchronous build and test dispatcher
+    cmd = { 'Dispatch', 'Make', 'Focus', 'Start' },
   },
   {
     'tpope/vim-eunuch', -- eunuch.vim: Helpers for UNIX
     cmd = {
-      'Remove', 'Delete', 'Move', 'Chmod', 'Mkdir', 'Cfind', 'Clocate', 'Lfind', 'Llocate', 'Wall', 'SudoWrite',
-      'SudoEdit'
-    }
+      'Remove',
+      'Delete',
+      'Move',
+      'Chmod',
+      'Mkdir',
+      'Cfind',
+      'Clocate',
+      'Lfind',
+      'Llocate',
+      'Wall',
+      'SudoWrite',
+      'SudoEdit',
+    },
   },
   {
     'tpope/vim-sleuth', -- sleuth.vim: Heuristically set buffer options
@@ -157,18 +170,20 @@ return {
   {
     'tpope/vim-bundler', -- bundler.vim: Lightweight support for Ruby's Bundler
     ft = 'ruby',
-    cmd = { 'Bundle', 'Bopen', 'Bsplit', 'Btabedit' }
+    cmd = { 'Bundle', 'Bopen', 'Bsplit', 'Btabedit' },
   },
-  'tpope/vim-projectionist',                 -- Granular project configuration
-  { 'tpope/vim-rails',        ft = 'ruby' }, -- rails.vim: Ruby on Rails power tools
+  'tpope/vim-projectionist', -- Granular project configuration
+  { 'tpope/vim-rails', ft = 'ruby' }, -- rails.vim: Ruby on Rails power tools
   { 'bfontaine/Brewfile.vim', ft = 'ruby' }, -- Brewfile syntax for Vim
-  'wsdjeg/vim-fetch',                        -- Make Vim handle line and column numbers in file names with a minimum of fuss
+  'wsdjeg/vim-fetch', -- Make Vim handle line and column numbers in file names with a minimum of fuss
 
   {
-    'iamcco/markdown-preview.nvim',                       -- markdown preview plugin for (neo)vim
+    'iamcco/markdown-preview.nvim', -- markdown preview plugin for (neo)vim
     cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
     ft = 'markdown',
-    build = function() vim.fn['mkdp#util#install']() end, -- install without yarn or npm
+    build = function()
+      vim.fn['mkdp#util#install']()
+    end, -- install without yarn or npm
   },
 
   { 'NoahTheDuke/vim-just', event = { 'BufReadPre', 'BufNewFile' }, ft = 'just' },

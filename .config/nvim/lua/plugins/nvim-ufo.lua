@@ -3,19 +3,20 @@
 
 local function setFoldOptions()
   local config = require('config')
-  local expander_icons = config.icons.expander
+  local expander_icons = config.ui.icons.expander
 
   if vim.fn.has('nvim-0.9') == 1 then
     vim.opt.foldcolumn = '1'
   else
     vim.opt.foldcolumn = '0'
   end
-  vim.opt.foldlevel      = 99
+  vim.opt.foldlevel = 99
   vim.opt.foldlevelstart = 99
-  vim.opt.foldenable     = true
-  vim.opt.fillchars      =
-      [[eob: ,fold: ,foldopen:]] .. expander_icons.expanded ..
-      [[,foldsep: ,foldclose:]] .. expander_icons.collapsed
+  vim.opt.foldenable = true
+  vim.opt.fillchars = [[eob: ,fold: ,foldopen:]]
+    .. expander_icons.expanded
+    .. [[,foldsep: ,foldclose:]]
+    .. expander_icons.collapsed
 end
 
 local function fold_virt_text_handler(virtText, lnum, endLnum, width, truncate)
@@ -44,8 +45,7 @@ local function fold_virt_text_handler(virtText, lnum, endLnum, width, truncate)
     end
     curWidth = curWidth + chunkWidth
   end
-  local rAlignAppndx =
-      math.max(math.min(vim.opt.textwidth['_value'], width - 1) - curWidth - sufWidth, 0)
+  local rAlignAppndx = math.max(math.min(vim.opt.textwidth['_value'], width - 1) - curWidth - sufWidth, 0)
   suffix = (' '):rep(rAlignAppndx) .. suffix
   table.insert(newVirtText, { suffix, 'MoreMsg' })
   return newVirtText
@@ -58,6 +58,7 @@ return {
     opts = function()
       local builtin = require('statuscol.builtin')
 
+      -- stylua: ignore
       return {
         relculright = true,
         segments = {
@@ -66,7 +67,7 @@ return {
           { text = { builtin.lnumfunc, ' ' }, click = 'v:lua.ScLa' }
         }
       }
-    end
+    end,
   },
   {
     'kevinhwang91/nvim-ufo',
@@ -84,6 +85,7 @@ return {
       'ruby',
       'yaml',
     },
+    -- stylua: ignore
     keys = {
       { 'zR', function() require('ufo').openAllFolds() end,  mode = { 'n', 'v' }, desc = 'Open All Folds', },
       { 'zM', function() require('ufo').closeAllFolds() end, mode = { 'n', 'v' }, desc = 'Close All Folds', },
@@ -95,8 +97,8 @@ return {
             vim.lsp.buf.hover()
           end
         end,
-        mode = { 'n', 'v' }
-      }
+        mode = { 'n', 'v' },
+      },
     },
     opts = function()
       setFoldOptions()
@@ -115,12 +117,12 @@ return {
       end
 
       return {
-        close_fold_kinds       = { 'imports' },
+        close_fold_kinds = { 'imports' },
         fold_virt_text_handler = fold_virt_text_handler,
-        provider_selector      = function()
+        provider_selector = function()
           return { 'treesitter', 'indent' }
-        end
+        end,
       }
     end,
-  }
+  },
 }

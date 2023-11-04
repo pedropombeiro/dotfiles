@@ -10,16 +10,16 @@ return {
   init = function()
     local opt = vim.opt
 
-    opt.showmode = false                 -- The mode is shown in Lualine anyway
-    opt.showcmd = false                  -- The selected line count is already shown in Lualine
+    opt.showmode = false -- The mode is shown in Lualine anyway
+    opt.showcmd = false -- The selected line count is already shown in Lualine
     if vim.fn.has('nvim-0.9') == 1 then
       opt.shortmess:append({ S = true }) -- do not show search count message when searching
     end
   end,
   opts = function()
-    local config           = require('config')
-    local diagnostic_icons = config.icons.diagnostics
-    local symbol_icons     = config.icons.symbols
+    local config = require('config')
+    local diagnostic_icons = config.ui.icons.diagnostics
+    local symbol_icons = config.ui.icons.symbols
 
     return {
       options = {
@@ -48,9 +48,9 @@ return {
             'diagnostics',
             symbols = {
               ---@diagnostic disable: undefined-field
-              hint  = diagnostic_icons.hint .. ' ',
-              info  = diagnostic_icons.info .. ' ',
-              warn  = diagnostic_icons.warning .. ' ',
+              hint = diagnostic_icons.hint .. ' ',
+              info = diagnostic_icons.info .. ' ',
+              warn = diagnostic_icons.warning .. ' ',
               error = diagnostic_icons.error .. ' ',
               ---@diagnostic enable: undefined-field
             },
@@ -84,9 +84,9 @@ return {
             'diff',
             symbols = {
               ---@diagnostic disable: undefined-field
-              added    = symbol_icons.added .. ' ',
+              added = symbol_icons.added .. ' ',
               modified = symbol_icons.modified .. ' ',
-              removed  = symbol_icons.removed .. ' ',
+              removed = symbol_icons.removed .. ' ',
               ---@diagnostic enable: undefined-field
             },
           },

@@ -55,14 +55,14 @@ return {
       },
     },
     init = function()
-      local config = require('config')
+      local icons = require('config').ui.icons.diagnostics
 
       local signs = {
         ---@diagnostic disable: undefined-field
-        Error = config.icons.diagnostics.error .. ' ',
-        Warn = config.icons.diagnostics.warning .. ' ',
-        Hint = config.icons.diagnostics.hint .. ' ',
-        Info = config.icons.diagnostics.info .. ' ',
+        Error = icons.error .. ' ',
+        Warn = icons.warning .. ' ',
+        Hint = icons.hint .. ' ',
+        Info = icons.info .. ' ',
         ---@diagnostic enable: undefined-field
       }
       for type, icon in pairs(signs) do

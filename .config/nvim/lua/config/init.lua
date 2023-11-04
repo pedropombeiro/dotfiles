@@ -21,6 +21,9 @@ return {
       purple      = '#d3869b',
     }
   },
+  ui = {
+    border = 'rounded',
+  },
   icons = {
     folder = {
       empty      = '',

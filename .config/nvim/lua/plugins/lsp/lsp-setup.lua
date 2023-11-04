@@ -268,7 +268,7 @@ return {
         lspconfig.homeassistant.setup({})
       end
 
-      require('lspconfig.ui.windows').default_options.border = 'rounded'
+      require('lspconfig.ui.windows').default_options.border = require('config').ui.border
     end,
   },
   {

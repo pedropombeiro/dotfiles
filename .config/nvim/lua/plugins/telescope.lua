@@ -146,6 +146,7 @@ return {
       local function set_hl(name, attr)
         vim.api.nvim_set_hl(0, name, attr)
       end
+      set_hl('TelescopeBorder', { link = 'FloatBorder' })
       set_hl('TelescopeTitle', { fg = config.theme.colors.green })
       set_hl('TelescopePromptTitle', { fg = config.theme.colors.orange })
       set_hl('TelescopePromptBorder', { fg = config.theme.colors.orange })

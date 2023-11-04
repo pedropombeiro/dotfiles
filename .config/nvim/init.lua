@@ -63,6 +63,9 @@ require('lazy').setup({
       },
     },
   },
+  ui = {
+    border = 'rounded',
+  },
 })
 
 -- Inspiration: https://github.com/skwp/dotfiles/blob/master/vim/settings.vim

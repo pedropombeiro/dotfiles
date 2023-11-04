@@ -128,7 +128,6 @@ return {
             },
           },
         },
-        marksman = {},
         lua_ls = {
           single_file_support = true,
           settings = {
@@ -263,7 +262,7 @@ return {
             cmd = { install_dir .. '/node_modules/.bin/ts-node', install_dir .. '/out/server/server.js', '--stdio' },
             filetypes = { 'yaml' },
             root_dir = util.root_pattern('configuration.yaml'),
-            settings = {}
+            settings = {},
           },
         }
         lspconfig.homeassistant.setup({})

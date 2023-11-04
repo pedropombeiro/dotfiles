@@ -7,24 +7,6 @@ source "${YADM_SCRIPTS}/colors.sh"
 source "${YADM_SCRIPTS}/enable-touchid-on-terminal.sh"
 source "${YADM_SCRIPTS}/relink-dotfiles.sh"
 
-# Check if mDNS is operational (sometimes Bonjour is broken on M1 and we need to reset the adapter)
-printf "${YELLOW}%s${NC}\n" "Checking mDNS..."
-(timeout 1 dns-sd -Z _home-assistant._tcp. local. | grep 'ha.pombei.ro' >/dev/null)
-if [[ $? -eq 1 ]]; then
-  # Reset network adapter in case it is messed up
-  interface=en0
-
-  echo "Resetting network adapter..."
-  sudo ifconfig "$interface" down && sudo ifconfig "$interface" up
-
-  echo "Waiting for network adapter to become available..."
-  while ! curl http://ipecho.net/plain >/dev/null 2>&1; do
-    sleep 1
-  done
-
-  echo "Network adapter is now available."
-fi
-
 # Update Homebrew (Cask) & packages
 printf "${YELLOW}%s${NC}\n" "Updating brew..."
 brew update

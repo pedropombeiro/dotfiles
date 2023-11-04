@@ -81,8 +81,9 @@ return {
 
       return {
         lsp_fallback = false, -- LSP formatting on Ruby and Go files has proven to delete the first word of the changed line, so let's disable it
-        async = true,
-        timeout_ms = 2000,
+        timeout_ms = 3000,
+        async = false, -- not recommended to change
+        quiet = false, -- not recommended to change
       }
     end,
     -- Customize formatters

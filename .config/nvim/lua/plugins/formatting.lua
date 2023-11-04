@@ -25,6 +25,14 @@ return {
       desc = 'Format selection',
     },
     {
+      '<leader>lF',
+      function()
+        require('conform').format({ formatters = { 'injected' } })
+      end,
+      mode = { 'n', 'v' },
+      desc = 'Format injected langs',
+    },
+    {
       ']of',
       function()
         vim.b.disable_autoformat = true

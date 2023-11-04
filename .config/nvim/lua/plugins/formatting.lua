@@ -19,12 +19,7 @@ return {
     {
       '<leader>lf',
       function()
-        local range = {
-          start = vim.api.nvim_buf_get_mark(0, '<'),
-          ['end'] = vim.api.nvim_buf_get_mark(0, '>'),
-        }
-
-        require('conform').format({ async = true, lsp_fallback = true, range = range })
+        require('conform').format({ async = true, lsp_fallback = true })
       end,
       mode = { 'v' },
       desc = 'Format selection',

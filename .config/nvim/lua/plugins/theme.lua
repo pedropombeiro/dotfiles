@@ -21,6 +21,9 @@ return {
       local function define_highlights()
         -- Change border for float windows (normally grey)
         set_hl('FloatBorder', { ctermfg = 66, fg = '#458588' })
+        set_hl('FloatermBorder', { link = 'FloatBorder', default = true })
+        set_hl('LspInfoBorder', { link = 'FloatBorder', default = true })
+        set_hl('TelescopeBorder', { link = 'FloatBorder', default = true })
 
         -- Change border for LSP elements, to make them more recognizable (same colors as the bat gruvbox theme)
         set_hl('@field', { ctermfg = 167, fg = '#fb4934' })

@@ -15,9 +15,11 @@ test_files=(
     uniq)
 )
 valid_test_files=()
-for ((i = 0; i < ${#test_files[@]}; i++)); do
+for ((i = 1; i <= ${#test_files[@]}; i++)); do
   if [[ -f "${test_files[$i]}" ]]; then
     valid_test_files+=("${test_files[$i]}")
+  else
+    echo "INFO: Could not find specs file at ${test_files[$i]}"
   fi
 done
 

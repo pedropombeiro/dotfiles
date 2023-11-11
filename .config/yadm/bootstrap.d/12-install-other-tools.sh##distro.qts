@@ -10,7 +10,7 @@ target_dir="${HOME}/opt/bin"
 temp_dir="$(mktemp -d)"
 
 bandwhich_version=0.20.0
-croc_version=9.6.5
+croc_version=9.6.6
 lnav_version=0.11.2
 lsd_version=1.0.0
 procs_version=0.14.2
@@ -40,7 +40,7 @@ function extract_zip() {
 
 function extract_tar() {
   if [[ $1 == *"/"* ]]; then
-    components=$(tr -dc '/' <<< "$1" | awk '{ print length; }')
+    components=$(tr -dc '/' <<<"$1" | awk '{ print length; }')
     tar xzvf "${temp_dir}/package.gz" --directory="${target_dir}" --strip-components="$components" "$1" --no-same-owner
   else
     tar xzvf "${temp_dir}/package.gz" --directory="${target_dir}" "$1" --no-same-owner
@@ -51,7 +51,7 @@ function extract_tar() {
 
 function extract_tarball() {
   if [[ $1 == *"/"* ]]; then
-    components=$(tr -dc '/' <<< "$1" | awk '{ print length; }')
+    components=$(tr -dc '/' <<<"$1" | awk '{ print length; }')
     tar xjvf "${temp_dir}/package.tbz" --directory="${target_dir}" --strip-components="$components" "$1" --no-same-owner
   else
     tar xjvf "${temp_dir}/package.tbz" --directory="${target_dir}" "$1" --no-same-owner

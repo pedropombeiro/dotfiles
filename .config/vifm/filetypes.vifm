@@ -133,7 +133,7 @@ fileviewer {*.o,*.a},<application/x-object> nm %f | bat --file-name %f
 filetype {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*>
        \ open -a Preview.app,
 fileviewer {*.bmp,*.jpg,*.jpeg,*.png,*.gif,*.xpm},<image/*>
-       \ file --brief --preserve-date --uncompress -- %d/%c,
+       \ file --brief --preserve-date --uncompress -- %d/%c &&
        \ imgpreview %d/%c %px %py %pw %ph,
 
 " MD5

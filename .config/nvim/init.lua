@@ -42,7 +42,7 @@ require('lazy').setup({
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
   checker = {
-    enabled = true, -- automatically check for plugin updates
+    enabled = false, -- do not automatically check for plugin updates
     notify = true,
   },
   change_detection = {

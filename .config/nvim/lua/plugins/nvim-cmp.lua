@@ -7,7 +7,7 @@ return {
     'L3MON4D3/LuaSnip',
     build = (not jit.os:find('Windows'))
         and "echo 'NOTE: jsregexp is optional, so not a big deal if it fails to build\n'; make install_jsregexp"
-        or nil,
+      or nil,
     dependencies = {
       'rafamadriz/friendly-snippets',
       config = function()
@@ -40,18 +40,18 @@ return {
     version = false, -- last release is way too old
     event = 'InsertEnter',
     dependencies = {
-      'hrsh7th/cmp-buffer',                  -- nvim-cmp source for buffer words
-      'hrsh7th/cmp-nvim-lsp',                -- nvim-cmp source for neovim builtin LSP client
-      'hrsh7th/cmp-nvim-lua',                -- nvim-cmp source for nvim lua
-      'hrsh7th/cmp-path',                    -- nvim-cmp source for path
-      'saadparwaiz1/cmp_luasnip',            -- nvim-cmp source for LuaSnip
+      'hrsh7th/cmp-buffer', -- nvim-cmp source for buffer words
+      'hrsh7th/cmp-calc', -- nvim-cmp source for math calculation
+      'hrsh7th/cmp-nvim-lsp', -- nvim-cmp source for neovim builtin LSP client
+      'hrsh7th/cmp-nvim-lua', -- nvim-cmp source for nvim lua
+      'hrsh7th/cmp-path', -- nvim-cmp source for path
+      'saadparwaiz1/cmp_luasnip', -- nvim-cmp source for LuaSnip
       'hrsh7th/cmp-nvim-lsp-signature-help', -- nvim-cmp source for displaying function signatures with the current parameter emphasized
       { 'williamboman/mason-lspconfig.nvim', lazy = true },
       {
-        'onsails/lspkind.nvim',  -- vscode-like pictograms for neovim lsp completion items
-        dependencies =
-        'mortepau/codicons.nvim' -- A plugin simplifying the task of working with VS Code codicons in Neovim
-      }
+        'onsails/lspkind.nvim', -- vscode-like pictograms for neovim lsp completion items
+        dependencies = 'mortepau/codicons.nvim', -- A plugin simplifying the task of working with VS Code codicons in Neovim
+      },
     },
     opts = function()
       local cmp = require('cmp')
@@ -73,19 +73,19 @@ return {
           max_height = 20,
         },
         formatting = {
-          format = require('lspkind').cmp_format({ preset = 'codicons' })
+          format = require('lspkind').cmp_format({ preset = 'codicons' }),
         },
         mapping = cmp.mapping.preset.insert({
-          ['<C-n>']     = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
-          ['<C-p>']     = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
-          ['<C-b>']     = cmp.mapping.scroll_docs(-4),
-          ['<C-f>']     = cmp.mapping.scroll_docs(4),
+          ['<C-n>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
+          ['<C-p>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Insert }),
+          ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+          ['<C-f>'] = cmp.mapping.scroll_docs(4),
           ['<C-Space>'] = cmp.mapping.complete(),
-          ['<C-e>']     = cmp.mapping({
+          ['<C-e>'] = cmp.mapping({
             i = cmp.mapping.abort(),
             c = cmp.mapping.close(),
           }),
-          ['<CR>']      = cmp.mapping.confirm({
+          ['<CR>'] = cmp.mapping.confirm({
             behavior = cmp.ConfirmBehavior.Replace,
             select = false,
           }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
@@ -109,11 +109,12 @@ return {
                 return kind == kinds.Function or kind == kinds.Variable
               end
               return true
-            end
+            end,
           },
           { name = 'nvim_lua', priority = 80, group_index = 1 },
-          { name = 'luasnip',  priority = 10, group_index = 2 }, -- For luasnip users.
-          { name = 'path',     priority = 40, max_item_count = 10, group_index = 5 },
+          { name = 'luasnip', priority = 10, group_index = 2 }, -- For luasnip users.
+          { name = 'path', priority = 40, max_item_count = 10, group_index = 5 },
+          { name = 'calc', priority = 50 },
           { name = 'git' },
           {
             name = 'buffer',
@@ -139,8 +140,8 @@ return {
       cmp.setup.filetype('gitcommit', {
         sources = {
           { name = 'buffer' },
-        }
+        },
       })
-    end
-  }
+    end,
+  },
 }

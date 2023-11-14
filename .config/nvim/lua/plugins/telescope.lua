@@ -101,7 +101,7 @@ local keys = {
 return {
   {
     'nvim-telescope/telescope.nvim',
-    version = false, -- telescope did only one release, so use HEAD for now
+    branch = '0.1.x',
     dependencies = {
       'nvim-lua/plenary.nvim',
       'tsakirist/telescope-lazy.nvim', -- Telescope extension that provides handy functionality about plugins installed via lazy.nvim
@@ -151,10 +151,11 @@ return {
       set_hl('TelescopePromptTitle', { fg = config.theme.colors.orange })
       set_hl('TelescopePromptBorder', { fg = config.theme.colors.orange })
 
-      require('telescope').setup(opts)
+      local telescope = require('telescope')
+      telescope.setup(opts)
 
-      require('telescope').load_extension('fzf')
-      require('telescope').load_extension('lazy')
+      telescope.load_extension('fzf')
+      telescope.load_extension('lazy')
     end,
   },
 }

@@ -5,39 +5,31 @@
 -- stylua: ignore
 local keys = {
   -- File operations
-  { '<leader>ff',    '<Cmd>Telescope find_files<CR>', desc = 'Files' },
-  { '<leader>fr',    '<Cmd>Telescope live_grep<CR>',  desc = 'Live grep (rg)' },
-  { '<leader>fF',    '<Cmd>Telescope resume<CR>',     desc = 'Resume last Telescope command/query' },
-  { '<leader><Tab>', '<Cmd>Telescope keymaps<CR>',    desc = 'Keymaps' },
-  { '<leader>fb',    '<Cmd>Telescope buffers<CR>',    desc = 'Buffers' },
-  {
-    '<leader>fc',
-    function()
-      require('telescope').load_extension('themes')
-      vim.cmd [[Telescope themes]]
-    end,
-    desc = 'Colorschemes'
-  },
-  { '<leader>fH',  '<Cmd>Telescope highlights<CR>',      desc = 'Highlight groups' },
-  { '<leader>fK',  '<Cmd>Telescope man_pages<CR>',       desc = 'Man pages' },
-  { '<leader>fl',  '<Cmd>Telescope loclist<CR>',         desc = 'Location list' },
-  { '<leader>fq',  '<Cmd>Telescope quickfix<CR>',        desc = 'Quickfix list' },
-  { '<leader>fT',  '<Cmd>Telescope filetypes<CR>',       desc = 'Filetypes' },
-  { '<leader>fh',  '<Cmd>Telescope oldfiles<CR>',        desc = 'Old files' },
-  { '<leader>f:',  '<Cmd>Telescope command_history<CR>', desc = 'Command history' },
-  { '<leader>f/',  '<Cmd>Telescope search_history<CR>',  desc = 'Search history' },
-  { '<leader>f`',  '<Cmd>Telescope marks<CR>',           desc = 'Marks' },
-  { "<leader>f'",  '<Cmd>Telescope marks<CR>',           desc = 'Marks' },
-  { '<leader>f.',  '<Cmd>Telescope jumplist<CR>',        desc = 'Jump list' },
-  { '<leader>f"',  '<Cmd>Telescope registers<CR>',       desc = 'Registers' },
-  { '<leader>fO',  '<Cmd>Telescope vim_options<CR>',     desc = 'Vim options' },
-  { '<leader>fs',  '<Cmd>Telescope spell_suggest<CR>',   desc = 'Spelling suggestions' },
-  { '<leader>fp',  '<Cmd>Telescope lazy<CR>',            desc = 'Plugins' },
+  { '<leader>ff',    '<Cmd>Telescope find_files<CR>',      desc = 'Files' },
+  { '<leader>fr',    '<Cmd>Telescope live_grep<CR>',       desc = 'Live grep (rg)' },
+  { '<leader>fF',    '<Cmd>Telescope resume<CR>',          desc = 'Resume last Telescope command/query' },
+  { '<leader><Tab>', '<Cmd>Telescope keymaps<CR>',         desc = 'Keymaps' },
+  { '<leader>fb',    '<Cmd>Telescope buffers<CR>',         desc = 'Buffers' },
+  { '<leader>fH',    '<Cmd>Telescope highlights<CR>',      desc = 'Highlight groups' },
+  { '<leader>fK',    '<Cmd>Telescope man_pages<CR>',       desc = 'Man pages' },
+  { '<leader>fl',    '<Cmd>Telescope loclist<CR>',         desc = 'Location list' },
+  { '<leader>fq',    '<Cmd>Telescope quickfix<CR>',        desc = 'Quickfix list' },
+  { '<leader>fT',    '<Cmd>Telescope filetypes<CR>',       desc = 'Filetypes' },
+  { '<leader>fh',    '<Cmd>Telescope oldfiles<CR>',        desc = 'Old files' },
+  { '<leader>f:',    '<Cmd>Telescope command_history<CR>', desc = 'Command history' },
+  { '<leader>f/',    '<Cmd>Telescope search_history<CR>',  desc = 'Search history' },
+  { '<leader>f`',    '<Cmd>Telescope marks<CR>',           desc = 'Marks' },
+  { "<leader>f'",    '<Cmd>Telescope marks<CR>',           desc = 'Marks' },
+  { '<leader>f.',    '<Cmd>Telescope jumplist<CR>',        desc = 'Jump list' },
+  { '<leader>f"',    '<Cmd>Telescope registers<CR>',       desc = 'Registers' },
+  { '<leader>fO',    '<Cmd>Telescope vim_options<CR>',     desc = 'Vim options' },
+  { '<leader>fs',    '<Cmd>Telescope spell_suggest<CR>',   desc = 'Spelling suggestions' },
+  { '<leader>fp',    '<Cmd>Telescope lazy<CR>',            desc = 'Plugins' },
 
   -- Git operations
-  { '<leader>fgb', '<Cmd>Telescope git_branches<CR>',    desc = 'Git branches' },
-  { '<leader>fgc', '<Cmd>Telescope git_commits<CR>',     desc = 'Git commits' },
-  { '<leader>fgC', '<Cmd>Telescope git_bcommits<CR>',    desc = 'Git commits (buffer)' },
+  { '<leader>fgb', '<Cmd>Telescope git_branches<CR>', desc = 'Git branches' },
+  { '<leader>fgc', '<Cmd>Telescope git_commits<CR>',  desc = 'Git commits' },
+  { '<leader>fgC', '<Cmd>Telescope git_bcommits<CR>', desc = 'Git commits (buffer)' },
   {
     '<leader>fgg',
     function()

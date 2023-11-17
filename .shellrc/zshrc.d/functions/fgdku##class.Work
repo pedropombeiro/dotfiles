@@ -111,7 +111,7 @@ source ~/.config/yadm/scripts/colors.sh
   fi
 
   printf "${YELLOW}%s${NC}\n" 'Warming up web server...'
-  curl -sL 'http://gdk.test:3000' -o /dev/null
+  xh GET --quiet http://gdk.test:3000/api/v4/projects/24/runners PRIVATE-TOKEN:$GITLAB_GDK_TOKEN
 
   cd - >/dev/null
 )

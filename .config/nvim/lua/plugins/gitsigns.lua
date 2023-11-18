@@ -162,5 +162,11 @@ return {
     require('gitsigns').setup(opts)
 
     require('scrollbar.handlers.gitsigns').setup()
+
+    -- Compare with the default branch
+    local branch = string.match(vim.fn.system('git branch -rl "*/HEAD"'), '.*/(.*)\n')
+    if branch then
+      require('gitsigns').change_base(branch, true)
+    end
   end,
 }

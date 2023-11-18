@@ -105,7 +105,14 @@ return {
       return not vim.g.started_by_firenvim
     end,
     keys = {
-      { '<leader>fn', ':Telescope notify<CR>', 'Notifications' },
+      {
+        '<leader>fn',
+        function()
+          require('telescope').load_extension('notify')
+          require('telescope').extensions.notify.notify()
+        end,
+        desc = 'Notifications',
+      },
       {
         '<leader>un',
         function()

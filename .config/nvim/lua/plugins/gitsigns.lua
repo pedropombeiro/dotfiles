@@ -12,65 +12,101 @@ local on_attach = function(bufnr)
   end
 
   local gs = package.loaded.gitsigns
-  local m = require('mapx')
-
-  local function nmap(l, r, desc, opts)
-    opts = opts or {}
-    opts.buffer = bufnr
-    m.nmap(l, r, desc, opts)
-  end
-
-  local function vmap(l, r, desc, opts)
-    opts = opts or {}
-    opts.buffer = bufnr
-    m.vmap(l, r, desc, opts)
-  end
-
-  local function omap(l, r, desc, opts)
-    opts = opts or {}
-    opts.buffer = bufnr
-    m.omap(l, r, desc, opts)
-  end
-
-  local function xmap(l, r, desc, opts)
-    opts = opts or {}
-    opts.buffer = bufnr
-    m.xmap(l, r, desc, opts)
-  end
-
-  -- Navigation
-  nmap(']c', function()
-    if vim.wo.diff then return ']c' end
-    vim.schedule(gs.next_hunk)
-    return '<Ignore>'
-  end, 'Next Git hunk', { expr = true })
-
-  nmap('[c', function()
-    if vim.wo.diff then return '[c' end
-    vim.schedule(gs.prev_hunk)
-    return '<Ignore>'
-  end, 'Previous Git hunk', { expr = true })
+  local wk = require('which-key')
 
   -- Actions
-  m.nname('<leader>h', 'Git hunk')
-  m.vname('<leader>h', 'Git hunk')
-  nmap('<leader>hs', ':Gitsigns stage_hunk<CR>', 'Stage Git hunk')
-  vmap('<leader>hs', ':Gitsigns stage_hunk<CR>', 'Stage Git hunk')
-  nmap('<leader>hr', ':Gitsigns reset_hunk<CR>', 'Reset Git hunk')
-  vmap('<leader>hr', ':Gitsigns reset_hunk<CR>', 'Reset Git hunk')
-  nmap('<leader>hS', gs.stage_buffer, 'Stage buffer')
-  nmap('<leader>hu', gs.undo_stage_hunk, 'Undo stage Git hunk')
-  nmap('<leader>hR', gs.reset_buffer, 'Reset buffer from Git')
-  nmap('<leader>hp', gs.preview_hunk, 'Preview Git hunk')
-  nmap('<leader>hb', function() gs.blame_line { full = true } end, 'Git blame line')
-  nmap('<leader>tb', gs.toggle_current_line_blame, 'Toggle current line blame')
-  nmap('<leader>hd', gs.diffthis, 'Git diff this')
-  nmap('<leader>hD', function() gs.diffthis('~') end, 'Git diff this ~')
-  nmap('<leader>td', gs.toggle_deleted, 'Toggle Git-deleted')
+  wk.register({
+    h = {
+      name = 'Gitsigns',
+      s = { ':Gitsigns stage_hunk<CR>', 'Stage Git hunk', mode = { 'n', 'v' } },
+      u = { gs.undo_stage_buffer, 'Undo stage Git hunk' },
+      r = { ':Gitsigns reset_hunk<CR>', 'Reset Git hunk', mode = { 'n', 'v' } },
+      p = { gs.preview_hunk, 'Preview Git hunk' },
+      S = { gs.stage_buffer, 'Stage buffer' },
+      R = { gs.reset_buffer, 'Reset buffer' },
+      b = {
+        function()
+          gs.blame_line({ full = true })
+        end,
+        'Git blame line',
+      },
+      d = { gs.diffthis, 'Git diff this' },
+      D = {
+        function()
+          gs.diffthis('~')
+        end,
+        'Git diff this ~',
+      },
+    },
+  }, { prefix = '<leader>', buffer = bufnr })
+
+  wk.register({
+    ['['] = {
+      -- Navigation
+      c = {
+        function()
+          if vim.wo.diff then
+            return '[c'
+          end
+          vim.schedule(gs.prev_hunk)
+          return '<Ignore>'
+        end,
+        'Previous Git hunk',
+      },
+      -- Options
+      g = {
+        name = 'Git',
+        b = {
+          function()
+            gs.toggle_current_line_blame(true)
+          end,
+          'Enable current line blame',
+        },
+        d = {
+          function()
+            gs.toggle_deleted(true)
+          end,
+          'Enable Git-deleted',
+        },
+      },
+    },
+    [']'] = {
+      -- Navigation
+      c = {
+        function()
+          if vim.wo.diff then
+            return ']c'
+          end
+          vim.schedule(gs.next_hunk)
+          return '<Ignore>'
+        end,
+        'Next Git hunk',
+      },
+      -- Options
+      g = {
+        name = 'Git',
+        b = {
+          function()
+            gs.toggle_current_line_blame(false)
+          end,
+          'Disable current line blame',
+        },
+        d = {
+          function()
+            gs.toggle_deleted(false)
+          end,
+          'Disable Git-deleted',
+        },
+      },
+    },
+  }, { buffer = bufnr, expr = true })
 
   -- Text object
-  omap('ih', ':<C-U>Gitsigns select_hunk<CR>', 'Select Git hunk')
-  xmap('ih', ':<C-U>Gitsigns select_hunk<CR>', 'Select Git hunk')
+  wk.register({
+    i = {
+      h = { ':<C-U>Gitsigns select_hunk<CR>', 'Select Git hunk' },
+    },
+  }, { mode = { 'o', 'x' }, buffer = bufnr })
 end
 
 return {
@@ -79,17 +115,18 @@ return {
   event = 'BufReadPre',
   opts = {
     signs = {
-      add          = { text = '▌', show_count = true },
-      change       = { text = '▌', show_count = true },
-      delete       = { text = '▐', show_count = true },
-      topdelete    = { text = '▛', show_count = true },
+      add = { text = '▌', show_count = true },
+      change = { text = '▌', show_count = true },
+      delete = { text = '▐', show_count = true },
+      topdelete = { text = '▛', show_count = true },
       changedelete = { text = '▚', show_count = true },
-      untracked    = { text = '▎' },
+      untracked = { text = '▎' },
     },
     update_debounce = 500,
     sign_priority = 10,
     numhl = false,
     signcolumn = true,
+    current_line_blame = true,
     count_chars = {
       [1] = '',
       [2] = '₂',
@@ -109,13 +146,21 @@ return {
       linematch = 60,
     },
     on_attach = on_attach,
+    preview_config = {
+      -- Options passed to nvim_open_win
+      border = 'rounded',
+      style = 'minimal',
+      relative = 'cursor',
+      row = 0,
+      col = 1,
+    },
     yadm = {
       enable = true,
-    }
+    },
   },
   config = function(_, opts)
     require('gitsigns').setup(opts)
 
     require('scrollbar.handlers.gitsigns').setup()
-  end
+  end,
 }

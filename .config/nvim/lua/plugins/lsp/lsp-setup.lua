@@ -4,8 +4,8 @@
 ---@format disable-next
 -- stylua: ignore
 local keys = {
-  { '[g',          ':lua vim.diagnostic.goto_prev()<CR>',           desc = 'Next LSP diagnostic' },
-  { ']g',          ':lua vim.diagnostic.goto_next()<CR>',           desc = 'Previous LSP diagnostic' },
+  { '[d',          ':lua vim.diagnostic.goto_prev()<CR>',           desc = 'Next LSP diagnostic' },
+  { ']d',          ':lua vim.diagnostic.goto_next()<CR>',           desc = 'Previous LSP diagnostic' },
   { '<f2>',        ':lua vim.lsp.buf.rename()<CR>',                 desc = 'Rename symbol' },
   { 'K',           ':lua vim.lsp.buf.hover()<CR>',                  desc = 'Hover' },
   { '<leader>K',   ':lua vim.lsp.buf.signature_help()<CR>',         desc = 'Signature help' },

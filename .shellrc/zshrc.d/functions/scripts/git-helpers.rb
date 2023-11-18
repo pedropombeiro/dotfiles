@@ -5,7 +5,7 @@
 # this script will ensure that branches from the same MR will be rebased correctly, keeping the chain order
 
 def compute_default_branch
-  system(*%w[git show-ref refs/remotes/origin/master], out: File::NULL) ? 'master' : 'main'
+  `git branch -rl "*/HEAD"`.strip.split('/').last
 end
 
 # compute_parent_branch will determine the closest parent branch,

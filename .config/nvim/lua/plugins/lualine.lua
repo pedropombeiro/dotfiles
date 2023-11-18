@@ -4,8 +4,11 @@
 return {
   'nvim-lualine/lualine.nvim',
   event = 'VeryLazy',
+  cond = function()
+    return not vim.g.started_by_firenvim
+  end,
   dependencies = {
-    { 'kyazdani42/nvim-web-devicons', lazy = true },
+    'kyazdani42/nvim-web-devicons',
   },
   init = function()
     local opt = vim.opt

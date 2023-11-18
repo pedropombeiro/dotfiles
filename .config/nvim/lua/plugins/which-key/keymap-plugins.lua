@@ -14,3 +14,6 @@ m.nnoremap('<leader>pu', ':Lazy sync<CR>', 'Sync', { silent = true })
 wk.register({
   ['gF'] = { 'Go to file:line under cursor' },
 }, { mode = { 'n', 'x' } })
+
+-- folke/persistence.nvim
+m.nname('<leader>q', 'Session management')

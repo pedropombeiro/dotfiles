@@ -91,6 +91,7 @@ return {
       { 'zM', function() require('ufo').closeAllFolds() end, mode = { 'n', 'v' }, desc = 'Close All Folds', },
       {
         '<leader>k',
+        'Peek folded lines',
         function()
           local winid = require('ufo').peekFoldedLinesUnderCursor()
           if not winid then

@@ -16,6 +16,9 @@ if ! uhubctl --action cycle --location 2-1.1.2 --port 1 | grep 'Elgato Stream De
   terminal-notifier -title 'uhubctl' -message 'Failed to cycle power to Elgato Stream Deck' -sound boop -ignoreDnD
 fi
 
+# Turn off Elgato Wave mic
+uhubctl --action off --location 2-1.1.1.3 --port 2
+
 sleep 5
 
 SwitchAudioSource -t output -s 'CalDigit TS4 Audio - Rear'

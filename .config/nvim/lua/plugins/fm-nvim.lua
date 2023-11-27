@@ -14,36 +14,45 @@ return {
           callback = function()
             vim.g.lazygit_use_custom_config_file_path = 1
             vim.g.lazygit_config_file_path = vim.fn.expand('~/.config/lazygit/config.yml')
-          end
+          end,
         })
       end
     end,
     keys = {
-      { '<leader>gg', ':Lazygit<CR>', desc = 'Open LazyGit' },
+      {
+        '<leader>gg',
+        function()
+          if vim.env.GIT_DIR == nil then
+            vim.cmd('cd %:h') -- Ensure we're calling Lazygit from the folder of the active file
+          end
+          vim.cmd('Lazygit')
+        end,
+        desc = 'Open LazyGit',
+      },
       {
         '<leader>F',
         function()
           -- Signal to vifm that we don't want image previews, since we can't really calculate the correct offset of the popup
           vim.env._DISABLE_VIFM_IMGPREVIEW = '1'
           if vim.api.nvim_buf_get_name(0) == '' then
-            vim.cmd [[Vifm --select %:p:h]]
+            vim.cmd([[Vifm --select %:p:h]])
           else
-            vim.cmd [[Vifm --select %]]
+            vim.cmd([[Vifm --select %]])
           end
           vim.env._DISABLE_VIFM_IMGPREVIEW = ''
         end,
         desc = 'Open File Manager (vifm)',
-      }
+      },
     },
     opts = {
       ui = {
         float = {
           height = 0.9,
-          width  = 0.9,
+          width = 0.9,
           -- Floating window border (see ':h nvim_open_win')
-          border = 'single'
-        }
-      }
-    }
-  }
+          border = 'single',
+        },
+      },
+    },
+  },
 }

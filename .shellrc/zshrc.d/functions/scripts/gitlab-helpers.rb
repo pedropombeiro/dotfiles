@@ -135,7 +135,7 @@ def gitlab_mr_rate(*author)
       best_month_mr_rate = monthly_mrs.count
     end
 
-    msg = "#{ym.strftime('%Y-%m')}: #{monthly_mrs.count.to_s.rjust(3)}"
+    msg = "#{ym.strftime('%Y-%m')}: #{monthly_mrs.count.to_s.rjust(3)}\t#{'▁' * monthly_mrs.count}"
 
     if prorated_mr_count < BASELINE_MR_RATE
       print msg.red

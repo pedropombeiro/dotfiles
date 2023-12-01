@@ -8,8 +8,8 @@ if [[ -z $_DISABLE_VIFM_IMGPREVIEW ]]; then
   PW=$4
   PH=$5
 
-  tput cup "$PY" "$PX" > "$_P9K_TTY"
-  "$HOME/.iterm2/imgcat" --width "$PW" --height "$PH" "$FILEPATH" > "$_P9K_TTY"
+  tput cup "$PY" "$PX" >"$_P9K_TTY"
+  "$HOME/.iterm2/imgcat" --width "$PW" --height "$PH" "$FILEPATH" >"$_P9K_TTY"
 else
-  file --brief --preserve-date "$FILEPATH"
+  command -v exiftool 2>/dev/null && exiftool "$FILEPATH"
 fi

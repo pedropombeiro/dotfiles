@@ -6,5 +6,5 @@ nodejs        18.7.0
 pre-commit    latest
 ruby          3.0.5
 yarn          1.22.19
-rust          latest
+rust          stable
 glab          latest

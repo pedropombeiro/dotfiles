@@ -44,6 +44,7 @@ local keys = {
       if is_git_repo() then
         opts = {
           prompt_title = 'Git grep',
+          search_dirs = { ':/' },
           vimgrep_arguments = { 'git', 'grep', '--line-number', '--column' },
         }
       end

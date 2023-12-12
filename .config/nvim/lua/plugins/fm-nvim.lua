@@ -20,7 +20,7 @@ return {
     end,
     keys = {
       {
-        '<leader>gg',
+        '<leader>tg',
         function()
           if vim.env.GIT_DIR == nil then
             vim.cmd('cd %:h') -- Ensure we're calling Lazygit from the folder of the active file

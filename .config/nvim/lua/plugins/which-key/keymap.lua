@@ -23,9 +23,7 @@ m.tnoremap('<s-space>', '<space>')
 m.nnoremap('&', ':&&<CR>')
 m.xnoremap('&', ':&&<CR>')
 
-m.nname('<leader>t', 'Tabs')
-m.noremap('<leader>tn', ':tabnew<CR>', 'Open new tab')
-m.noremap('<leader>tc', ':tabclose<CR>', 'Close tab')
+m.nname('<leader>t', 'Terminal')
 
 m.nnoremap('<C-s>', ':w<CR>')
 m.inoremap('<C-s>', '<Esc>:w<CR>')
@@ -107,7 +105,12 @@ for open_sym, close_sym in pairs(symbols) do
   m.vmap('<leader>)', 'c' .. open_sym .. '<C-R>"' .. close_sym .. '<Esc>', close_desc)
 end
 
-m.nmap('<leader>gr', ':Dispatch bundle exec rubocop --auto-correct %<CR>', { ft = 'ruby' }, 'Reformat file with Rubocop')
+m.nmap(
+  '<leader>gr',
+  ':Dispatch bundle exec rubocop --auto-correct %<CR>',
+  { ft = 'ruby' },
+  'Reformat file with Rubocop'
+)
 
 m.nnoremap('gv', '`[v`]', 'Select last pasted text')
 

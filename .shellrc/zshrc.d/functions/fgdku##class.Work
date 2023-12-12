@@ -95,6 +95,12 @@ source ~/.config/yadm/scripts/colors.sh
   gdk stop
   # Ensure there are no orphaned sidekiq-cluster (https://gitlab.com/gitlab-org/gitlab-development-kit/-/issues/1455)
   pkill -lf 'sidekiq-cluster' || echo 'No stray sidekiq-cluster found'
+
+  # Ensure vite is enabled
+  gdk config set webpack.enabled false
+  gdk config set vite.enabled true
+  gdk reconfigure
+
   gdk start
 
   if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
@@ -109,9 +115,6 @@ source ~/.config/yadm/scripts/colors.sh
     printf "${YELLOW}%s${NC}\n" 'Start indexing in RubyMine...'
     osascript -e 'tell application "RubyMine" to activate'
   fi
-
-  printf "${YELLOW}%s${NC}\n" 'Warming up web server...'
-  xh GET --quiet http://gdk.test:3000/api/v4/projects/24/runners PRIVATE-TOKEN:$GITLAB_GDK_TOKEN
 
   cd - >/dev/null
 )

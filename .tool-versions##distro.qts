@@ -26,3 +26,4 @@ shfmt         latest
 viddy         latest
 xh            latest
 hyperfine     latest
+stylua        0.11

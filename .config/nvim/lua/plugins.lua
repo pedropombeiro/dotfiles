@@ -22,8 +22,8 @@ return {
     'aduros/ai.vim', -- Generate and edit text in Neovim using OpenAI and GPT.
     -- stylua: ignore
     keys = {
-      { '<leader>=', ':AI ',              mode = { 'n', 'v' }, desc = 'Perform action with OpenAI' },
-      { '<C-=>',     '<Esc><Cmd>AI<CR>a', mode = 'i',          desc = 'Autocomplete with OpenAI' },
+      { '<leader>=', ':AI ', mode = { 'n', 'v' }, desc = 'Perform action with OpenAI' },
+      { '<C-A>', '<Esc><Cmd>AI<CR>a', mode = 'i', desc = 'Autocomplete with OpenAI' },
     },
     cmd = { 'AI' },
     init = function()
@@ -52,9 +52,27 @@ return {
     opts = { options = { 'buffers', 'curdir', 'tabpages', 'winsize', 'help', 'globals' } },
     -- stylua: ignore
     keys = {
-      { '<leader>qs', function() require('persistence').load() end,                desc = 'Restore session' },
-      { '<leader>ql', function() require('persistence').load({ last = true }) end, desc = 'Restore last session' },
-      { '<leader>qd', function() require('persistence').stop() end,                desc = "Don't save current session" },
+      {
+        '<leader>qs',
+        function()
+          require('persistence').load()
+        end,
+        desc = 'Restore session',
+      },
+      {
+        '<leader>ql',
+        function()
+          require('persistence').load({ last = true })
+        end,
+        desc = 'Restore last session',
+      },
+      {
+        '<leader>qd',
+        function()
+          require('persistence').stop()
+        end,
+        desc = "Don't save current session",
+      },
     },
   },
 
@@ -67,7 +85,7 @@ return {
     'Wansmer/treesj', -- Neovim plugin for splitting/joining blocks of code
     -- stylua: ignore
     keys = {
-      { 'gJ', ':TSJJoin<CR>',  desc = 'Join into single-line form' },
+      { 'gJ', ':TSJJoin<CR>', desc = 'Join into single-line form' },
       { 'gS', ':TSJSplit<CR>', desc = 'Split into multi-line form' },
     },
     opts = {

@@ -68,6 +68,8 @@ fi
 
 sessions=$(tmux ls 2>&1)
 if [[ $? -eq 0 ]]; then
-  echo "Existing tmux sessions:"
-  echo "$sessions"
+  if [[ $(echo $sessions | wc -l) -gt 1 ]]; then
+    echo "Existing tmux sessions:"
+    echo "$sessions"
+  fi
 fi

@@ -17,10 +17,6 @@ return {
     local completion   = builtins.completion
     local diagnostics  = builtins.diagnostics
     local hover        = builtins.hover
-    local conditional  = function(fn)
-      local utils = require('null-ls.utils').make_conditional_utils()
-      return fn(utils)
-    end
     -- stylua: ignore end
 
     local sources = {

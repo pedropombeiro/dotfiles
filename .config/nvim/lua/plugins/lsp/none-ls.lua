@@ -5,7 +5,7 @@ return {
   'nvimtools/none-ls.nvim',
   dependencies = 'nvim-lua/plenary.nvim',
   lazy = true,
-  config = function()
+  opts = function()
     local null_ls_status_ok, null_ls = pcall(require, 'null-ls')
     if not null_ls_status_ok then
       return
@@ -42,10 +42,14 @@ return {
       --diagnostics.semgrep,
       diagnostics.shellcheck,
       diagnostics.vale,
-      diagnostics.yamllint,
       diagnostics.zsh,
 
       hover.dictionary,
     }
+    if vim.fn.executable('yamllint') == 1 then
+      table.insert(sources, diagnostics.yamllint)
+    end
+
+    return { sources = sources }
   end,
 }

@@ -11,5 +11,8 @@ return {
     statusline = {
       enabled = false,
     },
+    code_suggestions = {
+      offset_encoding = 'utf-16', -- Required in order to avoid "multiple different client offset_encodings detected for buffer, this is not supported yet" warning due to other LSP clients using utf-16
+    },
   },
 }

@@ -235,25 +235,6 @@ return {
         }
       end
 
-      require('neodev').setup({
-        library = {
-          plugins = { 'plenary.nvim', 'neotest' },
-          types = true,
-        },
-        runtime_path = true,
-        experimental = { pathStrict = true },
-      })
-
-      require('lsp-setup').setup({
-        default_mappings = false,
-        inlay_hints = {
-          enabled = false, -- TODO: Enable on Neovim 0.10+
-        },
-        -- Global capabilities
-        capabilities = vim.lsp.protocol.make_client_capabilities(),
-        servers = servers,
-      })
-
       local install_dir = '/share/homes/admin/opt/vscode-home-assistant'
       if vim.fn.finddir(install_dir) then
         local lspconfig = require('lspconfig.configs')
@@ -268,10 +249,19 @@ return {
             settings = {},
           },
         }
-        lspconfig.homeassistant.setup({})
       end
 
       require('lspconfig.ui.windows').default_options.border = require('config').ui.border
+
+      require('lsp-setup').setup({
+        default_mappings = false,
+        inlay_hints = {
+          enabled = false, -- TODO: Enable on Neovim 0.10+
+        },
+        -- Global capabilities
+        capabilities = vim.lsp.protocol.make_client_capabilities(),
+        servers = servers,
+      })
     end,
   },
   {
@@ -279,5 +269,13 @@ return {
     'folke/neodev.nvim',
     lazy = true,
     ft = { 'lua' },
+    opts = {
+      library = {
+        plugins = { 'plenary.nvim', 'neotest' },
+        types = true,
+      },
+      runtime_path = true,
+      experimental = { pathStrict = true },
+    },
   },
 }

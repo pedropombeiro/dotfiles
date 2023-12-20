@@ -45,6 +45,10 @@ listen_address: 0.0.0.0
 # gitlab:
 #   rails:
 #     sherlock: true
+vite:
+  enabled: true
+webpack:
+  enabled: false
 EOF
 fi
 

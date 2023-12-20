@@ -226,6 +226,9 @@ return {
       end
       if vim.fn.executable('solargraph') == 1 then
         servers.solargraph = {
+          init_options = {
+            formatting = false, -- Formatting is performed by Conform
+          },
           flags = {
             debounce_text_changes = 150,
           },

@@ -2,7 +2,12 @@
 -- 🗂 Neovim plugin that lets you use your favorite terminal file managers (and fuzzy finders) from within Neovim.
 
 return {
-  'vifm/vifm.vim', -- Import for ftplugin, ftdetect, and syntax definitions
+  {
+    'vifm/vifm.vim', -- Import for ftplugin, ftdetect, and syntax definitions
+    init = function()
+      vim.g.loaded_vifm = 1
+    end,
+  },
 
   {
     'is0n/fm-nvim',

@@ -28,16 +28,6 @@ return {
         set_hl('@field', { ctermfg = 167, fg = '#fb4934' })
         set_hl('@constant', { ctermfg = 109, fg = '#83a598' })
         set_hl('@string', { ctermfg = 142, fg = '#b8bb26' })
-
-        vim.g.gruvbox_material_background = 'hard'
-        vim.g.gruvbox_material_better_performance = 1
-        vim.g.gruvbox_material_foreground = 'hard'
-        vim.g.gruvbox_material_diagnostic_text_highlight = 1
-        vim.g.gruvbox_material_diagnostic_virtual_text = 'highlighted'
-        vim.g.gruvbox_material_enable_italic = 1
-        vim.g.gruvbox_material_float_style = 'dim'
-
-        vim.cmd('colorscheme gruvbox-material')
       end
 
       local augroup = vim.api.nvim_create_augroup('ThemerColorSchemeRefresh', { clear = true })
@@ -49,6 +39,16 @@ return {
       if vim.fn.has('termguicolors') then
         vim.opt.termguicolors = true
       end
+
+      vim.g.gruvbox_material_background = 'hard'
+      vim.g.gruvbox_material_better_performance = 1
+      vim.g.gruvbox_material_foreground = 'hard'
+      vim.g.gruvbox_material_diagnostic_text_highlight = 1
+      vim.g.gruvbox_material_diagnostic_virtual_text = 'highlighted'
+      vim.g.gruvbox_material_enable_italic = 1
+      vim.g.gruvbox_material_float_style = 'dim'
+
+      vim.cmd('colorscheme gruvbox-material')
     end
   end,
 }

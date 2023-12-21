@@ -6,7 +6,6 @@ return {
 
   {
     'is0n/fm-nvim',
-    event = 'VeryLazy',
     init = function()
       if vim.fn.has('mac') == 1 then -- Ensure that LazyGit uses same config dir on macOS as in Linux
         vim.api.nvim_create_autocmd({ 'BufEnter', 'BufAdd', 'BufNew', 'BufNewFile', 'BufWinEnter' }, {

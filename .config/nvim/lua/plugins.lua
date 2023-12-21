@@ -112,7 +112,7 @@ return {
     version = false,
     opts = {},
   },
-  { 'RaafatTurki/hex.nvim', opts = {} }, -- hex editing done right
+  { 'RaafatTurki/hex.nvim', event = { 'BufReadPre', 'BufNewFile' }, opts = {} }, -- hex editing done right
 
   --### Other
   {

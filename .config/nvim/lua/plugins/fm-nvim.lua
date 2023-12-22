@@ -4,6 +4,7 @@
 return {
   {
     'vifm/vifm.vim', -- Import for ftplugin, ftdetect, and syntax definitions
+    event = { 'BufNewFile', 'BufReadPre' },
     init = function()
       vim.g.loaded_vifm = 1
     end,

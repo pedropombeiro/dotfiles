@@ -3,7 +3,7 @@
 
 return {
   'nvim-lualine/lualine.nvim',
-  event = 'VeryLazy',
+  event = { 'BufNewFile', 'BufReadPre' },
   cond = function()
     return not vim.g.started_by_firenvim
   end,

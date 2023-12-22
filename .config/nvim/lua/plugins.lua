@@ -94,22 +94,18 @@ return {
   },
   {
     'tpope/vim-repeat', -- repeat.vim: enable repeating supported plugin maps with '.'
-    event = 'VeryLazy',
     keys = '.',
-  },
-  {
-    'tpope/vim-speeddating', -- speeddating.vim: CTRL-A/CTRL-X to increment dates, times, and more
-    event = 'BufReadPost',
   },
   {
     'kylechui/nvim-surround', -- Add/change/delete surrounding delimiter pairs with ease. Written with ❤️ in Lua.
     event = 'BufReadPost',
     opts = {},
   },
-  { 'tummetott/unimpaired.nvim', opts = {} }, -- LUA port of tpope's famous vim-unimpaired plugin
+  { 'tummetott/unimpaired.nvim', event = { 'BufReadPre', 'BufNewFile' }, opts = {} }, -- LUA port of tpope's famous vim-unimpaired plugin
   {
     'echasnovski/mini.trailspace',
     version = false,
+    event = { 'BufReadPre', 'BufNewFile' },
     opts = {},
   },
   { 'RaafatTurki/hex.nvim', event = { 'BufReadPre', 'BufNewFile' }, opts = {} }, -- hex editing done right
@@ -121,6 +117,13 @@ return {
     priority = 60,
     cond = function()
       return not vim.g.started_by_firenvim
+    end,
+    init = function()
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.notify = function(...)
+        require('lazy').load({ plugins = { 'notify' } })
+        return vim.notify(...)
+      end
     end,
     keys = {
       {

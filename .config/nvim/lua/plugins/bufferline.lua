@@ -7,7 +7,7 @@ return {
   cond = function()
     return not vim.g.started_by_firenvim
   end,
-  event = 'VeryLazy',
+  event = { 'BufNewFile', 'BufReadPre' },
   -- stylua: ignore
   keys = {
     { '<leader>bp', '<Cmd>BufferLineTogglePin<CR>',            desc = 'Toggle pin' },

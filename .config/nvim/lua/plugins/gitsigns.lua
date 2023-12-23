@@ -163,17 +163,6 @@ return {
 
     require('scrollbar.handlers.gitsigns').setup()
 
-    local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
-    if theme == nil then
-      local config = require('config')
-      ---@diagnostic disable-next-line: undefined-field
-      theme = config.theme.name
-    end
-
-    if theme == 'gruvbox-material-dark' then
-      vim.cmd([[highlight GitSignsCurrentLineBlame ctermfg=239 guifg='#504945']])
-    end
-
     -- Compare with the default branch
     local branch = string.match(vim.fn.system('git branch -rl "*/HEAD"'), '.*/(.*)\n')
     if branch then

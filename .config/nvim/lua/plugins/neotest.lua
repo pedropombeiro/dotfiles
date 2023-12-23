@@ -38,7 +38,7 @@ return {
     local m = require('mapx')
     m.nname('<leader>r', 'Test')
   end,
-  config = function()
+  config = function(_, opts)
     -- get neotest namespace (api call creates or returns namespace)
     local neotest_ns = vim.api.nvim_create_namespace('neotest')
     vim.diagnostic.config({
@@ -53,7 +53,50 @@ return {
     local neotest = require('neotest')
     local config = require('config')
     local icons = config.ui.icons
-    neotest.setup({
+    neotest.setup(opts)
+
+    -- Theming (from https://github.com/nvim-neotest/neotest/blob/master/lua/neotest/config/init.lua)
+    local function set_hl(name, attr)
+      vim.api.nvim_set_hl(0, name, attr)
+    end
+
+    ---@format disable-next
+    local function define_highlights()
+      ---@diagnostic disable: undefined-field
+      set_hl('NeotestPassed', { ctermfg = 'Green', fg = config.theme.colors.green })
+      set_hl('NeotestFailed', { ctermfg = 'Red', fg = config.theme.colors.dark_red })
+      set_hl('NeotestRunning', { ctermfg = 'Yellow', fg = config.theme.colors.dark_yellow })
+      set_hl('NeotestSkipped', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue })
+      set_hl('NeotestTest', { link = 'Normal' })
+      set_hl('NeotestNamespace', { ctermfg = 'Magenta', fg = config.theme.colors.purple })
+      set_hl('NeotestFocused', { bold = true, underline = true })
+      set_hl('NeotestFile', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue })
+      set_hl('NeotestDir', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue })
+      set_hl('NeotestIndent', { ctermfg = 'Grey', fg = config.theme.colors.fg4 })
+      set_hl('NeotestExpandMarker', { ctermfg = 'Grey', fg = config.theme.colors.fg3 })
+      set_hl('NeotestAdapterName', { ctermfg = 'Red', fg = config.theme.colors.red })
+      set_hl('NeotestWinSelect', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue, bold = true })
+      set_hl('NeotestMarked', { ctermfg = 'Brown', fg = config.theme.colors.orange, bold = true })
+      set_hl('NeotestTarget', { ctermfg = 'Red', fg = config.theme.colors.red })
+      set_hl('NeotestUnknown', { link = 'Normal' })
+      ---@diagnostic enable: undefined-field
+    end
+
+    --- Override Neotest default theme
+    local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
+    ---@diagnostic disable-next-line: undefined-field
+    if theme == config.theme.name then
+      local augroup = vim.api.nvim_create_augroup('NeotestColorSchemeRefresh', { clear = true })
+      vim.api.nvim_create_autocmd('ColorScheme', {
+        pattern = 'gruvbox',
+        callback = define_highlights,
+        group = augroup,
+      })
+      define_highlights()
+    end
+  end,
+  opts = function()
+    return {
       adapters = {
         require('neotest-go')({
           experimental = {
@@ -90,46 +133,6 @@ return {
           vim.cmd('Trouble quickfix')
         end,
       },
-    })
-
-    -- Theming (from https://github.com/nvim-neotest/neotest/blob/master/lua/neotest/config/init.lua)
-    local function set_hl(name, attr)
-      vim.api.nvim_set_hl(0, name, attr)
-    end
-
-    ---@format disable-next
-    local function define_highlights()
-      ---@diagnostic disable: undefined-field
-      set_hl('NeotestPassed', { ctermfg = 'Green', fg = config.theme.colors.green })
-      set_hl('NeotestFailed', { ctermfg = 'Red', fg = config.theme.colors.dark_red })
-      set_hl('NeotestRunning', { ctermfg = 'Yellow', fg = config.theme.colors.dark_yellow })
-      set_hl('NeotestSkipped', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue })
-      set_hl('NeotestTest', { link = 'Normal' })
-      set_hl('NeotestNamespace', { ctermfg = 'Magenta', fg = config.theme.colors.purple })
-      set_hl('NeotestFocused', { bold = true, underline = true })
-      set_hl('NeotestFile', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue })
-      set_hl('NeotestDir', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue })
-      set_hl('NeotestIndent', { ctermfg = 'Grey', fg = config.theme.colors.fg4 })
-      set_hl('NeotestExpandMarker', { ctermfg = 'Grey', fg = config.theme.colors.fg3 })
-      set_hl('NeotestAdapterName', { ctermfg = 'Red', fg = config.theme.colors.red })
-      set_hl('NeotestWinSelect', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue, bold = true })
-      set_hl('NeotestMarked', { ctermfg = 'Brown', fg = config.theme.colors.orange, bold = true })
-      set_hl('NeotestTarget', { ctermfg = 'Red', fg = config.theme.colors.red })
-      set_hl('NeotestUnknown', { link = 'Normal' })
-      ---@diagnostic enable: undefined-field
-    end
-
-    --- Override Neotest default theme
-    local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
-    ---@diagnostic disable-next-line: undefined-field
-    if theme == config.theme.name then
-      local augroup = vim.api.nvim_create_augroup('NeotestColorSchemeRefresh', { clear = true })
-      vim.api.nvim_create_autocmd('ColorScheme', {
-        pattern = 'gruvbox-material',
-        callback = define_highlights,
-        group = augroup,
-      })
-      define_highlights()
-    end
+    }
   end,
 }

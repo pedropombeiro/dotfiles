@@ -1,7 +1,7 @@
 -- stylua: ignore
 return {
   theme = {
-    name = 'gruvbox-material-dark',
+    name = 'gruvbox',
     colors = {
       bg0_s       = '#32302f', -- Gruvbox Dark bg0_s
       gray        = '#928374',

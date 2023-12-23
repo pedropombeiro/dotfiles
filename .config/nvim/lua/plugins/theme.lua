@@ -1,8 +1,8 @@
--- gruvbox-material (https://github.com/sainnhe/gruvbox-material)
---  Gruvbox with Material Palette
+-- gruvbox (https://github.com/ellisonleao/gruvbox.nvim)
+--  Lua port of the most famous vim colorscheme
 
 return {
-  'sainnhe/gruvbox-material',
+  'ellisonleao/gruvbox.nvim',
   lazy = false,
   priority = 1000, -- make sure to load this before all the other start plugins
   condition = function()
@@ -13,46 +13,78 @@ return {
       theme = config.theme.name
     end
 
-    return theme == 'gruvbox-material-dark'
+    return theme == 'gruvbox'
   end,
-  config = function()
-    local function set_hl(name, attr)
-      vim.api.nvim_set_hl(0, name, attr)
-    end
+  config = function(_, opts)
+    require('gruvbox').setup(opts)
 
-    local function initialize_theme()
+    vim.cmd('colorscheme gruvbox')
+  end,
+  opts = {
+    contrast = 'hard',
+    dim_inactive = true,
+    transparent_mode = false,
+    overrides = {
       -- Change border for float windows (normally grey)
-      set_hl('FloatBorder', { ctermfg = 109, fg = '#83a598' })
-      set_hl('FloatermBorder', { link = 'FloatBorder' })
-      set_hl('LspInfoBorder', { link = 'FloatBorder' })
+      NormalFloat = { bg = '#1d2021' },
+      FloatBorder = { fg = '#83a598', bg = '#1d2021' },
+      FloatermBorder = { link = 'FloatBorder' },
+      LspInfoBorder = { link = 'FloatBorder' },
+
+      FoldColumn = { bg = 'NONE' },
+      SignColumn = { bg = 'NONE' },
+      GitSignsCurrentLineBlame = { fg = '#504945' },
+
+      DiagnosticVirtualTextWarn = { fg = '#fabd2f', bg = '#473c29' },
+      DiagnosticVirtualTextError = { fg = '#fb4934', bg = '#442e2d' },
+      DiagnosticVirtualTextInfo = { fg = '#83a598', bg = '#2e3b3b' },
+      DiagnosticVirtualTextHint = { fg = '#b8bb26', bg = '#333e34' },
+
+      -- Remove background from signs (since we made the sign column not have a background)
+      GruvboxYellowSign = { link = 'GruvboxYellow' },
+      GruvboxRedSign = { link = 'GruvboxRed' },
+      GruvboxAquaSign = { link = 'GruvboxAqua' },
 
       -- Change border for LSP elements, to make them more recognizable (same colors as the bat gruvbox theme)
-      set_hl('@field', { ctermfg = 167, fg = '#fb4934' })
-      set_hl('@constant', { ctermfg = 109, fg = '#83a598' })
-      set_hl('@string', { ctermfg = 142, fg = '#b8bb26' })
-    end
+      ['@field'] = { link = 'GruvboxRed' },
+      ['@constant'] = { link = 'GruvboxBlue' },
+      ['@string'] = { link = 'GruvboxGreen' },
 
-    local augroup = vim.api.nvim_create_augroup('ThemerColorSchemeRefresh', { clear = true })
-    vim.api.nvim_create_autocmd('ColorScheme', {
-      pattern = 'gruvbox-material',
-      callback = initialize_theme,
-      group = augroup,
-    })
+      ['@constant.bash'] = { link = 'GruvboxBlueBold' },
+      ['@string.bash'] = { link = 'GruvboxFg1' },
 
-    if vim.fn.has('termguicolors') then
-      vim.opt.termguicolors = true
-    end
+      -- Go
+      ['@constant.go'] = { link = 'GruvboxYellow' },
+      ['@field.go'] = { link = 'GruvboxBlue' },
+      ['@include.go'] = { link = 'GruvboxRed' },
+      ['@namespace.go'] = { link = 'GruvboxBlue' },
+      ['@type.go'] = { link = 'GruvboxRed' },
+      ['@variable.go'] = { link = 'GruvboxBlue' },
 
-    vim.g.gruvbox_material_background = 'hard'
-    vim.g.gruvbox_material_better_performance = 1
-    vim.g.gruvbox_material_foreground = 'material'
-    vim.g.gruvbox_material_diagnostic_text_highlight = 1
-    vim.g.gruvbox_material_diagnostic_virtual_text = 'highlighted'
-    vim.g.gruvbox_material_transparent_background = 1
-    vim.g.gruvbox_material_enable_bold = 1
-    vim.g.gruvbox_material_enable_italic = 1
-    vim.g.gruvbox_material_float_style = 'dim'
+      -- Lua
+      ['@function.call.lua'] = { link = 'GruvboxAqua' },
+      ['@keyword.function.lua'] = { link = 'GruvboxBlue' },
+      ['@lsp.type.function.lua'] = { link = 'GruvboxAqua' },
+      ['@lsp.type.property.lua'] = { link = 'GruvboxRed' },
+      ['@lsp.type.variable.lua'] = { link = 'GruvboxBlue' },
 
-    vim.cmd('colorscheme gruvbox-material')
-  end,
+      -- Ruby
+      ['@constant.builtin.ruby'] = { link = 'GruvboxPurple' },
+      ['@function.call.ruby'] = { link = 'GruvboxAqua' },
+      ['@punctuation.bracket.ruby'] = { link = 'GruvboxFg1' },
+      ['@string.ruby'] = { link = 'GruvboxGreen' },
+      ['@symbol.ruby'] = { link = 'GruvboxPurple' },
+      ['@variable.builtin.ruby'] = { link = 'GruvboxPurple' },
+
+      -- vifm
+      vifmExprCommand = { fg = '#8ec07c' },
+      vifmMap = { fg = '#8ec07c' },
+      vifmNotation = { fg = '#fabd2f' },
+      vifmStatementCN = { fg = '#fb4934' },
+
+      -- YAML
+      ['@field.yaml'] = { link = 'GruvboxBlueBold' },
+      ['@string.yaml'] = { link = 'GruvboxGreen' },
+    },
+  },
 }

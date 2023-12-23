@@ -32,7 +32,7 @@ return {
           statusline = { 'alpha', 'Fm', 'mason', 'neotest-summary' },
         },
         globalstatus = true,
-        theme = 'gruvbox-flat',
+        theme = 'gruvbox-material',
       },
       extensions = {
         'fugitive',

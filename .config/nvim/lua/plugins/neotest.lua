@@ -124,7 +124,11 @@ return {
     ---@diagnostic disable-next-line: undefined-field
     if theme == config.theme.name then
       local augroup = vim.api.nvim_create_augroup('NeotestColorSchemeRefresh', { clear = true })
-      vim.api.nvim_create_autocmd('ColorScheme', { callback = define_highlights, group = augroup })
+      vim.api.nvim_create_autocmd('ColorScheme', {
+        pattern = 'gruvbox-material',
+        callback = define_highlights,
+        group = augroup,
+      })
       define_highlights()
     end
   end,

@@ -55,7 +55,7 @@ return {
           height = 0.9,
           width = 0.9,
           -- Floating window border (see ':h nvim_open_win')
-          border = 'single',
+          border = 'rounded',
         },
       },
     },

@@ -52,7 +52,6 @@ return {
 
     local neotest = require('neotest')
     local config = require('config')
-    local icons = config.ui.icons
     neotest.setup(opts)
 
     -- Theming (from https://github.com/nvim-neotest/neotest/blob/master/lua/neotest/config/init.lua)
@@ -96,6 +95,8 @@ return {
     end
   end,
   opts = function()
+    local icons = require('config').ui.icons
+
     return {
       adapters = {
         require('neotest-go')({

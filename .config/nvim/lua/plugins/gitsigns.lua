@@ -112,7 +112,7 @@ end
 return {
   'lewis6991/gitsigns.nvim',
   dependencies = 'nvim-lua/plenary.nvim',
-  event = 'BufReadPre',
+  event = { 'BufReadPost', 'BufNewFile', 'BufWritePre' },
   opts = {
     signs = {
       add = { text = '▌', show_count = true },
@@ -148,7 +148,7 @@ return {
     on_attach = on_attach,
     preview_config = {
       -- Options passed to nvim_open_win
-      border = 'rounded',
+      border = require('config').ui.border,
       style = 'minimal',
       relative = 'cursor',
       row = 0,

@@ -1,7 +1,7 @@
 -- Justfile support --
 
 local function find_justfile_path(current_dir)
-  while (current_dir ~= '/') do
+  while current_dir ~= '/' do
     local justfile_path = current_dir .. '/.justfile'
     local alt_justfile_path = current_dir .. '/justfile'
 
@@ -33,8 +33,10 @@ vim.api.nvim_create_user_command('Just', execute_just_recipe, {
     local work_dir = vim.fn.expand('%:p:h')
     local justfile_path = find_justfile_path(work_dir)
 
-    while (justfile_path ~= nil) do
-      local parent_recipes = vim.fn.split(vim.fn.system('just --working-directory "' .. work_dir .. '" --justfile "' .. justfile_path .. '" --summary'))
+    while justfile_path ~= nil do
+      local parent_recipes = vim.fn.split(
+        vim.fn.system('just --working-directory "' .. work_dir .. '" --justfile "' .. justfile_path .. '" --summary')
+      )
       for i = 1, #parent_recipes do
         table.insert(recipes, parent_recipes[i])
       end
@@ -43,5 +45,5 @@ vim.api.nvim_create_user_command('Just', execute_just_recipe, {
     end
 
     return recipes
-  end
+  end,
 })

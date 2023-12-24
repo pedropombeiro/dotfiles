@@ -3,13 +3,8 @@
 
 return {
   {
-    'nvim-treesitter/nvim-treesitter-textobjects', -- Syntax aware text-objects, select, move, swap, and peek support.
-    event = 'BufReadPre',
-  },
-
-  {
     'nvim-treesitter/nvim-treesitter-context', -- Show code context
-    event = 'BufReadPre',
+    event = { 'BufReadPost', 'BufNewFile', 'BufWritePre' },
     config = function()
       ---@diagnostic disable-next-line: undefined-field
       local colors = require('config').theme.colors
@@ -26,19 +21,57 @@ return {
     init = function()
       vim.g.matchup_matchparen_deferred = 1
       vim.g.matchup_matchparen_offscreen = { method = 'popup' }
-    end
+    end,
   },
 
   {
     'nvim-treesitter/nvim-treesitter',
-    event = 'BufReadPost',
+    version = false, -- last release is way too old and doesn't work on Windows
+    event = { 'BufReadPost', 'BufNewFile', 'BufWritePre', 'VeryLazy' },
     dependencies = {
+      {
+        'nvim-treesitter/nvim-treesitter-textobjects',
+        config = function()
+          -- When in diff mode, we want to use the default
+          -- vim text objects c & C instead of the treesitter ones.
+          local move = require('nvim-treesitter.textobjects.move') ---@type table<string,fun(...)>
+          local configs = require('nvim-treesitter.configs')
+          for name, fn in pairs(move) do
+            if name:find('goto') == 1 then
+              move[name] = function(q, ...)
+                if vim.wo.diff then
+                  local config = configs.get_module('textobjects.move')[name] ---@type table<string,string>
+                  for key, query in pairs(config or {}) do
+                    if q == query and key:find('[%]%[][cC]') then
+                      vim.cmd('normal! ' .. key)
+                      return
+                    end
+                  end
+                end
+                return fn(q, ...)
+              end
+            end
+          end
+        end,
+      },
       'RRethy/nvim-treesitter-endwise', --- Wisely add 'end' in Ruby, Vimscript, Lua, etc.
-      'HiPhish/nvim-ts-rainbow2',       -- Rainbow delimiters for Neovim through Tree-sitter
+      'HiPhish/nvim-ts-rainbow2', -- Rainbow delimiters for Neovim through Tree-sitter
     },
+    init = function(plugin)
+      -- PERF: add nvim-treesitter queries to the rtp and its custom query predicates early
+      -- This is needed because a bunch of plugins no longer `require("nvim-treesitter")`, which
+      -- no longer trigger the **nvim-treesitter** module to be loaded in time.
+      -- Luckily, the only things that those plugins need are the custom queries, which we make available
+      -- during startup.
+      require('lazy.core.loader').add_to_rtp(plugin)
+      require('nvim-treesitter.query_predicates')
+    end,
     build = function()
       local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
       ts_update()
+    end,
+    config = function(_, opts)
+      require('nvim-treesitter.configs').setup(opts)
     end,
     opts = function()
       return {
@@ -64,7 +97,7 @@ return {
           'sql',
           'toml',
           'vim',
-          'yaml'
+          'yaml',
         },
         -- Install parsers synchronously (only applied to `ensure_installed`)
         sync_install = false,
@@ -74,7 +107,7 @@ return {
         -- List of parsers to ignore installing (for "all")
         ignore_install = {
           'java',
-          'javascript'
+          'javascript',
         },
         endwise = {
           enable = true,
@@ -87,7 +120,7 @@ return {
           -- Which query to use for finding delimiters
           query = 'rainbow-parens',
           -- Highlight the entire buffer all at once
-          strategy = require 'ts-rainbow'.strategy.global,
+          strategy = require('ts-rainbow').strategy.global,
         },
         highlight = {
           -- `false` will disable the whole extension
@@ -121,28 +154,28 @@ return {
               ['af'] = '@function.outer',
               ['if'] = '@function.inner',
               ['ac'] = '@class.outer',
-              ['ic'] = '@class.inner'
-            }
+              ['ic'] = '@class.inner',
+            },
           },
           move = {
             enable = true,
             set_jumps = true,
             goto_next_start = {
               [']m'] = '@function.outer',
-              [']]'] = '@class.outer'
+              [']]'] = '@class.outer',
             },
             goto_next_end = {
               [']M'] = '@function.outer',
-              [']['] = '@class.outer'
+              [']['] = '@class.outer',
             },
             goto_previous_start = {
               ['[m'] = '@function.outer',
-              ['[['] = '@class.outer'
+              ['[['] = '@class.outer',
             },
             goto_previous_end = {
               ['[M'] = '@function.outer',
-              ['[]'] = '@class.outer'
-            }
+              ['[]'] = '@class.outer',
+            },
           },
           swap = {
             enable = true,
@@ -156,8 +189,5 @@ return {
         },
       }
     end,
-    config = function(_, opts)
-      require('nvim-treesitter.configs').setup(opts)
-    end
-  }
+  },
 }

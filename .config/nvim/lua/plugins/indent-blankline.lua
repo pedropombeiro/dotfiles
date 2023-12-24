@@ -1,25 +1,25 @@
 -- indent-blankline.nvim (https://github.com/lukas-reineke/indent-blankline.nvim)
 --  Indent guides for Neovim
 
-local filetype_exclude = { 'help', 'alpha', 'dashboard', 'neo-tree', 'Trouble', 'lazy', 'mason' }
+local filetype_exclude = { 'help', 'alpha', 'dashboard', 'neo-tree', 'Trouble', 'lazy', 'mason', 'notify' }
 local symbol = '│'
 
 return {
   {
     'lukas-reineke/indent-blankline.nvim', -- Indent guides for Neovim
     main = 'ibl',
-    event = { 'BufReadPre', 'BufNewFile' },
+    event = { 'BufReadPost', 'BufNewFile', 'BufWritePre' },
     opts = {
       indent = {
-        char = symbol
+        char = symbol,
       },
       exclude = { filetypes = filetype_exclude },
     },
   },
   {
     'echasnovski/mini.indentscope', -- Visualize and work with indent scope
-    version = false,
-    event = { 'BufReadPre', 'BufNewFile' },
+    version = false, -- wait till new 0.7.0 release to put it back on semver
+    event = { 'BufReadPost', 'BufNewFile', 'BufWritePre' },
     init = function()
       vim.api.nvim_create_autocmd('FileType', {
         pattern = filetype_exclude,
@@ -34,8 +34,8 @@ return {
       draw = {
         animation = function(next, _total)
           return 5
-        end
-      }
+        end,
+      },
     },
   },
 }

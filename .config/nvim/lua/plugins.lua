@@ -118,13 +118,6 @@ return {
     cond = function()
       return not vim.g.started_by_firenvim
     end,
-    init = function()
-      ---@diagnostic disable-next-line: duplicate-set-field
-      vim.notify = function(...)
-        require('lazy').load({ plugins = { 'notify' } })
-        return vim.notify(...)
-      end
-    end,
     keys = {
       {
         '<leader>fn',

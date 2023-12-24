@@ -3,8 +3,9 @@
 
 return {
   'nvimtools/none-ls.nvim',
-  dependencies = 'nvim-lua/plenary.nvim',
-  lazy = true,
+  event = { 'BufReadPost', 'BufNewFile', 'BufWritePre' },
+  dependencies = { 'mason.nvim', 'nvim-lua/plenary.nvim' },
+  optional = true,
   opts = function()
     local null_ls_status_ok, null_ls = pcall(require, 'null-ls')
     if not null_ls_status_ok then

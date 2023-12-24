@@ -6,13 +6,14 @@ return {
   cmd = 'TSPlaygroundToggle',
   dependencies = 'nvim-treesitter/nvim-treesitter',
   build = ':TSInstall query',
-  config = function()
-    require 'nvim-treesitter.configs'.setup {
-      query_linter = {
-        enable = true,
-        use_virtual_text = true,
-        lint_events = { 'BufWrite', 'CursorHold' },
-      },
-    }
-  end
+  config = function(_, opts)
+    require('nvim-treesitter.configs').setup(opts)
+  end,
+  opts = {
+    query_linter = {
+      enable = true,
+      use_virtual_text = true,
+      lint_events = { 'BufWrite', 'CursorHold' },
+    },
+  },
 }

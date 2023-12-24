@@ -2,12 +2,12 @@
 --  (makes it possible to use LazyGit directly)
 
 if vim.env.GIT_DIR == nil then
-  local cwd       = vim.fn.getcwd()
-  local homedir   = vim.fn.expand('~')
+  local cwd = vim.fn.getcwd()
+  local homedir = vim.fn.expand('~')
   local configdir = vim.fn.expand('~/.config')
 
   if cwd == homedir or string.sub(cwd, 1, #configdir) == configdir then
-    vim.env.GIT_DIR = vim.fn.systemlist('yadm introspect repo')[1]
+    vim.env.GIT_DIR = vim.fn.expand('~/.local/share/yadm/repo.git') -- hardcode value of `vim.fn.systemlist('yadm introspect repo')[1]` for startup speed
     vim.cmd('cd ' .. homedir)
   end
 end

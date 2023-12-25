@@ -12,17 +12,6 @@ return {
 
   {
     'is0n/fm-nvim',
-    init = function()
-      if vim.fn.has('mac') == 1 then -- Ensure that LazyGit uses same config dir on macOS as in Linux
-        vim.api.nvim_create_autocmd({ 'BufEnter', 'BufAdd', 'BufNew', 'BufNewFile', 'BufWinEnter' }, {
-          group = vim.api.nvim_create_augroup('LAZYGIT_CUSTOM_CONFIG', {}),
-          callback = function()
-            vim.g.lazygit_use_custom_config_file_path = 1
-            vim.g.lazygit_config_file_path = vim.fn.expand('~/.config/lazygit/config.yml')
-          end,
-        })
-      end
-    end,
     keys = {
       {
         '<leader>tg',
@@ -31,6 +20,9 @@ return {
             vim.cmd('cd %:h') -- Ensure we're calling Lazygit from the folder of the active file
           end
           vim.cmd('Lazygit')
+
+          -- ensure that Gitsigns refreshes with new state after closing Lazygit
+          vim.cmd([[execute 'Gitsigns refresh']])
         end,
         desc = 'Open LazyGit',
       },

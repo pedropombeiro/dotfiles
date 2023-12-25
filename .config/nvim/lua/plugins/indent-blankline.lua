@@ -1,7 +1,8 @@
 -- indent-blankline.nvim (https://github.com/lukas-reineke/indent-blankline.nvim)
 --  Indent guides for Neovim
 
-local filetype_exclude = { 'help', 'alpha', 'dashboard', 'neo-tree', 'Trouble', 'lazy', 'mason', 'notify' }
+local filetype_exclude =
+  { 'help', 'alpha', 'dashboard', 'neo-tree', 'Trouble', 'lazy', 'mason', 'notify', 'toggleterm', 'lazyterm' }
 local symbol = '│'
 
 return {

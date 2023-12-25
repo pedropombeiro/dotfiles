@@ -1,19 +1,22 @@
 -- wilder.nvim (https://github.com/gelguy/wilder.nvim)
 -- A more adventurous wildmenu
 
-local function config()
-  local wilder = require('wilder')
-  vim.opt.wildcharm = vim.fn.char2nr('	') -- tab
-  wilder.enable_cmdline_enter()
-  wilder.setup({ modes = { ':' } })
+return {
+  'gelguy/wilder.nvim',
+  build = ':UpdateRemotePlugins',
+  event = 'CmdlineEnter',
+  keys = {
+    { '<TAB>', 'wilder#in_context() ? wilder#next() : "\\<Tab>"', mode = 'c', expr = true },
+    { '<S-TAB>', 'wilder#in_context() ? wilder#previous() : "\\<S-Tab>"', mode = 'c', expr = true },
+    { '<C-j>', 'wilder#in_context() ? wilder#next() : "\\<Tab>"', mode = 'c', expr = true },
+    { '<C-k>', 'wilder#in_context() ? wilder#previous() : "\\<S-Tab>"', mode = 'c', expr = true },
+  },
+  config = function()
+    vim.opt.wildcharm = vim.fn.char2nr('	') -- tab
 
-  local function init_wilder()
-    -- stylua: ignore start
-    vim.keymap.set('c', '<TAB>', 'wilder#in_context() ? wilder#next() : "\\<Tab>"', { expr = true })
-    vim.keymap.set('c', '<S-TAB>', 'wilder#in_context() ? wilder#previous() : "\\<S-Tab>"', { expr = true })
-    vim.keymap.set('c', '<C-j>', 'wilder#in_context() ? wilder#next() : "\\<Tab>"', { expr = true })
-    vim.keymap.set('c', '<C-k>', 'wilder#in_context() ? wilder#previous() : "\\<S-Tab>"', { expr = true })
-    -- stylua: ignore end
+    local wilder = require('wilder')
+    wilder.enable_cmdline_enter()
+    wilder.setup({ modes = { ':', '/' } })
 
     wilder.set_option('pipeline', {
       wilder.debounce(10),
@@ -22,11 +25,10 @@ local function config()
           fuzzy = 1,
           -- set_pcre2_pattern = 1,
         }),
-        wilder.python_search_pipeline({
-          pattern = 'fuzzy',
-        })
+        wilder.search_pipeline()
       ),
     })
+
     local highlighters = {
       wilder.basic_highlighter(),
     }
@@ -46,19 +48,5 @@ local function config()
         }),
       })
     )
-  end
-
-  -- Lazy loading the setup.
-  local wilder_group = vim.api.nvim_create_augroup('WILDER', { clear = true })
-  vim.api.nvim_create_autocmd(
-    'CmdlineEnter',
-    { group = wilder_group, pattern = '*', once = true, callback = init_wilder }
-  )
-end
-
-return {
-  'gelguy/wilder.nvim',
-  config = config,
-  build = ':UpdateRemotePlugins',
-  event = { 'CmdlineEnter' },
+  end,
 }

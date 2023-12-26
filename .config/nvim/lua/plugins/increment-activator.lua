@@ -3,22 +3,22 @@
 
 return {
   'nishigori/increment-activator',
-  event = 'BufReadPost',
+  event = { 'BufNewFile', 'BufReadPost' },
   init = function()
     vim.g.increment_activator_filetype_candidates = {
       ['_'] = {
-        { 'enable',  'disable' },
+        { 'enable', 'disable' },
         { 'enabled', 'disabled' },
       },
       ['home-assistant'] = {
-        { 'turn_off',    'turn_on' },
+        { 'turn_off', 'turn_on' },
         { 'unavailable', 'available' },
-        { 'not_home',    'home' },
+        { 'not_home', 'home' },
       },
       ruby = {
         { 'be_allowed', 'be_disallowed' },
-        { 'to',         'not_to' },
+        { 'to', 'not_to' },
       },
     }
-  end
+  end,
 }

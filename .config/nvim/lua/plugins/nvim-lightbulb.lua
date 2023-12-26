@@ -3,9 +3,9 @@
 
 return {
   'kosayoda/nvim-lightbulb',
-  event = 'BufReadPre',
+  event = { 'BufNewFile', 'BufReadPre' },
   dependencies = 'antoinemadec/FixCursorHold.nvim',
   opts = {
-    autocmd = { enabled = true }
-  }
+    autocmd = { enabled = true },
+  },
 }

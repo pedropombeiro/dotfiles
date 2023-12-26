@@ -4,9 +4,9 @@
 
 return {
   'folke/which-key.nvim',
-  lazy = true,
+  event = 'VeryLazy',
   init = function()
     require('plugins/which-key.keymap')
     require('plugins/which-key.keymap-plugins')
-  end
+  end,
 }

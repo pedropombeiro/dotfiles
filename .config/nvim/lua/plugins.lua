@@ -49,7 +49,7 @@ return {
   {
     'folke/persistence.nvim',
     event = 'BufReadPre',
-    opts = { options = { 'buffers', 'curdir', 'tabpages', 'winsize', 'help', 'globals' } },
+    opts = { options = vim.opt.sessionoptions:get() },
     -- stylua: ignore
     keys = {
       {

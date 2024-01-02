@@ -27,6 +27,14 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- Inspiration: https://github.com/skwp/dotfiles/blob/master/vim/settings.vim
+local vimsettings = '~/.config/nvim/lua/core'
+local settingsfiles = vim.fn.split(vim.fn.globpath(vimsettings, '*.lua'), '\n')
+
+for _, fpath in ipairs(settingsfiles) do
+  dofile(fpath)
+end
+
 -- Install plugins
 -- https://github.com/folke/lazy.nvim
 require('lazy').setup({
@@ -68,11 +76,3 @@ require('lazy').setup({
     border = require('config').ui.border,
   },
 })
-
--- Inspiration: https://github.com/skwp/dotfiles/blob/master/vim/settings.vim
-local vimsettings = '~/.config/nvim/lua/core'
-local settingsfiles = vim.fn.split(vim.fn.globpath(vimsettings, '*.lua'), '\n')
-
-for _, fpath in ipairs(settingsfiles) do
-  dofile(fpath)
-end

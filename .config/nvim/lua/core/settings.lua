@@ -2,6 +2,7 @@
 
 local opt = vim.opt
 
+---@format disable
 opt.shortmess:append({ W = true, I = true, c = true })
 opt.smartindent = true
 opt.swapfile    = false -- disable the swapfile
@@ -34,7 +35,7 @@ local vimrc_undofile_augroup  = vim.api.nvim_create_augroup('vimrc_undofile', { 
 vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = '/tmp/*',
   group = vimrc_undofile_augroup,
-  command = 'setlocal noundofile'
+  command = 'setlocal noundofile',
 })
 
 ---------------- Spelling ------------------
@@ -102,6 +103,7 @@ opt.listchars    = {
   tab      = '│·',
   nbsp     = '␣'
 }
+---@format enable
 
 local term_helper_augroup = vim.api.nvim_create_augroup('term_helper', { clear = true })
 vim.api.nvim_create_autocmd('TermOpen', {
@@ -145,5 +147,5 @@ vim.api.nvim_create_autocmd('BufEnter', {
         vim.opt_local.makeprg = 'just'
       end
     end
-  end
+  end,
 })

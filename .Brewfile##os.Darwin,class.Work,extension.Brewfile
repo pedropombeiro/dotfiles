@@ -382,8 +382,6 @@ cask "notion"
 cask "numi"
 # Visual client for Helix Core
 cask "p4v"
-# Administration and development platform for PostgreSQL
-cask "pgadmin4"
 # Home media player
 cask "plex"
 # VPN client focusing on security

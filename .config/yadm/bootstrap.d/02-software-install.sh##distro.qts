@@ -25,12 +25,12 @@ if [[ ! -d "/share/homes/${USER}/.oh-my-zsh" ]]; then
   printf "${YELLOW}%s${NC}\n" "Oh-my-zsh installed"
 fi
 
-if [[ ! -x "${HOME}/.local/share/rtx/bin/rtx" ]]; then
-  curl https://rtx.jdxcode.com/install.sh | sh
+if [[ ! -x "${HOME}/.local/share/mise/bin/mise" ]]; then
+  curl https://mise.jdx.dev/install.sh | sh
   ln -sf "/share/homes/${USER}/.local" /root/
 fi
 
-rtx plugins add https://github.com/comdotlinux/asdf-lazydocker.git
+mise plugins add https://github.com/comdotlinux/asdf-lazydocker.git
 
 INSTALL_DIR=/share/homes/${USER}/opt
 if [[ ! -d "${INSTALL_DIR}/autojump" ]]; then

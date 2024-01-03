@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# mise shims are needed for key-value-server plist and for RubyMine debugger
+mise settings set experimental true
+mise settings set shims_dir "${HOME}/.mise/shims"

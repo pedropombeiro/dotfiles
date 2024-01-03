@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-source "$(rtx where rust 2>& /dev/null)/env"
+source "$(mise where rust 2>&/dev/null)/env"
 
 command -v grc-rs >/dev/null && eval "$(grc-rs --aliases)"

@@ -3,4 +3,4 @@
 TMPDIR="$TEMP"
 export TMPDIR
 
-export PATH="$PATH:$(rtx where rust 2>& /dev/null)/bin"
+export PATH="$PATH:$(mise where rust 2>&/dev/null)/bin"

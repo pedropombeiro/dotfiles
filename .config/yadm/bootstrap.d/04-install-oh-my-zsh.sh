@@ -10,11 +10,11 @@ function install_zsh_plugin() {
   local dest_path="${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/${path}"
   if [[ ! -d "${dest_path}" ]]; then
     printf "${YELLOW}%s${NC}\n" "Cloning ${repo} ..."
-    git clone --depth=1 https://github.com/${repo}.git "${dest_path}"
+    git clone --depth=1 https://github.com/"${repo}".git "${dest_path}"
   fi
 }
 
-type -f rtx >/dev/null 2>&1 || eval "$(rtx activate bash)"
+type -f mise >/dev/null 2>&1 || eval "$(mise activate bash)"
 
 grep '.bash_profile.shared' "${HOME}/.bash_profile" >/dev/null 2>&1 || echo "source ~/.bash_profile.shared" >>"${HOME}/.bash_profile"
 grep '.bashrc.shared' "${HOME}/.bashrc" >/dev/null 2>&1 || echo "source ~/.bashrc.shared" >>"${HOME}/.bashrc"

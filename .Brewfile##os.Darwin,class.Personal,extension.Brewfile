@@ -105,6 +105,8 @@ brew "lsd"
 brew "mackup"
 # Mac App Store command-line interface
 brew "mas"
+# Polyglot runtime manager (asdf rust clone)
+brew "mise"
 # Collection of tools that nobody wrote when UNIX was young
 brew "moreutils"
 # NCurses Disk Usage
@@ -169,8 +171,6 @@ brew "yt-dlp"
 brew "borgbackup/tap/borgbackup-fuse"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
-# Multi-language runtime manager
-brew "jdxcode/tap/rtx"
 # Reconcile your local git repositories
 brew "leipert-projects/git-recon/git-recon"
 # Password manager that keeps all passwords secure behind one password

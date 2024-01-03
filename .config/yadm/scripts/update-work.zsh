@@ -4,11 +4,11 @@ YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pw
 
 source "${YADM_SCRIPTS}/colors.sh"
 
-# Create rtx shims for key-value-server plist and for RubyMine debugger
-rtx reshim
+# Create mise shims for key-value-server plist and for RubyMine debugger
+mise reshim
 
-printf "${YELLOW}%s${NC}\n" "Pruning rtx..."
-(cd ${GDK_ROOT}/gitlab && rtx prune)
+printf "${YELLOW}%s${NC}\n" "Pruning mise..."
+(cd ${GDK_ROOT}/gitlab && mise prune)
 
 # Populate gdk.yml
 if [[ -n ${GDK_ROOT} ]]; then
@@ -24,7 +24,7 @@ snowplow_micro:
   enabled: false
   port: 9090
 asdf:
-  opt_out: true  # Required to use rtx instead
+  opt_out: true  # Required to use mise instead
 gdk:
   update_hooks:
     before:
@@ -68,15 +68,15 @@ if [[ -n ${GDK_ROOT} ]]; then
 post-merge:
   follow: true
   commands:
-    rtx-install:
-      run: rtx install
+    mise-install:
+      run: mise install
 
 # When switching branches
 post-checkout:
   follow: true
   commands:
-    rtx-install:
-      run: rtx install
+    mise-install:
+      run: mise install
 EOF
 
   (cd ${GDK_ROOT} && lefthook install)

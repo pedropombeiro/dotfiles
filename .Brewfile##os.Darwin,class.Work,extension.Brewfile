@@ -170,6 +170,8 @@ brew "markdownlint-cli"
 brew "mas"
 # Run a Kubernetes cluster locally
 brew "minikube"
+# Polyglot runtime manager (asdf rust clone)
+brew "mise"
 # Simple tool to make locally trusted development certificates
 brew "mkcert"
 # Collection of tools that nobody wrote when UNIX was young
@@ -179,7 +181,7 @@ brew "ncdu"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # HTTP(S) server and reverse proxy, and IMAP/POP3 proxy server
-brew "nginx", restart_service: true
+brew "nginx"
 # Port scanning utility for large networks
 brew "nmap"
 # Prometheus exporter for machine metrics
@@ -272,8 +274,6 @@ brew "yq"
 brew "yt-dlp"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
-# Multi-language runtime manager
-brew "jdxcode/tap/rtx"
 # Reconcile your local git repositories
 brew "leipert-projects/git-recon/git-recon"
 # Compare Docker images

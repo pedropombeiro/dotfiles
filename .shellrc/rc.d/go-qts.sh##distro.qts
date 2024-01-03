@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-GOROOT="$(rtx where golang)/go"
+GOROOT="$(mise where golang)/go"
 if [[ -d ${GOROOT} ]] && [[ -z ${ASDF_GOLANG_DEFAULT_PACKAGES_FILE} ]]; then
-  GOPATH="$(rtx where golang)/packages"
+  GOPATH="$(mise where golang)/packages"
 
   ASDF_GOLANG_DEFAULT_PACKAGES_FILE=~/.default-golang-pkgs
 

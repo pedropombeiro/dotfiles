@@ -12,8 +12,8 @@ printf "${YELLOW}%s${NC}\n" "Updating brew..."
 brew update
 brew upgrade
 
-printf "${YELLOW}%s${NC}\n" "Updating rtx plugins..."
-(cd ~ && rtx plugins update && rtx install --yes && rtx upgrade)
+printf "${YELLOW}%s${NC}\n" "Updating mise plugins..."
+(cd ~ && mise plugins update && mise install --yes && mise upgrade)
 
 # Update npm packages
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."

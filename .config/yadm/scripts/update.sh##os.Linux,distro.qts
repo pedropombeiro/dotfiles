@@ -7,9 +7,9 @@ source "${YADM_SCRIPTS}/colors.sh"
 printf "${YELLOW}%s${NC}\n" "Updating Entware packages..."
 opkg update && opkg upgrade
 
-printf "${YELLOW}%s${NC}\n" "Updating rtx packages..."
-yes | rtx self-update
-(cd ~ && rtx plugin update && rtx install --yes && rtx upgrade)
+printf "${YELLOW}%s${NC}\n" "Updating mise packages..."
+yes | mise self-update
+(cd ~ && mise plugin update && mise install --yes && mise upgrade)
 
 printf "${YELLOW}%s${NC}\n" "Updating python packages..."
 pip3 list --outdated --format=json | jq -r '.[] | .name+"="+.latest_version' |

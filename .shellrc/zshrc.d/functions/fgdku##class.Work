@@ -67,6 +67,8 @@ source ~/.config/yadm/scripts/colors.sh
   git restore db/structure.sql
   sleep 5
 
+  bundle install # Needed if Ruby version changed
+
   printf "${YELLOW}%s${NC}\n" 'Precompiling static assets to ensure graphiql-rails changes are picked up...'
   bundle exec rake rake:assets:precompile
 

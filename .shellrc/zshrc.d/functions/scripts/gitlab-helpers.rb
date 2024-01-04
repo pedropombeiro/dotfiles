@@ -54,7 +54,7 @@ class String
 
   def trim(text, length_with_room_for_omission, options)
     stop = if options[:separator]
-             (text.rindex(options[:separator], length_with_room_for_omission) || length_with_room_for_omission)
+             text.rindex(options[:separator], length_with_room_for_omission) || length_with_room_for_omission
            else
              length_with_room_for_omission
            end
@@ -279,7 +279,8 @@ end
 def retrieve_mrs(*args)
   username = ARGV[0] if args.empty?
 
-  require('json')
+  require 'date'
+  require 'json'
 
   res = `glab api graphql -f query='
     query authoredMergeRequests {
@@ -307,6 +308,8 @@ def retrieve_mrs(*args)
             headPipeline {
               path
               status
+              startedAt
+              finishedAt
             }
           }
         }
@@ -314,6 +317,11 @@ def retrieve_mrs(*args)
     }
   '`
   return if $CHILD_STATUS != 0
+
+  if res.start_with?('glab:')
+    puts res
+    exit 1
+  end
 
   mrs = JSON.parse(res).dig(*%w[data user authoredMergeRequests nodes])
   unless mrs
@@ -350,12 +358,22 @@ def retrieve_mrs(*args)
       approvals_left = mr['approvalsLeft']
       approvals_required = mr['approvalsRequired']
       pipeline_status = mr.dig('headPipeline', 'status')
+      pipeline_started_at = mr.dig('headPipeline', 'startedAt')
+      pipeline_finished_at = mr.dig('headPipeline', 'finishedAt')
+      pipeline_started_at = DateTime.parse(pipeline_started_at) if pipeline_started_at
+      pipeline_finished_at = DateTime.parse(pipeline_finished_at) if pipeline_finished_at
+      pipeline_duration = pipeline_finished_at || pipeline_started_at.nil? ? nil : (DateTime.now - pipeline_started_at).to_f * 24 * 60 * 60
+      pipeline_age = pipeline_finished_at ? (DateTime.now - pipeline_finished_at).to_f * 24 * 60 * 60 : nil
       reviewers = mr.dig('reviewers', 'nodes').map { |reviewer| reviewer['username'] }
 
       row = [
         mr['reference'],
         merge_status,
-        pipeline_aliases.fetch(pipeline_status, pipeline_status),
+        [
+          pipeline_aliases.fetch(pipeline_status, pipeline_status),
+          pipeline_duration ? "(#{(pipeline_duration / 60).round} mins)" : nil,
+          pipeline_age && pipeline_age > 4 * 60 * 60 ? '🥶' : nil
+        ].compact.join(' '),
         { value: squash, alignment: :center }
       ]
       row << should_be_rebased if any_rebase

@@ -58,7 +58,10 @@ return {
     {
       'gx', -- Restore URL handling from disabled netrw plugin
       function()
-        if vim.fn.has('mac') == 1 then
+        if vim.fn.has('nvim-0.10') == 1 then
+          vim.ui.open(vim.fn.expand('<cfile>'))
+          -- TODO: Remove following lines when Neovim 0.10 is released
+        elseif vim.fn.has('mac') == 1 then
           vim.cmd([[call jobstart(['open', expand('<cfile>')], {'detach': v:true})]])
         elseif vim.fn.has('unix') == 1 then
           vim.cmd([[call jobstart(['xdg-open', expand('<cfile>')], {'detach': v:true})]])

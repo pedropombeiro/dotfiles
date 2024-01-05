@@ -251,12 +251,17 @@ return {
         }
       end
 
-      require('lspconfig.ui.windows').default_options.border = require('config').ui.border
+      local border = require('config').ui.border
+      local inlay_hints_enabled = false
+      if vim.fn.has('nvim-0.10') == 1 then
+        inlay_hints_enabled = true
+      end
 
+      require('lspconfig.ui.windows').default_options.border = border
       require('lsp-setup').setup({
         default_mappings = false,
         inlay_hints = {
-          enabled = false, -- TODO: Enable on Neovim 0.10+
+          enabled = inlay_hints_enabled,
         },
         -- Global capabilities
         capabilities = vim.lsp.protocol.make_client_capabilities(),
@@ -269,7 +274,7 @@ return {
         float = {
           focusable = false,
           style = 'minimal',
-          border = require('config').ui.border,
+          border = border,
           source = false,
           header = '',
           suffix = '',

@@ -5,11 +5,7 @@ local function setFoldOptions()
   local config = require('config')
   local expander_icons = config.ui.icons.expander
 
-  if vim.fn.has('nvim-0.9') == 1 then
-    vim.opt.foldcolumn = '1'
-  else
-    vim.opt.foldcolumn = '0'
-  end
+  vim.opt.foldcolumn = '1'
   vim.opt.foldlevel = 99
   vim.opt.foldlevelstart = 99
   vim.opt.foldenable = true

@@ -1,7 +1,7 @@
 bat           latest
 bottom        latest
 ctop          latest
-delta         0.15.1
+delta         latest
 dive          latest
 duf           latest
 dust          latest
@@ -20,7 +20,7 @@ neovim        latest
 node          17
 pre-commit    latest
 ripgrep       latest
-rust          1.58.1
+rust          1.58.2
 shellcheck    latest
 shfmt         latest
 viddy         latest

@@ -4,6 +4,7 @@ return {
     'mtdl9/vim-log-highlighting', -- Provides syntax highlighting for generic log files in VIM.
     ft = 'log',
   },
+  { 'mechatroner/rainbow_csv', ft = { 'csv', 'tsv' } }, -- 🌈Rainbow CSV - Vim plugin: Highlight columns in CSV and TSV files and run queries in SQL-like language
 
   {
     'petertriho/nvim-scrollbar', -- Extensible Neovim Scrollbar

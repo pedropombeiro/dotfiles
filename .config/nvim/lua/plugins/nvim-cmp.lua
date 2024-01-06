@@ -1,6 +1,12 @@
 -- nvim-cmp (https://github.com/hrsh7th/nvim-cmp)
 --  A completion plugin for neovim coded in Lua.
 
+local has_words_before = function()
+  unpack = unpack or table.unpack
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
+end
+
 return {
   -- snippets
   {
@@ -18,27 +24,13 @@ return {
       history = true,
       delete_check_events = 'TextChanged',
     },
-    -- stylua: ignore
-    keys = {
-      {
-        '<Tab>',
-        function()
-          return require('luasnip').jumpable(1) and '<Plug>luasnip-jump-next' or '<Tab>'
-        end,
-        expr = true,
-        silent = true,
-        mode = 'i',
-      },
-      { '<Tab>',   function() require('luasnip').jump(1) end,  mode = 's' },
-      { '<S-Tab>', function() require('luasnip').jump(-1) end, mode = { 'i', 's' } },
-    },
   },
 
   -- auto completion
   {
     'hrsh7th/nvim-cmp',
     version = false, -- last release is way too old
-    event = 'InsertEnter',
+    event = { 'InsertEnter', 'CmdlineEnter' },
     dependencies = {
       'hrsh7th/cmp-buffer', -- nvim-cmp source for buffer words
       'hrsh7th/cmp-calc', -- nvim-cmp source for math calculation
@@ -85,10 +77,33 @@ return {
             i = cmp.mapping.abort(),
             c = cmp.mapping.close(),
           }),
+          ['<Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable()
+            --       -- that way you will only jump inside the snippet region
+            elseif luasnip.expand_or_jumpable() then
+              luasnip.expand_or_jump()
+            elseif has_words_before() then
+              cmp.complete()
+            else
+              fallback()
+            end
+          end, { 'i', 's' }),
+          ['<S-Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+              luasnip.jump(-1)
+            else
+              fallback()
+            end
+          end, { 'i', 's' }),
+
           ['<CR>'] = cmp.mapping.confirm({
             behavior = cmp.ConfirmBehavior.Replace,
-            select = false,
-          }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+            select = true,
+          }),
         }),
         sources = cmp.config.sources({
           {

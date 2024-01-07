@@ -20,7 +20,7 @@ neovim        latest
 node          17
 pre-commit    latest
 ripgrep       latest
-rust          1.58.2
+rust          1.58.1
 shellcheck    latest
 shfmt         latest
 viddy         latest

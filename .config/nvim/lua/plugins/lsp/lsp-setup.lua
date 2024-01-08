@@ -184,6 +184,11 @@ return {
                 lineFoldingOnly = true,
               },
             },
+            settings = {
+              yaml = {
+                ['https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json'] = '/.gitlab-ci.yml',
+              },
+            },
           },
           -- lazy-load schemastore when needed
           on_new_config = function(new_config)

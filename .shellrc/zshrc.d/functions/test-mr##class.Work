@@ -7,10 +7,10 @@
 test_files=(
   $(git diff --name-only "$(git merge-base master "$(git rev-parse --abbrev-ref HEAD)")" |
     awk '/.rb$/ && !/spec\/factories/' |
-    sed -e 's/^app\/controllers/spec\/requests/' \
-      -e 's/^app/spec/' \
-      -e '/_spec.rb$/!s/.rb$/_spec.rb/' \
-      -e 's/^lib/spec\/lib/' |
+    sed -E 's/^(ee\/)?app\/controllers/\1spec\/requests/' |
+    sed -E 's/^(ee\/)?app/\1spec/' |
+    sed -e '/_spec.rb$/!s/.rb$/_spec.rb/' |
+    sed -E 's/^(ee\/)?lib/\1spec\/lib/' |
     sort |
     uniq)
 )

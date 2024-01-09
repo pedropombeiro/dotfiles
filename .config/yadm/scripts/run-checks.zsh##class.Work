@@ -1,0 +1,92 @@
+#!/usr/bin/env zsh
+
+YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
+
+source "${YADM_SCRIPTS}/colors.sh"
+
+function print_op() {
+  printf "${CYAN}%s${NC}\n" "- $1"
+}
+
+function print_op_stay() {
+  printf "${CYAN}%-60s${NC} " "- $1..."
+}
+
+function print_ok() {
+  printf "${GREEN}%s${NC} %s\n" '✅ OK' $1
+}
+
+function print_failure() {
+  printf "${RED}%s${NC}\n" "$1"
+}
+
+any_failed=0
+
+print_op_stay "Checking Busylight HTTP server"
+current_presence=$(curl --silent --fail --max-time 0.2 "http://127.0.0.1:18989?action=currentpresence" | jq -r '.runningcommand.parameter')
+if [[ $? -eq 0 ]]; then
+  print_ok $current_presence
+else
+  echo
+  if pgrep Busylight_HTTP_Mac >/dev/null; then
+    print_failure "Busylight HTTP server is running, but API endpoint can't be reached"
+  else
+    print_failure "Busylight HTTP server is not running"
+  fi
+  any_failed=1
+fi
+
+print_op_stay "Checking key-value-server (for Desk controller)"
+if pgrep key-value-server >/dev/null; then
+  print_ok
+else
+  echo
+  print_failure "key-value-server is not running"
+  any_failed=1
+fi
+
+print_op_stay "Checking if key-value-server is in PATH"
+if which key-value-server >/dev/null; then
+  print_ok
+else
+  print_failure "key-value-server is not in PATH. Ensure that a working cargo version is installed, run `cargo install --git https://github.com/pedropombeiro/key-value-server` and then `mise reshim`"
+  any_failed=1
+fi
+
+print_op_stay "Checking nginx (for Desk Controller)"
+if pgrep nginx >/dev/null; then
+  print_ok
+else
+  echo
+  print_failure "nginx is not running"
+  any_failed=1
+fi
+
+print_op_stay "Checking if key-value-server is available through nginx"
+position=$(curl -s http://localhost:18087/deskcontroller/desk-position)
+if [[ $? -eq 0 ]]; then
+  print_ok "$position"
+else
+  any_failed=1
+fi
+
+print_op_stay "Checking if Home Assistant Companion is running"
+if pgrep 'Home Assistant' >/dev/null; then
+  print_ok
+else
+  open -a 'Home Assistant'
+  sleep 1
+  if pgrep 'Home Assistant' >/dev/null; then
+    print_failure "Home Assistant Companion is not running (fixed)"
+  else
+    print_failure "Home Assistant Companion is not running"
+    any_failed=1
+  fi
+fi
+
+if [[ $any_failed -eq 1 ]]; then
+  printf "${YELLOW}%s${NC}\n" "⚠️  Checks finished with errors/warnings!"
+  (exit 1)
+else
+  printf "${GREEN}%s${NC}\n" "✅ Checks finished!"
+fi

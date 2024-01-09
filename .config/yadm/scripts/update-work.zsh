@@ -132,6 +132,20 @@ else
   any_failed=1
 fi
 
+print_op_stay "Checking if Home Assistant Companion is running"
+if pgrep 'Home Assistant' >/dev/null; then
+  print_ok
+else
+  open -a 'Home Assistant'
+  sleep 1
+  if pgrep 'Home Assistant' >/dev/null; then
+    print_failure "Home Assistant Companion is not running (fixed)"
+  else
+    print_failure "Home Assistant Companion is not running"
+    any_failed=1
+  fi
+fi
+
 if [[ $any_failed -eq 1 ]]; then
   printf "${YELLOW}%s${NC}\n" "⚠️  Checks finished with errors/warnings!"
   (exit 1)

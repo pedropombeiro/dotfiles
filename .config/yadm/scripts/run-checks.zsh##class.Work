@@ -22,6 +22,29 @@ function print_failure() {
 
 any_failed=0
 
+print_op_stay "Checking if Elgato Stream Deck is running"
+if pgrep 'Stream Deck' >/dev/null; then
+  print_ok
+else
+  open -a 'Elgato Stream Deck'
+  sleep 1
+  if pgrep 'Stream Deck' >/dev/null; then
+    print_failure "Elgato Stream Deck is not running (fixed)"
+  else
+    print_failure "Elgato Stream Deck is not running"
+    any_failed=1
+  fi
+fi
+
+print_op_stay "Checking nginx (for Desk Controller and Busylight)"
+if pgrep nginx >/dev/null; then
+  print_ok
+else
+  echo
+  print_failure "nginx is not running"
+  any_failed=1
+fi
+
 print_op_stay "Checking Busylight HTTP server"
 current_presence=$(curl --silent --fail --max-time 0.2 "http://127.0.0.1:18989?action=currentpresence" | jq -r '.runningcommand.parameter')
 if [[ $? -eq 0 ]]; then
@@ -33,6 +56,14 @@ else
   else
     print_failure "Busylight HTTP server is not running"
   fi
+  any_failed=1
+fi
+
+print_op_stay "Checking WalkingPad Prometheus metrics server"
+if curl --silent --fail --max-time 0.2 http://127.0.0.1:8000/metrics >/dev/null; then
+  print_ok
+else
+  print_failure "WalkingPad Prometheus server (github.com/huserben/walkingpad) is not running"
   any_failed=1
 fi
 
@@ -53,17 +84,8 @@ else
   any_failed=1
 fi
 
-print_op_stay "Checking nginx (for Desk Controller)"
-if pgrep nginx >/dev/null; then
-  print_ok
-else
-  echo
-  print_failure "nginx is not running"
-  any_failed=1
-fi
-
 print_op_stay "Checking if key-value-server is available through nginx"
-position=$(curl -s http://localhost:18087/deskcontroller/desk-position)
+position=$(curl -s --fail http://localhost:18087/deskcontroller/desk-position)
 if [[ $? -eq 0 ]]; then
   print_ok "$position"
 else

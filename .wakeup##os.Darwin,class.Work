@@ -23,3 +23,5 @@ sleep 5
 
 SwitchAudioSource -t output -s 'MacBook Pro Speakers'
 SwitchAudioSource -t output -s 'CalDigit TS4 Audio - Rear'
+
+~/.config/yadm/scripts/run-checks.zsh

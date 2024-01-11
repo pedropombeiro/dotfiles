@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 INSTALL_DIR="${HOMEBREW_PREFIX}/share/autojump"
 
-[[ -s "${INSTALL_DIR}/autojump.zsh" ]] && source "${INSTALL_DIR}/autojump.zsh"
+[[ -s "${INSTALL_DIR}/autojump.zsh" ]] && zvm_after_init_commands+=("source '${INSTALL_DIR}/autojump.zsh'")

@@ -11,7 +11,7 @@ elif command -v mise >/dev/null; then
 fi
 
 if [[ -n $MISE_SHELL ]]; then
-  if [ ! -f ~/.config/zsh/site-functions/_mise ]; then
+  if [[ ! -f ~/.config/zsh/site-functions/_mise ]]; then
     mise complete -s zsh >~/.config/zsh/site-functions/_mise
     rm -f '~/.zcompdump*' >/dev/null 2>&1
   fi

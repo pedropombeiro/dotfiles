@@ -2,7 +2,7 @@
 
 INSTALL_DIR="/share/homes/${USER}/opt/.autojump"
 
-[[ -s "${INSTALL_DIR}/etc/profile.d/autojump.sh" ]] && source "${INSTALL_DIR}/etc/profile.d/autojump.sh"
+[[ -s "${INSTALL_DIR}/etc/profile.d/autojump.sh" ]] && zvm_after_init_commands+=("source '${INSTALL_DIR}/etc/profile.d/autojump.sh'")
 if ! echo "${PATH}" | grep "${INSTALL_DIR}" >/dev/null; then
   export PATH="${PATH}:${INSTALL_DIR}/bin/"
 fi

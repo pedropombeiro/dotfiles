@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 
 if [[ -d ${GDK_ROOT} ]]; then
-  autoload bashcompinit
-  bashcompinit
-
-  source "${GDK_ROOT}/support/completions/gdk.bash"
+  zvm_after_init_commands+=("source '${GDK_ROOT}/support/completions/gdk.bash'")
 
   alias compile_docs="bundle exec rake gitlab:graphql:compile_docs"
   alias guard="bundle exec guard"

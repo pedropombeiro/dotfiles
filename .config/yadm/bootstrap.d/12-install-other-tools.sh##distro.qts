@@ -10,6 +10,7 @@ target_dir="${HOME}/opt/bin"
 temp_dir="$(mktemp -d)"
 
 bandwhich_version=0.20.0
+btop_version=1.3.0
 croc_version=9.6.6
 gping_version=1.15.1
 lnav_version=0.11.2
@@ -17,8 +18,21 @@ lsd_version=1.0.0
 procs_version=0.14.2
 
 function download_and_extract() {
-  printf "${GREEN}%s${NC}\n" "Downloading $1..."
   filename="$(basename "$1")"
+  executable="$(basename "$2")"
+  version="$(${executable} --version 2>/dev/null)"
+  required_version="$3"
+
+  if [[ -n $required_version ]]; then
+    if [[ $? -eq 0 ]]; then
+      if echo "$version" | grep "$required_version" >/dev/null; then
+        printf "${GREEN}%s${NC}\n" "${executable} version ${required_version} is already present."
+        return
+      fi
+    fi
+  fi
+
+  printf "${GREEN}%s${NC}\n" "Downloading $1..."
   wget -q "$1" -O "${temp_dir}/package.${filename##*.}"
 
   printf "${GREEN}%s${NC}" "Extracting... "
@@ -61,17 +75,17 @@ function extract_tarball() {
   rm -f "${temp_dir}/package.*"
 }
 
-download_and_extract "https://github.com/imsnif/bandwhich/releases/download/${bandwhich_version}/bandwhich-v${bandwhich_version}-x86_64-unknown-linux-musl.tar.gz" bandwhich
-download_and_extract "https://github.com/aristocratos/btop/releases/latest/download/btop-x86_64-linux-musl.tbz" ./btop/bin/btop
-download_and_extract "https://github.com/schollz/croc/releases/download/v${croc_version}/croc_${croc_version}_Linux-64bit.tar.gz" croc
-download_and_extract "https://github.com/orf/gping/releases/download/gping-v${gping_version}/gping-x86_64-unknown-linux-musl.tar.gz" gping
+download_and_extract "https://github.com/imsnif/bandwhich/releases/download/${bandwhich_version}/bandwhich-v${bandwhich_version}-x86_64-unknown-linux-musl.tar.gz" bandwhich $bandwhich_version
+download_and_extract "https://github.com/aristocratos/btop/releases/download/v${btop_version}/btop-x86_64-linux-musl.tbz" ./btop/bin/btop $btop_version
+download_and_extract "https://github.com/schollz/croc/releases/download/v${croc_version}/croc_${croc_version}_Linux-64bit.tar.gz" croc $croc_version
+download_and_extract "https://github.com/orf/gping/releases/download/gping-v${gping_version}/gping-x86_64-unknown-linux-musl.tar.gz" gping $gping_version
 
-download_and_extract "https://github.com/tstack/lnav/releases/download/v${lnav_version}/lnav-${lnav_version}-x86_64-linux-musl.zip" "lnav-${lnav_version}/lnav"
+download_and_extract "https://github.com/tstack/lnav/releases/download/v${lnav_version}/lnav-${lnav_version}-x86_64-linux-musl.zip" "lnav-${lnav_version}/lnav" $lnav_version
 
 archive_name="lsd-v${lsd_version}-x86_64-unknown-linux-musl"
-download_and_extract "https://github.com/lsd-rs/lsd/releases/download/v${lsd_version}/${archive_name}.tar.gz" "${archive_name}/lsd"
+download_and_extract "https://github.com/lsd-rs/lsd/releases/download/v${lsd_version}/${archive_name}.tar.gz" "${archive_name}/lsd" $lsd_version
 
-download_and_extract "https://github.com/dalance/procs/releases/download/v${procs_version}/procs-v${procs_version}-x86_64-linux.zip" procs
+download_and_extract "https://github.com/dalance/procs/releases/download/v${procs_version}/procs-v${procs_version}-x86_64-linux.zip" procs $procs_version
 download_and_extract "https://github.com/pedropombeiro/qnapexporter/releases/latest/download/qnapexporter.tar.gz" qnapexporter
 
 rm -rf "${temp_dir}"

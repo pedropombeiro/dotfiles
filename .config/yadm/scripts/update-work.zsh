@@ -12,6 +12,7 @@ printf "${YELLOW}%s${NC}\n" "Pruning mise..."
 
 # Populate gdk.yml
 if [[ -n ${GDK_ROOT} ]]; then
+  # From https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/howto/registry.md#set-up-pushing-and-pulling-of-images-over-http
   cat << EOF > ${GDK_ROOT}/gdk.tmp.yml
 ---
 hostname: gdk.test
@@ -20,6 +21,12 @@ runner:
   bin: "${HOME}/Developer/gitlab.com/gitlab-org/gitlab-runner/out/binaries/gitlab-runner"
   config_file: "${HOME}/.gitlab-runner/config.gdk.toml"
   enabled: false
+registry:
+  enabled: true
+  host: registry.test
+  self_signed: false
+  auth_enabled: true
+  listen_address: 0.0.0.0
 snowplow_micro:
   enabled: false
   port: 9090
@@ -41,7 +48,7 @@ gdk:
 #     key: "${GDK_ROOT}/gdk.localhost+2-key.pem"
 trusted_directories:
   - "${GDK_ROOT}"
-listen_address: 0.0.0.0
+listen_address: 172.16.123.1
 # gitlab:
 #   rails:
 #     sherlock: true

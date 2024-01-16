@@ -89,6 +89,7 @@ position=$(curl -s --fail http://localhost:18087/deskcontroller/desk-position)
 if [[ $? -eq 0 ]]; then
   print_ok "$position"
 else
+  print_failure "key-value-server is not responding to HTTP request"
   any_failed=1
 fi
 

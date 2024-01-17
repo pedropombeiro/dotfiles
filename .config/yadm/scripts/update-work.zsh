@@ -24,7 +24,7 @@ runner:
 registry:
   enabled: true
   host: registry.test
-  self_signed: false
+  self_signed: true
   auth_enabled: true
   listen_address: 0.0.0.0
 snowplow_micro:

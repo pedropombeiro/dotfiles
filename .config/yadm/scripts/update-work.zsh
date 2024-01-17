@@ -22,7 +22,7 @@ runner:
   config_file: "${HOME}/.gitlab-runner/config.gdk.toml"
   enabled: false
 registry:
-  enabled: true
+  enabled: false
   host: registry.test
   self_signed: true
   auth_enabled: true

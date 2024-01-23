@@ -6,4 +6,4 @@
 
 SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
 
-ruby -r "${SCRIPT_DIR}/gitlab-helpers.rb" -e 'pick_reviewer_for_group("gitlab-org/maintainers/cicd-verify")'
+(cd "$SCRIPT_DIR" && ruby -r ./gitlab-helpers.rb -e 'pick_reviewer_for_group("gitlab-org/maintainers/cicd-verify")')

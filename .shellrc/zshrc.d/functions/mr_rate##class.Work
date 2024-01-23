@@ -7,4 +7,4 @@
 SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
 GITLAB_USERNAME="${USER}"
 
-ruby -r "${SCRIPT_DIR}/gitlab-helpers.rb" -e gitlab_mr_rate -- "${1:-${GITLAB_USERNAME}}"
+(cd "$SCRIPT_DIR" && ruby -r ./gitlab-helpers.rb -e gitlab_mr_rate -- "${1:-${GITLAB_USERNAME}}")

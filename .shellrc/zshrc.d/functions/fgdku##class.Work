@@ -40,6 +40,8 @@ source ~/.config/yadm/scripts/colors.sh
     (cd $GDK_ROOT && gdk restart)
   fi
 
+  mise install
+
   set -eo pipefail
 
   ORIGINAL_BRANCH="$(git_current_branch)"

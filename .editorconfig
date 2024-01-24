@@ -9,13 +9,6 @@ indent_size = 2
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.yaml]
-end_of_line = lf
-indent_style = space
-indent_size = 2
-insert_final_newline = true
-trim_trailing_whitespace = true
-
 # Matches multiple files with brace expansion notation
 # Set default charset
 [*.{go,js}]
@@ -25,6 +18,21 @@ indent_size = 2
 insert_final_newline = true
 max_line_length = 120
 
+# Tab indentation (no size specified)
+[.gitconfig]
+max_line_length = 120
+
+[.justfile]
+indent_size = 4
+
+[*.lua]
+quote_style = single
+
+# Tab indentation (no size specified)
+[{Makefile,*.mk}]
+indent_style = tab
+max_line_length = 120
+
 # 4 space indentation
 [*.py]
 charset = utf-8
@@ -32,14 +40,9 @@ indent_style = space
 indent_size = 4
 max_line_length = 120
 
-# Tab indentation (no size specified)
-[Makefile]
-indent_style = tab
-max_line_length = 120
-
-# Tab indentation (no size specified)
-[.gitconfig]
-max_line_length = 120
-
-[*.lua]
-quote_style = single
+[*.yaml]
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true

@@ -41,6 +41,10 @@ source ~/.config/yadm/scripts/colors.sh
   fi
 
   mise install
+  if ! command -v gdk >/dev/null; then
+    # When ruby is upgraded, we don't have the gdk gem, so we need to reinstall it
+    gem install gitlab-development-kit
+  fi
 
   set -eo pipefail
 

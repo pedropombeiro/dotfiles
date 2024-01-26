@@ -249,7 +249,7 @@ return {
         lspconfig.homeassistant = {
           default_config = {
             cmd = { install_dir .. '/node_modules/.bin/ts-node', install_dir .. '/out/server/server.js', '--stdio' },
-            filetypes = { 'yaml' },
+            filetypes = { 'home-assistant' },
             root_dir = util.root_pattern('configuration.yaml'),
             settings = {},
           },

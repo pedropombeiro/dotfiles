@@ -27,6 +27,12 @@ source ~/.config/yadm/scripts/colors.sh
     exit 1
   fi
 
+  # Reset network adapter if network is not reachable
+  if ! ping -c 1 1.1.1.1 >/dev/null; then
+    sudo ifconfig en0 down
+    sudo ifconfig en0 up
+  fi
+
   curl -s 'http://localhost:8989?action=pulse&green=100'
 
   rm -rf .git/gc.log

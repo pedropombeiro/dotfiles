@@ -5,6 +5,11 @@ local m = require('mapx')
 
 m.nname('<leader>g', 'Git')
 
+-- ruifm/gitlinker.nvim
+wk.register({
+  ['<leader>gy'] = { 'Yank Git URL' },
+}, { mode = { 'n', 'v' } })
+
 -- Lazy.nvim
 m.nname('<leader>p', 'Package Manager')
 m.nnoremap('<leader>ps', ':Lazy<CR>', 'Status', { silent = true })

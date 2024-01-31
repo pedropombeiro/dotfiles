@@ -209,4 +209,11 @@ return {
   },
 
   { 'NoahTheDuke/vim-just', event = { 'BufReadPre', 'BufNewFile' }, ft = 'just' },
+
+  {
+    'ruifm/gitlinker.nvim',
+    dependencies = 'nvim-lua/plenary.nvim',
+    event = { 'BufReadPre', 'BufNewFile' },
+    opts = {},
+  },
 }

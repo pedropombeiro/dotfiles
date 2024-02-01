@@ -183,7 +183,7 @@ brew "ncdu"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # HTTP(S) server and reverse proxy, and IMAP/POP3 proxy server
-brew "nginx"
+brew "nginx", restart_service: true
 # Port scanning utility for large networks
 brew "nmap"
 # Prometheus exporter for machine metrics
@@ -354,12 +354,8 @@ cask "launchcontrol"
 cask "libreoffice"
 # Host-based application firewall
 cask "little-snitch"
-# Provides access to camera controls
-cask "logitech-camera-settings"
 # Software for Logitech devices
 cask "logitech-options"
-# Screen and video recording software
-cask "loom"
 # Adaptive brightness for external displays
 cask "lunar"
 # Track and update to the latest versions of installed software
@@ -418,7 +414,6 @@ mas "DaisyDisk", id: 411643860
 mas "Discovery", id: 1381004916
 mas "Expressions", id: 913158085
 mas "HazeOver", id: 430798174
-mas "Keyboard Pilot", id: 402670023
 mas "Keynote", id: 409183694
 mas "Mactracker", id: 430255202
 mas "MediaInfo", id: 510620098

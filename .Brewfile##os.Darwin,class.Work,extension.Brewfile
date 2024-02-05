@@ -315,6 +315,8 @@ cask "cakebrew"
 cask "choosy"
 # Graphical configurator for Kaleidoscope-powered keyboards
 cask "chrysalis"
+# Allows switching between application windows
+cask "contexts"
 # API documentation browser and code snippet manager
 cask "dash"
 # Control your Elgato key lights

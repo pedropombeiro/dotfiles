@@ -77,6 +77,8 @@ brew "direnv"
 brew "dive"
 # Pack, ship and run any application as a lightweight container
 brew "docker"
+# Docker CLI plugin for extended build capabilities with BuildKit
+brew "docker-buildx"
 # Platform keystore credential helper for Docker
 brew "docker-credential-helper"
 # Text processing system for reStructuredText

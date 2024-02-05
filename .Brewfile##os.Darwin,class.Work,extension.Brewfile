@@ -10,6 +10,7 @@ tap "jarred-sumner/git-peek"
 tap "jdxcode/tap"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "mas-cli/tap"
+tap "mike-engel/jwt-cli"
 tap "minio/stable"
 tap "moul/moul"
 tap "mvp/uhubctl", "https://github.com/mvp/uhubctl"
@@ -278,6 +279,8 @@ brew "yt-dlp"
 brew "jarred-sumner/git-peek/git-peek"
 # Reconcile your local git repositories
 brew "leipert-projects/git-recon/git-recon"
+# Super fast CLI tool to decode and encode JWTs built in Rust
+brew "mike-engel/jwt-cli/jwt-cli"
 # Compare Docker images
 brew "moul/moul/docker-diff"
 # USB hub per-port power control

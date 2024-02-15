@@ -417,6 +417,7 @@ mas "DaisyDisk", id: 411643860
 mas "Discovery", id: 1381004916
 mas "Expressions", id: 913158085
 mas "HazeOver", id: 430798174
+mas "iMovie", id: 408981434
 mas "Keyboard Pilot", id: 402670023
 mas "Keynote", id: 409183694
 mas "Mactracker", id: 430255202

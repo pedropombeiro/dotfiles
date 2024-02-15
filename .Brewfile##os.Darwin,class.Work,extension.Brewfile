@@ -25,10 +25,6 @@ brew "sqlite"
 brew "xz"
 # Automate deployment, configuration, and upgrading
 brew "ansible"
-# Linter for YAML files
-brew "yamllint"
-# Checks ansible playbooks for practices and behaviour
-brew "ansible-lint"
 # Arduino command-line interface
 brew "arduino-cli"
 # Record and share terminal sessions
@@ -301,13 +297,13 @@ cask "appcleaner"
 cask "audacity"
 # Tool to flash OS images to SD cards & USB drives
 cask "balenaetcher"
-# Menu bar icon organizer
+# Menu bar icon organiser
 cask "bartender"
 # Compare files and folders
 cask "beyond-compare"
 # Prevents your sleeping computer from connecting to Bluetooth accessories
 cask "bluesnooze"
-# Volume booster and equalizer software
+# Volume booster and equaliser software
 cask "boom-3d"
 # GUI app for Homebrew
 cask "cakebrew"
@@ -341,7 +337,7 @@ cask "google-cloud-sdk"
 cask "gpg-suite"
 # Companion app for Home Assistant home automation software
 cask "home-assistant"
-# Tool to optimize images to a smaller size
+# Tool to optimise images to a smaller size
 cask "imageoptim"
 # System monitoring app
 cask "istat-menus"
@@ -351,7 +347,7 @@ cask "iterm2"
 cask "jetbrains-toolbox"
 # Open-source screen recorder built with web technology
 cask "kap"
-# Open-source keystroke visualizer
+# Open-source keystroke visualiser
 cask "keycastr"
 # Interface for reading and syncing eBooks
 cask "kindle"
@@ -379,7 +375,7 @@ cask "muzzle"
 cask "netspot"
 # Reverse proxy, secure introspectable tunnels to localhost
 cask "ngrok"
-# App to write, plan, collaborate, and get organized
+# App to write, plan, collaborate, and get organised
 cask "notion"
 # Calculator and converter application
 cask "numi"
@@ -405,7 +401,7 @@ cask "slack"
 cask "spotify"
 # Windows manager
 cask "stay"
-# Real time file synchronization software
+# Real time file synchronisation software
 cask "syncthing"
 # Quicklook extension for source files
 cask "syntax-highlight"

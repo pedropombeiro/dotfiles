@@ -9,3 +9,4 @@ pre-commit    latest
 ruby          3.1.4
 rust          stable
 yarn          1.22.19
+yamllint      latest

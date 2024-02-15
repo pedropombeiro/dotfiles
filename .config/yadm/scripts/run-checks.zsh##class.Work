@@ -59,14 +59,6 @@ else
   any_failed=1
 fi
 
-print_op_stay "Checking WalkingPad Prometheus metrics server"
-if curl --silent --fail --max-time 0.2 http://127.0.0.1:8000/metrics >/dev/null; then
-  print_ok
-else
-  print_failure "WalkingPad Prometheus server (github.com/huserben/walkingpad) is not running"
-  any_failed=1
-fi
-
 print_op_stay "Checking key-value-server (for Desk controller)"
 if pgrep key-value-server >/dev/null; then
   print_ok

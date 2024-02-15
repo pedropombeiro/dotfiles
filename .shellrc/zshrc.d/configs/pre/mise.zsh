@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 
+export MISE_GLOBAL_CONFIG_FILE=~/.tool-versions
 if [ -x "${HOME}/.local/share/mise/bin/mise" ]; then
   export RTX_DISABLE_DIRENV_WARNING=1
 

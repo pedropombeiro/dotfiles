@@ -49,6 +49,8 @@ brew "duf"
 brew "dust"
 # Run arbitrary commands when files change
 brew "entr"
+# Perl lib for reading and writing EXIF metadata
+brew "exiftool"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
 # Scriptable ping program for checking if multiple hosts are up

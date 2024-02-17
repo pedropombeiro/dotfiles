@@ -322,6 +322,7 @@ mas "Keynote", id: 409183694
 mas "Kindle Classic", id: 405399194
 mas "Mactracker", id: 430255202
 mas "Microsoft To Do", id: 1274495053
+mas "Paperparrot", id: 1663665267
 mas "Pocket", id: 568494494
 mas "Router", id: 1229416813
 mas "Shazam", id: 897118787

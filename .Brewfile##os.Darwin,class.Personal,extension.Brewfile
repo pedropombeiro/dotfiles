@@ -99,6 +99,8 @@ brew "libpq", link: true
 brew "lnav"
 # Clone of ls with colorful output, file type icons, and more
 brew "lsd"
+# Package manager for the Lua programming language
+brew "luarocks"
 # Keep your Mac's application settings in sync
 brew "mackup"
 # Mac App Store command-line interface

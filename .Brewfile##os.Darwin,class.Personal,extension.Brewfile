@@ -67,10 +67,6 @@ brew "git-extras"
 brew "git-revise"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
-# Validating, recursive, caching DNS resolver
-brew "unbound"
-# GNU Transport Layer Security (TLS) Library
-brew "gnutls"
 # Ping, but with a graph
 brew "gping"
 # Colorize logfiles and command output
@@ -235,8 +231,6 @@ cask "libreoffice"
 cask "little-snitch"
 # Provides access to camera controls
 cask "logitech-camera-settings"
-# Update your Logitech wireless receivers and selected keyboards
-cask "logitech-firmwareupdatetool"
 # Adaptive brightness for external displays
 cask "lunar"
 # File system integration

@@ -9,12 +9,12 @@ tap "jdxcode/tap"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
 tap "zaquestion/tap"
+# General-purpose data compression with high compression ratio
+brew "xz"
 # Arduino command-line interface
 brew "arduino-cli"
 # Command-line interface for SQLite
 brew "sqlite"
-# General-purpose data compression with high compression ratio
-brew "xz"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.12"
 # Record and share terminal sessions
@@ -112,7 +112,7 @@ brew "moreutils"
 # NCurses Disk Usage
 brew "ncdu"
 # Ambitious Vim-fork focused on extensibility and agility
-brew "neovim"
+brew "neovim", args: ["HEAD"]
 # Port scanning utility for large networks
 brew "nmap"
 # PNG file optimizer
@@ -189,21 +189,23 @@ cask "appcleaner"
 cask "applepi-baker"
 # Tool to flash OS images to SD cards & USB drives
 cask "balenaetcher"
-# Menu bar icon organizer
+# Menu bar icon organiser
 cask "bartender"
 # Compare files and folders
 cask "beyond-compare"
 # Bluetooth Low Energy browser
 cask "bluetility"
-# Volume booster and equalizer software
+# Volume booster and equaliser software
 cask "boom-3d"
 # GUI app for Homebrew
 cask "cakebrew"
 # E-books management software
 cask "calibre"
+# Allows switching between application windows
+cask "contexts"
 # API documentation browser and code snippet manager
 cask "dash"
-# App to build and share containerized applications and microservices
+# App to build and share containerised applications and microservices
 cask "docker"
 # Typeface made for developers
 cask "font-jetbrains-mono"
@@ -256,7 +258,7 @@ cask "musescore"
 cask "muzzle"
 # WiFi site survey software and WiFi scanner
 cask "netspot"
-# App to write, plan, collaborate, and get organized
+# App to write, plan, collaborate, and get organised
 cask "notion"
 # Calculator and converter application
 cask "numi"
@@ -284,7 +286,7 @@ cask "slack"
 cask "spotify"
 # Windows manager
 cask "stay"
-# Real time file synchronization software
+# Real time file synchronisation software
 cask "syncthing"
 # Quicklook extension for source files
 cask "syntax-highlight"

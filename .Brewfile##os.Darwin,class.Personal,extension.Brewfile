@@ -221,6 +221,8 @@ cask "gimp"
 cask "google-earth-pro"
 # Tools to protect your emails and files
 cask "gpg-suite"
+# Video stabilization using gyroscope data
+cask "gyroflow"
 # System monitoring app
 cask "istat-menus"
 # Terminal emulator as alternative to Apple's Terminal app

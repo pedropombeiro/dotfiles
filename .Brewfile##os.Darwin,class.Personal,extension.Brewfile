@@ -1,6 +1,5 @@
 tap "borgbackup/tap"
 tap "homebrew/bundle"
-tap "homebrew/cask-drivers"
 tap "homebrew/cask-fonts"
 tap "homebrew/cask-versions"
 tap "homebrew/services"
@@ -223,6 +222,8 @@ cask "google-earth-pro"
 cask "gpg-suite"
 # Video stabilization using gyroscope data
 cask "gyroflow"
+# Tool for multi-language users
+cask "input-source-pro"
 # System monitoring app
 cask "istat-menus"
 # Terminal emulator as alternative to Apple's Terminal app
@@ -317,7 +318,6 @@ mas "Discovery", id: 1381004916
 mas "feedly", id: 865500966
 mas "GarageBand", id: 682658836
 mas "iMovie", id: 408981434
-mas "Keyboard Pilot", id: 402670023
 mas "Keynote", id: 409183694
 mas "Kindle Classic", id: 405399194
 mas "Mactracker", id: 430255202

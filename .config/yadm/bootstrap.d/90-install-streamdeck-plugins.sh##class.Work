@@ -12,6 +12,4 @@ function install_plugin() {
   open "$path"
 }
 
-#install_plugin com.pedropombeiro.streamdeck-walkingpad.streamDeckPlugin https://gitlab.com/pedropombeiro/streamdeck-walkingpad/-/raw/main/Release/com.pedropombeiro.streamdeck-walkingpad.streamDeckPlugin
-#install_plugin com.pedropombeiro.streamdeck-deskappliance.streamDeckPlugin https://gitlab.com/pedropombeiro/streamdeck-deskappliance/-/raw/main/Release/com.pedropombeiro.streamdeck-deskappliance.streamDeckPlugin
 install_plugin co.weimeng.streamdeck-gitlab.streamDeckPlugin https://gitlab.com/weimeng/streamdeck-gitlab/-/raw/main/Release/co.weimeng.streamdeck-gitlab.streamDeckPlugin

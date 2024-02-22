@@ -4,7 +4,7 @@ YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pw
 
 source "${YADM_SCRIPTS}/colors.sh"
 
-# Create mise shims for key-value-server plist and for RubyMine debugger
+# Create mise shims for RubyMine debugger
 mise reshim
 
 printf "${YELLOW}%s${NC}\n" "Pruning mise..."

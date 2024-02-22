@@ -36,7 +36,7 @@ else
   fi
 fi
 
-print_op_stay "Checking nginx (for Desk Controller and Busylight)"
+print_op_stay "Checking nginx (for Busylight)"
 if pgrep nginx >/dev/null; then
   print_ok
 else
@@ -57,38 +57,6 @@ else
     print_failure "Busylight HTTP server is not running"
   fi
   any_failed=1
-fi
-
-print_op_stay "Checking key-value-server (for Desk controller)"
-if pgrep key-value-server >/dev/null; then
-  print_ok
-else
-  echo
-  print_failure "key-value-server is not running"
-  any_failed=1
-fi
-
-print_op_stay "Checking if key-value-server is in PATH"
-if which key-value-server >/dev/null; then
-  print_ok
-else
-  print_failure "key-value-server is not in PATH. Ensure that a working cargo version is installed, run `cargo install --git https://github.com/pedropombeiro/key-value-server` and then `mise reshim`"
-  any_failed=1
-fi
-
-print_op_stay "Checking if key-value-server is available through nginx"
-position=$(curl -s --fail http://localhost:18087/deskcontroller/desk-position)
-if [[ $? -eq 0 ]]; then
-  print_ok "$position"
-else
-  xh POST http://localhost:18087/deskcontroller 'desk-position=sitting'
-  position=$(curl -s --fail http://localhost:18087/deskcontroller/desk-position)
-  if [[ $position == 'sitting' ]]; then
-    print_failure "key-value-server is not responding to HTTP request (fixed)"
-  else
-    print_failure "key-value-server is not responding to HTTP request"
-    any_failed=1
-  fi
 fi
 
 print_op_stay "Checking if Home Assistant Companion is running"

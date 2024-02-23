@@ -16,7 +16,7 @@ if git remote get-url "${remote}" | grep gitlab.com >/dev/null; then
     -o merge_request.target="$(git_parent)" \
     -o merge_request.milestone="$milestone" \
     -o merge_request.assign="${GITLAB_USERNAME}" \
-    -o merge_request.label="Category:Runner Fleet" \
+    -o merge_request.label="Category:Fleet Visibility" \
     -o merge_request.label="section::ci" \
     -o merge_request.label="devops::verify" \
     -o merge_request.label="group::runner" \

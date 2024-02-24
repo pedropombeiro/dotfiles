@@ -22,26 +22,14 @@ return {
 
     local sources = {
       code_actions.gitsigns,
-      code_actions.shellcheck,
 
       completion.spell,
 
       diagnostics.checkmake,
-      -- setting eslint_d only if we have a ".eslintrc.js" file in the project
-      diagnostics.eslint_d.with({
-        condition = function(utils)
-          return utils.root_has_file({ '.eslintrc.js' })
-        end,
-      }),
       diagnostics.golangci_lint,
       diagnostics.hadolint,
-      diagnostics.jsonlint,
-      diagnostics.luacheck.with({
-        extra_args = { '--globals', 'vim' },
-      }),
-      diagnostics.markdownlint,
+      diagnostics.selene,
       --diagnostics.semgrep,
-      diagnostics.shellcheck,
       diagnostics.vale,
       diagnostics.zsh,
 

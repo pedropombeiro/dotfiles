@@ -13,7 +13,7 @@ bandwhich_version=0.20.0
 btop_version=1.3.0
 croc_version=9.6.6
 gping_version=1.15.1
-lnav_version=0.11.2
+lnav_version=0.12.0
 lsd_version=1.0.0
 procs_version=0.14.2
 
@@ -80,7 +80,7 @@ download_and_extract "https://github.com/aristocratos/btop/releases/download/v${
 download_and_extract "https://github.com/schollz/croc/releases/download/v${croc_version}/croc_${croc_version}_Linux-64bit.tar.gz" croc $croc_version
 download_and_extract "https://github.com/orf/gping/releases/download/gping-v${gping_version}/gping-x86_64-unknown-linux-musl.tar.gz" gping $gping_version
 
-download_and_extract "https://github.com/tstack/lnav/releases/download/v${lnav_version}/lnav-${lnav_version}-x86_64-linux-musl.zip" "lnav-${lnav_version}/lnav" $lnav_version
+download_and_extract "https://github.com/tstack/lnav/releases/download/v${lnav_version}/lnav-${lnav_version}-linux-musl-x86_64.zip" "lnav-${lnav_version}/lnav" $lnav_version
 
 archive_name="lsd-v${lsd_version}-x86_64-unknown-linux-musl"
 download_and_extract "https://github.com/lsd-rs/lsd/releases/download/v${lsd_version}/${archive_name}.tar.gz" "${archive_name}/lsd" $lsd_version

@@ -28,7 +28,6 @@ return {
       diagnostics.checkmake,
       diagnostics.golangci_lint,
       diagnostics.hadolint,
-      diagnostics.selene,
       --diagnostics.semgrep,
       diagnostics.vale,
       diagnostics.zsh,

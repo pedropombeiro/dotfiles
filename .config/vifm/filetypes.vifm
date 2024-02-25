@@ -191,6 +191,11 @@ fileviewer *.gz gunzip --list %f
 filetype *.rar unrar x -y -c- -ad %f %s
 fileviewer *.rar unrar lb %d/%c
 
+" Mount borg archives
+filetype *.borg
+  \ {Mount with Borgmatic}
+  \ FUSE_MOUNT2|borg mount %PARAM %DESTINATION_DIR %FOREGROUND
+
 " Mount .dmg archives
 filetype *.dmg open
 

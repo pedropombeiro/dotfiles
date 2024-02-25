@@ -4,3 +4,8 @@
 
 set slowfs+=/share/ExternalBackup
 set cdpath=/share/Container,~
+
+" Borgmatic support
+let $BORG_RELOCATED_REPO_ACCESS_IS_OK="yes"
+set fusehome=/mnt/borg
+set slowfs+=borgfs

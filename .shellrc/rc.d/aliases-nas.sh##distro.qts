@@ -18,4 +18,6 @@ alias dockerclean='dockercleanc || true && dockercleani || true && dockercleanv'
 alias dockerstatsns='docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}\t{{.NetIO}}" | sort -nrb -t " " -k 2'
 alias dockerstats='docker stats --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}\t{{.NetIO}}"'
 
+alias esphome="docker run --rm -v /share/Container/config/esphome:/config -t ghcr.io/esphome/esphome"
+
 alias reload_traefik='docker kill --signal=USR1 traefik'

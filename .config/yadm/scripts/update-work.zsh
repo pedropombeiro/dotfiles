@@ -49,9 +49,9 @@ gdk:
 trusted_directories:
   - "${GDK_ROOT}"
 listen_address: 172.16.123.1
-gitlab:
-  rails:
-    address: 'http://gdk.test:3000'
+# gitlab:
+#   rails:
+#     address: 'http://gdk.test:3000'
 #     sherlock: true
 vite:
   enabled: true

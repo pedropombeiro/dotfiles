@@ -4,8 +4,21 @@
 # `wait-gdk-mr-merged` waits for an MR (specified by its number) to be merged, making it easy to chain commands like fgdku
 #
 
+aborted=0
+ctrl_c() {
+  aborted=1
+}
+
+trap ctrl_c INT
+
 curl -s 'http://localhost:8989?action=light&red=100&blue=100'
 while [[ "$(curl -sS "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab/merge_requests/$1" --header "PRIVATE-TOKEN: $GITLAB_COM_TOKEN" | jq -r .state)" != 'merged' ]]; do
+  if [[ $aborted -eq 1 ]]; then
+    echo "Ctrl-C detected. Exiting..."
+    break
+  fi
   sleep 5
 done
 curl -s 'http://localhost:8989?action=light&green=100'
+
+return $aborted

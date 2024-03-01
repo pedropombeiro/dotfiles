@@ -21,6 +21,7 @@ local on_attach = function(bufnr)
       s = { ':Gitsigns stage_hunk<CR>', 'Stage Git hunk', mode = { 'n', 'v' } },
       u = { gs.undo_stage_buffer, 'Undo stage Git hunk' },
       r = { ':Gitsigns reset_hunk<CR>', 'Reset Git hunk', mode = { 'n', 'v' } },
+      q = { ':Gitsigns setqflist<CR>', 'Open changes in Quickfix list' },
       p = { gs.preview_hunk_inline, 'Preview Git hunk' },
       S = { gs.stage_buffer, 'Stage buffer' },
       R = { gs.reset_buffer, 'Reset buffer' },

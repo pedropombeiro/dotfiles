@@ -114,7 +114,7 @@ return {
       end
 
       return {
-        close_fold_kinds = { 'imports' },
+        close_fold_kinds_for_ft = { go = 'imports' },
         fold_virt_text_handler = fold_virt_text_handler,
         provider_selector = function()
           return { 'treesitter', 'indent' }

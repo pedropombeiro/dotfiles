@@ -230,10 +230,13 @@ return {
         servers.clangd = {}
       end
       if vim.fn.executable('solargraph') == 1 then
+        local util = require('lspconfig/util')
+
         servers.solargraph = {
           init_options = {
             formatting = false, -- Formatting is performed by Conform
           },
+          root_dir = util.root_pattern('Gemfile', '.git', '.'),
           flags = {
             debounce_text_changes = 150,
           },

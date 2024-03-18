@@ -23,7 +23,9 @@ return {
     local sources = {
       code_actions.gitsigns,
 
-      completion.spell,
+      completion.spell.with({
+        filetypes = { 'json', 'yaml', 'markdown' },
+      }),
 
       diagnostics.checkmake,
       diagnostics.golangci_lint,

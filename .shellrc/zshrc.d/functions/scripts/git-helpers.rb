@@ -110,7 +110,7 @@ def rebase_all_per_capture_info(local_branch_info_hash)
     end
 
     # There is a merge conflict that needs to be resolved by the user, exit now
-    system(%(terminal-notifier -title 'rebase-all failed with merge conflict' -message 'Please resolve merge conflicts!' -sound boop -ignoreDnD))
+    system(%(terminal-notifier -title 'rebase_all failed with merge conflict' -message 'Please resolve merge conflicts!' -sound boop -ignoreDnD))
     return
   end
 
@@ -123,8 +123,8 @@ def rebase_mappings
   system(*%w[git status], out: File::NULL, err: File::NULL) # Refresh status, as `scalar` seems to be outdated after a pull
   system(*%w[git diff-index --quiet HEAD --])
   unless Process.last_status.success?
-    system(%(terminal-notifier -title 'rebase-all failed' -message 'Please stash the changes in the current branch before calling rebase-all!' -sound boop -ignoreDnD))
-    abort 'Please stash the changes in the current branch before calling rebase-all!'.red
+    system(%(terminal-notifier -title 'rebase_all failed' -message 'Please stash the changes in the current branch before calling rebase_all!' -sound boop -ignoreDnD))
+    abort 'Please stash the changes in the current branch before calling rebase_all!'.red
   end
 
   user_name = ENV['USER']

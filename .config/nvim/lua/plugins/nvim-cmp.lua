@@ -187,7 +187,7 @@ return {
               end,
             },
           },
-          { name = 'luasnip', priority = 10, group_index = 2 }, -- For luasnip users.
+          { name = 'luasnip', priority = 10, max_item_count = 3, group_index = 2 }, -- For luasnip users.
           { name = 'path', priority = 40, max_item_count = 10, group_index = 5 },
           { name = 'nvim_lua', priority = 80, group_index = 1 },
           {
@@ -203,9 +203,6 @@ return {
               if chars_before:find('%.') or chars_before:find('%:') then
                 -- If any previous 4 characters contains a "." or ":"
                 return kind == kinds.Method or kind == kinds.Function or kinds.Field
-              elseif line:match('^%s*%w*$') then
-                -- text in the new line
-                return kind == kinds.Function or kind == kinds.Variable
               end
               return true
             end,

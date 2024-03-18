@@ -41,9 +41,10 @@ return {
       'saadparwaiz1/cmp_luasnip', -- nvim-cmp source for LuaSnip
       'hrsh7th/cmp-nvim-lsp-signature-help', -- nvim-cmp source for displaying function signatures with the current parameter emphasized
       { 'williamboman/mason-lspconfig.nvim', lazy = true },
+      'onsails/lspkind.nvim', -- vscode-like pictograms for neovim lsp completion items
       {
-        'onsails/lspkind.nvim', -- vscode-like pictograms for neovim lsp completion items
-        dependencies = 'mortepau/codicons.nvim', -- A plugin simplifying the task of working with VS Code codicons in Neovim
+        'petertriho/cmp-git', -- Git source for nvim-cmp
+        dependencies = 'nvim-lua/plenary.nvim',
       },
     },
     opts = function()
@@ -84,7 +85,17 @@ return {
         },
 
         formatting = {
-          format = require('lspkind').cmp_format({ preset = 'codicons' }),
+          format = function(entry, vim_item)
+            if vim.tbl_contains({ 'path' }, entry.source.name) then
+              local icon, hl_group = require('nvim-web-devicons').get_icon(entry:get_completion_item().label)
+              if icon then
+                vim_item.kind = icon
+                vim_item.kind_hl_group = hl_group
+                return vim_item
+              end
+            end
+            return require('lspkind').cmp_format({ with_text = true })(entry, vim_item)
+          end,
         },
 
         mapping = cmp.mapping.preset.insert({
@@ -211,9 +222,11 @@ return {
       })
 
       cmp.setup.filetype('gitcommit', {
-        sources = {
+        sources = cmp.config.sources({
+          { name = 'git' }, -- You can specify the `git` source if [you were installed it](https://github.com/petertriho/cmp-git).
+        }, {
           { name = 'buffer' },
-        },
+        }),
       })
     end,
   },

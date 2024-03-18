@@ -85,17 +85,25 @@ return {
           max_height = 20,
         },
 
+        window = {
+          documentation = cmp.config.window.bordered(),
+        },
+
         formatting = {
+          fields = { 'kind', 'abbr', 'menu' },
           format = function(entry, vim_item)
+            vim_item.menu = '    (' .. (vim_item.kind or '') .. ')'
             if vim.tbl_contains({ 'path' }, entry.source.name) then
               local icon, hl_group = require('nvim-web-devicons').get_icon(entry:get_completion_item().label)
               if icon then
-                vim_item.kind = icon
+                vim_item.kind = ' ' .. (icon or '')
                 vim_item.kind_hl_group = hl_group
                 return vim_item
               end
             end
-            vim_item.kind = (cmp_kinds[vim_item.kind] or '') .. vim_item.kind
+
+            vim_item.kind = ' ' .. (cmp_kinds[vim_item.kind] or '')
+
             return vim_item
           end,
         },

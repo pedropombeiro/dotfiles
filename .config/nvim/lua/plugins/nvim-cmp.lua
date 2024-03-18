@@ -50,6 +50,7 @@ return {
     opts = function()
       local cmp = require('cmp')
       local compare = require('cmp.config.compare')
+      local cmp_kinds = require('config').ui.icons.kinds
       local types = require('cmp.types')
       local kinds = types.lsp.CompletionItemKind
 
@@ -94,7 +95,8 @@ return {
                 return vim_item
               end
             end
-            return require('lspkind').cmp_format({ with_text = true })(entry, vim_item)
+            vim_item.kind = (cmp_kinds[vim_item.kind] or '') .. vim_item.kind
+            return vim_item
           end,
         },
 

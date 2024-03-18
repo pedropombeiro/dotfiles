@@ -280,6 +280,9 @@ return {
       -- Show diagnostic source in float (e.g. goto_next, goto_prev)
       vim.diagnostic.config({
         severity_sort = true,
+        virtual_text = {
+          prefix = '●',
+        },
         float = {
           focusable = false,
           style = 'minimal',

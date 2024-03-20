@@ -22,7 +22,7 @@ return {
   end,
   opts = {
     contrast = 'hard',
-    dim_inactive = true,
+    dim_inactive = false,
     transparent_mode = false,
     overrides = {
       -- Change border for float windows (normally grey)

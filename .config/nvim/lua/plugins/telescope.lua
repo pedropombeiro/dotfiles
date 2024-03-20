@@ -33,23 +33,7 @@ local keys = {
   {
     '<leader>fgg',
     function()
-      local function is_git_repo()
-        vim.fn.system('git rev-parse --is-inside-work-tree')
-
-        return vim.v.shell_error == 0
-      end
-
-      local opts = {}
-
-      if is_git_repo() then
-        opts = {
-          prompt_title = 'Git grep',
-          search_dirs = { ':/' },
-          vimgrep_arguments = { 'git', 'grep', '--line-number', '--column' },
-        }
-      end
-
-      require('telescope.builtin').live_grep(opts)
+      require('git_grep').live_grep()
     end,
     desc = 'Git grep'
   },
@@ -97,8 +81,9 @@ return {
     version = false, -- telescope did only one release, so use HEAD for now
     dependencies = {
       'nvim-lua/plenary.nvim',
-      'tsakirist/telescope-lazy.nvim', -- Telescope extension that provides handy functionality about plugins installed via lazy.nvim
       'nvim-telescope/telescope-symbols.nvim', -- Provides its users with the ability of picking symbols and insert them at point.
+      'tsakirist/telescope-lazy.nvim', -- Telescope extension that provides handy functionality about plugins installed via lazy.nvim
+      'davvid/telescope-git-grep.nvim', -- Telescope extension for searching using "git grep"
       {
         'nvim-telescope/telescope-fzf-native.nvim', -- FZF sorter for telescope written in c
         build = 'make',
@@ -108,6 +93,14 @@ return {
     keys = keys,
     init = function()
       local m = require('mapx')
+      local config = require('config')
+      local function set_hl(name, attr)
+        vim.api.nvim_set_hl(0, name, attr)
+      end
+      set_hl('TelescopeBorder', { link = 'FloatBorder' })
+      set_hl('TelescopeTitle', { fg = config.theme.colors.green })
+      set_hl('TelescopePromptTitle', { fg = config.theme.colors.orange })
+      set_hl('TelescopePromptBorder', { fg = config.theme.colors.orange })
 
       m.nname('<leader>f', 'Telescope')
       m.nname('<leader>fg', 'Telescope (Git)')
@@ -148,22 +141,11 @@ return {
           },
         },
       },
+      extensions = {
+        fzf = {},
+        git_grep = {},
+        lazy = {},
+      },
     },
-    config = function(_, opts)
-      local config = require('config')
-      local function set_hl(name, attr)
-        vim.api.nvim_set_hl(0, name, attr)
-      end
-      set_hl('TelescopeBorder', { link = 'FloatBorder' })
-      set_hl('TelescopeTitle', { fg = config.theme.colors.green })
-      set_hl('TelescopePromptTitle', { fg = config.theme.colors.orange })
-      set_hl('TelescopePromptBorder', { fg = config.theme.colors.orange })
-
-      local telescope = require('telescope')
-      telescope.setup(opts)
-
-      telescope.load_extension('fzf')
-      telescope.load_extension('lazy')
-    end,
   },
 }

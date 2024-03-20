@@ -94,12 +94,12 @@ return {
       })
       define_highlights()
     end
-  end,
-  opts = function()
+
     local icons = require('config').ui.icons
 
-    return {
+    require('neotest').setup({
       adapters = {
+        require('neotest-plenary'),
         require('neotest-go')({
           experimental = {
             test_table = true,
@@ -135,6 +135,6 @@ return {
           vim.cmd('Trouble quickfix')
         end,
       },
-    }
+    })
   end,
 }

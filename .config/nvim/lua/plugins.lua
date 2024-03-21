@@ -103,12 +103,6 @@ return {
     opts = {},
   },
   { 'tummetott/unimpaired.nvim', event = { 'BufReadPre', 'BufNewFile' }, opts = {} }, -- LUA port of tpope's famous vim-unimpaired plugin
-  {
-    'echasnovski/mini.trailspace',
-    version = false,
-    event = { 'BufReadPre', 'BufNewFile' },
-    opts = {},
-  },
   { 'RaafatTurki/hex.nvim', event = { 'BufReadPre', 'BufNewFile' }, opts = {} }, -- hex editing done right
 
   --### Other

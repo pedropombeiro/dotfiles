@@ -25,6 +25,8 @@ return {
     dim_inactive = false,
     transparent_mode = false,
     overrides = {
+      Normal = { bg = '#101011' },
+
       -- Change border for float windows (normally grey)
       NormalFloat = { bg = '#1d2021' },
       FloatBorder = { fg = '#83a598', bg = '#1d2021' },

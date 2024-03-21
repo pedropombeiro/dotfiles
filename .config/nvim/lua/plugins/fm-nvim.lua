@@ -48,6 +48,7 @@ return {
           width = 0.9,
           -- Floating window border (see ':h nvim_open_win')
           border = require('config').ui.border,
+          float_hl = 'NormalFloat',
         },
       },
     },

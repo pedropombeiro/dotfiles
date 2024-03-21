@@ -28,8 +28,8 @@ return {
       Normal = { bg = '#101011' },
 
       -- Change border for float windows (normally grey)
-      NormalFloat = { bg = '#1d2021' },
-      FloatBorder = { fg = '#83a598', bg = '#1d2021' },
+      NormalFloat = { bg = require('config').theme.colors.dark0 },
+      FloatBorder = { fg = '#83a598', bg = require('config').theme.colors.dark0 },
       FloatermBorder = { link = 'FloatBorder' },
       LspInfoBorder = { link = 'FloatBorder' },
 

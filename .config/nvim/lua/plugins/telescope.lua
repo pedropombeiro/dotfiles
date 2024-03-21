@@ -93,14 +93,6 @@ return {
     keys = keys,
     init = function()
       local m = require('mapx')
-      local config = require('config')
-      local function set_hl(name, attr)
-        vim.api.nvim_set_hl(0, name, attr)
-      end
-      set_hl('TelescopeBorder', { link = 'FloatBorder' })
-      set_hl('TelescopeTitle', { fg = config.theme.colors.green })
-      set_hl('TelescopePromptTitle', { fg = config.theme.colors.orange })
-      set_hl('TelescopePromptBorder', { fg = config.theme.colors.orange })
 
       m.nname('<leader>f', 'Telescope')
       m.nname('<leader>fg', 'Telescope (Git)')
@@ -147,5 +139,18 @@ return {
         lazy = {},
       },
     },
+    config = function(_, opts)
+      local config = require('config')
+      local function set_hl(name, attr)
+        vim.api.nvim_set_hl(0, name, attr)
+      end
+      set_hl('TelescopeNormal', { link = 'NormalFloat' })
+      set_hl('TelescopeBorder', { link = 'FloatBorder' })
+      set_hl('TelescopeTitle', { fg = config.theme.colors.green })
+      set_hl('TelescopePromptTitle', { fg = config.theme.colors.orange })
+      set_hl('TelescopePromptBorder', { bg = config.theme.colors.dark0, fg = config.theme.colors.orange })
+
+      require('telescope').setup(opts)
+    end,
   },
 }

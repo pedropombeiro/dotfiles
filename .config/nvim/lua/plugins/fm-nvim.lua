@@ -16,9 +16,6 @@ return {
       {
         '<leader>tg',
         function()
-          if vim.env.GIT_DIR == nil then
-            vim.cmd('cd %:h') -- Ensure we're calling Lazygit from the folder of the active file
-          end
           vim.cmd('Lazygit')
 
           -- ensure that Gitsigns refreshes with new state after closing Lazygit

@@ -18,10 +18,12 @@ return {
       'Makefile',
       '*.mk',
       '*.sh',
+      '*.yaml',
+      '*.yml',
     },
     exclude_filetypes = {
       ['vimdoc'] = true,
       ['neo-tree'] = true,
     },
-  }
+  },
 }

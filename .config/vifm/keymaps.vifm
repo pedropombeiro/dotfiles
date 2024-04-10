@@ -43,16 +43,20 @@ nnoremap s :shell<cr>
 nnoremap S :sort<cr>
 
 " Toggle single pane/double pane layout
-nnoremap W : if layoutis('only')
+nnoremap W : if $_VIFM_LAYOUT != "1"
+         \ |   let $_VIFM_LAYOUT="1"
+         \ |   execute 'view'
          \ |   execute 'set nomillerview'
          \ |   execute 'vsplit'
          \ |   execute 'wincmd w'
          \ |   execute 'set nomillerview'
          \ |   execute 'wincmd w'
          \ | else
-         \ |   execute 'only'
+         \ |   let $_VIFM_LAYOUT="0"
+         \ |   execute 'view'
          \ |   execute 'set millerview'
          \ |   execute 'set dotdirs=nonrootparent,treeleafsparent'
+         \ |   execute 'set milleroptions=lsize:1,csize:2,rsize:0,rpreview:all'
          \ | endif<cr>
 " Toggle visibility of preview window
 nnoremap w :view<cr>

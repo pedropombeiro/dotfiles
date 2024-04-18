@@ -375,8 +375,6 @@ cask "microsoft-edge"
 cask "muzzle"
 # WiFi site survey software and WiFi scanner
 cask "netspot"
-# Reverse proxy, secure introspectable tunnels to localhost
-cask "ngrok"
 # App to write, plan, collaborate, and get organised
 cask "notion"
 # Calculator and converter application

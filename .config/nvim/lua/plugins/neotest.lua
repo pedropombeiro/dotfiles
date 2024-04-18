@@ -39,7 +39,7 @@ return {
     local m = require('mapx')
     m.nname('<leader>r', 'Test')
   end,
-  config = function(_, opts)
+  config = function()
     -- get neotest namespace (api call creates or returns namespace)
     local neotest_ns = vim.api.nvim_create_namespace('neotest')
     vim.diagnostic.config({
@@ -51,9 +51,8 @@ return {
       },
     }, neotest_ns)
 
-    local neotest = require('neotest')
     local config = require('config')
-    neotest.setup(opts)
+    local icons = config.ui.icons
 
     -- Theming (from https://github.com/nvim-neotest/neotest/blob/master/lua/neotest/config/init.lua)
     local function set_hl(name, attr)
@@ -95,11 +94,8 @@ return {
       define_highlights()
     end
 
-    local icons = require('config').ui.icons
-
     require('neotest').setup({
       adapters = {
-        require('neotest-plenary'),
         require('neotest-go')({
           experimental = {
             test_table = true,

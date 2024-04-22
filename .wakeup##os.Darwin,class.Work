@@ -2,8 +2,6 @@
 
 #osascript -e 'tell application id "com.runningwithcrayons.Alfred" to run trigger "resume" in workflow "com.pedropombeiro.resumetimeout"'
 
-sudo killall coreaudiod # Restart CoreAudio service to make sure eqMac can work correctly
-
 open -a Busylight_HTTP_Mac.app # Reopen Busylight_HTTP_Mac at wake
 
 # Restart Control Center, since it regularly loses connection with the Key Lights and gets confused
@@ -19,6 +17,8 @@ fi
 uhubctl --action off --location 2-1.1.1.3 --port 2
 
 sleep 5
+
+sudo killall coreaudiod # Restart CoreAudio service to make sure eqMac can work correctly
 
 SwitchAudioSource -t output -s 'MacBook Pro Speakers'
 SwitchAudioSource -t output -s 'CalDigit TS4 Audio - Rear'

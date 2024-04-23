@@ -309,8 +309,6 @@ cask "bartender"
 cask "beyond-compare"
 # Prevents your sleeping computer from connecting to Bluetooth accessories
 cask "bluesnooze"
-# Volume booster and equaliser software
-cask "boom-3d"
 # GUI app for Homebrew
 cask "cakebrew"
 # Open links in any browser
@@ -327,6 +325,8 @@ cask "elgato-control-center"
 cask "elgato-stream-deck"
 # Software custom-built for content creation
 cask "elgato-wave-link"
+# System-wide audio equaliser
+cask "eqmac"
 # Typeface made for developers
 cask "font-jetbrains-mono"
 # Developer targeted fonts with a high number of glyphs

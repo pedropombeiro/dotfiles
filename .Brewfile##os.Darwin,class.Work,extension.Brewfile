@@ -245,6 +245,8 @@ brew "tealdeer"
 brew "teleport"
 # Send macOS User Notifications from the command-line
 brew "terminal-notifier"
+# Tool to build, change, and version infrastructure
+brew "terraform"
 # Code-search similar to ack
 brew "the_silver_searcher"
 # Program that allows you to count code, quickly

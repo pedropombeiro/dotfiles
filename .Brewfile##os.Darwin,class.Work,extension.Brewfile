@@ -44,9 +44,7 @@ brew "boost"
 # Resource monitor. C++ version and continuation of bashtop and bpytop
 brew "btop"
 # Core application library for C
-brew "glib"
-# Manage compile and link flags for libraries
-brew "pkg-config"
+brew "glib", link: false
 # Linter/analyzer for Makefiles
 brew "checkmake"
 # Cross-platform make
@@ -123,12 +121,16 @@ brew "glab"
 brew "gnu-sed"
 # GNU Pretty Good Privacy (PGP) package
 brew "gnupg"
+# Manage compile and link flags for libraries
+brew "pkg-config"
 # Library access to GnuPG
 brew "gpgme"
 # Image processing tools collection
 brew "graphicsmagick"
 # Colorize logfiles and command output
 brew "grc"
+# GNU troff text-formatting system
+brew "groff"
 # Free Kerberos 5 implementation
 brew "heimdal"
 # Kubernetes package manager
@@ -163,6 +165,8 @@ brew "lnav"
 brew "lsd"
 # Package manager for the Lua programming language
 brew "luarocks"
+# Fast, async, resource-friendly link checker
+brew "lychee"
 # Keep your Mac's application settings in sync
 brew "mackup"
 # CLI for Node.js style checker and lint tool for Markdown files
@@ -271,7 +275,7 @@ brew "yadm"
 brew "ykpers"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
-# Fork of youtube-dl with additional features and fixes
+# Feature-rich command-line audio/video downloader
 brew "yt-dlp"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"

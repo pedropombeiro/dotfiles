@@ -188,14 +188,15 @@ def rebase_mappings
         chain_previous_branches << branch
       else
         parent_branch = chain_previous_branches[-2]
+        rebase_onto = chain_previous_branches[-2]
       end
 
       chain_previous_mr_seq_nr = chain_mr_seq_nr
     elsif backport_match_data
-      remote = `git rev-parse --abbrev-ref --symbolic-full-name #{branch}@{u} --`.split('/').first
-      next if Process.last_status.exitstatus == 128 # Ignore branch if was deleted upstream
+      remote = 'security'
 
       parent_branch = "#{remote}/#{backport_match_data[:milestone].tr('.', '-')}-stable-ee"
+      rebase_onto = parent_branch
     else
       parent_branch = default_branch
     end
@@ -204,7 +205,8 @@ def rebase_mappings
       chain_mr_id: chain_mr_id,
       chain_mr_seq_nr: chain_mr_seq_nr,
       branch: branch,
-      parent_branch: parent_branch
+      parent_branch: parent_branch,
+      rebase_onto: rebase_onto || parent_branch
     }
   end
 end
@@ -218,7 +220,7 @@ def rebase_all
   mappings = rebase_mappings
              .sort { |b1, b2| branch_sort_key(b1) <=> branch_sort_key(b2) }
              .uniq { |b| "#{b[:chain_mr_id] || b[:branch]}/#{b[:chain_mr_seq_nr].nil? ? Random.rand(1..100_000) : 0}" }
-             .to_h { |b| [b[:branch], default_branch] }
+             .to_h { |b| [b[:branch], b[:rebase_onto]] }
   rebase_all_per_capture_info(mappings)
 end
 

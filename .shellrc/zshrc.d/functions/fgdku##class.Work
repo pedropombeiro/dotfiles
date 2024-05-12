@@ -29,8 +29,9 @@ source ~/.config/yadm/scripts/colors.sh
 
   # Reset network adapter if network is not reachable
   if ! ping -c 1 1.1.1.1 >/dev/null; then
-    sudo ifconfig en0 down
-    sudo ifconfig en0 up
+    sudo ifconfig en7 down
+    sudo route flush
+    sudo ifconfig en7 up
   fi
 
   curl -s 'http://localhost:8989?action=pulse&green=100'

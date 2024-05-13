@@ -81,7 +81,7 @@ def gitlab_mr_rate(*author)
   loop do
     $stderr.putc '.'
 
-    res = `glab api graphql -f query='
+    res = `op plugin run -- glab api graphql -f query='
         query {
           group(fullPath: "gitlab-org") {
             mergeRequests(
@@ -174,7 +174,7 @@ end
 def retrieve_group_owners(group_path)
   require('json')
 
-  res = `glab api graphql -f query='
+  res = `op plugin run -- glab api graphql -f query='
     query groupMembers($fullPath: ID!) {
       group(fullPath: $fullPath) {
         groupMembers(accessLevels: [OWNER]) {
@@ -282,7 +282,7 @@ def retrieve_mrs(*args)
   require 'date'
   require 'json'
 
-  res = `glab api graphql -f query='
+  res = `op plugin run -- glab api graphql -f query='
     query authoredMergeRequests {
       user(username: "#{username}") {
     authoredMergeRequests(state: opened, assigneeUsername: "#{username}", sort: UPDATED_DESC) {

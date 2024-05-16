@@ -116,7 +116,7 @@ return {
           enable = true,
         },
         rainbow = {
-          enable = true,
+          enable = not vim.fn.has('nvim-0.10'), -- TODO: Enable once treesitter is updated to support 0.10.0
           -- Which query to use for finding delimiters
           query = 'rainbow-parens',
           -- Highlight the entire buffer all at once

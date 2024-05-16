@@ -261,17 +261,18 @@ return {
       end
 
       local border = require('config').ui.border
-      local inlay_hints_enabled = false
-      if vim.fn.has('nvim-0.10') == 1 then
-        inlay_hints_enabled = true
-      end
+      -- TODO: Uncomment once Neovim 0.10 is supported
+      -- local inlay_hints_enabled = false
+      -- if vim.fn.has('nvim-0.10') == 1 then
+      --   inlay_hints_enabled = true
+      -- end
 
       require('lspconfig.ui.windows').default_options.border = border
       require('lsp-setup').setup({
         default_mappings = false,
-        inlay_hints = {
-          enabled = inlay_hints_enabled,
-        },
+        -- inlay_hints = {
+        --   enabled = inlay_hints_enabled,
+        -- },
         -- Global capabilities
         capabilities = vim.lsp.protocol.make_client_capabilities(),
         servers = servers,

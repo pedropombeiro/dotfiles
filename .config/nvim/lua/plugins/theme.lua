@@ -5,7 +5,7 @@ return {
   'ellisonleao/gruvbox.nvim',
   lazy = false,
   priority = 1000, -- make sure to load this before all the other start plugins
-  condition = function()
+  cond = function()
     local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
     if theme == nil then
       local config = require('config')

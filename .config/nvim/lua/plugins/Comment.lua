@@ -4,6 +4,9 @@
 
 return {
   'echasnovski/mini.comment',
+  cond = function()
+    return vim.fn.has('nvim-0.10') == 0
+  end,
   event = { 'BufNewFile', 'BufReadPre' },
   opts = {},
 }

@@ -163,7 +163,7 @@ keybinding:
     files:
         commitChanges: "c"
         commitChangesWithoutHook: "w" # commit changes without pre-commit hook
-        amendLastCommit: null # "A"
+        amendLastCommit: <disabled> # "A"
         commitChangesWithEditor: "C"
         ignoreFile: "i"
         refreshFiles: "r"
@@ -196,7 +196,7 @@ keybinding:
         squashAboveCommits: "S"
         moveDownCommit: "<c-j>" # move commit down one
         moveUpCommit: "<c-k>" # move commit up one
-        amendToCommit: null # "A"
+        amendToCommit: <disabled> # "A"
         pickCommit: "p" # pick commit (when mid-rebase)
         revertCommit: "t"
         cherryPickCopy: "c"

@@ -16,6 +16,7 @@ jq            latest
 just          latest
 lazydocker    latest
 lazygit       latest
+neovim        0.9.5
 nodejs        17
 pre-commit    latest
 ripgrep       latest

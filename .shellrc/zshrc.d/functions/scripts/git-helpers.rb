@@ -129,6 +129,7 @@ def rebase_mappings
 
   user_name = ENV['USER']
   default_branch = compute_default_branch
+  update_refs = `git config --bool rebase.updateRefs`.chop == 'true'
 
   mr_pattern       = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/[a-z0-9\-+_]+$}i
   seq_mr_pattern   = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/(?<mr_seq_nr>\d+)-[a-z0-9\-+_]+$}i
@@ -185,6 +186,7 @@ def rebase_mappings
     if chain_mr_seq_nr
       if chain_previous_mr_seq_nr.nil? || chain_mr_seq_nr > chain_previous_mr_seq_nr
         parent_branch = chain_previous_branches.last
+        rebase_onto = default_branch if update_refs
         chain_previous_branches << branch
       else
         parent_branch = chain_previous_branches[-2]
@@ -216,10 +218,10 @@ def branch_sort_key(branch_info)
 end
 
 def rebase_all
+  require 'json'
   default_branch = compute_default_branch
   mappings = rebase_mappings
              .sort { |b1, b2| branch_sort_key(b1) <=> branch_sort_key(b2) }
-             .uniq { |b| "#{b[:chain_mr_id] || b[:branch]}/#{b[:chain_mr_seq_nr].nil? ? Random.rand(1..100_000) : 0}" }
              .to_h { |b| [b[:branch], b[:rebase_onto]] }
   rebase_all_per_capture_info(mappings)
 end

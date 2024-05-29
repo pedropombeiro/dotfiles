@@ -332,7 +332,7 @@ def retrieve_mrs(*args)
   require 'tty-table'
   require 'time'
 
-  pipeline_aliases = { 'SUCCESS' => '✅', 'FAILED' => '❌', 'RUNNING' => '🔄' }
+  pipeline_aliases = { 'SUCCESS' => '✔︎'.green, 'FAILED' => '‼'.red, 'RUNNING' => '▶︎'.brown }
   merge_status_aliases = { 'CI_STILL_RUNNING' => 'CI_STILL_RUNNING'.green }
   any_rebase = mrs.any? { |mr| mr['shouldBeRebased'] }
   any_conflicts = mrs.any? { |mr| mr['conflicts'] }
@@ -352,8 +352,8 @@ def retrieve_mrs(*args)
       merge_status = merge_status_aliases.fetch(mr['detailedMergeStatus'],
                                                 mr['detailedMergeStatus'])
         .truncate(21)
-      squash = mr['squashOnMerge'] ? '✔️' : '❌'
-      conflicts = mr['conflicts'] ? '❌' : '✔️'
+      squash = mr['squashOnMerge'] ? '✔︎'.green : '⨯'.red
+      conflicts = mr['conflicts'] ? '⨯'.red : '✔︎'.green
       should_be_rebased = mr['shouldBeRebased'] ? 'Y' : ''
       approvals_left = mr['approvalsLeft']
       approvals_required = mr['approvalsRequired']

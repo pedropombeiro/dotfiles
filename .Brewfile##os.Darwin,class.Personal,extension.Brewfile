@@ -132,8 +132,6 @@ brew "ripgrep"
 brew "sleepwatcher", restart_service: true
 # SMART hard drive monitoring
 brew "smartmontools"
-# Command-line interface for https://speedtest.net bandwidth tests
-brew "speedtest-cli"
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
 # Code-search similar to ack
@@ -164,8 +162,6 @@ brew "yadm"
 brew "yq"
 # Feature-rich command-line audio/video downloader
 brew "yt-dlp"
-# Deduplicating archiver with compression and authenticated encryption
-brew "borgbackup/tap/borgbackup-fuse"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
 # Reconcile your local git repositories

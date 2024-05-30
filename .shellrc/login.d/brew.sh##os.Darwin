@@ -11,5 +11,9 @@ fi
 
 if [ -n "$HOMEBREW_PREFIX" ]; then
   PATH="${HOMEBREW_PREFIX}/bin:${HOMEBREW_PREFIX}/sbin:${PATH}"
+  if [ -d "$HOMEBREW_PREFIX"/opt/python/libexec/bin ]; then
+    PATH="$HOMEBREW_PREFIX/opt/python/libexec/bin:$PATH"
+  fi
+
   export PATH
 fi

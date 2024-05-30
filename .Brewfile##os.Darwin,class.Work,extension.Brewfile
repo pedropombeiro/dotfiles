@@ -273,6 +273,8 @@ brew "wifi-password"
 brew "xh"
 # Yet Another Dotfiles Manager
 brew "yadm"
+# Linter for YAML files
+brew "yamllint"
 # YubiKey personalization library and tool
 brew "ykpers"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI

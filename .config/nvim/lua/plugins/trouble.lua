@@ -6,11 +6,10 @@ return {
   'folke/trouble.nvim',
   cmd = { 'TroubleToggle', 'Trouble' },
   keys = {
-    { '<leader>xx', '<cmd>TroubleToggle<cr>', desc = 'Toggle Trouble window' },
-    { '<leader>xw', '<cmd>TroubleToggle workspace_diagnostics<cr>', desc = 'Toggle workspace diagnostics' },
-    { '<leader>xd', '<cmd>TroubleToggle document_diagnostics<cr>', desc = 'Toggle document diagnostics' },
-    { '<leader>xq', '<cmd>TroubleToggle quickfix<cr>', desc = 'Toggle quickfix window' },
-    { '<leader>xl', '<cmd>TroubleToggle loclist<cr>', desc = 'Toggle loclist window' },
+    { '<leader>xw', '<cmd>Trouble diagnostics toggle<cr>', desc = 'Toggle workspace diagnostics' },
+    { '<leader>xd', '<cmd>Trouble diagnostics toggle filter.buf=0<cr>', desc = 'Toggle document diagnostics' },
+    { '<leader>xq', '<cmd>Trouble qflist toggle<cr>', desc = 'Toggle quickfix window' },
+    { '<leader>xl', '<cmd>Trouble loclist toggle<cr>', desc = 'Toggle loclist window' },
     {
       '[X',
       function()

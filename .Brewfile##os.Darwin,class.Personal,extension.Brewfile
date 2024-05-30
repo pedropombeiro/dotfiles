@@ -124,6 +124,8 @@ brew "pngquant"
 brew "poppler"
 # Unix pager optimized for psql
 brew "pspg"
+# Generic syntax highlighter
+brew "pygments"
 # QR Code generation
 brew "qrencode"
 # Search tool like grep and The Silver Searcher
@@ -313,6 +315,7 @@ mas "feedly", id: 865500966
 mas "GarageBand", id: 682658836
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
+mas "Kindle", id: 302584613
 mas "Kindle Classic", id: 405399194
 mas "Mactracker", id: 430255202
 mas "Microsoft To Do", id: 1274495053

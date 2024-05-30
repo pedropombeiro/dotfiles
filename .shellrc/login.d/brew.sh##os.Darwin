@@ -10,6 +10,6 @@ if [ -z "$HOMEBREW_PREFIX" ]; then
 fi
 
 if [ -n "$HOMEBREW_PREFIX" ]; then
-  PATH="${PATH}:${HOMEBREW_PREFIX}/bin:${HOMEBREW_PREFIX}/sbin"
+  PATH="${HOMEBREW_PREFIX}/bin:${HOMEBREW_PREFIX}/sbin:${PATH}"
   export PATH
 fi

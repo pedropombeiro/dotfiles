@@ -109,7 +109,7 @@ brew "moreutils"
 # NCurses Disk Usage
 brew "ncdu"
 # Ambitious Vim-fork focused on extensibility and agility
-brew "neovim", args: ["HEAD"]
+brew "neovim"
 # Port scanning utility for large networks
 brew "nmap"
 # PNG file optimizer

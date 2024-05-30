@@ -44,7 +44,7 @@ brew "boost"
 # Resource monitor. C++ version and continuation of bashtop and bpytop
 brew "btop"
 # Core application library for C
-brew "glib", link: false
+brew "glib"
 # Linter/analyzer for Makefiles
 brew "checkmake"
 # Cross-platform make
@@ -121,8 +121,6 @@ brew "glab"
 brew "gnu-sed"
 # GNU Pretty Good Privacy (PGP) package
 brew "gnupg"
-# Manage compile and link flags for libraries
-brew "pkg-config"
 # Library access to GnuPG
 brew "gpgme"
 # Image processing tools collection
@@ -205,6 +203,8 @@ brew "pigz"
 brew "pinentry-mac"
 # Python dependency management tool
 brew "pipenv"
+# Manage compile and link flags for libraries
+brew "pkg-config"
 # PDF rendering library (based on the xpdf-3.0 code base)
 brew "poppler"
 # Object-relational database system
@@ -299,8 +299,6 @@ cask "alfred"
 cask "apparency"
 # Application uninstaller
 cask "appcleaner"
-# Tool to flash OS images to SD cards & USB drives
-cask "balenaetcher"
 # Menu bar icon organiser
 cask "bartender"
 # Compare files and folders

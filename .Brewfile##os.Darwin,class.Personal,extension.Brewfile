@@ -92,6 +92,8 @@ brew "lazygit"
 brew "less"
 # Postgres C API library
 brew "libpq", link: true
+# YAML Parser
+brew "libyaml"
 # Curses-based tool for viewing and analyzing log files
 brew "lnav"
 # Clone of ls with colorful output, file type icons, and more

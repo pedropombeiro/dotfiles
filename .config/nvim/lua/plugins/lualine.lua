@@ -4,9 +4,6 @@
 return {
   'nvim-lualine/lualine.nvim',
   event = { 'BufNewFile', 'BufReadPre' },
-  cond = function()
-    return not vim.g.started_by_firenvim
-  end,
   dependencies = {
     'kyazdani42/nvim-web-devicons',
   },
@@ -23,6 +20,72 @@ return {
     local config = require('config')
     local diagnostic_icons = config.ui.icons.diagnostics
     local symbol_icons = config.ui.icons.symbols
+    local sections = {
+      lualine_a = { 'mode' },
+      lualine_b = { 'branch' },
+      lualine_c = {
+        {
+          'diagnostics',
+          symbols = {
+            ---@diagnostic disable: undefined-field
+            hint = diagnostic_icons.hint .. ' ',
+            info = diagnostic_icons.info .. ' ',
+            warn = diagnostic_icons.warning .. ' ',
+            error = diagnostic_icons.error .. ' ',
+            ---@diagnostic enable: undefined-field
+          },
+        },
+        { 'filetype', icon_only = true, separator = '', padding = { left = 1, right = 0 } },
+        {
+          'filename',
+          show_filename_only = false,
+          path = 1,
+          shorting_target = 80,
+          symbols = {
+            modified = symbol_icons.modified,
+            readonly = symbol_icons.readonly, -- Text to show when the file is non-modifiable or readonly.
+          },
+        },
+      },
+      lualine_x = {
+        {
+          function()
+            return diagnostic_icons.debug .. '  ' .. require('dap').status()
+          end,
+          cond = function()
+            return package.loaded['dap'] and require('dap').status() ~= ''
+          end,
+        },
+        {
+          require('lazy.status').updates,
+          cond = require('lazy.status').has_updates,
+        },
+        {
+          'diff',
+          symbols = {
+            ---@diagnostic disable: undefined-field
+            added = symbol_icons.added .. ' ',
+            modified = symbol_icons.modified .. ' ',
+            removed = symbol_icons.removed .. ' ',
+            ---@diagnostic enable: undefined-field
+          },
+        },
+        'encoding',
+        'fileformat',
+        'filetype',
+      },
+      lualine_y = {
+        'selectioncount',
+        { 'searchcount', maxcount = 999, timeout = 500 },
+      },
+      lualine_z = {
+        'progress',
+        'location',
+      },
+    }
+    if vim.g.started_by_firenvim then
+      table.remove(sections.lualine_c, 3)
+    end
 
     return {
       options = {
@@ -43,69 +106,7 @@ return {
         'symbols-outline',
         'trouble',
       },
-      sections = {
-        lualine_a = { 'mode' },
-        lualine_b = { 'branch' },
-        lualine_c = {
-          {
-            'diagnostics',
-            symbols = {
-              ---@diagnostic disable: undefined-field
-              hint = diagnostic_icons.hint .. ' ',
-              info = diagnostic_icons.info .. ' ',
-              warn = diagnostic_icons.warning .. ' ',
-              error = diagnostic_icons.error .. ' ',
-              ---@diagnostic enable: undefined-field
-            },
-          },
-          { 'filetype', icon_only = true, separator = '', padding = { left = 1, right = 0 } },
-          {
-            'filename',
-            show_filename_only = false,
-            path = 1,
-            shorting_target = 80,
-            symbols = {
-              modified = symbol_icons.modified,
-              readonly = symbol_icons.readonly, -- Text to show when the file is non-modifiable or readonly.
-            },
-          },
-        },
-        lualine_x = {
-          {
-            function()
-              return diagnostic_icons.debug .. '  ' .. require('dap').status()
-            end,
-            cond = function()
-              return package.loaded['dap'] and require('dap').status() ~= ''
-            end,
-          },
-          {
-            require('lazy.status').updates,
-            cond = require('lazy.status').has_updates,
-          },
-          {
-            'diff',
-            symbols = {
-              ---@diagnostic disable: undefined-field
-              added = symbol_icons.added .. ' ',
-              modified = symbol_icons.modified .. ' ',
-              removed = symbol_icons.removed .. ' ',
-              ---@diagnostic enable: undefined-field
-            },
-          },
-          'encoding',
-          'fileformat',
-          'filetype',
-        },
-        lualine_y = {
-          'selectioncount',
-          { 'searchcount', maxcount = 999, timeout = 500 },
-        },
-        lualine_z = {
-          'progress',
-          'location',
-        },
-      },
+      sections = sections,
     }
   end,
 }

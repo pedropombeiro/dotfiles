@@ -18,8 +18,11 @@ return {
         function()
           vim.cmd('Lazygit')
 
-          -- ensure that Gitsigns refreshes with new state after closing Lazygit
-          vim.cmd([[execute 'Gitsigns refresh']])
+          local plugins = require('lazy.core.config').plugins
+          if plugins['gitsigns.nvim'] ~= nil and plugins['gitsigns.nvim']._.loaded ~= nil then
+            -- ensure that Gitsigns refreshes with new state after closing Lazygit
+            vim.cmd([[execute 'Gitsigns refresh']])
+          end
         end,
         desc = 'Open LazyGit',
       },

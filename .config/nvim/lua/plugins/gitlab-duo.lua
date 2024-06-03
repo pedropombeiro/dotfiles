@@ -8,6 +8,12 @@ return {
     return vim.env.GITLAB_TOKEN ~= nil and vim.env.GITLAB_TOKEN ~= ''
   end,
   opts = {
+    code_suggestions = {
+      auto_filetypes = { 'go', 'javascript', 'python', 'ruby' },
+    },
+    resource_editing = {
+      enabled = true,
+    },
     statusline = {
       enabled = false,
     },

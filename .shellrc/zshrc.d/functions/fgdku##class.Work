@@ -88,9 +88,6 @@ source ~/.config/yadm/scripts/colors.sh
 
   bundle install # Needed if Ruby version changed
 
-  printf "${YELLOW}%s${NC}\n" 'Precompiling static assets to ensure graphiql-rails changes are picked up...'
-  bundle exec rake rake:assets:precompile
-
   printf "${YELLOW}%s${NC}\n" 'Running simple test...'
   bin/rspec --failure-exit-code 0 --error-exit-code 0 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb
 

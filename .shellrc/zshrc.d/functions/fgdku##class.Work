@@ -17,6 +17,7 @@
 #
 
 source ~/.config/yadm/scripts/colors.sh
+rm -f /tmp/.need_reset_busylight
 
 (
   cd "${GDK_ROOT}/gitlab" || exit 0
@@ -34,10 +35,9 @@ source ~/.config/yadm/scripts/colors.sh
     sudo ifconfig en7 up
   fi
 
-  need_reset_busylight=0
   if [[ $(xh "http://localhost:8989?action=currentpresence" | jq -r '.runningcommand.eventname') != 'Pulse' ]]; then
     curl -s 'http://localhost:8989?action=pulse&green=100'
-    need_reset_busylight=1
+    touch /tmp/.need_reset_busylight
   fi
 
   setup_gitlab_secrets
@@ -131,7 +131,6 @@ source ~/.config/yadm/scripts/colors.sh
   cd - >/dev/null
 )
 
-if [[ need_reset_busylight -eq 1 ]]; then
+if [[ -f /tmp/.need_reset_busylight ]]; then
   curl -s 'http://localhost:8989?action=light&green=100'
 fi
--

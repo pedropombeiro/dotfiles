@@ -15,6 +15,7 @@ gui:
     expandFocusedSidePanel: false
     mainPanelSplitMode: "flexible" # one of 'horizontal' | 'flexible' | 'vertical'
     language: "auto" # one of 'auto' | 'en' | 'zh' | 'pl' | 'nl' | 'ja' | 'ko'
+    nerdFontsVersion: "3"
     timeFormat: "02 Jan 06 15:04 MST" # https://pkg.go.dev/time#Time.Format
     theme:
         lightTheme: false
@@ -45,7 +46,8 @@ gui:
     showRandomTip: true
     showBottomLine: true # for hiding the bottom information line (unless it has important information to tell you)
     showCommandLog: true
-    showIcons: false
+    showIcons: true
+    showDivergenceFromBaseBranch: 'arrowAndNumber'
     commandLogSize: 8
     splitDiff: "auto" # one of 'auto' | 'always'
 git:
@@ -56,7 +58,8 @@ git:
     commit:
         signOff: false
     merging:
-        # only applicable to unix users
+        # If true, run merges in a subprocess so that if a commit message is required, Lazygit will not hang
+        # Only applicable to unix users.
         manualCommit: false
         # extra args passed to `git merge`, e.g. --no-ff
         args: ""

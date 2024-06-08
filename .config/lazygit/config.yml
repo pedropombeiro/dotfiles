@@ -71,7 +71,7 @@ git:
         # displays the whole git graph by default in the commits panel (equivalent to passing the `--all` argument to `git log`)
         showWholeGraph: false
     skipHookPrefix: WIP
-    autoFetch: true
+    autoFetch: false
     autoRefresh: true
     branchLogCmd: "git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium {{branchName}} --"
     allBranchesLogCmd: "git log --graph --all --color=always --abbrev-commit --decorate --date=relative  --pretty=medium"

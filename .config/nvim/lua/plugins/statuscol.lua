@@ -14,18 +14,8 @@ local opts = function()
   }
 end
 
-if vim.fn.has('nvim-0.10') == 1 then
-  return {
-    'luukvbaal/statuscol.nvim',
-    event = { 'BufRead', 'BufNewFile' },
-    opts = opts,
-  }
-else
-  return {
-    'luukvbaal/statuscol.nvim',
-    commit = '51428469218c3b382cab793a2d53c72014627fbe', -- last commit that supports neovim 0.9
-    pin = true,
-    event = { 'BufRead', 'BufNewFile' },
-    opts = opts,
-  }
-end
+return {
+  'luukvbaal/statuscol.nvim',
+  event = { 'BufRead', 'BufNewFile' },
+  opts = opts,
+}

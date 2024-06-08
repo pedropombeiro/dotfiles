@@ -89,9 +89,6 @@ opt.grepprg    = 'rg --vimgrep --smart-case --follow '
 ---------------- Format --------------------------
 
 opt.encoding     = 'utf-8'
-if vim.fn.has('nvim-0.10') == 0 then
-  opt.termencoding = 'utf-8'
-end
 opt.fileformats  = 'unix,dos,mac' -- supported formats
 opt.bomb         = false          -- don't use a BOM
 opt.shiftwidth   = 2

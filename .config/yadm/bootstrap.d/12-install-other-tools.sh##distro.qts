@@ -15,9 +15,10 @@ croc_version=10.0.8
 gping_version=1.15.1
 lnav_version=0.12.0
 lsd_version=1.1.2
+nvim_version=0.10.0 # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
 procs_version=0.14.2
 
-function download_and_extract() {
+function download() {
   filename="$(basename "$1")"
   executable="$(basename "$2")"
   version="$(${executable} --version 2>/dev/null)"
@@ -27,13 +28,44 @@ function download_and_extract() {
     if [[ $? -eq 0 ]]; then
       if echo "$version" | grep "$required_version" >/dev/null; then
         printf "${GREEN}%s${NC}\n" "${executable} version ${required_version} is already present."
-        return
+        return 1
       fi
     fi
   fi
 
   printf "${GREEN}%s${NC}\n" "Downloading $1..."
   wget -q "$1" -O "${temp_dir}/package.${filename##*.}"
+}
+
+function download_and_extract_package() {
+  filename="$(basename "$1")"
+  executable="$(basename "$2")"
+  version="$(${executable} --version 2>/dev/null)"
+  required_version="$3"
+
+  download "$@"
+  if [[ $? -eq 1 ]]; then
+    return 1
+  fi
+
+  printf "${GREEN}%s${NC}" "Extracting... "
+  echo "${temp_dir}/package.${filename##*.}"
+  tar xzvf "${temp_dir}/package.${filename##*.}" --strip-components=1 --directory="$target_dir"/.. --no-same-owner
+
+  version="$($(basename "$2") --version 2>/dev/null)"
+  [[ $? -eq 0 ]] && echo "$version"
+}
+
+function download_and_extract() {
+  filename="$(basename "$1")"
+  executable="$(basename "$2")"
+  version="$(${executable} --version 2>/dev/null)"
+  required_version="$3"
+
+  download "$@"
+  if [[ $? -eq 1 ]]; then
+    return 1
+  fi
 
   printf "${GREEN}%s${NC}" "Extracting... "
   if [[ ${filename##*.} == 'zip' ]]; then
@@ -85,6 +117,7 @@ download_and_extract "https://github.com/tstack/lnav/releases/download/v${lnav_v
 archive_name="lsd-v${lsd_version}-x86_64-unknown-linux-musl"
 download_and_extract "https://github.com/lsd-rs/lsd/releases/download/v${lsd_version}/${archive_name}.tar.gz" "${archive_name}/lsd" $lsd_version
 
+download_and_extract_package "https://github.com/neovim/neovim-releases/releases/download/v${nvim_version}/nvim-linux64.tar.gz" nvim $nvim_version
 download_and_extract "https://github.com/dalance/procs/releases/download/v${procs_version}/procs-v${procs_version}-x86_64-linux.zip" procs $procs_version
 download_and_extract "https://github.com/pedropombeiro/qnapexporter/releases/latest/download/qnapexporter.tar.gz" qnapexporter
 

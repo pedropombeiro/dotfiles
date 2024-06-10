@@ -60,7 +60,7 @@ return {
       json            = { { 'prettier', 'fixjson', 'jq' } },
       just            = { 'just' },
       yaml            = { { 'prettier', 'yamlfmt' } },
-      markdown        = { 'markdown-toc', 'markdownlint-cli2' },
+      markdown        = { 'markdownlint-cli2' },
       graphql         = { 'prettier' },
       lua             = { 'stylua' },
       nginx           = { 'nginx' },

@@ -3,6 +3,7 @@
 #
 # `fgdku` takes care of updating the GDK taking certain precautions:
 # - removes .git/gc.log
+# - restores bin/rake bin/rspec bin/rails bin/spring
 # - restores db/structure.sql in case it is out of sync
 # - restarts the GDK if the Redis socket disappeared
 # - undoes any migrations from the active branch
@@ -11,6 +12,7 @@
 # - prunes and rebases local branches, taking care to preserve branch dependencies
 # - ensures there is no orphaned Sidekiq cluster
 # - reapplies migrations from active branch
+# - reapplies spring stubs
 # - runs a simple test in order to bring up Gitaly
 # - activates RubyMine if it is running so it can update its indices in the background
 # - performs a web request in order to warm up web server
@@ -21,6 +23,8 @@ rm -f /tmp/.need_reset_busylight
 
 (
   cd "${GDK_ROOT}/gitlab" || exit 0
+
+  git restore db/structure.sql bin/rake bin/rspec bin/rails bin/spring
 
   if [[ $(git diff --shortstat 2>/dev/null | tail -n1) != "" ]]; then
     printf "${RED}%s${NC}\n" 'Please stash the changes in the current branch before calling fgdku!'
@@ -42,8 +46,7 @@ rm -f /tmp/.need_reset_busylight
 
   setup_gitlab_secrets
 
-  rm -rf .git/gc.log
-  git restore db/structure.sql
+  rm -f .git/gc.log
 
   git fetch
 
@@ -65,9 +68,13 @@ rm -f /tmp/.need_reset_busylight
   MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A master -- db/schema_migrations/)"
   BRANCH_MIGRATIONS=($(echo ${MIGRATIONS_DIFF} | xargs basename -a | sort -r))
   if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
+    bin/spring binstub --all
     undo-migrations
     git stash push -m "Rolled back migration from ${ORIGINAL_BRANCH}"
   fi
+
+  bin/spring stop || echo 'Spring not running'
+  git restore bin/rake bin/rspec bin/rails bin/spring
 
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
   set +e
@@ -87,6 +94,8 @@ rm -f /tmp/.need_reset_busylight
   sleep 5
 
   bundle install # Needed if Ruby version changed
+
+  bin/spring binstub --all
 
   printf "${YELLOW}%s${NC}\n" 'Running simple test...'
   bin/rspec --failure-exit-code 0 --error-exit-code 0 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb

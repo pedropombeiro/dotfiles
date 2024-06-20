@@ -5,7 +5,7 @@
 # this script will ensure that branches from the same MR will be rebased correctly, keeping the chain order
 
 def compute_default_branch
-  `git branch -rl "*/HEAD"`.strip.split('/').last
+  system(*%w[git show-ref -q --verify refs/heads/main]) ? 'main' : 'master'
 end
 
 # compute_parent_branch will determine the closest parent branch,
@@ -118,8 +118,6 @@ def rebase_all_per_capture_info(local_branch_info_hash)
 end
 
 def rebase_mappings
-  system(*%w[git restore db/schema_migrations/], out: File::NULL)
-
   system(*%w[git status], out: File::NULL, err: File::NULL) # Refresh status, as `scalar` seems to be outdated after a pull
   system(*%w[git diff-index --quiet HEAD --])
   unless Process.last_status.success?

@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 alias lzd='lazydocker'
-alias gdp='printf "\`\`\`patch\n%s\n\`\`\`" "$(git diff)" | pbcopy'
 
 # Delete all remote tracking Git branches where the upstream branch has been deleted
 alias git_prune="git fetch --prune && git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print \$1}' | grep -v '^_.*$' | xargs git branch -D"

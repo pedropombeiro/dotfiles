@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+#
+# The `gdp` copies the current diff as a patch into the clipboard
+#
+
+git diff -- . ':(exclude)./bin/' |
+  awk 'NR==1{$0="```patch\n"$0} {print}END{print "\n```"}' |
+  pbcopy

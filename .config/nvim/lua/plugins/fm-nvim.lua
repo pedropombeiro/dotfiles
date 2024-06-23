@@ -42,6 +42,10 @@ return {
       },
     },
     opts = {
+      cmds = {
+        vifm_cmd = 'vifm',
+        lazygit_cmd = 'lazygit --use-config-dir ~/.config/lazygit',
+      },
       ui = {
         float = {
           height = 0.9,

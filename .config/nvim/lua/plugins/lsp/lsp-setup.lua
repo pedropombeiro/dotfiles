@@ -26,198 +26,197 @@ local keys = {
 }
 
 return {
-  {
-    'junnplus/lsp-setup.nvim',
-    event = { 'BufReadPre', 'BufNewFile' },
-    keys = keys,
-    dependencies = {
-      {
-        'b0o/SchemaStore.nvim', -- 🛍  JSON schemas for Neovim
-        version = false, -- last release is way too old
-      },
-      {
-        'neovim/nvim-lspconfig', -- Quickstart configs for Nvim LSP
-        dependencies = {
-          'hrsh7th/cmp-nvim-lsp', -- nvim-cmp source for neovim builtin LSP client
-          {
-            --- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
-            --- to use to launch those servers.
-            'williamboman/mason-lspconfig.nvim',
-            dependencies = 'williamboman/mason.nvim',
-          },
+  'junnplus/lsp-setup.nvim',
+  event = { 'BufReadPre', 'BufNewFile' },
+  keys = keys,
+  dependencies = {
+    {
+      'b0o/SchemaStore.nvim', -- 🛍  JSON schemas for Neovim
+      version = false, -- last release is way too old
+    },
+    {
+      'neovim/nvim-lspconfig', -- Quickstart configs for Nvim LSP
+      dependencies = {
+        'hrsh7th/cmp-nvim-lsp', -- nvim-cmp source for neovim builtin LSP client
+        {
+          --- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
+          --- to use to launch those servers.
+          'williamboman/mason-lspconfig.nvim',
+          dependencies = 'williamboman/mason.nvim',
         },
-      },
-      {
-        --- Uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
-        --- to use to launch those servers.
-        'williamboman/mason-lspconfig.nvim',
-        dependencies = 'williamboman/mason.nvim',
       },
     },
-    init = function()
-      local icons = require('config').ui.icons.diagnostics
+    {
+      --- Uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
+      --- to use to launch those servers.
+      'williamboman/mason-lspconfig.nvim',
+      dependencies = 'williamboman/mason.nvim',
+    },
+  },
+  init = function()
+    local icons = require('config').ui.icons.diagnostics
 
-      local signs = {
-        ---@diagnostic disable: undefined-field
-        Error = icons.error .. ' ',
-        Warn = icons.warning .. ' ',
-        Hint = icons.hint .. ' ',
-        Info = icons.info .. ' ',
-        ---@diagnostic enable: undefined-field
-      }
-      for type, icon in pairs(signs) do
-        local hl = 'DiagnosticSign' .. type
-        vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
+    local signs = {
+      ---@diagnostic disable: undefined-field
+      Error = icons.error .. ' ',
+      Warn = icons.warning .. ' ',
+      Hint = icons.hint .. ' ',
+      Info = icons.info .. ' ',
+      ---@diagnostic enable: undefined-field
+    }
+    for type, icon in pairs(signs) do
+      local hl = 'DiagnosticSign' .. type
+      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
+    end
+
+    local m = require('mapx')
+    m.nname('<leader>l', 'LSP')
+    m.nname('<leader>lw', 'Workspace')
+  end,
+  config = function()
+    --if !has_key(plugs, "trouble.nvim")
+    --  nnoremap <silent> <leader>gd :lua vim.lsp.buf.definition()<CR>
+    --  nnoremap <silent> <C-]> :lua vim.lsp.buf.definition()<CR>
+    --  nnoremap <silent> <leader>gr :lua vim.lsp.buf.references()<CR>
+    --  nnoremap <silent> <leader>xq :lua vim.diagnostic.setloclist()<CR>
+    --endif
+
+    if vim.fn.has('mac') ~= 1 then
+      vim.env.DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = 1 -- Needed for marksman LSP on systems missing ICU libraries
+    end
+
+    local function file_exists(name)
+      local f = io.open(name, 'r')
+      if f ~= nil then
+        io.close(f)
+        return true
+      else
+        return false
       end
+    end
 
-      local m = require('mapx')
-      m.nname('<leader>l', 'LSP')
-      m.nname('<leader>lw', 'Workspace')
-    end,
-    config = function()
-      --if !has_key(plugs, "trouble.nvim")
-      --  nnoremap <silent> <leader>gd :lua vim.lsp.buf.definition()<CR>
-      --  nnoremap <silent> <C-]> :lua vim.lsp.buf.definition()<CR>
-      --  nnoremap <silent> <leader>gr :lua vim.lsp.buf.references()<CR>
-      --  nnoremap <silent> <leader>xq :lua vim.diagnostic.setloclist()<CR>
-      --endif
-
-      if vim.fn.has('mac') ~= 1 then
-        vim.env.DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = 1 -- Needed for marksman LSP on systems missing ICU libraries
-      end
-
-      local function file_exists(name)
-        local f = io.open(name, 'r')
-        if f ~= nil then
-          io.close(f)
-          return true
-        else
-          return false
-        end
-      end
-
-      local servers = {
-        bashls = {},
-        dockerls = {},
-        golangci_lint_ls = {},
-        gopls = {
-          settings = {
-            gopls = {
-              hints = {
-                rangeVariableTypes = true,
-                parameterNames = true,
-                constantValues = true,
-                assignVariableTypes = true,
-                compositeLiteralFields = true,
-                compositeLiteralTypes = true,
-                functionTypeParameters = true,
-              },
+    local servers = {
+      bashls = {},
+      dockerls = {},
+      golangci_lint_ls = {},
+      gopls = {
+        settings = {
+          gopls = {
+            hints = {
+              rangeVariableTypes = true,
+              parameterNames = true,
+              constantValues = true,
+              assignVariableTypes = true,
+              compositeLiteralFields = true,
+              compositeLiteralTypes = true,
+              functionTypeParameters = true,
             },
           },
         },
-        jsonls = {
-          -- lazy-load schemastore when needed
-          on_new_config = function(new_config)
-            new_config.settings.json.schemas = new_config.settings.json.schemas or {}
-            vim.list_extend(new_config.settings.json.schemas, require('schemastore').json.schemas())
-          end,
-          settings = {
-            json = {
-              format = { enable = false },
-              validate = { enable = true },
+      },
+      jsonls = {
+        -- lazy-load schemastore when needed
+        on_new_config = function(new_config)
+          new_config.settings.json.schemas = new_config.settings.json.schemas or {}
+          vim.list_extend(new_config.settings.json.schemas, require('schemastore').json.schemas())
+        end,
+        settings = {
+          json = {
+            format = { enable = false },
+            validate = { enable = true },
+          },
+        },
+      },
+      lua_ls = {
+        single_file_support = true,
+        settings = {
+          Lua = {
+            runtime = {
+              -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+              version = 'LuaJIT',
+            },
+            diagnostics = {
+              enable = true,
+              -- Get the language server to recognize the `vim` global
+              globals = { 'vim' },
+              neededFileStatus = {
+                ['codestyle-check'] = 'Any',
+              },
+            },
+            workspace = {
+              -- Make the server aware of Neovim runtime files
+              library = vim.api.nvim_get_runtime_file('', true),
+              checkThirdParty = false,
+            },
+            completion = {
+              callSnippet = 'Replace',
+            },
+            format = {
+              enable = false,
+              defaultConfig = {
+                indent_style = 'space',
+                indent_size = '2',
+                quote_style = 'single',
+              },
+            },
+            hint = {
+              enable = false,
+              arrayIndex = 'Auto',
+              await = true,
+              paramName = 'All',
+              paramType = true,
+              semicolon = 'SameLine',
+              setType = false,
             },
           },
         },
-        lua_ls = {
-          single_file_support = true,
-          settings = {
-            Lua = {
-              runtime = {
-                -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-                version = 'LuaJIT',
-              },
-              diagnostics = {
-                enable = true,
-                -- Get the language server to recognize the `vim` global
-                globals = { 'vim' },
-                neededFileStatus = {
-                  ['codestyle-check'] = 'Any',
-                },
-              },
-              workspace = {
-                -- Make the server aware of Neovim runtime files
-                library = vim.api.nvim_get_runtime_file('', true),
-                checkThirdParty = false,
-              },
-              completion = {
-                callSnippet = 'Replace',
-              },
-              format = {
-                enable = false,
-                defaultConfig = {
-                  indent_style = 'space',
-                  indent_size = '2',
-                  quote_style = 'single',
-                },
-              },
-              hint = {
-                enable = false,
-                arrayIndex = 'Auto',
-                await = true,
-                paramName = 'All',
-                paramType = true,
-                semicolon = 'SameLine',
-                setType = false,
-              },
+      },
+      sqlls = {},
+      taplo = {},
+      vimls = {},
+      yamlls = {
+        -- Have to add this for yamlls to understand that we support line folding
+        capabilities = {
+          textDocument = {
+            foldingRange = {
+              dynamicRegistration = false,
+              lineFoldingOnly = true,
             },
           },
-        },
-        sqlls = {},
-        taplo = {},
-        vimls = {},
-        yamlls = {
-          -- Have to add this for yamlls to understand that we support line folding
-          capabilities = {
-            textDocument = {
-              foldingRange = {
-                dynamicRegistration = false,
-                lineFoldingOnly = true,
-              },
-            },
-            settings = {
-              yaml = {
-                ['https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json'] = '/.gitlab-ci.yml',
-              },
-            },
-          },
-          -- lazy-load schemastore when needed
-          on_new_config = function(new_config)
-            new_config.settings.yaml.schemas = new_config.settings.yaml.schemas or {}
-            vim.list_extend(new_config.settings.yaml.schemas, require('schemastore').yaml.schemas())
-          end,
           settings = {
-            redhat = { telemetry = { enabled = false } },
             yaml = {
-              keyOrdering = false,
-              format = {
-                enable = false,
-              },
-              hover = true,
-              completion = true,
-              validate = true,
-              schemastore = {
-                -- Must disable built-in schemaStore support to use
-                -- schemas from SchemaStore.nvim plugin
-                enable = false,
-                -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
-                url = '',
-              },
+              ['https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json'] = '/.gitlab-ci.yml',
             },
           },
         },
-      }
-      if file_exists(vim.fn.expand('~/Library/Arduino15/arduino-cli.yaml')) then
-        servers.arduino_language_server = {
+        -- lazy-load schemastore when needed
+        on_new_config = function(new_config)
+          new_config.settings.yaml.schemas = new_config.settings.yaml.schemas or {}
+          vim.list_extend(new_config.settings.yaml.schemas, require('schemastore').yaml.schemas())
+        end,
+        settings = {
+          redhat = { telemetry = { enabled = false } },
+          yaml = {
+            keyOrdering = false,
+            format = {
+              enable = false,
+            },
+            hover = true,
+            completion = true,
+            validate = true,
+            schemastore = {
+              -- Must disable built-in schemaStore support to use
+              -- schemas from SchemaStore.nvim plugin
+              enable = false,
+              -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
+              url = '',
+            },
+          },
+        },
+      },
+    }
+    if file_exists(vim.fn.expand('~/Library/Arduino15/arduino-cli.yaml')) then
+      servers.arduino_language_server = {
           -- stylua: ignore
           cmd = {
             'arduino-language-server',
@@ -226,86 +225,71 @@ return {
             '-cli', 'arduino-cli',
             '-clangd', 'clangd'
           },
-        }
-        servers.clangd = {}
-      end
-      if vim.fn.executable('solargraph') == 1 then
-        local util = require('lspconfig/util')
+      }
+      servers.clangd = {}
+    end
+    if vim.fn.executable('solargraph') == 1 then
+      local util = require('lspconfig/util')
 
-        servers.solargraph = {
-          init_options = {
-            formatting = false, -- Formatting is performed by Conform
-          },
-          root_dir = util.root_pattern('Gemfile', '.git', '.'),
-          flags = {
-            debounce_text_changes = 150,
-          },
-        }
-      end
-
-      local install_dir = '/share/homes/admin/opt/vscode-home-assistant'
-      if vim.fn.finddir(install_dir) then
-        local lspconfig = require('lspconfig.configs')
-        local util = require('lspconfig/util')
-
-        -- add the default config for homeassistant
-        lspconfig.homeassistant = {
-          default_config = {
-            cmd = { install_dir .. '/node_modules/.bin/ts-node', install_dir .. '/out/server/server.js', '--stdio' },
-            filetypes = { 'home-assistant' },
-            root_dir = util.root_pattern('.HA_VERSION', 'configuration.yaml'),
-            settings = {},
-          },
-        }
-        lspconfig.homeassistant.setup({})
-      end
-
-      local border = require('config').ui.border
-
-      require('lspconfig.ui.windows').default_options.border = border
-      require('lsp-setup').setup({
-        default_mappings = false,
-        inlay_hints = {
-          enabled = true,
+      servers.solargraph = {
+        init_options = {
+          formatting = false, -- Formatting is performed by Conform
         },
-        -- Global capabilities
-        capabilities = vim.lsp.protocol.make_client_capabilities(),
-        servers = servers,
-      })
+        root_dir = util.root_pattern('Gemfile', '.git', '.'),
+        flags = {
+          debounce_text_changes = 150,
+        },
+      }
+    end
 
-      -- Show diagnostic source in float (e.g. goto_next, goto_prev)
-      vim.diagnostic.config({
-        severity_sort = true,
-        virtual_text = {
-          prefix = '●',
+    local install_dir = '/share/homes/admin/opt/vscode-home-assistant'
+    if vim.fn.finddir(install_dir) then
+      local lspconfig = require('lspconfig.configs')
+      local util = require('lspconfig/util')
+
+      -- add the default config for homeassistant
+      lspconfig.homeassistant = {
+        default_config = {
+          cmd = { install_dir .. '/node_modules/.bin/ts-node', install_dir .. '/out/server/server.js', '--stdio' },
+          filetypes = { 'home-assistant' },
+          root_dir = util.root_pattern('.HA_VERSION', 'configuration.yaml'),
+          settings = {},
         },
-        float = {
-          focusable = false,
-          style = 'minimal',
-          border = border,
-          source = false,
-          header = '',
-          suffix = '',
-          prefix = '',
-          format = function(value)
-            return string.format('%s: [%s] %s', value.source, value.code, value.message)
-          end,
-        },
-      })
-    end,
-  },
-  {
-    -- 💻 Neovim setup for init.lua and plugin development with full signature help, docs and completion for the nvim lua API.
-    'folke/neodev.nvim',
-    lazy = true,
-    ft = { 'lua' },
-    opts = {
-      library = {
-        plugins = { 'plenary.nvim', 'neotest' },
-        types = true,
+      }
+      lspconfig.homeassistant.setup({})
+    end
+
+    local border = require('config').ui.border
+
+    require('lspconfig.ui.windows').default_options.border = border
+    require('lsp-setup').setup({
+      default_mappings = false,
+      inlay_hints = {
+        enabled = true,
       },
-      runtime_path = true,
-      experimental = { pathStrict = true },
-    },
-  },
+      -- Global capabilities
+      capabilities = vim.lsp.protocol.make_client_capabilities(),
+      servers = servers,
+    })
+
+    -- Show diagnostic source in float (e.g. goto_next, goto_prev)
+    vim.diagnostic.config({
+      severity_sort = true,
+      virtual_text = {
+        prefix = '●',
+      },
+      float = {
+        focusable = false,
+        style = 'minimal',
+        border = border,
+        source = false,
+        header = '',
+        suffix = '',
+        prefix = '',
+        format = function(value)
+          return string.format('%s: [%s] %s', value.source, value.code, value.message)
+        end,
+      },
+    })
+  end,
 }

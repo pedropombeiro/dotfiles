@@ -4,23 +4,27 @@
 
 open -a Busylight_HTTP_Mac.app # Reopen Busylight_HTTP_Mac at wake
 
-# Restart Control Center, since it regularly loses connection with the Key Lights and gets confused
-killall 'Elgato Control Center'
+if pgrep 'Elgato Control Center' >/dev/null 2>&1; then
+  # Restart Control Center, since it regularly loses connection with the Key Lights and gets confused
+  killall 'Elgato Control Center'
+fi
 # open -g -a 'Elgato Control Center.app'
 
-# Restart Stream Deck on hub, since half of the times it only shows wallpaper after resuming
-if ! uhubctl --action cycle --location 2-1.1.2 --port 1 --wait 4000 | grep 'Elgato Stream Deck'; then
-  terminal-notifier -title 'uhubctl' -message 'Failed to cycle power to Elgato Stream Deck' -sound boop -ignoreDnD
+if uhubctl >/dev/null 2>&1; then
+  # Restart Stream Deck on hub, since half of the times it only shows wallpaper after resuming
+  if ! uhubctl --action cycle --location 2-1.1.2 --port 1 --wait 4000 | grep 'Elgato Stream Deck'; then
+    terminal-notifier -title 'uhubctl' -message 'Failed to cycle power to Elgato Stream Deck' -sound boop -ignoreDnD
+  fi
+
+  # Turn off Elgato Wave mic
+  uhubctl --action off --location 2-1.1.2 --port 1
+
+  sleep 5
+
+  sudo killall coreaudiod # Restart CoreAudio service to make sure eqMac can work correctly
+
+  SwitchAudioSource -t output -s 'MacBook Pro Speakers'
+  SwitchAudioSource -t output -s 'CalDigit TS4 Audio - Rear'
 fi
-
-# Turn off Elgato Wave mic
-uhubctl --action off --location 2-1.1.2 --port 1
-
-sleep 5
-
-sudo killall coreaudiod # Restart CoreAudio service to make sure eqMac can work correctly
-
-SwitchAudioSource -t output -s 'MacBook Pro Speakers'
-SwitchAudioSource -t output -s 'CalDigit TS4 Audio - Rear'
 
 ~/.config/yadm/scripts/run-checks.zsh

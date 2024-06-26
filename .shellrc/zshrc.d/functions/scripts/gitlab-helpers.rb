@@ -372,7 +372,7 @@ def retrieve_mrs(*args)
         [
           pipeline_aliases.fetch(pipeline_status, pipeline_status),
           pipeline_duration ? "(#{(pipeline_duration / 60).round} mins)" : nil,
-          pipeline_age && pipeline_age > 4 * 60 * 60 ? '🥶' : nil
+          pipeline_age && pipeline_age > 8 * 60 * 60 ? '🥶' : nil
         ].compact.join(' '),
         { value: squash, alignment: :center }
       ]

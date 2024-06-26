@@ -413,6 +413,7 @@ def retrieve_mrs(*args)
       }
     end
   puts render
+  puts "#{mrs.count} merge request(s)"
 
   nil
 end

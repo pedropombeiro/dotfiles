@@ -296,6 +296,7 @@ def retrieve_mrs(*args)
             approved
             approvalsRequired
             approvalsLeft
+            autoMergeEnabled
             detailedMergeStatus
             squashOnMerge
             conflicts
@@ -310,6 +311,9 @@ def retrieve_mrs(*args)
               status
               startedAt
               finishedAt
+              failedJobs: jobs(statuses: FAILED, retried: false) {
+                count
+              }
             }
           }
         }
@@ -349,12 +353,13 @@ def retrieve_mrs(*args)
     header: headings.map(&:green),
     rows: mrs.map do |mr|
       title = mr['title'].truncate(69)
-      merge_status = merge_status_aliases.fetch(mr['detailedMergeStatus'],
-                                                mr['detailedMergeStatus'])
-        .truncate(21)
+      merge_status = merge_status_aliases.fetch(mr['detailedMergeStatus'], mr['detailedMergeStatus'])
+      merge_status += ' 🚀' if mr['autoMergeEnabled']
+      merge_status.truncate(21)
       squash = mr['squashOnMerge'] ? '✔︎'.green : '⨯'.red
       conflicts = mr['conflicts'] ? '⨯'.red : '✔︎'.green
       should_be_rebased = mr['shouldBeRebased'] ? 'Y' : ''
+      approved = mr['approved']
       approvals_left = mr['approvalsLeft']
       approvals_required = mr['approvalsRequired']
       pipeline_status = mr.dig('headPipeline', 'status')
@@ -364,6 +369,7 @@ def retrieve_mrs(*args)
       pipeline_finished_at = DateTime.parse(pipeline_finished_at) if pipeline_finished_at
       pipeline_duration = pipeline_finished_at || pipeline_started_at.nil? ? nil : (DateTime.now - pipeline_started_at).to_f * 24 * 60 * 60
       pipeline_age = pipeline_finished_at ? (DateTime.now - pipeline_finished_at).to_f * 24 * 60 * 60 : nil
+      pipeline_failed_jobs = mr.dig('headPipeline', 'failedJobs', 'count').to_i
       reviewers = mr.dig('reviewers', 'nodes').map { |reviewer| reviewer['username'] }
 
       row = [
@@ -371,6 +377,7 @@ def retrieve_mrs(*args)
         merge_status,
         [
           pipeline_aliases.fetch(pipeline_status, pipeline_status) || '??',
+          pipeline_failed_jobs.positive? ? '⨯'.red : nil,
           pipeline_duration ? "(#{(pipeline_duration / 60).round} mins)" : nil,
           pipeline_age && pipeline_age > 8 * 60 * 60 ? '🥶' : nil
         ].compact.join(' '),
@@ -379,7 +386,8 @@ def retrieve_mrs(*args)
       row << should_be_rebased if any_rebase
       row << conflicts if any_conflicts
       row + [
-        { value: "#{approvals_required - approvals_left}/#{approvals_required}", alignment: :right },
+        { value: approved ? '✔︎'.green : "#{approvals_required - approvals_left}/#{approvals_required}",
+          alignment: :right },
         reviewers.map { |name| format_reviewer_name(name, reviewers.count) }.join(', '),
         title,
         mr['sourceBranch'].truncate(50).green

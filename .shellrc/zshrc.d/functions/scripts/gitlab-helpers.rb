@@ -370,7 +370,7 @@ def retrieve_mrs(*args)
         mr['reference'],
         merge_status,
         [
-          pipeline_aliases.fetch(pipeline_status, pipeline_status),
+          pipeline_aliases.fetch(pipeline_status, pipeline_status) || '??',
           pipeline_duration ? "(#{(pipeline_duration / 60).round} mins)" : nil,
           pipeline_age && pipeline_age > 8 * 60 * 60 ? '🥶' : nil
         ].compact.join(' '),
@@ -397,7 +397,11 @@ def retrieve_mrs(*args)
         when 0
           val.with_hyperlink(mr['webUrl'])
         when pipeline_col_index
-          val.with_hyperlink("https://gitlab.com#{mr.dig('headPipeline', 'path')}")
+          if mr.dig('headPipeline', 'path')
+            val.with_hyperlink("https://gitlab.com#{mr.dig('headPipeline', 'path')}")
+          else
+            val
+          end
         when reviewers_col_index
           reviewers = mr.dig('reviewers', 'nodes')
           new_val = reviewers.map do |reviewer|

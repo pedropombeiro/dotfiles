@@ -119,6 +119,8 @@ rm -f /tmp/.need_reset_busylight
     fi
   fi
 
+  (cd $GDK_ROOT && bundle install && yes | rake gitlab:truncate_logs)
+
   set +e
   yes | gdk kill # Use kill instead of stop so that services are killed if they can't be stopped (e.g. postgresql)
   set -e

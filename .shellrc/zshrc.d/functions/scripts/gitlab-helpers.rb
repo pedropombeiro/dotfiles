@@ -123,7 +123,7 @@ def gitlab_mr_rate(*author)
   puts
   now = DateTime.now
   mrs_merged_by_month = mrs.group_by { |mr| [now, DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min }
-  mrs_merged_by_month.each do |ym, monthly_mrs|
+  mrs_merged_by_month.reverse_each do |ym, monthly_mrs|
     prorated_mr_count = monthly_mrs.count
     if ym.year == now.year && ym.month == now.month
       prorated_mr_count = monthly_mrs.count.to_f / ym.day * DateTime.civil(ym.year, ym.month, -1).day

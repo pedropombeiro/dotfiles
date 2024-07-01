@@ -106,10 +106,12 @@ def gitlab_mr_rate(*author)
     json_res = JSON.parse(res)
     merge_requests = json_res.dig('data', 'group', 'mergeRequests')
     mrs +=
-      merge_requests['nodes'].map do |mr|
+      merge_requests['nodes']
+      .select { |mr| mr['mergedAt'] }
+      .map do |mr|
         { merged_at: DateTime.iso8601(mr['mergedAt']) }
       rescue StandardError
-        $stderr.print mr
+        $stderr.print "\n#{mr}\n"
         raise
       end
 

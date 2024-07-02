@@ -88,6 +88,7 @@ def gitlab_mr_rate(*author)
               authorUsername: "#{author}",
               state: merged,
               includeSubgroups: true,
+              createdAfter: "2020-01-27",
               after: #{start_cursor}
             ) {
               totalTimeToMerge
@@ -124,7 +125,9 @@ def gitlab_mr_rate(*author)
 
   puts
   now = DateTime.now
-  mrs_merged_by_month = mrs.group_by { |mr| [now, DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min }
+  mrs_merged_by_month = mrs
+                        .sort_by { |mr| now - mr[:merged_at] }
+                        .group_by { |mr| [now, DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min }
   mrs_merged_by_month.reverse_each do |ym, monthly_mrs|
     prorated_mr_count = monthly_mrs.count
     if ym.year == now.year && ym.month == now.month

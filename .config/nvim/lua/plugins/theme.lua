@@ -25,7 +25,7 @@ return {
     dim_inactive = false,
     transparent_mode = false,
     overrides = {
-      Normal = { bg = '#101011' },
+      Normal = { bg = require('config').theme.colors.dark0 },
 
       -- Change border for float windows (normally grey)
       NormalFloat = { bg = require('config').theme.colors.dark0 },

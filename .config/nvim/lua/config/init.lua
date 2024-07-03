@@ -3,7 +3,7 @@ return {
   theme = {
     name = 'gruvbox',
     colors = {
-      dark0       = '#1d2021',
+      dark0       = '#101011',
       bg0_s       = '#32302f', -- Gruvbox Dark bg0_s
       gray        = '#928374',
       fg          = '#ebdbb2',

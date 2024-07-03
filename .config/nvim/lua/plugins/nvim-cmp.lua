@@ -47,7 +47,7 @@ return {
         dependencies = 'nvim-lua/plenary.nvim',
       },
     },
-    opts = function()
+    config = function()
       local cmp = require('cmp')
       local compare = require('cmp.config.compare')
       local cmp_kinds = require('config').ui.icons.kinds
@@ -217,7 +217,6 @@ return {
               return true
             end,
           },
-          { name = 'git' },
           { name = 'nvim_lsp_signature_help' },
         }),
 

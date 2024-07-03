@@ -4,6 +4,9 @@
 ---@format disable-next
 -- stylua: ignore
 local keys = {
+  { '<leader>uh',  ':lua vim.lsp.inlay_hint.enable(false)<CR>',     desc = 'Disable inlay hints' },
+  { '[oH',         ':lua vim.lsp.inlay_hint.enable(true)<CR>',      desc = 'Enable inlay hints' },
+  { ']oH',         ':lua vim.lsp.inlay_hint.enable(false)<CR>',     desc = 'Disable inlay hints' },
   { '[d',          ':lua vim.diagnostic.goto_prev()<CR>',           desc = 'Next LSP diagnostic' },
   { ']d',          ':lua vim.diagnostic.goto_next()<CR>',           desc = 'Previous LSP diagnostic' },
   { '<f2>',        ':lua vim.lsp.buf.rename()<CR>',                 desc = 'Rename symbol' },

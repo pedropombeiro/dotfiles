@@ -57,8 +57,9 @@ return {
       ---@type table<integer, integer>
       local modified_priority = {
         [types.lsp.CompletionItemKind.Variable] = types.lsp.CompletionItemKind.Method,
-        [types.lsp.CompletionItemKind.Snippet] = 0, -- top
+        [types.lsp.CompletionItemKind.Property] = 0, -- top
         [types.lsp.CompletionItemKind.Keyword] = 0, -- top
+        [types.lsp.CompletionItemKind.Snippet] = 1, -- top
         [types.lsp.CompletionItemKind.Text] = 100, -- bottom
       }
       ---@param kind integer: kind of completion entry
@@ -90,6 +91,7 @@ return {
         },
 
         formatting = {
+          expandable_indicator = true,
           fields = { 'kind', 'abbr', 'menu' },
           format = function(entry, vim_item)
             vim_item.menu = '    (' .. (vim_item.kind or '') .. ')'
@@ -152,17 +154,11 @@ return {
         }),
 
         sorting = {
+          priority_weight = 1,
           -- https://github.com/hrsh7th/nvim-cmp/blob/main/lua/cmp/config/compare.lua
           comparators = {
             compare.offset,
             compare.exact,
-            function(entry1, entry2) -- sort by length ignoring "=~"
-              local len1 = string.len(string.gsub(entry1.completion_item.label, '[=~()_]', ''))
-              local len2 = string.len(string.gsub(entry2.completion_item.label, '[=~()_]', ''))
-              if len1 ~= len2 then
-                return len1 - len2 < 0
-              end
-            end,
             compare.recently_used,
             function(entry1, entry2) -- sort by compare kind (Variable, Function etc)
               local kind1 = modified_kind(entry1:get_kind())
@@ -180,6 +176,13 @@ return {
             end,
             compare.score,
             compare.order,
+            function(entry1, entry2) -- sort by length ignoring "=~"
+              local len1 = string.len(string.gsub(entry1.completion_item.label, '[=~()_]', ''))
+              local len2 = string.len(string.gsub(entry2.completion_item.label, '[=~()_]', ''))
+              if len1 ~= len2 then
+                return len1 - len2 < 0
+              end
+            end,
           },
         },
 

@@ -100,6 +100,9 @@ rm -f /tmp/.need_reset_busylight
   printf "${YELLOW}%s${NC}\n" 'Running simple test...'
   bin/rspec --failure-exit-code 0 --error-exit-code 0 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb
 
+  printf "${YELLOW}%s${NC}\n" "Run any pending ClickHouse migrations..."
+  bundle exec rake gitlab:clickhouse:migrate:main
+
   printf "${YELLOW}%s${NC}\n" 'Pruning local branches...'
   git fetch --all --prune --jobs=10
   set +e

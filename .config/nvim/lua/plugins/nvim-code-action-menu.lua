@@ -1,10 +1,16 @@
--- NeoVim Code Action Menu (https://github.com/weilbith/nvim-code-action-menu)
---  Pop-up menu for code actions to show meta-information and diff preview
+-- NeoVim Code Action Menu (https://github.com/aznhe21/actions-preview.nvim)
+--  Fully customizable previewer for LSP code actions.
 
 return {
-  'weilbith/nvim-code-action-menu', -- Pop-up menu for code actions to show meta-information and diff preview
+  'aznhe21/actions-preview.nvim',
   cmd = 'CodeActionMenu',
   keys = {
-    { '<leader>la', ':CodeActionMenu<CR>', desc = 'Open code action menu' }
-  }
+    {
+      '<leader>la',
+      function()
+        require('actions-preview').code_actions()
+      end,
+      desc = 'Open code action menu',
+    },
+  },
 }

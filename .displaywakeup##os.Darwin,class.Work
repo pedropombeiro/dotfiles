@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Turn on Stream Deck
+uhubctl --action on --location 2-1 --port 5

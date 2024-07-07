@@ -19,6 +19,7 @@ return {
       'actionlint',
       'docker-compose-language-service',
       'fixjson',
+      'gitlab-ci-ls',
       'golangci-lint',
       'golangci-lint-langserver',
       'goimports',

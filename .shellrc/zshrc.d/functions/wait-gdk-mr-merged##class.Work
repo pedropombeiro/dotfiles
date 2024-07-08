@@ -12,13 +12,24 @@ ctrl_c() {
 trap ctrl_c INT
 
 curl -s 'http://localhost:8989?action=light&red=100&blue=100'
-while [[ "$(curl -sS "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab/merge_requests/$1" --header "PRIVATE-TOKEN: $GITLAB_COM_TOKEN" | jq -r .state)" != 'merged' ]]; do
-  if [[ $aborted -eq 1 ]]; then
-    echo "Ctrl-C detected. Exiting..."
-    break
-  fi
-  sleep 5
-done
+if [[ -z $1 ]]; then
+  while ! git branch -vv | grep -E '(origin|security)/.*: gone]'; do
+    if [[ $aborted -eq 1 ]]; then
+      echo "Ctrl-C detected. Exiting..."
+      break
+    fi
+    sleep 5
+    git fetch --all --prune --jobs=10 | grep -v 'Fetching'
+  done
+else
+  while [[ "$(curl -sS "https://gitlab.com/api/v4/projects/gitlab-org%2Fgitlab/merge_requests/$1" --header "PRIVATE-TOKEN: $GITLAB_COM_TOKEN" | jq -r .state)" != 'merged' ]]; do
+    if [[ $aborted -eq 1 ]]; then
+      echo "Ctrl-C detected. Exiting..."
+      break
+    fi
+    sleep 5
+  done
+fi
 curl -s 'http://localhost:8989?action=light&green=100'
 
 return $aborted

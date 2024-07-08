@@ -104,7 +104,7 @@ rm -f /tmp/.need_reset_busylight
   bundle exec rake gitlab:clickhouse:migrate:main
 
   printf "${YELLOW}%s${NC}\n" 'Pruning local branches...'
-  git fetch --all --prune --jobs=10
+  git fetch --all --jobs=10
   set +e
   git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | xargs git branch -D
   set -e

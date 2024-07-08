@@ -8,3 +8,5 @@ if alias t >/dev/null; then
   # Allow ~/.shellrc/zshrc.d/functions/t to override the t alias
   unalias t
 fi
+
+unalias gfa # Overriden as a more specialized function

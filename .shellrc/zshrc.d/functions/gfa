@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+#
+# The `gfa` fetches all branches/tags from the remote, deleting local references to remote branches that have been deleted upstream
+
+git fetch --all --prune --jobs=10
+git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | awk '{print $1 " has been merged!"}'

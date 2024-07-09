@@ -3,7 +3,6 @@
 
 return {
   'aznhe21/actions-preview.nvim',
-  cmd = 'CodeActionMenu',
   keys = {
     {
       '<leader>la',
@@ -13,4 +12,11 @@ return {
       desc = 'Open code action menu',
     },
   },
+  config = function()
+    return {
+      highlight_command = {
+        require('actions-preview.highlight').delta(),
+      },
+    }
+  end,
 }

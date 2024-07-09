@@ -21,20 +21,23 @@ return {
     -- stylua: ignore end
 
     local sources = {
-      code_actions.gitsigns,
+      code_actions.gomodifytags, -- Go tool to modify struct field tags
+      code_actions.impl, -- impl generates method stubs for implementing an interface.
+      code_actions.gitsigns, -- Injects code actions for Git operations at the current cursor position (stage / preview / reset hunks, blame, etc.).
 
       completion.spell.with({
         filetypes = { 'json', 'yaml', 'markdown' },
       }),
 
-      diagnostics.checkmake,
-      diagnostics.golangci_lint,
-      diagnostics.hadolint,
+      diagnostics.checkmake, -- make linter
+      diagnostics.gitlint, -- Linter for Git commit messages
+      diagnostics.golangci_lint, -- A Go linter aggregator
+      diagnostics.hadolint, -- A smarter Dockerfile linter that helps you build best practice Docker images
       --diagnostics.semgrep,
       diagnostics.vale,
-      diagnostics.zsh,
+      diagnostics.zsh, -- Uses zsh's own -n option to evaluate, but not execute, zsh scripts
 
-      hover.dictionary,
+      hover.dictionary, -- Shows the first available definition for the current word under the cursor
     }
     if vim.fn.executable('yamllint') == 1 then
       table.insert(sources, diagnostics.yamllint)

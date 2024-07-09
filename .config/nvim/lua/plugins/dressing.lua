@@ -13,6 +13,9 @@ return {
     ---@diagnostic disable-next-line: duplicate-set-field
     vim.ui.input = function(...)
       require('lazy').load({ plugins = { 'dressing.nvim' } })
+      vim.schedule(function()
+        vim.cmd('startinsert')
+      end)
       return vim.ui.input(...)
     end
   end,

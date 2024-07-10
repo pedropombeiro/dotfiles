@@ -176,6 +176,7 @@ return {
       },
       sqlls = {},
       taplo = {},
+      tsserver = {},
       vimls = {},
       volar = {},
       yamlls = {

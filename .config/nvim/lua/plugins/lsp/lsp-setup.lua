@@ -177,6 +177,7 @@ return {
       sqlls = {},
       taplo = {},
       vimls = {},
+      volar = {},
       yamlls = {
         -- Have to add this for yamlls to understand that we support line folding
         capabilities = {

@@ -90,7 +90,7 @@ return {
     return {
       options = {
         icons_enabled = true,
-        ignore_focus = { 'neotest-summary', 'lazygit', 'TelescopePrompt' },
+        ignore_focus = { 'neotest-summary', 'lazygit', 'TelescopePrompt', 'Outline' },
         disabled_filetypes = {
           statusline = { 'alpha', 'Fm', 'mason', 'neotest-summary' },
         },
@@ -103,7 +103,6 @@ return {
         'lazy',
         'neo-tree',
         'nvim-dap-ui',
-        'symbols-outline',
         'trouble',
       },
       sections = sections,

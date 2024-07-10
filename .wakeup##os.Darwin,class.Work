@@ -2,6 +2,8 @@
 
 #osascript -e 'tell application id "com.runningwithcrayons.Alfred" to run trigger "resume" in workflow "com.pedropombeiro.resumetimeout"'
 
+osascript -e 'tell application "Stay.app" to restore all windows'
+
 open -a Busylight_HTTP_Mac.app # Reopen Busylight_HTTP_Mac at wake
 
 if pgrep 'Elgato Control Center' >/dev/null 2>&1; then

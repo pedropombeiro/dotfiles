@@ -44,10 +44,6 @@ gitlab:
   rails:
 #     address: 'http://gdk.test:3000'
 #     sherlock: true
-    session_store:
-      cookie_key: _gitlab_session
-      session_cookie_token_prefix: cell_1_
-      unique_cookie_key_postfix: false
 registry:
   enabled: false
   host: registry.test

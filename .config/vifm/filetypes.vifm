@@ -50,7 +50,7 @@ let $BAT_THEME='gruvbox-dark-vifm'
 "  %u uses command's output to build a file list
 "  see `:help vifm-macros` and `:help vifm-filename-modifiers` for more
 
-fileviewer */,.*/ lsd --tree --color always --icon always --directory-only --group-directories-first %c/*
+fileviewer */,.*/ lsd --tree --color always --icon always --directory-only --group-directories-first %c/* 2>/dev/null
 
 " Pdf
 filetype {*.pdf},<application/pdf>

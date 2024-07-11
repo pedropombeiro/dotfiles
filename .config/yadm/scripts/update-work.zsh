@@ -16,26 +16,19 @@ if [[ -n ${GDK_ROOT} ]]; then
   cat << EOF > ${GDK_ROOT}/gdk.tmp.yml
 ---
 hostname: gdk.test
+listen_address: 172.16.123.1
 port: 3000
-runner:
-  bin: "${HOME}/Developer/gitlab.com/gitlab-org/gitlab-runner/out/binaries/gitlab-runner"
-  config_file: "${HOME}/.gitlab-runner/config.gdk.toml"
-  enabled: false
-registry:
-  enabled: false
-  host: registry.test
-  self_signed: true
-  auth_enabled: true
-  listen_address: 0.0.0.0
-snowplow_micro:
-  enabled: false
-  port: 9090
 asdf:
   opt_out: true  # Required to use mise instead
+clickhouse:
+  bin: "/opt/homebrew/bin/clickhouse"
+  enabled: true
 gdk:
+  experimental:
+    ruby_services: true
   update_hooks:
     before:
-      - cd gitlab && scalar register  # Improve performance for rebasing/status/etc.
+      - cd ${GDK_ROOT}/gitlab && scalar register  # Improve performance for rebasing/status/etc.
       - support/exec-cd gitlab bin/spring stop || true
     after:
       - git -C gitlab restore db/structure.sql
@@ -47,9 +40,6 @@ gdk:
 #   ssl:
 #     certificate: "${GDK_ROOT}/gdk.localhost+2.pem"
 #     key: "${GDK_ROOT}/gdk.localhost+2-key.pem"
-trusted_directories:
-  - "${GDK_ROOT}"
-listen_address: 172.16.123.1
 gitlab:
   rails:
 #     address: 'http://gdk.test:3000'
@@ -58,6 +48,21 @@ gitlab:
       cookie_key: _gitlab_session
       session_cookie_token_prefix: cell_1_
       unique_cookie_key_postfix: false
+registry:
+  enabled: false
+  host: registry.test
+  self_signed: true
+  auth_enabled: true
+  listen_address: 0.0.0.0
+runner:
+  bin: "${HOME}/Developer/gitlab.com/gitlab-org/gitlab-runner/out/binaries/gitlab-runner"
+  config_file: "${HOME}/.gitlab-runner/config.gdk.toml"
+  enabled: false
+snowplow_micro:
+  enabled: false
+  port: 9090
+trusted_directories:
+  - "${GDK_ROOT}"
 vite:
   enabled: true
 webpack:

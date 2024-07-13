@@ -6,6 +6,8 @@ return {
     --- An extension for nvim-dap providing configurations for launching go debugger (delve)
     --- and debugging individual tests
     'leoluz/nvim-dap-go',
+    ---@format disable-next
+    -- stylua: ignore
     keys = {
       { '<leader>dl', function() require('dap-go').debug_last_test() end, desc = 'Debug last Go test' },
       { '<leader>dt', function() require('dap-go').debug_test() end,      desc = 'Debug Go test' },
@@ -30,10 +32,12 @@ return {
       {
         'theHamsta/nvim-dap-virtual-text',
         dependencies = 'nvim-treesitter/nvim-treesitter',
-        opts = {}
+        opts = {},
       },
       {
         'rcarriga/nvim-dap-ui', --  A UI for nvim-dap
+        ---@format disable-next
+        -- stylua: ignore
         keys = {
           { '<leader>de',  function() require('dapui').eval() end,    desc = 'Evaluate with DAP', mode = 'v' },
           { '<leader>dui', function() require('dapui').toggle() end,  desc = 'Toggle DAP UI' },
@@ -42,8 +46,10 @@ return {
         config = function()
           require('dapui').setup()
         end,
-      }
+      },
     },
+    ---@format disable-next
+    -- stylua: ignore
     keys = {
       { '<S-F5>', function() require('dap').close() end,             desc = 'Close DAP' },
       { '<F5>',   function() require('dap').continue() end,          desc = 'Continue execution' },
@@ -52,9 +58,7 @@ return {
       { '<F9>',   function() require('dap').toggle_breakpoint() end, desc = 'Toggle breakpoint' },
     },
     init = function()
-      local m = require('mapx')
-
-      m.nname('<leader>d', 'Debug')
+      require('which-key').add({ '<leader>d', group = 'Debug', icon = '' })
     end,
     config = function()
       local dap = require('dap')
@@ -85,7 +89,7 @@ return {
           args = {},
           env = {},
           terminalKind = 'integrated',
-        }
+        },
       }
 
       dap.configurations.sh = sh_config
@@ -99,12 +103,12 @@ return {
           name = 'Launch file',
           program = '${file}',
           pythonPath = function()
-            return vim.fn.system('which python'):gsub('\n[^\n]*$', '');
+            return vim.fn.system('which python'):gsub('\n[^\n]*$', '')
           end,
         },
       }
 
       vim.fn.sign_define('DapBreakpoint', { text = '🛑', texthl = '', linehl = '', numhl = '' })
-    end
-  }
+    end,
+  },
 }

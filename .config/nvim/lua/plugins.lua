@@ -98,9 +98,24 @@ return {
     keys = '.',
   },
   {
-    'kylechui/nvim-surround', -- Add/change/delete surrounding delimiter pairs with ease. Written with ❤️ in Lua.
-    event = 'BufReadPost',
-    opts = {},
+    'echasnovski/mini.surround',
+    version = false,
+    opts = {
+      mappings = {
+        add = 'gsa',
+        delete = 'gsd',
+        find = 'gsf',
+        find_left = 'gsF',
+        highlight = 'gsh',
+        replace = 'gsr',
+        update_n_lines = 'gsn',
+      },
+    },
+    init = function()
+      require('which-key').add({
+        { 'gs', group = 'Surround', icon = '' },
+      })
+    end,
   },
   { 'tummetott/unimpaired.nvim', event = { 'BufReadPre', 'BufNewFile' }, opts = {} }, -- LUA port of tpope's famous vim-unimpaired plugin
   { 'RaafatTurki/hex.nvim', event = { 'BufReadPre', 'BufNewFile' }, opts = {} }, -- hex editing done right
@@ -123,7 +138,7 @@ return {
         desc = 'Notifications',
       },
       {
-        '<leader>un',
+        'dn',
         function()
           require('notify').dismiss({ silent = true, pending = true })
         end,

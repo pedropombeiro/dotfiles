@@ -15,99 +15,107 @@ local on_attach = function(bufnr)
   local wk = require('which-key')
 
   -- Actions
-  wk.register({
-    h = {
-      name = 'Gitsigns',
-      s = { ':Gitsigns stage_hunk<CR>', 'Stage Git hunk', mode = { 'n', 'v' } },
-      u = { gs.undo_stage_buffer, 'Undo stage Git hunk' },
-      r = { ':Gitsigns reset_hunk<CR>', 'Reset Git hunk', mode = { 'n', 'v' } },
-      q = { ':Gitsigns setqflist<CR>', 'Open changes in Quickfix list' },
-      p = { gs.preview_hunk_inline, 'Preview Git hunk' },
-      S = { gs.stage_buffer, 'Stage buffer' },
-      R = { gs.reset_buffer, 'Reset buffer' },
-      b = {
+  wk.add({
+    buffer = bufnr,
+    {
+      icon = '',
+      { '<leader>h', group = 'Gitsigns' },
+      { '<leader>hs', ':Gitsigns stage_hunk<CR>', desc = 'Stage Git hunk', mode = { 'n', 'v' }, icon = '' },
+      { '<leader>hu', gs.undo_stage_buffer, desc = 'Undo stage Git hunk', icon = '' },
+      { '<leader>hr', ':Gitsigns reset_hunk<CR>', desc = 'Reset Git hunk', mode = { 'n', 'v' } },
+      { '<leader>hq', ':Gitsigns setqflist<CR>', desc = 'Open changes in Quickfix list' },
+      { '<leader>hp', gs.preview_hunk_inline, desc = 'Preview Git hunk', icon = '' },
+      { '<leader>hS', gs.stage_buffer, desc = 'Stage buffer' },
+      { '<leader>hR', gs.reset_buffer, desc = 'Reset buffer' },
+      {
+        '<leader>hb',
         function()
           gs.blame_line({ full = true })
         end,
-        'Git blame line',
+        desc = 'Git blame line',
       },
-      d = { gs.diffthis, 'Git diff this' },
-      D = {
+      { '<leader>hd', gs.diffthis, desc = 'Git diff this' },
+      {
+        '<leader>hD',
         function()
           gs.diffthis('~')
         end,
-        'Git diff this ~',
+        desc = 'Git diff this ~',
+        icon = '',
+      },
+      {
+        expr = true,
+        {
+          {
+            -- Navigation
+            '[c',
+            function()
+              if vim.wo.diff then
+                return '[c'
+              end
+              vim.schedule(gs.prev_hunk)
+              return '<Ignore>'
+            end,
+            desc = 'Previous Git hunk',
+            icon = '󰮳',
+          },
+          {
+            -- Options
+            { '[g', group = 'Enable Git option', icon = '' },
+            {
+              '[gb',
+              function()
+                gs.toggle_current_line_blame(true)
+              end,
+              desc = 'Enable current line blame',
+            },
+            {
+              '[gd',
+              function()
+                gs.toggle_deleted(true)
+              end,
+              desc = 'Enable Git-deleted',
+            },
+          },
+          {
+            -- Navigation
+            ']c',
+            function()
+              if vim.wo.diff then
+                return ']c'
+              end
+              vim.schedule(gs.next_hunk)
+              return '<Ignore>'
+            end,
+            desc = 'Next Git hunk',
+            icon = '󰮱',
+          },
+          -- Options
+          { ']g', group = 'Disable Git option', icon = '' },
+          {
+            ']gb',
+            function()
+              gs.toggle_current_line_blame(false)
+            end,
+            desc = 'Disable current line blame',
+          },
+          {
+            ']gd',
+            function()
+              gs.toggle_deleted(false)
+            end,
+            desc = 'Disable Git-deleted',
+          },
+        },
+      },
+      {
+        -- Text object
+        mode = { 'o', 'x' },
+        { 'i', group = 'Text object' },
+        { 'ih', ':<C-U>Gitsigns select_hunk<CR>', desc = 'Select Git hunk' },
       },
     },
-  }, { prefix = '<leader>', buffer = bufnr })
-
-  wk.register({
-    ['['] = {
-      -- Navigation
-      c = {
-        function()
-          if vim.wo.diff then
-            return '[c'
-          end
-          vim.schedule(gs.prev_hunk)
-          return '<Ignore>'
-        end,
-        'Previous Git hunk',
-      },
-      -- Options
-      g = {
-        name = 'Git',
-        b = {
-          function()
-            gs.toggle_current_line_blame(true)
-          end,
-          'Enable current line blame',
-        },
-        d = {
-          function()
-            gs.toggle_deleted(true)
-          end,
-          'Enable Git-deleted',
-        },
-      },
-    },
-    [']'] = {
-      -- Navigation
-      c = {
-        function()
-          if vim.wo.diff then
-            return ']c'
-          end
-          vim.schedule(gs.next_hunk)
-          return '<Ignore>'
-        end,
-        'Next Git hunk',
-      },
-      -- Options
-      g = {
-        name = 'Git',
-        b = {
-          function()
-            gs.toggle_current_line_blame(false)
-          end,
-          'Disable current line blame',
-        },
-        d = {
-          function()
-            gs.toggle_deleted(false)
-          end,
-          'Disable Git-deleted',
-        },
-      },
-    },
-  }, { buffer = bufnr, expr = true })
-
-  -- Text object
-  wk.register({
-    i = {
-      h = { ':<C-U>Gitsigns select_hunk<CR>', 'Select Git hunk' },
-    },
-  }, { mode = { 'o', 'x' }, buffer = bufnr })
+  })
 end
 
 return {

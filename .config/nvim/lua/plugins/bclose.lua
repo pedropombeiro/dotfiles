@@ -5,9 +5,11 @@ return {
   'rbgrouleff/bclose.vim',
   cmd = 'Bclose',
   keys = {
-    { '<leader>bd', '<Cmd>Bclose<CR>', desc = 'Close buffer' }
+    { '<leader>bd', '<Cmd>Bclose<CR>', desc = 'Close buffer' },
   },
   init = function()
-    require('mapx').nname('<leader>b', 'Bclose')
-  end
+    require('which-key').add({
+      { '<leader>b', group = 'Bclose' },
+    })
+  end,
 }

@@ -35,9 +35,7 @@ return {
     },
   },
   init = function()
-    -- Keymaps
-    local m = require('mapx')
-    m.nname('<leader>r', 'Test')
+    require('which-key').add({ { '<leader>r', group = 'Test', icon = '󰙨' } })
   end,
   config = function()
     -- get neotest namespace (api call creates or returns namespace)

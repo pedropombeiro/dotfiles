@@ -3,23 +3,23 @@
 
 return {
   'crnvl96/lazydocker.nvim',
-  keys = {
-    {
-      '<leader>td',
-      function()
-        if vim.api.nvim_buf_get_name(0) ~= '' then -- Check if there's at least one buffer
-          vim.api.nvim_exec2('cd %:h', { output = false }) -- switch to current directory so that Lazydocker filters containers from current stack
-        end
-
-        require('lazydocker').toggle()
-      end,
-      desc = 'Open LazyDocker',
-      noremap = true,
-      silent = true,
-    },
-  },
+  lazy = true,
+  dependencies = { 'MunifTanjim/nui.nvim' },
   opts = {},
-  dependencies = {
-    'MunifTanjim/nui.nvim',
-  },
+  init = function()
+    require('which-key').add({
+      {
+        '<leader>td',
+        function()
+          if vim.api.nvim_buf_get_name(0) ~= '' then -- Check if there's at least one buffer
+            vim.api.nvim_exec2('cd %:h', { output = false }) -- switch to current directory so that Lazydocker filters containers from current stack
+          end
+
+          require('lazydocker').toggle()
+        end,
+        desc = 'Open LazyDocker',
+        icon = '',
+      },
+    })
+  end,
 }

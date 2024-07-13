@@ -1,24 +1,19 @@
 --- key bindings -------------------------------------------------------------------
 
-local wk = require('which-key')
-local m = require('mapx')
+require('which-key').add({
+  { '<leader>g', group = 'Git / Change action' },
 
-m.nname('<leader>g', 'Git')
+  -- folke/persistence.nvim
+  { '<leader>q', group = 'Session management' },
 
--- ruifm/gitlinker.nvim
-wk.register({
-  ['<leader>gy'] = { 'Yank Git URL' },
-}, { mode = { 'n', 'v' } })
+  -- ruifm/gitlinker.nvim
+  { '<leader>gy', mode = { 'n', 'v' }, desc = 'Yank Git URL' },
 
--- Lazy.nvim
-m.nname('<leader>p', 'Package Manager')
-m.nnoremap('<leader>ps', ':Lazy<CR>', 'Status', { silent = true })
-m.nnoremap('<leader>pu', ':Lazy sync<CR>', 'Sync', { silent = true })
+  -- Lazy.nvim
+  { '<leader>p', group = 'Package Manager', icon = '' },
+  { '<leader>ps', ':Lazy<CR>', desc = 'Status', icon = '󱖫' },
+  { '<leader>pu', ':Lazy sync<CR>', desc = 'Sync', icon = '' },
 
--- wsdjeg/vim-fetch
-wk.register({
-  ['gF'] = { 'Go to file:line under cursor' },
-}, { mode = { 'n', 'x' } })
-
--- folke/persistence.nvim
-m.nname('<leader>q', 'Session management')
+  -- wsdjeg/vim-fetch
+  { 'gF', mode = { 'n', 'x' }, desc = 'Go to file:line under cursor' },
+})

@@ -9,4 +9,13 @@ return {
     require('plugins/which-key.keymap')
     require('plugins/which-key.keymap-plugins')
   end,
+  keys = {
+    {
+      '<leader>?',
+      function()
+        require('which-key').show({ global = false })
+      end,
+      desc = 'Buffer Local Keymaps (which-key)',
+    },
+  },
 }

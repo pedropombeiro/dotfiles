@@ -71,10 +71,6 @@ return {
       local hl = 'DiagnosticSign' .. type
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
     end
-
-    local m = require('mapx')
-    m.nname('<leader>l', 'LSP')
-    m.nname('<leader>lw', 'Workspace')
   end,
   config = function()
     --if !has_key(plugs, "trouble.nvim")

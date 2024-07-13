@@ -13,35 +13,37 @@ return {
     {
       '[X',
       function()
-        require('trouble').first({ skip_groups = true, jump = true })
+        require('trouble').first({ jump = true })
       end,
       desc = 'First Trouble 🚦 item',
     },
     {
       '[x',
       function()
-        require('trouble').previous({ skip_groups = true, jump = true })
+        require('trouble').prev({ jump = true })
       end,
       desc = 'Previous Trouble 🚦 item',
     },
     {
       ']x',
       function()
-        require('trouble').next({ skip_groups = true, jump = true })
+        require('trouble').next({ jump = true })
       end,
       desc = 'Next Trouble 🚦 item',
     },
     {
       ']X',
       function()
-        require('trouble').last({ skip_groups = true, jump = true })
+        require('trouble').last({ jump = true })
       end,
       desc = 'Last Trouble 🚦 item',
     },
   },
   dependencies = 'kyazdani42/nvim-web-devicons',
   init = function()
-    require('mapx').nname('<leader>x', 'Trouble 🚦')
+    require('which-key').add({
+      { '<leader>x', group = 'Trouble', icon = '🚦' },
+    })
 
     vim.cmd('highlight link TroubleNormal NormalFloat')
   end,

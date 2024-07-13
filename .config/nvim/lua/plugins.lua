@@ -21,7 +21,6 @@ return {
   --### Snippets
   {
     'aduros/ai.vim', -- Generate and edit text in Neovim using OpenAI and GPT.
-    -- stylua: ignore
     keys = {
       { '<leader>=', ':AI ', mode = { 'n', 'v' }, desc = 'Perform action with OpenAI' },
       { '<C-A>', '<Esc><Cmd>AI<CR>a', mode = 'i', desc = 'Autocomplete with OpenAI' },
@@ -51,7 +50,6 @@ return {
     'folke/persistence.nvim',
     event = 'BufReadPre',
     opts = { options = vim.opt.sessionoptions:get() },
-    -- stylua: ignore
     keys = {
       {
         '<leader>qs',
@@ -84,7 +82,6 @@ return {
   },
   {
     'Wansmer/treesj', -- Neovim plugin for splitting/joining blocks of code
-    -- stylua: ignore
     keys = {
       { 'gJ', ':TSJJoin<CR>', desc = 'Join into single-line form' },
       { 'gS', ':TSJSplit<CR>', desc = 'Split into multi-line form' },

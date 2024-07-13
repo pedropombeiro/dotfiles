@@ -4,8 +4,5 @@
 return {
   'shumphrey/fugitive-gitlab.vim',
   cmd = 'GBrowse',
-  keys = {
-    '<C-X><C-O>'
-  },
-  dependencies = 'tpope/vim-fugitive'
+  dependencies = 'tpope/vim-fugitive',
 }

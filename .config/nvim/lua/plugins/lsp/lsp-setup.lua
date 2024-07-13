@@ -218,14 +218,14 @@ return {
     }
     if file_exists(vim.fn.expand('~/Library/Arduino15/arduino-cli.yaml')) then
       servers.arduino_language_server = {
-          -- stylua: ignore
-          cmd = {
-            'arduino-language-server',
-            '-cli-config', '~/Library/Arduino15/arduino-cli.yaml', -- Generated with `arduino-cli config init`
-            '-fqbn', 'keyboardio:gd32:keyboardio_model_100',
-            '-cli', 'arduino-cli',
-            '-clangd', 'clangd'
-          },
+        -- stylua: ignore
+        cmd = {
+          'arduino-language-server',
+          '-cli-config', '~/Library/Arduino15/arduino-cli.yaml', -- Generated with `arduino-cli config init`
+          '-fqbn', 'keyboardio:gd32:keyboardio_model_100',
+          '-cli', 'arduino-cli',
+          '-clangd', 'clangd'
+        },
       }
       servers.clangd = {}
     end

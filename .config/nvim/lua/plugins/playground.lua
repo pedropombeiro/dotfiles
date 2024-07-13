@@ -6,9 +6,7 @@ return {
   cmd = 'TSPlaygroundToggle',
   dependencies = 'nvim-treesitter/nvim-treesitter',
   build = ':TSInstall query',
-  config = function(_, opts)
-    require('nvim-treesitter.configs').setup(opts)
-  end,
+  module = 'nvim-treesitter.configs',
   opts = {
     query_linter = {
       enable = true,

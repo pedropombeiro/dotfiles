@@ -5,11 +5,10 @@ return {
   {
     'nvim-treesitter/nvim-treesitter-context', -- Show code context
     event = { 'BufReadPost', 'BufNewFile', 'BufWritePre' },
-    config = function()
+    module = 'treesitter-context',
+    init = function()
       ---@diagnostic disable-next-line: undefined-field
       local colors = require('config').theme.colors
-
-      require('treesitter-context').setup()
 
       vim.api.nvim_set_hl(0, 'TreesitterContextBottom', { underline = true, sp = colors.bg0_s })
     end,
@@ -70,9 +69,7 @@ return {
       local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
       ts_update()
     end,
-    config = function(_, opts)
-      require('nvim-treesitter.configs').setup(opts)
-    end,
+    module = 'nvim-treesitter.configs',
     opts = function()
       return {
         -- A list of parser names, or "all"

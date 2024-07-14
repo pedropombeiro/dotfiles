@@ -54,7 +54,30 @@ return {
         end,
       },
       'RRethy/nvim-treesitter-endwise', --- Wisely add 'end' in Ruby, Vimscript, Lua, etc.
-      'HiPhish/nvim-ts-rainbow2', -- Rainbow delimiters for Neovim through Tree-sitter
+      {
+        'HiPhish/rainbow-delimiters.nvim', -- Rainbow delimiters for Neovim with Tree-sitter
+        config = function()
+          require('rainbow-delimiters.setup').setup({
+            strategy = {
+              [''] = require('rainbow-delimiters').strategy['global'],
+              vim = require('rainbow-delimiters').strategy['local'],
+            },
+            query = {
+              [''] = 'rainbow-delimiters',
+              lua = 'rainbow-blocks',
+            },
+            highlight = {
+              'MiniIconsRed',
+              'MiniIconsYellow',
+              'MiniIconsBlue',
+              'MiniIconsOrange',
+              'MiniIconsGreen',
+              'MiniIconsPurple',
+              'MiniIconsCyan',
+            },
+          })
+        end,
+      },
     },
     init = function(plugin)
       -- PERF: add nvim-treesitter queries to the rtp and its custom query predicates early
@@ -111,13 +134,6 @@ return {
         },
         matchup = {
           enable = true,
-        },
-        rainbow = {
-          enable = not vim.fn.has('nvim-0.10'), -- TODO: Enable once treesitter is updated to support 0.10.0
-          -- Which query to use for finding delimiters
-          query = 'rainbow-parens',
-          -- Highlight the entire buffer all at once
-          strategy = require('ts-rainbow').strategy.global,
         },
         highlight = {
           -- `false` will disable the whole extension

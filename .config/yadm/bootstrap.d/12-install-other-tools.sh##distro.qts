@@ -12,6 +12,7 @@ temp_dir="$(mktemp -d)"
 bandwhich_version=0.20.0
 btop_version=1.3.2
 croc_version=10.0.10
+fzf_version=0.54.2
 gping_version=1.16.1
 lnav_version=0.12.2
 lsd_version=1.1.2
@@ -111,6 +112,7 @@ download_and_extract "https://github.com/imsnif/bandwhich/releases/download/${ba
 download_and_extract "https://github.com/aristocratos/btop/releases/download/v${btop_version}/btop-x86_64-linux-musl.tbz" ./btop/bin/btop $btop_version
 download_and_extract "https://github.com/schollz/croc/releases/download/v${croc_version}/croc_v${croc_version}_Linux-64bit.tar.gz" croc $croc_version
 download_and_extract "https://github.com/orf/gping/releases/download/gping-v${gping_version}/gping-x86_64-unknown-linux-musl.tar.gz" gping $gping_version
+download_and_extract "https://github.com/junegunn/fzf/releases/download/v${fzf_version}/fzf-${fzf_version}-linux_amd64.tar.gz" fzf "$fzf_version"
 
 download_and_extract "https://github.com/tstack/lnav/releases/download/v${lnav_version}/lnav-${lnav_version}-linux-musl-x86_64.zip" "lnav-${lnav_version}/lnav" $lnav_version
 

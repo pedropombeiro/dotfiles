@@ -17,6 +17,8 @@ tap "mvp/uhubctl", "https://github.com/mvp/uhubctl"
 tap "zaquestion/tap"
 # Asciicast to GIF converter
 brew "agg"
+# Slice and dice log files on the command-line
+brew "angle-grinder"
 # Library for command-line editing
 brew "readline"
 # Command-line interface for SQLite
@@ -29,8 +31,6 @@ brew "ansible"
 brew "arduino-cli"
 # Record and share terminal sessions
 brew "asciinema"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.10"
 # Shell extension to jump to frequently used directories
 brew "autojump"
 # Bourne-Again SHell, a UNIX command interpreter
@@ -211,8 +211,6 @@ brew "poppler"
 brew "postgresql@13"
 # Unix pager optimized for psql
 brew "pspg"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.8"
 # Alternative to backtracking PCRE-style regular expression engines
 brew "re2"
 # GNU Make with improved error handling, tracing, and a debugger
@@ -235,8 +233,6 @@ brew "sleepwatcher", restart_service: true
 brew "smartmontools"
 # SOcket CAT: netcat on steroids
 brew "socat"
-# Command-line interface for https://speedtest.net bandwidth tests
-brew "speedtest-cli"
 # Change macOS audio source from the command-line
 brew "switchaudio-osx"
 # Very fast implementation of tldr in Rust
@@ -311,6 +307,8 @@ cask "cakebrew"
 cask "choosy"
 # Graphical configurator for Kaleidoscope-powered keyboards
 cask "chrysalis"
+# Column-oriented database management system
+cask "clickhouse"
 # Allows switching between application windows
 cask "contexts"
 # API documentation browser and code snippet manager
@@ -323,9 +321,9 @@ cask "elgato-stream-deck"
 cask "elgato-wave-link"
 # System-wide audio equaliser
 cask "eqmac"
-# Typeface made for developers
+# Utility to finds and fix problems on computer systems
+cask "etrecheckpro"
 cask "font-jetbrains-mono"
-# Developer targeted fonts with a high number of glyphs
 cask "font-meslo-lg-nerd-font"
 # GIT client
 cask "fork"

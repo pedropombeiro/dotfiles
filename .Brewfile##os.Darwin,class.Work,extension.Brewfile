@@ -303,8 +303,6 @@ cask "apparency"
 cask "appcleaner"
 # Menu bar icon organiser
 cask "bartender"
-# Compare files and folders
-cask "beyond-compare"
 # Prevents your sleeping computer from connecting to Bluetooth accessories
 cask "bluesnooze"
 # GUI app for Homebrew
@@ -357,7 +355,7 @@ cask "kap"
 cask "keycastr"
 # Interface for reading and syncing eBooks
 cask "kindle"
-# Create, manage and debug system- and user services
+# Create, manage and debug system and user services
 cask "launchcontrol"
 # Free cross-platform office suite, fresh version
 cask "libreoffice"

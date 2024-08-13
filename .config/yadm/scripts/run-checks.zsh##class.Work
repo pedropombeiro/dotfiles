@@ -76,6 +76,8 @@ if uhubctl >/dev/null 2>&1; then
     echo
     print_failure "Busylight HTTP server is not correctly being exposed through nginx"
     lsof -i :18989
+    sudo pkill nginx
+    brew services restart nginx
     any_failed=1
   fi
 fi

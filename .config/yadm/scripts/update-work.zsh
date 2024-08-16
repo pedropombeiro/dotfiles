@@ -23,6 +23,7 @@ asdf:
 clickhouse:
   bin: "/opt/homebrew/bin/clickhouse"
   enabled: true
+  max_server_memory_usage: 5000000000
 gdk:
   experimental:
     ruby_services: true

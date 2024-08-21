@@ -237,8 +237,6 @@ brew "socat"
 brew "switchaudio-osx"
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
-# Modern SSH server for teams managing distributed infrastructure
-brew "teleport"
 # Send macOS User Notifications from the command-line
 brew "terminal-notifier"
 # Tool to build, change, and version infrastructure

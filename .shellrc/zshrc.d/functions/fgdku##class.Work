@@ -123,7 +123,7 @@ rm -f /tmp/.need_reset_busylight
   fi
 
   (
-    cd $GDK_ROOT && bundle install && yes | bundle exec rake gitlab:truncate_logs
+    cd $GDK_ROOT && bundle install && yes | gdk cleanup
     find gitlab/log -maxdepth 1 -size +10M -exec truncate -s 0 {} \;
   )
 

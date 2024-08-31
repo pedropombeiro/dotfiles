@@ -36,6 +36,7 @@ fi
 
 printf "${YELLOW}%s${NC}\n" "Updating neovim plugins..."
 nvim --headless '+Lazy! sync' +qa && \
+  nvim --headless "+Lazy! build firenvim" +qa && \
   printf "\n${GREEN}%s${NC}\n" "Done"
 
 printf "${YELLOW}%s${NC}\n" "Testing Neovim startup performance..."

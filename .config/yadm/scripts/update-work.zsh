@@ -32,7 +32,7 @@ gdk:
       - cd ${GDK_ROOT}/gitlab && scalar register  # Improve performance for rebasing/status/etc.
       - support/exec-cd gitlab bin/spring stop || true
     after:
-      - git -C gitlab restore db/structure.sql
+      - git -C "${GDK_ROOT}/gitlab" restore db/structure.sql
   overwrite_changes: true
 # https:
 #   enabled: true

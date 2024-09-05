@@ -44,11 +44,9 @@ rm -f /tmp/.need_reset_busylight
     touch /tmp/.need_reset_busylight
   fi
 
-  setup_gitlab_secrets
-
   rm -f .git/gc.log
 
-  git fetch
+  git fetch --jobs=10
 
   if [[ ! -S $GDK_ROOT/redis/redis.socket ]]; then
     # Work around issue with Redis socket disappearing by restarting the GDK
@@ -104,7 +102,7 @@ rm -f /tmp/.need_reset_busylight
   bundle exec rake gitlab:clickhouse:migrate:main
 
   printf "${YELLOW}%s${NC}\n" 'Pruning local branches...'
-  git fetch --all --jobs=10
+  git fetch --jobs=10
   set +e
   git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | xargs git branch -D
   set -e
@@ -141,9 +139,6 @@ rm -f /tmp/.need_reset_busylight
     scripts/regenerate-schema # Ensure we have a clean test DB with any branch migrations done
     git restore db/structure.sql
   fi
-
-  printf "${YELLOW}%s${NC}\n" 'Warming up web server...'
-  xh GET --quiet http://gdk.test:3000/api/v4/projects/24/runners PRIVATE-TOKEN:$GITLAB_GDK_TOKEN
 
   cd - >/dev/null
 )

@@ -33,6 +33,7 @@ gdk:
       - support/exec-cd gitlab bin/spring stop || true
     after:
       - git -C "${GDK_ROOT}/gitlab" restore db/structure.sql
+      - support/exec-cd gitlab mise install
   overwrite_changes: true
 # https:
 #   enabled: true

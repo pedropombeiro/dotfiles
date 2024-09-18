@@ -8,7 +8,7 @@
 GITLAB_USERNAME="${USER}"
 
 remote=origin
-milestone=$(glab api 'https://gitlab.com/api/v4/groups/9970/milestones?state=active' | jq -r '[.[] | select(.due_date) | select(.due_date | strptime("%Y-%m-%d") | mktime > now)] | .[0].title')
+milestone=$(glab api 'https://gitlab.com/api/v4/groups/9970/milestones?state=active' | jq -r '[.[] | select(.due_date) | select(.due_date | strptime("%Y-%m-%d") | mktime > now) | select(.title | test("^[0-9]+\\.[0-9]+"))] | .[0].title')
 
 if git remote get-url "${remote}" | grep gitlab.com >/dev/null; then
   git push --set-upstream "${remote}" "$(git_current_branch)" \

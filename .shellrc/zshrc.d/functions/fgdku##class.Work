@@ -96,7 +96,8 @@ rm -f /tmp/.need_reset_busylight
   bin/spring binstub --all
 
   printf "${YELLOW}%s${NC}\n" 'Running simple test...'
-  bin/rspec --failure-exit-code 0 --error-exit-code 0 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb
+  bundle exec rspec --failure-exit-code 0 --error-exit-code 1 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb ||
+    bundle exec rake db:test:prepare
 
   printf "${YELLOW}%s${NC}\n" "Run any pending ClickHouse migrations..."
   bundle exec rake gitlab:clickhouse:migrate:main

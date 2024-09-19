@@ -1,0 +1,3 @@
+export PGHOST=$GDK_ROOT/postgresql
+export PGUSER=pedropombeiro
+export PGDATABASE=gitlabhq_development_ci

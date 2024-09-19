@@ -3,6 +3,8 @@
 if [[ -d ${GDK_ROOT} ]]; then
   zvm_after_init_commands+=("source '${GDK_ROOT}/support/completions/gdk.bash'")
 
+  source ~/.pgsql_profile
+
   alias compile_docs="bundle exec rake gitlab:graphql:compile_docs"
   alias guard="bundle exec guard"
   unalias gswm

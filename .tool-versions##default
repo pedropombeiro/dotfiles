@@ -1,13 +1,13 @@
 dive               latest
 fd                 latest
 glab               latest
-golang             1.19.5
+golang             latest
 golangci-lint      latest
 just               latest
 nodejs             latest
 pre-commit         latest
-ruby               3.1.4
+ruby               latest
 rust               stable
-yarn               1.22.19
+yarn               latest
 yamllint           latest
 teleport-community latest

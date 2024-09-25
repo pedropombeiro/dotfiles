@@ -221,10 +221,14 @@ return {
         -- stylua: ignore
         cmd = {
           'arduino-language-server',
-          '-cli-config', '~/Library/Arduino15/arduino-cli.yaml', -- Generated with `arduino-cli config init`
-          '-fqbn', 'keyboardio:gd32:keyboardio_model_100',
-          '-cli', 'arduino-cli',
-          '-clangd', 'clangd'
+          '-cli-config',
+          '~/Library/Arduino15/arduino-cli.yaml', -- Generated with `arduino-cli config init`
+          '-fqbn',
+          'keyboardio:gd32:keyboardio_model_100',
+          '-cli',
+          'arduino-cli',
+          '-clangd',
+          'clangd',
         },
       }
       servers.clangd = {}
@@ -241,6 +245,12 @@ return {
           debounce_text_changes = 150,
         },
       }
+    end
+
+    if vim.fn.has('mac') ~= 1 then
+      -- add Python support on Macs
+      servers.jedi_language_server = {}
+      servers.ruff = {}
     end
 
     local install_dir = '/share/homes/admin/opt/vscode-home-assistant'

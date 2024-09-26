@@ -68,6 +68,7 @@ rm -f /tmp/.need_reset_busylight
   if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
     bin/spring binstub --all
     undo-migrations
+    git restore bin/rake bin/rspec bin/rails bin/spring
     git stash push -m "Rolled back migration from ${ORIGINAL_BRANCH}"
   fi
 

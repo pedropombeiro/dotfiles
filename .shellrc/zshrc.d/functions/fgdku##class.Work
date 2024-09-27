@@ -92,7 +92,7 @@ rm -f /tmp/.need_reset_busylight
   git restore db/structure.sql
   sleep 5
 
-  bundle install # Needed if Ruby version changed
+  mise x ruby -- bundle install # Needed if Ruby version changed
 
   bin/spring binstub --all
 
@@ -123,7 +123,7 @@ rm -f /tmp/.need_reset_busylight
   fi
 
   (
-    cd $GDK_ROOT && bundle install && yes | gdk cleanup
+    cd $GDK_ROOT && mise x ruby -- bundle install && yes | gdk cleanup
     find gitlab/log -maxdepth 1 -size +10M -exec truncate -s 0 {} \;
   )
 

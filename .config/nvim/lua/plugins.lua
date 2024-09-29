@@ -5,6 +5,12 @@ return {
     ft = 'log',
   },
   { 'mechatroner/rainbow_csv', ft = { 'csv', 'tsv' } }, -- 🌈Rainbow CSV - Vim plugin: Highlight columns in CSV and TSV files and run queries in SQL-like language
+  {
+    'MeanderingProgrammer/render-markdown.nvim',
+    cmd = { 'RenderMarkdown' },
+    opts = {},
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+  },
 
   {
     'petertriho/nvim-scrollbar', -- Extensible Neovim Scrollbar

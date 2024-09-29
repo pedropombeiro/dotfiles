@@ -172,7 +172,7 @@ return {
       },
       sqlls = {},
       taplo = {},
-      tsserver = {},
+      vtsls = {},
       vimls = {},
       volar = {},
       yamlls = {

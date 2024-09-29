@@ -91,6 +91,9 @@ return {
     end,
     -- Customize formatters
     formatters = {
+      black = {
+        prepend_args = { '--fast' },
+      },
       lua = {
         prepend_args = { '--verify' },
       },

@@ -45,6 +45,9 @@ return {
           --- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
           --- to use to launch those servers.
           'williamboman/mason-lspconfig.nvim',
+          enabled = function()
+            return vim.fn.has('mac') == 1
+          end,
           dependencies = 'williamboman/mason.nvim',
         },
       },
@@ -53,6 +56,9 @@ return {
       --- Uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
       --- to use to launch those servers.
       'williamboman/mason-lspconfig.nvim',
+      enabled = function()
+        return vim.fn.has('mac') == 1
+      end,
       dependencies = 'williamboman/mason.nvim',
     },
   },
@@ -170,6 +176,7 @@ return {
           },
         },
       },
+      jedi_language_server = {},
       sqlls = {},
       taplo = {},
       vtsls = {},
@@ -245,12 +252,6 @@ return {
           debounce_text_changes = 150,
         },
       }
-    end
-
-    if vim.fn.has('mac') == 1 then
-      -- add Python support on Macs
-      servers.jedi_language_server = {}
-      servers.ruff = {}
     end
 
     local install_dir = '/share/homes/admin/opt/vscode-home-assistant'

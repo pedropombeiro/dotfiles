@@ -40,7 +40,13 @@ return {
       'hrsh7th/cmp-path', -- nvim-cmp source for path
       'saadparwaiz1/cmp_luasnip', -- nvim-cmp source for LuaSnip
       'hrsh7th/cmp-nvim-lsp-signature-help', -- nvim-cmp source for displaying function signatures with the current parameter emphasized
-      { 'williamboman/mason-lspconfig.nvim', lazy = true },
+      {
+        'williamboman/mason-lspconfig.nvim',
+        enabled = function()
+          return vim.fn.has('mac') == 1
+        end,
+        lazy = true,
+      },
       'onsails/lspkind.nvim', -- vscode-like pictograms for neovim lsp completion items
       {
         'petertriho/cmp-git', -- Git source for nvim-cmp

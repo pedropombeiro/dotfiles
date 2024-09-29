@@ -247,7 +247,7 @@ return {
       }
     end
 
-    if vim.fn.has('mac') ~= 1 then
+    if vim.fn.has('mac') == 1 then
       -- add Python support on Macs
       servers.jedi_language_server = {}
       servers.ruff = {}

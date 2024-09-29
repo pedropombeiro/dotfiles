@@ -8,25 +8,6 @@ local has_words_before = function()
 end
 
 return {
-  -- snippets
-  {
-    'L3MON4D3/LuaSnip',
-    event = { 'InsertEnter' },
-    build = (not jit.os:find('Windows'))
-        and "echo 'NOTE: jsregexp is optional, so not a big deal if it fails to build\n'; make install_jsregexp"
-      or nil,
-    dependencies = {
-      'rafamadriz/friendly-snippets',
-      config = function()
-        require('luasnip.loaders.from_vscode').lazy_load()
-      end,
-    },
-    opts = {
-      history = true,
-      delete_check_events = 'TextChanged',
-    },
-  },
-
   -- auto completion
   {
     'hrsh7th/nvim-cmp',
@@ -38,7 +19,8 @@ return {
       'hrsh7th/cmp-nvim-lsp', -- nvim-cmp source for neovim builtin LSP client
       'hrsh7th/cmp-nvim-lua', -- nvim-cmp source for nvim lua
       'hrsh7th/cmp-path', -- nvim-cmp source for path
-      'saadparwaiz1/cmp_luasnip', -- nvim-cmp source for LuaSnip
+      'rafamadriz/friendly-snippets',
+      { 'garymjr/nvim-snippets', opts = { friendly_snippets = true } },
       'hrsh7th/cmp-nvim-lsp-signature-help', -- nvim-cmp source for displaying function signatures with the current parameter emphasized
       {
         'williamboman/mason-lspconfig.nvim',
@@ -77,6 +59,10 @@ return {
         performance = {
           debounce = 50,
           throttle = 10,
+          fetching_timeout = 500,
+          confirm_resolve_timeout = 80,
+          async_budget = 1,
+          max_view_entries = 200,
         },
 
         preselect = cmp.PreselectMode.None,
@@ -84,7 +70,7 @@ return {
         snippet = {
           -- REQUIRED - you must specify a snippet engine
           expand = function(args)
-            require('luasnip').lsp_expand(args.body)
+            vim.snippet.expand(args.body)
           end,
         },
 
@@ -127,14 +113,14 @@ return {
             c = cmp.mapping.close(),
           }),
           ['<Tab>'] = cmp.mapping(function(fallback)
-            local luasnip = require('luasnip')
-
             if cmp.visible() then
               cmp.select_next_item()
               -- You could replace the expand_or_jumpable() calls with expand_or_locally_jumpable()
               -- that way you will only jump inside the snippet region
-            elseif luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
+            elseif vim.snippet.active({ direction = 1 }) then
+              vim.schedule(function()
+                vim.snippet.jump(1)
+              end)
             elseif has_words_before() then
               cmp.complete()
             else
@@ -142,17 +128,16 @@ return {
             end
           end, { 'i', 's' }),
           ['<S-Tab>'] = cmp.mapping(function(fallback)
-            local luasnip = require('luasnip')
-
             if cmp.visible() then
               cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-              luasnip.jump(-1)
+            elseif vim.snippet.active({ direction = -1 }) then
+              vim.schedule(function()
+                vim.snippet.jump(-1)
+              end)
             else
               fallback()
             end
           end, { 'i', 's' }),
-
           ['<CR>'] = cmp.mapping.confirm({
             behavior = cmp.ConfirmBehavior.Replace,
             select = true,
@@ -206,7 +191,7 @@ return {
               end,
             },
           },
-          { name = 'luasnip', priority = 10, max_item_count = 3, group_index = 2 }, -- For luasnip users.
+          { name = 'snippets', priority = 10, max_item_count = 3, group_index = 2 },
           { name = 'path', priority = 40, max_item_count = 10, group_index = 5 },
           { name = 'nvim_lua', priority = 80, group_index = 1 },
           {

@@ -63,6 +63,10 @@ class String
   end
 end
 
+def graphql_execute(query, **kwargs)
+  `op plugin run -- glab api graphql -f query='#{query}' #{kwargs.map { |k, v| "--field #{k}='#{v}'" }.join(' ')}`
+end
+
 BASELINE_MR_RATE = 13
 
 def gitlab_mr_rate(*author)
@@ -72,7 +76,7 @@ def gitlab_mr_rate(*author)
   require 'json'
 
   mrs = []
-  start_cursor = 'null'
+  start_cursor = nil
   best_month = nil
   best_month_mr_rate = 0
   total_time_to_merge = 0
@@ -81,27 +85,28 @@ def gitlab_mr_rate(*author)
   loop do
     $stderr.putc '.'
 
-    res = `op plugin run -- glab api graphql -f query='
-        query {
-          group(fullPath: "gitlab-org") {
-            mergeRequests(
-              authorUsername: "#{author}",
-              state: merged,
-              includeSubgroups: true,
-              createdAfter: "2020-01-27",
-              after: #{start_cursor}
-            ) {
-              totalTimeToMerge
-              nodes {
-                mergedAt
-              }
-              pageInfo {
-                endCursor
-                hasNextPage
-              }
+    res = graphql_execute(<<~GQL, groupPath: 'gitlab-org', author: author, after: start_cursor, createdAfter: '2020-01-27')
+      query($groupPath: ID!, $author: String!, $after: String, $createdAfter: Time) {
+        group(fullPath: $groupPath) {
+          mergeRequests(
+            authorUsername: $author,
+            state: merged,
+            includeSubgroups: true,
+            createdAfter: $createdAfter,
+            after: $after
+          ) {
+            totalTimeToMerge
+            nodes {
+              mergedAt
+            }
+            pageInfo {
+              endCursor
+              hasNextPage
             }
           }
-        }'`
+        }
+      }
+    GQL
     return if $CHILD_STATUS != 0
 
     json_res = JSON.parse(res)
@@ -120,7 +125,7 @@ def gitlab_mr_rate(*author)
     page_info = merge_requests['pageInfo']
     break unless page_info['hasNextPage']
 
-    start_cursor = "\"#{page_info['endCursor']}\""
+    start_cursor = page_info['endCursor']
   end
 
   puts
@@ -179,7 +184,7 @@ end
 def retrieve_group_owners(group_path)
   require('json')
 
-  res = `op plugin run -- glab api graphql -f query='
+  res = graphql_execute(<<~GQL, fullPath: group_path)
     query groupMembers($fullPath: ID!) {
       group(fullPath: $fullPath) {
         groupMembers(accessLevels: [OWNER]) {
@@ -205,7 +210,7 @@ def retrieve_group_owners(group_path)
         }
       }
     }
-  ' --field fullPath="#{group_path}"`
+  GQL
   return if $CHILD_STATUS != 0
 
   JSON.parse(res).dig(*%w[data group groupMembers nodes]).map { |v| v['user'] }
@@ -287,10 +292,10 @@ def retrieve_mrs(*args)
   require 'date'
   require 'json'
 
-  res = `op plugin run -- glab api graphql -f query='
-    query authoredMergeRequests {
-      user(username: "#{username}") {
-    authoredMergeRequests(state: opened, assigneeUsername: "#{username}", sort: UPDATED_DESC) {
+  res = graphql_execute(<<~GQL, username: username)
+    query authoredMergeRequests($username: String) {
+      user(username: $username) {
+        authoredMergeRequests(state: opened, assigneeUsername: $username, sort: UPDATED_DESC) {
           nodes {
             reference
             webUrl
@@ -324,7 +329,7 @@ def retrieve_mrs(*args)
         }
       }
     }
-  '`
+  GQL
   return if $CHILD_STATUS != 0
 
   if res.start_with?('glab:')

@@ -18,7 +18,7 @@ opkg install script-utils     # required for script (used by /share/Container/.j
 
 opkg install python3 python3-pip
 pip install --use-pep517 neovim-remote tldr
-pip install --use-pep517 isort black yamllint jedi-language-server # Python3 support in Neovim
+pip install --use-pep517 black isort mypy jedi-language-server yamllint # Python3 support in Neovim
 
 opkg install nut-upscmd
 

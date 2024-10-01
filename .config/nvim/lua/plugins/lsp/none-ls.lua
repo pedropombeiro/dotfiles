@@ -33,6 +33,9 @@ return {
       diagnostics.gitlint, -- Linter for Git commit messages
       diagnostics.golangci_lint, -- A Go linter aggregator
       diagnostics.hadolint, -- A smarter Dockerfile linter that helps you build best practice Docker images
+      diagnostics.mypy.with({
+        filetypes = { 'python' },
+      }),
       --diagnostics.semgrep,
       diagnostics.vale,
       diagnostics.zsh, -- Uses zsh's own -n option to evaluate, but not execute, zsh scripts

@@ -5,7 +5,7 @@ set -o pipefail
 export PATH="$PATH:/usr/local/bin:/opt/homebrew/bin"
 export TELEPORT_USE_LOCAL_SSH_AGENT=false
 
-tsh login --proxy=staging.teleport.gitlab.net
+tsh login --add-keys-to-agent=no --proxy=production.teleport.gitlab.net
 tsh db login --db-user=console-ro --db-name=gitlabhq_production db-ci-replica-gstg
 
 pgcli "$(tsh db config --format=json db-ci-replica-gstg | jq -r '"postgres://" + .user + "@" + .host + ":" + (.port | tostring) + "/" + .database + "?sslrootcert=" + .ca + "&sslcert=" + .cert + "&sslkey=" + .key + "&sslmode=verify-full"')"

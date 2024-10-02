@@ -1,0 +1,23 @@
+{
+  "Add automation": {
+    "prefix": "auto",
+    "description": "Automation skeleton",
+    "body": [
+      "- id: ${1:id}",
+      "  alias: \"${2:description}\"",
+      "  triggers:",
+      "    - platform: state",
+      "      entity_id: ${3:entity_id}",
+      "      to: \"${4:new_state}\"",
+      "  conditions:",
+      "    - condition: state",
+      "      entity_id: ${3:entity_id}",
+      "      state: \"${4:new_state}\"",
+      "  actions:",
+      "    - action: ",
+      "      target:",
+      "        entity_id: ",
+      "!$0"
+    ]
+  }
+}

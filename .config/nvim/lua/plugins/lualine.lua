@@ -103,7 +103,6 @@ return {
         'lazy',
         'neo-tree',
         'nvim-dap-ui',
-        'trouble',
       },
       sections = sections,
     }

@@ -4,7 +4,7 @@
 
 return {
   'folke/trouble.nvim',
-  cmd = { 'TroubleToggle', 'Trouble' },
+  cmd = { 'Trouble' },
   keys = {
     { '<leader>xw', '<cmd>Trouble diagnostics toggle<cr>', desc = 'Toggle workspace diagnostics' },
     { '<leader>xd', '<cmd>Trouble diagnostics toggle filter.buf=0<cr>', desc = 'Toggle document diagnostics' },
@@ -20,14 +20,28 @@ return {
     {
       '[x',
       function()
-        require('trouble').prev({ jump = true })
+        if require('trouble').is_open() then
+          require('trouble').prev({ skip_groups = true, jump = true })
+        else
+          local ok, err = pcall(vim.cmd.cprev)
+          if not ok then
+            vim.notify(err, vim.log.levels.ERROR)
+          end
+        end
       end,
       desc = 'Previous Trouble 🚦 item',
     },
     {
       ']x',
       function()
-        require('trouble').next({ jump = true })
+        if require('trouble').is_open() then
+          require('trouble').next({ skip_groups = true, jump = true })
+        else
+          local ok, err = pcall(vim.cmd.cprev)
+          if not ok then
+            vim.notify(err, vim.log.levels.ERROR)
+          end
+        end
       end,
       desc = 'Next Trouble 🚦 item',
     },
@@ -45,7 +59,22 @@ return {
       { '<leader>x', group = 'Trouble', icon = '🚦' },
     })
 
+    vim.api.nvim_create_autocmd('QuickFixCmdPost', {
+      callback = function()
+        vim.cmd([[Trouble qflist open]])
+      end,
+    })
+
     vim.cmd('highlight link TroubleNormal NormalFloat')
   end,
-  opts = { use_diagnostic_signs = true },
+  opts = {
+    use_diagnostic_signs = true,
+    preview = {
+      type = 'main',
+      -- when a buffer is not yet loaded, the preview window will be created
+      -- in a scratch buffer with only syntax highlighting enabled.
+      -- Set to false, if you want the preview to always be a real loaded buffer.
+      scratch = false,
+    },
+  },
 }

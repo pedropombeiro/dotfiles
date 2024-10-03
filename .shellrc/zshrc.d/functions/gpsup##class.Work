@@ -5,23 +5,15 @@
 # if the target remote is at gitlab.com
 #
 
-GITLAB_USERNAME="${USER}"
+SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
 
 remote=origin
-milestone=$(glab api 'https://gitlab.com/api/v4/groups/9970/milestones?state=active' | jq -r '[.[] | select(.due_date) | select(.due_date | strptime("%Y-%m-%d") | mktime > now) | select(.title | test("^[0-9]+\\.[0-9]+"))] | .[0].title')
+branch="$(git_current_branch)"
 
 if git remote get-url "${remote}" | grep gitlab.com >/dev/null; then
-  git push --set-upstream "${remote}" "$(git_current_branch)" \
-    -o merge_request.create \
-    -o merge_request.squash \
-    -o merge_request.target="$(git_parent)" \
-    -o merge_request.milestone="$milestone" \
-    -o merge_request.assign="${GITLAB_USERNAME}" \
-    -o merge_request.label="Category:Fleet Visibility" \
-    -o merge_request.label="section::ci" \
-    -o merge_request.label="devops::verify" \
-    -o merge_request.label="group::runner" \
-    "$@"
+  issue_iid="$(echo $branch | sed -E 's|[^0-9]+([0-9]+).*|\1|')"
+
+  ruby -r $SCRIPT_DIR/gitlab-helpers.rb -e "gpsup('$remote', '$issue_iid')" -- $@
 else
-  git push --set-upstream $remote "$(git_current_branch)" "$@"
+  git push --set-upstream $remote "$branch" "$@"
 fi

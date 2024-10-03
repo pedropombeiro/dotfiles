@@ -217,7 +217,6 @@ end
 
 def rebase_all
   require 'json'
-  default_branch = compute_default_branch
   mappings = rebase_mappings
              .sort { |b1, b2| branch_sort_key(b1) <=> branch_sort_key(b2) }
              .to_h { |b| [b[:branch], b[:rebase_onto]] }

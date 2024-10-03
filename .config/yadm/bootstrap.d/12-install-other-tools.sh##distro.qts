@@ -16,7 +16,7 @@ fzf_version=0.54.2
 gping_version=1.16.1
 lnav_version=0.12.2
 lsd_version=1.1.2
-nvim_version=0.10.1 # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
+nvim_version=0.10.2 # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
 procs_version=0.14.2
 
 function download() {

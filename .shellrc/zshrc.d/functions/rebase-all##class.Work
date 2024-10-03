@@ -7,7 +7,7 @@
 
 SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
 
-test -f db/structure.sql && git restore db/schema_migrations db/structure.sql bin/rake bin/rspec bin/rails bin/spring
+test -f db/structure.sql && git restore db/ bin/rake bin/rspec bin/rails bin/spring package.json
 
 ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e rebase_all
 

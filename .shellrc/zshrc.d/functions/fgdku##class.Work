@@ -24,7 +24,7 @@ rm -f /tmp/.need_reset_busylight
 (
   cd "${GDK_ROOT}/gitlab" || exit 0
 
-  git restore db/structure.sql bin/rake bin/rspec bin/rails bin/spring
+  git restore db/structure.sql bin/rake bin/rspec bin/rails bin/spring package.json
 
   if [[ $(git diff --shortstat 2>/dev/null | tail -n1) != "" ]]; then
     printf "${RED}%s${NC}\n" 'Please stash the changes in the current branch before calling fgdku!'

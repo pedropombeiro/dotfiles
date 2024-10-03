@@ -6,6 +6,6 @@
 
 if [[ $PWD/ = ${GDK_ROOT}/* ]]; then
   undo-migrations
-  git restore db/
+  git restore db/ package.json
 fi
 git switch "$(git_main_branch)"

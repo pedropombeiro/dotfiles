@@ -4,6 +4,8 @@
 require 'English'
 require 'tty-link'
 
+REJECTED_LABELS = /^(workflow:|missed:|estimate:|Effort:|\[Deprecated|auto updated).*/.freeze
+
 class String
   def black
     "\033[30m#{self}\033[0m"
@@ -473,7 +475,7 @@ def gpsup(remote, issue_iid)
                       .first
   labels = json_res.dig(*%w[data project issue labels nodes])
                    .map { |h| h['title'] }
-                   .reject { |label| label.match?(/^(workflow:|missed:|\[Deprecated|auto updated).*/) }
+                   .reject { |label| label.match?(REJECTED_LABELS) }
 
   require_relative 'git-helpers'
   branch = `git rev-parse --abbrev-ref HEAD`.strip
@@ -494,5 +496,5 @@ def gpsup(remote, issue_iid)
   SHELL
 
   puts cmd
-  # system(cmd)
+  system(cmd)
 end

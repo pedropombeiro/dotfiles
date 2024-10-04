@@ -73,6 +73,7 @@ rm -f /tmp/.need_reset_busylight
   fi
 
   bin/spring stop || echo 'Spring not running'
+  pkill spring || echo 'No remaining spring processes' # Ensure there are no leftover spring processes, this sometimes causes issues with the RubyMine debugger hanging trying to establish a connection
   git restore bin/rake bin/rspec bin/rails bin/spring
 
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'

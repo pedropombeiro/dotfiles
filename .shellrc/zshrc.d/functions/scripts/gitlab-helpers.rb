@@ -366,8 +366,8 @@ def retrieve_mrs(*args)
     rows: mrs.map do |mr|
       title = mr['title'].truncate(69)
       merge_status = merge_status_aliases.fetch(mr['detailedMergeStatus'], mr['detailedMergeStatus'])
-      merge_status += ' 🚀' if mr['autoMergeEnabled']
       merge_status.truncate(21)
+      merge_status += ' 🚀' if mr['autoMergeEnabled']
       squash = mr['squashOnMerge'] ? '✔︎'.green : '⨯'.red
       conflicts = mr['conflicts'] ? '⨯'.red : '✔︎'.green
       should_be_rebased = mr['shouldBeRebased'] ? 'Y' : ''

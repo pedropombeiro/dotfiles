@@ -47,6 +47,9 @@ return {
       desc = 'Enable autoformat-on-save',
     },
   },
+  init = function()
+    vim.g.disable_autoformat = true
+  end,
   opts = {
     -- stylua: ignore
     formatters_by_ft = {

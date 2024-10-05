@@ -93,114 +93,107 @@ return {
       ts_update()
     end,
     module = 'nvim-treesitter.configs',
-    opts = function()
-      return {
-        -- A list of parser names, or "all"
-        ensure_installed = {
-          'bash',
-          'diff',
-          'dockerfile',
-          'git_rebase',
-          'gitignore',
-          'go',
-          'gomod',
-          'json',
-          'vimdoc',
-          'html',
-          'lua',
-          'make',
-          'markdown',
-          'markdown_inline',
-          'python',
-          'regex',
-          'ruby',
-          'sql',
-          'toml',
-          'vim',
-          'yaml',
-        },
-        -- Install parsers synchronously (only applied to `ensure_installed`)
-        sync_install = false,
-        -- Automatically install missing parsers when entering buffer
-        -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
-        auto_install = false,
-        -- List of parsers to ignore installing (for "all")
-        ignore_install = {
-          'java',
-          'javascript',
-        },
-        endwise = {
+    opts = {
+      -- A list of parser names, or "all"
+      ensure_installed = {
+        'bash',
+        'diff',
+        'dockerfile',
+        'git_rebase',
+        'gitignore',
+        'go',
+        'gomod',
+        'json',
+        'vimdoc',
+        'html',
+        'lua',
+        'make',
+        'markdown',
+        'markdown_inline',
+        'python',
+        'regex',
+        'ruby',
+        'sql',
+        'toml',
+        'vim',
+        'yaml',
+      },
+      -- Install parsers synchronously (only applied to `ensure_installed`)
+      sync_install = false,
+      -- Automatically install missing parsers when entering buffer
+      -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+      auto_install = true,
+      -- List of parsers to ignore installing (for "all")
+      ignore_install = {
+        'java',
+        'javascript',
+      },
+      endwise = {
+        enable = true,
+      },
+      matchup = {
+        enable = true,
+      },
+      highlight = {
+        -- `false` will disable the whole extension
+        enable = true,
+        -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+        -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+        -- Using this option may slow down your editor, and you may see some duplicate highlights.
+        -- Instead of true it can also be a list of languages
+        additional_vim_regex_highlighting = false,
+        disable = function(lang, bufnr) -- Disable in large buffers
+          return vim.api.nvim_buf_line_count(bufnr) > 5000
+        end,
+      },
+      indent = { enable = true, disable = { 'python', 'css', 'rust' } },
+      autotag = {
+        enable = true,
+        disable = { 'xml', 'markdown' },
+      },
+      textobjects = {
+        select = {
           enable = true,
-        },
-        matchup = {
-          enable = true,
-        },
-        highlight = {
-          -- `false` will disable the whole extension
-          enable = true,
-          -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-          -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-          -- Using this option may slow down your editor, and you may see some duplicate highlights.
-          -- Instead of true it can also be a list of languages
-          additional_vim_regex_highlighting = false,
-          disable = function(lang, bufnr) -- Disable in large buffers
-            if lang == 'markdown' then
-              return true
-            end
-
-            return vim.api.nvim_buf_line_count(bufnr) > 5000
-          end,
-          -- additional_vim_regex_highlighting = true,
-        },
-        indent = { enable = true, disable = { 'python', 'css', 'rust' } },
-        autotag = {
-          enable = true,
-          disable = { 'xml', 'markdown' },
-        },
-        textobjects = {
-          select = {
-            enable = true,
-            -- Automatically jump forward to textobj, similar to targets.vim
-            lookahead = true,
-            keymaps = {
-              -- You can use the capture groups defined in textobjects.scm
-              ['af'] = '@function.outer',
-              ['if'] = '@function.inner',
-              ['ac'] = '@class.outer',
-              ['ic'] = '@class.inner',
-            },
-          },
-          move = {
-            enable = true,
-            set_jumps = true,
-            goto_next_start = {
-              [']m'] = '@function.outer',
-              [']]'] = '@class.outer',
-            },
-            goto_next_end = {
-              [']M'] = '@function.outer',
-              [']['] = '@class.outer',
-            },
-            goto_previous_start = {
-              ['[m'] = '@function.outer',
-              ['[['] = '@class.outer',
-            },
-            goto_previous_end = {
-              ['[M'] = '@function.outer',
-              ['[]'] = '@class.outer',
-            },
-          },
-          swap = {
-            enable = true,
-            swap_next = {
-              ['<leader>.'] = '@parameter.inner',
-            },
-            swap_previous = {
-              ['<leader>,'] = '@parameter.inner',
-            },
+          -- Automatically jump forward to textobj, similar to targets.vim
+          lookahead = true,
+          keymaps = {
+            -- You can use the capture groups defined in textobjects.scm
+            ['af'] = '@function.outer',
+            ['if'] = '@function.inner',
+            ['ac'] = '@class.outer',
+            ['ic'] = '@class.inner',
           },
         },
-      }
-    end,
+        move = {
+          enable = true,
+          set_jumps = true,
+          goto_next_start = {
+            [']m'] = '@function.outer',
+            [']]'] = '@class.outer',
+          },
+          goto_next_end = {
+            [']M'] = '@function.outer',
+            [']['] = '@class.outer',
+          },
+          goto_previous_start = {
+            ['[m'] = '@function.outer',
+            ['[['] = '@class.outer',
+          },
+          goto_previous_end = {
+            ['[M'] = '@function.outer',
+            ['[]'] = '@class.outer',
+          },
+        },
+        swap = {
+          enable = true,
+          swap_next = {
+            ['<leader>.'] = '@parameter.inner',
+          },
+          swap_previous = {
+            ['<leader>,'] = '@parameter.inner',
+          },
+        },
+      },
+    },
   },
 }

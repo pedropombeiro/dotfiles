@@ -18,6 +18,8 @@ return {
     ensure_installed = {
       'actionlint',
       'docker-compose-language-service',
+      'erb-formatter',
+      'erb-lint',
       'fixjson',
       'gitlab-ci-ls',
       'golangci-lint',

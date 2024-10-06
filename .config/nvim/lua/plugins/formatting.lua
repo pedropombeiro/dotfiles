@@ -69,6 +69,7 @@ return {
       nginx           = { 'nginx' },
       python          = { 'isort', 'black' },
       ruby            = { 'rubocop' },
+      eruby           = { 'erb_format' },
       sh              = { 'shellcheck', 'shfmt' },
       zsh             = { 'shellcheck', 'shfmt' },
       sql             = { { 'pg_format', 'sql_formatter' } },

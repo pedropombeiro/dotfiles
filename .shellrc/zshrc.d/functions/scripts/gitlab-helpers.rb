@@ -350,12 +350,10 @@ def retrieve_mrs(*args)
 
   pipeline_aliases = { 'SUCCESS' => '✔︎'.green, 'FAILED' => '‼'.red, 'RUNNING' => '▶︎'.brown }
   merge_status_aliases = { 'CI_STILL_RUNNING' => 'CI_STILL_RUNNING'.green }
-  any_rebase = mrs.any? { |mr| mr['shouldBeRebased'] }
   any_conflicts = mrs.any? { |mr| mr['conflicts'] }
   headings = ['Reference'.truncate(7), 'Merge status']
   pipeline_col_index = headings.count
   headings += %w[Pipeline Squash]
-  headings << 'Should rebase' if any_rebase
   headings << 'Conflicts' if any_conflicts
   headings += ['Approvals'.truncate(5), 'Reviewers', 'Title', 'Source branch']
   reviewers_col_index = headings.count - 3
@@ -370,7 +368,6 @@ def retrieve_mrs(*args)
       merge_status += ' 🚀' if mr['autoMergeEnabled']
       squash = mr['squashOnMerge'] ? '✔︎'.green : '⨯'.red
       conflicts = mr['conflicts'] ? '⨯'.red : '✔︎'.green
-      should_be_rebased = mr['shouldBeRebased'] ? 'Y' : ''
       approved = mr['approved']
       approvals_left = mr['approvalsLeft']
       approvals_required = mr['approvalsRequired']
@@ -395,7 +392,6 @@ def retrieve_mrs(*args)
         ].compact.join(' '),
         { value: squash, alignment: :center }
       ]
-      row << should_be_rebased if any_rebase
       row << conflicts if any_conflicts
       row + [
         { value: approved ? '✔︎'.green : "#{approvals_required - approvals_left}/#{approvals_required}",

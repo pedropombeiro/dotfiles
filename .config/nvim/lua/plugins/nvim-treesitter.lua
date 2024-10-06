@@ -15,6 +15,12 @@ return {
   },
 
   {
+    'windwp/nvim-ts-autotag', -- Automatically add closing tags for HTML and JSX
+    event = { 'BufReadPre', 'BufNewFile' },
+    opts = {}
+  },
+
+  {
     'andymass/vim-matchup',
     lazy = true, -- we let treesitter manage this
     init = function()

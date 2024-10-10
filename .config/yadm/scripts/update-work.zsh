@@ -29,7 +29,6 @@ gdk:
     ruby_services: true
   update_hooks:
     before:
-      - cd ${GDK_ROOT}/gitlab && scalar register  # Improve performance for rebasing/status/etc.
       - support/exec-cd gitlab bin/spring stop || true
     after:
       - git -C "${GDK_ROOT}/gitlab" restore db/structure.sql
@@ -74,8 +73,6 @@ if ! delta "${GDK_ROOT}/gdk.yml" "${GDK_ROOT}/gdk.tmp.yml"; then
   cp -f "${GDK_ROOT}/gdk.tmp.yml" "${GDK_ROOT}/gdk.yml"
 fi
 rm -f "${GDK_ROOT}/gdk.tmp.yml"
-
-scalar reconfigure -a
 
 # Populate lefthook-local.yml
 if [[ -n ${GDK_ROOT} ]]; then

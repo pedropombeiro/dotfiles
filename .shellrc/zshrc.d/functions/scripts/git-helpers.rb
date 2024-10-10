@@ -118,7 +118,6 @@ def rebase_all_per_capture_info(local_branch_info_hash)
 end
 
 def rebase_mappings
-  system(*%w[git status], out: File::NULL, err: File::NULL) # Refresh status, as `scalar` seems to be outdated after a pull
   system(*%w[git diff-index --quiet HEAD --])
   unless Process.last_status.success?
     system(%(terminal-notifier -title 'rebase_all failed' -message 'Please stash the changes in the current branch before calling rebase_all!' -sound boop -ignoreDnD))

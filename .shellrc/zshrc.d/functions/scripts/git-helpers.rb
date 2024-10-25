@@ -238,13 +238,10 @@ def git_push_issue(*args)
       b[:branch].start_with?("#{mr_match_data[:prefix]}/#{mr_match_data[:mr_id]}")
     end
 
+  branches = []
   local_branch_info_hash.each do |b|
     branch = b[:branch]
     parent_branch = b[:parent_branch]
-
-    active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
-
-    puts 'Pushing '.brown + branch.cyan + ' to '.brown + active_remote_name.green + '...'.brown
 
     system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
     unless Process.last_status.success?
@@ -252,11 +249,16 @@ def git_push_issue(*args)
       next
     end
 
-    system(*%W[git push --force-with-lease #{active_remote_name} #{branch}] + args)
-    break unless Process.last_status.success?
+    branches << branch
   end
 
-  system(*%W[git switch #{current_branch}])
+  if branches.any?
+    active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
+
+    puts 'Pushing '.brown + branches.map(&:cyan).join(', ') + ' to '.brown + active_remote_name.green + '...'.brown
+
+    system(*%W[git push --force-with-lease #{active_remote_name}], *branches, *args)
+  end
 end
 
 def changed_branch_files(format: nil)

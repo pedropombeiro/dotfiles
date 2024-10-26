@@ -6,7 +6,7 @@ NGINX_ETC_DIR="$(brew --prefix)/etc/nginx"
 if [[ -d "${NGINX_ETC_DIR}" ]]; then
   cp -fR ${YADM_CONFIG}/nginx/* "${NGINX_ETC_DIR}/"
 
-  NGINX_PATH="$(realpath $(which nginx))"
+  NGINX_PATH="$(realpath "$(which nginx)")"
   sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add "${NGINX_PATH}"
   sudo /usr/libexec/ApplicationFirewall/socketfilterfw --unblockapp "${NGINX_PATH}"
 fi

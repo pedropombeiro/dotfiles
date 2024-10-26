@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-GDK_ROOT="${HOME}/Developer/gitlab-development-kit"
+GDK_ROOT="${HOME}/gitlab-development-kit"
 [[ -d ${GDK_ROOT} ]] && export GDK_ROOT
 
 if [[ -d ${GDK_ROOT} && ! -f ${GDK_ROOT}/.envrc ]]; then

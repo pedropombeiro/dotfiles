@@ -470,8 +470,8 @@ def gpsup(remote, issue_iid)
                       .select { |title| title.match?(/^[0-9]+\.[0-9]+/) }
                       .first
   labels = json_res.dig(*%w[data project issue labels nodes])
-                   .map { |h| h['title'] }
-                   .reject { |label| label.match?(REJECTED_LABELS) }
+                   &.map { |h| h['title'] }
+                   &.reject { |label| label.match?(REJECTED_LABELS) }
 
   require_relative 'git-helpers'
   branch = `git rev-parse --abbrev-ref HEAD`.strip
@@ -486,7 +486,7 @@ def gpsup(remote, issue_iid)
     "label='section::ci'",
     "label='devops::verify'",
     "label='group::runner'"
-  ] + labels.map { |label| "label='#{label}'" }
+  ] + (labels&.map { |label| "label='#{label}'" } || [])
   cmd = <<~SHELL.lines(chomp: true).join(' ')
     git push --set-upstream "#{remote}" "#{branch}" #{options.uniq.map { |option| "-o merge_request.#{option}" }.join(' ')} #{ARGV.join(' ')}
   SHELL

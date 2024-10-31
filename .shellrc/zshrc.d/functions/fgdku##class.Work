@@ -79,7 +79,7 @@ rm -f /tmp/.need_reset_busylight
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
   set +e
   cd $GDK_ROOT
-  gdk update
+  gdk update || gdk update # Sometimes we have a failure due to missing new gems, and a retry fixes it
   if [[ $? -eq 1 && ! -S $GDK_ROOT/redis/redis.socket ]]; then
     # Work around issue with Redis socket disappearing by returning to pristine state and retrying the update
     printf "${YELLOW}%s${NC}\n" 'Redis socket disappeared during update, running gdk pristine before retrying update...'

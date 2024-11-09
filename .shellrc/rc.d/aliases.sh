@@ -9,3 +9,5 @@ alias sqlformat='pg_format --nocomment - | xargs -0 printf "\`\`\`sql\n%s\`\`\`"
 alias vim=nvim
 alias xh='xh --style $XH_STYLE' # defined in ~/.shellrc/rc.d/_theme.sh
 alias ls='lsd'
+
+alias docker_ip='docker inspect -f "{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}"'

@@ -77,17 +77,14 @@ rm -f /tmp/.need_reset_busylight
   git restore bin/rake bin/rspec bin/rails bin/spring
 
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
-  set +e
   cd $GDK_ROOT
-  gdk update || gdk update # Sometimes we have a failure due to missing new gems, and a retry fixes it
-  if [[ $? -eq 1 && ! -S $GDK_ROOT/redis/redis.socket ]]; then
+  if ! gdk update && [[ ! -S $GDK_ROOT/redis/redis.socket ]]; then
     # Work around issue with Redis socket disappearing by returning to pristine state and retrying the update
     printf "${YELLOW}%s${NC}\n" 'Redis socket disappeared during update, running gdk pristine before retrying update...'
     gdk pristine
     gdk reconfigure
     gdk update
   fi
-  set -eo pipefail
 
   cd gitlab
   git restore db/structure.sql
@@ -136,9 +133,9 @@ rm -f /tmp/.need_reset_busylight
   gdk start
 
   if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
-    printf "${YELLOW}%s${NC}\n" 'Applying stash and migrations...'
+    printf "${YELLOW}%s${NC}\n" 'Applying stash...'
     git stash pop
-    bin/rails db:migrate
+    bin/rails db:migrate RAILS_ENV=test
     scripts/regenerate-schema # Ensure we have a clean test DB with any branch migrations done
     git restore db/structure.sql
   fi

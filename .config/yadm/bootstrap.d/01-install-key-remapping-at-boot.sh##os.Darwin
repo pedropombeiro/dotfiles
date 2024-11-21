@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
+
+PLIST=/Library/LaunchDaemons/org.custom.keyboard-remap.plist
+
+# https://www.grzegorowski.com/how-to-remap-single-mac-keyboard-key
+sudo mkdir -p /Library/LaunchDaemons
+sudo tee $PLIST >/dev/null <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>org.custom.keyboard-remap</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>${YADM_SCRIPTS}/remap-mac-keys.sh</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <false/>
+  </dict>
+</plist>
+EOF
+sudo launchctl load -w $PLIST

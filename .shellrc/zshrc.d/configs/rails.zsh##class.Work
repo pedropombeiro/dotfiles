@@ -1,3 +1,5 @@
 #!/usr/bin/env zsh
 
 plugins+=(rake-fast)
+
+alias reset_test_db='bundle exec rails db:drop db:create db:test:prepare db:migrate RAILS_ENV=test'

@@ -68,7 +68,7 @@ return {
       lua             = { 'stylua' },
       nginx           = { 'nginx' },
       python          = { 'isort', 'black' },
-      ruby            = { 'rubocop' },
+      ruby            = { 'standardrb', 'rubocop' },
       eruby           = { 'erb_format' },
       sh              = { 'shellcheck', 'shfmt' },
       zsh             = { 'shellcheck', 'shfmt' },

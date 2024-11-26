@@ -9,7 +9,6 @@ tap "homebrew/services"
 tap "jarred-sumner/git-peek"
 tap "jdxcode/tap"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
-tap "mas-cli/tap"
 tap "mike-engel/jwt-cli"
 tap "minio/stable"
 tap "moul/moul"
@@ -49,10 +48,6 @@ brew "glib"
 brew "checkmake"
 # Cross-platform make
 brew "cmake"
-# Validating, recursive, caching DNS resolver
-brew "unbound"
-# GNU Transport Layer Security (TLS) Library
-brew "gnutls"
 # Container runtimes on MacOS (and Linux) with minimal setup
 brew "colima"
 # Diff your Docker containers
@@ -93,6 +88,10 @@ brew "epr"
 brew "exiftool"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
+# Validating, recursive, caching DNS resolver
+brew "unbound"
+# GNU Transport Layer Security (TLS) Library
+brew "gnutls"
 # OpenType text shaping engine
 brew "harfbuzz"
 # Framework for layout and rendering of i18n text
@@ -203,8 +202,8 @@ brew "pigz"
 brew "pinentry-mac"
 # Python dependency management tool
 brew "pipenv"
-# Manage compile and link flags for libraries
-brew "pkg-config"
+# Package compiler and linker metadata toolkit
+brew "pkgconf"
 # PDF rendering library (based on the xpdf-3.0 code base)
 brew "poppler"
 # Object-relational database system
@@ -367,7 +366,7 @@ cask "macupdater"
 cask "micro-snitch"
 # Provides updates to various Microsoft products
 cask "microsoft-auto-update"
-# Web browser
+# Multi-platform web browser
 cask "microsoft-edge"
 # Silence embarrassing notifications while screensharing
 cask "muzzle"

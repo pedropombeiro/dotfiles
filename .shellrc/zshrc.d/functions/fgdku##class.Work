@@ -78,13 +78,7 @@ rm -f /tmp/.need_reset_busylight
 
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
   cd $GDK_ROOT
-  if ! gdk update && [[ ! -S $GDK_ROOT/redis/redis.socket ]]; then
-    # Work around issue with Redis socket disappearing by returning to pristine state and retrying the update
-    printf "${YELLOW}%s${NC}\n" 'Redis socket disappeared during update, running gdk pristine before retrying update...'
-    gdk pristine
-    gdk reconfigure
-    gdk update
-  fi
+  gdk update
 
   cd gitlab
   git restore db/structure.sql

@@ -10,4 +10,4 @@ ruby               latest
 rust               stable
 yarn               latest
 yamllint           latest
-teleport-community latest
+teleport-community 16

@@ -22,7 +22,7 @@ asdf:
   opt_out: true  # Required to use mise instead
 clickhouse:
   bin: "/opt/homebrew/bin/clickhouse"
-  enabled: true
+  enabled: false
   max_server_memory_usage: 5000000000
 gdk:
   experimental:

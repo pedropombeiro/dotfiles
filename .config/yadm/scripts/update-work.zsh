@@ -7,9 +7,6 @@ source "${YADM_SCRIPTS}/colors.sh"
 # Create mise shims for RubyMine debugger
 mise reshim
 
-printf "${YELLOW}%s${NC}\n" "Pruning mise..."
-(cd ${GDK_ROOT}/gitlab && mise prune)
-
 # Populate gdk.yml
 if [[ -n ${GDK_ROOT} ]]; then
   # From https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/howto/registry.md#set-up-pushing-and-pulling-of-images-over-http

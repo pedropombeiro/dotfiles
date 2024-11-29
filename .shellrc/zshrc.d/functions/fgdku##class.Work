@@ -93,7 +93,7 @@ rm -f /tmp/.need_reset_busylight
     bundle exec rake db:test:prepare
 
   printf "${YELLOW}%s${NC}\n" "Run any pending ClickHouse migrations..."
-  bundle exec rake gitlab:clickhouse:migrate:main
+  gdk status clickhouse >/dev/null && bundle exec rake gitlab:clickhouse:migrate:main
 
   printf "${YELLOW}%s${NC}\n" 'Pruning local branches...'
   git fetch --jobs=10

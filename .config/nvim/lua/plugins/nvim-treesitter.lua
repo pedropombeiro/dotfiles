@@ -17,7 +17,7 @@ return {
   {
     'windwp/nvim-ts-autotag', -- Automatically add closing tags for HTML and JSX
     event = { 'BufReadPre', 'BufNewFile' },
-    opts = {}
+    opts = {},
   },
 
   {
@@ -149,7 +149,7 @@ return {
         -- Instead of true it can also be a list of languages
         additional_vim_regex_highlighting = false,
         disable = function(lang, bufnr) -- Disable in large buffers
-          return vim.api.nvim_buf_line_count(bufnr) > 5000
+          return lang == 'just' or vim.api.nvim_buf_line_count(bufnr) > 5000
         end,
       },
       indent = { enable = true, disable = { 'eruby', 'html', 'python', 'css', 'rust' } },

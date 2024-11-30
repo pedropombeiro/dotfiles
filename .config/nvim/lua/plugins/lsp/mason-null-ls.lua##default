@@ -21,6 +21,7 @@ return {
       'erb-formatter',
       'erb-lint',
       'fixjson',
+      'hadolint',
       'gitlab-ci-ls',
       'golangci-lint',
       'golangci-lint-langserver',

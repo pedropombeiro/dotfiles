@@ -102,6 +102,7 @@ return {
 
     local servers = {
       bashls = {},
+      docker_compose_language_service = {},
       dockerls = {},
       golangci_lint_ls = {},
       gopls = {

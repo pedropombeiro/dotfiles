@@ -6,13 +6,14 @@ GDK_ROOT="${HOME}/gitlab-development-kit"
 if [[ -d ${GDK_ROOT} && ! -f ${GDK_ROOT}/.envrc ]]; then
   cat <<EOF >"${GDK_ROOT}/.envrc"
 source .local.envrc
-export RAILS_HOSTS="127.0.0.1,localhost,host.docker.internal,gdk.test,gdk.localhost"
+export BUNDLER_CHECKSUM_VERIFICATION_OPT_IN=1
+export COREPACK_ENABLE_AUTO_PIN=0 # Avoid corepack adding packageManager to package.json
 export ENABLE_FDOC=1
 export GITLAB_USE_MODEL_LOAD_BALANCING=1
-export BUNDLER_CHECKSUM_VERIFICATION_OPT_IN=1
-export TELEPORT_USE_LOCAL_SSH_AGENT=false
-export QA_LOG_LEVEL=DEBUG
 export QA_GITLAB_URL="http://gdk.test:3000"
+export QA_LOG_LEVEL=DEBUG
+export RAILS_HOSTS="127.0.0.1,localhost,host.docker.internal,gdk.test,gdk.localhost"
+export TELEPORT_USE_LOCAL_SSH_AGENT=false
 EOF
 
   touch "{GDK_ROOT}/.local.envrc"

@@ -78,7 +78,7 @@ rm -f /tmp/.need_reset_busylight
 
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
   cd $GDK_ROOT
-  gdk update
+  mise x ruby -- gdk update
 
   cd gitlab
   git restore db/structure.sql

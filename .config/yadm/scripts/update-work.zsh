@@ -31,6 +31,8 @@ gdk:
       - git -C "${GDK_ROOT}/gitlab" restore db/structure.sql
       - support/exec-cd gitlab mise install
   overwrite_changes: true
+gitlab_http_router:
+  enabled: false
 # https:
 #   enabled: true
 # nginx:

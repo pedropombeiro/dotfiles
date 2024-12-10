@@ -159,6 +159,12 @@ filetype *.sha512
        \ {Check SHA512 hash sum}
        \ shasum -a 512 -c %f %S,
 
+" Encrypted files
+filetype credentials.yml.enc rails encrypted:edit %d/%c
+fileviewer credentials.yml.enc rails encrypted:show %pu %d/%c
+filetype *.yml.enc rails encrypted:edit --key %d/%c:r:r.key %d/%c
+fileviewer *.yml.enc rails encrypted:show --key %pu %d/%c:r:r.key %d/%c
+
 " Torrent
 filetype {*.torrent},<application/x-bittorrent> open -a Transmission.app
 fileviewer {*.torrent},<application/x-bittorrent>

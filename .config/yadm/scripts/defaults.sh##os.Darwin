@@ -68,10 +68,8 @@ defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
 defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
 
 # Set language and text formats
-# Note: if you’re in the US, replace `EUR` with `USD`, `Centimeters` with
-# `Inches`, `en_GB` with `en_US`, and `true` with `false`.
-defaults write NSGlobalDomain AppleLanguages -array "en" "fr" "pt"
-defaults write NSGlobalDomain AppleLocale -string "en_GB@currency=EUR"
+defaults write NSGlobalDomain AppleLanguages -array "en-US" "fr-CH" "pt-CH"
+defaults write NSGlobalDomain AppleLocale -string "en_001@currency=chf;rg=chzzzz"
 defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
 defaults write NSGlobalDomain AppleMetricUnits -bool true
 
@@ -275,7 +273,9 @@ if [[ -f /Applications/SlowQuitApps.app/Contents/MacOS/SlowQuitApps ]]; then
   defaults write com.dteoh.SlowQuitApps invertList -bool YES
   defaults delete com.dteoh.SlowQuitApps whitelist
   defaults write com.dteoh.SlowQuitApps whitelist -array-add us.zoom.xos
-  killall SlowQuitApps; /Applications/SlowQuitApps.app/Contents/MacOS/SlowQuitApps & disown
+  killall SlowQuitApps
+  /Applications/SlowQuitApps.app/Contents/MacOS/SlowQuitApps &
+  disown
 fi
 
 # reset the preferences cache

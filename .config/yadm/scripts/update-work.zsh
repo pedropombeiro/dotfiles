@@ -32,7 +32,8 @@ gdk:
       - support/exec-cd gitlab mise install
   overwrite_changes: true
 gitlab_http_router:
-  enabled: false
+  enabled: true
+  gitlab_rules_config: passthrough
 # https:
 #   enabled: true
 # nginx:

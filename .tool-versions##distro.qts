@@ -8,7 +8,7 @@ dust          latest
 fd            latest
 github-cli    latest
 gitleaks      latest
-golang        1.19.13
+golang        latest
 golangci-lint latest
 hadolint      latest
 jq            latest

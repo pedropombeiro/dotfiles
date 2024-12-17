@@ -119,6 +119,9 @@ return {
           -- actions.which_key shows the mappings for your picker,
           -- e.g. git_{create, delete, ...}_branch for the git_branches picker
           ['<C-h>'] = 'which_key',
+          ['<c-d>'] = function(...)
+            require('telescope.actions').delete_buffer(...)
+          end,
           ['<Esc>'] = 'close', -- directly close on Escape
           ['<c-t>'] = function(...)
             return require('trouble.sources.telescope').open(...)

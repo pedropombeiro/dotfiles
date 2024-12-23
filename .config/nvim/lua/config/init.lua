@@ -95,10 +95,12 @@ return {
         readonly = '',
       },
       tests = {
-        passed  = '',
-        running = '',
-        failed  = '',
-        unknown = ''
+        passed     = '',
+        running    = '',
+        failed     = '',
+        cancelled  = '⊘',
+        skipped    = '◌',
+        unknown    = ''
       }
     },
   },

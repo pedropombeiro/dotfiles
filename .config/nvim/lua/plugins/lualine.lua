@@ -60,6 +60,7 @@ return {
           require('lazy.status').updates,
           cond = require('lazy.status').has_updates,
         },
+        { 'pipeline' }, -- https://github.com/topaxi/pipeline.nvim
         {
           'diff',
           symbols = {

@@ -41,6 +41,10 @@ return {
       DiagnosticVirtualTextError = { fg = '#fb4934', bg = '#442e2d' },
       DiagnosticVirtualTextInfo = { fg = '#83a598', bg = '#2e3b3b' },
       DiagnosticVirtualTextHint = { fg = '#b8bb26', bg = '#333e34' },
+      LspDiagnosticsVirtualTextWarning = { fg = '#fabd2f' },
+      LspDiagnosticsVirtualTextError = { fg = '#fb4934' },
+      LspDiagnosticsVirtualTextInfo = { fg = '#83a598' },
+      LspDiagnosticsVirtualTextHint = { fg = '#b8bb26' },
 
       -- Remove background from signs (since we made the sign column not have a background)
       GruvboxYellowSign = { link = 'GruvboxYellow' },

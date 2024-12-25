@@ -16,7 +16,7 @@ fzf_version=0.57.0
 gping_version=1.16.1
 lnav_version=0.12.2
 lsd_version=1.1.2
-nvim_version=0.10.3 # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
+nvim_version=0.10.2 # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
 procs_version=0.14.2
 
 function download() {
@@ -121,6 +121,6 @@ download_and_extract "https://github.com/lsd-rs/lsd/releases/download/v${lsd_ver
 
 download_and_extract_package "https://github.com/neovim/neovim-releases/releases/download/v${nvim_version}/nvim-linux64.tar.gz" nvim $nvim_version
 download_and_extract "https://github.com/dalance/procs/releases/download/v${procs_version}/procs-v${procs_version}-x86_64-linux.zip" procs $procs_version
-download_and_extract "https://github.com/pedropombeiro/qnapexporter/releases/latest/download/qnapexporter.tar.gz" qnapexporter
+download_and_extract "https://github.com/pedropombeiro/qnapexporter/releases/latest/download/qnapexporter-linux-amd64.tar.gz" qnapexporter
 
 rm -rf "${temp_dir}"

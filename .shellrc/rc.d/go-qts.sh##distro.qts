@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 
-GOROOT="$(mise where golang)/go"
 if [[ -d ${GOROOT} ]] && [[ -z ${ASDF_GOLANG_DEFAULT_PACKAGES_FILE} ]]; then
   GOPATH="$(mise where golang)/packages"
 
   ASDF_GOLANG_DEFAULT_PACKAGES_FILE=~/.default-golang-pkgs
 
   export ASDF_GOLANG_DEFAULT_PACKAGES_FILE
-  export GOROOT
   export GOPATH
 fi

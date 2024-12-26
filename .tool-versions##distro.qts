@@ -9,8 +9,7 @@ fd            latest
 github-cli    latest
 gitleaks      latest
 golang        latest
-golangci-lint latest
-hadolint      latest
+hyperfine     latest
 jq            latest
 just          latest
 lazydocker    latest
@@ -20,8 +19,5 @@ pre-commit    latest
 ripgrep       latest
 rust          1.58.1
 shellcheck    latest
-shfmt         latest
 viddy         latest
 xh            latest
-hyperfine     latest
-stylua        0.11

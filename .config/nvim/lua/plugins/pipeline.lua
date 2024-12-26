@@ -3,6 +3,9 @@
 
 return {
   'topaxi/pipeline.nvim',
+  cond = function()
+    return vim.fn.executable('gh') == 1
+  end,
   keys = {
     { '<leader>ci', '<cmd>Pipeline<cr>', desc = 'Open pipeline.nvim' },
   },

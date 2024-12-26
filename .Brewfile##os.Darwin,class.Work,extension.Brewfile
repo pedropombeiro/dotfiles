@@ -18,16 +18,14 @@ tap "zaquestion/tap"
 brew "agg"
 # Slice and dice log files on the command-line
 brew "angle-grinder"
+# General-purpose data compression with high compression ratio
+brew "xz"
+# Arduino command-line interface
+brew "arduino-cli"
 # Library for command-line editing
 brew "readline"
 # Command-line interface for SQLite
 brew "sqlite"
-# General-purpose data compression with high compression ratio
-brew "xz"
-# Automate deployment, configuration, and upgrading
-brew "ansible"
-# Arduino command-line interface
-brew "arduino-cli"
 # Record and share terminal sessions
 brew "asciinema"
 # Shell extension to jump to frequently used directories
@@ -146,8 +144,6 @@ brew "ipinfo-cli"
 brew "jless"
 # Lightweight and flexible command-line JSON processor
 brew "jq"
-# Kubernetes CLI To Manage Your Clusters In Style!
-brew "k9s"
 # Lazier way to manage everything docker
 brew "lazydocker"
 # Simple terminal UI for git commands

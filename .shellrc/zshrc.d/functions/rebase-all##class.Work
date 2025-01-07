@@ -9,6 +9,6 @@ SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
 
 test -f db/structure.sql && git restore db/ bin/rake bin/rspec bin/rails bin/spring package.json
 
-ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e rebase_all
+mise x ruby -- ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e rebase_all
 
 test -x bin/spring && bin/spring binstub --all

@@ -7,7 +7,7 @@ just               latest
 nodejs             latest
 pre-commit         latest
 ruby               latest
-rust               stable
+rust               latest
 yarn               latest
 yamllint           latest
 teleport-community 16

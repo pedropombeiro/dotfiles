@@ -15,7 +15,7 @@ return {
   },
 
   {
-    'windwp/nvim-ts-autotag', -- Automatically add closing tags for HTML and JSX
+    'nvim-ts-autotag', -- Automatically add closing tags for HTML and JSX
     event = { 'BufReadPre', 'BufNewFile' },
     opts = {},
   },
@@ -162,10 +162,6 @@ return {
         end,
       },
       indent = { enable = true, disable = { 'eruby', 'html', 'python', 'css', 'rust' } },
-      autotag = {
-        enable = true,
-        disable = { 'xml', 'markdown' },
-      },
       incremental_selection = {
         enable = true,
         keymaps = {

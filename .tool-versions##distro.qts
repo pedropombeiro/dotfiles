@@ -17,7 +17,6 @@ lazygit       latest
 nodejs        17
 pre-commit    latest
 ripgrep       latest
-rust          1.58.1
 shellcheck    latest
 viddy         latest
 xh            latest

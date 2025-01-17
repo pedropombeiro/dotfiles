@@ -3,4 +3,5 @@
 TMPDIR="$TEMP"
 export TMPDIR
 
-source "$(mise where rust 2>&/dev/null)/env"
+PATH="$HOME/.cargo/bin:$PATH"
+export PATH

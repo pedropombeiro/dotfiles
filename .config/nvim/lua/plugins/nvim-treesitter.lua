@@ -32,7 +32,12 @@ return {
   {
     'nvim-treesitter/nvim-treesitter',
     version = false, -- last release is way too old and doesn't work on Windows
+    build = function()
+      local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
+      ts_update()
+    end,
     event = { 'BufReadPost', 'BufNewFile', 'BufWritePre', 'VeryLazy' },
+    lazy = vim.fn.argc(-1) == 0, -- load treesitter early when opening a file from the cmdline
     dependencies = {
       {
         'nvim-treesitter/nvim-treesitter-textobjects',
@@ -94,24 +99,26 @@ return {
       require('lazy.core.loader').add_to_rtp(plugin)
       require('nvim-treesitter.query_predicates')
     end,
-    build = function()
-      local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
-      ts_update()
-    end,
-    module = 'nvim-treesitter.configs',
+    cmd = { 'TSUpdateSync', 'TSUpdate', 'TSInstall' },
+    keys = {
+      { '<TAB>', desc = 'Increment Selection' },
+      { '<S-TAB>', desc = 'Decrement Selection', mode = 'x' },
+    },
     opts = {
       -- A list of parser names, or "all"
       ensure_installed = {
         'bash',
         'diff',
         'dockerfile',
+        'git_config',
         'git_rebase',
+        'gitcommit',
         'gitignore',
         'go',
         'gomod',
-        'json',
-        'vimdoc',
+        'graphql',
         'html',
+        'json',
         'lua',
         'make',
         'markdown',
@@ -120,8 +127,11 @@ return {
         'regex',
         'ruby',
         'sql',
+        'ssh_config',
         'toml',
+        'tmux',
         'vim',
+        'vimdoc',
         'yaml',
       },
       -- Install parsers synchronously (only applied to `ensure_installed`)
@@ -132,7 +142,6 @@ return {
       -- List of parsers to ignore installing (for "all")
       ignore_install = {
         'java',
-        'javascript',
       },
       endwise = {
         enable = true,
@@ -201,5 +210,8 @@ return {
         },
       },
     },
+    config = function(_, opts)
+      require('nvim-treesitter.configs').setup(opts)
+    end,
   },
 }

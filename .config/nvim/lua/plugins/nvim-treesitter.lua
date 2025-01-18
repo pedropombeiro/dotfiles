@@ -67,8 +67,9 @@ return {
       'RRethy/nvim-treesitter-endwise', --- Wisely add 'end' in Ruby, Vimscript, Lua, etc.
       {
         'HiPhish/rainbow-delimiters.nvim', -- Rainbow delimiters for Neovim with Tree-sitter
-        config = function()
-          require('rainbow-delimiters.setup').setup({
+        main = 'rainbow-delimiters.setup',
+        opts = function()
+          return {
             strategy = {
               [''] = require('rainbow-delimiters').strategy['global'],
               vim = require('rainbow-delimiters').strategy['local'],
@@ -86,7 +87,7 @@ return {
               'MiniIconsPurple',
               'MiniIconsCyan',
             },
-          })
+          }
         end,
       },
     },
@@ -104,6 +105,7 @@ return {
       { '<TAB>', desc = 'Increment Selection' },
       { '<S-TAB>', desc = 'Decrement Selection', mode = 'x' },
     },
+    main = 'nvim-treesitter.configs',
     opts = {
       -- A list of parser names, or "all"
       ensure_installed = {
@@ -215,8 +217,5 @@ return {
         },
       },
     },
-    config = function(_, opts)
-      require('nvim-treesitter.configs').setup(opts)
-    end,
   },
 }

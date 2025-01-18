@@ -60,11 +60,8 @@ return {
     bigfile = {},
     dashboard = {
       preset = {
-        header = [[            ]]
-          .. vim_version()
-          .. [[
-
-███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗
+        header = [[
+      ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗ ]] .. vim_version() .. '\n' .. [[
 ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
 ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
 ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║
@@ -77,8 +74,24 @@ return {
           pane = 2,
           padding = { 7, 0 },
         },
-        { icon = ' ', key = 'm', desc = 'Mason', action = '<cmd>Mason<CR>' },
-        { section = 'keys', padding = 1 },
+        {
+          { icon = ' ', key = 'f', desc = 'Find File', action = ":lua Snacks.dashboard.pick('files')" },
+          { icon = ' ', key = 'n', desc = 'New File', action = ':ene | startinsert' },
+          { icon = ' ', key = 'g', desc = 'Find Text', action = ":lua Snacks.dashboard.pick('live_grep')" },
+          { icon = ' ', key = '<leader>fgg', desc = 'Git Grep', action = ":lua require('git_grep').live_grep()" },
+          { icon = ' ', key = 'r', desc = 'Recent Files', action = ":lua Snacks.dashboard.pick('oldfiles')" },
+          {
+            icon = ' ',
+            key = 'c',
+            desc = 'Config',
+            action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
+          },
+          { icon = ' ', key = 's', desc = 'Restore Session', section = 'session' },
+          { icon = '󰒲 ', key = 'l', desc = 'Lazy', action = ':Lazy', enabled = package.loaded.lazy ~= nil },
+          { icon = ' ', key = 'm', desc = 'Mason', action = ':Mason' },
+          { icon = ' ', key = 'q', desc = 'Quit', action = ':qa', padding = 1 },
+        },
+        { section = 'terminal', cmd = "curl -s 'wttr.in/?0'" },
         { pane = 2, icon = ' ', title = 'Recent Files', section = 'recent_files', indent = 2, padding = { 2, 2 } },
         { pane = 2, icon = ' ', title = 'Projects', section = 'projects', indent = 2, padding = 2 },
         {
@@ -89,11 +102,10 @@ return {
           enabled = function()
             return Snacks.git.get_root() ~= nil
           end,
-          cmd = 'git --no-pager diff --stat -B -M -C',
-          height = 10,
+          cmd = "echo ''; git --no-pager diff --stat-width=98 --stat-count=7 -B -M -C",
           padding = 1,
           ttl = 5 * 60,
-          indent = 3,
+          indent = 2,
         },
         { section = 'startup' },
       },

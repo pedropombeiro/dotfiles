@@ -163,10 +163,11 @@ return {
   {
     'iamcco/markdown-preview.nvim', -- markdown preview plugin for (neo)vim
     cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+    build = 'cd app && yarn install',
     ft = 'markdown',
-    build = function()
-      vim.fn['mkdp#util#install']()
-    end, -- install without yarn or npm
+    init = function()
+      vim.g.mkdp_filetypes = { 'markdown' }
+    end,
   },
 
   { 'NoahTheDuke/vim-just', event = { 'BufReadPre', 'BufNewFile' }, ft = 'just' },

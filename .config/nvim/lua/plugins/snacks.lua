@@ -32,6 +32,7 @@ return {
     end
 
     return {
+      bigfile = {},
       dashboard = {
         preset = {
           header = [[            ]]

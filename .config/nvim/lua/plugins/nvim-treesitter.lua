@@ -112,6 +112,7 @@ return {
         'bash',
         'diff',
         'dockerfile',
+        'embedded_template',
         'git_config',
         'git_rebase',
         'gitcommit',

@@ -124,57 +124,6 @@ return {
   { 'RaafatTurki/hex.nvim', event = { 'BufReadPre', 'BufNewFile' }, opts = {} }, -- hex editing done right
 
   --### Other
-  {
-    'rcarriga/nvim-notify', -- A fancy, configurable, notification manager for NeoVim
-    event = 'VeryLazy',
-    priority = 60,
-    cond = function()
-      return not vim.g.started_by_firenvim
-    end,
-    keys = {
-      {
-        '<leader>fn',
-        function()
-          require('telescope').load_extension('notify')
-          require('telescope').extensions.notify.notify()
-        end,
-        desc = 'Notifications',
-      },
-      {
-        'dn',
-        function()
-          require('notify').dismiss({ silent = true, pending = true })
-        end,
-        desc = 'Dismiss all Notifications',
-      },
-    },
-    opts = function()
-      local config = require('config')
-      local icons = config.ui.icons.diagnostics
-
-      vim.notify = require('notify')
-
-      return {
-        timeout = 3000,
-        top_down = false,
-        max_height = function()
-          return math.floor(vim.o.lines * 0.75)
-        end,
-        max_width = function()
-          return math.floor(vim.o.columns * 0.75)
-        end,
-        icons = {
-          ---@diagnostic disable: undefined-field
-          DEBUG = icons.debug,
-          TRACE = icons.trace,
-          INFO = icons.info,
-          WARN = icons.warning,
-          ERROR = icons.error,
-          ---@diagnostic enable: undefined-field
-        },
-      }
-    end,
-  },
   { 'tmux-plugins/vim-tmux', ft = 'tmux' }, -- Vim plugin for .tmux.conf
   {
     'tpope/vim-dispatch', -- dispatch.vim: Asynchronous build and test dispatcher

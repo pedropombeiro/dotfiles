@@ -112,5 +112,6 @@ return {
         ---@diagnostic enable: undefined-field
       },
     },
+    quickfile = {},
   },
 }

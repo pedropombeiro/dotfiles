@@ -178,6 +178,12 @@ return {
         },
       },
       jedi_language_server = {},
+      ruby_lsp = {
+        init_options = {
+          formatter = 'standard',
+          linters = { 'standard' },
+        },
+      },
       sqlls = {},
       taplo = {},
       vtsls = {},
@@ -240,19 +246,6 @@ return {
         },
       }
       servers.clangd = {}
-    end
-    if vim.fn.executable('solargraph') == 1 then
-      local util = require('lspconfig/util')
-
-      servers.solargraph = {
-        init_options = {
-          formatting = false, -- Formatting is performed by Conform
-        },
-        root_dir = util.root_pattern('Gemfile', '.git', '.'),
-        flags = {
-          debounce_text_changes = 150,
-        },
-      }
     end
 
     local install_dir = '/share/homes/admin/opt/vscode-home-assistant'

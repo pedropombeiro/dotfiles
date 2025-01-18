@@ -128,12 +128,14 @@ brew "poppler"
 brew "pspg"
 # Generic syntax highlighter
 brew "pygments"
+# Easily download, build, install, upgrade, and uninstall Python packages
+brew "python-setuptools"
 # QR Code generation
 brew "qrencode"
 # Search tool like grep and The Silver Searcher
 brew "ripgrep"
 # Monitors sleep, wakeup, and idleness of a Mac
-brew "sleepwatcher", restart_service: true
+brew "sleepwatcher", restart_service: :changed
 # SMART hard drive monitoring
 brew "smartmontools"
 # Very fast implementation of tldr in Rust
@@ -156,7 +158,7 @@ brew "watch"
 brew "wget"
 # Show the current WiFi network password
 brew "wifi-password"
-# Graphical network analyzer and capture tool
+# Network analyzer and capture tool - without graphical user interface
 brew "wireshark", link: false
 # Friendly and fast tool for sending HTTP requests
 brew "xh"
@@ -248,7 +250,7 @@ cask "mediainfo"
 cask "micro-snitch"
 # Provides updates to various Microsoft products
 cask "microsoft-auto-update"
-# Web browser
+# Multi-platform web browser
 cask "microsoft-edge"
 cask "mqtt-explorer"
 # Open-source music notation software

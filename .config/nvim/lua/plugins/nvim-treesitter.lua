@@ -36,7 +36,7 @@ return {
       local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
       ts_update()
     end,
-    event = { 'BufReadPost', 'BufNewFile', 'BufWritePre', 'VeryLazy' },
+    event = { 'BufReadPost', 'BufNewFile', 'BufWritePre' },
     lazy = vim.fn.argc(-1) == 0, -- load treesitter early when opening a file from the cmdline
     dependencies = {
       {

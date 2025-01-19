@@ -54,6 +54,9 @@ return {
       end,
       desc = 'Open LazyGit for current file',
     },
+    {
+      '<leader>tn', function() Snacks.terminal() end, desc = 'Open terminal',
+    }
   },
   init = function()
     require('which-key').add({
@@ -149,6 +152,9 @@ return {
       },
       quickfile = {
         enabled = true,
+      },
+      terminal = {
+        enabled = not vim.g.started_by_firenvim,
       },
     }
   end,

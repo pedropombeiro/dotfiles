@@ -192,7 +192,7 @@ return {
           set_jumps = true,
           goto_next_start = {
             [']m'] = '@function.outer',
-            [']]'] = '@class.outer',
+            [']]'] = { query = '@class.outer', desc = 'Next class start' },
           },
           goto_next_end = {
             [']M'] = '@function.outer',

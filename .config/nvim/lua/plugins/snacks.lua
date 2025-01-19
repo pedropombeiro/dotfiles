@@ -14,31 +14,10 @@ return {
   priority = 1000,
   lazy = false,
   keys = {
-    { '<leader>bd', function() Snacks.bufdelete() end, desc = 'Close buffer' },
-
-
-
-    {
-      '<leader>fn',
-      function()
-        Snacks.dashboard.open()
-      end,
-      desc = 'Dashboard',
-    },
-    {
-      '<leader>fn',
-      function()
-        Snacks.notifier.show_history()
-      end,
-      desc = 'Notification History',
-    },
-    {
-      '<leader>dn',
-      function()
-        Snacks.notifier.hide()
-      end,
-      desc = 'Dismiss All Notifications',
-    },
+    { '<leader>bd', function() Snacks.bufdelete() end, desc = 'Close buffer', silent = true },
+    { '<leader>fn', function() Snacks.dashboard.open() end, desc = 'Dashboard', silent = true },
+    { '<leader>fn', function() Snacks.notifier.show_history() end, desc = 'Notification History', silent = true },
+    { '<leader>dn', function() Snacks.notifier.hide() end, desc = 'Dismiss All Notifications', silent = true },
     {
       '<leader>tg',
       function()
@@ -46,7 +25,7 @@ return {
 
         refresh_gitsigns()
       end,
-      desc = 'Open LazyGit',
+      desc = 'Open LazyGit', silent = true
     },
     {
       '<leader>tC',
@@ -55,11 +34,9 @@ return {
 
         refresh_gitsigns()
       end,
-      desc = 'Open LazyGit for current file',
+      desc = 'Open LazyGit for current file', silent = true
     },
-    {
-      '<leader>tn', function() Snacks.terminal() end, desc = 'Open terminal',
-    }
+    { '<leader>tn', function() Snacks.terminal() end, desc = 'Open terminal', silent = true }
   },
   init = function()
     require('which-key').add({
@@ -171,6 +148,9 @@ return {
       },
       terminal = {
         enabled = not vim.g.started_by_firenvim,
+      },
+      win = {
+        border = "rounded",
       },
     }
   end,

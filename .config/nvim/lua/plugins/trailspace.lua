@@ -17,6 +17,7 @@ return {
         'neotest-output',
         'neotest-summary',
         'neotest-output-panel',
+        'snacks_dashboard',
       },
       callback = function(event)
         vim.b[event.buf].minitrailspace_disable = true

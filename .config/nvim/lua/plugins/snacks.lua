@@ -5,7 +5,7 @@ local function refresh_gitsigns()
   local plugins = require('lazy.core.config').plugins
   if plugins['gitsigns.nvim'] ~= nil and plugins['gitsigns.nvim']._.loaded ~= nil then
     -- ensure that Gitsigns refreshes with new state after closing Lazygit
-    vim.cmd([[execute 'Gitsigns refresh']])
+    require('gitsigns').refresh()
   end
 end
 
@@ -68,10 +68,7 @@ return {
     dashboard = {
       preset = {
         header = [[
-      ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗ ]]
-          .. vim_version()
-          .. '\n'
-          .. [[
+      ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗ ]] .. vim_version() .. '\n' .. [[
 ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
 ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
 ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║

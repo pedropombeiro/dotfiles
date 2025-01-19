@@ -72,7 +72,7 @@ return {
       end
     end
   end,
-  opts = function()
+  opts = function(_, opts)
     ---@diagnostic disable: undefined-field
     local icons = require('config').ui.icons
     ---@diagnostic enable: undefined-field
@@ -81,6 +81,18 @@ return {
     vim.fn.sign_define('DiagnosticSignWarn', { text = icons.diagnostics.warning, texthl = 'DiagnosticSignWarn' })
     vim.fn.sign_define('DiagnosticSignInfo', { text = icons.diagnostics.info, texthl = 'DiagnosticSignInfo' })
     vim.fn.sign_define('DiagnosticSignHint', { text = icons.diagnostics.hint, texthl = 'DiagnosticSignHint' })
+
+    -- +Snacks
+    local function on_move(data)
+      Snacks.rename.on_rename_file(data.source, data.destination)
+    end
+    local events = require('neo-tree.events')
+    opts.event_handlers = opts.event_handlers or {}
+    vim.list_extend(opts.event_handlers, {
+      { event = events.FILE_MOVED, handler = on_move },
+      { event = events.FILE_RENAMED, handler = on_move },
+    })
+    -- -Snacks
 
     return {
       default_component_configs = {

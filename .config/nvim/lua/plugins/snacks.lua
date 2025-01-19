@@ -116,6 +116,7 @@ return {
         { section = 'startup' },
       },
     },
+    input = {},
     lazygit = {},
     notifier = {
       enabled = true,

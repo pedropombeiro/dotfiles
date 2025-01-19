@@ -25,6 +25,13 @@ return {
     {
       '<leader>fn',
       function()
+        Snacks.dashboard.open()
+      end,
+      desc = 'Dashboard',
+    },
+    {
+      '<leader>fn',
+      function()
         Snacks.notifier.show_history()
       end,
       desc = 'Notification History',

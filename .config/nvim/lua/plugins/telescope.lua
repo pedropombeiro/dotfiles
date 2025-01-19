@@ -19,6 +19,7 @@ local keys = {
   { '<leader>fh',    '<Cmd>Telescope oldfiles<CR>',        desc = 'Old files' },
   { '<leader>f:',    '<Cmd>Telescope command_history<CR>', desc = 'Command history', icon = '' },
   { '<leader>f/',    '<Cmd>Telescope search_history<CR>',  desc = 'Search history', icon = '󱝩' },
+  { '<leader>fd',    '<Cmd>Telescope diagnostics<CR>',     desc = 'Diagnostics', icon = require('config').ui.icons.diagnostics.warning },
   { '<leader>f`',    '<Cmd>Telescope marks<CR>',           desc = 'Marks', icon = '' },
   { "<leader>f'",    '<Cmd>Telescope marks<CR>',           desc = 'Marks', icon = '' },
   { '<leader>f.',    '<Cmd>Telescope jumplist<CR>',        desc = 'Jump list', icon = '' },

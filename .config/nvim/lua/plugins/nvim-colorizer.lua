@@ -28,7 +28,7 @@ return {
       '!neo-tree',
       '!Outline',
       '!Trouble',
-      '!alpha',
+      '!snacks_dashboard',
       '!lazy',
       '!neotest-summary',
       '!nofile',

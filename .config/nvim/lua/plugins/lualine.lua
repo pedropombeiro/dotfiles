@@ -93,7 +93,7 @@ return {
         icons_enabled = true,
         ignore_focus = { 'neotest-summary', 'lazygit', 'TelescopePrompt', 'Outline' },
         disabled_filetypes = {
-          statusline = { 'alpha', 'Fm', 'mason', 'neotest-summary' },
+          statusline = { 'snacks_dashboard', 'Fm', 'mason', 'neotest-summary' },
         },
         globalstatus = true,
         theme = 'gruvbox',

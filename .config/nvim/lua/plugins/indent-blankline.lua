@@ -3,7 +3,7 @@
 
 local filetype_exclude = {
   'help',
-  'alpha',
+  'snacks_dashboard',
   'dashboard',
   'neo-tree',
   'Trouble',

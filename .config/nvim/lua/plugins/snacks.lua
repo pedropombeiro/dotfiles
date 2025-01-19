@@ -61,7 +61,10 @@ return {
     dashboard = {
       preset = {
         header = [[
-      ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗ ]] .. vim_version() .. '\n' .. [[
+      ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗ ]]
+          .. vim_version()
+          .. '\n'
+          .. [[
 ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
 ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
 ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║
@@ -102,7 +105,7 @@ return {
           enabled = function()
             return Snacks.git.get_root() ~= nil
           end,
-          cmd = "echo ''; git --no-pager diff --stat-width=98 --stat-count=7 -B -M -C",
+          cmd = 'git --no-pager diff --stat -B -M -C',
           padding = 1,
           ttl = 5 * 60,
           indent = 2,

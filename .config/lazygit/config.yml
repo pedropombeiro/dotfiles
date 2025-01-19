@@ -4,8 +4,8 @@ gui:
   authorColors:
     "Pedro Pombeiro": "#83a598" # use a light blue for my commits
   branchColors:
-    "pedropombeiro": "#83a598" # use a light blue for branches beginning with 'pedropombeiro/'
-    "_pedropombeiro": "#7c6f64" # use gray for branches beginning with '_pedropombeiro/'
+    "^pedropombeiro/": "#83a598" # use a light blue for branches beginning with 'pedropombeiro/'
+    "^_pedropombeiro/": "#7c6f64" # use gray for branches beginning with '_pedropombeiro/'
     "tmp": "#504945" # use dark gray for branches beginning with 'tmp/'
 
   # The number of lines you scroll by when scrolling the main window

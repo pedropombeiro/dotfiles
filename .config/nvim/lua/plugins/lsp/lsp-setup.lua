@@ -179,6 +179,8 @@ return {
       },
       jedi_language_server = {},
       ruby_lsp = {
+        mason = false,
+        cmd = { vim.fn.expand('~/.local/share/mise/shims/ruby-lsp') },
         init_options = {
           formatter = 'standard',
           linters = { 'standard' },

@@ -1,14 +1,6 @@
 -- snacks.nvim (https://github.com/folke/snacks.nvim)
 --  🍿 A collection of QoL plugins for Neovim
 
-local function refresh_gitsigns()
-  local plugins = require('lazy.core.config').plugins
-  if plugins['gitsigns.nvim'] ~= nil and plugins['gitsigns.nvim']._.loaded ~= nil then
-    -- ensure that Gitsigns refreshes with new state after closing Lazygit
-    require('gitsigns').refresh()
-  end
-end
-
 return {
   'folke/snacks.nvim',
   priority = 1000,
@@ -18,24 +10,6 @@ return {
     { '<leader>fn', function() Snacks.dashboard.open() end, desc = 'Dashboard', silent = true },
     { '<leader>fn', function() Snacks.notifier.show_history() end, desc = 'Notification History', silent = true },
     { '<leader>dn', function() Snacks.notifier.hide() end, desc = 'Dismiss All Notifications', silent = true },
-    {
-      '<leader>tg',
-      function()
-        Snacks.lazygit.open()
-
-        refresh_gitsigns()
-      end,
-      desc = 'Open LazyGit', silent = true
-    },
-    {
-      '<leader>tC',
-      function()
-        Snacks.lazygit.log_file()
-
-        refresh_gitsigns()
-      end,
-      desc = 'Open LazyGit for current file', silent = true
-    },
     { '<leader>tn', function() Snacks.terminal() end, desc = 'Open terminal', silent = true }
   },
   init = function()

@@ -35,6 +35,7 @@ return {
       split = {
         win_options = {
           relativenumber = false,
+          cursorline = false,
         },
       },
     }

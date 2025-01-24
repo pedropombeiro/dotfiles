@@ -7,10 +7,16 @@ return {
   lazy = false,
   keys = {
     { '<leader>bd', function() Snacks.bufdelete() end, desc = 'Close buffer', silent = true },
+
     { '<leader>fn', function() Snacks.dashboard.open() end, desc = 'Dashboard', silent = true },
+
     { '<leader>fn', function() Snacks.notifier.show_history() end, desc = 'Notification History', silent = true },
     { '<leader>dn', function() Snacks.notifier.hide() end, desc = 'Dismiss All Notifications', silent = true },
-    { '<leader>tn', function() Snacks.terminal() end, desc = 'Open terminal', silent = true }
+
+    { '<leader>tn', function() Snacks.terminal() end, desc = 'Open terminal', silent = true },
+
+    { '[w', function() Snacks.words.jump(-1, true) end, desc = 'Previous word reference', silent = true },
+    { ']w', function() Snacks.words.jump(1, true) end, desc = 'Next word reference', silent = true },
   },
   init = function()
     require('which-key').add({
@@ -128,6 +134,10 @@ return {
       },
       win = {
         border = 'rounded',
+      },
+      words = {
+        enabled = true,
+        notify_jump = true,
       },
     }
   end,

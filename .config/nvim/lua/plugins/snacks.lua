@@ -107,6 +107,9 @@ return {
       quickfile = {
         enabled = true,
       },
+      scope = {
+        enabled = true,
+      },
       statuscolumn = {
         left = { 'mark', 'fold', 'sign' }, -- priority of signs on the left (high to low)
         right = { 'git' }, -- priority of signs on the right (high to low)
@@ -124,7 +127,7 @@ return {
         enabled = not vim.g.started_by_firenvim,
       },
       win = {
-        border = "rounded",
+        border = 'rounded',
       },
     }
   end,

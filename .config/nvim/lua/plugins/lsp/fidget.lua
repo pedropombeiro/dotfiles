@@ -3,16 +3,10 @@
 
 return {
   'j-hui/fidget.nvim',
-  tag = 'legacy',
   event = 'LspAttach',
   opts = {
-    text = {
-      spinner = 'dots_snake'
+    progress = {
+      ignore = { 'null-ls' },
     },
-    sources = {                -- Sources to configure
-      ['null-ls'] = {          -- Name of source
-        ignore = true,         -- Ignore notifications from this source
-      },
-    },
-  }
+  },
 }

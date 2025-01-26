@@ -15,6 +15,9 @@ return {
 
     { '<leader>tn', function() Snacks.terminal() end, desc = 'Open terminal', silent = true },
 
+    { '<leader>-',  function() Snacks.scratch() end, desc = 'Toggle Scratch Buffer' },
+    { '<leader>S',  function() Snacks.scratch.select() end, desc = 'Select Scratch Buffer' },
+
     { '[w', function() Snacks.words.jump(-1, true) end, desc = 'Previous word reference', silent = true },
     { ']w', function() Snacks.words.jump(1, true) end, desc = 'Next word reference', silent = true },
   },
@@ -114,6 +117,9 @@ return {
         enabled = true,
       },
       scope = {
+        enabled = true,
+      },
+      scratch = {
         enabled = true,
       },
       statuscolumn = {

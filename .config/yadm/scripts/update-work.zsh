@@ -17,6 +17,8 @@ listen_address: 172.16.123.1
 port: 3000
 asdf:
   opt_out: true  # Required to use mise instead
+mise:
+  enabled: true
 clickhouse:
   bin: "/opt/homebrew/bin/clickhouse"
   enabled: true
@@ -30,7 +32,6 @@ gdk:
       - support/exec-cd gitlab bin/spring stop || true
     after:
       - git -C "${GDK_ROOT}/gitlab" restore db/structure.sql
-      - support/exec-cd gitlab mise install
   overwrite_changes: true
 # https:
 #   enabled: true
@@ -75,19 +76,6 @@ rm -f "${GDK_ROOT}/gdk.tmp.yml"
 # Populate lefthook-local.yml
 if [[ -n ${GDK_ROOT} ]]; then
   cat << EOF > ${GDK_ROOT}/lefthook-local.yml
-# For git pulls
-post-merge:
-  follow: true
-  commands:
-    mise-install:
-      run: mise install
-
-# When switching branches
-post-checkout:
-  follow: true
-  commands:
-    mise-install:
-      run: mise install
 EOF
 
   (cd ${GDK_ROOT} && lefthook install)

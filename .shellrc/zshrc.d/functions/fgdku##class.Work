@@ -77,9 +77,10 @@ rm -f /tmp/.need_reset_busylight
   git restore bin/rake bin/rspec bin/rails bin/spring
 
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
-  cd $GDK_ROOT/gitlab
-  gdk update
+  cd $GDK_ROOT
+  mise x ruby -- gdk update
 
+  cd gitlab
   git restore db/structure.sql
   sleep 5
 

@@ -214,11 +214,7 @@ gui:
   # Config relating to the spinner.
   spinner:
     # The frames of the spinner animation.
-    frames:
-      - "|"
-      - /
-      - "-"
-      - \
+    frames: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
 
     # The "speed" of the spinner in milliseconds.
     rate: 50

@@ -12,6 +12,9 @@
 # Enable the sound effects on boot
 sudo nvram StartupMute=%00
 
+# Prevent startup when opening the lid (https://support.apple.com/en-us/120622)
+sudo nvram BootPreference=%01
+
 # Disable 'Wake for network access' and 'Power Nap'
 sudo pmset -a womp 0
 sudo pmset -a powernap 0

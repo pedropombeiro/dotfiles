@@ -75,7 +75,7 @@ local keys = {
     function()
       require('telescope.builtin').symbols { sources = { 'emoji', 'gitmoji' } }
     end,
-    desc = 'Workspace symbols',
+    desc = 'Emojis',
     mode = 'i',
     icon = '󰞅'
   },

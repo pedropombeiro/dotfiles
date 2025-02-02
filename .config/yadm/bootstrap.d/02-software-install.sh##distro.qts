@@ -33,6 +33,7 @@ fi
 if [[ ! -x "${HOME}/.local/share/mise/bin/mise" ]]; then
   curl https://mise.jdx.dev/install.sh | sh
   ln -sf "/share/homes/${USER}/.local" /root/
+  mise use --global --yes cargo-binstall
 fi
 
 mise plugin add https://github.com/comdotlinux/asdf-lazydocker.git

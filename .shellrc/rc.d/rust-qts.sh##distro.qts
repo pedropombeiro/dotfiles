@@ -3,5 +3,5 @@
 TMPDIR="$TEMP"
 export TMPDIR
 
-PATH="$HOME/.cargo/bin:$PATH"
+PATH="$HOME/.cargo/bin:/opt/share/cargo/bin:$PATH"
 export PATH

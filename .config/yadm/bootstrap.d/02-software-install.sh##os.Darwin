@@ -28,3 +28,5 @@ if [[ ! -f ${HOME}/.fzf.zsh ]]; then
   printf "${YELLOW}%s${NC}\n" "Installing FZF scripts"
   $(brew --prefix fzf)/install --no-update-rc --completion --key-bindings
 fi
+
+mise use --global --yes cargo-binstall

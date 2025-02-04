@@ -93,6 +93,7 @@ return {
       define_highlights()
     end
 
+    ---@diagnostic disable-next-line: missing-fields
     require('neotest').setup({
       adapters = {
         require('neotest-go')({
@@ -124,11 +125,6 @@ return {
         failed = icons.tests.failed,
         unknown = icons.tests.unknown,
         ---@diagnostic enable: undefined-field
-      },
-      quickfix = {
-        open = function()
-          vim.cmd('Trouble quickfix')
-        end,
       },
     })
   end,

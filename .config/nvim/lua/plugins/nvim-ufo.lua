@@ -54,16 +54,6 @@ return {
       'kevinhwang91/promise-async',
       'neovim/nvim-lspconfig',
     },
-    event = { 'BufRead', 'BufNewFile' },
-    ft = {
-      'bash',
-      'go',
-      'json',
-      'lua',
-      'markdown',
-      'ruby',
-      'yaml',
-    },
     -- stylua: ignore
     keys = {
       { 'zR', function() require('ufo').openAllFolds() end,  mode = { 'n', 'v' }, desc = 'Open All Folds', },

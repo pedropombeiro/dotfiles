@@ -112,6 +112,7 @@ return {
     defaults = {
       layout_strategy = 'vertical',
       layout_config = {
+        preview_cutoff = 0,
         vertical = { width = 0.7 },
       },
       mappings = {

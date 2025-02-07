@@ -82,7 +82,7 @@ def rebase_all_per_capture_info(local_branch_info_hash)
     auto_generated_files_hash = {
       'app/workers/all_queues.yml' => %w[bundle exec rake gitlab:sidekiq:all_queues_yml:generate],
       'config/sidekiq_queues.yml' => %w[bundle exec rake gitlab:sidekiq:sidekiq_queues_yml:generate],
-      'db/structure.sql' => %w[scripts/regenerate-schema],
+      'db/structure.sql' => %w[bundle exec scripts/regenerate-schema],
       'doc/api/graphql/reference/index.md' => %w[bundle exec rake gitlab:graphql:compile_docs],
       'doc/user/compliance/audit_event_types.md' => %w[bundle exec rake gitlab:audit_event_types:compile_docs],
       'doc/update/deprecations.md' => %w[bundle exec rake gitlab:docs:compile_deprecations],

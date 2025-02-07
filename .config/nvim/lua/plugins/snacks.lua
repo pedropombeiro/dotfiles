@@ -49,6 +49,7 @@ local keys = {
   { '<leader>fgb', function() Snacks.picker.git_branches() end, desc = 'Git branches', icon = '' },
   { '<leader>fgc', function() Snacks.picker.git_log() end, desc = 'Git commits', icon = ''},
   { '<leader>fgC', function() Snacks.picker.git_log_file() end, desc = 'Git commits (buffer)', icon = ''},
+  { '<leader>/', function() Snacks.picker.git_grep() end, desc = 'Git grep', icon = '󰛔' },
   { '<leader>fgg', function() Snacks.picker.git_grep() end, desc = 'Git grep', icon = '󰛔' },
   { '<leader>fgf', function() Snacks.picker.git_files() end, desc = 'Git files', icon = '' },
   { '<leader>fgS', function() Snacks.picker.git_stash() end, desc = 'Git stash' },
@@ -113,7 +114,7 @@ return {
             { icon = ' ', key = 'f', desc = 'Find File', action = ":lua Snacks.dashboard.pick('files')" },
             { icon = ' ', key = 'n', desc = 'New File', action = ':ene | startinsert' },
             { icon = ' ', key = 'g', desc = 'Find Text', action = ":lua Snacks.dashboard.pick('live_grep')" },
-            { icon = ' ', key = '<leader>fgg', desc = 'Git Grep', action = ':lua Snacks.picker.git_grep()' },
+            { icon = ' ', key = '<leader>/', desc = 'Git Grep', action = ':lua Snacks.picker.git_grep()' },
             { icon = ' ', key = 'r', desc = 'Recent Files', action = ":lua Snacks.dashboard.pick('oldfiles')" },
             {
               icon = ' ',

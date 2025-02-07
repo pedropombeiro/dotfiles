@@ -29,7 +29,7 @@ local keys = {
 }
 
 return {
-  'junnplus/lsp-setup.nvim',
+  'neovim/nvim-lspconfig', -- Quickstart configs for Nvim LSP
   event = { 'BufReadPre', 'BufNewFile' },
   keys = keys,
   dependencies = {
@@ -37,23 +37,9 @@ return {
       'b0o/SchemaStore.nvim', -- 🛍  JSON schemas for Neovim
       version = false, -- last release is way too old
     },
+    { 'saghen/blink.cmp' },
     {
-      'neovim/nvim-lspconfig', -- Quickstart configs for Nvim LSP
-      dependencies = {
-        'hrsh7th/cmp-nvim-lsp', -- nvim-cmp source for neovim builtin LSP client
-        {
-          --- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
-          --- to use to launch those servers.
-          'williamboman/mason-lspconfig.nvim',
-          enabled = function()
-            return vim.fn.has('mac') == 1
-          end,
-          dependencies = 'williamboman/mason.nvim',
-        },
-      },
-    },
-    {
-      --- Uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
+      --- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
       --- to use to launch those servers.
       'williamboman/mason-lspconfig.nvim',
       enabled = function()
@@ -78,14 +64,7 @@ return {
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
     end
   end,
-  config = function()
-    --if !has_key(plugs, "trouble.nvim")
-    --  nnoremap <silent> <leader>gd :lua vim.lsp.buf.definition()<CR>
-    --  nnoremap <silent> <C-]> :lua vim.lsp.buf.definition()<CR>
-    --  nnoremap <silent> <leader>gr :lua vim.lsp.buf.references()<CR>
-    --  nnoremap <silent> <leader>xq :lua vim.diagnostic.setloclist()<CR>
-    --endif
-
+  opts = function()
     if vim.fn.has('mac') ~= 1 then
       vim.env.DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = 1 -- Needed for marksman LSP on systems missing ICU libraries
     end
@@ -267,18 +246,32 @@ return {
       lspconfig.homeassistant.setup({})
     end
 
+    return {
+      servers = servers,
+    }
+  end,
+  config = function(_, opts)
+    --if !has_key(plugs, "trouble.nvim")
+    --  nnoremap <silent> <leader>gd :lua vim.lsp.buf.definition()<CR>
+    --  nnoremap <silent> <C-]> :lua vim.lsp.buf.definition()<CR>
+    --  nnoremap <silent> <leader>gr :lua vim.lsp.buf.references()<CR>
+    --  nnoremap <silent> <leader>xq :lua vim.diagnostic.setloclist()<CR>
+    --endif
+
+    local lspconfig = require('lspconfig')
     local border = require('config').ui.border
 
     require('lspconfig.ui.windows').default_options.border = border
-    require('lsp-setup').setup({
-      default_mappings = false,
-      inlay_hints = {
-        enabled = true,
-      },
-      -- Global capabilities
-      capabilities = vim.lsp.protocol.make_client_capabilities(),
-      servers = servers,
-    })
+
+    local isBlinkLoaded = package.loaded['blink.cmp'] ~= nil
+    if isBlinkLoaded then
+      for server, config in pairs(opts.servers) do
+        -- passing config.capabilities to blink.cmp merges with the capabilities in your
+        -- `opts[server].capabilities, if you've defined it
+        config.capabilities = require('blink.cmp').get_lsp_capabilities(config.capabilities)
+        lspconfig[server].setup(config)
+      end
+    end
 
     -- Show diagnostic source in float (e.g. goto_next, goto_prev)
     vim.diagnostic.config({

@@ -11,6 +11,11 @@ local on_attach = function(bufnr)
     return false
   end
 
+  local is_git_repo = vim.fn.systemlist('git', { 'rev-parse', '--is-inside-work-tree' })[1] == 'true'
+  if not is_git_repo then
+    return false
+  end
+
   local gs = package.loaded.gitsigns
   local wk = require('which-key')
 

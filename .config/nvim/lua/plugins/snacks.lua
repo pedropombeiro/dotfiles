@@ -1,30 +1,85 @@
 -- snacks.nvim (https://github.com/folke/snacks.nvim)
 --  🍿 A collection of QoL plugins for Neovim
 
+---@format disable-next
+-- stylua: ignore
+local keys = {
+  { '<leader>b', group = 'Bclose' },
+  { '<leader>bd', function() Snacks.bufdelete() end, desc = 'Close buffer', silent = true },
+
+  { '<leader>fn', function() Snacks.dashboard.open() end, desc = 'Dashboard', silent = true },
+
+  { '<leader>fn', function() Snacks.notifier.show_history() end, desc = 'Notification History', silent = true },
+  { '<leader>dn', function() Snacks.notifier.hide() end, desc = 'Dismiss All Notifications', silent = true },
+
+  { '<leader>tn', function() Snacks.terminal() end, desc = 'Open terminal', silent = true },
+
+  { '<leader>-', function() Snacks.scratch() end, desc = 'Toggle Scratch Buffer' },
+  { '<leader>S', function() Snacks.scratch.select() end, desc = 'Select Scratch Buffer' },
+
+  { '[w', function() Snacks.words.jump(-1, true) end, desc = 'Previous word reference', silent = true },
+  { ']w', function() Snacks.words.jump(1, true) end, desc = 'Next word reference', silent = true },
+
+  -- File operations
+  { '<leader>f', group = 'Picker' },
+  { '<leader>ff', function() Snacks.picker.files() end, desc = 'Files', icon = '' },
+  { '<leader>fr', function() Snacks.picker.grep() end, desc = 'Live grep (rg)', icon = '' },
+  { '<leader>fF', function() Snacks.picker.resume() end, desc = 'Resume last finder query' },
+  { '<leader><Tab>', function() Snacks.picker.keymaps() end, desc = 'Keymaps', icon = '' },
+  { '<leader>fb', function() Snacks.picker.buffers() end, desc = 'Buffers' },
+  { '<leader>fH', function() Snacks.picker.highlights() end, desc = 'Highlight groups' },
+  { '<leader>fK', function() Snacks.picker.man() end, desc = 'Man pages', icon = '' },
+  { '<leader>fl', function() Snacks.picker.loclist() end, desc = 'Location list', icon = '' },
+  { '<leader>fq', function() Snacks.picker.qflist() end, desc = 'Quickfix list', icon = '' },
+  -- { '<leader>fT',    '<Cmd>Telescope filetypes<CR>',       desc = 'Filetypes' },
+  { '<leader>fh', function() Snacks.picker.recent() end, desc = 'Old files', },
+  { '<leader>f:', function() Snacks.picker.command_history() end, desc = 'Command history', icon = '' },
+  { '<leader>f/', function() Snacks.picker.search_history() end, desc = 'Search history', icon = '󱝩' },
+  { '<leader>fd', function() Snacks.picker.diagnostics() end, desc = 'Diagnostics', icon = require('config').ui.icons.diagnostics.warning },
+  { '<leader>f`', function() Snacks.picker.marks() end, desc = 'Marks', icon = '' },
+  { "<leader>f'", function() Snacks.picker.marks() end, desc = 'Marks', icon = '' },
+  { '<leader>f.', function() Snacks.picker.jumps() end, desc = 'Jump list', icon = '' },
+  { '<leader>f"', function() Snacks.picker.registers() end, desc = 'Registers', },
+  -- { '<leader>fO',    '<Cmd>Telescope vim_options<CR>',     desc = 'Vim options' },
+  { '<leader>fs', function() Snacks.picker.spelling() end, desc = 'Spelling suggestions', icon = '󱣩' },
+  { '<leader>fp', function() Snacks.picker.lazy() end, desc = 'Plugins', icon = '' },
+
+  -- Git operations
+  { '<leader>fg', group = 'Finder (Git)' },
+  { '<leader>fgb', function() Snacks.picker.git_branches() end, desc = 'Git branches', icon = '' },
+  { '<leader>fgc', function() Snacks.picker.git_log() end, desc = 'Git commits', icon = ''},
+  { '<leader>fgC', function() Snacks.picker.git_log_file() end, desc = 'Git commits (buffer)', icon = ''},
+  { '<leader>fgg', function() Snacks.picker.git_grep() end, desc = 'Git grep', icon = '󰛔' },
+  { '<leader>fgf', function() Snacks.picker.git_files() end, desc = 'Git files', icon = '' },
+  { '<leader>fgS', function() Snacks.picker.git_stash() end, desc = 'Git stash' },
+  { '<leader>fgs', function() Snacks.picker.git_status() end, desc = 'Git status', icon = '󱖫' },
+  -- LSP operations
+  { '<leader>l', group = 'Finder (LSP)' },
+  { '<leader>ls', function() Snacks.picker.lsp_symbols() end, desc = 'Document symbols', },
+  { '<leader>lr', function() Snacks.picker.lsp_references() end, nowait = true, desc = 'References' },
+  { '<leader>ld', function() Snacks.picker.lsp_definitions() end, desc = 'Definitions' },
+  { '<C-]>', function() Snacks.picker.lsp_definitions() end, desc = 'Definitions' },
+  { '<leader>lt', function() Snacks.picker.lsp_type_definitions() end, desc = 'Typedefs' },
+  { '<leader>lw', group = 'Workspace' },
+  { '<leader>lws', function() Snacks.picker.lsp_symbols({ workspace = true }) end, desc = 'Workspace symbols' },
+  -- { "<leader>lca", "<Cmd>FzfLua lsp_code_actions<CR>",           desc = "Code actions" },
+
+  { '<C-e>', function() Snacks.picker.icons() end, desc = 'Emojis', mode = 'i', icon = '' },
+}
+
 return {
   'folke/snacks.nvim',
   priority = 1000,
   lazy = false,
-  keys = {
-    { '<leader>bd', function() Snacks.bufdelete() end, desc = 'Close buffer', silent = true },
-
-    { '<leader>fn', function() Snacks.dashboard.open() end, desc = 'Dashboard', silent = true },
-
-    { '<leader>fn', function() Snacks.notifier.show_history() end, desc = 'Notification History', silent = true },
-    { '<leader>dn', function() Snacks.notifier.hide() end, desc = 'Dismiss All Notifications', silent = true },
-
-    { '<leader>tn', function() Snacks.terminal() end, desc = 'Open terminal', silent = true },
-
-    { '<leader>-',  function() Snacks.scratch() end, desc = 'Toggle Scratch Buffer' },
-    { '<leader>S',  function() Snacks.scratch.select() end, desc = 'Select Scratch Buffer' },
-
-    { '[w', function() Snacks.words.jump(-1, true) end, desc = 'Previous word reference', silent = true },
-    { ']w', function() Snacks.words.jump(1, true) end, desc = 'Next word reference', silent = true },
-  },
   init = function()
-    require('which-key').add({
-      { '<leader>b', group = 'Bclose' },
-    })
+    require('which-key').add(keys)
+
+    local config = require('config')
+    local function set_hl(name, attr)
+      vim.api.nvim_set_hl(0, name, attr)
+    end
+
+    set_hl('SnacksPickerInputBorder', { bg = config.theme.colors.dark0, fg = config.theme.colors.orange })
   end,
   opts = function()
     local config = require('config')
@@ -41,7 +96,10 @@ return {
         enabled = not vim.g.started_by_firenvim,
         preset = {
           header = [[
-      ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗ ]] .. vim_version() .. '\n' .. [[
+      ███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗ ]]
+            .. vim_version()
+            .. '\n'
+            .. [[
 ████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
 ██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
 ██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║
@@ -55,7 +113,7 @@ return {
             { icon = ' ', key = 'f', desc = 'Find File', action = ":lua Snacks.dashboard.pick('files')" },
             { icon = ' ', key = 'n', desc = 'New File', action = ':ene | startinsert' },
             { icon = ' ', key = 'g', desc = 'Find Text', action = ":lua Snacks.dashboard.pick('live_grep')" },
-            { icon = ' ', key = '<leader>fgg', desc = 'Git Grep', action = ":lua require('git_grep').live_grep()" },
+            { icon = ' ', key = '<leader>fgg', desc = 'Git Grep', action = ':lua Snacks.picker.git_grep()' },
             { icon = ' ', key = 'r', desc = 'Recent Files', action = ":lua Snacks.dashboard.pick('oldfiles')" },
             {
               icon = ' ',
@@ -115,6 +173,35 @@ return {
       },
       quickfile = {
         enabled = true,
+      },
+      picker = {
+        layout = {
+          cycle = true,
+          reverse = true,
+          layout = {
+            box = 'vertical',
+            backdrop = false,
+            width = 0.7,
+            height = 0.8,
+            border = 'none',
+            {
+              win = 'preview',
+              title = '{preview:Preview}',
+              border = 'rounded',
+              title_pos = 'center',
+            },
+            {
+              box = 'vertical',
+              { win = 'list', title = ' Results ', title_pos = 'center', border = 'rounded' },
+              { win = 'input', height = 1, border = 'rounded', title = '{title} {live} {flags}', title_pos = 'center' },
+            },
+          },
+        },
+        sources = {
+          explorer = {
+            git_untracked = false,
+          },
+        },
       },
       scope = {
         enabled = true,

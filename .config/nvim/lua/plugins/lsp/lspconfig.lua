@@ -248,6 +248,7 @@ return {
 
     return {
       servers = servers,
+      inlay_hints = { enabled = true },
     }
   end,
   config = function(_, opts)

@@ -2,10 +2,6 @@
 --  Performant, batteries-included completion plugin for Neovim.
 
 return {
-  {
-    'xzbdmw/colorful-menu.nvim', -- https://github.com/xzbdmw/colorful-menu.nvim
-    lazy = true,
-  },
   -- auto completion
   {
     'saghen/blink.cmp',
@@ -17,10 +13,10 @@ return {
     -- use a release tag to download pre-built binaries
     version = '*',
 
-    event = { 'InsertEnter', 'CmdlineEnter' },
+    event = 'InsertEnter',
 
     cond = function()
-      if vim.fn.has('unix') == 1 then  -- Check if it's a Unix-like system (Linux, macOS, etc.)
+      if vim.fn.has('unix') == 1 then -- Check if it's a Unix-like system (Linux, macOS, etc.)
         local uname_output = vim.fn.system('uname -a')
         if uname_output then
           return not string.find(string.lower(uname_output), 'qnap')
@@ -50,6 +46,12 @@ return {
       },
 
       completion = {
+        accept = {
+          -- experimental auto-brackets support
+          auto_brackets = {
+            enabled = true,
+          },
+        },
         documentation = {
           auto_show = true,
           auto_show_delay_ms = 500,
@@ -57,19 +59,7 @@ return {
         ghost_text = { enabled = true },
         menu = {
           draw = {
-            -- We don't need label_description now because label and label_description are already
-            -- combined together in label by colorful-menu.nvim.
-            columns = { { 'kind_icon' }, { 'label', gap = 1 } },
-            components = {
-              label = {
-                text = function(ctx)
-                  return require('colorful-menu').blink_components_text(ctx)
-                end,
-                highlight = function(ctx)
-                  return require('colorful-menu').blink_components_highlight(ctx)
-                end,
-              },
-            },
+            treesitter = { 'lsp' },
           },
         },
       },

@@ -20,19 +20,14 @@ return {
     event = { 'InsertEnter', 'CmdlineEnter' },
 
     cond = function()
-      local is_qnap = false
-
       if vim.fn.has('unix') == 1 then  -- Check if it's a Unix-like system (Linux, macOS, etc.)
-        local uname_output = vim.fn.system('uname -m') -- Get the machine architecture
+        local uname_output = vim.fn.system('uname -a')
         if uname_output then
-          uname_output = string.lower(uname_output) -- Convert to lowercase for easier comparison
-          if string.find(uname_output, 'x86_64') or string.find(uname_output, 'amd64') then -- Check for common x64 identifiers
-            is_qnap = true
-          end
+          return not string.find(string.lower(uname_output), 'qnap')
         end
       end
 
-      return not is_qnap
+      return true
     end,
     ---@module 'blink.cmp'
     ---@diagnostic disable-next-line: undefined-doc-name

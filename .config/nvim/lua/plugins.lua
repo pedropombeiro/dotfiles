@@ -167,7 +167,33 @@ return {
   {
     "ruifm/gitlinker.nvim",
     dependencies = "nvim-lua/plenary.nvim",
-    event = { "BufReadPre", "BufNewFile" },
-    opts = {},
+    keys = {
+      {
+        "<leader>gy",
+        function()
+          require("gitlinker").get_buf_range_url(
+            "n",
+            { action_callback = require("gitlinker.actions").open_in_browser }
+          )
+        end,
+        mode = "n",
+        desc = "Yank Git URL",
+        silent = true,
+      },
+      {
+        "<leader>gy",
+        function()
+          require("gitlinker").get_buf_range_url(
+            "v",
+            { action_callback = require("gitlinker.actions").open_in_browser }
+          )
+        end,
+        mode = "v",
+        desc = "Yank Git URL",
+      },
+    },
+    opts = {
+      mappings = nil,
+    },
   },
 }

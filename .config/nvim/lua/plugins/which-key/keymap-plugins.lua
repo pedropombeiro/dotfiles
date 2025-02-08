@@ -6,9 +6,6 @@ require("which-key").add({
   -- folke/persistence.nvim
   { "<leader>q", group = "Session management" },
 
-  -- ruifm/gitlinker.nvim
-  { "<leader>gy", mode = { "n", "v" }, desc = "Yank Git URL" },
-
   -- Lazy.nvim
   { "<leader>p", group = "Package Manager", icon = "" },
   { "<leader>ps", function() require("lazy").home() end, desc = "Status", icon = "󱖫" },

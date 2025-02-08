@@ -78,5 +78,10 @@ return {
       },
     },
     opts_extend = { 'sources.default' },
+    config = function(_, opts)
+      Set_hl('BlinkCmpGhostText', { link = 'LspInlayHint' })
+
+      require('blink-cmp').setup(opts)
+    end,
   },
 }

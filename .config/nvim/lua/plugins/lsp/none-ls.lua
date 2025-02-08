@@ -2,15 +2,13 @@
 --  Use Neovim as a language server to inject LSP diagnostics, code actions, and more via Lua.
 
 return {
-  'nvimtools/none-ls.nvim',
-  event = { 'BufReadPost', 'BufNewFile', 'BufWritePre' },
-  dependencies = { 'mason.nvim', 'nvim-lua/plenary.nvim' },
+  "nvimtools/none-ls.nvim",
+  event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+  dependencies = { "mason.nvim", "nvim-lua/plenary.nvim" },
   optional = true,
   opts = function()
-    local null_ls_status_ok, null_ls = pcall(require, 'null-ls')
-    if not null_ls_status_ok then
-      return
-    end
+    local null_ls_status_ok, null_ls = pcall(require, "null-ls")
+    if not null_ls_status_ok then return end
 
     -- stylua: ignore start
     local builtins     = null_ls.builtins
@@ -26,7 +24,7 @@ return {
       code_actions.gitsigns, -- Injects code actions for Git operations at the current cursor position (stage / preview / reset hunks, blame, etc.).
 
       completion.spell.with({
-        filetypes = { 'json', 'yaml', 'markdown' },
+        filetypes = { "json", "yaml", "markdown" },
       }),
 
       diagnostics.checkmake, -- make linter
@@ -34,7 +32,7 @@ return {
       diagnostics.golangci_lint, -- A Go linter aggregator
       diagnostics.hadolint, -- A smarter Dockerfile linter that helps you build best practice Docker images
       diagnostics.mypy.with({
-        filetypes = { 'python' },
+        filetypes = { "python" },
       }),
       --diagnostics.semgrep,
       diagnostics.vale,
@@ -42,9 +40,7 @@ return {
 
       hover.dictionary, -- Shows the first available definition for the current word under the cursor
     }
-    if vim.fn.executable('yamllint') == 1 then
-      table.insert(sources, diagnostics.yamllint)
-    end
+    if vim.fn.executable("yamllint") == 1 then table.insert(sources, diagnostics.yamllint) end
 
     return { sources = sources }
   end,

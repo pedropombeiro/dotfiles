@@ -2,11 +2,11 @@
 --   Standalone UI for nvim-lsp progress
 
 return {
-  'j-hui/fidget.nvim',
-  event = 'LspAttach',
+  "j-hui/fidget.nvim",
+  event = "LspAttach",
   opts = {
     progress = {
-      ignore = { 'null-ls' },
+      ignore = { "null-ls" },
     },
   },
 }

@@ -3,57 +3,57 @@
 
 return {
   {
-    'nvim-treesitter/nvim-treesitter-context', -- Show code context
-    event = { 'BufReadPost', 'BufNewFile', 'BufWritePre' },
-    module = 'treesitter-context',
+    "nvim-treesitter/nvim-treesitter-context", -- Show code context
+    event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+    module = "treesitter-context",
     init = function()
       ---@diagnostic disable-next-line: undefined-field
-      local colors = require('config').theme.colors
+      local colors = require("config").theme.colors
 
-      Set_hl('TreesitterContextBottom', { underline = true, sp = colors.bg0_s })
+      Set_hl("TreesitterContextBottom", { underline = true, sp = colors.bg0_s })
     end,
   },
 
   {
-    'windwp/nvim-ts-autotag', -- Automatically add closing tags for HTML and JSX
-    event = { 'BufReadPre', 'BufNewFile' },
+    "windwp/nvim-ts-autotag", -- Automatically add closing tags for HTML and JSX
+    event = { "BufReadPre", "BufNewFile" },
     opts = {},
   },
 
   {
-    'andymass/vim-matchup',
+    "andymass/vim-matchup",
     lazy = true, -- we let treesitter manage this
     init = function()
       vim.g.matchup_matchparen_deferred = 1
-      vim.g.matchup_matchparen_offscreen = { method = 'popup' }
+      vim.g.matchup_matchparen_offscreen = { method = "popup" }
     end,
   },
 
   {
-    'nvim-treesitter/nvim-treesitter',
+    "nvim-treesitter/nvim-treesitter",
     version = false, -- last release is way too old and doesn't work on Windows
     build = function()
-      local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
+      local ts_update = require("nvim-treesitter.install").update({ with_sync = true })
       ts_update()
     end,
-    event = { 'BufReadPost', 'BufNewFile', 'BufWritePre' },
+    event = { "BufReadPost", "BufNewFile", "BufWritePre" },
     lazy = vim.fn.argc(-1) == 0, -- load treesitter early when opening a file from the cmdline
     dependencies = {
       {
-        'nvim-treesitter/nvim-treesitter-textobjects',
+        "nvim-treesitter/nvim-treesitter-textobjects",
         config = function()
           -- When in diff mode, we want to use the default
           -- vim text objects c & C instead of the treesitter ones.
-          local move = require('nvim-treesitter.textobjects.move') ---@type table<string,fun(...)>
-          local configs = require('nvim-treesitter.configs')
+          local move = require("nvim-treesitter.textobjects.move") ---@type table<string,fun(...)>
+          local configs = require("nvim-treesitter.configs")
           for name, fn in pairs(move) do
-            if name:find('goto') == 1 then
+            if name:find("goto") == 1 then
               move[name] = function(q, ...)
                 if vim.wo.diff then
-                  local config = configs.get_module('textobjects.move')[name] ---@type table<string,string>
+                  local config = configs.get_module("textobjects.move")[name] ---@type table<string,string>
                   for key, query in pairs(config or {}) do
-                    if q == query and key:find('[%]%[][cC]') then
-                      vim.cmd('normal! ' .. key)
+                    if q == query and key:find("[%]%[][cC]") then
+                      vim.cmd("normal! " .. key)
                       return
                     end
                   end
@@ -64,28 +64,28 @@ return {
           end
         end,
       },
-      'RRethy/nvim-treesitter-endwise', --- Wisely add 'end' in Ruby, Vimscript, Lua, etc.
+      "RRethy/nvim-treesitter-endwise", --- Wisely add 'end' in Ruby, Vimscript, Lua, etc.
       {
-        'HiPhish/rainbow-delimiters.nvim', -- Rainbow delimiters for Neovim with Tree-sitter
-        main = 'rainbow-delimiters.setup',
+        "HiPhish/rainbow-delimiters.nvim", -- Rainbow delimiters for Neovim with Tree-sitter
+        main = "rainbow-delimiters.setup",
         opts = function()
           return {
             strategy = {
-              [''] = require('rainbow-delimiters').strategy['global'],
-              vim = require('rainbow-delimiters').strategy['local'],
+              [""] = require("rainbow-delimiters").strategy["global"],
+              vim = require("rainbow-delimiters").strategy["local"],
             },
             query = {
-              [''] = 'rainbow-delimiters',
-              lua = 'rainbow-blocks',
+              [""] = "rainbow-delimiters",
+              lua = "rainbow-blocks",
             },
             highlight = {
-              'MiniIconsRed',
-              'MiniIconsYellow',
-              'MiniIconsBlue',
-              'MiniIconsOrange',
-              'MiniIconsGreen',
-              'MiniIconsPurple',
-              'MiniIconsCyan',
+              "MiniIconsRed",
+              "MiniIconsYellow",
+              "MiniIconsBlue",
+              "MiniIconsOrange",
+              "MiniIconsGreen",
+              "MiniIconsPurple",
+              "MiniIconsCyan",
             },
           }
         end,
@@ -97,45 +97,45 @@ return {
       -- no longer trigger the **nvim-treesitter** module to be loaded in time.
       -- Luckily, the only things that those plugins need are the custom queries, which we make available
       -- during startup.
-      require('lazy.core.loader').add_to_rtp(plugin)
-      require('nvim-treesitter.query_predicates')
+      require("lazy.core.loader").add_to_rtp(plugin)
+      require("nvim-treesitter.query_predicates")
     end,
-    cmd = { 'TSUpdateSync', 'TSUpdate', 'TSInstall' },
+    cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
     keys = {
-      { '<TAB>', desc = 'Increment Selection' },
-      { '<S-TAB>', desc = 'Decrement Selection', mode = 'x' },
+      { "<TAB>", desc = "Increment Selection" },
+      { "<S-TAB>", desc = "Decrement Selection", mode = "x" },
     },
-    main = 'nvim-treesitter.configs',
+    main = "nvim-treesitter.configs",
     opts = {
       -- A list of parser names, or "all"
       ensure_installed = {
-        'bash',
-        'diff',
-        'dockerfile',
-        'embedded_template',
-        'git_config',
-        'git_rebase',
-        'gitcommit',
-        'gitignore',
-        'go',
-        'gomod',
-        'graphql',
-        'html',
-        'json',
-        'lua',
-        'make',
-        'markdown',
-        'markdown_inline',
-        'python',
-        'regex',
-        'ruby',
-        'sql',
-        'ssh_config',
-        'toml',
-        'tmux',
-        'vim',
-        'vimdoc',
-        'yaml',
+        "bash",
+        "diff",
+        "dockerfile",
+        "embedded_template",
+        "git_config",
+        "git_rebase",
+        "gitcommit",
+        "gitignore",
+        "go",
+        "gomod",
+        "graphql",
+        "html",
+        "json",
+        "lua",
+        "make",
+        "markdown",
+        "markdown_inline",
+        "python",
+        "regex",
+        "ruby",
+        "sql",
+        "ssh_config",
+        "toml",
+        "tmux",
+        "vim",
+        "vimdoc",
+        "yaml",
       },
       -- Install parsers synchronously (only applied to `ensure_installed`)
       sync_install = false,
@@ -144,7 +144,7 @@ return {
       auto_install = true,
       -- List of parsers to ignore installing (for "all")
       ignore_install = {
-        'java',
+        "java",
       },
       endwise = {
         enable = true,
@@ -161,17 +161,17 @@ return {
         -- Instead of true it can also be a list of languages
         additional_vim_regex_highlighting = false,
         disable = function(lang, bufnr) -- Disable in large buffers
-          return lang == 'just' or vim.api.nvim_buf_line_count(bufnr) > 5000
+          return lang == "just" or vim.api.nvim_buf_line_count(bufnr) > 5000
         end,
       },
-      indent = { enable = true, disable = { 'eruby', 'html', 'python', 'css', 'rust' } },
+      indent = { enable = true, disable = { "eruby", "html", "python", "css", "rust" } },
       incremental_selection = {
         enable = true,
         keymaps = {
-          init_selection = '<CR>',
-          scope_incremental = '<CR>',
-          node_incremental = '<TAB>',
-          node_decremental = '<S-TAB>',
+          init_selection = "<CR>",
+          scope_incremental = "<CR>",
+          node_incremental = "<TAB>",
+          node_decremental = "<S-TAB>",
         },
       },
       textobjects = {
@@ -181,39 +181,39 @@ return {
           lookahead = true,
           keymaps = {
             -- You can use the capture groups defined in textobjects.scm
-            ['af'] = '@function.outer',
-            ['if'] = '@function.inner',
-            ['ac'] = '@class.outer',
-            ['ic'] = '@class.inner',
+            ["af"] = "@function.outer",
+            ["if"] = "@function.inner",
+            ["ac"] = "@class.outer",
+            ["ic"] = "@class.inner",
           },
         },
         move = {
           enable = true,
           set_jumps = true,
           goto_next_start = {
-            [']m'] = '@function.outer',
-            [']]'] = { query = '@class.outer', desc = 'Next class start' },
+            ["]m"] = "@function.outer",
+            ["]]"] = { query = "@class.outer", desc = "Next class start" },
           },
           goto_next_end = {
-            [']M'] = '@function.outer',
-            [']['] = '@class.outer',
+            ["]M"] = "@function.outer",
+            ["]["] = "@class.outer",
           },
           goto_previous_start = {
-            ['[m'] = '@function.outer',
-            ['[['] = '@class.outer',
+            ["[m"] = "@function.outer",
+            ["[["] = "@class.outer",
           },
           goto_previous_end = {
-            ['[M'] = '@function.outer',
-            ['[]'] = '@class.outer',
+            ["[M"] = "@function.outer",
+            ["[]"] = "@class.outer",
           },
         },
         swap = {
           enable = true,
           swap_next = {
-            ['<leader>.'] = '@parameter.inner',
+            ["<leader>."] = "@parameter.inner",
           },
           swap_previous = {
-            ['<leader>,'] = '@parameter.inner',
+            ["<leader>,"] = "@parameter.inner",
           },
         },
       },

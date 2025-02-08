@@ -2,7 +2,7 @@
 --  A vim extension to fugitive.vim for GitLab support
 
 return {
-  'shumphrey/fugitive-gitlab.vim',
-  cmd = 'GBrowse',
-  dependencies = 'tpope/vim-fugitive',
+  "shumphrey/fugitive-gitlab.vim",
+  cmd = "GBrowse",
+  dependencies = "tpope/vim-fugitive",
 }

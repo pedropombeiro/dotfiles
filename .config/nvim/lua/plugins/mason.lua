@@ -4,20 +4,20 @@
 
 return {
   {
-    'williamboman/mason.nvim',
-    cmd = { 'Mason', 'MasonLog', 'MasonUpdate', 'MasonInstall', 'MasonUninstall', 'MasonUninstallAll' },
-    build = ':MasonUpdate', -- :MasonUpdate updates registry contents
+    "williamboman/mason.nvim",
+    cmd = { "Mason", "MasonLog", "MasonUpdate", "MasonInstall", "MasonUninstall", "MasonUninstallAll" },
+    build = ":MasonUpdate", -- :MasonUpdate updates registry contents
     opts = function()
       return {
         ui = {
-          border = require('config').ui.border,
+          border = require("config").ui.border,
           icons = {
             -- The list icon to use for installed packages.
-            package_installed = '●',
+            package_installed = "●",
             -- The list icon to use for packages that are installing, or queued for installation.
-            package_pending = '◍',
+            package_pending = "◍",
             -- The list icon to use for packages that are not installed.
-            package_uninstalled = '○',
+            package_uninstalled = "○",
           },
         },
       }

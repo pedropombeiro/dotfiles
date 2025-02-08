@@ -2,23 +2,23 @@
 --  Plugin to open LazyDocker without quiting neovim.
 
 return {
-  'crnvl96/lazydocker.nvim',
+  "crnvl96/lazydocker.nvim",
   lazy = true,
-  dependencies = { 'MunifTanjim/nui.nvim' },
+  dependencies = { "MunifTanjim/nui.nvim" },
   opts = {},
   init = function()
-    require('which-key').add({
+    require("which-key").add({
       {
-        '<leader>td',
+        "<leader>td",
         function()
-          if vim.api.nvim_buf_get_name(0) ~= '' then -- Check if there's at least one buffer
-            vim.api.nvim_exec2('cd %:h', { output = false }) -- switch to current directory so that Lazydocker filters containers from current stack
+          if vim.api.nvim_buf_get_name(0) ~= "" then -- Check if there's at least one buffer
+            vim.api.nvim_exec2("cd %:h", { output = false }) -- switch to current directory so that Lazydocker filters containers from current stack
           end
 
-          require('lazydocker').toggle()
+          require("lazydocker").toggle()
         end,
-        desc = 'Open LazyDocker',
-        icon = '',
+        desc = "Open LazyDocker",
+        icon = "",
       },
     })
   end,

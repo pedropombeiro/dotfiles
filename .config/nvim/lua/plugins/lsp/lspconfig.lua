@@ -29,48 +29,46 @@ local keys = {
 }
 
 return {
-  'neovim/nvim-lspconfig', -- Quickstart configs for Nvim LSP
-  event = { 'BufReadPre', 'BufNewFile' },
+  "neovim/nvim-lspconfig", -- Quickstart configs for Nvim LSP
+  event = { "BufReadPre", "BufNewFile" },
   keys = keys,
   dependencies = {
     {
-      'b0o/SchemaStore.nvim', -- 🛍  JSON schemas for Neovim
+      "b0o/SchemaStore.nvim", -- 🛍  JSON schemas for Neovim
       version = false, -- last release is way too old
     },
-    { 'saghen/blink.cmp' },
+    { "saghen/blink.cmp" },
     {
       --- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
       --- to use to launch those servers.
-      'williamboman/mason-lspconfig.nvim',
-      enabled = function()
-        return vim.fn.has('mac') == 1
-      end,
-      dependencies = 'williamboman/mason.nvim',
+      "williamboman/mason-lspconfig.nvim",
+      enabled = function() return vim.fn.has("mac") == 1 end,
+      dependencies = "williamboman/mason.nvim",
     },
   },
   init = function()
-    local icons = require('config').ui.icons.diagnostics
+    local icons = require("config").ui.icons.diagnostics
 
     local signs = {
       ---@diagnostic disable: undefined-field
-      Error = icons.error .. ' ',
-      Warn = icons.warning .. ' ',
-      Hint = icons.hint .. ' ',
-      Info = icons.info .. ' ',
+      Error = icons.error .. " ",
+      Warn = icons.warning .. " ",
+      Hint = icons.hint .. " ",
+      Info = icons.info .. " ",
       ---@diagnostic enable: undefined-field
     }
     for type, icon in pairs(signs) do
-      local hl = 'DiagnosticSign' .. type
-      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
+      local hl = "DiagnosticSign" .. type
+      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
     end
   end,
   opts = function()
-    if vim.fn.has('mac') ~= 1 then
+    if vim.fn.has("mac") ~= 1 then
       vim.env.DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = 1 -- Needed for marksman LSP on systems missing ICU libraries
     end
 
     local function file_exists(name)
-      local f = io.open(name, 'r')
+      local f = io.open(name, "r")
       if f ~= nil then
         io.close(f)
         return true
@@ -103,7 +101,7 @@ return {
         -- lazy-load schemastore when needed
         on_new_config = function(new_config)
           new_config.settings.json.schemas = new_config.settings.json.schemas or {}
-          vim.list_extend(new_config.settings.json.schemas, require('schemastore').json.schemas())
+          vim.list_extend(new_config.settings.json.schemas, require("schemastore").json.schemas())
         end,
         settings = {
           json = {
@@ -118,41 +116,41 @@ return {
           Lua = {
             runtime = {
               -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-              version = 'LuaJIT',
+              version = "LuaJIT",
             },
             diagnostics = {
               enable = true,
               -- Get the language server to recognize the `Snacks` and `vim` globals
-              globals = { 'Snacks', 'vim' },
+              globals = { "Snacks", "vim" },
               neededFileStatus = {
-                ['codestyle-check'] = 'Any',
+                ["codestyle-check"] = "Any",
               },
             },
             workspace = {
               -- Make the server aware of Neovim runtime files
               checkThirdParty = false,
               library = {
-                vim.env.VIMRUNTIME
-              }
+                vim.env.VIMRUNTIME,
+              },
             },
             completion = {
-              callSnippet = 'Replace',
+              callSnippet = "Replace",
             },
             format = {
               enable = false,
               defaultConfig = {
-                indent_style = 'space',
-                indent_size = '2',
-                quote_style = 'single',
+                indent_style = "space",
+                indent_size = "2",
+                quote_style = "double",
               },
             },
             hint = {
               enable = false,
-              arrayIndex = 'Auto',
+              arrayIndex = "Auto",
               await = true,
-              paramName = 'All',
+              paramName = "All",
               paramType = true,
-              semicolon = 'SameLine',
+              semicolon = "SameLine",
               setType = false,
             },
           },
@@ -161,10 +159,10 @@ return {
       jedi_language_server = {},
       ruby_lsp = {
         mason = false,
-        cmd = { vim.fn.expand('~/.local/share/mise/shims/ruby-lsp') },
+        cmd = { vim.fn.expand("~/.local/share/mise/shims/ruby-lsp") },
         init_options = {
-          formatter = 'standard',
-          linters = { 'standard' },
+          formatter = "standard",
+          linters = { "standard" },
         },
       },
       sqlls = {},
@@ -183,14 +181,14 @@ return {
           },
           settings = {
             yaml = {
-              ['https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json'] = '/.gitlab-ci.yml',
+              ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] = "/.gitlab-ci.yml",
             },
           },
         },
         -- lazy-load schemastore when needed
         on_new_config = function(new_config)
           new_config.settings.yaml.schemas = new_config.settings.yaml.schemas or {}
-          vim.list_extend(new_config.settings.yaml.schemas, require('schemastore').yaml.schemas())
+          vim.list_extend(new_config.settings.yaml.schemas, require("schemastore").yaml.schemas())
         end,
         settings = {
           redhat = { telemetry = { enabled = false } },
@@ -207,13 +205,13 @@ return {
               -- schemas from SchemaStore.nvim plugin
               enable = false,
               -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
-              url = '',
+              url = "",
             },
           },
         },
       },
     }
-    if file_exists(vim.fn.expand('~/Library/Arduino15/arduino-cli.yaml')) then
+    if file_exists(vim.fn.expand("~/Library/Arduino15/arduino-cli.yaml")) then
       servers.arduino_language_server = {
         -- stylua: ignore
         cmd = {
@@ -231,17 +229,17 @@ return {
       servers.clangd = {}
     end
 
-    local install_dir = '/share/homes/admin/opt/vscode-home-assistant'
+    local install_dir = "/share/homes/admin/opt/vscode-home-assistant"
     if vim.fn.finddir(install_dir) then
-      local lspconfig = require('lspconfig.configs')
-      local util = require('lspconfig/util')
+      local lspconfig = require("lspconfig.configs")
+      local util = require("lspconfig/util")
 
       -- add the default config for homeassistant
       lspconfig.homeassistant = {
         default_config = {
-          cmd = { install_dir .. '/node_modules/.bin/ts-node', install_dir .. '/out/server/server.js', '--stdio' },
-          filetypes = { 'home-assistant' },
-          root_dir = util.root_pattern('.HA_VERSION', 'configuration.yaml'),
+          cmd = { install_dir .. "/node_modules/.bin/ts-node", install_dir .. "/out/server/server.js", "--stdio" },
+          filetypes = { "home-assistant" },
+          root_dir = util.root_pattern(".HA_VERSION", "configuration.yaml"),
           settings = {},
         },
       }
@@ -261,17 +259,17 @@ return {
     --  nnoremap <silent> <leader>xq :lua vim.diagnostic.setloclist()<CR>
     --endif
 
-    local lspconfig = require('lspconfig')
-    local border = require('config').ui.border
+    local lspconfig = require("lspconfig")
+    local border = require("config").ui.border
 
-    require('lspconfig.ui.windows').default_options.border = border
+    require("lspconfig.ui.windows").default_options.border = border
 
-    local isBlinkLoaded = package.loaded['blink.cmp'] ~= nil
+    local isBlinkLoaded = package.loaded["blink.cmp"] ~= nil
     if isBlinkLoaded then
       for server, config in pairs(opts.servers) do
         -- passing config.capabilities to blink.cmp merges with the capabilities in your
         -- `opts[server].capabilities, if you've defined it
-        config.capabilities = require('blink.cmp').get_lsp_capabilities(config.capabilities)
+        config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
         lspconfig[server].setup(config)
       end
     end
@@ -280,19 +278,17 @@ return {
     vim.diagnostic.config({
       severity_sort = true,
       virtual_text = {
-        prefix = '●',
+        prefix = "●",
       },
       float = {
         focusable = false,
-        style = 'minimal',
+        style = "minimal",
         border = border,
         source = false,
-        header = '',
-        suffix = '',
-        prefix = '',
-        format = function(value)
-          return string.format('%s: [%s] %s', value.source, value.code, value.message)
-        end,
+        header = "",
+        suffix = "",
+        prefix = "",
+        format = function(value) return string.format("%s: [%s] %s", value.source, value.code, value.message) end,
       },
     })
   end,

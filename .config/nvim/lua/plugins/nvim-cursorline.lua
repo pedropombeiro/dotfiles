@@ -2,11 +2,11 @@
 --  A plugin for neovim that highlights cursor words and lines
 
 return {
-  'yamatsum/nvim-cursorline',
-  event = { 'BufReadPre', 'BufNewFile' },
+  "yamatsum/nvim-cursorline",
+  event = { "BufReadPre", "BufNewFile" },
   init = function()
     -- Disable cursorline for TelescopePrompt
-    vim.cmd [[ au FileType TelescopePrompt* setlocal nocursorline ]]
+    vim.cmd([[ au FileType TelescopePrompt* setlocal nocursorline ]])
   end,
   opts = {
     cursorline = {
@@ -18,6 +18,6 @@ return {
       enable = true,
       min_length = 3,
       hl = { underline = true },
-    }
-  }
+    },
+  },
 }

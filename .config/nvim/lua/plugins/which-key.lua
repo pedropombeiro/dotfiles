@@ -3,19 +3,17 @@
 --   a popup with possible keybindings of the command you started typing.
 
 return {
-  'folke/which-key.nvim',
-  event = 'VeryLazy',
+  "folke/which-key.nvim",
+  event = "VeryLazy",
   init = function()
-    require('plugins/which-key.keymap')
-    require('plugins/which-key.keymap-plugins')
+    require("plugins/which-key.keymap")
+    require("plugins/which-key.keymap-plugins")
   end,
   keys = {
     {
-      '<leader>?',
-      function()
-        require('which-key').show({ global = false })
-      end,
-      desc = 'Buffer Local Keymaps (which-key)',
+      "<leader>?",
+      function() require("which-key").show({ global = false }) end,
+      desc = "Buffer Local Keymaps (which-key)",
     },
   },
 }

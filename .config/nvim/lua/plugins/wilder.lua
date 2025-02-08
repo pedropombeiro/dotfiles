@@ -2,23 +2,23 @@
 -- A more adventurous wildmenu
 
 return {
-  'gelguy/wilder.nvim',
-  build = ':UpdateRemotePlugins',
-  event = 'CmdlineEnter',
+  "gelguy/wilder.nvim",
+  build = ":UpdateRemotePlugins",
+  event = "CmdlineEnter",
   keys = {
-    { '<TAB>', 'wilder#in_context() ? wilder#next() : "\\<Tab>"', mode = 'c', expr = true },
-    { '<S-TAB>', 'wilder#in_context() ? wilder#previous() : "\\<S-Tab>"', mode = 'c', expr = true },
-    { '<C-j>', 'wilder#in_context() ? wilder#next() : "\\<Tab>"', mode = 'c', expr = true },
-    { '<C-k>', 'wilder#in_context() ? wilder#previous() : "\\<S-Tab>"', mode = 'c', expr = true },
+    { "<TAB>", 'wilder#in_context() ? wilder#next() : "\\<Tab>"', mode = "c", expr = true },
+    { "<S-TAB>", 'wilder#in_context() ? wilder#previous() : "\\<S-Tab>"', mode = "c", expr = true },
+    { "<C-j>", 'wilder#in_context() ? wilder#next() : "\\<Tab>"', mode = "c", expr = true },
+    { "<C-k>", 'wilder#in_context() ? wilder#previous() : "\\<S-Tab>"', mode = "c", expr = true },
   },
   config = function()
-    vim.opt.wildcharm = vim.fn.char2nr('	') -- tab
+    vim.opt.wildcharm = vim.fn.char2nr("	") -- tab
 
-    local wilder = require('wilder')
+    local wilder = require("wilder")
     wilder.enable_cmdline_enter()
-    wilder.setup({ modes = { ':', '/' } })
+    wilder.setup({ modes = { ":", "/" } })
 
-    wilder.set_option('pipeline', {
+    wilder.set_option("pipeline", {
       wilder.debounce(10),
       wilder.branch(
         wilder.cmdline_pipeline({
@@ -33,17 +33,17 @@ return {
       wilder.basic_highlighter(),
     }
     wilder.set_option(
-      'renderer',
+      "renderer",
       wilder.renderer_mux({
-        [':'] = wilder.popupmenu_renderer({
+        [":"] = wilder.popupmenu_renderer({
           highlighter = highlighters,
           pumblend = 10,
-          left = { ' ', wilder.popupmenu_devicons() },
+          left = { " ", wilder.popupmenu_devicons() },
         }),
-        ['/'] = wilder.wildmenu_renderer({
+        ["/"] = wilder.wildmenu_renderer({
           highlighter = highlighters,
         }),
-        ['?'] = wilder.wildmenu_renderer({
+        ["?"] = wilder.wildmenu_renderer({
           highlighter = highlighters,
         }),
       })

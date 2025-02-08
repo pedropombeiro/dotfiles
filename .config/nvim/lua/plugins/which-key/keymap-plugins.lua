@@ -1,19 +1,19 @@
 --- key bindings -------------------------------------------------------------------
 
-require('which-key').add({
-  { '<leader>g', group = 'Git / Change action' },
+require("which-key").add({
+  { "<leader>g", group = "Git / Change action" },
 
   -- folke/persistence.nvim
-  { '<leader>q', group = 'Session management' },
+  { "<leader>q", group = "Session management" },
 
   -- ruifm/gitlinker.nvim
-  { '<leader>gy', mode = { 'n', 'v' }, desc = 'Yank Git URL' },
+  { "<leader>gy", mode = { "n", "v" }, desc = "Yank Git URL" },
 
   -- Lazy.nvim
-  { '<leader>p', group = 'Package Manager', icon = '' },
-  { '<leader>ps', function() require('lazy').home() end, desc = 'Status', icon = '󱖫' },
-  { '<leader>pu', function() require('lazy').sync() end, desc = 'Sync', icon = '' },
+  { "<leader>p", group = "Package Manager", icon = "" },
+  { "<leader>ps", function() require("lazy").home() end, desc = "Status", icon = "󱖫" },
+  { "<leader>pu", function() require("lazy").sync() end, desc = "Sync", icon = "" },
 
   -- wsdjeg/vim-fetch
-  { 'gF', mode = { 'n', 'x' }, desc = 'Go to file:line under cursor' },
+  { "gF", mode = { "n", "x" }, desc = "Go to file:line under cursor" },
 })

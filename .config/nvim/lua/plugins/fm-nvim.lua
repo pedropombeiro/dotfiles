@@ -3,56 +3,54 @@
 
 return {
   {
-    'vifm/vifm.vim', -- Import for ftplugin, ftdetect, and syntax definitions
-    event = { 'BufNewFile', 'BufReadPre' },
-    init = function()
-      vim.g.loaded_vifm = 1
-    end,
+    "vifm/vifm.vim", -- Import for ftplugin, ftdetect, and syntax definitions
+    event = { "BufNewFile", "BufReadPre" },
+    init = function() vim.g.loaded_vifm = 1 end,
   },
 
   {
-    'is0n/fm-nvim',
+    "is0n/fm-nvim",
     keys = {
       {
-        '<leader>tg',
+        "<leader>tg",
         function()
-          vim.cmd('Lazygit')
+          vim.cmd("Lazygit")
 
-          local plugins = require('lazy.core.config').plugins
-          if plugins['gitsigns.nvim'] ~= nil and plugins['gitsigns.nvim']._.loaded ~= nil then
+          local plugins = require("lazy.core.config").plugins
+          if plugins["gitsigns.nvim"] ~= nil and plugins["gitsigns.nvim"]._.loaded ~= nil then
             -- ensure that Gitsigns refreshes with new state after closing Lazygit
             vim.cmd([[execute 'Gitsigns refresh']])
           end
         end,
-        desc = 'Open LazyGit',
+        desc = "Open LazyGit",
       },
       {
-        '<leader>F',
+        "<leader>F",
         function()
           -- Signal to vifm that we don't want image previews, since we can't really calculate the correct offset of the popup
-          vim.env._DISABLE_VIFM_IMGPREVIEW = '1'
-          if vim.api.nvim_buf_get_name(0) == '' then
+          vim.env._DISABLE_VIFM_IMGPREVIEW = "1"
+          if vim.api.nvim_buf_get_name(0) == "" then
             vim.cmd([[Vifm --select %:p:h]])
           else
             vim.cmd([[Vifm --select %]])
           end
-          vim.env._DISABLE_VIFM_IMGPREVIEW = ''
+          vim.env._DISABLE_VIFM_IMGPREVIEW = ""
         end,
-        desc = 'Open File Manager (vifm)',
+        desc = "Open File Manager (vifm)",
       },
     },
     opts = {
       cmds = {
-        vifm_cmd = 'vifm',
-        lazygit_cmd = 'lazygit --use-config-dir ~/.config/lazygit',
+        vifm_cmd = "vifm",
+        lazygit_cmd = "lazygit --use-config-dir ~/.config/lazygit",
       },
       ui = {
         float = {
           height = 0.9,
           width = 0.9,
           -- Floating window border (see ':h nvim_open_win')
-          border = require('config').ui.border,
-          float_hl = 'NormalFloat',
+          border = require("config").ui.border,
+          float_hl = "NormalFloat",
         },
       },
     },

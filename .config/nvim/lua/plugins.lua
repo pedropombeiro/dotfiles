@@ -1,82 +1,74 @@
 return {
   --### Buffer decorations
   {
-    'mtdl9/vim-log-highlighting', -- Provides syntax highlighting for generic log files in VIM.
-    ft = 'log',
+    "mtdl9/vim-log-highlighting", -- Provides syntax highlighting for generic log files in VIM.
+    ft = "log",
   },
-  { 'mechatroner/rainbow_csv', ft = { 'csv', 'tsv' } }, -- 🌈Rainbow CSV - Vim plugin: Highlight columns in CSV and TSV files and run queries in SQL-like language
+  { "mechatroner/rainbow_csv", ft = { "csv", "tsv" } }, -- 🌈Rainbow CSV - Vim plugin: Highlight columns in CSV and TSV files and run queries in SQL-like language
   {
-    'MeanderingProgrammer/render-markdown.nvim',
-    cmd = { 'RenderMarkdown' },
+    "MeanderingProgrammer/render-markdown.nvim",
+    cmd = { "RenderMarkdown" },
     opts = {},
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons
   },
 
   {
-    'petertriho/nvim-scrollbar', -- Extensible Neovim Scrollbar
-    event = { 'BufNewFile', 'BufReadPost' },
-    dependencies = 'lewis6991/gitsigns.nvim', -- Git integration for buffers
+    "petertriho/nvim-scrollbar", -- Extensible Neovim Scrollbar
+    event = { "BufNewFile", "BufReadPost" },
+    dependencies = "lewis6991/gitsigns.nvim", -- Git integration for buffers
     opts = {},
   },
 
   --### Search
   {
-    'tpope/vim-abolish', -- abolish.vim: easily search for, substitute, and abbreviate multiple variants of a word
-    event = 'BufReadPost',
+    "tpope/vim-abolish", -- abolish.vim: easily search for, substitute, and abbreviate multiple variants of a word
+    event = "BufReadPost",
   },
 
   --### Snippets
   {
-    'aduros/ai.vim', -- Generate and edit text in Neovim using OpenAI and GPT.
+    "aduros/ai.vim", -- Generate and edit text in Neovim using OpenAI and GPT.
     keys = {
-      { '<leader>=', ':AI ', mode = { 'n', 'v' }, desc = 'Perform action with OpenAI' },
-      { '<C-A>', '<Esc><Cmd>AI<CR>a', mode = 'i', desc = 'Autocomplete with OpenAI' },
+      { "<leader>=", ":AI ", mode = { "n", "v" }, desc = "Perform action with OpenAI" },
+      { "<C-A>", "<Esc><Cmd>AI<CR>a", mode = "i", desc = "Autocomplete with OpenAI" },
     },
-    cmd = { 'AI' },
-    init = function()
-      vim.g.ai_no_mappings = 1
-    end,
+    cmd = { "AI" },
+    init = function() vim.g.ai_no_mappings = 1 end,
   },
 
   --### Navigation
   {
-    'ruanyl/vim-gh-line', -- vim plugin that open the link of current line on github
+    "ruanyl/vim-gh-line", -- vim plugin that open the link of current line on github
     keys = {
-      { '<leader>gb', '<Plug>(gh-line-blame)', desc = 'Open blame view in browser' },
-      { '<leader>gh', '<Plug>(gh-line)', desc = 'Open blob view in browser' },
-      { '<leader>go', '<Plug>(gh-repo)', desc = 'Open in browser' },
+      { "<leader>gb", "<Plug>(gh-line-blame)", desc = "Open blame view in browser" },
+      { "<leader>gh", "<Plug>(gh-line)", desc = "Open blob view in browser" },
+      { "<leader>go", "<Plug>(gh-repo)", desc = "Open in browser" },
     },
   },
 
   --### Session management
   {
-    'farmergreg/vim-lastplace', -- Intelligently reopen files at your last edit position in Vim.
-    event = 'BufReadPre',
+    "farmergreg/vim-lastplace", -- Intelligently reopen files at your last edit position in Vim.
+    event = "BufReadPre",
   },
   {
-    'folke/persistence.nvim',
-    event = 'BufReadPre',
+    "folke/persistence.nvim",
+    event = "BufReadPre",
     opts = { options = vim.opt.sessionoptions:get() },
     keys = {
       {
-        '<leader>qs',
-        function()
-          require('persistence').load()
-        end,
-        desc = 'Restore session',
+        "<leader>qs",
+        function() require("persistence").load() end,
+        desc = "Restore session",
       },
       {
-        '<leader>ql',
-        function()
-          require('persistence').load({ last = true })
-        end,
-        desc = 'Restore last session',
+        "<leader>ql",
+        function() require("persistence").load({ last = true }) end,
+        desc = "Restore last session",
       },
       {
-        '<leader>qd',
-        function()
-          require('persistence').stop()
-        end,
+        "<leader>qd",
+        function() require("persistence").stop() end,
         desc = "Don't save current session",
       },
     },
@@ -84,100 +76,98 @@ return {
 
   --### Editor enhancements
   {
-    'sitiom/nvim-numbertoggle', -- Neovim plugin to automatically toggle between relative and absolute line numbers.
-    event = 'BufReadPost',
+    "sitiom/nvim-numbertoggle", -- Neovim plugin to automatically toggle between relative and absolute line numbers.
+    event = "BufReadPost",
   },
   {
-    'Wansmer/treesj', -- Neovim plugin for splitting/joining blocks of code
+    "Wansmer/treesj", -- Neovim plugin for splitting/joining blocks of code
     keys = {
-      { 'gJ', ':TSJJoin<CR>', desc = 'Join into single-line form' },
-      { 'gS', ':TSJSplit<CR>', desc = 'Split into multi-line form' },
+      { "gJ", ":TSJJoin<CR>", desc = "Join into single-line form" },
+      { "gS", ":TSJSplit<CR>", desc = "Split into multi-line form" },
     },
     opts = {
       use_default_keymaps = false,
     },
   },
   {
-    'tpope/vim-repeat', -- repeat.vim: enable repeating supported plugin maps with '.'
-    keys = '.',
+    "tpope/vim-repeat", -- repeat.vim: enable repeating supported plugin maps with '.'
+    keys = ".",
   },
   {
-    'echasnovski/mini.surround',
+    "echasnovski/mini.surround",
     version = false,
-    event = { 'BufReadPre', 'BufNewFile' },
+    event = { "BufReadPre", "BufNewFile" },
     opts = {
       mappings = {
-        add = 'gsa',
-        delete = 'gsd',
-        find = 'gsf',
-        find_left = 'gsF',
-        highlight = 'gsh',
-        replace = 'gsr',
-        update_n_lines = 'gsn',
+        add = "gsa",
+        delete = "gsd",
+        find = "gsf",
+        find_left = "gsF",
+        highlight = "gsh",
+        replace = "gsr",
+        update_n_lines = "gsn",
       },
     },
     init = function()
-      require('which-key').add({
-        { 'gs', group = 'Surround', icon = '' },
+      require("which-key").add({
+        { "gs", group = "Surround", icon = "" },
       })
     end,
   },
-  { 'tummetott/unimpaired.nvim', event = { 'BufReadPre', 'BufNewFile' }, opts = {} }, -- LUA port of tpope's famous vim-unimpaired plugin
-  { 'RaafatTurki/hex.nvim', event = { 'BufReadPre', 'BufNewFile' }, opts = {} }, -- hex editing done right
+  { "tummetott/unimpaired.nvim", event = { "BufReadPre", "BufNewFile" }, opts = {} }, -- LUA port of tpope's famous vim-unimpaired plugin
+  { "RaafatTurki/hex.nvim", event = { "BufReadPre", "BufNewFile" }, opts = {} }, -- hex editing done right
 
   --### Other
-  { 'tmux-plugins/vim-tmux', ft = 'tmux' }, -- Vim plugin for .tmux.conf
+  { "tmux-plugins/vim-tmux", ft = "tmux" }, -- Vim plugin for .tmux.conf
   {
-    'tpope/vim-dispatch', -- dispatch.vim: Asynchronous build and test dispatcher
-    cmd = { 'Dispatch', 'Make', 'Focus', 'Start' },
+    "tpope/vim-dispatch", -- dispatch.vim: Asynchronous build and test dispatcher
+    cmd = { "Dispatch", "Make", "Focus", "Start" },
   },
   {
-    'tpope/vim-eunuch', -- eunuch.vim: Helpers for UNIX
+    "tpope/vim-eunuch", -- eunuch.vim: Helpers for UNIX
     cmd = {
-      'Remove',
-      'Delete',
-      'Move',
-      'Chmod',
-      'Mkdir',
-      'Cfind',
-      'Clocate',
-      'Lfind',
-      'Llocate',
-      'Wall',
-      'SudoWrite',
-      'SudoEdit',
+      "Remove",
+      "Delete",
+      "Move",
+      "Chmod",
+      "Mkdir",
+      "Cfind",
+      "Clocate",
+      "Lfind",
+      "Llocate",
+      "Wall",
+      "SudoWrite",
+      "SudoEdit",
     },
   },
   {
-    'tpope/vim-sleuth', -- sleuth.vim: Heuristically set buffer options
-    event = 'BufReadPre',
+    "tpope/vim-sleuth", -- sleuth.vim: Heuristically set buffer options
+    event = "BufReadPre",
   },
   {
-    'tpope/vim-bundler', -- bundler.vim: Lightweight support for Ruby's Bundler
-    ft = 'ruby',
-    cmd = { 'Bundle', 'Bopen', 'Bsplit', 'Btabedit' },
+    "tpope/vim-bundler", -- bundler.vim: Lightweight support for Ruby's Bundler
+    ft = "ruby",
+    cmd = { "Bundle", "Bopen", "Bsplit", "Btabedit" },
   },
-  'tpope/vim-projectionist', -- Granular project configuration
-  { 'tpope/vim-rails', ft = 'ruby' }, -- rails.vim: Ruby on Rails power tools
-  { 'bfontaine/Brewfile.vim', ft = 'ruby' }, -- Brewfile syntax for Vim
-  'wsdjeg/vim-fetch', -- Make Vim handle line and column numbers in file names with a minimum of fuss
+  "tpope/vim-projectionist", -- Granular project configuration
+  { "tpope/vim-rails", ft = "ruby" }, -- rails.vim: Ruby on Rails power tools
+  { "bfontaine/Brewfile.vim", ft = "ruby" }, -- Brewfile syntax for Vim
+  "wsdjeg/vim-fetch", -- Make Vim handle line and column numbers in file names with a minimum of fuss
 
   {
-    'iamcco/markdown-preview.nvim', -- markdown preview plugin for (neo)vim
-    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
-    build = 'cd app && yarn install',
-    ft = 'markdown',
-    init = function()
-      vim.g.mkdp_filetypes = { 'markdown' }
-    end,
+    "iamcco/markdown-preview.nvim", -- markdown preview plugin for (neo)vim
+    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+    build = "cd app && yarn install",
+    ft = "markdown",
+    init = function() vim.g.mkdp_filetypes = { "markdown" } end,
   },
 
-  { 'NoahTheDuke/vim-just', event = { 'BufReadPre', 'BufNewFile' }, ft = 'just' },
+  { "NoahTheDuke/vim-just", event = { "BufReadPre", "BufNewFile" }, ft = "just" },
 
   {
-    'ruifm/gitlinker.nvim',
-    dependencies = 'nvim-lua/plenary.nvim',
-    event = { 'BufReadPre', 'BufNewFile' },
+    "ruifm/gitlinker.nvim",
+    dependencies = "nvim-lua/plenary.nvim",
+    event = { "BufReadPre", "BufNewFile" },
     opts = {},
   },
 }

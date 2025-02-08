@@ -2,10 +2,10 @@
 --  Not UFO in the sky, but an ultra fold in Neovim.
 
 local function setFoldOptions()
-  local config = require('config')
+  local config = require("config")
   local expander_icons = config.ui.icons.expander
 
-  vim.opt.foldcolumn = '1'
+  vim.opt.foldcolumn = "1"
   vim.opt.foldlevel = 99
   vim.opt.foldlevelstart = 99
   vim.opt.foldenable = true
@@ -19,7 +19,7 @@ local function fold_virt_text_handler(virtText, lnum, endLnum, width, truncate)
   local newVirtText = {}
   local totalLines = vim.api.nvim_buf_line_count(0)
   local foldedLines = endLnum - lnum
-  local suffix = (' ↙ %d %d%%'):format(foldedLines, foldedLines / totalLines * 100)
+  local suffix = (" ↙ %d %d%%"):format(foldedLines, foldedLines / totalLines * 100)
   local sufWidth = vim.fn.strdisplaywidth(suffix)
   local targetWidth = width - sufWidth
   local curWidth = 0
@@ -34,26 +34,24 @@ local function fold_virt_text_handler(virtText, lnum, endLnum, width, truncate)
       table.insert(newVirtText, { chunkText, hlGroup })
       chunkWidth = vim.fn.strdisplaywidth(chunkText)
       -- str width returned from truncate() may less than 2nd argument, need padding
-      if curWidth + chunkWidth < targetWidth then
-        suffix = suffix .. (' '):rep(targetWidth - curWidth - chunkWidth)
-      end
+      if curWidth + chunkWidth < targetWidth then suffix = suffix .. (" "):rep(targetWidth - curWidth - chunkWidth) end
       break
     end
     curWidth = curWidth + chunkWidth
   end
-  local rAlignAppndx = math.max(math.min(vim.opt.textwidth['_value'], width - 1) - curWidth - sufWidth, 0)
-  suffix = (' '):rep(rAlignAppndx) .. suffix
-  table.insert(newVirtText, { suffix, 'MoreMsg' })
+  local rAlignAppndx = math.max(math.min(vim.opt.textwidth["_value"], width - 1) - curWidth - sufWidth, 0)
+  suffix = (" "):rep(rAlignAppndx) .. suffix
+  table.insert(newVirtText, { suffix, "MoreMsg" })
   return newVirtText
 end
 
 return {
   {
-    'kevinhwang91/nvim-ufo',
+    "kevinhwang91/nvim-ufo",
     dependencies = {
-      'kevinhwang91/promise-async',
+      "kevinhwang91/promise-async",
     },
-    ft = { 'css', 'eruby', 'go', 'html', 'javascript', 'json', 'lua', 'markdown', 'ruby', 'typescript', 'yaml' },
+    ft = { "css", "eruby", "go", "html", "javascript", "json", "lua", "markdown", "ruby", "typescript", "yaml" },
     -- stylua: ignore
     keys = {
       { 'zr', function() require('ufo').openFoldsExceptKinds() end,  mode = { 'n', 'v' }, desc = 'Open folds except defined kinds', },
@@ -76,18 +74,16 @@ return {
       setFoldOptions()
 
       --- Override foldcolumn colors to match theme
-      local config = require('config')
+      local config = require("config")
       local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
       if theme == config.theme.name then
-        Set_hl('FoldColumn', { ctermbg = 'none', bg = 'none', ctermfg = 'gray', fg = config.theme.colors.gray })
+        Set_hl("FoldColumn", { ctermbg = "none", bg = "none", ctermfg = "gray", fg = config.theme.colors.gray })
       end
 
       return {
-        close_fold_kinds_for_ft = { go = 'imports' },
+        close_fold_kinds_for_ft = { go = "imports" },
         fold_virt_text_handler = fold_virt_text_handler,
-        provider_selector = function()
-          return { 'treesitter', 'indent' }
-        end,
+        provider_selector = function() return { "treesitter", "indent" } end,
       }
     end,
   },

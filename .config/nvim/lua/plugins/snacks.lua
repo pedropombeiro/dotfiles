@@ -2,7 +2,7 @@
 --  🍿 A collection of QoL plugins for Neovim
 
 ---@format disable-next
--- stylua: ignore
+--\ stylua: ignore
 local keys = {
   { '<leader>b', group = 'Bclose' },
   { '<leader>bd', function() Snacks.bufdelete() end, desc = 'Close buffer', silent = true },
@@ -114,7 +114,7 @@ return {
             { icon = ' ', key = 'f', desc = 'Find File', action = function() Snacks.dashboard.pick('files') end },
             { icon = ' ', key = 'n', desc = 'New File', action = ':ene | startinsert' },
             { icon = ' ', key = 'g', desc = 'Find Text', action = function() Snacks.dashboard.pick('live_grep') end },
-            { icon = ' ', key = '<leader>/', desc = 'Git Grep', action = Snacks.picker.git_grep },
+            { icon = ' ', key = '<leader>/', desc = 'Git Grep', action = function() Snacks.picker.git_grep() end },
             { icon = ' ', key = 'r', desc = 'Recent Files', action = ":lua Snacks.dashboard.pick('oldfiles')" },
             {
               icon = ' ',

@@ -203,6 +203,9 @@ return {
             git_untracked = false,
           },
         },
+        on_show = function()
+          require('nvim-treesitter') -- Ensure treesitter is loaded for correct code preview colors
+        end,
       },
       scope = {
         enabled = true,

@@ -76,11 +76,8 @@ return {
     require('which-key').add(keys)
 
     local config = require('config')
-    local function set_hl(name, attr)
-      vim.api.nvim_set_hl(0, name, attr)
-    end
 
-    set_hl('SnacksPickerInputBorder', { bg = config.theme.colors.dark0, fg = config.theme.colors.orange })
+    Set_hl('SnacksPickerInputBorder', { bg = config.theme.colors.dark0, fg = config.theme.colors.orange })
   end,
   opts = function()
     local config = require('config')

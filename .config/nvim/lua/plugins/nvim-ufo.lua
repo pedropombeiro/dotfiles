@@ -76,14 +76,8 @@ return {
       --- Override foldcolumn colors to match theme
       local config = require('config')
       local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
-      ---@diagnostic disable: undefined-field
       if theme == config.theme.name then
-        local function set_hl(name, attr)
-          vim.api.nvim_set_hl(0, name, attr)
-        end
-
-        set_hl('FoldColumn', { ctermbg = 'none', bg = 'none', ctermfg = 'gray', fg = config.theme.colors.gray })
-        ---@diagnostic enable: undefined-field
+        Set_hl('FoldColumn', { ctermbg = 'none', bg = 'none', ctermfg = 'gray', fg = config.theme.colors.gray })
       end
 
       return {

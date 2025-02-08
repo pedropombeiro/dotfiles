@@ -10,7 +10,7 @@ return {
       ---@diagnostic disable-next-line: undefined-field
       local colors = require('config').theme.colors
 
-      vim.api.nvim_set_hl(0, 'TreesitterContextBottom', { underline = true, sp = colors.bg0_s })
+      Set_hl('TreesitterContextBottom', { underline = true, sp = colors.bg0_s })
     end,
   },
 

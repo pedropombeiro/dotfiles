@@ -53,30 +53,25 @@ return {
     local config = require('config')
     local icons = config.ui.icons
 
-    -- Theming (from https://github.com/nvim-neotest/neotest/blob/master/lua/neotest/config/init.lua)
-    local function set_hl(name, attr)
-      vim.api.nvim_set_hl(0, name, attr)
-    end
-
     ---@format disable-next
     local function define_highlights()
       ---@diagnostic disable: undefined-field
-      set_hl('NeotestPassed', { ctermfg = 'Green', fg = config.theme.colors.green })
-      set_hl('NeotestFailed', { ctermfg = 'Red', fg = config.theme.colors.dark_red })
-      set_hl('NeotestRunning', { ctermfg = 'Yellow', fg = config.theme.colors.dark_yellow })
-      set_hl('NeotestSkipped', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue })
-      set_hl('NeotestTest', { link = 'Normal' })
-      set_hl('NeotestNamespace', { ctermfg = 'Magenta', fg = config.theme.colors.purple })
-      set_hl('NeotestFocused', { bold = true, underline = true })
-      set_hl('NeotestFile', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue })
-      set_hl('NeotestDir', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue })
-      set_hl('NeotestIndent', { ctermfg = 'Grey', fg = config.theme.colors.fg4 })
-      set_hl('NeotestExpandMarker', { ctermfg = 'Grey', fg = config.theme.colors.fg3 })
-      set_hl('NeotestAdapterName', { ctermfg = 'Red', fg = config.theme.colors.red })
-      set_hl('NeotestWinSelect', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue, bold = true })
-      set_hl('NeotestMarked', { ctermfg = 'Brown', fg = config.theme.colors.orange, bold = true })
-      set_hl('NeotestTarget', { ctermfg = 'Red', fg = config.theme.colors.red })
-      set_hl('NeotestUnknown', { link = 'Normal' })
+      Set_hl('NeotestPassed', { ctermfg = 'Green', fg = config.theme.colors.green })
+      Set_hl('NeotestFailed', { ctermfg = 'Red', fg = config.theme.colors.dark_red })
+      Set_hl('NeotestRunning', { ctermfg = 'Yellow', fg = config.theme.colors.dark_yellow })
+      Set_hl('NeotestSkipped', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue })
+      Set_hl('NeotestTest', { link = 'Normal' })
+      Set_hl('NeotestNamespace', { ctermfg = 'Magenta', fg = config.theme.colors.purple })
+      Set_hl('NeotestFocused', { bold = true, underline = true })
+      Set_hl('NeotestFile', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue })
+      Set_hl('NeotestDir', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue })
+      Set_hl('NeotestIndent', { ctermfg = 'Grey', fg = config.theme.colors.fg4 })
+      Set_hl('NeotestExpandMarker', { ctermfg = 'Grey', fg = config.theme.colors.fg3 })
+      Set_hl('NeotestAdapterName', { ctermfg = 'Red', fg = config.theme.colors.red })
+      Set_hl('NeotestWinSelect', { ctermfg = 'Cyan', fg = config.theme.colors.dark_blue, bold = true })
+      Set_hl('NeotestMarked', { ctermfg = 'Brown', fg = config.theme.colors.orange, bold = true })
+      Set_hl('NeotestTarget', { ctermfg = 'Red', fg = config.theme.colors.red })
+      Set_hl('NeotestUnknown', { link = 'Normal' })
       ---@diagnostic enable: undefined-field
     end
 

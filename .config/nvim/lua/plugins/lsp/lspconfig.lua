@@ -122,8 +122,8 @@ return {
             },
             diagnostics = {
               enable = true,
-              -- Get the language server to recognize the `vim` global
-              globals = { 'vim' },
+              -- Get the language server to recognize the `Snacks` and `vim` globals
+              globals = { 'Snacks', 'vim' },
               neededFileStatus = {
                 ['codestyle-check'] = 'Any',
               },

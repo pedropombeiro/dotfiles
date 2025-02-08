@@ -52,12 +52,14 @@ return {
     'kevinhwang91/nvim-ufo',
     dependencies = {
       'kevinhwang91/promise-async',
-      'neovim/nvim-lspconfig',
     },
+    ft = { 'css', 'eruby', 'go', 'html', 'javascript', 'json', 'lua', 'markdown', 'ruby', 'typescript', 'yaml' },
     -- stylua: ignore
     keys = {
-      { 'zR', function() require('ufo').openAllFolds() end,  mode = { 'n', 'v' }, desc = 'Open All Folds', },
-      { 'zM', function() require('ufo').closeAllFolds() end, mode = { 'n', 'v' }, desc = 'Close All Folds', },
+      { 'zr', function() require('ufo').openFoldsExceptKinds() end,  mode = { 'n', 'v' }, desc = 'Open folds except defined kinds', },
+      { 'zm', function() require('ufo').closeFoldsWith() end,  mode = { 'n', 'v' }, desc = 'Close the folds > 0', },
+      { 'zR', function() require('ufo').openAllFolds() end,  mode = { 'n', 'v' }, desc = 'Open all folds but keep foldlevel', },
+      { 'zM', function() require('ufo').closeAllFolds() end, mode = { 'n', 'v' }, desc = 'Close all folds but keep foldlevel', },
       {
         '<leader>k',
         function()

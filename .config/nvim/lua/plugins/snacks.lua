@@ -109,7 +109,7 @@ return {
         },
         sections = {
           { section = "header" },
-          { pane = 2, section = "terminal", cmd = "curl -s 'https://wttr.in/?0'", height = 8 },
+          { pane = 2, section = "terminal", cmd = "curl -s 'https://wttr.in/?0' || echo", height = 8 },
           {
             { icon = " ", key = "f", desc = "Find File", action = function() Snacks.dashboard.pick("files") end },
             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },

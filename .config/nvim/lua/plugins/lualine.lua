@@ -35,9 +35,16 @@ return {
             ---@diagnostic enable: undefined-field
           },
         },
-        { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+        {
+          "filetype",
+          cond = function() return not vim.g.started_by_firenvim end,
+          icon_only = true,
+          separator = "",
+          padding = { left = 1, right = 0 },
+        },
         {
           "filename",
+          cond = function() return not vim.g.started_by_firenvim end,
           show_filename_only = false,
           path = 1,
           shorting_target = 80,
@@ -49,16 +56,16 @@ return {
       },
       lualine_x = {
         {
-          function() return diagnostic_icons.debug .. "  " .. require("dap").status() end,
-          cond = function() return package.loaded["dap"] and require("dap").status() ~= "" end,
-        },
-        {
           require("lazy.status").updates,
           cond = require("lazy.status").has_updates,
         },
-        { "pipeline" }, -- https://github.com/topaxi/pipeline.nvim
+        {
+          "pipeline", -- https://github.com/topaxi/pipeline.nvim
+          cond = function() return not vim.g.started_by_firenvim end,
+        },
         {
           "diff",
+          cond = function() return not vim.g.started_by_firenvim end,
           symbols = {
             ---@diagnostic disable: undefined-field
             added = symbol_icons.added .. " ",
@@ -80,7 +87,6 @@ return {
         "location",
       },
     }
-    if vim.g.started_by_firenvim then table.remove(sections.lualine_c, 3) end
 
     return {
       options = {
@@ -97,7 +103,6 @@ return {
         "man",
         "lazy",
         "neo-tree",
-        "nvim-dap-ui",
       },
       sections = sections,
     }

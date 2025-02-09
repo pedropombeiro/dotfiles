@@ -3,7 +3,7 @@
 
 return {
   "nvim-lualine/lualine.nvim",
-  event = { "BufNewFile", "BufReadPre" },
+  event = { "BufNewFile", "BufReadPost" },
   dependencies = {
     "kyazdani42/nvim-web-devicons",
   },

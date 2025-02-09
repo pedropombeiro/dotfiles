@@ -54,22 +54,24 @@ return {
     ---@format disable-next
     local function define_highlights()
       ---@diagnostic disable: undefined-field
-      Set_hl("NeotestPassed", { ctermfg = "Green", fg = config.theme.colors.green })
-      Set_hl("NeotestFailed", { ctermfg = "Red", fg = config.theme.colors.dark_red })
-      Set_hl("NeotestRunning", { ctermfg = "Yellow", fg = config.theme.colors.dark_yellow })
-      Set_hl("NeotestSkipped", { ctermfg = "Cyan", fg = config.theme.colors.dark_blue })
-      Set_hl("NeotestTest", { link = "Normal" })
-      Set_hl("NeotestNamespace", { ctermfg = "Magenta", fg = config.theme.colors.purple })
-      Set_hl("NeotestFocused", { bold = true, underline = true })
-      Set_hl("NeotestFile", { ctermfg = "Cyan", fg = config.theme.colors.dark_blue })
-      Set_hl("NeotestDir", { ctermfg = "Cyan", fg = config.theme.colors.dark_blue })
-      Set_hl("NeotestIndent", { ctermfg = "Grey", fg = config.theme.colors.fg4 })
-      Set_hl("NeotestExpandMarker", { ctermfg = "Grey", fg = config.theme.colors.fg3 })
-      Set_hl("NeotestAdapterName", { ctermfg = "Red", fg = config.theme.colors.red })
-      Set_hl("NeotestWinSelect", { ctermfg = "Cyan", fg = config.theme.colors.dark_blue, bold = true })
-      Set_hl("NeotestMarked", { ctermfg = "Brown", fg = config.theme.colors.orange, bold = true })
-      Set_hl("NeotestTarget", { ctermfg = "Red", fg = config.theme.colors.red })
-      Set_hl("NeotestUnknown", { link = "Normal" })
+      Set_hl({
+        Passed = { ctermfg = "Green", fg = config.theme.colors.green },
+        Failed = { ctermfg = "Red", fg = config.theme.colors.dark_red },
+        Running = { ctermfg = "Yellow", fg = config.theme.colors.dark_yellow },
+        Skipped = { ctermfg = "Cyan", fg = config.theme.colors.dark_blue },
+        Test = { link = "Normal" },
+        Namespace = { ctermfg = "Magenta", fg = config.theme.colors.purple },
+        Focused = { bold = true, underline = true },
+        File = { ctermfg = "Cyan", fg = config.theme.colors.dark_blue },
+        Dir = { ctermfg = "Cyan", fg = config.theme.colors.dark_blue },
+        Indent = { ctermfg = "Grey", fg = config.theme.colors.fg4 },
+        ExpandMarker = { ctermfg = "Grey", fg = config.theme.colors.fg3 },
+        AdapterName = { ctermfg = "Red", fg = config.theme.colors.red },
+        WinSelect = { ctermfg = "Cyan", fg = config.theme.colors.dark_blue, bold = true },
+        Marked = { ctermfg = "Brown", fg = config.theme.colors.orange, bold = true },
+        Target = { ctermfg = "Red", fg = config.theme.colors.red },
+        Unknown = { link = "Normal" },
+      }, { prefix = "Neotest", default = true })
       ---@diagnostic enable: undefined-field
     end
 

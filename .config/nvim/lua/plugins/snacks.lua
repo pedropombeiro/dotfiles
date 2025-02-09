@@ -77,15 +77,16 @@ return {
   "folke/snacks.nvim",
   priority = 1000,
   lazy = false,
-  init = function()
-    require("which-key").add(keys)
-  end,
+  init = function() require("which-key").add(keys) end,
   opts = function()
     local config = require("config")
     local icons = config.ui.icons.diagnostics
     local function vim_version() return vim.version().major .. "." .. vim.version().minor .. "." .. vim.version().patch end
 
-    Set_hl("SnacksPickerInputBorder", { bg = config.theme.colors.dark0, fg = config.theme.colors.orange })
+    Set_hl(
+      { InputBorder = { bg = config.theme.colors.dark0, fg = config.theme.colors.orange } },
+      { prefix = "SnacksPicker", default = true }
+    )
 
     return {
       bigfile = {

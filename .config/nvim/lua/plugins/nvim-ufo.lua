@@ -82,7 +82,10 @@ return {
       local config = require("config")
       local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
       if theme == config.theme.name then
-        Set_hl("FoldColumn", { ctermbg = "none", bg = "none", ctermfg = "gray", fg = config.theme.colors.gray })
+        Set_hl(
+          { FoldColumn = { ctermbg = "none", bg = "none", ctermfg = "gray", fg = config.theme.colors.gray } },
+          { default = true }
+        )
       end
 
       require("ufo").setup(opts)

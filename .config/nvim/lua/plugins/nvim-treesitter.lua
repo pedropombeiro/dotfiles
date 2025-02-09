@@ -6,11 +6,12 @@ return {
     "nvim-treesitter/nvim-treesitter-context", -- Show code context
     event = { "BufReadPost", "BufNewFile", "BufWritePre" },
     module = "treesitter-context",
-    init = function()
+    config = function(_, opts)
       ---@diagnostic disable-next-line: undefined-field
       local colors = require("config").theme.colors
 
-      Set_hl("TreesitterContextBottom", { underline = true, sp = colors.bg0_s })
+      Set_hl({ ContextBottom = { underline = true, sp = colors.bg0_s } }, { prefix = "Treesitter", default = true })
+      require("treesitter-context").setup(opts)
     end,
   },
 

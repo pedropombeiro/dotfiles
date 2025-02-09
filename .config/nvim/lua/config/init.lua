@@ -1,4 +1,6 @@
-function Set_hl(name, attr) vim.api.nvim_set_hl(0, name, attr) end
+function Set_hl(table, opts)
+  Snacks.util.set_hl(table, opts)
+end
 
 -- stylua: ignore
 return {

@@ -26,6 +26,7 @@ return {
       lualine_c = {
         {
           "diagnostics",
+          sources = { "nvim_lsp", "nvim_diagnostic" },
           symbols = {
             ---@diagnostic disable: undefined-field
             hint = diagnostic_icons.hint .. " ",

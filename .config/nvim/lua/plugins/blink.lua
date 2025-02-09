@@ -1,6 +1,9 @@
 -- blink.nvim (https://github.com/saghen/blink.cmp)
 --  Performant, batteries-included completion plugin for Neovim.
 
+local config = require("config")
+local ui_icons = config.ui.icons.kinds
+
 return {
   -- auto completion
   {
@@ -19,7 +22,8 @@ return {
       if vim.fn.has("unix") == 1 then -- Check if it's a Unix-like system (Linux, macOS, etc.)
         local uname_output = vim.fn.system("uname -a")
         if uname_output and string.find(string.lower(uname_output), "qnap") then
-          return vim.fn.filereadable(vim.fn.stdpath("data") .. "/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so") == 1
+          return vim.fn.filereadable(vim.fn.stdpath("data") .. "/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so")
+            == 1
         end
       end
 
@@ -43,6 +47,38 @@ return {
         -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
         -- Adjusts spacing to ensure icons are aligned
         nerd_font_variant = "mono",
+        kind_icons = {
+          Text = ui_icons.Text,
+          Method = ui_icons.Method,
+          Function = ui_icons.Function,
+          Constructor = ui_icons.Constructor,
+
+          Field = ui_icons.Field,
+          Variable = ui_icons.Variable,
+          Property = ui_icons.Property,
+
+          Class = ui_icons.Class,
+          Interface = ui_icons.Interface,
+          Struct = ui_icons.Struct,
+          Module = ui_icons.Module,
+
+          Unit = ui_icons.Unit,
+          Value = ui_icons.Value,
+          Enum = ui_icons.Enum,
+          EnumMember = ui_icons.EnumMember,
+
+          Keyword = ui_icons.Keyword,
+          Constant = ui_icons.Constant,
+
+          Snippet = ui_icons.Snippet,
+          Color = ui_icons.Color,
+          File = ui_icons.File,
+          Reference = ui_icons.Reference,
+          Folder = ui_icons.Folder,
+          Event = ui_icons.Event,
+          Operator = ui_icons.Operator,
+          TypeParameter = ui_icons.TypeParameter,
+        },
       },
 
       completion = {
@@ -68,7 +104,9 @@ return {
           -- docker run --rm -it --name rust_builder ubuntu:14.04
           -- apt update -y && apt install -y curl git gcc && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && . "$HOME/.cargo/env" && git clone https://github.com/Saghen/blink.cmp.git && cd blink.cmp/ && cargo build --release
           -- From the QNAP host, run `docker cp rust_builder:/blink.cmp/target/release/libblink_cmp_fuzzy.so $HOME/.local/share/nvim/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so`
-          download = not vim.fn.filereadable(vim.fn.stdpath("data") .. "/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so") == 1,
+          download = not vim.fn.filereadable(
+            vim.fn.stdpath("data") .. "/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so"
+          ) == 1,
         },
       },
 

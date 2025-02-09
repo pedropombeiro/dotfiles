@@ -3,6 +3,7 @@
 
 local config = require("config")
 local ui_icons = config.ui.icons.kinds
+local libpath = vim.fn.stdpath("data") .. "/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so"
 
 return {
   -- auto completion
@@ -22,8 +23,7 @@ return {
       if vim.fn.has("unix") == 1 then -- Check if it's a Unix-like system (Linux, macOS, etc.)
         local uname_output = vim.fn.system("uname -a")
         if uname_output and string.find(string.lower(uname_output), "qnap") then
-          return vim.fn.filereadable(vim.fn.stdpath("data") .. "/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so")
-            == 1
+          return vim.fn.filereadable(libpath) == 1
         end
       end
 
@@ -104,9 +104,7 @@ return {
           -- docker run --rm -it --name rust_builder ubuntu:14.04
           -- apt update -y && apt install -y curl git gcc && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && . "$HOME/.cargo/env" && git clone https://github.com/Saghen/blink.cmp.git && cd blink.cmp/ && cargo build --release
           -- From the QNAP host, run `docker cp rust_builder:/blink.cmp/target/release/libblink_cmp_fuzzy.so $HOME/.local/share/nvim/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so`
-          download = not vim.fn.filereadable(
-            vim.fn.stdpath("data") .. "/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so"
-          ) == 1,
+          download = not vim.fn.filereadable(libpath) == 1,
         },
       },
 

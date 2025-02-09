@@ -79,15 +79,13 @@ return {
   lazy = false,
   init = function()
     require("which-key").add(keys)
-
-    local config = require("config")
-
-    Set_hl("SnacksPickerInputBorder", { bg = config.theme.colors.dark0, fg = config.theme.colors.orange })
   end,
   opts = function()
     local config = require("config")
     local icons = config.ui.icons.diagnostics
     local function vim_version() return vim.version().major .. "." .. vim.version().minor .. "." .. vim.version().patch end
+
+    Set_hl("SnacksPickerInputBorder", { bg = config.theme.colors.dark0, fg = config.theme.colors.orange })
 
     return {
       bigfile = {

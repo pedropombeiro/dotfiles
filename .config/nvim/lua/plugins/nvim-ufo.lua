@@ -54,23 +54,28 @@ return {
     ft = { "css", "eruby", "go", "html", "javascript", "json", "lua", "markdown", "ruby", "typescript", "yaml" },
     -- stylua: ignore
     keys = {
-      { 'zr', function() require('ufo').openFoldsExceptKinds() end,  mode = { 'n', 'v' }, desc = 'Open folds except defined kinds', },
-      { 'zm', function() require('ufo').closeFoldsWith() end,  mode = { 'n', 'v' }, desc = 'Close the folds > 0', },
-      { 'zR', function() require('ufo').openAllFolds() end,  mode = { 'n', 'v' }, desc = 'Open all folds but keep foldlevel', },
-      { 'zM', function() require('ufo').closeAllFolds() end, mode = { 'n', 'v' }, desc = 'Close all folds but keep foldlevel', },
+      { "zr", function() require("ufo").openFoldsExceptKinds() end,  mode = { "n", "v" }, desc = "Open folds except defined kinds", },
+      { "zm", function() require("ufo").closeFoldsWith() end,  mode = { "n", "v" }, desc = "Close the folds > 0", },
+      { "zR", function() require("ufo").openAllFolds() end,  mode = { "n", "v" }, desc = "Open all folds but keep foldlevel", },
+      { "zM", function() require("ufo").closeAllFolds() end, mode = { "n", "v" }, desc = "Close all folds but keep foldlevel", },
       {
-        '<leader>k',
+        "<leader>k",
         function()
-          local winid = require('ufo').peekFoldedLinesUnderCursor()
+          local winid = require("ufo").peekFoldedLinesUnderCursor()
           if not winid then
             vim.lsp.buf.hover()
           end
         end,
-        desc = 'Peek folded lines',
-        mode = { 'n', 'v' },
+        desc = "Peek folded lines",
+        mode = { "n", "v" },
       },
     },
-    opts = function()
+    opts = {
+      close_fold_kinds_for_ft = { go = "imports" },
+      fold_virt_text_handler = fold_virt_text_handler,
+      provider_selector = function() return { "treesitter", "indent" } end,
+    },
+    config = function(_, opts)
       setFoldOptions()
 
       --- Override foldcolumn colors to match theme
@@ -80,11 +85,7 @@ return {
         Set_hl("FoldColumn", { ctermbg = "none", bg = "none", ctermfg = "gray", fg = config.theme.colors.gray })
       end
 
-      return {
-        close_fold_kinds_for_ft = { go = "imports" },
-        fold_virt_text_handler = fold_virt_text_handler,
-        provider_selector = function() return { "treesitter", "indent" } end,
-      }
+      require("ufo").setup(opts)
     end,
   },
 }

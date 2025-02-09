@@ -96,13 +96,7 @@ return {
           args = { "-count=1", "-timeout=60s" },
         }),
         require("neotest-rspec")({
-          rspec_cmd = function()
-            return vim.tbl_flatten({
-              "bundle",
-              "exec",
-              "rspec",
-            })
-          end,
+          rspec_cmd = function() return { "bundle", "exec", "rspec" } end,
         }),
       },
       icons = {

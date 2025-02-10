@@ -10,7 +10,9 @@ if [ -z "$HOMEBREW_PREFIX" ]; then
 fi
 
 if [ -n "$HOMEBREW_PREFIX" ]; then
-  PATH="${PATH}:${HOMEBREW_PREFIX}/bin:${HOMEBREW_PREFIX}/sbin"
+  if ! echo "$PATH" | grep "$HOMEBREW_PREFIX" >/dev/null; then
+    PATH="${HOMEBREW_PREFIX}/bin:${HOMEBREW_PREFIX}/sbin:${PATH}"
+  fi
   if [ -d "$HOMEBREW_PREFIX"/opt/python/libexec/bin ]; then
     PATH="$HOMEBREW_PREFIX/opt/python/libexec/bin:$PATH"
   fi

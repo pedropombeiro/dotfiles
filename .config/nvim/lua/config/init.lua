@@ -79,7 +79,7 @@ return {
         Reference     = "",
         Snippet       = "",
         String        = "",
-        Struct        = "󰆼",
+        Struct        = "󱡠",
         Text          = "󰉿",
         TypeAlias     = "",
         TypeParameter = "",

@@ -1,8 +1,6 @@
 -- blink.nvim (https://github.com/saghen/blink.cmp)
 --  Performant, batteries-included completion plugin for Neovim.
 
-local config = require("config")
-local ui_icons = config.ui.icons.kinds
 local libpath = vim.fn.stdpath("data") .. "/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so"
 
 return {
@@ -51,38 +49,6 @@ return {
         -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
         -- Adjusts spacing to ensure icons are aligned
         nerd_font_variant = "mono",
-        kind_icons = {
-          Text = ui_icons.Text,
-          Method = ui_icons.Method,
-          Function = ui_icons.Function,
-          Constructor = ui_icons.Constructor,
-
-          Field = ui_icons.Field,
-          Variable = ui_icons.Variable,
-          Property = ui_icons.Property,
-
-          Class = ui_icons.Class,
-          Interface = ui_icons.Interface,
-          Struct = ui_icons.Struct,
-          Module = ui_icons.Module,
-
-          Unit = ui_icons.Unit,
-          Value = ui_icons.Value,
-          Enum = ui_icons.Enum,
-          EnumMember = ui_icons.EnumMember,
-
-          Keyword = ui_icons.Keyword,
-          Constant = ui_icons.Constant,
-
-          Snippet = ui_icons.Snippet,
-          Color = ui_icons.Color,
-          File = ui_icons.File,
-          Reference = ui_icons.Reference,
-          Folder = ui_icons.Folder,
-          Event = ui_icons.Event,
-          Operator = ui_icons.Operator,
-          TypeParameter = ui_icons.TypeParameter,
-        },
       },
 
       completion = {
@@ -97,6 +63,12 @@ return {
         menu = {
           auto_show = false,
           draw = {
+            components = {
+              kind_icon = {
+                ellipsis = false,
+                text = function(ctx) return require("config").ui.icons.kinds[ctx.kind] end,
+              },
+            },
             treesitter = { "lsp" },
           },
         },

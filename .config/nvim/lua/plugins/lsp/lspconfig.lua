@@ -77,6 +77,7 @@ return {
       end
     end
 
+    -- LSP Server Settings
     local servers = {
       bashls = {},
       docker_compose_language_service = {},
@@ -215,15 +216,15 @@ return {
       servers.arduino_language_server = {
         -- stylua: ignore
         cmd = {
-          'arduino-language-server',
-          '-cli-config',
-          '~/Library/Arduino15/arduino-cli.yaml', -- Generated with `arduino-cli config init`
-          '-fqbn',
-          'keyboardio:gd32:keyboardio_model_100',
-          '-cli',
-          'arduino-cli',
-          '-clangd',
-          'clangd',
+          "arduino-language-server",
+          "-cli-config",
+          "~/Library/Arduino15/arduino-cli.yaml", -- Generated with `arduino-cli config init`
+          "-fqbn",
+          "keyboardio:gd32:keyboardio_model_100",
+          "-cli",
+          "arduino-cli",
+          "-clangd",
+          "clangd",
         },
       }
       servers.clangd = {}
@@ -248,6 +249,12 @@ return {
 
     return {
       servers = servers,
+      -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
+      -- Be aware that you also will need to properly configure your LSP server to
+      -- provide the code lenses.
+      codelens = {
+        enabled = false,
+      },
       inlay_hints = { enabled = true },
     }
   end,

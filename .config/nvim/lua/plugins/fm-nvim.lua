@@ -10,6 +10,7 @@ return {
 
   {
     "is0n/fm-nvim",
+    ---@type LazyKeysSpec[]
     keys = {
       {
         "<leader>tg",

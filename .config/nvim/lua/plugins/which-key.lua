@@ -9,6 +9,7 @@ return {
     require("plugins/which-key.keymap")
     require("plugins/which-key.keymap-plugins")
   end,
+  ---@type LazyKeysSpec[]
   keys = {
     {
       "<leader>?",

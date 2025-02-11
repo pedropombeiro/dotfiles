@@ -3,28 +3,29 @@
 
 ---@format disable-next
 -- stylua: ignore
+---@type LazyKeysSpec[]
 local keys = {
-  { '<leader>uh',  function() vim.lsp.inlay_hint.enable(false) end, desc = 'Disable inlay hints' },
-  { '[oH',         function() vim.lsp.inlay_hint.enable(true) end,  desc = 'Enable inlay hints' },
-  { ']oH',         function() vim.lsp.inlay_hint.enable(false) end, desc = 'Disable inlay hints' },
-  { '[d',          function() vim.diagnostic.goto_prev() end,       desc = 'Previous LSP diagnostic' },
-  { ']d',          function() vim.diagnostic.goto_next() end,       desc = 'Next LSP diagnostic' },
-  { '<f2>',        function() vim.lsp.buf.rename() end,             desc = 'Rename symbol' },
-  { 'K',           function() vim.lsp.buf.hover() end,              desc = 'Hover' },
-  { '<leader>K',   function() vim.lsp.buf.signature_help() end,     desc = 'Signature help' },
-  --{ "<leader>lca', function() vim.lsp.buf.code_action() end,        desc = "List code actions" },       -- Replaced with nvim-code-action-menu
-  { '<leader>lD',  function() vim.lsp.buf.declaration() end,        desc = 'Go to declaration' },
-  { '<leader>ly',  function() vim.lsp.buf.type_definition() end,    desc = 'Go to type definition' },
-  { '<leader>li',  function() vim.lsp.buf.implementation() end,     desc = 'Go to implementation' },
-  --{ "<leader>lr",  ':TroubleToggle lsp_references',             desc = "References" },
-  --{ "<leader>ld",  ':TroubleToggle lsp_definitions',            desc = "Definitions" },
-  --{ "<C-]>",       ':TroubleToggle lsp_definitions',            desc = "Definitions" },
-  -- { '<leader>lf',  function() vim.lsp.buf.format({ async = true }) end, desc = 'Format buffer' },
-  { '<leader>lwa', function() vim.lsp.buf.add_workspace_folder() end, desc = 'Add workspace folder' },
+  { "<leader>uh",  function() vim.lsp.inlay_hint.enable(false) end, desc = "Disable inlay hints" },
+  { "[oH",         function() vim.lsp.inlay_hint.enable(true) end,  desc = "Enable inlay hints" },
+  { "]oH",         function() vim.lsp.inlay_hint.enable(false) end, desc = "Disable inlay hints" },
+  { "[d",          function() vim.diagnostic.goto_prev() end,       desc = "Previous LSP diagnostic" },
+  { "]d",          function() vim.diagnostic.goto_next() end,       desc = "Next LSP diagnostic" },
+  { "<f2>",        function() vim.lsp.buf.rename() end,             desc = "Rename symbol" },
+  { "K",           function() vim.lsp.buf.hover() end,              desc = "Hover" },
+  { "<leader>K",   function() vim.lsp.buf.signature_help() end,     desc = "Signature help" },
+  --{ "<leader>lca", function() vim.lsp.buf.code_action() end,        desc = "List code actions" },       -- Replaced with nvim-code-action-menu
+  { "<leader>lD",  function() vim.lsp.buf.declaration() end,        desc = "Go to declaration" },
+  { "<leader>ly",  function() vim.lsp.buf.type_definition() end,    desc = "Go to type definition" },
+  { "<leader>li",  function() vim.lsp.buf.implementation() end,     desc = "Go to implementation" },
+  --{ "<leader>lr",  ":TroubleToggle lsp_references",             desc = "References" },
+  --{ "<leader>ld",  ":TroubleToggle lsp_definitions",            desc = "Definitions" },
+  --{ "<C-]>",       ":TroubleToggle lsp_definitions",            desc = "Definitions" },
+  -- { "<leader>lf",  function() vim.lsp.buf.format({ async = true }) end, desc = "Format buffer" },
+  { "<leader>lwa", function() vim.lsp.buf.add_workspace_folder() end, desc = "Add workspace folder" },
   {
-    '<leader>lwl',
+    "<leader>lwl",
     function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end,
-    desc = 'List workspace folders',
+    desc = "List workspace folders",
   },
 }
 
@@ -62,6 +63,7 @@ return {
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
     end
   end,
+  ---@return PluginLspOpts
   opts = function()
     if vim.fn.has("mac") ~= 1 then
       vim.env.DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = 1 -- Needed for marksman LSP on systems missing ICU libraries
@@ -78,140 +80,152 @@ return {
     end
 
     -- LSP Server Settings
-    local servers = {
-      bashls = {},
-      docker_compose_language_service = {},
-      dockerls = {},
-      golangci_lint_ls = {},
-      gopls = {
-        settings = {
-          gopls = {
-            hints = {
-              rangeVariableTypes = true,
-              parameterNames = true,
-              constantValues = true,
-              assignVariableTypes = true,
-              compositeLiteralFields = true,
-              compositeLiteralTypes = true,
-              functionTypeParameters = true,
-            },
-          },
-        },
-      },
-      jsonls = {
-        -- lazy-load schemastore when needed
-        on_new_config = function(new_config)
-          new_config.settings.json.schemas = new_config.settings.json.schemas or {}
-          vim.list_extend(new_config.settings.json.schemas, require("schemastore").json.schemas())
-        end,
-        settings = {
-          json = {
-            format = { enable = false },
-            validate = { enable = true },
-          },
-        },
-      },
-      lua_ls = {
-        single_file_support = true,
-        settings = {
-          Lua = {
-            runtime = {
-              -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-              version = "LuaJIT",
-            },
-            diagnostics = {
-              enable = true,
-              -- Get the language server to recognize the `Snacks` and `vim` globals
-              globals = { "Snacks", "vim" },
-              neededFileStatus = {
-                ["codestyle-check"] = "Any",
-              },
-            },
-            workspace = {
-              -- Make the server aware of Neovim runtime files
-              checkThirdParty = false,
-              library = {
-                vim.env.VIMRUNTIME,
-              },
-            },
-            completion = {
-              callSnippet = "Replace",
-            },
-            format = {
-              enable = false,
-              defaultConfig = {
-                indent_style = "space",
-                indent_size = "2",
-                quote_style = "double",
-              },
-            },
-            hint = {
-              enable = false,
-              arrayIndex = "Auto",
-              await = true,
-              paramName = "All",
-              paramType = true,
-              semicolon = "SameLine",
-              setType = false,
-            },
-          },
-        },
-      },
-      jedi_language_server = {},
-      ruby_lsp = {
-        mason = false,
-        cmd = { vim.fn.expand("~/.local/share/mise/shims/ruby-lsp") },
-        init_options = {
-          formatter = "standard",
-          linters = { "standard" },
-        },
-      },
-      sqlls = {},
-      taplo = {},
-      vtsls = {},
-      vimls = {},
-      volar = {},
-      yamlls = {
-        -- Have to add this for yamlls to understand that we support line folding
-        capabilities = {
-          textDocument = {
-            foldingRange = {
-              dynamicRegistration = false,
-              lineFoldingOnly = true,
-            },
-          },
+    ---@class PluginLspOpts
+    local lspopts = {
+      servers = {
+        bashls = {},
+        docker_compose_language_service = {},
+        dockerls = {},
+        golangci_lint_ls = {},
+        gopls = {
           settings = {
-            yaml = {
-              ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] = "/.gitlab-ci.yml",
+            gopls = {
+              hints = {
+                rangeVariableTypes = true,
+                parameterNames = true,
+                constantValues = true,
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                compositeLiteralTypes = true,
+                functionTypeParameters = true,
+              },
             },
           },
         },
-        -- lazy-load schemastore when needed
-        on_new_config = function(new_config)
-          new_config.settings.yaml.schemas = new_config.settings.yaml.schemas or {}
-          vim.list_extend(new_config.settings.yaml.schemas, require("schemastore").yaml.schemas())
-        end,
-        settings = {
-          redhat = { telemetry = { enabled = false } },
-          yaml = {
-            keyOrdering = false,
-            format = {
-              enable = false,
+        jsonls = {
+          -- lazy-load schemastore when needed
+          on_new_config = function(new_config)
+            new_config.settings.json.schemas = new_config.settings.json.schemas or {}
+            vim.list_extend(new_config.settings.json.schemas, require("schemastore").json.schemas())
+          end,
+          settings = {
+            json = {
+              format = { enable = false },
+              validate = { enable = true },
             },
-            hover = true,
-            completion = true,
-            validate = true,
-            schemastore = {
-              -- Must disable built-in schemaStore support to use
-              -- schemas from SchemaStore.nvim plugin
-              enable = false,
-              -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
-              url = "",
+          },
+        },
+        lua_ls = {
+          single_file_support = true,
+          settings = {
+            Lua = {
+              runtime = {
+                -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+                version = "LuaJIT",
+              },
+              diagnostics = {
+                enable = true,
+                -- Get the language server to recognize the `Snacks` and `vim` globals
+                globals = { "Snacks", "vim" },
+                neededFileStatus = {
+                  ["codestyle-check"] = "Any",
+                },
+              },
+              workspace = {
+                -- Make the server aware of Neovim runtime files
+                checkThirdParty = false,
+                library = {
+                  vim.env.VIMRUNTIME,
+                },
+              },
+              completion = {
+                callSnippet = "Replace",
+              },
+              format = {
+                enable = false,
+                defaultConfig = {
+                  indent_style = "space",
+                  indent_size = "2",
+                  quote_style = "double",
+                },
+              },
+              hint = {
+                enable = false,
+                arrayIndex = "Auto",
+                await = true,
+                paramName = "All",
+                paramType = true,
+                semicolon = "SameLine",
+                setType = false,
+              },
+            },
+          },
+        },
+        jedi_language_server = {},
+        ruby_lsp = {
+          mason = false,
+          cmd = { vim.fn.expand("~/.local/share/mise/shims/ruby-lsp") },
+          init_options = {
+            formatter = "standard",
+            linters = { "standard" },
+          },
+        },
+        sqlls = {},
+        taplo = {},
+        vtsls = {},
+        vimls = {},
+        volar = {},
+        yamlls = {
+          -- Have to add this for yamlls to understand that we support line folding
+          capabilities = {
+            textDocument = {
+              foldingRange = {
+                dynamicRegistration = false,
+                lineFoldingOnly = true,
+              },
+            },
+            settings = {
+              yaml = {
+                ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] = "/.gitlab-ci.yml",
+              },
+            },
+          },
+          -- lazy-load schemastore when needed
+          on_new_config = function(new_config)
+            new_config.settings.yaml.schemas = new_config.settings.yaml.schemas or {}
+            vim.list_extend(new_config.settings.yaml.schemas, require("schemastore").yaml.schemas())
+          end,
+          settings = {
+            redhat = { telemetry = { enabled = false } },
+            yaml = {
+              keyOrdering = false,
+              format = {
+                enable = false,
+              },
+              hover = true,
+              completion = true,
+              validate = true,
+              schemastore = {
+                -- Must disable built-in schemaStore support to use
+                -- schemas from SchemaStore.nvim plugin
+                enable = false,
+                -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
+                url = "",
+              },
             },
           },
         },
       },
+      -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
+      -- Be aware that you also will need to properly configure your LSP server to
+      -- provide the code lenses.
+      codelens = {
+        enabled = false,
+      },
+      inlay_hints = { enabled = true },
     }
+    local servers = lspopts.servers
+
     if file_exists(vim.fn.expand("~/Library/Arduino15/arduino-cli.yaml")) then
       servers.arduino_language_server = {
         -- stylua: ignore
@@ -247,17 +261,9 @@ return {
       lspconfig.homeassistant.setup({})
     end
 
-    return {
-      servers = servers,
-      -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
-      -- Be aware that you also will need to properly configure your LSP server to
-      -- provide the code lenses.
-      codelens = {
-        enabled = false,
-      },
-      inlay_hints = { enabled = true },
-    }
+    return lspopts
   end,
+  ---@param opts PluginLspOpts
   config = function(_, opts)
     --if !has_key(plugs, "trouble.nvim")
     --  nnoremap <silent> <leader>gd :lua vim.lsp.buf.definition()<CR>

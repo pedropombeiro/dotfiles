@@ -5,6 +5,7 @@
 return {
   "folke/trouble.nvim",
   cmd = { "Trouble" },
+  ---@type LazyKeysSpec[]
   keys = {
     { "<leader>xw", "<cmd>Trouble diagnostics toggle<cr>", desc = "Toggle workspace diagnostics" },
     { "<leader>xd", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", desc = "Toggle document diagnostics" },

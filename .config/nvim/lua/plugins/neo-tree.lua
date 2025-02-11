@@ -46,6 +46,7 @@ return {
       end,
     },
   },
+  ---@type LazyKeysSpec[]
   keys = {
     {
       "<C-\\>",

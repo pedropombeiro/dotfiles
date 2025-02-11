@@ -32,6 +32,7 @@ return {
   --### Snippets
   {
     "aduros/ai.vim", -- Generate and edit text in Neovim using OpenAI and GPT.
+    ---@type LazyKeysSpec[]
     keys = {
       { "<leader>=", ":AI ", mode = { "n", "v" }, desc = "Perform action with OpenAI" },
       { "<C-A>", "<Esc><Cmd>AI<CR>a", mode = "i", desc = "Autocomplete with OpenAI" },
@@ -43,6 +44,7 @@ return {
   --### Navigation
   {
     "ruanyl/vim-gh-line", -- vim plugin that open the link of current line on github
+    ---@type LazyKeysSpec[]
     keys = {
       { "<leader>gb", "<Plug>(gh-line-blame)", desc = "Open blame view in browser" },
       { "<leader>gh", "<Plug>(gh-line)", desc = "Open blob view in browser" },
@@ -59,6 +61,7 @@ return {
     "folke/persistence.nvim",
     event = "BufReadPre",
     opts = { options = vim.opt.sessionoptions:get() },
+    ---@type LazyKeysSpec[]
     keys = {
       {
         "<leader>qs",
@@ -85,6 +88,7 @@ return {
   },
   {
     "Wansmer/treesj", -- Neovim plugin for splitting/joining blocks of code
+    ---@type LazyKeysSpec[]
     keys = {
       { "gJ", ":TSJJoin<CR>", desc = "Join into single-line form" },
       { "gS", ":TSJSplit<CR>", desc = "Split into multi-line form" },
@@ -171,6 +175,7 @@ return {
   {
     "ruifm/gitlinker.nvim",
     dependencies = "nvim-lua/plenary.nvim",
+    ---@type LazyKeysSpec[]
     keys = {
       {
         "<leader>gy",

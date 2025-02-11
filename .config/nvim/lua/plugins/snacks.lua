@@ -2,7 +2,8 @@
 --  🍿 A collection of QoL plugins for Neovim
 
 ---@format disable-next
---\ stylua: ignore
+-- stylua: ignore
+---@type LazyKeysSpec[]
 local keys = {
   { "<leader>b", group = "Bclose" },
   { "<leader>bd", function() Snacks.bufdelete() end, desc = "Close buffer", silent = true },
@@ -31,7 +32,7 @@ local keys = {
   { "<leader>fK", function() Snacks.picker.man() end, desc = "Man pages", icon = "" },
   { "<leader>fl", function() Snacks.picker.loclist() end, desc = "Location list", icon = "" },
   { "<leader>fq", function() Snacks.picker.qflist() end, desc = "Quickfix list", icon = "" },
-  -- { '<leader>fT',    '<Cmd>Telescope filetypes<CR>',       desc = 'Filetypes' },
+  -- { "<leader>fT",    "<Cmd>Telescope filetypes<CR>",       desc = "Filetypes" },
   { "<leader>fh", function() Snacks.picker.recent() end, desc = "Old files" },
   { "<leader>f:", function() Snacks.picker.command_history() end, desc = "Command history", icon = "" },
   { "<leader>f/", function() Snacks.picker.search_history() end, desc = "Search history", icon = "󱝩" },
@@ -45,7 +46,7 @@ local keys = {
   { "<leader>f'", function() Snacks.picker.marks() end, desc = "Marks", icon = "" },
   { "<leader>f.", function() Snacks.picker.jumps() end, desc = "Jump list", icon = "" },
   { '<leader>f"', function() Snacks.picker.registers() end, desc = "Registers" },
-  -- { '<leader>fO',    '<Cmd>Telescope vim_options<CR>',     desc = 'Vim options' },
+  -- { "<leader>fO",    "<Cmd>Telescope vim_options<CR>",     desc = "Vim options" },
   { "<leader>fs", function() Snacks.picker.spelling() end, desc = "Spelling suggestions", icon = "󱣩" },
   { "<leader>fp", function() Snacks.picker.lazy() end, desc = "Plugins", icon = "" },
 
@@ -88,6 +89,7 @@ return {
       { prefix = "SnacksPicker", default = true }
     )
 
+    ---@type snacks.Config
     return {
       bigfile = {
         enabled = not vim.g.started_by_firenvim,

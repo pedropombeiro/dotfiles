@@ -53,6 +53,7 @@ return {
     },
     ft = { "css", "eruby", "go", "html", "javascript", "json", "lua", "markdown", "ruby", "typescript", "yaml" },
     -- stylua: ignore
+    ---@type LazyKeysSpec[]
     keys = {
       { "zr", function() require("ufo").openFoldsExceptKinds() end,  mode = { "n", "v" }, desc = "Open folds except defined kinds", },
       { "zm", function() require("ufo").closeFoldsWith() end,  mode = { "n", "v" }, desc = "Close the folds > 0", },

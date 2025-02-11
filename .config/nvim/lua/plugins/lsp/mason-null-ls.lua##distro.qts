@@ -8,23 +8,23 @@
 
 return {
   'jayp0521/mason-null-ls.nvim',
-  event = { 'BufReadPost', 'BufNewFile', 'BufWritePre' },
+  event = { "BufReadPost", "BufNewFile", "BufWritePre" },
   dependencies = {
-    'nvimtools/none-ls.nvim',
-    'williamboman/mason.nvim',
+    "nvimtools/none-ls.nvim",
+    "williamboman/mason.nvim",
   },
   opts = {
     automatic_installation = false,
     ensure_installed = {
-      'actionlint',
-      'docker-compose-language-service',
-      'fixjson',
-      'jsonlint',
-      'markdownlint-cli2',
-      'prettier',
-      'shfmt',
-      'shellcheck',
-      'vale',
+      "actionlint",
+      "docker-compose-language-service",
+      "fixjson",
+      "jsonlint",
+      "markdownlint-cli2",
+      "prettier",
+      "shfmt",
+      "shellcheck",
+      "vale",
     }
   }
 }

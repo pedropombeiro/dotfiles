@@ -7,6 +7,7 @@ return {
   cond = function() return not vim.g.started_by_firenvim end,
   event = { "BufNewFile", "BufReadPre" },
   -- stylua: ignore
+  ---@type LazyKeysSpec[]
   keys = {
     { "<leader>bp", "<Cmd>BufferLineTogglePin<CR>",            desc = "Toggle pin" },
     { "<leader>bP", "<Cmd>BufferLineGroupClose ungrouped<CR>", desc = "Delete non-pinned buffers" },

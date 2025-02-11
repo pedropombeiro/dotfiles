@@ -5,6 +5,7 @@ return {
   "gelguy/wilder.nvim",
   build = ":UpdateRemotePlugins",
   event = "CmdlineEnter",
+  ---@type LazyKeysSpec[]
   keys = {
     { "<TAB>", 'wilder#in_context() ? wilder#next() : "\\<Tab>"', mode = "c", expr = true },
     { "<S-TAB>", 'wilder#in_context() ? wilder#previous() : "\\<S-Tab>"', mode = "c", expr = true },

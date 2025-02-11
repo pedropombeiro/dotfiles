@@ -4,6 +4,7 @@
 return {
   "hedyhli/outline.nvim",
   cmd = { "Outline", "OutlineOpen" },
+  ---@type LazyKeysSpec[]
   keys = {
     { "<C-|>", ":Outline<CR>", mode = { "n", "v" }, desc = "Toggle symbols window", silent = true },
   },

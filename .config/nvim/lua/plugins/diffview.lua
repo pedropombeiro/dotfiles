@@ -5,6 +5,7 @@ return {
   "sindrets/diffview.nvim",
   dependencies = "nvim-lua/plenary.nvim",
   cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
+  ---@type LazyKeysSpec[]
   keys = { { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "DiffView" } },
   opts = function()
     local config = require("config")

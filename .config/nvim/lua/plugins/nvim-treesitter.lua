@@ -102,11 +102,14 @@ return {
       require("nvim-treesitter.query_predicates")
     end,
     cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
+    ---@type LazyKeysSpec[]
     keys = {
       { "<TAB>", desc = "Increment Selection" },
       { "<S-TAB>", desc = "Decrement Selection", mode = "x" },
     },
     main = "nvim-treesitter.configs",
+    ---@type TSConfig
+    ---@diagnostic disable-next-line: missing-fields
     opts = {
       -- A list of parser names, or "all"
       ensure_installed = {

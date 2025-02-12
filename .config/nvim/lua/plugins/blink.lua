@@ -15,7 +15,7 @@ return {
     -- use a release tag to download pre-built binaries
     version = "*",
 
-    event = "InsertEnter",
+    event = { "InsertEnter", "CmdLineEnter" },
 
     cond = function()
       if vim.fn.has("unix") == 1 then -- Check if it's a Unix-like system (Linux, macOS, etc.)
@@ -61,7 +61,7 @@ return {
         },
         ghost_text = { enabled = true },
         menu = {
-          auto_show = false,
+          auto_show = function(ctx) return ctx.mode == "cmdline" end,
           draw = {
             components = {
               kind_icon = {

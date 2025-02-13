@@ -48,6 +48,7 @@ local keys = {
   { '<leader>f"', function() Snacks.picker.registers() end, desc = "Registers" },
   -- { "<leader>fO",    "<Cmd>Telescope vim_options<CR>",     desc = "Vim options" },
   { "<leader>fs", function() Snacks.picker.spelling() end, desc = "Spelling suggestions", icon = "󱣩" },
+  { "<leader>fS", function() Snacks.picker() end, desc = "Pickers", icon = "" },
   { "<leader>fp", function() Snacks.picker.lazy() end, desc = "Plugins", icon = "" },
 
   -- Git operations

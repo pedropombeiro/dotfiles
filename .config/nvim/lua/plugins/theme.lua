@@ -23,7 +23,7 @@ return {
   end,
   opts = {
     contrast = "hard",
-    dim_inactive = false,
+    dim_inactive = true,
     transparent_mode = false,
     overrides = {
       Normal = { bg = theme.colors.dark0 },

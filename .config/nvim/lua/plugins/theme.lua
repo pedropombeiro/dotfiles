@@ -1,35 +1,36 @@
 -- gruvbox (https://github.com/ellisonleao/gruvbox.nvim)
 --  Lua port of the most famous vim colorscheme
 
+local theme = require("config").theme
+
 return {
   "ellisonleao/gruvbox.nvim",
   lazy = false,
   priority = 1000, -- make sure to load this before all the other start plugins
   cond = function()
-    local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
-    if theme == nil then
-      local config = require("config")
+    local nvim_theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
+    if nvim_theme == nil then
       ---@diagnostic disable-next-line: undefined-field
-      theme = config.theme.name
+      nvim_theme = theme.name
     end
 
-    return theme == "gruvbox"
+    return nvim_theme == "gruvbox"
   end,
   config = function(_, opts)
     require("gruvbox").setup(opts)
 
-    vim.cmd("colorscheme " .. require("config").theme.name)
+    vim.cmd("colorscheme " .. theme.name)
   end,
   opts = {
     contrast = "hard",
     dim_inactive = false,
     transparent_mode = false,
     overrides = {
-      Normal = { bg = require("config").theme.colors.dark0 },
+      Normal = { bg = theme.colors.dark0 },
 
       -- Change border for float windows (normally grey)
-      NormalFloat = { bg = require("config").theme.colors.dark0 },
-      FloatBorder = { fg = "#83a598", bg = require("config").theme.colors.dark0 },
+      NormalFloat = { bg = theme.colors.dark0 },
+      FloatBorder = { fg = "#83a598", bg = theme.colors.dark0 },
       FloatermBorder = { link = "FloatBorder" },
       LspInfoBorder = { link = "FloatBorder" },
 

@@ -70,9 +70,9 @@ return {
 
       -- Lua
       ["@function.call.lua"] = { link = "GruvboxAqua" },
-      ["@keyword.function.lua"] = { link = "GruvboxBlue" },
+      ["@keyword.function.lua"] = { link = "GruvboxBlueBold" },
       ["@lsp.type.function.lua"] = { link = "GruvboxAqua" },
-      ["@lsp.type.property.lua"] = { link = "GruvboxRed" },
+      ["@lsp.type.property.lua"] = { link = "GruvboxAqua" },
       ["@lsp.type.variable.lua"] = { link = "GruvboxBlue" },
 
       -- Ruby

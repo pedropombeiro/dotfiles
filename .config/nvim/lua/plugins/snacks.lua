@@ -38,6 +38,13 @@ local function git_grep()
   Snacks.picker.git_grep()
 end
 
+local function yadm_grep()
+  -- Workaround until https://github.com/folke/snacks.nvim/issues/1184 is implemented
+  vim.env.GIT_DIR = yadm_repo()
+
+  Snacks.picker.git_grep({ cwd = vim.fn.expand("~") })
+end
+
 ---@format disable-next
 -- stylua: ignore
 ---@type LazyKeysSpec[]
@@ -95,6 +102,7 @@ local keys = {
   { "<leader>fgC", function() Snacks.picker.git_log_file() end, desc = "Git commits (buffer)", icon = "" },
   { "<leader>/", function() git_grep() end, desc = "Git grep", icon = "󰛔" },
   { "<leader>fgg", function() git_grep() end, desc = "Git grep", icon = "󰛔" },
+  { "<leader>fgy", function() yadm_grep() end, desc = "YADM grep", icon = "󰛔" },
   { "<leader>fgf", function() Snacks.picker.git_files() end, desc = "Git files", icon = "" },
   { "<leader>fgS", function() Snacks.picker.git_stash() end, desc = "Git stash" },
   { "<leader>fgs", function() Snacks.picker.git_status() end, desc = "Git status", icon = "󱖫" },

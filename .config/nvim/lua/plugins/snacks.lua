@@ -1,6 +1,43 @@
 -- snacks.nvim (https://github.com/folke/snacks.nvim)
 --  🍿 A collection of QoL plugins for Neovim
 
+local function yadm_repo()
+  return vim.fn.expand("~/.local/share/yadm/repo.git") -- hardcode value of vim.fn.systemlist("yadm introspect repo")[1] for startup speed
+end
+
+local function lazygit_opts()
+  local opts = {
+    enabled = not vim.g.started_by_firenvim,
+    configure = false,
+    args = {
+      "--use-config-dir", vim.fn.expand("~/.config/lazygit")
+    }
+  }
+
+  if opts.enabled then
+    local cwd = vim.fn.getcwd()
+    local homedir = vim.fn.expand("~")
+    local configdir = vim.fn.expand("~/.config")
+
+    if cwd == homedir or string.sub(cwd, 1, #configdir) == configdir then
+      vim.list_extend(opts.args, {
+        "--git-dir", yadm_repo(),
+        "--work-tree", homedir,
+      })
+    end
+  end
+
+  return opts
+end
+
+local function git_grep()
+  -- Workaround until https://github.com/folke/snacks.nvim/issues/1184 is implemented
+  local opts = lazygit_opts()
+  if #opts.args > 2 then vim.env.GIT_DIR = opts.args[4] end
+
+  Snacks.picker.git_grep()
+end
+
 ---@format disable-next
 -- stylua: ignore
 ---@type LazyKeysSpec[]
@@ -56,8 +93,8 @@ local keys = {
   { "<leader>fgb", function() Snacks.picker.git_branches() end, desc = "Git branches", icon = "" },
   { "<leader>fgc", function() Snacks.picker.git_log() end, desc = "Git commits", icon = "" },
   { "<leader>fgC", function() Snacks.picker.git_log_file() end, desc = "Git commits (buffer)", icon = "" },
-  { "<leader>/", function() Snacks.picker.git_grep() end, desc = "Git grep", icon = "󰛔" },
-  { "<leader>fgg", function() Snacks.picker.git_grep() end, desc = "Git grep", icon = "󰛔" },
+  { "<leader>/", function() git_grep() end, desc = "Git grep", icon = "󰛔" },
+  { "<leader>fgg", function() git_grep() end, desc = "Git grep", icon = "󰛔" },
   { "<leader>fgf", function() Snacks.picker.git_files() end, desc = "Git files", icon = "" },
   { "<leader>fgS", function() Snacks.picker.git_stash() end, desc = "Git stash" },
   { "<leader>fgs", function() Snacks.picker.git_status() end, desc = "Git status", icon = "󱖫" },
@@ -78,7 +115,6 @@ local keys = {
   {
     "<leader>tg",
     function()
-      vim.env.LG_CONFIG_FILE = vim.fn.expand("~/.config/lazygit/config.yml")
       Snacks.lazygit.open(lazygit_opts())
 
       local plugins = require("lazy.core.config").plugins
@@ -137,7 +173,7 @@ return {
               desc = "Find Text",
               action = function() Snacks.dashboard.pick("live_grep") end,
             },
-            { icon = " ", key = "<leader>/", desc = "Git Grep", action = function() Snacks.picker.git_grep() end },
+            { icon = " ", key = "<leader>/", desc = "Git Grep", action = function() git_grep() end },
             { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
             {
               icon = " ",
@@ -172,6 +208,7 @@ return {
           { section = "startup" },
         },
       },
+      image = { enabled = false },
       indent = {
         animate = {
           duration = {
@@ -183,10 +220,7 @@ return {
       input = {
         enabled = true,
       },
-      lazygit = {
-        enabled = not vim.g.started_by_firenvim,
-        configure = false,
-      },
+      lazygit = lazygit_opts(),
       notifier = {
         enabled = true,
         timeout = 3000,
@@ -199,9 +233,6 @@ return {
           trace = icons.trace,
           ---@diagnostic enable: undefined-field
         },
-      },
-      images = {
-        enabled = true,
       },
       quickfile = {
         enabled = true,

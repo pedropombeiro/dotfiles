@@ -13,19 +13,6 @@ return {
     ---@type LazyKeysSpec[]
     keys = {
       {
-        "<leader>tg",
-        function()
-          vim.cmd("Lazygit")
-
-          local plugins = require("lazy.core.config").plugins
-          if plugins["gitsigns.nvim"] ~= nil and plugins["gitsigns.nvim"]._.loaded ~= nil then
-            -- ensure that Gitsigns refreshes with new state after closing Lazygit
-            vim.cmd([[execute 'Gitsigns refresh']])
-          end
-        end,
-        desc = "Open LazyGit",
-      },
-      {
         "<leader>F",
         function()
           -- Signal to vifm that we don't want image previews, since we can't really calculate the correct offset of the popup

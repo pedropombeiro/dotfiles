@@ -73,6 +73,22 @@ local keys = {
   -- { "<leader>lca", "<Cmd>FzfLua lsp_code_actions<CR>",           desc = "Code actions" },
 
   { "<C-e>", function() Snacks.picker.icons() end, desc = "Emojis", mode = "i", icon = "" },
+
+  -- LazyGit
+  {
+    "<leader>tg",
+    function()
+      vim.env.LG_CONFIG_FILE = vim.fn.expand("~/.config/lazygit/config.yml")
+      Snacks.lazygit.open(lazygit_opts())
+
+      local plugins = require("lazy.core.config").plugins
+      if plugins["gitsigns.nvim"] ~= nil and plugins["gitsigns.nvim"]._.loaded ~= nil then
+        -- ensure that Gitsigns refreshes with new state after closing Lazygit
+        vim.cmd([[execute 'Gitsigns refresh']])
+      end
+    end,
+    desc = "Open LazyGit",
+  },
 }
 
 return {
@@ -169,6 +185,7 @@ return {
       },
       lazygit = {
         enabled = not vim.g.started_by_firenvim,
+        configure = false,
       },
       notifier = {
         enabled = true,
@@ -182,6 +199,9 @@ return {
           trace = icons.trace,
           ---@diagnostic enable: undefined-field
         },
+      },
+      images = {
+        enabled = true,
       },
       quickfile = {
         enabled = true,

@@ -13,14 +13,16 @@ return {
       end
     end
 
-    require("which-key").add({
-      "<leader>fu",
-      open_buffer_urlview,
-      icon = "󰖟",
-      silent = true,
-      remap = true,
-      desc = "List buffer URLs",
-    })
+    require("which-key").add( ---@type wk.Spec
+      {
+        "<leader>fu",
+        open_buffer_urlview,
+        icon = "󰖟",
+        silent = true,
+        remap = true,
+        desc = "List buffer URLs",
+      }
+    )
   end,
   opts = {
     default_action = "system",

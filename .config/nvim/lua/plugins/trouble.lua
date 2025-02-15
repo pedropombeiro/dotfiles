@@ -48,11 +48,11 @@ return {
   },
   dependencies = "kyazdani42/nvim-web-devicons",
   init = function()
-    require("which-key").add({
-      { "<leader>x", group = "Trouble", icon = "🚦" },
-    })
-
-    vim.cmd("highlight link TroubleNormal NormalFloat")
+    require("which-key").add( ---@type wk.Spec
+      {
+        { "<leader>x", group = "Trouble", icon = "🚦" },
+      }
+    )
   end,
   opts = {
     use_diagnostic_signs = true,
@@ -64,6 +64,11 @@ return {
       scratch = false,
     },
   },
+  config = function(_, opts)
+    Set_hl({ TroubleNormal = { link = "NormalFloat" } })
+
+    require("trouble").setup(opts)
+  end,
   specs = {
     "folke/snacks.nvim",
     opts = function(_, opts)

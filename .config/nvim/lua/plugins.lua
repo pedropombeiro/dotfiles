@@ -117,9 +117,11 @@ return {
       },
     },
     init = function()
-      require("which-key").add({
-        { "gs", group = "Surround", icon = "" },
-      })
+      require("which-key").add( ---@type wk.Spec
+        {
+          { "gs", group = "Surround", icon = "" },
+        }
+      )
     end,
   },
   { "tummetott/unimpaired.nvim", event = { "BufReadPre", "BufNewFile" }, opts = {} }, -- LUA port of tpope's famous vim-unimpaired plugin

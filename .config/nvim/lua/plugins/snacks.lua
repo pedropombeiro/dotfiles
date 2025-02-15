@@ -16,6 +16,7 @@ local function is_yadm_repo()
   return cwd == homedir or string.sub(cwd, 1, #configdir) == configdir
 end
 
+---@type function|snacks.lazygit.Config
 local function lazygit_opts()
   local opts = {
     enabled = not vim.g.started_by_firenvim,
@@ -48,7 +49,7 @@ end
 
 ---@format disable-next
 -- stylua: ignore
----@type LazyKeysSpec[]
+---@type wk.Spec
 local keys = {
   { "<leader>b", group = "Bclose" },
   { "<leader>bd", function() Snacks.bufdelete() end, desc = "Close buffer", silent = true },
@@ -148,6 +149,8 @@ return {
     ---@type snacks.Config
     return {
       bigfile = { enabled = not vim.g.started_by_firenvim },
+      ---@type snacks.dashboard.Config
+      ---@diagnostic disable-next-line: missing-fields
       dashboard = {
         enabled = not vim.g.started_by_firenvim,
         preset = {
@@ -205,6 +208,8 @@ return {
         },
       },
       image = { enabled = false },
+      ---@type snacks.indent.Config
+      ---@diagnostic disable-next-line: missing-fields
       indent = {
         animate = {
           duration = {
@@ -215,6 +220,8 @@ return {
       },
       input = { enabled = true },
       lazygit = lazygit_opts(),
+      ---@type snacks.notifier.Config
+      ---@diagnostic disable-next-line: missing-fields
       notifier = {
         enabled = true,
         timeout = 3000,
@@ -227,6 +234,8 @@ return {
         },
       },
       quickfile = { enabled = true },
+      ---@type snacks.picker.Config
+      ---@diagnostic disable-next-line: missing-fields
       picker = {
         ---@type snacks.picker.jump.Config
         ---@diagnostic disable-next-line: missing-fields
@@ -290,6 +299,8 @@ return {
       },
       scope = { enabled = true },
       scratch = { enabled = true },
+      ---@type snacks.statuscolumn.Config
+      ---@diagnostic disable-next-line: missing-fields
       statuscolumn = {
         left = { "mark", "fold", "sign" }, -- priority of signs on the left (high to low)
         right = { "git" }, -- priority of signs on the right (high to low)
@@ -304,9 +315,13 @@ return {
         refresh = 50, -- refresh at most every 50ms
       },
       terminal = { enabled = not vim.g.started_by_firenvim },
+      ---@type snacks.win.Config
+      ---@diagnostic disable-next-line: missing-fields
       win = {
         border = "rounded",
       },
+      ---@type snacks.words.Config
+      ---@diagnostic disable-next-line: missing-fields
       words = {
         notify_jump = true,
       },

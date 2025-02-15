@@ -12,68 +12,69 @@ local on_attach = function(bufnr)
   local wk = require("which-key")
 
   -- Actions
-  wk.add({
-    buffer = bufnr,
+  wk.add( ---@type wk.Spec
     {
-      icon = "",
-      { "<leader>h", group = "Gitsigns" },
-      { "<leader>hs", ":Gitsigns stage_hunk<CR>", desc = "Stage Git hunk", mode = { "n", "v" }, icon = "" },
-      { "<leader>hu", gs.undo_stage_buffer, desc = "Undo stage Git hunk", icon = "" },
-      { "<leader>hr", ":Gitsigns reset_hunk<CR>", desc = "Reset Git hunk", mode = { "n", "v" } },
-      { "<leader>hq", ":Gitsigns setqflist<CR>", desc = "Open changes in Quickfix list" },
-      { "<leader>hp", gs.preview_hunk_inline, desc = "Preview Git hunk", icon = "" },
-      { "<leader>hS", gs.stage_buffer, desc = "Stage buffer" },
-      { "<leader>hR", gs.reset_buffer, desc = "Reset buffer" },
-      { "<leader>hb", function() gs.blame_line({ full = true }) end, desc = "Git blame line" },
-      { "<leader>hd", gs.diffthis, desc = "Git diff this" },
-      { "<leader>hD", function() gs.diffthis("~") end, desc = "Git diff this ~", icon = "" },
+      buffer = bufnr,
       {
-        expr = true,
+        icon = "",
+        { "<leader>h", group = "Gitsigns" },
+        { "<leader>hs", ":Gitsigns stage_hunk<CR>", desc = "Stage Git hunk", mode = { "n", "v" }, icon = "" },
+        { "<leader>hu", gs.undo_stage_buffer, desc = "Undo stage Git hunk", icon = "" },
+        { "<leader>hr", ":Gitsigns reset_hunk<CR>", desc = "Reset Git hunk", mode = { "n", "v" } },
+        { "<leader>hq", ":Gitsigns setqflist<CR>", desc = "Open changes in Quickfix list" },
+        { "<leader>hp", gs.preview_hunk_inline, desc = "Preview Git hunk", icon = "" },
+        { "<leader>hS", gs.stage_buffer, desc = "Stage buffer" },
+        { "<leader>hR", gs.reset_buffer, desc = "Reset buffer" },
+        { "<leader>hb", function() gs.blame_line({ full = true }) end, desc = "Git blame line" },
+        { "<leader>hd", gs.diffthis, desc = "Git diff this" },
+        { "<leader>hD", function() gs.diffthis("~") end, desc = "Git diff this ~", icon = "" },
         {
+          expr = true,
           {
-            -- Navigation
-            "[c",
-            function()
-              if vim.wo.diff then return "[c" end
-              vim.schedule(gs.prev_hunk)
-              return "<Ignore>"
-            end,
-            desc = "Previous Git hunk",
-            icon = "󰮳",
-          },
-          {
-            -- Navigation
-            "]c",
-            function()
-              if vim.wo.diff then return "]c" end
-              vim.schedule(gs.next_hunk)
-              return "<Ignore>"
-            end,
-            desc = "Next Git hunk",
-            icon = "󰮱",
-          },
-          {
+            {
+              -- Navigation
+              "[c",
+              function()
+                if vim.wo.diff then return "[c" end
+                vim.schedule(gs.prev_hunk)
+                return "<Ignore>"
+              end,
+              desc = "Previous Git hunk",
+              icon = "󰮳",
+            },
+            {
+              -- Navigation
+              "]c",
+              function()
+                if vim.wo.diff then return "]c" end
+                vim.schedule(gs.next_hunk)
+                return "<Ignore>"
+              end,
+              desc = "Next Git hunk",
+              icon = "󰮱",
+            },
+            {
+              -- Options
+              { "[g", group = "Enable Git option", icon = "" },
+              { "[gb", function() gs.toggle_current_line_blame(true) end, desc = "Enable current line blame" },
+
+              { "[gd", function() gs.toggle_deleted(true) end, desc = "Enable Git-deleted" },
+            },
             -- Options
-            { "[g", group = "Enable Git option", icon = "" },
-            { "[gb", function() gs.toggle_current_line_blame(true) end, desc = "Enable current line blame" },
-
-
-            { "[gd", function() gs.toggle_deleted(true) end, desc = "Enable Git-deleted" },
+            { "]g", group = "Disable Git option", icon = "" },
+            { "]gb", function() gs.toggle_current_line_blame(false) end, desc = "Disable current line blame" },
+            { "]gd", function() gs.toggle_deleted(false) end, desc = "Disable Git-deleted" },
           },
-          -- Options
-          { "]g", group = "Disable Git option", icon = "" },
-          { "]gb", function() gs.toggle_current_line_blame(false) end, desc = "Disable current line blame" },
-          { "]gd", function() gs.toggle_deleted(false) end, desc = "Disable Git-deleted" },
+        },
+        {
+          -- Text object
+          mode = { "o", "x" },
+          { "i", group = "Text object" },
+          { "ih", function() gs.select_hunk() end, desc = "Select Git hunk" },
         },
       },
-      {
-        -- Text object
-        mode = { "o", "x" },
-        { "i", group = "Text object" },
-        { "ih", function() gs.select_hunk() end, desc = "Select Git hunk" },
-      },
-    },
-  })
+    }
+  )
 end
 
 return {

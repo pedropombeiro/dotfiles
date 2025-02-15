@@ -1,3 +1,5 @@
+---@param table snacks.util.hl
+---@param opts { prefix?:string, default?:boolean, managed?:boolean }
 function Set_hl(table, opts)
   Snacks.util.set_hl(table, opts)
 end

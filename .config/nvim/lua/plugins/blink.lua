@@ -13,7 +13,7 @@ return {
     },
 
     -- use a release tag to download pre-built binaries
-    version = "*",
+    version = "v0.11.0",
 
     event = { "InsertEnter", "CmdLineEnter" },
 

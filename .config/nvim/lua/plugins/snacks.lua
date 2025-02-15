@@ -152,9 +152,7 @@ return {
 
     ---@type snacks.Config
     return {
-      bigfile = {
-        enabled = not vim.g.started_by_firenvim,
-      },
+      bigfile = { enabled = not vim.g.started_by_firenvim },
       dashboard = {
         enabled = not vim.g.started_by_firenvim,
         preset = {
@@ -173,16 +171,11 @@ return {
           { section = "header" },
           { pane = 2, section = "terminal", cmd = "curl -s 'https://wttr.in/?0' || echo", height = 8 },
           {
-            { icon = " ", key = "f", desc = "Find File", action = function() Snacks.dashboard.pick("files") end },
+            { icon = " ", key = "f", desc = "Find File", action = ':lua Snacks.dashboard.pick("files")' },
             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
-            {
-              icon = " ",
-              key = "g",
-              desc = "Find Text",
-              action = function() Snacks.dashboard.pick("live_grep") end,
-            },
+            { icon = " ", key = "g", desc = "Find Text", action = ':lua Snacks.dashboard.pick("live_grep")' },
             { icon = " ", key = "<leader>/", desc = "Git Grep", action = function() git_grep() end },
-            { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
+            { icon = " ", key = "r", desc = "Recent Files", action = ':lua Snacks.dashboard.pick("oldfiles")' },
             {
               icon = " ",
               key = "c",
@@ -194,7 +187,7 @@ return {
               icon = "󰒲 ",
               key = "l",
               desc = "Lazy",
-              action = function() require("lazy").home() end,
+              action = ':lua require("lazy").home()',
               enabled = package.loaded.lazy ~= nil,
             },
             { icon = " ", key = "m", desc = "Mason", action = ":Mason" },
@@ -225,9 +218,7 @@ return {
           },
         },
       },
-      input = {
-        enabled = true,
-      },
+      input = { enabled = true },
       lazygit = lazygit_opts(),
       notifier = {
         enabled = true,
@@ -240,9 +231,7 @@ return {
           trace = icons.trace,
         },
       },
-      quickfile = {
-        enabled = true,
-      },
+      quickfile = { enabled = true },
       picker = {
         layout = {
           cycle = true,
@@ -275,12 +264,8 @@ return {
           require("nvim-treesitter") -- Ensure treesitter is loaded for correct code preview colors
         end,
       },
-      scope = {
-        enabled = true,
-      },
-      scratch = {
-        enabled = true,
-      },
+      scope = { enabled = true },
+      scratch = { enabled = true },
       statuscolumn = {
         left = { "mark", "fold", "sign" }, -- priority of signs on the left (high to low)
         right = { "git" }, -- priority of signs on the right (high to low)
@@ -294,14 +279,11 @@ return {
         },
         refresh = 50, -- refresh at most every 50ms
       },
-      terminal = {
-        enabled = not vim.g.started_by_firenvim,
-      },
+      terminal = { enabled = not vim.g.started_by_firenvim },
       win = {
         border = "rounded",
       },
       words = {
-        enabled = true,
         notify_jump = true,
       },
     }

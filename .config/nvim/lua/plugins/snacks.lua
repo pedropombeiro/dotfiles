@@ -30,19 +30,19 @@ local function lazygit_opts()
   return opts
 end
 
-local function git_grep()
+local function with_git_dir(fn)
   -- Workaround until https://github.com/folke/snacks.nvim/issues/1184 is implemented
   local opts = lazygit_opts()
   if #opts.args > 2 then vim.env.GIT_DIR = opts.args[4] end
 
-  Snacks.picker.git_grep()
+  fn()
 end
 
 local function yadm_grep()
   -- Workaround until https://github.com/folke/snacks.nvim/issues/1184 is implemented
   vim.env.GIT_DIR = yadm_repo()
 
-  Snacks.picker.git_grep({ cwd = vim.fn.expand("~") })
+  Snacks.picker.git_grep({ cwd = vim.fn.expand("~"), title = "YADM grep" })
 end
 
 ---@format disable-next
@@ -97,15 +97,15 @@ local keys = {
 
   -- Git operations
   { "<leader>fg", group = "Finder (Git)" },
-  { "<leader>fgb", function() Snacks.picker.git_branches() end, desc = "Git branches", icon = "" },
-  { "<leader>fgc", function() Snacks.picker.git_log() end, desc = "Git commits", icon = "" },
-  { "<leader>fgC", function() Snacks.picker.git_log_file() end, desc = "Git commits (buffer)", icon = "" },
-  { "<leader>/", function() git_grep() end, desc = "Git grep", icon = "󰛔" },
-  { "<leader>fgg", function() git_grep() end, desc = "Git grep", icon = "󰛔" },
+  { "<leader>fgb", function() with_git_dir(Snacks.picker.git_branches) end, desc = "Git branches", icon = "" },
+  { "<leader>fgc", function() with_git_dir(Snacks.picker.git_log) end, desc = "Git commits", icon = "" },
+  { "<leader>fgC", function() with_git_dir(Snacks.picker.git_log_file) end, desc = "Git commits (buffer)", icon = "" },
+  { "<leader>/", function() with_git_dir(Snacks.picker.git_grep) end, desc = "Git grep", icon = "󰛔" },
+  { "<leader>fgg", function() with_git_dir(Snacks.picker.git_grep) end, desc = "Git grep", icon = "󰛔" },
   { "<leader>fgy", function() yadm_grep() end, desc = "YADM grep", icon = "󰛔" },
-  { "<leader>fgf", function() Snacks.picker.git_files() end, desc = "Git files", icon = "" },
-  { "<leader>fgS", function() Snacks.picker.git_stash() end, desc = "Git stash" },
-  { "<leader>fgs", function() Snacks.picker.git_status() end, desc = "Git status", icon = "󱖫" },
+  { "<leader>fgf", function() with_git_dir(Snacks.picker.git_files) end, desc = "Git files", icon = "" },
+  { "<leader>fgS", function() with_git_dir(Snacks.picker.git_stash) end, desc = "Git stash" },
+  { "<leader>fgs", function() with_git_dir(Snacks.picker.git_status) end, desc = "Git status", icon = "󱖫" },
   -- LSP operations
   { "<leader>l", group = "Finder (LSP)" },
   { "<leader>ls", function() Snacks.picker.lsp_symbols() end, desc = "Document symbols" },
@@ -174,7 +174,7 @@ return {
             { icon = " ", key = "f", desc = "Find File", action = ':lua Snacks.dashboard.pick("files")' },
             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
             { icon = " ", key = "g", desc = "Find Text", action = ':lua Snacks.dashboard.pick("live_grep")' },
-            { icon = " ", key = "<leader>/", desc = "Git Grep", action = function() git_grep() end },
+            { icon = " ", key = "<leader>/", desc = "Git Grep", action = function() with_git_dir(Snacks.picker.git_grep) end },
             { icon = " ", key = "r", desc = "Recent Files", action = ':lua Snacks.dashboard.pick("oldfiles")' },
             {
               icon = " ",

@@ -39,10 +39,7 @@ local function with_git_dir(fn)
 end
 
 local function yadm_grep()
-  -- Workaround until https://github.com/folke/snacks.nvim/issues/1184 is implemented
-  vim.env.GIT_DIR = yadm_repo()
-
-  Snacks.picker.git_grep({ cwd = vim.fn.expand("~"), title = "YADM grep" })
+  Snacks.picker.git_grep({ title = "YADM grep", cwd = vim.fn.expand("~"), args = { "--git-dir", yadm_repo() } })
 end
 
 ---@format disable-next

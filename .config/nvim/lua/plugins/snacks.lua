@@ -5,6 +5,14 @@ local function yadm_repo()
   return vim.fn.expand("~/.local/share/yadm/repo.git") -- hardcode value of vim.fn.systemlist("yadm introspect repo")[1] for startup speed
 end
 
+local function is_yadm_repo()
+  local cwd = vim.fn.getcwd()
+  local homedir = vim.fn.expand("~")
+  local configdir = vim.fn.expand("~/.config")
+
+  return cwd == homedir or string.sub(cwd, 1, #configdir) == configdir
+end
+
 local function lazygit_opts()
   local opts = {
     enabled = not vim.g.started_by_firenvim,
@@ -14,17 +22,11 @@ local function lazygit_opts()
     }
   }
 
-  if opts.enabled then
-    local cwd = vim.fn.getcwd()
-    local homedir = vim.fn.expand("~")
-    local configdir = vim.fn.expand("~/.config")
-
-    if cwd == homedir or string.sub(cwd, 1, #configdir) == configdir then
-      vim.list_extend(opts.args, {
-        "--git-dir", yadm_repo(),
-        "--work-tree", homedir,
-      })
-    end
+  if opts.enabled and is_yadm_repo() then
+    vim.list_extend(opts.args, {
+      "--git-dir", yadm_repo(),
+      "--work-tree", vim.fn.expand("~"),
+    })
   end
 
   return opts
@@ -32,8 +34,7 @@ end
 
 local function with_git_dir(fn)
   -- Workaround until https://github.com/folke/snacks.nvim/issues/1184 is implemented
-  local opts = lazygit_opts()
-  if #opts.args > 2 then vim.env.GIT_DIR = opts.args[4] end
+  if is_yadm_repo() then vim.env.GIT_DIR = yadm_repo() end
 
   fn()
 end

@@ -233,13 +233,11 @@ return {
         enabled = true,
         timeout = 3000,
         icons = {
-          ---@diagnostic disable: undefined-field
           error = icons.error,
           warn = icons.warning,
           info = icons.info,
           debug = icons.debug,
           trace = icons.trace,
-          ---@diagnostic enable: undefined-field
         },
       },
       quickfile = {

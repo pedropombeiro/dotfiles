@@ -174,6 +174,7 @@ return {
         taplo = {},
         vtsls = {},
         vimls = {},
+        vale_ls = {},
         volar = {},
         yamlls = {
           -- Have to add this for yamlls to understand that we support line folding

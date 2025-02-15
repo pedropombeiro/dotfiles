@@ -228,6 +228,35 @@ return {
       },
       quickfile = { enabled = true },
       picker = {
+        ---@type snacks.picker.jump.Config
+        ---@diagnostic disable-next-line: missing-fields
+        jump = {
+          reuse_win = true, -- reuse an existing window if the buffer is already open
+        },
+        ---@type snacks.picker.icons
+        ---@diagnostic disable-next-line: missing-fields
+        icons = {
+          files = {
+            enabled = true, -- show file icons
+            dir = config.ui.icons.folder.collapsed .. " ",
+            dir_open = config.ui.icons.folder.expanded .. " ",
+            file = config.ui.icons.kinds.File .. " "
+          },
+          git = {
+            enabled = true, -- show git icons
+            staged = config.ui.icons.symbols.staged,
+            added = config.ui.icons.symbols.added,
+            deleted = config.ui.icons.symbols.removed,
+            modified = config.ui.icons.symbols.modified,
+            renamed = config.ui.icons.symbols.renamed,
+          },
+          diagnostics = {
+            Error = diagnostics_icons.error .. " ",
+            Warn = diagnostics_icons.warning .. " ",
+            Info = diagnostics_icons.info .. " ",
+            Hint = diagnostics_icons.info .. " ",
+          },
+        },
         layout = {
           cycle = true,
           reverse = true,

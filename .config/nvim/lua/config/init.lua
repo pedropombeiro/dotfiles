@@ -93,6 +93,7 @@ local config = {
         modified = "",
         removed  = "",
         renamed  = "󰁕",
+        staged   = "●",
         unstaged = "󰄱",
         readonly = "",
       },

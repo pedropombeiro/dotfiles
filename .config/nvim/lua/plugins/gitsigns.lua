@@ -79,13 +79,21 @@ end
 
 return {
   "lewis6991/gitsigns.nvim",
-  dependencies = "nvim-lua/plenary.nvim",
+  dependencies = {
+    {
+      "nvim-lua/plenary.nvim",
+      lazy = true,
+    },
+    {
+      "purarue/gitsigns-yadm.nvim",
+      lazy = true,
+    },
+  },
   event = { "BufReadPost", "BufNewFile", "BufWritePre" },
-  cond = function()
-    local is_git_repo = vim.fn.systemlist({ "git", "rev-parse", "--is-inside-work-tree" })[1] == "true"
-    return is_git_repo
-  end,
   opts = {
+    _on_attach_pre = function(bufnr, callback)
+      require("gitsigns-yadm").yadm_signs(callback, { bufnr = bufnr })
+    end,
     signs = {
       add = { text = "▌", show_count = true },
       change = { text = "▌", show_count = true },

@@ -16,6 +16,17 @@ local function is_yadm_repo()
   return cwd == homedir or string.sub(cwd, 1, #configdir) == configdir
 end
 
+local function git_opts()
+  if is_yadm_repo() then
+    return {
+      "--git-dir", yadm_repo(),
+      "--work-tree", vim.fn.expand("~"),
+    }
+  end
+
+  return {}
+end
+
 ---@type function|snacks.lazygit.Config
 local function lazygit_opts()
   local opts = {
@@ -26,12 +37,7 @@ local function lazygit_opts()
     }
   }
 
-  if opts.enabled and is_yadm_repo() then
-    vim.list_extend(opts.args, {
-      "--git-dir", yadm_repo(),
-      "--work-tree", vim.fn.expand("~"),
-    })
-  end
+  if opts.enabled then vim.list_extend(opts.args, git_opts()) end
 
   return opts
 end
@@ -249,7 +255,7 @@ return {
             enabled = true, -- show file icons
             dir = config.ui.icons.folder.collapsed .. " ",
             dir_open = config.ui.icons.folder.expanded .. " ",
-            file = config.ui.icons.kinds.File .. " "
+            file = config.ui.icons.kinds.File .. " ",
           },
           git = {
             enabled = true, -- show git icons
@@ -288,6 +294,12 @@ return {
             },
           },
         },
+        ---@class snacks.picker.previewers.Config
+        previewers = {
+          git = {
+            args = git_opts(),
+          },
+        },
         sources = {
           explorer = {
             git_untracked = false,
@@ -295,6 +307,9 @@ return {
         },
         on_show = function()
           require("nvim-treesitter") -- Ensure treesitter is loaded for correct code preview colors
+        end,
+        on_close = function()
+          if vim.env.GIT_DIR ~= nil and is_yadm_repo() then vim.env.GIT_DIR = nil end
         end,
       },
       scope = { enabled = true },

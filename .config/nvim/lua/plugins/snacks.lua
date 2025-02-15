@@ -16,13 +16,15 @@ local function is_yadm_repo()
   return cwd == homedir or string.sub(cwd, 1, #configdir) == configdir
 end
 
+local function yadm_opts()
+  return {
+    "--git-dir", yadm_repo(),
+    "--work-tree", vim.fn.expand("~"),
+  }
+end
+
 local function git_opts()
-  if is_yadm_repo() then
-    return {
-      "--git-dir", yadm_repo(),
-      "--work-tree", vim.fn.expand("~"),
-    }
-  end
+  if is_yadm_repo() then return yadm_opts() end
 
   return {}
 end
@@ -49,9 +51,7 @@ local function with_git_dir(fn)
   fn()
 end
 
-local function yadm_grep()
-  Snacks.picker.git_grep({ title = "YADM grep", cwd = vim.fn.expand("~"), args = { "--git-dir", yadm_repo() } })
-end
+local function yadm_grep() Snacks.picker.git_grep({ title = "YADM grep", cwd = vim.fn.expand("~"), args = yadm_opts() }) end
 
 ---@format disable-next
 -- stylua: ignore

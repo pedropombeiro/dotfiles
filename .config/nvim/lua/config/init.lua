@@ -3,7 +3,8 @@ function Set_hl(table, opts)
 end
 
 -- stylua: ignore
-return {
+---@class pmsp.neovim.Config
+local config = {
   theme = {
     name = "gruvbox",
     colors = {
@@ -106,3 +107,5 @@ return {
     },
   },
 }
+
+return config

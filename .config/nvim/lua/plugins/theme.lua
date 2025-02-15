@@ -1,7 +1,9 @@
 -- gruvbox (https://github.com/ellisonleao/gruvbox.nvim)
 --  Lua port of the most famous vim colorscheme
 
-local theme = require("config").theme
+---@type pmsp.neovim.Config
+local config = require("config")
+local theme = config.theme
 
 return {
   "ellisonleao/gruvbox.nvim",
@@ -10,7 +12,6 @@ return {
   cond = function()
     local nvim_theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
     if nvim_theme == nil then
-      ---@diagnostic disable-next-line: undefined-field
       nvim_theme = theme.name
     end
 

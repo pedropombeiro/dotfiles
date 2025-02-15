@@ -50,9 +50,9 @@ return {
       diagnostics = "nvim_lsp",
       always_show_bufferline = false,
       diagnostics_indicator = function(_, _, diag)
-        ---@diagnostic disable: undefined-field
-        local icons = require("config").ui.icons.diagnostics
-        ---@diagnostic enable: undefined-field
+        ---@type pmsp.neovim.Config
+        local config = require("config")
+        local icons = config.ui.icons.diagnostics
         local ret = (diag.error and (icons.error .. " " .. diag.error) or "")
           .. (diag.warning and (icons.warning .. " " .. diag.warning) or "")
         return ret

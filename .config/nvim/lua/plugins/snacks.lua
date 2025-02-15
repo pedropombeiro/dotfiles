@@ -1,6 +1,9 @@
 -- snacks.nvim (https://github.com/folke/snacks.nvim)
 --  🍿 A collection of QoL plugins for Neovim
 
+---@type pmsp.neovim.Config
+local config = require("config")
+
 local function yadm_repo()
   return vim.fn.expand("~/.local/share/yadm/repo.git") -- hardcode value of vim.fn.systemlist("yadm introspect repo")[1] for startup speed
 end
@@ -78,12 +81,7 @@ local keys = {
   { "<leader>fh", function() Snacks.picker.recent() end, desc = "Old files" },
   { "<leader>f:", function() Snacks.picker.command_history() end, desc = "Command history", icon = "" },
   { "<leader>f/", function() Snacks.picker.search_history() end, desc = "Search history", icon = "󱝩" },
-  {
-    "<leader>fd",
-    function() Snacks.picker.diagnostics() end,
-    desc = "Diagnostics",
-    icon = require("config").ui.icons.diagnostics.warning,
-  },
+  { "<leader>fd", function() Snacks.picker.diagnostics() end, desc = "Diagnostics", icon = config.ui.icons.diagnostics.warning },
   { "<leader>f`", function() Snacks.picker.marks() end, desc = "Marks", icon = "" },
   { "<leader>f'", function() Snacks.picker.marks() end, desc = "Marks", icon = "" },
   { "<leader>f.", function() Snacks.picker.jumps() end, desc = "Jump list", icon = "" },
@@ -139,8 +137,7 @@ return {
   lazy = false,
   init = function() require("which-key").add(keys) end,
   opts = function()
-    local config = require("config")
-    local icons = config.ui.icons.diagnostics
+    local diagnostics_icons = config.ui.icons.diagnostics
     local function vim_version() return vim.version().major .. "." .. vim.version().minor .. "." .. vim.version().patch end
 
     Set_hl(
@@ -222,11 +219,11 @@ return {
         enabled = true,
         timeout = 3000,
         icons = {
-          error = icons.error,
-          warn = icons.warning,
-          info = icons.info,
-          debug = icons.debug,
-          trace = icons.trace,
+          error = diagnostics_icons.error,
+          warn = diagnostics_icons.warning,
+          info = diagnostics_icons.info,
+          debug = diagnostics_icons.debug,
+          trace = diagnostics_icons.trace,
         },
       },
       quickfile = { enabled = true },

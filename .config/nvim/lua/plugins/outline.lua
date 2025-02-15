@@ -9,6 +9,7 @@ return {
     { "<C-|>", ":Outline<CR>", mode = { "n", "v" }, desc = "Toggle symbols window", silent = true },
   },
   opts = function()
+    ---@type pmsp.neovim.Config
     local config = require("config")
     local function with_padding(icon) return icon .. " " end
 

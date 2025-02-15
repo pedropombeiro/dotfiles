@@ -49,12 +49,12 @@ return {
       },
     }, neotest_ns)
 
+    ---@type pmsp.neovim.Config
     local config = require("config")
     local icons = config.ui.icons
 
     ---@format disable-next
     local function define_highlights()
-      ---@diagnostic disable: undefined-field
       Set_hl({
         Passed = { ctermfg = "Green", fg = config.theme.colors.green },
         Failed = { ctermfg = "Red", fg = config.theme.colors.dark_red },
@@ -73,12 +73,10 @@ return {
         Target = { ctermfg = "Red", fg = config.theme.colors.red },
         Unknown = { link = "Normal" },
       }, { prefix = "Neotest", default = true })
-      ---@diagnostic enable: undefined-field
     end
 
     --- Override Neotest default theme
     local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
-    ---@diagnostic disable-next-line: undefined-field
     if theme == config.theme.name then
       local augroup = vim.api.nvim_create_augroup("NeotestColorSchemeRefresh", { clear = true })
       vim.api.nvim_create_autocmd("ColorScheme", {
@@ -103,7 +101,6 @@ return {
         }),
       },
       icons = {
-        ---@diagnostic disable: undefined-field
         expanded = icons.expander.expanded,
         child_prefix = "",
         child_indent = "",
@@ -114,7 +111,6 @@ return {
         running = icons.tests.running,
         failed = icons.tests.failed,
         unknown = icons.tests.unknown,
-        ---@diagnostic enable: undefined-field
       },
     })
   end,

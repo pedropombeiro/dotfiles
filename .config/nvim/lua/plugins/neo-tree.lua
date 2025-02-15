@@ -16,7 +16,9 @@ return {
       lazy = true,
       version = "2.*",
       opts = function()
-        local colors = require("config").theme.colors
+        ---@type pmsp.neovim.Config
+        local config = require("config")
+        local colors = config.theme.colors
 
         return {
           use_winbar = "always",
@@ -68,9 +70,9 @@ return {
     end
   end,
   opts = function(_, opts)
-    ---@diagnostic disable: undefined-field
-    local icons = require("config").ui.icons
-    ---@diagnostic enable: undefined-field
+    ---@type pmsp.neovim.Config
+    local config = require("config")
+    local icons = config.ui.icons
 
     vim.fn.sign_define("DiagnosticSignError", { text = icons.diagnostics.error, texthl = "DiagnosticSignError" })
     vim.fn.sign_define("DiagnosticSignWarn", { text = icons.diagnostics.warning, texthl = "DiagnosticSignWarn" })

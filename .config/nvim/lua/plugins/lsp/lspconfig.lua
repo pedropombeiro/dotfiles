@@ -48,15 +48,15 @@ return {
     },
   },
   init = function()
-    local icons = require("config").ui.icons.diagnostics
+    ---@type pmsp.neovim.Config
+    local config = require("config")
+    local icons = config.ui.icons.diagnostics
 
     local signs = {
-      ---@diagnostic disable: undefined-field
       Error = icons.error .. " ",
       Warn = icons.warning .. " ",
       Hint = icons.hint .. " ",
       Info = icons.info .. " ",
-      ---@diagnostic enable: undefined-field
     }
     for type, icon in pairs(signs) do
       local hl = "DiagnosticSign" .. type
@@ -274,7 +274,9 @@ return {
     --endif
 
     local lspconfig = require("lspconfig")
-    local border = require("config").ui.border
+    ---@type pmsp.neovim.Config
+    local nvconfig = require("config")
+    local border = nvconfig.ui.border
 
     require("lspconfig.ui.windows").default_options.border = border
 

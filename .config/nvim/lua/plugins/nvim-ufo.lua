@@ -2,6 +2,7 @@
 --  Not UFO in the sky, but an ultra fold in Neovim.
 
 local function setFoldOptions()
+  ---@type pmsp.neovim.Config
   local config = require("config")
   local expander_icons = config.ui.icons.expander
 
@@ -80,6 +81,7 @@ return {
       setFoldOptions()
 
       --- Override foldcolumn colors to match theme
+      ---@type pmsp.neovim.Config
       local config = require("config")
       local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
       if theme == config.theme.name then

@@ -8,6 +8,7 @@ return {
   ---@type LazyKeysSpec[]
   keys = { { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "DiffView" } },
   opts = function()
+    ---@type pmsp.neovim.Config
     local config = require("config")
 
     return {

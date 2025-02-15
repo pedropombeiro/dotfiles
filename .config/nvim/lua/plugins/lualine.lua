@@ -17,6 +17,7 @@ return {
     end
   end,
   opts = function()
+    ---@type pmsp.neovim.Config
     local config = require("config")
     local diagnostic_icons = config.ui.icons.diagnostics
     local symbol_icons = config.ui.icons.symbols
@@ -28,12 +29,10 @@ return {
           "diagnostics",
           sources = { "nvim_lsp", "nvim_diagnostic" },
           symbols = {
-            ---@diagnostic disable: undefined-field
             hint = diagnostic_icons.hint .. " ",
             info = diagnostic_icons.info .. " ",
             warn = diagnostic_icons.warning .. " ",
             error = diagnostic_icons.error .. " ",
-            ---@diagnostic enable: undefined-field
           },
         },
         {
@@ -68,11 +67,9 @@ return {
           "diff",
           cond = function() return not vim.g.started_by_firenvim end,
           symbols = {
-            ---@diagnostic disable: undefined-field
             added = symbol_icons.added .. " ",
             modified = symbol_icons.modified .. " ",
             removed = symbol_icons.removed .. " ",
-            ---@diagnostic enable: undefined-field
           },
         },
         "encoding",

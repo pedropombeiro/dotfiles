@@ -7,8 +7,9 @@ return {
     event = { "BufReadPost", "BufNewFile", "BufWritePre" },
     module = "treesitter-context",
     config = function(_, opts)
-      ---@diagnostic disable-next-line: undefined-field
-      local colors = require("config").theme.colors
+      ---@type pmsp.neovim.Config
+      local config = require("config")
+      local colors = config.theme.colors
 
       Set_hl({ ContextBottom = { underline = true, sp = colors.bg0_s } }, { prefix = "Treesitter", default = true })
       require("treesitter-context").setup(opts)

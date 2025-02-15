@@ -9,6 +9,7 @@ return {
     { "<leader>ci", "<cmd>Pipeline<cr>", desc = "Open pipeline.nvim" },
   },
   opts = function()
+    ---@type pmsp.neovim.Config
     local config = require("config")
     local icons = config.ui.icons.tests
 

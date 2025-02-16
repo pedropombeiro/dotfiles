@@ -14,6 +14,10 @@ return {
     },
   },
   opts = {
+    ---@type wk.Win.opts
+    win = {
+      border = require("config").ui.border,
+    },
     ---@type wk.Spec
     spec = {
       -- Workaround: Fix <s-space> being rendered as 32;2u in LazyGit
@@ -162,5 +166,5 @@ return {
         },
       })
     end
-  end
+  end,
 }

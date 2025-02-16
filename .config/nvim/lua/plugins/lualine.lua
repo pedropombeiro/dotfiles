@@ -36,7 +36,7 @@ return {
       local sections = {
         lualine_a = { "mode" },
         lualine_b = {
-          { "b:gitsigns_head", icon = "" },
+          { "b:gitsigns_head", icon = "" },
           {
             "diff",
             cond = firenvim_cond,

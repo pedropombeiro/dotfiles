@@ -78,69 +78,69 @@ local on_attach = function(bufnr)
 end
 
 return {
-  "lewis6991/gitsigns.nvim",
-  dependencies = {
-    {
-      "nvim-lua/plenary.nvim",
-      lazy = true,
+  {
+    "lewis6991/gitsigns.nvim",
+    event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+    opts = {
+      _on_attach_pre = function(bufnr, callback)
+        require("gitsigns-yadm").yadm_signs(callback, { bufnr = bufnr })
+      end,
+      signs = {
+        add = { text = "▌", show_count = true },
+        change = { text = "▌", show_count = true },
+        delete = { text = "▐", show_count = true },
+        topdelete = { text = "▛", show_count = true },
+        changedelete = { text = "▚", show_count = true },
+        untracked = { text = "▎" },
+      },
+      update_debounce = 500,
+      sign_priority = 10,
+      numhl = false,
+      signcolumn = true,
+      current_line_blame = true,
+      count_chars = {
+        [1] = "",
+        [2] = "₂",
+        [3] = "₃",
+        [4] = "₄",
+        [5] = "₅",
+        [6] = "₆",
+        [7] = "₇",
+        [8] = "₈",
+        [9] = "₉",
+        ["+"] = "₊",
+      },
+      diff_opts = {
+        internal = true,
+        algorithm = "patience",
+        indent_heuristic = true,
+        linematch = 60,
+      },
+      on_attach = on_attach,
+      preview_config = {
+        -- Options passed to nvim_open_win
+        border = require("config").ui.border,
+        style = "minimal",
+        relative = "cursor",
+        row = 0,
+        col = 1,
+      },
     },
-    {
-      "purarue/gitsigns-yadm.nvim",
-      lazy = true,
-    },
-  },
-  event = { "BufReadPost", "BufNewFile", "BufWritePre" },
-  opts = {
-    _on_attach_pre = function(bufnr, callback)
-      require("gitsigns-yadm").yadm_signs(callback, { bufnr = bufnr })
-    end,
-    signs = {
-      add = { text = "▌", show_count = true },
-      change = { text = "▌", show_count = true },
-      delete = { text = "▐", show_count = true },
-      topdelete = { text = "▛", show_count = true },
-      changedelete = { text = "▚", show_count = true },
-      untracked = { text = "▎" },
-    },
-    update_debounce = 500,
-    sign_priority = 10,
-    numhl = false,
-    signcolumn = true,
-    current_line_blame = true,
-    count_chars = {
-      [1] = "",
-      [2] = "₂",
-      [3] = "₃",
-      [4] = "₄",
-      [5] = "₅",
-      [6] = "₆",
-      [7] = "₇",
-      [8] = "₈",
-      [9] = "₉",
-      ["+"] = "₊",
-    },
-    diff_opts = {
-      internal = true,
-      algorithm = "patience",
-      indent_heuristic = true,
-      linematch = 60,
-    },
-    on_attach = on_attach,
-    preview_config = {
-      -- Options passed to nvim_open_win
-      border = require("config").ui.border,
-      style = "minimal",
-      relative = "cursor",
-      row = 0,
-      col = 1,
-    },
-  },
-  config = function(_, opts)
-    require("gitsigns").setup(opts)
-    require("scrollbar.handlers.gitsigns").setup()
+    config = function(_, opts)
+      require("gitsigns").setup(opts)
+      require("scrollbar.handlers.gitsigns").setup()
 
-    -- Compare with the default branch
-    local branch = string.match(vim.fn.system("git branch -rl '*/HEAD'"), ".*/(.*)\n")
-    if branch then require("gitsigns").change_base(branch, true) end
-  end,
+      -- Compare with the default branch
+      local branch = string.match(vim.fn.system("git branch -rl '*/HEAD'"), ".*/(.*)\n")
+      if branch then require("gitsigns").change_base(branch, true) end
+    end,
+  },
+  {
+    "nvim-lua/plenary.nvim",
+    lazy = true,
+  },
+  {
+    "purarue/gitsigns-yadm.nvim",
+    lazy = true,
+  }
 }

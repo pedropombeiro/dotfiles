@@ -49,9 +49,6 @@ end
 return {
   {
     "kevinhwang91/nvim-ufo",
-    dependencies = {
-      "kevinhwang91/promise-async",
-    },
     ft = { "css", "eruby", "go", "html", "javascript", "json", "lua", "markdown", "ruby", "typescript", "yaml" },
     -- stylua: ignore
     ---@type LazyKeysSpec[]
@@ -94,4 +91,5 @@ return {
       require("ufo").setup(opts)
     end,
   },
+  { "kevinhwang91/promise-async", lazy = true },
 }

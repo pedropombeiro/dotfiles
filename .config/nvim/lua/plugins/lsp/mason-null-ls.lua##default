@@ -1,4 +1,4 @@
--- mason-null-ls.nvim (https://github.com/jayp0521/mason-null-ls.nvim)
+-- mason-null-ls.nvim (https://github.com/jay-babu/mason-null-ls.nvim)
 --  mason-null-ls bridges mason.nvim with the null-ls plugin - making it easier to use both plugins together.
 --  mason-null-ls.nvim closes some gaps that exist between mason.nvim and null-ls. Its main responsibilities are:
 --    - provide extra convenience APIs such as the :NullLsInstall command
@@ -7,11 +7,11 @@
 --  **Note: this plugin uses the null-ls source names in the APIs it exposes - not mason.nvim package names.
 
 return {
-  "jayp0521/mason-null-ls.nvim",
+  "jay-babu/mason-null-ls.nvim",
   event = { "BufReadPost", "BufNewFile", "BufWritePre" },
   dependencies = {
-    "nvimtools/none-ls.nvim",
     "williamboman/mason.nvim",
+    "nvimtools/none-ls.nvim",
   },
   opts = {
     automatic_installation = true,

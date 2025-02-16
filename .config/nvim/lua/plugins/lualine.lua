@@ -51,7 +51,7 @@ return {
         lualine_c = {
           {
             "diagnostics",
-            sources = { "nvim_lsp", "nvim_diagnostic" },
+            sources = { "nvim_diagnostic" },
             symbols = {
               hint = diagnostic_icons.hint .. " ",
               info = diagnostic_icons.info .. " ",

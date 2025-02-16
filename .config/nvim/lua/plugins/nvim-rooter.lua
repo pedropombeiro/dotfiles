@@ -3,6 +3,7 @@
 
 return {
   "notjedi/nvim-rooter.lua",
+  event = { "BufNewFile", "BufReadPost" },
   opts = {
     manual = false,
     rooter_patterns = {
@@ -22,8 +23,10 @@ return {
       "*.yml",
     },
     exclude_filetypes = {
-      ["vimdoc"] = true,
+      ["lazy"] = true,
       ["neo-tree"] = true,
+      ["snacks_picker_input"] = true,
+      ["vimdoc"] = true,
     },
   },
 }

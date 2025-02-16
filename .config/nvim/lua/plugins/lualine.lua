@@ -104,7 +104,7 @@ return {
       return {
         options = {
           icons_enabled = true,
-          ignore_focus = { "neotest-summary", "lazygit", "TelescopePrompt", "Outline" },
+          ignore_focus = { "neotest-summary", "lazygit", "Outline" },
           disabled_filetypes = {
             statusline = { "snacks_dashboard", "Fm", "mason", "neotest-summary" },
           },

@@ -4,6 +4,7 @@
 return {
   "junegunn/vim-easy-align",
   event = { "BufNewFile", "BufReadPost" },
+  ---@module "lazy"
   ---@type LazyKeysSpec[]
   keys = {
     --- Start interactive EasyAlign in visual mode (e.g. vipga) and for a motion/text object (e.g. gaip)

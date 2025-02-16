@@ -3,6 +3,7 @@
 
 ---@format disable-next
 -- stylua: ignore
+---@module "lazy"
 ---@type LazyKeysSpec[]
 local keys = {
   { "<leader>rt", function() require("neotest").run.run() end,                        desc = "Run the nearest test" },
@@ -26,6 +27,7 @@ return {
     "nvim-neotest/neotest-go",
     {
       "olimorris/neotest-rspec",
+      ---@module "lazy"
       ---@type LazyKeysSpec[]
       keys = {
         {

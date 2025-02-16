@@ -51,6 +51,7 @@ return {
     "kevinhwang91/nvim-ufo",
     ft = { "css", "eruby", "go", "html", "javascript", "json", "lua", "markdown", "ruby", "typescript", "yaml" },
     -- stylua: ignore
+    ---@module "lazy"
     ---@type LazyKeysSpec[]
     keys = {
       { "zr", function() require("ufo").openFoldsExceptKinds() end,  mode = { "n", "v" }, desc = "Open folds except defined kinds", },

@@ -7,6 +7,7 @@ return {
   lazy = true,
   event = { "BufWritePre" },
   cmd = { "ConformInfo" },
+  ---@module "lazy"
   ---@type LazyKeysSpec[]
   keys = {
     {

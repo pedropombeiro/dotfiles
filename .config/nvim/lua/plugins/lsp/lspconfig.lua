@@ -3,6 +3,7 @@
 
 ---@format disable-next
 -- stylua: ignore
+---@module "lazy"
 ---@type LazyKeysSpec[]
 local keys = {
   { "<leader>uh",  function() vim.lsp.inlay_hint.enable(false) end, desc = "Disable inlay hints" },

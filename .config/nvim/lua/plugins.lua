@@ -32,6 +32,7 @@ return {
   --### Snippets
   {
     "aduros/ai.vim", -- Generate and edit text in Neovim using OpenAI and GPT.
+    ---@module "lazy"
     ---@type LazyKeysSpec[]
     keys = {
       { "<leader>=", ":AI ", mode = { "n", "v" }, desc = "Perform action with OpenAI" },

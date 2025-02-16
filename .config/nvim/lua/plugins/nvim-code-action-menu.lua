@@ -3,6 +3,7 @@
 
 return {
   "aznhe21/actions-preview.nvim",
+  ---@module "lazy"
   ---@type LazyKeysSpec[]
   keys = {
     {

@@ -108,6 +108,7 @@ return {
       require("nvim-treesitter.query_predicates")
     end,
     cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
+    ---@module "lazy"
     ---@type LazyKeysSpec[]
     keys = {
       { "<TAB>", desc = "Increment Selection" },

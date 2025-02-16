@@ -10,6 +10,7 @@ return {
     dependencies = {
       "MunifTanjim/nui.nvim",
     },
+    ---@module "lazy"
     ---@type LazyKeysSpec[]
     keys = {
       {

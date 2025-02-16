@@ -10,6 +10,7 @@ return {
 
   {
     "is0n/fm-nvim",
+    ---@module "lazy"
     ---@type LazyKeysSpec[]
     keys = {
       {

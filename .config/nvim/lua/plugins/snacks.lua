@@ -284,13 +284,13 @@ return {
             {
               win = "preview",
               title = "{preview:Preview}",
-              border = "rounded",
+              border = config.ui.border,
               title_pos = "center",
             },
             {
               box = "vertical",
-              { win = "list", title = " Results ", title_pos = "center", border = "rounded" },
-              { win = "input", height = 1, border = "rounded", title = "{title} {live} {flags}", title_pos = "center" },
+              { win = "list", title = " Results ", title_pos = "center", border = config.ui.border },
+              { win = "input", height = 1, border = config.ui.border, title = "{title} {live} {flags}", title_pos = "center" },
             },
           },
         },
@@ -333,7 +333,7 @@ return {
       ---@type snacks.win.Config
       ---@diagnostic disable-next-line: missing-fields
       win = {
-        border = "rounded",
+        border = config.ui.border,
       },
       ---@type snacks.words.Config
       ---@diagnostic disable-next-line: missing-fields

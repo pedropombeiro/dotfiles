@@ -4,9 +4,30 @@ return {
     "mtdl9/vim-log-highlighting", -- Provides syntax highlighting for generic log files in VIM.
     ft = "log",
   },
-  { "mechatroner/rainbow_csv", ft = { "csv", "tsv" } }, -- 🌈Rainbow CSV - Vim plugin: Highlight columns in CSV and TSV files and run queries in SQL-like language
   {
-    "MeanderingProgrammer/render-markdown.nvim",
+    "hat0uma/csvview.nvim",
+    cmd = { "CsvViewEnable", "CsvViewDisable", "CsvViewToggle" },
+    ---@module "csvview"
+    ---@type CsvView.Options
+    opts = {
+      parser = { comments = { "#", "//" } },
+      keymaps = {
+        -- Text objects for selecting fields
+        textobject_field_inner = { "if", mode = { "o", "x" } },
+        textobject_field_outer = { "af", mode = { "o", "x" } },
+        -- Excel-like navigation:
+        -- Use <Tab> and <S-Tab> to move horizontally between fields.
+        -- Use <Enter> and <S-Enter> to move vertically between rows and place the cursor at the end of the field.
+        -- Note: In terminals, you may need to enable CSI-u mode to use <S-Tab> and <S-Enter>.
+        jump_next_field_end = { "<Tab>", mode = { "n", "v" } },
+        jump_prev_field_end = { "<S-Tab>", mode = { "n", "v" } },
+        jump_next_row = { "<Enter>", mode = { "n", "v" } },
+        jump_prev_row = { "<S-Enter>", mode = { "n", "v" } },
+      },
+    },
+  },
+  {
+    "meanderingprogrammer/render-markdown.nvim",
     cmd = { "RenderMarkdown" },
     opts = {},
     dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" }, -- if you prefer nvim-web-devicons

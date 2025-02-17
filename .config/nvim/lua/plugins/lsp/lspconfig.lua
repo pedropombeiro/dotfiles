@@ -50,8 +50,6 @@ return {
         dependencies = "williamboman/mason.nvim",
       },
     },
-    init = function()
-    end,
     ---@return PluginLspOpts
     opts = function()
       if vim.fn.has("mac") ~= 1 then
@@ -291,11 +289,9 @@ return {
       end
 
       -- Show diagnostic source in float (e.g. goto_next, goto_prev)
+      ---@type vim.diagnostic.Opts
       vim.diagnostic.config({
         severity_sort = true,
-        virtual_text = {
-          prefix = "●",
-        },
         float = {
           focusable = false,
           style = "minimal",

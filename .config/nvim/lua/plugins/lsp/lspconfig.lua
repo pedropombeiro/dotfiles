@@ -6,26 +6,21 @@
 ---@module "lazy"
 ---@type LazyKeysSpec[]
 local keys = {
-  { "<leader>uh",  function() vim.lsp.inlay_hint.enable(false) end, desc = "Disable inlay hints" },
   { "[oH",         function() vim.lsp.inlay_hint.enable(true) end,  desc = "Enable inlay hints" },
   { "]oH",         function() vim.lsp.inlay_hint.enable(false) end, desc = "Disable inlay hints" },
+  { "<leader>uh",  function() vim.lsp.inlay_hint.enable(false) end, desc = "Disable inlay hints" },
   { "[d",          function() vim.diagnostic.goto_prev() end,       desc = "Previous LSP diagnostic" },
   { "]d",          function() vim.diagnostic.goto_next() end,       desc = "Next LSP diagnostic" },
   { "<f2>",        function() vim.lsp.buf.rename() end,             desc = "Rename symbol" },
   { "K",           function() vim.lsp.buf.hover() end,              desc = "Hover" },
   { "<leader>K",   function() vim.lsp.buf.signature_help() end,     desc = "Signature help" },
-  --{ "<leader>lca", function() vim.lsp.buf.code_action() end,        desc = "List code actions" },       -- Replaced with nvim-code-action-menu
   { "<leader>lD",  function() vim.lsp.buf.declaration() end,        desc = "Go to declaration" },
   { "<leader>ly",  function() vim.lsp.buf.type_definition() end,    desc = "Go to type definition" },
   { "<leader>li",  function() vim.lsp.buf.implementation() end,     desc = "Go to implementation" },
-  --{ "<leader>lr",  ":TroubleToggle lsp_references",             desc = "References" },
-  --{ "<leader>ld",  ":TroubleToggle lsp_definitions",            desc = "Definitions" },
-  --{ "<C-]>",       ":TroubleToggle lsp_definitions",            desc = "Definitions" },
-  -- { "<leader>lf",  function() vim.lsp.buf.format({ async = true }) end, desc = "Format buffer" },
   { "<leader>lwa", function() vim.lsp.buf.add_workspace_folder() end, desc = "Add workspace folder" },
   {
     "<leader>lwl",
-    function() print(vim.inspect(vim.lsp.buf.list_workspace_folders())) end,
+    function() Snacks.notify(vim.inspect(vim.lsp.buf.list_workspace_folders())) end,
     desc = "List workspace folders",
   },
 }

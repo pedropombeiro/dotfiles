@@ -36,10 +36,17 @@ return {
   {
     "petertriho/nvim-scrollbar", -- Extensible Neovim Scrollbar
     event = { "BufNewFile", "BufReadPost" },
-    dependencies = "lewis6991/gitsigns.nvim", -- Git integration for buffers
     opts = {
       excluded_buftypes = {
         "nofile",
+      },
+    },
+    specs = {
+      {
+        "lewis6991/gitsigns.nvim",
+        opts = function()
+          require("scrollbar.handlers.gitsigns").setup()
+        end,
       },
     },
   },

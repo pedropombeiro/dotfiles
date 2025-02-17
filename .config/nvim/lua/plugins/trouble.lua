@@ -47,13 +47,6 @@ return {
         desc = "Last Trouble 🚦 item",
       },
     },
-    init = function()
-      require("which-key").add( ---@type wk.Spec
-        {
-          { "<leader>x", group = "Trouble", icon = "🚦" },
-        }
-      )
-    end,
     opts = {
       use_diagnostic_signs = true,
       preview = {
@@ -70,24 +63,36 @@ return {
       require("trouble").setup(opts)
     end,
     specs = {
-      "folke/snacks.nvim",
-      opts = function(_, opts)
-        return vim.tbl_deep_extend("force", opts or {}, {
-          picker = {
-            actions = require("trouble.sources.snacks").actions,
-            win = {
-              input = {
-                keys = {
-                  ["<c-t>"] = {
-                    "trouble_open",
-                    mode = { "n", "i" },
+      {
+        "folke/snacks.nvim",
+        opts = function(_, opts)
+          return vim.tbl_deep_extend("force", opts or {}, {
+            picker = {
+              actions = require("trouble.sources.snacks").actions,
+              win = {
+                input = {
+                  keys = {
+                    ["<c-t>"] = {
+                      "trouble_open",
+                      mode = { "n", "i" },
+                    },
                   },
                 },
               },
             },
+          })
+        end,
+      },
+      {
+        "folke/which-key.nvim",
+        opts = {
+          ---@type wk.Spec
+          spec = {
+            { "<leader>x", group = "Trouble", icon = "🚦" },
           },
-        })
-      end,
+        },
+        opts_extend = { "spec" },
+      },
     },
   },
   { "kyazdani42/nvim-web-devicons", lazy = true },

@@ -142,7 +142,6 @@ return {
   "folke/snacks.nvim",
   priority = 1000,
   lazy = false,
-  init = function() require("which-key").add(keys) end,
   opts = function()
     local diagnostics_icons = config.ui.icons.diagnostics
     local function vim_version() return vim.version().major .. "." .. vim.version().minor .. "." .. vim.version().patch end
@@ -342,4 +341,14 @@ return {
       },
     }
   end,
+  specs = {
+    {
+      "folke/which-key.nvim",
+      opts = {
+        ---@type wk.Spec
+        spec = keys,
+      },
+      opts_extend = { "spec" },
+    },
+  },
 }

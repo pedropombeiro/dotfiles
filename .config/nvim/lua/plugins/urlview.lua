@@ -1,34 +1,34 @@
 -- urlview.nvim (https://github.com/axieax/urlview.nvim)
 -- 🔎 Neovim plugin for viewing all the URLs in a buffer
 
+local function open_buffer_urlview()
+  if vim.fn.expand("%:p") == vim.fn.stdpath("config") .. "/lua/plugins.lua" then
+    vim.cmd([[UrlView lazy]])
+  else
+    vim.cmd([[UrlView]])
+  end
+end
+
 return {
   "axieax/urlview.nvim",
   cmd = "UrlView",
-  init = function()
-    local function open_buffer_urlview()
-      if vim.fn.expand("%:p") == vim.fn.stdpath("config") .. "/lua/plugins.lua" then
-        vim.cmd([[UrlView lazy]])
-      else
-        vim.cmd([[UrlView]])
-      end
-    end
-
-    require("which-key").add( ---@type wk.Spec
-      {
-        "<leader>fu",
-        open_buffer_urlview,
-        icon = "󰖟",
-        silent = true,
-        remap = true,
-        desc = "List buffer URLs",
-      }
-    )
-  end,
   opts = {
     default_action = "system",
     jump = {
       prev = "[U",
       next = "]U",
+    },
+  },
+  specs = {
+    {
+      "folke/which-key.nvim",
+      opts = {
+        ---@type wk.Spec
+        spec = {
+          { "<leader>fu", open_buffer_urlview, icon = "󰖟", silent = true, remap = true, desc = "List buffer URLs" },
+        },
+      },
+      opts_extend = { "spec" },
     },
   },
 }

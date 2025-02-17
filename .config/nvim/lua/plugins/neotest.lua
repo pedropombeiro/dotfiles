@@ -38,7 +38,6 @@ return {
       },
     },
   },
-  init = function() require("which-key").add({ { "<leader>r", group = "Test", icon = "󰙨" } }) end,
   config = function()
     -- get neotest namespace (api call creates or returns namespace)
     local neotest_ns = vim.api.nvim_create_namespace("neotest")
@@ -116,4 +115,16 @@ return {
       },
     })
   end,
+  specs = {
+    {
+      "folke/which-key.nvim",
+      opts = {
+        ---@type wk.Spec
+        spec = {
+          { "<leader>r", group = "Test", icon = "󰙨" },
+        },
+      },
+      opts_extend = { "spec" },
+    },
+  },
 }

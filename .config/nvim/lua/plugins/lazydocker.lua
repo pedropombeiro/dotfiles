@@ -2,13 +2,12 @@
 --  Plugin to open LazyDocker without quiting neovim.
 
 return {
-  "crnvl96/lazydocker.nvim",
-  lazy = true,
-  dependencies = { "MunifTanjim/nui.nvim" },
-  opts = {},
-  init = function()
-    require("which-key").add( ---@type wk.Spec
-      {
+  {
+    "folke/which-key.nvim",
+    lazy = true,
+    opts = {
+      ---@type wk.Spec
+      spec = {
         {
           "<leader>td",
           function()
@@ -21,7 +20,15 @@ return {
           desc = "Open LazyDocker",
           icon = "",
         },
-      }
-    )
-  end,
+      },
+    },
+    opts_extend = { "spec" },
+  },
+
+  {
+    "crnvl96/lazydocker.nvim",
+    lazy = true,
+    dependencies = { "MunifTanjim/nui.nvim" },
+    opts = {},
+  },
 }

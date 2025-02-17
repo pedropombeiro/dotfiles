@@ -138,13 +138,18 @@ return {
         update_n_lines = "gsn",
       },
     },
-    init = function()
-      require("which-key").add( ---@type wk.Spec
-        {
-          { "gs", group = "Surround", icon = "" },
-        }
-      )
-    end,
+    specs = {
+      {
+        "folke/which-key.nvim",
+        opts = {
+          ---@type wk.Spec
+          spec = {
+            { "gs", group = "Surround", icon = "" },
+          },
+        },
+        opts_extend = { "spec" },
+      },
+    },
   },
   { "tummetott/unimpaired.nvim", event = { "BufReadPre", "BufNewFile" }, opts = {} }, -- LUA port of tpope's famous vim-unimpaired plugin
   { "RaafatTurki/hex.nvim", event = { "BufReadPre", "BufNewFile" }, opts = {} }, -- hex editing done right

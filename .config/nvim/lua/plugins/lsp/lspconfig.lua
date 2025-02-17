@@ -51,20 +51,6 @@ return {
       },
     },
     init = function()
-      ---@type pmsp.neovim.Config
-      local config = require("config")
-      local icons = config.ui.icons.diagnostics
-
-      local signs = {
-        Error = icons.error .. " ",
-        Warn = icons.warning .. " ",
-        Hint = icons.hint .. " ",
-        Info = icons.info .. " ",
-      }
-      for type, icon in pairs(signs) do
-        local hl = "DiagnosticSign" .. type
-        vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-      end
     end,
     ---@return PluginLspOpts
     opts = function()
@@ -280,6 +266,17 @@ return {
       ---@type pmsp.neovim.Config
       local nvconfig = require("config")
       local border = nvconfig.ui.border
+      local icons = nvconfig.ui.icons.diagnostics
+      local signs = {
+        Error = icons.error .. " ",
+        Warn = icons.warning .. " ",
+        Hint = icons.hint .. " ",
+        Info = icons.info .. " ",
+      }
+      for type, icon in pairs(signs) do
+        local hl = "DiagnosticSign" .. type
+        vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+      end
 
       require("lspconfig.ui.windows").default_options.border = border
 

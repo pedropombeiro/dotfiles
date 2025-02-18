@@ -1,8 +1,6 @@
 -- blink.nvim (https://github.com/saghen/blink.cmp)
 --  Performant, batteries-included completion plugin for Neovim.
 
-local libpath = vim.fn.stdpath("data") .. "/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so"
-
 local function is_qnap()
   if vim.fn.has("unix") == 1 then -- Check if it's a Unix-like system (Linux, macOS, etc.)
     local uname_output = vim.fn.system("uname -a")
@@ -28,9 +26,15 @@ return {
     event = { "InsertEnter", "CmdLineEnter" },
 
     cond = function()
-      return not is_qnap() or vim.fn.filereadable(libpath) == 1
+      if is_qnap() then
+        local libpath = vim.fn.stdpath("data") .. "/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so"
+
+        return vim.fn.filereadable(libpath) == 1
+      end
+
+      return true
     end,
-    ---@module 'blink.cmp'
+    ---@module "blink.cmp"
     ---@diagnostic disable-next-line: undefined-doc-name
     ---@type blink.cmp.Config
     opts = {
@@ -106,6 +110,8 @@ return {
         },
       },
     },
+    -- allows extending the providers array elsewhere in your config
+    -- without having to redefine it
     opts_extend = { "sources.default" },
     config = function(_, opts)
       Set_hl({ GhostText = { link = "LspInlayHint" } }, { prefix = "BlinkCmp", default = true })

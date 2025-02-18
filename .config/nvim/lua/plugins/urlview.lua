@@ -23,12 +23,12 @@ return {
     {
       "folke/which-key.nvim",
       opts = {
+        ---@module "which-key"
         ---@type wk.Spec
         spec = {
           { "<leader>fu", open_buffer_urlview, icon = "󰖟", silent = true, remap = true, desc = "List buffer URLs" },
         },
       },
-      opts_extend = { "spec" },
     },
   },
 }

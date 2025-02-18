@@ -345,6 +345,7 @@ return {
     {
       "folke/which-key.nvim",
       opts = {
+        ---@module "which-key"
         ---@type wk.Spec
         spec = keys,
       },

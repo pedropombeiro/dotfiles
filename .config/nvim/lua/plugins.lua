@@ -149,12 +149,12 @@ return {
       {
         "folke/which-key.nvim",
         opts = {
+          ---@module "which-key"
           ---@type wk.Spec
           spec = {
             { "gs", group = "Surround", icon = "" },
           },
         },
-        opts_extend = { "spec" },
       },
     },
   },

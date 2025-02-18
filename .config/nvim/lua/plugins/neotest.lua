@@ -53,8 +53,6 @@ return {
     ---@type pmsp.neovim.Config
     local config = require("config")
     local icons = config.ui.icons
-
-    ---@format disable-next
     local function define_highlights()
       Set_hl({
         Passed = { ctermfg = "Green", fg = config.theme.colors.green },
@@ -98,7 +96,13 @@ return {
           args = { "-count=1", "-timeout=60s" },
         }),
         require("neotest-rspec")({
-          rspec_cmd = function() return { "bundle", "exec", "rspec" } end,
+          rspec_cmd = function(position_type)
+            if position_type == "test" then
+              return { "bundle", "exec", "rspec", "--fail-fast" }
+            else
+              return { "bundle", "exec", "rspec" }
+            end
+          end,
         }),
       },
       icons = {
@@ -119,12 +123,12 @@ return {
     {
       "folke/which-key.nvim",
       opts = {
+        ---@module "which-key"
         ---@type wk.Spec
         spec = {
           { "<leader>r", group = "Test", icon = "󰙨" },
         },
       },
-      opts_extend = { "spec" },
     },
   },
 }

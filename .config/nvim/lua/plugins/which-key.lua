@@ -167,4 +167,5 @@ return {
       })
     end
   end,
+  opts_extend = { "spec" },
 }

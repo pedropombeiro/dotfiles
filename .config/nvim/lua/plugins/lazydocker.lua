@@ -6,6 +6,7 @@ return {
     "folke/which-key.nvim",
     lazy = true,
     opts = {
+      ---@module "which-key"
       ---@type wk.Spec
       spec = {
         {
@@ -22,7 +23,6 @@ return {
         },
       },
     },
-    opts_extend = { "spec" },
   },
 
   {

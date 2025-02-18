@@ -86,12 +86,12 @@ return {
       {
         "folke/which-key.nvim",
         opts = {
+          ---@module "which-key"
           ---@type wk.Spec
           spec = {
             { "<leader>x", group = "Trouble", icon = "🚦" },
           },
         },
-        opts_extend = { "spec" },
       },
     },
   },

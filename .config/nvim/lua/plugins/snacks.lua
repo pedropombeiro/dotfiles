@@ -45,8 +45,10 @@ local function lazygit_opts()
 end
 
 local function with_git_dir(fn)
-  -- Workaround until https://github.com/folke/snacks.nvim/issues/1184 is implemented
-  if is_yadm_repo() then vim.env.GIT_DIR = yadm_repo() end
+  if is_yadm_repo() then
+    fn({ cwd = vim.fn.expand("~"), args = yadm_opts() })
+    return
+  end
 
   fn()
 end
@@ -306,9 +308,6 @@ return {
         },
         on_show = function()
           require("nvim-treesitter") -- Ensure treesitter is loaded for correct code preview colors
-        end,
-        on_close = function()
-          if vim.env.GIT_DIR ~= nil and is_yadm_repo() then vim.env.GIT_DIR = nil end
         end,
       },
       scope = { enabled = true },

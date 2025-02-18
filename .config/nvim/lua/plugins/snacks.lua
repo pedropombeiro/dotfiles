@@ -297,6 +297,10 @@ return {
         },
         ---@class snacks.picker.previewers.Config
         previewers = {
+          diff = {
+            native = false,
+            cmd = { "delta" },
+          },
           git = {
             args = git_opts(),
           },

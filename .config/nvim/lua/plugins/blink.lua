@@ -6,7 +6,7 @@ local libpath = vim.fn.stdpath("data") .. "/lazy/blink.cmp/target/release/libbli
 local function is_qnap()
   if vim.fn.has("unix") == 1 then -- Check if it's a Unix-like system (Linux, macOS, etc.)
     local uname_output = vim.fn.system("uname -a")
-    return uname_output and string.find(string.lower(uname_output), "qnap")
+    return uname_output and string.find(string.lower(uname_output), "qnap") ~= nil
   end
 
   return false
@@ -16,6 +16,10 @@ return {
   -- auto completion
   {
     "saghen/blink.cmp",
+
+    -- use a release tag to download pre-built binaries
+    version = "*",
+
     -- optional: provides snippets for the snippet source
     dependencies = {
       "rafamadriz/friendly-snippets",

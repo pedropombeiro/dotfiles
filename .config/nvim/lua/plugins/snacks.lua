@@ -298,7 +298,7 @@ return {
         ---@class snacks.picker.previewers.Config
         previewers = {
           diff = {
-            native = false,
+            builtin = true,
             cmd = { "delta" },
           },
           git = {

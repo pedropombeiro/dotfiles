@@ -6,6 +6,7 @@ return {
   {
     "folke/trouble.nvim",
     cmd = { "Trouble" },
+    ---@diagnostic disable: missing-fields
     ---@type LazyKeysSpec[]
     keys = {
       { "<leader>xw", "<cmd>Trouble diagnostics toggle<cr>", desc = "Toggle workspace diagnostics" },
@@ -15,7 +16,7 @@ return {
       {
         "[X",
         function() require("trouble").first({ jump = true }) end,
-        desc = "First Trouble 🚦 item",
+        desc = "First Trouble/Quickfix 🚦 item",
       },
       {
         "[x",
@@ -27,7 +28,7 @@ return {
             if not ok then vim.notify(err, vim.log.levels.ERROR) end
           end
         end,
-        desc = "Previous Trouble 🚦 item",
+        desc = "Previous Trouble/Quickfix 🚦 item",
       },
       {
         "]x",
@@ -35,16 +36,16 @@ return {
           if require("trouble").is_open() then
             require("trouble").next({ skip_groups = true, jump = true })
           else
-            local ok, err = pcall(vim.cmd.cprev)
+            local ok, err = pcall(vim.cmd.cnext)
             if not ok then vim.notify(err, vim.log.levels.ERROR) end
           end
         end,
-        desc = "Next Trouble 🚦 item",
+        desc = "Next Trouble/Quickfix 🚦 item",
       },
       {
         "]X",
         function() require("trouble").last({ jump = true }) end,
-        desc = "Last Trouble 🚦 item",
+        desc = "Last Trouble/Quickfix 🚦 item",
       },
     },
     opts = {

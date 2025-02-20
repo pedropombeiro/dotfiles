@@ -9,6 +9,8 @@ return {
       ["_"] = {
         { "enable", "disable" },
         { "enabled", "disabled" },
+        { "first", "last" },
+        { "previous", "next" },
       },
       ["home-assistant"] = {
         { "turn_off", "turn_on" },

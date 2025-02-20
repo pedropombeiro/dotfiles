@@ -13,12 +13,12 @@ return {
       desc = "Buffer-local Keymaps (which-key)",
     },
   },
+  ---@type wk.Opts
   opts = {
-    ---@type wk.Win.opts
+    preset = "modern",
     win = {
       border = require("config").ui.border,
     },
-    ---@type wk.Spec
     spec = {
       -- Workaround: Fix <s-space> being rendered as 32;2u in LazyGit
       -- https://neovim.discourse.group/t/shift-space-escape-sequence-in-term-introduced-between-in-neovim-0-6-and-0-7/2816
@@ -140,6 +140,7 @@ return {
       { "gF", mode = { "n", "x" }, desc = "Go to file:line under cursor" },
     },
   },
+  ---@param opts wk.Opts
   config = function(_, opts)
     local wk = require("which-key")
     wk.setup(opts)

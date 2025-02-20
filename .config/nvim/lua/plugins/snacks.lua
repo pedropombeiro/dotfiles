@@ -202,7 +202,7 @@ return {
           { pane = 2, icon = " ", title = "Projects", section = "projects", indent = 2, padding = 2 },
           {
             pane = 2,
-            icon = " ",
+            icon = " ",
             title = "Git Status",
             section = "terminal",
             enabled = function() return Snacks.git.get_root() ~= nil end,

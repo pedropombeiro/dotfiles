@@ -154,6 +154,7 @@ return {
           },
           sqlls = {},
           taplo = {},
+          turbo_ls = {},
           vtsls = {},
           vimls = {},
           vale_ls = {},

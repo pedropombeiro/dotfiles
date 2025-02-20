@@ -17,50 +17,62 @@ local on_attach = function(bufnr)
       buffer = bufnr,
       {
         icon = "",
-        { "<leader>h", group = "Gitsigns" },
-        { "<leader>hs", ":Gitsigns stage_hunk<CR>", desc = "Stage Git hunk", mode = { "n", "v" }, icon = "" },
-        { "<leader>hu", gs.undo_stage_buffer, desc = "Undo stage Git hunk", icon = "" },
-        { "<leader>hr", ":Gitsigns reset_hunk<CR>", desc = "Reset Git hunk", mode = { "n", "v" } },
-        { "<leader>hq", ":Gitsigns setqflist<CR>", desc = "Open changes in Quickfix list" },
-        { "<leader>hp", gs.preview_hunk_inline, desc = "Preview Git hunk", icon = "" },
-        { "<leader>hS", gs.stage_buffer, desc = "Stage buffer" },
-        { "<leader>hR", gs.reset_buffer, desc = "Reset buffer" },
-        { "<leader>hb", function() gs.blame_line({ full = true }) end, desc = "Git blame line" },
-        { "<leader>hd", gs.diffthis, desc = "Git diff this" },
-        { "<leader>hD", function() gs.diffthis("~") end, desc = "Git diff this ~", icon = "" },
+        { "<leader>gh", group = "Gitsigns" },
+        { "<leader>ghs", ":Gitsigns stage_hunk<CR>", desc = "Stage Git hunk", mode = { "n", "v" }, icon = "" },
+        { "<leader>ghu", gs.undo_stage_buffer, desc = "Undo stage Git hunk", icon = "" },
+        { "<leader>ghr", ":Gitsigns reset_hunk<CR>", desc = "Reset Git hunk", mode = { "n", "v" } },
+        { "<leader>ghq", ":Gitsigns setqflist<CR>", desc = "Open changes in Quickfix list" },
+        { "<leader>ghp", gs.preview_hunk_inline, desc = "Preview Git hunk", icon = "" },
+        { "<leader>ghS", gs.stage_buffer, desc = "Stage buffer" },
+        { "<leader>ghR", gs.reset_buffer, desc = "Reset buffer" },
+        { "<leader>ghb", function() gs.blame_line({ full = true }) end, desc = "Git blame line" },
+        { "<leader>ghd", gs.diffthis, desc = "Git diff this" },
+        { "<leader>ghD", function() gs.diffthis("~") end, desc = "Git diff this ~", icon = "" },
         {
           expr = true,
+          mode = { "n" },
           {
+            -- Navigation
             {
-              -- Navigation
-              "[c",
+              "[H",
+              function() gs.nav_hunk("first") end,
+              desc = "First Git hunk",
+              icon = "󰮳",
+            },
+            {
+              "]H",
+              function() gs.nav_hunk("last") end,
+              desc = "Last Git hunk",
+              icon = "󰮳",
+            },
+            {
+              "[h",
               function()
-                if vim.wo.diff then return "[c" end
-                vim.schedule(gs.prev_hunk)
-                return "<Ignore>"
+                if vim.wo.diff then
+                  vim.cmd.normal({ "]c", bang = true })
+                else
+                  gs.nav_hunk("next")
+                end
               end,
               desc = "Previous Git hunk",
               icon = "󰮳",
             },
             {
-              -- Navigation
-              "]c",
+              "]h",
               function()
-                if vim.wo.diff then return "]c" end
-                vim.schedule(gs.next_hunk)
-                return "<Ignore>"
+                if vim.wo.diff then
+                  vim.cmd.normal({ "[c", bang = true })
+                else
+                  gs.nav_hunk("prev")
+                end
               end,
               desc = "Next Git hunk",
               icon = "󰮱",
             },
-            {
-              -- Options
-              { "[g", group = "Enable Git option", icon = "" },
-              { "[gb", function() gs.toggle_current_line_blame(true) end, desc = "Enable current line blame" },
-
-              { "[gd", function() gs.toggle_deleted(true) end, desc = "Enable Git-deleted" },
-            },
             -- Options
+            { "[g", group = "Enable Git option", icon = "" },
+            { "[gb", function() gs.toggle_current_line_blame(true) end, desc = "Enable current line blame" },
+            { "[gd", function() gs.toggle_deleted(true) end, desc = "Enable Git-deleted" },
             { "]g", group = "Disable Git option", icon = "" },
             { "]gb", function() gs.toggle_current_line_blame(false) end, desc = "Disable current line blame" },
             { "]gd", function() gs.toggle_deleted(false) end, desc = "Disable Git-deleted" },
@@ -82,9 +94,7 @@ return {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPost", "BufNewFile", "BufWritePre" },
     opts = {
-      _on_attach_pre = function(bufnr, callback)
-        require("gitsigns-yadm").yadm_signs(callback, { bufnr = bufnr })
-      end,
+      _on_attach_pre = function(bufnr, callback) require("gitsigns-yadm").yadm_signs(callback, { bufnr = bufnr }) end,
       signs = {
         add = { text = "▌", show_count = true },
         change = { text = "▌", show_count = true },
@@ -141,5 +151,5 @@ return {
   {
     "purarue/gitsigns-yadm.nvim",
     lazy = true,
-  }
+  },
 }

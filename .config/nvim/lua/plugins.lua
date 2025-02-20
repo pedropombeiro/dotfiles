@@ -76,7 +76,7 @@ return {
     ---@type LazyKeysSpec[]
     keys = {
       { "<leader>gb", "<Plug>(gh-line-blame)", desc = "Open blame view in browser" },
-      { "<leader>gh", "<Plug>(gh-line)", desc = "Open blob view in browser" },
+      { "<leader>gf", "<Plug>(gh-line)", desc = "Open blob view in browser" },
       { "<leader>go", "<Plug>(gh-repo)", desc = "Open in browser" },
     },
   },

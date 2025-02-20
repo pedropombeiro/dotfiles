@@ -146,6 +146,7 @@ return {
   lazy = false,
   opts = function()
     local diagnostics_icons = config.ui.icons.diagnostics
+    ---@return string
     local function vim_version() return vim.version().major .. "." .. vim.version().minor .. "." .. vim.version().patch end
 
     Set_hl(
@@ -153,11 +154,10 @@ return {
       { prefix = "SnacksPicker", default = true }
     )
 
+    ---@diagnostic disable: missing-fields
     ---@type snacks.Config
     return {
       bigfile = { enabled = not vim.g.started_by_firenvim },
-      ---@type snacks.dashboard.Config
-      ---@diagnostic disable-next-line: missing-fields
       dashboard = {
         enabled = not vim.g.started_by_firenvim,
         preset = {
@@ -215,8 +215,6 @@ return {
         },
       },
       image = { enabled = false },
-      ---@type snacks.indent.Config
-      ---@diagnostic disable-next-line: missing-fields
       indent = {
         animate = {
           duration = {
@@ -227,8 +225,6 @@ return {
       },
       input = { enabled = true },
       lazygit = lazygit_opts(),
-      ---@type snacks.notifier.Config
-      ---@diagnostic disable-next-line: missing-fields
       notifier = {
         enabled = true,
         timeout = 3000,
@@ -241,16 +237,10 @@ return {
         },
       },
       quickfile = { enabled = true },
-      ---@type snacks.picker.Config
-      ---@diagnostic disable-next-line: missing-fields
       picker = {
-        ---@type snacks.picker.jump.Config
-        ---@diagnostic disable-next-line: missing-fields
         jump = {
           reuse_win = true, -- reuse an existing window if the buffer is already open
         },
-        ---@type snacks.picker.icons
-        ---@diagnostic disable-next-line: missing-fields
         icons = {
           files = {
             enabled = true, -- show file icons
@@ -295,7 +285,6 @@ return {
             },
           },
         },
-        ---@class snacks.picker.previewers.Config
         previewers = {
           diff = {
             builtin = true,
@@ -316,8 +305,6 @@ return {
       },
       scope = { enabled = true },
       scratch = { enabled = true },
-      ---@type snacks.statuscolumn.Config
-      ---@diagnostic disable-next-line: missing-fields
       statuscolumn = {
         left = { "mark", "fold", "sign" }, -- priority of signs on the left (high to low)
         right = { "git" }, -- priority of signs on the right (high to low)
@@ -332,13 +319,9 @@ return {
         refresh = 50, -- refresh at most every 50ms
       },
       terminal = { enabled = not vim.g.started_by_firenvim },
-      ---@type snacks.win.Config
-      ---@diagnostic disable-next-line: missing-fields
       win = {
         border = config.ui.border,
       },
-      ---@type snacks.words.Config
-      ---@diagnostic disable-next-line: missing-fields
       words = {
         notify_jump = true,
       },

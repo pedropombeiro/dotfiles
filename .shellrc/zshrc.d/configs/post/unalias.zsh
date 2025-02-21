@@ -9,4 +9,5 @@ if alias t >/dev/null; then
   unalias t
 fi
 
+unalias gf # Overriden as a more specialized function
 unalias gfa # Overriden as a more specialized function

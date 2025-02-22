@@ -1,4 +1,4 @@
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile", "BufWritePost" }, {
-  pattern = ".envrc",
-  callback = function() vim.bo.filetype = "bash" end,
+  pattern = { ".envrc", "*.env" },
+  callback = function() vim.bo.syntax = "bash" end,
 })

@@ -31,14 +31,36 @@ return {
     },
     init = function()
       vim.g.neo_tree_remove_legacy_commands = 1
-      if vim.fn.argc() == 1 then
-        local stat = vim.uv.fs_stat(vim.fn.argv(0))
-        if stat and stat.type == "directory" then require("neo-tree") end
-      end
+
+      -- FIX: use `autocmd` for lazy-loading neo-tree instead of directly requiring it,
+      -- because `cwd` is not set up properly.
+      vim.api.nvim_create_autocmd("BufEnter", {
+        group = vim.api.nvim_create_augroup("Neotree_start_directory", { clear = true }),
+        desc = "Start Neo-tree with directory",
+        once = true,
+        callback = function()
+          if package.loaded["neo-tree"] then
+            return
+          else
+            local stats = vim.uv.fs_stat(vim.fn.argv(0))
+            if stats and stats.type == "directory" then
+              require("neo-tree")
+            end
+          end
+        end,
+      })
     end,
     opts = {
       popup_border_style = config.ui.border,
       default_component_configs = {
+        diagnostics = {
+          symbols = {
+            error = icons.diagnostics.error,
+            warn = icons.diagnostics.warning,
+            info = icons.diagnostics.info,
+            hint = icons.diagnostics.hint,
+          },
+        },
         icon = {
           folder_empty = icons.folder.empty,
           folder_empty_open = icons.folder.empty_open,
@@ -127,11 +149,6 @@ return {
       },
     },
     config = function(_, opts)
-      vim.fn.sign_define("DiagnosticSignError", { text = icons.diagnostics.error, texthl = "DiagnosticSignError" })
-      vim.fn.sign_define("DiagnosticSignWarn", { text = icons.diagnostics.warning, texthl = "DiagnosticSignWarn" })
-      vim.fn.sign_define("DiagnosticSignInfo", { text = icons.diagnostics.info, texthl = "DiagnosticSignInfo" })
-      vim.fn.sign_define("DiagnosticSignHint", { text = icons.diagnostics.hint, texthl = "DiagnosticSignHint" })
-
       -- +Snacks
       local function on_move(data) Snacks.rename.on_rename_file(data.source, data.destination) end
       local events = require("neo-tree.events")
@@ -165,8 +182,6 @@ return {
     lazy = true,
     version = "2.*",
     opts = function()
-      ---@type pmsp.neovim.Config
-      local config = require("config")
       local colors = config.theme.colors
 
       return {

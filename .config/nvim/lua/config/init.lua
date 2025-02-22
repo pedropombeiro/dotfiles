@@ -43,12 +43,12 @@ local config = {
         expanded  = "",
       },
       diagnostics = {
-        debug   = "",
-        hint    = "",
-        trace   = "✎",
-        info    = "",
-        warning = "",
-        error   = "",
+        debug   = "🐛 ",
+        hint    = "💡 ",
+        trace   = "✏️ ",
+        info    = "ℹ️ ",
+        warning = "⚠️ ",
+        error   = "❌ ",
       },
       kinds = {
         Array         = "",

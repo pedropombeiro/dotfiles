@@ -266,10 +266,10 @@ return {
       local border = nvconfig.ui.border
       local icons = nvconfig.ui.icons.diagnostics
       local signs = {
-        Error = icons.error .. " ",
-        Warn = icons.warning .. " ",
-        Hint = icons.hint .. " ",
-        Info = icons.info .. " ",
+        Error = icons.error,
+        Warn = icons.warning,
+        Hint = icons.hint,
+        Info = icons.info,
       }
       for type, icon in pairs(signs) do
         local hl = "DiagnosticSign" .. type

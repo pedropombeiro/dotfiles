@@ -65,7 +65,9 @@ return {
       ---@class PluginLspOpts
       local lspopts = {
         servers = {
-          bashls = {},
+          bashls = {
+            filetypes = { "sh", "bash", "zsh" },
+          },
           docker_compose_language_service = {},
           dockerls = {},
           golangci_lint_ls = {},

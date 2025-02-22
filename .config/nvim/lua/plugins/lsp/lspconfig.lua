@@ -160,6 +160,7 @@ return {
           vale_ls = {},
           volar = {},
           yamlls = {
+            filetypes = { "yaml", "yaml.docker-compose", "yaml.homeassistant" },
             -- Have to add this for yamlls to understand that we support line folding
             capabilities = {
               textDocument = {
@@ -237,7 +238,7 @@ return {
         lspconfig.homeassistant = {
           default_config = {
             cmd = { install_dir .. "/node_modules/.bin/ts-node", install_dir .. "/out/server/server.js", "--stdio" },
-            filetypes = { "home-assistant" },
+            filetypes = { "yaml.homeassistant" },
             root_dir = util.root_pattern(".HA_VERSION", "configuration.yaml"),
             settings = {},
           },

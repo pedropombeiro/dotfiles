@@ -12,7 +12,7 @@ return {
         { "first", "last" },
         { "previous", "next" },
       },
-      ["home-assistant"] = {
+      ["yaml.homeassistant"] = {
         { "turn_off", "turn_on" },
         { "unavailable", "available" },
         { "not_home", "home" },

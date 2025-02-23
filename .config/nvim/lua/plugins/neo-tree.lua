@@ -55,10 +55,10 @@ return {
       default_component_configs = {
         diagnostics = {
           symbols = {
-            error = icons.diagnostics.error .. " ",
-            warn = icons.diagnostics.warning .. " ",
-            info = icons.diagnostics.info .. " ",
-            hint = icons.diagnostics.hint .. " ",
+            error = icons.diagnostics.error,
+            warn = icons.diagnostics.warning,
+            info = icons.diagnostics.info,
+            hint = icons.diagnostics.hint,
           },
         },
         icon = {

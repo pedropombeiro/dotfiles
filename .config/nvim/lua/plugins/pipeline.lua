@@ -4,6 +4,7 @@
 return {
   "topaxi/pipeline.nvim",
   cond = function() return not vim.g.started_by_firenvim and vim.fn.executable("gh") == 1 end,
+  ---@module "lazy"
   ---@type LazyKeysSpec[]
   keys = {
     { "<leader>ci", "<cmd>Pipeline<cr>", desc = "Open pipeline.nvim" },
@@ -15,7 +16,7 @@ return {
 
     return {
       icons = {
-        workflow_dispatch = "⚡️",
+        workflow_dispatch = "",
         conclusion = {
           success = icons.passed,
           failure = icons.failed,

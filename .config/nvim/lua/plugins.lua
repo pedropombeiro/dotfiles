@@ -73,6 +73,7 @@ return {
   --### Navigation
   {
     "ruanyl/vim-gh-line", -- vim plugin that open the link of current line on github
+    ---@module "lazy"
     ---@type LazyKeysSpec[]
     keys = {
       { "<leader>gb", "<Plug>(gh-line-blame)", desc = "Open blame view in browser" },
@@ -90,6 +91,7 @@ return {
     "folke/persistence.nvim",
     event = "BufReadPre",
     opts = { options = vim.opt.sessionoptions:get() },
+    ---@module "lazy"
     ---@type LazyKeysSpec[]
     keys = {
       {
@@ -117,6 +119,7 @@ return {
   },
   {
     "Wansmer/treesj", -- Neovim plugin for splitting/joining blocks of code
+    ---@module "lazy"
     ---@type LazyKeysSpec[]
     keys = {
       { "gJ", ":TSJJoin<CR>", desc = "Join into single-line form" },
@@ -211,6 +214,7 @@ return {
   {
     "ruifm/gitlinker.nvim",
     dependencies = "nvim-lua/plenary.nvim",
+    ---@module "lazy"
     ---@type LazyKeysSpec[]
     keys = {
       {

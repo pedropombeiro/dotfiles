@@ -44,8 +44,8 @@ local config = {
       },
       diagnostics = {
         debug   = "",
-        hint    = "",
-        trace   = "✎",
+        hint    = "",
+        trace   = "󰏫",
         info    = "",
         warning = "",
         error   = "",

@@ -90,7 +90,7 @@ local keys = {
   { "<leader>fh", function() Snacks.picker.recent() end, desc = "Old files" },
   { "<leader>f:", function() Snacks.picker.command_history() end, desc = "Command history", icon = "" },
   { "<leader>f/", function() Snacks.picker.search_history() end, desc = "Search history", icon = "󱝩" },
-  { "<leader>fd", function() Snacks.picker.diagnostics() end, desc = "Diagnostics", icon = config.ui.icons.diagnostics.warning },
+  { "<leader>fd", function() Snacks.picker.diagnostics() end, desc = "Diagnostics", icon = "" },
   { "<leader>f`", function() Snacks.picker.marks() end, desc = "Marks", icon = "" },
   { "<leader>f'", function() Snacks.picker.marks() end, desc = "Marks", icon = "" },
   { "<leader>f.", function() Snacks.picker.jumps() end, desc = "Jump list", icon = "" },

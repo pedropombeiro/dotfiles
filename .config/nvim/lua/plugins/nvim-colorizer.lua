@@ -1,8 +1,8 @@
--- NvChad/nvim-colorizer.lua (https://github.com/NvChad/nvim-colorizer.lua)
+-- catgoose/nvim-colorizer.lua (https://github.com/catgoose/nvim-colorizer.lua)
 --  Maintained fork of the fastest Neovim colorizer
 
 return {
-  "NvChad/nvim-colorizer.lua",
+  "catgoose/nvim-colorizer.lua",
   event = "BufReadPre",
   opts = {
     filetypes = { "*", "!lazy" },

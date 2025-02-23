@@ -62,13 +62,12 @@ local keys = {
   { "<leader>b", group = "Bclose" },
   { "<leader>bd", function() Snacks.bufdelete() end, desc = "Close buffer", silent = true },
 
-  { "<leader>fn", function() Snacks.dashboard.open() end, desc = "Dashboard", silent = true },
-
   { "<leader>fn", function() Snacks.notifier.show_history() end, desc = "Notification History", silent = true },
   { "<leader>dn", function() Snacks.notifier.hide() end, desc = "Dismiss All Notifications", silent = true },
 
   { "<leader>tn", function() Snacks.terminal() end, desc = "Open terminal", silent = true },
 
+  { "<leader>D", function() Snacks.dashboard.open() end, desc = "Dashboard", silent = true },
   { "<leader>-", function() Snacks.scratch() end, desc = "Toggle Scratch Buffer" },
   { "<leader>S", function() Snacks.scratch.select() end, desc = "Select Scratch Buffer" },
 
@@ -82,6 +81,7 @@ local keys = {
   { "<leader>fF", function() Snacks.picker.resume() end, desc = "Resume last finder query" },
   { "<leader><Tab>", function() Snacks.picker.keymaps() end, desc = "Keymaps", icon = "" },
   { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
+  { "<leader>fc", function() Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')}) end, desc = "Neovim Config" },
   { "<leader>fH", function() Snacks.picker.highlights() end, desc = "Highlight groups" },
   { "<leader>fK", function() Snacks.picker.man() end, desc = "Man pages", icon = "" },
   { "<leader>fl", function() Snacks.picker.loclist() end, desc = "Location list", icon = "" },

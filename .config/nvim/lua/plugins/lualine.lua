@@ -33,74 +33,6 @@ return {
         end
       end
 
-      local sections = {
-        lualine_a = { "mode" },
-        lualine_b = {
-          { "b:gitsigns_head", icon = "" },
-          {
-            "diff",
-            cond = firenvim_cond,
-            symbols = {
-              added = symbol_icons.added .. " ",
-              modified = symbol_icons.modified .. " ",
-              removed = symbol_icons.removed .. " ",
-            },
-            source = diff_source,
-          },
-        },
-        lualine_c = {
-          {
-            "diagnostics",
-            sources = { "nvim_diagnostic" },
-            symbols = {
-              hint = diagnostic_icons.hint .. " ",
-              info = diagnostic_icons.info .. " ",
-              warn = diagnostic_icons.warning .. " ",
-              error = diagnostic_icons.error .. " ",
-            },
-          },
-          {
-            "filetype",
-            cond = firenvim_cond,
-            icon_only = true,
-            separator = "",
-            padding = { left = 1, right = 0 },
-          },
-          {
-            "filename",
-            cond = firenvim_cond,
-            show_filename_only = false,
-            path = 1,
-            shorting_target = 80,
-            symbols = {
-              modified = symbol_icons.modified,
-              readonly = symbol_icons.readonly, -- Text to show when the file is non-modifiable or readonly.
-            },
-          },
-        },
-        lualine_x = {
-          {
-            require("lazy.status").updates,
-            cond = require("lazy.status").has_updates,
-          },
-          {
-            "pipeline", -- https://github.com/topaxi/pipeline.nvim
-            cond = firenvim_cond,
-          },
-          "encoding",
-          "fileformat",
-          "filetype",
-        },
-        lualine_y = {
-          "selectioncount",
-          { "searchcount", maxcount = 999, timeout = 500 },
-        },
-        lualine_z = {
-          "progress",
-          "location",
-        },
-      }
-
       return {
         options = {
           icons_enabled = true,
@@ -117,7 +49,73 @@ return {
           "lazy",
           "neo-tree",
         },
-        sections = sections,
+        sections = {
+          lualine_a = { "mode" },
+          lualine_b = {
+            { "b:gitsigns_head", icon = "" },
+            {
+              "diff",
+              cond = firenvim_cond,
+              symbols = {
+                added = symbol_icons.added .. " ",
+                modified = symbol_icons.modified .. " ",
+                removed = symbol_icons.removed .. " ",
+              },
+              source = diff_source,
+            },
+          },
+          lualine_c = {
+            {
+              "diagnostics",
+              sources = { "nvim_diagnostic" },
+              symbols = {
+                hint = diagnostic_icons.hint .. " ",
+                info = diagnostic_icons.info .. " ",
+                warn = diagnostic_icons.warning .. " ",
+                error = diagnostic_icons.error .. " ",
+              },
+            },
+            {
+              "filetype",
+              cond = firenvim_cond,
+              icon_only = true,
+              separator = "",
+              padding = { left = 1, right = 0 },
+            },
+            {
+              "filename",
+              cond = firenvim_cond,
+              show_filename_only = false,
+              path = 1,
+              shorting_target = 80,
+              symbols = {
+                modified = symbol_icons.modified,
+                readonly = symbol_icons.readonly, -- Text to show when the file is non-modifiable or readonly.
+              },
+            },
+          },
+          lualine_x = {
+            {
+              require("lazy.status").updates,
+              cond = require("lazy.status").has_updates,
+            },
+            {
+              "pipeline", -- https://github.com/topaxi/pipeline.nvim
+              cond = firenvim_cond,
+            },
+            "encoding",
+            "fileformat",
+            "filetype",
+          },
+          lualine_y = {
+            "selectioncount",
+            { "searchcount", maxcount = 999, timeout = 500 },
+          },
+          lualine_z = {
+            "progress",
+            "location",
+          },
+        },
       }
     end,
   },

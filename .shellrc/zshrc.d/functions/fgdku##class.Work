@@ -19,7 +19,6 @@
 #
 
 source ~/.config/yadm/scripts/colors.sh
-rm -f /tmp/.need_reset_busylight
 
 (
   cd "${GDK_ROOT}/gitlab" || exit 0
@@ -39,10 +38,7 @@ rm -f /tmp/.need_reset_busylight
     sudo ifconfig en7 up
   fi
 
-  if [[ $(xh "http://localhost:8989?action=currentpresence" | jq -r '.runningcommand.eventname') != 'Pulse' ]]; then
-    curl -s 'http://localhost:8989?action=pulse&green=100'
-    touch /tmp/.need_reset_busylight
-  fi
+  curl -sX PUT -d 'state=on' 'https://ha.pombei.ro/api/webhook/gdk_update'
 
   rm -f .git/gc.log
 
@@ -137,6 +133,4 @@ rm -f /tmp/.need_reset_busylight
   cd - >/dev/null
 )
 
-if [[ -f /tmp/.need_reset_busylight ]]; then
-  curl -s 'http://localhost:8989?action=light&green=100'
-fi
+curl -sX PUT -d 'state=off' 'https://ha.pombei.ro/api/webhook/gdk_update'

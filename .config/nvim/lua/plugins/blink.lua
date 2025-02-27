@@ -21,6 +21,7 @@ return {
     -- optional: provides snippets for the snippet source
     dependencies = {
       "rafamadriz/friendly-snippets",
+      "bydlw98/blink-cmp-env",
     },
 
     event = { "InsertEnter", "CmdLineEnter" },
@@ -36,80 +37,93 @@ return {
     end,
     ---@module "blink.cmp"
     ---@diagnostic disable-next-line: undefined-doc-name
-    ---@type blink.cmp.Config
-    opts = {
-      -- 'default' for mappings similar to built-in completion
-      -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
-      -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
-      -- See the full "keymap" documentation for information on defining your own keymap.
-      keymap = {
-        preset = "super-tab",
+    ---@type function|blink.cmp.Config
+    opts = function()
+      return {
+        -- 'default' for mappings similar to built-in completion
+        -- 'super-tab' for mappings similar to vscode (tab to accept, arrow keys to navigate)
+        -- 'enter' for mappings similar to 'super-tab' but with 'enter' to accept
+        -- See the full "keymap" documentation for information on defining your own keymap.
+        keymap = {
+          preset = "super-tab",
 
-        ["<C-y>"] = { "show", "show_documentation", "hide_documentation" },
-      },
+          ["<C-y>"] = { "show", "show_documentation", "hide_documentation" },
+        },
 
-      appearance = {
-        -- Sets the fallback highlight groups to nvim-cmp's highlight groups
-        -- Useful for when your theme doesn't support blink.cmp
-        -- Will be removed in a future release
-        use_nvim_cmp_as_default = true,
-        -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
-        -- Adjusts spacing to ensure icons are aligned
-        nerd_font_variant = "mono",
-      },
+        appearance = {
+          -- Sets the fallback highlight groups to nvim-cmp's highlight groups
+          -- Useful for when your theme doesn't support blink.cmp
+          -- Will be removed in a future release
+          use_nvim_cmp_as_default = true,
+          -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
+          -- Adjusts spacing to ensure icons are aligned
+          nerd_font_variant = "mono",
+        },
 
-      completion = {
-        documentation = {
-          auto_show = true,
-          auto_show_delay_ms = 500,
-          window = {
-            border = require("config").ui.border,
+        completion = {
+          documentation = {
+            auto_show = true,
+            auto_show_delay_ms = 500,
+            window = {
+              border = require("config").ui.border,
+            },
+          },
+          ghost_text = { enabled = true },
+          menu = {
+            auto_show = function(ctx) return ctx.mode == "cmdline" end,
+            draw = {
+              components = {
+                kind_icon = {
+                  ellipsis = false,
+                  text = function(ctx) return require("config").ui.icons.kinds[ctx.kind] end,
+                },
+              },
+              treesitter = { "lsp" },
+            },
           },
         },
-        ghost_text = { enabled = true },
-        menu = {
-          auto_show = function(ctx) return ctx.mode == "cmdline" end,
-          draw = {
-            components = {
-              kind_icon = {
-                ellipsis = false,
-                text = function(ctx) return require("config").ui.icons.kinds[ctx.kind] end,
+
+        fuzzy = {
+          prebuilt_binaries = {
+            -- In QNAP, we don't want to download the prebuilt binaries, since they are built with a version of glibc that is too recent
+            -- To build a supported version, do the following:
+            -- docker run -it --name rust_builder ubuntu:14.04
+            -- apt update -y && apt install -y curl git gcc && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && . "$HOME/.cargo/env" && git clone https://github.com/Saghen/blink.cmp.git && cd blink.cmp/ && cargo build --release
+            -- From the QNAP host, run:
+            --   docker cp rust_builder:/blink.cmp/target/release/libblink_cmp_fuzzy.so $HOME/.local/share/nvim/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so
+            -- docker rm rust_builder
+            download = not is_qnap(),
+          },
+        },
+
+        signature = { enabled = false },
+
+        -- Default list of enabled providers defined so that you can extend it
+        -- elsewhere in your config, without redefining it, due to `opts_extend`
+        sources = {
+          default = { "lazydev", "lsp", "path", "snippets", "buffer", "env" },
+          providers = {
+            lazydev = {
+              name = "LazyDev",
+              module = "lazydev.integrations.blink",
+              -- make lazydev completions top priority (see `:h blink.cmp`)
+              score_offset = 100,
+            },
+            env = {
+              name = "Env",
+              module = "blink-cmp-env",
+              --- @module "blink-cmp-env"
+              --- @type blink-cmp-env.Options
+              opts = {
+                item_kind = require("blink.cmp.types").CompletionItemKind.Variable,
+                show_braces = false,
+                show_documentation_window = true,
               },
             },
-            treesitter = { "lsp" },
           },
         },
-      },
-
-      fuzzy = {
-        prebuilt_binaries = {
-          -- In QNAP, we don't want to download the prebuilt binaries, since they are built with a version of glibc that is too recent
-          -- To build a supported version, do the following:
-          -- docker run -it --name rust_builder ubuntu:14.04
-          -- apt update -y && apt install -y curl git gcc && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && . "$HOME/.cargo/env" && git clone https://github.com/Saghen/blink.cmp.git && cd blink.cmp/ && cargo build --release
-          -- From the QNAP host, run:
-          --   docker cp rust_builder:/blink.cmp/target/release/libblink_cmp_fuzzy.so $HOME/.local/share/nvim/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so
-          -- docker rm rust_builder
-          download = not is_qnap(),
-        },
-      },
-
-      signature = { enabled = false },
-
-      -- Default list of enabled providers defined so that you can extend it
-      -- elsewhere in your config, without redefining it, due to `opts_extend`
-      sources = {
-        default = { "lazydev", "lsp", "path", "snippets", "buffer" },
-        providers = {
-          lazydev = {
-            name = "LazyDev",
-            module = "lazydev.integrations.blink",
-            -- make lazydev completions top priority (see `:h blink.cmp`)
-            score_offset = 100,
-          },
-        },
-      },
-    },
+      }
+    end,
     -- allows extending the providers array elsewhere in your config
     -- without having to redefine it
     opts_extend = { "sources.default" },

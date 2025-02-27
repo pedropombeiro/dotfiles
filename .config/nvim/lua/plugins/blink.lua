@@ -136,7 +136,7 @@ return {
                 future_features = {
                   -- The backend to use for searching. Defaults to "ripgrep".
                   -- "gitgrep" is available as a preview right now.
-                  backend = "ripgrep",
+                  backend = { use = "ripgrep" },
                 },
               },
             },

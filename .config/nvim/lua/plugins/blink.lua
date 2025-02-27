@@ -22,6 +22,7 @@ return {
     dependencies = {
       "rafamadriz/friendly-snippets",
       "bydlw98/blink-cmp-env",
+      "mikavilpas/blink-ripgrep.nvim",
     },
 
     event = { "InsertEnter", "CmdLineEnter" },
@@ -101,7 +102,7 @@ return {
         -- Default list of enabled providers defined so that you can extend it
         -- elsewhere in your config, without redefining it, due to `opts_extend`
         sources = {
-          default = { "lazydev", "lsp", "path", "snippets", "buffer", "env" },
+          default = { "lazydev", "lsp", "path", "snippets", "buffer", "ripgrep", "env" },
           providers = {
             lazydev = {
               name = "LazyDev",
@@ -118,6 +119,25 @@ return {
                 item_kind = require("blink.cmp.types").CompletionItemKind.Variable,
                 show_braces = false,
                 show_documentation_window = true,
+              },
+            },
+            ripgrep = {
+              module = "blink-ripgrep",
+              name = "Ripgrep",
+              -- the options below are optional
+              ---@module "blink-ripgrep"
+              ---@type blink-ripgrep.Options
+              opts = {
+                project_root_marker = { ".git", "lazy-lock.json" },
+                ignore_paths = { "node_modules", "vendor", "tmp", "bin" },
+                -- Features that are not yet stable and might change in the future.
+                -- You can enable these to try them out beforehand, but be aware
+                -- that they might change. Nothing is enabled by default.
+                future_features = {
+                  -- The backend to use for searching. Defaults to "ripgrep".
+                  -- "gitgrep" is available as a preview right now.
+                  backend = "ripgrep",
+                },
               },
             },
           },

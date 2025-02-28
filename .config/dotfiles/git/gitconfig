@@ -14,6 +14,10 @@
   # Detect whitespace errors when applying a patch
   whitespace = fix
 
+[branch]
+
+  sort = -committerdate
+
 [core]
   editor = nvim
 
@@ -50,22 +54,15 @@
 [commit]
 
   template = ~/.config/dotfiles/git/git_commit_msg.txt
+  verbose = true
 
-[push]
+[column]
 
-  # https://git-scm.com/docs/git-config#git-config-pushdefault
-  default = simple
-  autoSetupRemote = true
+  ui = auto
 
-[pull]
-  rebase = true
+[init]
 
-[rebase]
-
-  autoSquash          = true
-  autoStash           = true
-  updateRefs          = true
-  missingCommitsCheck = warn
+  defaultBranch = main
 
 [diff]
 
@@ -76,19 +73,25 @@
 
 [diff "bin"]
 
+  algorithm = histogram
+  colorMoved = plain
+  mnemonicPrefix = true
+  renames = true
+
   # Use `hexdump` to diff binary files
   textconv = hexdump -v -C
+
+[filter "lfs"]
+
+  clean     = git-lfs clean -- %f
+  smudge    = git-lfs smudge -- %f
+  process   = git-lfs filter-process
+  required  = true
 
 [help]
 
   # Automatically correct and execute mistyped commands
   autocorrect = 1
-
-[pager]
-  diff    = delta
-  log     = delta
-  reflog  = delta
-  show    = delta
 
 [interactive]
   diffFilter = delta --color-only --features=interactive
@@ -129,12 +132,42 @@
 
   prompt = false
 
-[filter "lfs"]
+[pager]
+  diff    = delta
+  log     = delta
+  reflog  = delta
+  show    = delta
 
-  clean     = git-lfs clean -- %f
-  smudge    = git-lfs smudge -- %f
-  process   = git-lfs filter-process
-  required  = true
+[push]
+
+  # https://git-scm.com/docs/git-config#git-config-pushdefault
+  default = simple
+  autoSetupRemote = true
+  followTags = true ; push all tags that you have locally that aren’t on the server, every time you push anything.
+
+[pull]
+
+  rebase = true
+
+[rebase]
+
+  autoSquash          = true
+  autoStash           = true
+  updateRefs          = true
+  missingCommitsCheck = warn
+
+[rerere]
+
+  ; Reuse recorded resolutions
+  ; This setting is only useful if you’re doing rebases with conflicts over and over again.
+  ; It’s not the most common situation, but there is not really an issue if it’s turned on and never used.
+
+  enabled = true
+  autoupdate = true
+
+[tag]
+
+  sort = version:refname
 
 # URL shorthands
 
@@ -168,6 +201,8 @@
   parallel = 8
   prune = true
   showForcedUpdates = true
+  pruneTags = true
+
 [submodule]
   fetchJobs = 2
 [status]

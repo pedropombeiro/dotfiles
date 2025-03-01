@@ -117,7 +117,7 @@ return {
               --- @type blink-cmp-env.Options
               opts = {
                 item_kind = require("blink.cmp.types").CompletionItemKind.Variable,
-                show_braces = false,
+                show_braces = true,
                 show_documentation_window = true,
               },
             },

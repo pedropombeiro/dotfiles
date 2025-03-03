@@ -8,12 +8,12 @@ tap "jdxcode/tap"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
 tap "zaquestion/tap"
+# General-purpose data compression with high compression ratio
+brew "xz"
 # Arduino command-line interface
 brew "arduino-cli"
 # Command-line interface for SQLite
 brew "sqlite"
-# General-purpose data compression with high compression ratio
-brew "xz"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.12"
 # Record and share terminal sessions
@@ -112,6 +112,8 @@ brew "moreutils"
 brew "ncdu"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
+# Control nvim processes using `nvr` command-line tool
+brew "neovim-remote"
 # Port scanning utility for large networks
 brew "nmap"
 # PNG file optimizer

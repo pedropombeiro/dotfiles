@@ -178,6 +178,8 @@ brew "moreutils"
 brew "ncdu"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
+# Control nvim processes using `nvr` command-line tool
+brew "neovim-remote"
 # HTTP(S) server and reverse proxy, and IMAP/POP3 proxy server
 brew "nginx", restart_service: true
 # Port scanning utility for large networks

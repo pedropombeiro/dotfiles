@@ -313,6 +313,7 @@ cask "yubico-yubikey-manager"
 cask "zoom"
 mas "1Password for Safari", id: 1569813296
 mas "Amphetamine", id: 937984704
+mas "Brother iPrint&Scan", id: 1193539993
 mas "Developer", id: 640199958
 mas "Discovery", id: 1381004916
 mas "feedly", id: 865500966

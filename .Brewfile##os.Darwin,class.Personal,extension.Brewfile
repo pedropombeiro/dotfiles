@@ -72,6 +72,8 @@ brew "gping"
 brew "grc"
 # Convert source code to formatted text with syntax highlighting
 brew "highlight"
+# Command-line utility for Home Assistant
+brew "homeassistant-cli"
 # Improved top (interactive process viewer)
 brew "htop"
 # Command-line benchmarking tool

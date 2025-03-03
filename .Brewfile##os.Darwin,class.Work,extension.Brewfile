@@ -181,11 +181,11 @@ brew "neovim"
 # Control nvim processes using `nvr` command-line tool
 brew "neovim-remote"
 # HTTP(S) server and reverse proxy, and IMAP/POP3 proxy server
-brew "nginx", restart_service: true
+brew "nginx", restart_service: :changed
 # Port scanning utility for large networks
 brew "nmap"
 # Prometheus exporter for machine metrics
-brew "node_exporter", restart_service: true
+brew "node_exporter", restart_service: :changed
 # Tool for creating identical machine images for multiple platforms
 brew "packer"
 # Swiss-army knife of markup format conversion
@@ -225,7 +225,7 @@ brew "s3cmd"
 # Intuitive find & replace CLI
 brew "sd"
 # Monitors sleep, wakeup, and idleness of a Mac
-brew "sleepwatcher", restart_service: true
+brew "sleepwatcher", restart_service: :changed
 # SMART hard drive monitoring
 brew "smartmontools"
 # SOcket CAT: netcat on steroids

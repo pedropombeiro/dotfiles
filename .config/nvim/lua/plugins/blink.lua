@@ -22,6 +22,7 @@ return {
     dependencies = {
       "rafamadriz/friendly-snippets",
       "bydlw98/blink-cmp-env",
+      "disrupted/blink-cmp-conventional-commits",
       "mikavilpas/blink-ripgrep.nvim",
     },
 
@@ -102,7 +103,7 @@ return {
         -- Default list of enabled providers defined so that you can extend it
         -- elsewhere in your config, without redefining it, due to `opts_extend`
         sources = {
-          default = { "lazydev", "lsp", "path", "snippets", "buffer", "ripgrep", "env" },
+          default = { "lazydev", "conventional_commits", "lsp", "path", "snippets", "buffer", "ripgrep", "env" },
           providers = {
             lazydev = {
               name = "LazyDev",
@@ -110,16 +111,13 @@ return {
               -- make lazydev completions top priority (see `:h blink.cmp`)
               score_offset = 100,
             },
-            env = {
-              name = "Env",
-              module = "blink-cmp-env",
-              --- @module "blink-cmp-env"
-              --- @type blink-cmp-env.Options
-              opts = {
-                item_kind = require("blink.cmp.types").CompletionItemKind.Variable,
-                show_braces = true,
-                show_documentation_window = true,
-              },
+            conventional_commits = {
+              name = "Conventional Commits",
+              module = "blink-cmp-conventional-commits",
+              enabled = function() return vim.bo.filetype == "gitcommit" end,
+              ---@module "blink-cmp-conventional-commits"
+              ---@type blink-cmp-conventional-commits.Options
+              opts = {}, -- none so far
             },
             ripgrep = {
               module = "blink-ripgrep",
@@ -138,6 +136,17 @@ return {
                   -- "gitgrep" is available as a preview right now.
                   backend = { use = "ripgrep" },
                 },
+              },
+            },
+            env = {
+              name = "Env",
+              module = "blink-cmp-env",
+              --- @module "blink-cmp-env"
+              --- @type blink-cmp-env.Options
+              opts = {
+                item_kind = require("blink.cmp.types").CompletionItemKind.Variable,
+                show_braces = true,
+                show_documentation_window = true,
               },
             },
           },

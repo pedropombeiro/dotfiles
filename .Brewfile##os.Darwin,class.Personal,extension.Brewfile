@@ -80,6 +80,8 @@ brew "hyperfine"
 brew "iperf3"
 # Official CLI for the IPinfo IP Address API
 brew "ipinfo-cli"
+# Duplicate file finder and an enhanced fork of 'fdupes'
+brew "jdupes"
 # Command-line pager for JSON data
 brew "jless"
 # Lightweight and flexible command-line JSON processor

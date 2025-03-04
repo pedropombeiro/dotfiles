@@ -237,7 +237,7 @@ cask "ledger-live"
 # Free cross-platform office suite, fresh version
 cask "libreoffice"
 # Host-based application firewall
-cask "little-snitch"
+cask "little-snitch@5"
 # Provides access to camera controls
 cask "logitech-camera-settings"
 # Adaptive brightness for external displays
@@ -248,8 +248,6 @@ cask "macfuse"
 cask "macupdater"
 # Display technical and tag data for video and audio files
 cask "mediainfo"
-# Monitors and reports any microphone and camera activity
-cask "micro-snitch"
 # Provides updates to various Microsoft products
 cask "microsoft-auto-update"
 # Multi-platform web browser

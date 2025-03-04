@@ -342,15 +342,13 @@ cask "launchcontrol"
 # Free cross-platform office suite, fresh version
 cask "libreoffice"
 # Host-based application firewall
-cask "little-snitch"
+cask "little-snitch@5"
 # Software for Logitech devices
 cask "logitech-options"
 # Adaptive brightness for external displays
 cask "lunar"
 # Track and update to the latest versions of installed software
 cask "macupdater"
-# Monitors and reports any microphone and camera activity
-cask "micro-snitch"
 # Provides updates to various Microsoft products
 cask "microsoft-auto-update"
 # Multi-platform web browser

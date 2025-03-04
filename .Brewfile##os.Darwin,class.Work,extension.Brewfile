@@ -371,8 +371,6 @@ cask "plex"
 cask "protonvpn"
 # Control your tools with a few keystrokes
 cask "raycast"
-# Remote management solution
-cask "royal-tsx"
 # Tool for sending personal documents to Kindles from Macs
 cask "send-to-kindle"
 # Screenshot measurement and annotation tool

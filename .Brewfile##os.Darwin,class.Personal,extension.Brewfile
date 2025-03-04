@@ -273,8 +273,6 @@ cask "p4v"
 cask "plex"
 # VPN client focusing on security
 cask "protonvpn"
-# Display image info and preview unsupported formats in QuickLook
-cask "qlimagesize"
 # Imaging utility to install operating systems to a microSD card
 cask "raspberry-pi-imager"
 # Control your tools with a few keystrokes

@@ -183,8 +183,6 @@ brew "nginx", restart_service: :changed
 brew "nmap"
 # Prometheus exporter for machine metrics
 brew "node_exporter", restart_service: :changed
-# Tool for creating identical machine images for multiple platforms
-brew "packer"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
 # CLI for Postgres with auto-completion and syntax highlighting
@@ -241,8 +239,6 @@ brew "the_silver_searcher"
 brew "tokei"
 # Syntax-aware linter for prose
 brew "vale"
-# Secures, stores, and tightly controls access to secrets
-brew "vault"
 # Modern watch command
 brew "viddy"
 # Ncurses-based file manager with vi-like keybindings
@@ -377,8 +373,6 @@ cask "p4v"
 cask "plex"
 # VPN client focusing on security
 cask "protonvpn"
-# Display image info and preview unsupported formats in QuickLook
-cask "qlimagesize"
 # Control your tools with a few keystrokes
 cask "raycast"
 # Remote management solution

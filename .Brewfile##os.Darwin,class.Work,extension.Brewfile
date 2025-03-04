@@ -289,8 +289,6 @@ cask "appcleaner"
 cask "bartender"
 # Prevents your sleeping computer from connecting to Bluetooth accessories
 cask "bluesnooze"
-# GUI app for Homebrew
-cask "cakebrew"
 # Open links in any browser
 cask "choosy"
 # Graphical configurator for Kaleidoscope-powered keyboards

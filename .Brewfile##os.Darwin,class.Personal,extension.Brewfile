@@ -200,8 +200,6 @@ cask "beyond-compare"
 cask "bluetility"
 # Volume booster and equaliser software
 cask "boom-3d"
-# GUI app for Homebrew
-cask "cakebrew"
 # E-books management software
 cask "calibre"
 # Allows switching between application windows

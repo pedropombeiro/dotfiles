@@ -1,7 +1,5 @@
 tap "borgbackup/tap"
 tap "homebrew/bundle"
-tap "homebrew/cask-fonts"
-tap "homebrew/cask-versions"
 tap "homebrew/services"
 tap "jarred-sumner/git-peek"
 tap "jdxcode/tap"

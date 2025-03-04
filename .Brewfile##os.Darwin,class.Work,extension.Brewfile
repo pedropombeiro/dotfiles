@@ -337,8 +337,6 @@ cask "jetbrains-toolbox"
 cask "kap"
 # Open-source keystroke visualiser
 cask "keycastr"
-# Interface for reading and syncing eBooks
-cask "kindle"
 # Create, manage and debug system and user services
 cask "launchcontrol"
 # Free cross-platform office suite, fresh version

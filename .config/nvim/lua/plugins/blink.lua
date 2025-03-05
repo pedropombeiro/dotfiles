@@ -156,10 +156,5 @@ return {
     -- allows extending the providers array elsewhere in your config
     -- without having to redefine it
     opts_extend = { "sources.default" },
-    config = function(_, opts)
-      Set_hl({ GhostText = { link = "LspInlayHint" } }, { prefix = "BlinkCmp", default = true })
-
-      require("blink-cmp").setup(opts)
-    end,
   },
 }

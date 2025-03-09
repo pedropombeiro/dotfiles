@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+
+# Add a `fm` function to zsh that opens vifm either at the given directory or
+# at the one autojump suggests
+if [ "$2" != "" ]; then
+  yazi "$@"
+elif [ "$1" != "" ]; then
+  if [ -d "$1" ]; then
+    yazi "$1"
+  elif [ -f "$1" ]; then
+    yazi "$1"
+  else
+    out="$(autojump $1)"
+    yazi "$out"
+  fi
+else
+  local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
+	fi
+	rm -f -- "$tmp"
+fi
+return $?

@@ -9,3 +9,7 @@ printf "${YELLOW}%s${NC}\n" "Installing cargo packages..."
 # Install some useful system tools written in Rust and which don't provide an easy install method in QTS
 cargo install \
   grc-rs
+
+cargo install --locked yazi-fm yazi-cli
+
+ya pack -i # Install yazi packages

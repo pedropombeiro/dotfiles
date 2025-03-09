@@ -1,0 +1,64 @@
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-enter"
+rev = "2bf70d8"
+hash = "7918aab6a71caf31b58411f789195677"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:toggle-pane"
+rev = "2bf70d8"
+hash = "812fd49667ab6823250f0411f8cf793a"
+
+[[plugin.deps]]
+use = "Reledia/miller"
+rev = "40e0265"
+hash = "2d6d77583162aaf0a599e7a3091b5878"
+
+[[plugin.deps]]
+use = "dedukun/relative-motions"
+rev = "8103065"
+hash = "9f13f0740fa3a0c18e47ec6fb62ddfaa"
+
+[[plugin.deps]]
+use = "dedukun/bookmarks"
+rev = "95b2c58"
+hash = "17a094653b7d0db4ac68ed531d2e1412"
+
+[[plugin.deps]]
+use = "Lil-Dank/lazygit"
+rev = "9f924e3"
+hash = "2b0c33928986f126d5c5a4cac31a6b46"
+
+[[plugin.deps]]
+use = "KKV9/command"
+rev = "95a29be"
+hash = "65fff40a0060fe4b1c42d49d29f770fd"
+
+[[plugin.deps]]
+use = "KKV9/compress"
+rev = "60b24af"
+hash = "ee025be766240cc98e671754ac836da3"
+
+[[plugin.deps]]
+use = "ourongxing/fast-enter"
+rev = "1c4caeb"
+hash = "b209b5db91df69bdc6a4656cb8276cd9"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:git"
+rev = "2bf70d8"
+hash = "806cb2842b64e976ba2c65a3e3724518"
+
+[[plugin.deps]]
+use = "llanosrocas/githead"
+rev = "2375024"
+hash = "f46c42b1146bed331c7000b1efd076f5"
+
+[[plugin.deps]]
+use = "ahkohd/eza-preview"
+rev = "6575a9a"
+hash = "72355a6c8b7c8de6ed4dda0f98f86fee"
+
+[[flavor.deps]]
+use = "bennyyip/gruvbox-dark"
+rev = "b4cc9f2"
+hash = "f44c42bcbed3c8564100e45e2fe3649a"

@@ -1,0 +1,21 @@
+show_symlink = true
+
+[manager]
+ratio = [2, 3, 5]
+linemode = "size"
+
+[plugin]
+prepend_previewers = [
+  { mime = "text/csv", run = "miller" },
+  { name = "*/", run = "eza-preview" },
+]
+
+[[plugin.prepend_fetchers]]
+id   = "git"
+name = "*"
+run  = "git"
+
+[[plugin.prepend_fetchers]]
+id   = "git"
+name = "*/"
+run  = "git"

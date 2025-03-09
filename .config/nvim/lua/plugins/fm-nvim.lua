@@ -1,4 +1,4 @@
--- fm-nvim (https://github.com/is0n/fm-nvim)
+-- fm-nvim (https://github.com/Eric-Song-Nop/fm-nvim)
 -- 🗂 Neovim plugin that lets you use your favorite terminal file managers (and fuzzy finders) from within Neovim.
 
 return {
@@ -8,23 +8,20 @@ return {
   },
 
   {
-    "is0n/fm-nvim",
+    "Eric-Song-Nop/fm-nvim",
     ---@module "lazy"
     ---@type LazyKeysSpec[]
     keys = {
       {
         "<leader>F",
         function()
-          -- Signal to vifm that we don't want image previews, since we can't really calculate the correct offset of the popup
-          vim.env._DISABLE_VIFM_IMGPREVIEW = "1"
           if vim.api.nvim_buf_get_name(0) == "" then
-            vim.cmd([[Vifm --select %:p:h]])
+            vim.cmd([[Yazi %:p:h]])
           else
-            vim.cmd([[Vifm --select %]])
+            vim.cmd([[Yazi %]])
           end
-          vim.env._DISABLE_VIFM_IMGPREVIEW = ""
         end,
-        desc = "Open File Manager (vifm)",
+        desc = "Open File Manager (yazi)",
       },
     },
     opts = {

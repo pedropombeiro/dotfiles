@@ -1,17 +1,19 @@
 tap "borgbackup/tap"
 tap "homebrew/bundle"
+tap "homebrew/cask-fonts"
+tap "homebrew/cask-versions"
 tap "homebrew/services"
 tap "jarred-sumner/git-peek"
 tap "jdxcode/tap"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
 tap "zaquestion/tap"
-# General-purpose data compression with high compression ratio
-brew "xz"
 # Arduino command-line interface
 brew "arduino-cli"
 # Command-line interface for SQLite
 brew "sqlite"
+# General-purpose data compression with high compression ratio
+brew "xz"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.12"
 # Record and share terminal sessions
@@ -106,6 +108,8 @@ brew "luarocks"
 brew "mackup"
 # Mac App Store command-line interface
 brew "mas"
+# Like sed, awk, cut, join & sort for name-indexed data such as CSV
+brew "miller"
 # Polyglot runtime manager (asdf rust clone)
 brew "mise"
 # Collection of tools that nobody wrote when UNIX was young
@@ -168,6 +172,8 @@ brew "wireshark", link: false
 brew "xh"
 # Yet Another Dotfiles Manager
 brew "yadm"
+# Blazing fast terminal file manager written in Rust, based on async I/O
+brew "yazi"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
 # Feature-rich command-line audio/video downloader
@@ -210,7 +216,6 @@ cask "dash"
 cask "docker"
 # Typeface made for developers
 cask "font-jetbrains-mono"
-# Developer targeted fonts with a high number of glyphs
 cask "font-meslo-lg-nerd-font"
 # GIT client
 cask "fork"

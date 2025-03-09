@@ -127,7 +127,7 @@ return {
               ---@type blink-ripgrep.Options
               opts = {
                 project_root_marker = { ".git", "lazy-lock.json" },
-                ignore_paths = { "node_modules", "vendor", "tmp", "bin" },
+                ignore_paths = { "node_modules", "vendor", "tmp", "bin", vim.env.HOME },
                 -- Features that are not yet stable and might change in the future.
                 -- You can enable these to try them out beforehand, but be aware
                 -- that they might change. Nothing is enabled by default.

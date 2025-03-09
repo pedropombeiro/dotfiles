@@ -151,8 +151,6 @@ brew "libiconv"
 brew "libpq", link: true
 # Curses-based tool for viewing and analyzing log files
 brew "lnav"
-# Clone of ls with colorful output, file type icons, and more
-brew "lsd"
 # Package manager for the Lua programming language
 brew "luarocks"
 # Fast, async, resource-friendly link checker

@@ -15,7 +15,6 @@ croc_version=10.2.1
 fzf_version=0.57.0
 gping_version=1.16.1
 lnav_version=0.12.3
-lsd_version=1.1.5
 nvim_version=0.10.4 # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
 procs_version=0.14.9
 
@@ -116,9 +115,6 @@ download_and_extract "https://github.com/orf/gping/releases/download/gping-v${gp
 download_and_extract "https://github.com/junegunn/fzf/releases/download/v${fzf_version}/fzf-${fzf_version}-linux_amd64.tar.gz" fzf "$fzf_version"
 
 download_and_extract "https://github.com/tstack/lnav/releases/download/v${lnav_version}/lnav-${lnav_version}-linux-musl-x86_64.zip" "lnav-${lnav_version}/lnav" $lnav_version
-
-archive_name="lsd-v${lsd_version}-x86_64-unknown-linux-musl"
-download_and_extract "https://github.com/lsd-rs/lsd/releases/download/v${lsd_version}/${archive_name}.tar.gz" "${archive_name}/lsd" $lsd_version
 
 download_and_extract_package "https://github.com/neovim/neovim-releases/releases/download/v${nvim_version}/nvim-linux-x86_64.tar.gz" nvim $nvim_version
 download_and_extract "https://github.com/dalance/procs/releases/download/v${procs_version}/procs-v${procs_version}-x86_64-linux.zip" procs $procs_version

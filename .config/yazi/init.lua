@@ -76,7 +76,7 @@ require("githead"):setup({
 
   show_stashes = true,
   stashes_color = "bright magenta",
-  stashes_symbol = "$",
+  stashes_symbol = " ",
 
   show_state = true,
   show_state_prefix = true,

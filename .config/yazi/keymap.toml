@@ -3,6 +3,10 @@ on = ["<Space>", ","]
 run = "shell --block -- $EDITOR $HOME/.config/yazi/keymap.toml"
 
 [[manager.prepend_keymap]]
+on = ["<C-q>"]
+run = "quit --no-cwd-file"
+
+[[manager.prepend_keymap]]
 on = ["<Space>", "d", "u"]
 run = "shell --block -- ncdu --color dark-bg $0"
 

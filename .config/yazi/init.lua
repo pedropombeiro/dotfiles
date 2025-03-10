@@ -34,7 +34,7 @@ require("relative-motions"):setup({ show_numbers = "relative", show_motion = tru
 
 -- https://github.com/dedukun/bookmarks.yazi
 require("bookmarks"):setup({
-  last_directory = { enable = true, persist = true, mode = "jump" },
+  last_directory = { enable = true, persist = true, mode = "dir" },
   persist = "vim",
   desc_format = "full",
   file_pick_mode = "hover",

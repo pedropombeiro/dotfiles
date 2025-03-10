@@ -39,97 +39,97 @@ desc = "Maximize or restore the preview pane"
 
 # https://github.com/dedukun/relative-motions.yazi
 [[manager.prepend_keymap]]
-on = [ "1" ]
+on = ["1"]
 run = "plugin relative-motions 1"
 desc = "Move in relative steps"
 
 [[manager.prepend_keymap]]
-on = [ "2" ]
+on = ["2"]
 run = "plugin relative-motions 2"
 desc = "Move in relative steps"
 
 [[manager.prepend_keymap]]
-on = [ "3" ]
+on = ["3"]
 run = "plugin relative-motions 3"
 desc = "Move in relative steps"
 
 [[manager.prepend_keymap]]
-on = [ "4" ]
+on = ["4"]
 run = "plugin relative-motions 4"
 desc = "Move in relative steps"
 
 [[manager.prepend_keymap]]
-on = [ "5" ]
+on = ["5"]
 run = "plugin relative-motions 5"
 desc = "Move in relative steps"
 
 [[manager.prepend_keymap]]
-on = [ "6" ]
+on = ["6"]
 run = "plugin relative-motions 6"
 desc = "Move in relative steps"
 
 [[manager.prepend_keymap]]
-on = [ "7" ]
+on = ["7"]
 run = "plugin relative-motions 7"
 desc = "Move in relative steps"
 
 [[manager.prepend_keymap]]
-on = [ "8" ]
+on = ["8"]
 run = "plugin relative-motions 8"
 desc = "Move in relative steps"
 
 [[manager.prepend_keymap]]
-on = [ "9" ]
+on = ["9"]
 run = "plugin relative-motions 9"
 desc = "Move in relative steps"
 
 # https://github.com/dedukun/bookmarks.yazi
 [[manager.prepend_keymap]]
-on = [ "m" ]
+on = ["m"]
 run = "plugin bookmarks save"
 desc = "Save current position as a bookmark"
 
 [[manager.prepend_keymap]]
-on = [ "'" ]
+on = ["'"]
 run = "plugin bookmarks jump"
 desc = "Jump to a bookmark"
 
 [[manager.prepend_keymap]]
-on = [ "b", "d" ]
+on = ["b", "d"]
 run = "plugin bookmarks delete"
 desc = "Delete a bookmark"
 
 [[manager.prepend_keymap]]
-on = [ "b", "D" ]
+on = ["b", "D"]
 run = "plugin bookmarks delete_all"
 desc = "Delete all bookmarks"
 
 # https://github.com/Lil-Dank/lazygit.yazi
 [[manager.prepend_keymap]]
-on   = [ "<Space>", "t", "g" ]
-run  = "plugin lazygit"
+on = ["<Space>", "t", "g"]
+run = "plugin lazygit"
 desc = "Run lazygit"
 
 # https://github.com/KKV9/command.yazi
 [[manager.prepend_keymap]]
-on   = [ "c", "p" ]
-run  = "plugin command"
+on = ["c", "p"]
+run = "plugin command"
 desc = "Yazi command prompt"
 
 # https://github.com/KKV9/compress.yazi
 [[manager.prepend_keymap]]
-on   = [ "c", "a" ]
-run  = "plugin compress"
+on = ["c", "a"]
+run = "plugin compress"
 desc = "Archive selected files"
 
 # https://github.com/ourongxing/fast-enter.yazi
 [[manager.prepend_keymap]]
-on   = [ "l" ]
-run  = "plugin fast-enter"
+on = ["l"]
+run = "plugin fast-enter"
 desc = "Enter the subfolder faster, or open the file directly"
 
 # https://github.com/ahkohd/eza-preview.yazi
 [[manager.prepend_keymap]]
-on = [ "E" ]
+on = ["E"]
 run = "plugin eza-preview"
 desc = "Toggle tree/list dir preview"

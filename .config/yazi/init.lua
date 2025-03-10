@@ -85,7 +85,7 @@ require("githead"):setup({
 
   show_staged = true,
   staged_color = "bright yellow",
-  staged_symbol = "● ",
+  staged_symbol = " ",
 
   show_unstaged = true,
   unstaged_color = "bright yellow",

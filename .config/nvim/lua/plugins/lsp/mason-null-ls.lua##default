@@ -33,6 +33,7 @@ return {
       "lua_ls",
       "markdownlint-cli2",
       "prettier",
+      "ruby-lsp",
       "shfmt",
       "shellcheck",
       "stylua",

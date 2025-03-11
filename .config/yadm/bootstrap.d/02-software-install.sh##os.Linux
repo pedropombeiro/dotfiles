@@ -5,7 +5,7 @@ if command -v debconf-set-selections >/dev/null; then
 fi
 
 command -v sudo >/dev/null || apt-get install -y sudo
-sudo apt-get install -y autojump build-essential curl file git libssl-dev make moreutils neovim vifm software-properties-common wget
+sudo apt-get install -y autojump build-essential curl file git libssl-dev make moreutils neovim software-properties-common wget
 
 curl https://mise.jdx.dev/install.sh | sh
 

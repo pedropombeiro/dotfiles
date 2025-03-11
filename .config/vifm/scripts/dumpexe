@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-FILEPATH=$1
-
-file --brief --preserve-date --uncompress -- "$FILEPATH" | tr , "\n"
-echo "----------------------"
-ldd --verbose "$FILEPATH" 2>/dev/null || otool -L "$FILEPATH" 2>/dev/null

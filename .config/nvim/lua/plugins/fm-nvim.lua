@@ -3,11 +3,6 @@
 
 return {
   {
-    "vifm/vifm.vim", -- Import for ftplugin, ftdetect, and syntax definitions
-    event = { "BufNewFile", "BufReadPre" },
-  },
-
-  {
     "Eric-Song-Nop/fm-nvim",
     ---@module "lazy"
     ---@type LazyKeysSpec[]
@@ -26,7 +21,6 @@ return {
     },
     opts = {
       cmds = {
-        vifm_cmd = "vifm",
         lazygit_cmd = "lazygit --use-config-dir ~/.config/lazygit",
       },
       ui = {

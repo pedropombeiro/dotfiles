@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Add a `fm` function to zsh that opens vifm either at the given directory or
+# Add a `fm` function to zsh that opens yazi either at the given directory or
 # at the one autojump suggests
 if [ "$2" != "" ]; then
   yazi "$@"

@@ -45,7 +45,7 @@ if uhubctl >/dev/null 2>&1; then
   else
     echo
     brew services restart nginx
-    sleep 1
+    sleep 2
     if pgrep 'nginx' >/dev/null; then
       print_failure "nginx is not running (fixed)"
     else

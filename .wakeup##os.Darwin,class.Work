@@ -6,7 +6,6 @@ osascript -e 'tell application "Stay.app" to restore all windows'
 
 open -a Busylight_HTTP_Mac.app # Reopen Busylight_HTTP_Mac at wake
 
-~/.config/yadm/scripts/remap-mac-keys.sh
 
 if pgrep 'Elgato Control Center' >/dev/null 2>&1; then
   # Restart Control Center, since it regularly loses connection with the Key Lights and gets confused

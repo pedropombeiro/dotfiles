@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-
-FILEPATH=$1
-
-file --brief --preserve-date --uncompress -- "$FILEPATH" | tr , "\n"

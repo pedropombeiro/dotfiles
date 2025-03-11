@@ -35,7 +35,6 @@
 --map-syntax='.irb_history:Ruby'
 --map-syntax='*.ru:Ruby'
 --map-syntax='vi*rc:VimL'
---map-syntax='*.vifm:VimL'
 --map-syntax='*.vim:VimL'
 --map-syntax='*.vim:VimL'
 --map-syntax='.psqlrc:SQL'

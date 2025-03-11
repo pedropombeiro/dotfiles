@@ -84,12 +84,6 @@ return {
       ["@symbol.ruby"] = { link = "GruvboxPurple" },
       ["@variable.builtin.ruby"] = { link = "GruvboxPurple" },
 
-      -- vifm
-      vifmExprCommand = { fg = "#8ec07c" },
-      vifmMap = { fg = "#8ec07c" },
-      vifmNotation = { fg = "#fabd2f" },
-      vifmStatementCN = { fg = "#fb4934" },
-
       -- YAML
       ["@field.yaml"] = { link = "GruvboxBlueBold" },
       ["@string.yaml"] = { link = "GruvboxGreen" },

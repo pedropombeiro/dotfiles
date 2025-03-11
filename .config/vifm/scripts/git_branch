@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-
-branch_name="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
-if [[ -n $branch_name ]]; then
-  echo "  $branch_name "
-fi

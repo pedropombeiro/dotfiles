@@ -152,8 +152,6 @@ brew "the_silver_searcher"
 brew "vale"
 # Modern watch command
 brew "viddy"
-# Ncurses-based file manager with vi-like keybindings
-brew "vifm"
 # Use ViM as PAGER
 brew "vimpager"
 # Pager/text based browser

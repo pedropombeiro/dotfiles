@@ -527,7 +527,7 @@ keybinding:
   files:
     commitChanges: c
     commitChangesWithoutHook: w
-    amendLastCommit: <disabled> # "A"
+    amendLastCommit: A
     commitChangesWithEditor: C
     findBaseCommitForFixup: <c-f>
     confirmDiscard: x
@@ -572,7 +572,7 @@ keybinding:
     squashAboveCommits: S
     moveDownCommit: <c-j>
     moveUpCommit: <c-k>
-    amendToCommit: <disabled> # "A"
+    amendToCommit: A
     resetCommitAuthor: a
     pickCommit: p
     revertCommit: t
@@ -607,16 +607,6 @@ keybinding:
   commitMessage:
     commitMenu: <c-o>
 customCommands:
-  - key: "A"
-    context: "commits"
-    command: 'git revise -- "{{.SelectedLocalCommit.Sha}}"'
-    stream: true
-    description: "Git-revise selected commit with staged changes"
-  - key: "A"
-    context: "files"
-    command: "git revise -- HEAD"
-    stream: true
-    description: "Git-revise last commit with staged changes"
   - key: "G"
     command: "glab mr view -w {{.SelectedLocalBranch.UpstreamBranch}}"
     context: "localBranches"

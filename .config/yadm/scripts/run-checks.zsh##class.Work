@@ -78,6 +78,7 @@ if uhubctl >/dev/null 2>&1; then
     lsof -i :18989
     sudo pkill nginx
     brew reinstall nginx
+    brew services restart nginx
     any_failed=1
   fi
 fi

@@ -613,6 +613,24 @@ customCommands:
     description: "Go to MR in gitlab"
     stream: true
 
+  - key: '<c-E>'
+    description: Custom git push
+    context: 'global'
+    prompts:
+      - type: menu
+        title: "Control Push behaviour"
+        key: "gitOption"
+        options:
+          - name: 'Skip CI'
+            description: "Skip CI execution"
+            value: "-o ci.skip"
+          - name: 'Create MR'
+            description: "Create MR on push"
+            value: "-o merge_request.create"
+    command: "git push {{.Form.gitOption }}"
+    stream: true
+    loadingText: "Pushing changes"
+
   # retrieved from: https://github.com/jesseduffield/lazygit/wiki/Custom-Commands-Compendium#conventional-commit
   - key: "<c-v>"
     context: "global"

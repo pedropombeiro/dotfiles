@@ -44,6 +44,8 @@ gitlab:
   rails:
 #     address: 'http://gdk.test:3000'
 #     sherlock: true
+postgresql:
+  host: localhost
 registry:
   enabled: false
   host: registry.test

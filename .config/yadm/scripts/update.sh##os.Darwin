@@ -19,12 +19,6 @@ printf "${YELLOW}%s${NC}\n" "Updating mise plugins..."
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."
 command -v npm >/dev/null && npm update -g
 
-# Fix GPG agent symlink if broken
-sys_gpg_agent='/usr/local/bin/gpg-agent'
-if [[ ! -x ${sys_gpg_agent} || $(readlink ${sys_gpg_agent}) != /usr/local/MacGPG2/bin/gpg-agent ]]; then
-  sudo ln -sf /usr/local/MacGPG2/bin/gpg-agent ${sys_gpg_agent}
-fi
-
 "${YADM_SCRIPTS}/update-common.zsh"
 
 if [[ $(yadm config local.class) == 'Work' ]]; then

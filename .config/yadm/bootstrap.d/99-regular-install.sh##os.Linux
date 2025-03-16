@@ -14,7 +14,7 @@ sudo apt install -y preload gnome-tweak-tool unity-tweak-tool build-essential \
 
 # Install fonts for Powerline10k theme
 font_dir="$HOME/.local/share/fonts"
-mkdir -p $font_dir
+mkdir -p "$font_dir"
 wget -O "$font_dir/MesloLGS NF Regular.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Regular.ttf
 wget -O "$font_dir/MesloLGS NF Bold.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Bold.ttf
 wget -O "$font_dir/MesloLGS NF Italic.ttf" https://github.com/romkatv/powerlevel10k-media/raw/master/MesloLGS%20NF%20Italic.ttf
@@ -46,16 +46,7 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - &&
   sudo apt update &&
   sudo apt install -y docker-ce &&
   sudo docker run hello-world &&
-  sudo usermod -a -G docker $LOGNAME
-
-# GPG
-sudo apt install -y gnupg gnupg-agent
-sudo ln -sf /etc/alternatives/pinentry /usr/local/bin/pinentry-xp
-gpg --recv 0x91527A684B864DC0 # Install Yubikey public key
-gpg --list-secret-keys --keyid-format LONG
-
-# Ensure we have a common location for gpg between OSX and Linux
-sudo ln -sf /usr/bin/gpg /usr/local/bin/gpg
+  sudo usermod -a -G docker "$LOGNAME"
 
 # https://confluence.jetbrains.com/display/IDEADEV/Inotify+Watches+Limit
 echo fs.inotify.max_user_watches = 524288 | sudo tee -a /etc/sysctl.conf

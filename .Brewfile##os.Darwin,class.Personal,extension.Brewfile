@@ -122,8 +122,6 @@ brew "nmap"
 brew "optipng"
 # CLI for Postgres with auto-completion and syntax highlighting
 brew "pgcli"
-# Pinentry for GPG on Mac
-brew "pinentry-mac"
 # PNG image optimizing utility
 brew "pngquant"
 # PDF rendering library (based on the xpdf-3.0 code base)
@@ -219,8 +217,6 @@ cask "garmin-express"
 cask "gimp"
 # Virtual globe
 cask "google-earth-pro"
-# Tools to protect your emails and files
-cask "gpg-suite"
 # Video stabilization using gyroscope data
 cask "gyroflow"
 # Tool for multi-language users

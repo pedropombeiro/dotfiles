@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-PINENTRY_MAC="$(brew --prefix)/bin/pinentry-mac"
-[[ -x ${PINENTRY_MAC} ]] || PINENTRY_MAC="/usr/local/bin/pinentry-mac"
-if [ ! -f /usr/local/bin/pinentry-xp ] || [ "$(readlink /usr/local/bin/pinentry-xp)" != "${PINENTRY_MAC}" ]; then
-  sudo ln -sf ${PINENTRY_MAC} /usr/local/bin/pinentry-xp
-fi

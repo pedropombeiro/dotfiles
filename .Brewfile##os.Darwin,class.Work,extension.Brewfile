@@ -105,7 +105,7 @@ brew "git-delta"
 brew "git-extras"
 # Git extension for versioning large files
 brew "git-lfs"
-# Rebase alternative for easy & efficient in-memory rebases and fixups
+# Audit git repos for secrets
 brew "gitleaks"
 # Open-source GitLab command-line tool
 brew "glab"
@@ -313,8 +313,6 @@ cask "gimp"
 cask "google-chrome"
 # Set of tools to manage resources and applications hosted on Google Cloud
 cask "google-cloud-sdk"
-# Tools to protect your emails and files
-cask "gpg-suite"
 # Companion app for Home Assistant home automation software
 cask "home-assistant"
 # Tool to optimise images to a smaller size

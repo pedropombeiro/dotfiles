@@ -49,7 +49,21 @@ end
 return {
   {
     "kevinhwang91/nvim-ufo",
-    ft = { "css", "eruby", "go", "html", "javascript", "json", "lua", "markdown", "ruby", "typescript", "yaml" },
+    ft = {
+      "bash",
+      "css",
+      "eruby",
+      "go",
+      "html",
+      "javascript",
+      "json",
+      "lua",
+      "markdown",
+      "ruby",
+      "sh",
+      "typescript",
+      "yaml",
+    },
     -- stylua: ignore
     ---@module "lazy"
     ---@type LazyKeysSpec[]

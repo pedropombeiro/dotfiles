@@ -57,8 +57,63 @@ THEME.git.modified_sign = ""
 THEME.git.deleted_sign = ""
 require("git"):setup()
 
--- https://github.com/llanosrocas/githead.yazi
-require("githead"):setup({
+-- https://github.com/ahkohd/eza-preview.yazi
+require("eza-preview"):setup({})
+
+local gruvbox_theme = require("yatline-gruvbox"):setup("dark") -- or "light"
+
+require("yatline"):setup({
+  theme = gruvbox_theme,
+  show_background = false,
+
+  header_line = {
+    left = {
+      section_a = {
+        { type = "coloreds", custom = false, name = "tab_path" },
+        { type = "coloreds", custom = false, name = "githead" },
+      },
+      section_b = {},
+      section_c = {},
+    },
+    right = {
+      section_a = {},
+      section_b = {},
+      section_c = {},
+    },
+  },
+
+  status_line = {
+    left = {
+      section_a = {
+        { type = "string", custom = false, name = "tab_mode" },
+      },
+      section_b = {
+        { type = "string", custom = false, name = "hovered_size" },
+      },
+      section_c = {
+        { type = "string", custom = false, name = "hovered_path" },
+        { type = "coloreds", custom = false, name = "count" },
+      },
+    },
+    right = {
+      section_a = {
+        { type = "string", custom = false, name = "cursor_position" },
+      },
+      section_b = {
+        { type = "string", custom = false, name = "cursor_percentage" },
+      },
+      section_c = {
+        { type = "string", custom = false, name = "hovered_mime", params = { true } },
+        { type = "coloreds", custom = false, name = "permissions" },
+        { type = "coloreds", custom = false, name = "modified_time" },
+      },
+    },
+  },
+})
+
+require("yatline-modified-time"):setup()
+
+require("yatline-githead"):setup({
   show_branch = true,
   branch_prefix = "on",
   branch_color = "blue",
@@ -96,6 +151,13 @@ require("githead"):setup({
   untracked_symbol = "?",
 })
 
--- https://github.com/ahkohd/eza-preview.yazi
-require("eza-preview"):setup({})
-
+require("yatline-tab-path"):setup({
+  theme = gruvbox_theme,
+  path_fg = "cyan",
+  filter_fg = "brightyellow",
+  search_label = " search",
+  filter_label = " filter",
+  no_filter_label = "",
+  flatten_label = " flatten",
+  separator = "  ",
+})

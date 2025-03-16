@@ -26,6 +26,8 @@ brew "bash"
 brew "bat"
 # Resource monitor. C++ version and continuation of bashtop and bpytop
 brew "btop"
+# Easily download, build, install, upgrade, and uninstall Python packages
+brew "python-setuptools"
 # Linter/analyzer for Makefiles
 brew "checkmake"
 # GNU File, Shell, and Text utilities
@@ -48,6 +50,8 @@ brew "dust"
 brew "entr"
 # Perl lib for reading and writing EXIF metadata
 brew "exiftool"
+# Modern, maintained replacement for ls
+brew "eza"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
 # Scriptable ping program for checking if multiple hosts are up
@@ -130,8 +134,6 @@ brew "poppler"
 brew "pspg"
 # Generic syntax highlighter
 brew "pygments"
-# Easily download, build, install, upgrade, and uninstall Python packages
-brew "python-setuptools"
 # QR Code generation
 brew "qrencode"
 # Search tool like grep and The Silver Searcher
@@ -207,6 +209,8 @@ cask "dash"
 # App to build and share containerised applications and microservices
 cask "docker"
 # Typeface made for developers
+# Web browser
+cask "firefox"
 cask "font-jetbrains-mono"
 cask "font-meslo-lg-nerd-font"
 # GIT client

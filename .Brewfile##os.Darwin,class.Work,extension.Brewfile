@@ -81,6 +81,8 @@ brew "entr"
 brew "epr"
 # Perl lib for reading and writing EXIF metadata
 brew "exiftool"
+# Modern, maintained replacement for ls
+brew "eza"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
 # Validating, recursive, caching DNS resolver
@@ -253,6 +255,8 @@ brew "xh"
 brew "yadm"
 # Linter for YAML files
 brew "yamllint"
+# Blazing fast terminal file manager written in Rust, based on async I/O
+brew "yazi"
 # YubiKey personalization library and tool
 brew "ykpers"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
@@ -303,6 +307,8 @@ cask "elgato-wave-link"
 cask "eqmac"
 # Utility to finds and fix problems on computer systems
 cask "etrecheckpro"
+# Web browser
+cask "firefox"
 cask "font-jetbrains-mono"
 cask "font-meslo-lg-nerd-font"
 # GIT client

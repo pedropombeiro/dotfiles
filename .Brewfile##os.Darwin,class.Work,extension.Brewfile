@@ -412,9 +412,7 @@ mas "MusicBuddy", id: 563706976
 mas "Numbers", id: 409203825
 mas "Okta Extension App", id: 1439967473
 mas "Pages", id: 409201541
-mas "PDF Reader Pro", id: 919472673
 mas "PLIST Editor", id: 1157491961
-mas "Pocket", id: 568494494
 mas "Speedtest", id: 1153157709
 mas "Time Out", id: 402592703
 mas "WireGuard", id: 1451685025

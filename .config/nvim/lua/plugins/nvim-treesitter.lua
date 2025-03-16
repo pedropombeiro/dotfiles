@@ -11,7 +11,9 @@ return {
       local config = require("config")
       local colors = config.theme.colors
 
+      require("snacks")
       Set_hl({ ContextBottom = { underline = true, sp = colors.bg0_s } }, { prefix = "Treesitter", default = true })
+
       require("treesitter-context").setup(opts)
     end,
   },

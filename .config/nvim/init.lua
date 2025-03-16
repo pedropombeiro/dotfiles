@@ -8,11 +8,6 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = ","
 vim.opt.timeoutlen = 0
 
--- disable netrw at the very start of init.lua
---  (strongly advised so that nvim-tree can take over directory loading)
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
 -- Load plugins
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then

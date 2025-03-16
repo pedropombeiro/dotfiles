@@ -23,11 +23,6 @@ return {
         mode = { "n", "v" },
         desc = "Toggle file explorer",
       },
-      {
-        "gx", -- Restore URL handling from disabled netrw plugin
-        function() vim.ui.open(vim.fn.expand("<cfile>")) end,
-        "Open URL",
-      },
     },
     init = function()
       vim.g.neo_tree_remove_legacy_commands = 1
@@ -43,9 +38,7 @@ return {
             return
           else
             local stats = vim.uv.fs_stat(vim.fn.argv(0))
-            if stats and stats.type == "directory" then
-              require("neo-tree")
-            end
+            if stats and stats.type == "directory" then require("neo-tree") end
           end
         end,
       })
@@ -112,6 +105,7 @@ return {
       filesystem = {
         bind_to_cwd = false,
         follow_current_file = { enabled = true },
+        hijack_netrw_behavior = "disabled",
         use_libuv_file_watcher = true,
         filtered_items = {
           hide_dotfiles = false,

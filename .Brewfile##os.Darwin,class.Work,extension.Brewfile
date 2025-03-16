@@ -161,6 +161,10 @@ brew "mackup"
 brew "markdownlint-cli"
 # Mac App Store command-line interface
 brew "mas"
+# Small build system for use with gyp or CMake
+brew "ninja"
+# Fast and user friendly build system
+brew "meson"
 # Run a Kubernetes cluster locally
 brew "minikube"
 # Polyglot runtime manager (asdf rust clone)
@@ -193,16 +197,24 @@ brew "pigz"
 brew "pinentry-mac"
 # Python dependency management tool
 brew "pipenv"
+# Execute binaries from Python packages in isolated environments
+brew "pipx"
 # Package compiler and linker metadata toolkit
 brew "pkgconf"
 # PDF rendering library (based on the xpdf-3.0 code base)
 brew "poppler"
 # Object-relational database system
 brew "postgresql@13"
+# Object-relational database system
+brew "postgresql@14", link: false
 # Unix pager optimized for psql
 brew "pspg"
+# Generic syntax highlighter
+brew "pygments"
 # Alternative to backtracking PCRE-style regular expression engines
 brew "re2"
+# Persistent key-value database, with built-in net interface
+brew "redis"
 # GNU Make with improved error handling, tracing, and a debugger
 brew "remake"
 # Search tool like grep and The Silver Searcher
@@ -385,8 +397,6 @@ cask "syntax-highlight"
 cask "tor-browser"
 # Native desktop client for WhatsApp
 cask "whatsapp"
-# Video communication and virtual meeting platform
-cask "zoom"
 mas "Amphetamine", id: 937984704
 mas "Backdrop", id: 411461952
 mas "DaisyDisk", id: 411643860

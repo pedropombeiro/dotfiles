@@ -208,7 +208,8 @@ cask "contexts"
 cask "dash"
 # App to build and share containerised applications and microservices
 cask "docker"
-# Typeface made for developers
+# Assign keys, and then decorate and label them
+cask "elgato-stream-deck"
 # Web browser
 cask "firefox"
 cask "font-jetbrains-mono"

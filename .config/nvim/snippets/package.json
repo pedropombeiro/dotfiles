@@ -1,0 +1,11 @@
+{
+  "contributes": {
+    "snippets": [
+      {
+        "language": "yaml.homeassistant",
+        "path": "./yaml.homeassistant.json"
+      }
+    ]
+  },
+  "name": "my-snippets"
+}

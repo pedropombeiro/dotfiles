@@ -347,6 +347,8 @@ cask "jetbrains-toolbox"
 cask "kap"
 # Open-source keystroke visualiser
 cask "keycastr"
+# Utility that shows the latest app updates
+cask "latest"
 # Create, manage and debug system and user services
 cask "launchcontrol"
 # Free cross-platform office suite, fresh version
@@ -357,8 +359,6 @@ cask "little-snitch@5"
 cask "logitech-options"
 # Adaptive brightness for external displays
 cask "lunar"
-# Track and update to the latest versions of installed software
-cask "macupdater"
 # Provides updates to various Microsoft products
 cask "microsoft-auto-update"
 # Multi-platform web browser

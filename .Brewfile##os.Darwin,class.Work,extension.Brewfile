@@ -393,8 +393,6 @@ cask "stay"
 cask "syncthing"
 # Quicklook extension for source files
 cask "syntax-highlight"
-# Web browser focusing on security
-cask "tor-browser"
 # Native desktop client for WhatsApp
 cask "whatsapp"
 mas "Amphetamine", id: 937984704

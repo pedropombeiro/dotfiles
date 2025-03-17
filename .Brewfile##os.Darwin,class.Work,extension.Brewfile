@@ -165,6 +165,8 @@ brew "mas"
 brew "ninja"
 # Fast and user friendly build system
 brew "meson"
+# Like sed, awk, cut, join & sort for name-indexed data such as CSV
+brew "miller"
 # Run a Kubernetes cluster locally
 brew "minikube"
 # Polyglot runtime manager (asdf rust clone)
@@ -229,6 +231,8 @@ brew "runit"
 brew "s3cmd"
 # Intuitive find & replace CLI
 brew "sd"
+# 7-Zip is a file archiver with a high compression ratio
+brew "sevenzip"
 # Monitors sleep, wakeup, and idleness of a Mac
 brew "sleepwatcher", restart_service: :changed
 # SMART hard drive monitoring

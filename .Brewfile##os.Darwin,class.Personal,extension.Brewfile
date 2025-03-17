@@ -252,6 +252,8 @@ cask "mediainfo"
 cask "microsoft-auto-update"
 # Multi-platform web browser
 cask "microsoft-edge"
+# Like sed, awk, cut, join & sort for name-indexed data such as CSV
+brew "miller"
 cask "mqtt-explorer"
 # Open-source music notation software
 cask "musescore"
@@ -277,6 +279,8 @@ cask "raspberry-pi-imager"
 cask "raycast"
 # Tool for sending personal documents to Kindles from Macs
 cask "send-to-kindle"
+# 7-Zip is a file archiver with a high compression ratio
+brew "sevenzip"
 # Screenshot measurement and annotation tool
 cask "shottr"
 # Team communication and collaboration software

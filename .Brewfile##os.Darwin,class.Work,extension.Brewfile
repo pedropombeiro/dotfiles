@@ -413,6 +413,7 @@ mas "MusicBuddy", id: 563706976
 mas "Numbers", id: 409203825
 mas "Okta Extension App", id: 1439967473
 mas "Pages", id: 409201541
+mas "Parcel", id: 639968404
 mas "PLIST Editor", id: 1157491961
 mas "Speedtest", id: 1153157709
 mas "Time Out", id: 402592703

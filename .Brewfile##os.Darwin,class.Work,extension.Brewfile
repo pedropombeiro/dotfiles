@@ -357,8 +357,6 @@ cask "latest"
 cask "launchcontrol"
 # Free cross-platform office suite, fresh version
 cask "libreoffice"
-# Host-based application firewall
-cask "little-snitch@5"
 # Software for Logitech devices
 cask "logitech-options"
 # Adaptive brightness for external displays

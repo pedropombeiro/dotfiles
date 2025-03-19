@@ -10,6 +10,14 @@ local function is_qnap()
   return false
 end
 
+local function fuzzy_implementation()
+  if is_qnap() then
+    return "lua"
+  end
+
+  return "prefer_rust"
+end
+
 return {
   -- auto completion
   {
@@ -85,16 +93,7 @@ return {
         },
 
         fuzzy = {
-          prebuilt_binaries = {
-            -- In QNAP, we don't want to download the prebuilt binaries, since they are built with a version of glibc that is too recent
-            -- To build a supported version, do the following:
-            -- docker run -it --name rust_builder ubuntu:14.04
-            -- apt update -y && apt install -y curl git gcc && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && . "$HOME/.cargo/env" && git clone https://github.com/Saghen/blink.cmp.git && cd blink.cmp/ && cargo build --release
-            -- From the QNAP host, run:
-            --   docker cp rust_builder:/blink.cmp/target/release/libblink_cmp_fuzzy.so $HOME/.local/share/nvim/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so
-            -- docker rm rust_builder
-            download = not is_qnap(),
-          },
+          implementation = fuzzy_implementation(),
         },
 
         signature = { enabled = false },

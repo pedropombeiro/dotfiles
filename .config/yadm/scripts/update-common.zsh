@@ -34,6 +34,10 @@ if awk "BEGIN {exit !($mean_time >= 0.6)}"; then
   printf "${RED}%s${NC}\n" "Zsh performance is too slow!"
 fi
 
+printf "${YELLOW}%s${NC}\n" "Updating yazi plugins..."
+ya pack --upgrade && \
+  printf "\n${GREEN}%s${NC}\n" "Done"
+
 printf "${YELLOW}%s${NC}\n" "Updating neovim plugins..."
 nvim --headless '+Lazy! sync' +qa && \
   nvim --headless "+Lazy! build firenvim" +qa && \

@@ -1,12 +1,12 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "2bf70d8"
+rev = "2730199"
 hash = "7918aab6a71caf31b58411f789195677"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "2bf70d8"
-hash = "812fd49667ab6823250f0411f8cf793a"
+rev = "2730199"
+hash = "5c9dda1a587b8f5b6f63e3d5375bda88"
 
 [[plugin.deps]]
 use = "Reledia/miller"
@@ -45,8 +45,8 @@ hash = "b209b5db91df69bdc6a4656cb8276cd9"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "2bf70d8"
-hash = "806cb2842b64e976ba2c65a3e3724518"
+rev = "2730199"
+hash = "e0d2c8d7e7afe5b82270367098d1a821"
 
 [[plugin.deps]]
 use = "ahkohd/eza-preview"

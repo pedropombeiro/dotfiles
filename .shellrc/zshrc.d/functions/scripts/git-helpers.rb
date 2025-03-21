@@ -85,6 +85,7 @@ def rebase_all_per_capture_info(local_branch_info_hash)
       'db/structure.sql' => %w[bundle exec scripts/regenerate-schema],
       'doc/api/graphql/reference/index.md' => %w[bundle exec rake gitlab:graphql:compile_docs],
       'doc/user/compliance/audit_event_types.md' => %w[bundle exec rake gitlab:audit_event_types:compile_docs],
+      'doc/update/breaking_windows.md' => %w[bundle exec rake gitlab:docs:compile_windows],
       'doc/update/deprecations.md' => %w[bundle exec rake gitlab:docs:compile_deprecations],
       'doc/update/removals.md' => %w[bundle exec rake gitlab:docs:compile_removals]
     }

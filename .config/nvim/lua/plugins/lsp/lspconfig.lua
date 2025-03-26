@@ -265,16 +265,6 @@ return {
       local nvconfig = require("config")
       local border = nvconfig.ui.border
       local icons = nvconfig.ui.icons.diagnostics
-      local signs = {
-        Error = icons.error .. " ",
-        Warn = icons.warning .. " ",
-        Hint = icons.hint .. " ",
-        Info = icons.info .. " ",
-      }
-      for type, icon in pairs(signs) do
-        local hl = "DiagnosticSign" .. type
-        vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-      end
 
       require("lspconfig.ui.windows").default_options.border = border
 
@@ -288,11 +278,10 @@ return {
         end
       end
 
-      -- Show diagnostic source in float (e.g. goto_next, goto_prev)
       ---@type vim.diagnostic.Opts
       vim.diagnostic.config({
         severity_sort = true,
-        float = {
+        float = { -- Show diagnostic source in float (e.g. goto_next, goto_prev)
           focusable = false,
           style = "minimal",
           border = border,
@@ -301,6 +290,26 @@ return {
           suffix = "",
           prefix = "",
           format = function(value) return string.format("%s: [%s] %s", value.source, value.code, value.message) end,
+        },
+        signs = {
+          text = {
+            [vim.diagnostic.severity.ERROR] = icons.error .. " ",
+            [vim.diagnostic.severity.WARN] = icons.warning .. " ",
+            [vim.diagnostic.severity.HINT] = icons.hint .. " ",
+            [vim.diagnostic.severity.INFO] = icons.info .. " ",
+          },
+          texthl = {
+            [vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
+            [vim.diagnostic.severity.WARN] = "DiagnosticSignWarning",
+            [vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
+            [vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
+          },
+          numhl = {
+            [vim.diagnostic.severity.ERROR] = "",
+            [vim.diagnostic.severity.WARN] = "",
+            [vim.diagnostic.severity.HINT] = "",
+            [vim.diagnostic.severity.INFO] = "",
+          }
         },
       })
     end,

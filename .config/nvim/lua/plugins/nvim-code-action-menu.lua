@@ -7,7 +7,7 @@ return {
   ---@type LazyKeysSpec[]
   keys = {
     {
-      "<leader>la",
+      "gra",
       function() require("actions-preview").code_actions() end,
       desc = "Open code action menu",
     },

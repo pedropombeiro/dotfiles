@@ -11,9 +11,7 @@ local function is_qnap()
 end
 
 local function fuzzy_implementation()
-  if is_qnap() then
-    return "lua"
-  end
+  if is_qnap() then return "lua" end
 
   return "prefer_rust"
 end
@@ -67,6 +65,17 @@ return {
           -- Set to 'mono' for 'Nerd Font Mono' or 'normal' for 'Nerd Font'
           -- Adjusts spacing to ensure icons are aligned
           nerd_font_variant = "mono",
+        },
+
+        cmdline = {
+          keymap = {
+            ["<Tab>"] = { "show", "accept" },
+          },
+          completion = {
+            menu = {
+              auto_show = function(_ctx) return vim.fn.getcmdtype() == ":" end,
+            },
+          },
         },
 
         completion = {

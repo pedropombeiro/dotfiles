@@ -44,9 +44,7 @@ return {
     specs = {
       {
         "lewis6991/gitsigns.nvim",
-        opts = function()
-          require("scrollbar.handlers.gitsigns").setup()
-        end,
+        opts = function() require("scrollbar.handlers.gitsigns").setup() end,
       },
     },
   },
@@ -55,6 +53,11 @@ return {
   {
     "tpope/vim-abolish", -- abolish.vim: easily search for, substitute, and abbreviate multiple variants of a word
     event = "BufReadPost",
+  },
+  {
+    "MagicDuck/grug-far.nvim", -- Find And Replace plugin for neovim
+    cmd = { "GrugFar", "GrugFarWithin" },
+    opts = { headerMaxWidth = 80 },
   },
 
   --### Snippets

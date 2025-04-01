@@ -18,8 +18,10 @@ end
 
 local function yadm_opts()
   return {
-    "--git-dir", yadm_repo(),
-    "--work-tree", vim.fn.expand("~"),
+    "--git-dir",
+    yadm_repo(),
+    "--work-tree",
+    vim.fn.expand("~"),
   }
 end
 
@@ -35,8 +37,9 @@ local function lazygit_opts()
     enabled = not vim.g.started_by_firenvim,
     configure = false,
     args = {
-      "--use-config-dir", vim.fn.expand("~/.config/lazygit")
-    }
+      "--use-config-dir",
+      vim.fn.expand("~/.config/lazygit"),
+    },
   }
 
   if opts.enabled then vim.list_extend(opts.args, git_opts()) end
@@ -179,7 +182,12 @@ return {
             { icon = " ", key = "f", desc = "Find File", action = ':lua Snacks.dashboard.pick("files")' },
             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
             { icon = " ", key = "g", desc = "Find Text", action = ':lua Snacks.dashboard.pick("live_grep")' },
-            { icon = " ", key = "<leader>/", desc = "Git Grep", action = function() with_git_dir(Snacks.picker.git_grep, "Git Grep") end },
+            {
+              icon = " ",
+              key = "<leader>/",
+              desc = "Git Grep",
+              action = function() with_git_dir(Snacks.picker.git_grep, "Git Grep") end,
+            },
             { icon = " ", key = "r", desc = "Recent Files", action = ':lua Snacks.dashboard.pick("oldfiles")' },
             {
               icon = " ",
@@ -281,9 +289,18 @@ return {
             {
               box = "vertical",
               { win = "list", title = " Results ", title_pos = "center", border = config.ui.border },
-              { win = "input", height = 1, border = config.ui.border, title = "{title} {live} {flags}", title_pos = "center" },
+              {
+                win = "input",
+                height = 1,
+                border = config.ui.border,
+                title = "{title} {live} {flags}",
+                title_pos = "center",
+              },
             },
           },
+        },
+        matcher = {
+          frecency = true,
         },
         previewers = {
           diff = {

@@ -33,15 +33,6 @@ return {
 
     event = { "InsertEnter", "CmdLineEnter" },
 
-    cond = function()
-      if is_qnap() then
-        local libpath = vim.fn.stdpath("data") .. "/lazy/blink.cmp/target/release/libblink_cmp_fuzzy.so"
-
-        return vim.fn.filereadable(libpath) == 1
-      end
-
-      return true
-    end,
     ---@module "blink.cmp"
     ---@diagnostic disable-next-line: undefined-doc-name
     ---@type function|blink.cmp.Config

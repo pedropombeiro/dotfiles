@@ -12,13 +12,8 @@ if [[ -n ${GDK_ROOT} ]]; then
   # From https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/howto/registry.md#set-up-pushing-and-pulling-of-images-over-http
   cat << EOF > ${GDK_ROOT}/gdk.tmp.yml
 ---
-hostname: gdk.test
-listen_address: 172.16.123.1
-port: 3000
 asdf:
   opt_out: true  # Required to use mise instead
-mise:
-  enabled: true
 clickhouse:
   bin: "/opt/homebrew/bin/clickhouse"
   enabled: true
@@ -27,12 +22,12 @@ clickhouse:
 gdk:
   experimental:
     ruby_services: true
+  overwrite_changes: true
   update_hooks:
     before:
       - support/exec-cd gitlab bin/spring stop || true
     after:
       - git -C "${GDK_ROOT}/gitlab" restore db/structure.sql
-  overwrite_changes: true
 # https:
 #   enabled: true
 # nginx:
@@ -44,14 +39,19 @@ gitlab:
   rails:
 #     address: 'http://gdk.test:3000'
 #     sherlock: true
+hostname: gdk.test
+listen_address: 172.16.123.1
+mise:
+  enabled: true
+port: 3000
 postgresql:
   host: localhost
 registry:
+  auth_enabled: true
   enabled: false
   host: registry.test
-  self_signed: true
-  auth_enabled: true
   listen_address: 0.0.0.0
+  self_signed: true
 runner:
   bin: "${HOME}/Developer/gitlab.com/gitlab-org/gitlab-runner/out/binaries/gitlab-runner"
   config_file: "${HOME}/.gitlab-runner/config.gdk.toml"
@@ -59,6 +59,9 @@ runner:
 snowplow_micro:
   enabled: false
   port: 9090
+telemetry:
+  enabled: true
+  username: 526355293c854a36885c7a8d6b61a336
 trusted_directories:
   - "${GDK_ROOT}"
 vite:

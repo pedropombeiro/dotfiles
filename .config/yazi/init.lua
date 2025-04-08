@@ -51,10 +51,10 @@ require("bookmarks"):setup({
 })
 
 -- https://github.com/yazi-rs/plugins/tree/main/git.yazi
-THEME.git = THEME.git or {}
-THEME.git.added_sign = ""
-THEME.git.modified_sign = ""
-THEME.git.deleted_sign = ""
+-- THEME.git = THEME.git or {}
+-- THEME.git.added_sign = ""
+-- THEME.git.modified_sign = ""
+-- THEME.git.deleted_sign = ""
 require("git"):setup()
 
 -- https://github.com/ahkohd/eza-preview.yazi
@@ -111,7 +111,7 @@ require("yatline"):setup({
   },
 })
 
-require("yatline-modified-time"):setup()
+-- require("yatline-modified-time"):setup()
 
 require("yatline-githead"):setup({
   show_branch = true,

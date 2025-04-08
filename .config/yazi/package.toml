@@ -1,52 +1,7 @@
 [[plugin.deps]]
-use = "yazi-rs/plugins:smart-enter"
-rev = "2730199"
-hash = "7918aab6a71caf31b58411f789195677"
-
-[[plugin.deps]]
-use = "yazi-rs/plugins:toggle-pane"
-rev = "2730199"
-hash = "5c9dda1a587b8f5b6f63e3d5375bda88"
-
-[[plugin.deps]]
-use = "Reledia/miller"
-rev = "40e0265"
-hash = "2d6d77583162aaf0a599e7a3091b5878"
-
-[[plugin.deps]]
-use = "dedukun/relative-motions"
-rev = "8103065"
-hash = "9f13f0740fa3a0c18e47ec6fb62ddfaa"
-
-[[plugin.deps]]
-use = "dedukun/bookmarks"
-rev = "95b2c58"
-hash = "17a094653b7d0db4ac68ed531d2e1412"
-
-[[plugin.deps]]
-use = "Lil-Dank/lazygit"
-rev = "7a08a09"
-hash = "a1fa2b3e1826c3a34804ea8c548e9f80"
-
-[[plugin.deps]]
-use = "KKV9/command"
-rev = "95a29be"
-hash = "65fff40a0060fe4b1c42d49d29f770fd"
-
-[[plugin.deps]]
-use = "KKV9/compress"
-rev = "60b24af"
-hash = "ee025be766240cc98e671754ac836da3"
-
-[[plugin.deps]]
-use = "ourongxing/fast-enter"
-rev = "1c4caeb"
-hash = "b209b5db91df69bdc6a4656cb8276cd9"
-
-[[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "2730199"
-hash = "e0d2c8d7e7afe5b82270367098d1a821"
+rev = "a1738e8"
+hash = "e0ada736ea676c2bbb3ec705a49526ef"
 
 [[plugin.deps]]
 use = "ahkohd/eza-preview"
@@ -54,19 +9,14 @@ rev = "6575a9a"
 hash = "72355a6c8b7c8de6ed4dda0f98f86fee"
 
 [[plugin.deps]]
+use = "imsi32/yatline-gruvbox"
+rev = "1ce46eb"
+hash = "1a087e707ba0512106408144eeb3e50a"
+
+[[plugin.deps]]
 use = "imsi32/yatline"
 rev = "6b0fc1e"
 hash = "ab115c6cc77f5710c27f39dfa2f3d4d"
-
-[[plugin.deps]]
-use = "wekauwau/yatline-modified-time"
-rev = "17a3077"
-hash = "d5f86be5c73c480afecf99c1ca381d04"
-
-[[plugin.deps]]
-use = "blackdaemon/yatline-tab-path"
-rev = "101fe7c"
-hash = "b58a6786383df06dc16fc6dbd1876d31"
 
 [[plugin.deps]]
 use = "imsi32/yatline-githead"
@@ -74,9 +24,34 @@ rev = "3b0eb7c"
 hash = "bfd30c396bbe2af526cb949d97ce3dcf"
 
 [[plugin.deps]]
-use = "imsi32/yatline-gruvbox"
-rev = "1ce46eb"
-hash = "1a087e707ba0512106408144eeb3e50a"
+use = "blackdaemon/yatline-tab-path"
+rev = "101fe7c"
+hash = "b58a6786383df06dc16fc6dbd1876d31"
+
+[[plugin.deps]]
+use = "dedukun/bookmarks"
+rev = "95b2c58"
+hash = "17a094653b7d0db4ac68ed531d2e1412"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:smart-enter"
+rev = "a1738e8"
+hash = "7918aab6a71caf31b58411f789195677"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:toggle-pane"
+rev = "a1738e8"
+hash = "5c9dda1a587b8f5b6f63e3d5375bda88"
+
+[[plugin.deps]]
+use = "dedukun/relative-motions"
+rev = "61ae795"
+hash = "65d576a76597aac2a428dc7ec0eda2ce"
+
+[[plugin.deps]]
+use = "Lil-Dank/lazygit"
+rev = "7a08a09"
+hash = "a1fa2b3e1826c3a34804ea8c548e9f80"
 
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"

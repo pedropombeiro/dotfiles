@@ -53,6 +53,11 @@ use = "Lil-Dank/lazygit"
 rev = "7a08a09"
 hash = "a1fa2b3e1826c3a34804ea8c548e9f80"
 
+[[plugin.deps]]
+use = "yazi-rs/plugins:vcs-files"
+rev = "a1738e8"
+hash = "36405f8781fcaf33ceab24dffd5cea19"
+
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"
 rev = "b4cc9f2"

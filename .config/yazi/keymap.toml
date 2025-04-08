@@ -133,3 +133,9 @@ desc = "Enter the subfolder faster, or open the file directly"
 on = ["E"]
 run = "plugin eza-preview"
 desc = "Toggle tree/list dir preview"
+
+# yazi-rs/plugins:vcs-files
+[[manager.prepend_keymap]]
+on   = [ "g", "c" ]
+run  = "plugin vcs-files"
+desc = "Show Git file changes"

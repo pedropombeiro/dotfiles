@@ -106,8 +106,8 @@ desc = "Delete all bookmarks"
 
 # https://yazi-rs.github.io/docs/tips#smart-tab
 [[manager.prepend_keymap]]
-on   = "t"
-run  = "plugin smart-tab"
+on = "t"
+run = "plugin smart-tab"
 desc = "Create a tab and enter the hovered directory"
 
 # https://github.com/Lil-Dank/lazygit.yazi
@@ -128,6 +128,12 @@ on = ["c", "a"]
 run = "plugin compress"
 desc = "Archive selected files"
 
+# https://github.com/yazi-rs/plugins/tree/main/chmod.yazi
+[[manager.prepend_keymap]]
+on = ["c", "m"]
+run = "plugin chmod"
+desc = "Chmod on selected files"
+
 # https://github.com/ourongxing/fast-enter.yazi
 [[manager.prepend_keymap]]
 on = ["l"]
@@ -142,6 +148,6 @@ desc = "Toggle tree/list dir preview"
 
 # yazi-rs/plugins:vcs-files
 [[manager.prepend_keymap]]
-on   = [ "g", "c" ]
-run  = "plugin vcs-files"
+on = ["g", "c"]
+run = "plugin vcs-files"
 desc = "Show Git file changes"

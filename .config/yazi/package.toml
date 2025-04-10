@@ -58,6 +58,11 @@ use = "yazi-rs/plugins:vcs-files"
 rev = "a1738e8"
 hash = "36405f8781fcaf33ceab24dffd5cea19"
 
+[[plugin.deps]]
+use = "yazi-rs/plugins:chmod"
+rev = "a1738e8"
+hash = "2f1053f89d1a301a648ab181d0948e38"
+
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"
 rev = "b4cc9f2"

@@ -50,6 +50,11 @@ require("bookmarks"):setup({
   },
 })
 
+-- https://yazi-rs.github.io/docs/dds#session.lua
+require("session"):setup({
+  sync_yanked = true,
+})
+
 -- https://yazi-rs.github.io/docs/tips#folder-rules
 require("folder-rules"):setup()
 

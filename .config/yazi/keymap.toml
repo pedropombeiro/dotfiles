@@ -104,6 +104,12 @@ on = ["b", "D"]
 run = "plugin bookmarks delete_all"
 desc = "Delete all bookmarks"
 
+# https://yazi-rs.github.io/docs/tips#smart-tab
+[[manager.prepend_keymap]]
+on   = "t"
+run  = "plugin smart-tab"
+desc = "Create a tab and enter the hovered directory"
+
 # https://github.com/Lil-Dank/lazygit.yazi
 [[manager.prepend_keymap]]
 on = ["<Space>", "t", "g"]

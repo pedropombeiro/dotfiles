@@ -50,6 +50,9 @@ require("bookmarks"):setup({
   },
 })
 
+-- https://yazi-rs.github.io/docs/tips#folder-rules
+require("folder-rules"):setup()
+
 -- https://github.com/yazi-rs/plugins/tree/main/git.yazi
 th.git = th.git or {}
 th.git.added_sign = ""

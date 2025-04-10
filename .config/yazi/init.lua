@@ -51,10 +51,10 @@ require("bookmarks"):setup({
 })
 
 -- https://github.com/yazi-rs/plugins/tree/main/git.yazi
--- THEME.git = THEME.git or {}
--- THEME.git.added_sign = ""
--- THEME.git.modified_sign = ""
--- THEME.git.deleted_sign = ""
+th.git = th.git or {}
+th.git.added_sign = ""
+th.git.modified_sign = ""
+th.git.deleted_sign = ""
 require("git"):setup()
 
 -- https://github.com/ahkohd/eza-preview.yazi

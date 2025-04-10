@@ -6,6 +6,12 @@ sort_translit = true # Transliterate filenames for sorting, i.e. replaces Â as 
 ratio = [2, 3, 5]
 linemode = "size"
 
+[opener]
+extract = [
+  { run = 'ya pub extract --list "$@"', desc = "Extract here", for = "unix" },
+  { run = 'ya pub extract --list %*', desc = "Extract here", for = "windows" },
+]
+
 [plugin]
 prepend_previewers = [
   { mime = "text/csv", run = "miller" },

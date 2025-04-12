@@ -10,7 +10,6 @@ printf "${YELLOW}%s${NC}\n" "Installing cargo packages..."
 cargo install \
   grc-rs
 
-cargo install --locked yazi-fm yazi-cli
 cargo binstall eza
 
 ya pack -i # Install yazi packages

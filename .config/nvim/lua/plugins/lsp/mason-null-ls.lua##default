@@ -30,6 +30,7 @@ return {
       "gomodifytags",
       "gopls",
       "jsonlint",
+      "just-lsp",
       "lua_ls",
       "markdownlint-cli2",
       "prettier",

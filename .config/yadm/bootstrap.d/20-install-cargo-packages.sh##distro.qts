@@ -11,5 +11,3 @@ cargo install \
   grc-rs
 
 cargo binstall eza
-
-ya pack -i # Install yazi packages

@@ -119,7 +119,7 @@ require("yatline"):setup({
   },
 })
 
--- require("yatline-modified-time"):setup()
+require("yatline-modified-time"):setup()
 
 require("yatline-githead"):setup({
   show_branch = true,

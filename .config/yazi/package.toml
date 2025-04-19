@@ -1,6 +1,6 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "a1738e8"
+rev = "b12a9ab"
 hash = "e0ada736ea676c2bbb3ec705a49526ef"
 
 [[plugin.deps]]
@@ -15,8 +15,8 @@ hash = "1a087e707ba0512106408144eeb3e50a"
 
 [[plugin.deps]]
 use = "imsi32/yatline"
-rev = "6b0fc1e"
-hash = "ab115c6cc77f5710c27f39dfa2f3d4d"
+rev = "90e0284"
+hash = "8d4cb2dfadcbda045ddaa5c274441f9c"
 
 [[plugin.deps]]
 use = "imsi32/yatline-githead"
@@ -30,23 +30,23 @@ hash = "b58a6786383df06dc16fc6dbd1876d31"
 
 [[plugin.deps]]
 use = "dedukun/bookmarks"
-rev = "95b2c58"
-hash = "17a094653b7d0db4ac68ed531d2e1412"
+rev = "a70648a"
+hash = "b836fb264381f35dec79930438a906d5"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "a1738e8"
+rev = "b12a9ab"
 hash = "7918aab6a71caf31b58411f789195677"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "a1738e8"
+rev = "b12a9ab"
 hash = "5c9dda1a587b8f5b6f63e3d5375bda88"
 
 [[plugin.deps]]
 use = "dedukun/relative-motions"
-rev = "61ae795"
-hash = "65d576a76597aac2a428dc7ec0eda2ce"
+rev = "ce2e890"
+hash = "23915860e59348bf4166778bb0e606f7"
 
 [[plugin.deps]]
 use = "Lil-Dank/lazygit"
@@ -55,13 +55,18 @@ hash = "a1fa2b3e1826c3a34804ea8c548e9f80"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:vcs-files"
-rev = "a1738e8"
+rev = "b12a9ab"
 hash = "36405f8781fcaf33ceab24dffd5cea19"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:chmod"
-rev = "a1738e8"
+rev = "b12a9ab"
 hash = "2f1053f89d1a301a648ab181d0948e38"
+
+[[plugin.deps]]
+use = "wekauwau/yatline-modified-time"
+rev = "286680b"
+hash = "d5f86be5c73c480afecf99c1ca381d04"
 
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"

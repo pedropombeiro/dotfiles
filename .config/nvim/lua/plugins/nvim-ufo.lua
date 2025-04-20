@@ -61,6 +61,7 @@ return {
       "markdown",
       "ruby",
       "sh",
+      "toml",
       "typescript",
       "yaml",
     },

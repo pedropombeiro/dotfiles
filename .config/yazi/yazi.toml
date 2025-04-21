@@ -15,7 +15,7 @@ extract = [
 [plugin]
 prepend_previewers = [
   { mime = "text/csv", run = "miller" },
-  { name = "*/", run = "eza-preview" },
+  { name = "*/", run = 'piper -- eza -TL=3 --almost-all --ignore-glob=".git|.DS_Store|.localized|desktop.ini|.@__*" --color=always --icons=always --group-directories-first --no-quotes "$1"' },
 ]
 
 [[plugin.prepend_fetchers]]

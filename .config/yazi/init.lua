@@ -65,9 +65,6 @@ th.git.modified_sign = ""
 th.git.deleted_sign = ""
 require("git"):setup()
 
--- https://github.com/ahkohd/eza-preview.yazi
-require("eza-preview"):setup({})
-
 local gruvbox_theme = require("yatline-gruvbox"):setup("dark") -- or "light"
 
 require("yatline"):setup({

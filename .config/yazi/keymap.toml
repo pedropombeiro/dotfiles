@@ -140,12 +140,6 @@ on = ["l"]
 run = "plugin fast-enter"
 desc = "Enter the subfolder faster, or open the file directly"
 
-# https://github.com/ahkohd/eza-preview.yazi
-[[manager.prepend_keymap]]
-on = ["E"]
-run = "plugin eza-preview"
-desc = "Toggle tree/list dir preview"
-
 # yazi-rs/plugins:vcs-files
 [[manager.prepend_keymap]]
 on = ["g", "c"]

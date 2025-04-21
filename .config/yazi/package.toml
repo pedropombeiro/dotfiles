@@ -4,11 +4,6 @@ rev = "b12a9ab"
 hash = "e0ada736ea676c2bbb3ec705a49526ef"
 
 [[plugin.deps]]
-use = "ahkohd/eza-preview"
-rev = "6575a9a"
-hash = "72355a6c8b7c8de6ed4dda0f98f86fee"
-
-[[plugin.deps]]
 use = "imsi32/yatline-gruvbox"
 rev = "1ce46eb"
 hash = "1a087e707ba0512106408144eeb3e50a"
@@ -72,6 +67,11 @@ hash = "d5f86be5c73c480afecf99c1ca381d04"
 use = "ourongxing/fast-enter"
 rev = "738356f"
 hash = "b209b5db91df69bdc6a4656cb8276cd9"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:piper"
+rev = "4b027c7"
+hash = "ca862f0008f47952e2bd3e19328aca02"
 
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"

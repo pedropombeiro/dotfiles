@@ -24,8 +24,8 @@ return {
     },
     exclude_filetypes = {
       ["lazy"] = true,
-      ["neo-tree"] = true,
       ["snacks_picker_input"] = true,
+      ["snacks_picker_list"] = true,
       ["vimdoc"] = true,
     },
   },

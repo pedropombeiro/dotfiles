@@ -60,8 +60,8 @@ return {
       end,
       offsets = {
         {
-          filetype = "neo-tree",
-          text = "Neo-tree",
+          filetype = "snacks_picker_list",
+          text = "Explorer",
           highlight = "BufferLineBuffer",
           text_align = "center",
         },

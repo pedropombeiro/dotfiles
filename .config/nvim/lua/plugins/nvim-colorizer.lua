@@ -15,16 +15,16 @@ return {
     buftypes = {
       "*",
       -- exclude prompt and popup buftypes from highlight
-      "!Fm",
       "!FZF",
-      "!neo-tree",
+      "!Fm",
       "!Outline",
       "!Trouble",
-      "!snacks_dashboard",
       "!lazy",
       "!neotest-summary",
       "!popup",
       "!prompt",
+      "!snacks_dashboard",
+      "!snacks_picker_list",
     },
   },
 }

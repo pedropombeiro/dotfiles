@@ -77,6 +77,8 @@ local keys = {
   { "[w", function() Snacks.words.jump(-1, true) end, desc = "Previous word reference", silent = true },
   { "]w", function() Snacks.words.jump(1, true) end, desc = "Next word reference", silent = true },
 
+  { "<C-\\>", function() Snacks.explorer.reveal() end, mode = { "n", "v" }, desc = "Toggle file explorer" },
+
   -- File operations
   { "<leader>f", group = "Picker" },
   { "<leader>ff", function() Snacks.picker.files() end, desc = "Files", icon = "" },
@@ -222,6 +224,9 @@ return {
           { section = "startup" },
         },
       },
+      explorer = {
+        enabled = function() return not vim.g.started_by_firenvim end,
+      },
       image = { enabled = false },
       indent = {
         animate = {
@@ -271,30 +276,36 @@ return {
             Hint = diagnostics_icons.info .. " ",
           },
         },
-        layout = {
-          cycle = true,
-          reverse = true,
-          layout = {
-            box = "vertical",
-            backdrop = false,
-            width = 0.7,
-            height = 0.8,
-            border = "none",
-            {
-              win = "preview",
-              title = "{preview:Preview}",
-              border = config.ui.border,
-              title_pos = "center",
-            },
-            {
+        layout = { preset = "popup" },
+        layouts = {
+          right = {
+            layout = { position = "right" },
+          },
+          popup = {
+            cycle = true,
+            reverse = true,
+            layout = {
               box = "vertical",
-              { win = "list", title = " Results ", title_pos = "center", border = config.ui.border },
+              backdrop = false,
+              width = 0.7,
+              height = 0.8,
+              border = "none",
               {
-                win = "input",
-                height = 1,
+                win = "preview",
+                title = "{preview:Preview}",
                 border = config.ui.border,
-                title = "{title} {live} {flags}",
                 title_pos = "center",
+              },
+              {
+                box = "vertical",
+                { win = "list", title = " Results ", title_pos = "center", border = config.ui.border },
+                {
+                  win = "input",
+                  height = 1,
+                  border = config.ui.border,
+                  title = "{title} {live} {flags}",
+                  title_pos = "center",
+                },
               },
             },
           },
@@ -313,7 +324,24 @@ return {
         },
         sources = {
           explorer = {
+            exclude = {
+              "*.zwc",
+              ".DS_Store",
+              "thumbs.db",
+            },
             git_untracked = false,
+            hidden = true,
+            layout = {
+              preset = "right",
+              preview = { main = true, enabled = false },
+            },
+            win = {
+              list = {
+                keys = {
+                  ["C"] = "explorer_close", -- close directory
+                },
+              },
+            },
           },
         },
         on_show = function()

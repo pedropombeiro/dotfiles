@@ -47,7 +47,6 @@ return {
           "fugitive",
           "man",
           "lazy",
-          "neo-tree",
         },
         sections = {
           lualine_a = { "mode" },

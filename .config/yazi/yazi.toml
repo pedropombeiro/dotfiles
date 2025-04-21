@@ -14,7 +14,17 @@ extract = [
 
 [plugin]
 prepend_previewers = [
+  { name = "*.tar*", run = 'piper --format=url -- tar tf "$1"' },
+  { name = "*.epub", run = 'piper -- epr -d "$1"' },
+  { name = "*.yml.enc", run = 'piper -- bundle exec rails encrypted:show "$1" | bat --language yaml --force-colorization --paging=never --wrap=character --line-range :1000 --style=plain' },
+  { name = "*.plist", run = 'piper -- plutil -p "$1"' },
+  { name = "**/.git/objects/**/*", run = 'piper -- git cat-file -p "$1"' },
+  { name = "**/.ssh/*config*", run = 'piper -- bat --language="SSH Config" --force-colorization --paging=never --wrap=character --line-range :1000 --style=plain "$1"' },
   { mime = "text/csv", run = "miller" },
+  { mime = "text/*", run = 'piper -- bat --force-colorization --paging=never --wrap=character --line-range :1000 --style=plain "$1"' },
+  { mime = "application/sqlite3", run = 'piper -- sqlite3 "$1" .schema | sed "s/;/;\n/g" | bat --language sql --force-colorization --paging=never --wrap=character --line-range :1000 --style=plain' },
+  { mime = "*/xml", run = "code" },
+  { mime = "*/javascript", run = "code" },
   { name = "*/", run = 'piper -- eza -TL=3 --almost-all --ignore-glob=".git|.DS_Store|.localized|desktop.ini|.@__*" --color=always --icons=always --group-directories-first --no-quotes "$1"' },
 ]
 

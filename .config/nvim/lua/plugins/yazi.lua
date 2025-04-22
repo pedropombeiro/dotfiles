@@ -1,5 +1,5 @@
--- fm-nvim (https://github.com/Eric-Song-Nop/fm-nvim)
--- 🗂 Neovim plugin that lets you use your favorite terminal file managers (and fuzzy finders) from within Neovim.
+-- yazi.nvim (https://github.com/mikavilpas/yazi.nvim)
+-- A Neovim Plugin for the yazi terminal file manager
 
 ---@module "lazy"
 ---@type LazySpec

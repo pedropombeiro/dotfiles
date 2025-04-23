@@ -36,7 +36,13 @@ return {
       return {
         options = {
           icons_enabled = true,
-          ignore_focus = { "neotest-summary", "lazygit", "Outline" },
+          ignore_focus = {
+            "Outline",
+            "lazygit",
+            "neotest-summary",
+            "snacks_picker_input",
+            "snacks_picker_list",
+          },
           disabled_filetypes = {
             statusline = { "snacks_dashboard", "Fm", "mason", "neotest-summary" },
           },

@@ -83,6 +83,8 @@ brew "epr"
 brew "exiftool"
 # Modern, maintained replacement for ls
 brew "eza"
+# CGI support for Nginx
+brew "fcgiwrap"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
 # Validating, recursive, caching DNS resolver
@@ -239,6 +241,8 @@ brew "sleepwatcher", restart_service: :changed
 brew "smartmontools"
 # SOcket CAT: netcat on steroids
 brew "socat"
+# Spawn FastCGI processes
+brew "spawn-fcgi"
 # Change macOS audio source from the command-line
 brew "switchaudio-osx"
 # Very fast implementation of tldr in Rust
@@ -251,6 +255,8 @@ brew "terraform"
 brew "the_silver_searcher"
 # Program that allows you to count code, quickly
 brew "tokei"
+# USB hub per-port power control
+brew "uhubctl"
 # Syntax-aware linter for prose
 brew "vale"
 # Modern watch command
@@ -287,8 +293,6 @@ brew "leipert-projects/git-recon/git-recon"
 brew "mike-engel/jwt-cli/jwt-cli"
 # Compare Docker images
 brew "moul/moul/docker-diff"
-# USB hub per-port power control
-brew "mvp/uhubctl/uhubctl"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
 # Command-line interface for 1Password
@@ -391,8 +395,6 @@ cask "slack"
 cask "spotify"
 # Windows manager
 cask "stay"
-# Real time file synchronisation software
-cask "syncthing"
 # Quicklook extension for source files
 cask "syntax-highlight"
 # Native desktop client for WhatsApp
@@ -403,7 +405,6 @@ mas "DaisyDisk", id: 411643860
 mas "Discovery", id: 1381004916
 mas "Expressions", id: 913158085
 mas "HazeOver", id: 430798174
-mas "Home Assistant", id: 1099568401
 mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Mactracker", id: 430255202
@@ -412,6 +413,7 @@ mas "Microsoft To Do", id: 1274495053
 mas "MusicBuddy", id: 563706976
 mas "Numbers", id: 409203825
 mas "Okta Extension App", id: 1439967473
+mas "Okta Verify", id: 490179405
 mas "Pages", id: 409201541
 mas "Parcel", id: 639968404
 mas "PLIST Editor", id: 1157491961

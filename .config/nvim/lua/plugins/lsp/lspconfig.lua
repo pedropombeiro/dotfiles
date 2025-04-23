@@ -50,10 +50,6 @@ return {
     },
     ---@return PluginLspOpts
     opts = function()
-      if vim.fn.has("mac") ~= 1 then
-        vim.env.DOTNET_SYSTEM_GLOBALIZATION_INVARIANT = 1 -- Needed for marksman LSP on systems missing ICU libraries
-      end
-
       local function file_exists(name)
         local f = io.open(name, "r")
         if f ~= nil then
@@ -257,13 +253,6 @@ return {
     end,
     ---@param opts PluginLspOpts
     config = function(_, opts)
-      --if !has_key(plugs, "trouble.nvim")
-      --  nnoremap <silent> <leader>gd :lua vim.lsp.buf.definition()<CR>
-      --  nnoremap <silent> <C-]> :lua vim.lsp.buf.definition()<CR>
-      --  nnoremap <silent> <leader>gr :lua vim.lsp.buf.references()<CR>
-      --  nnoremap <silent> <leader>xq :lua vim.diagnostic.setloclist()<CR>
-      --endif
-
       local lspconfig = require("lspconfig")
       ---@type pmsp.neovim.Config
       local nvconfig = require("config")
@@ -313,7 +302,7 @@ return {
             [vim.diagnostic.severity.WARN] = "",
             [vim.diagnostic.severity.HINT] = "",
             [vim.diagnostic.severity.INFO] = "",
-          }
+          },
         },
       })
     end,

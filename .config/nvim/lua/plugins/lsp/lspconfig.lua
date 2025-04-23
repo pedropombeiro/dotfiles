@@ -46,6 +46,11 @@ return {
         "williamboman/mason-lspconfig.nvim",
         enabled = function() return vim.fn.has("mac") == 1 end,
         dependencies = "williamboman/mason.nvim",
+        config = function()
+          require("mason-lspconfig").setup_handlers({
+            function(name) vim.lsp.enable(name) end,
+          })
+        end,
       },
     },
     ---@return PluginLspOpts

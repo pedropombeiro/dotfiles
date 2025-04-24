@@ -339,6 +339,7 @@ return {
               list = {
                 keys = {
                   ["C"] = "explorer_close", -- close directory
+                  ["<C-Q>"] = "close", -- close explorer
                 },
               },
             },

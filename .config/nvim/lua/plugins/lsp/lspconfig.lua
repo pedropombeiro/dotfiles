@@ -1,5 +1,5 @@
--- lsp-setup.nvim (https://github.com/junnplus/lsp-setup.nvim)
---   A simple wrapper for nvim-lspconfig and mason-lspconfig to easily setup LSP servers.
+-- neovim/nvim-lspconfig (https://github.com/neovim/nvim-lspconfig)
+--   Quickstart configs for Nvim LSP
 
 ---@format disable-next
 -- stylua: ignore
@@ -53,212 +53,17 @@ return {
         end,
       },
     },
-    ---@return PluginLspOpts
-    opts = function()
-      local function file_exists(name)
-        local f = io.open(name, "r")
-        if f ~= nil then
-          io.close(f)
-          return true
-        else
-          return false
-        end
-      end
-
-      -- LSP Server Settings
-      ---@class PluginLspOpts
-      local lspopts = {
-        servers = {
-          bashls = {
-            filetypes = { "sh", "bash", "zsh" },
-          },
-          docker_compose_language_service = {},
-          dockerls = {},
-          golangci_lint_ls = {},
-          gopls = {
-            settings = {
-              gopls = {
-                hints = {
-                  rangeVariableTypes = true,
-                  parameterNames = true,
-                  constantValues = true,
-                  assignVariableTypes = true,
-                  compositeLiteralFields = true,
-                  compositeLiteralTypes = true,
-                  functionTypeParameters = true,
-                },
-              },
-            },
-          },
-          jsonls = {
-            -- lazy-load schemastore when needed
-            on_new_config = function(new_config)
-              new_config.settings.json.schemas = new_config.settings.json.schemas or {}
-              vim.list_extend(new_config.settings.json.schemas, require("schemastore").json.schemas())
-            end,
-            settings = {
-              json = {
-                format = { enable = false },
-                validate = { enable = true },
-              },
-            },
-          },
-          just = {},
-          lua_ls = {
-            single_file_support = true,
-            settings = {
-              Lua = {
-                runtime = {
-                  -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-                  version = "LuaJIT",
-                },
-                diagnostics = {
-                  enable = true,
-                  -- Get the language server to recognize the `Snacks` and `vim` globals
-                  globals = { "Snacks", "vim" },
-                  neededFileStatus = {
-                    ["codestyle-check"] = "Any",
-                  },
-                },
-                workspace = {
-                  -- Make the server aware of Neovim runtime files
-                  checkThirdParty = false,
-                  library = {
-                    vim.env.VIMRUNTIME,
-                  },
-                },
-                completion = {
-                  callSnippet = "Replace",
-                },
-                format = {
-                  enable = false,
-                  defaultConfig = {
-                    indent_style = "space",
-                    indent_size = "2",
-                    quote_style = "double",
-                  },
-                },
-                hint = {
-                  enable = false,
-                  arrayIndex = "Auto",
-                  await = true,
-                  paramName = "All",
-                  paramType = true,
-                  semicolon = "SameLine",
-                  setType = false,
-                },
-              },
-            },
-          },
-          jedi_language_server = {},
-          ruby_lsp = {
-            mason = false,
-            cmd = { vim.fn.expand("~/.local/share/mise/shims/ruby-lsp") },
-            init_options = {
-              -- https://shopify.github.io/ruby-lsp/editors.html#all-initialization-options
-              formatter = "standard",
-              linters = { "standard" },
-            },
-          },
-          sqlls = {},
-          taplo = {},
-          turbo_ls = {},
-          vtsls = {},
-          vimls = {},
-          vale_ls = {},
-          volar = {},
-          yamlls = {
-            filetypes = { "yaml", "yaml.docker-compose", "yaml.homeassistant" },
-            -- Have to add this for yamlls to understand that we support line folding
-            capabilities = {
-              textDocument = {
-                foldingRange = {
-                  dynamicRegistration = false,
-                  lineFoldingOnly = true,
-                },
-              },
-              settings = {
-                yaml = {
-                  ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] = "/.gitlab-ci.yml",
-                },
-              },
-            },
-            -- lazy-load schemastore when needed
-            on_new_config = function(new_config)
-              new_config.settings.yaml.schemas = new_config.settings.yaml.schemas or {}
-              vim.list_extend(new_config.settings.yaml.schemas, require("schemastore").yaml.schemas())
-            end,
-            settings = {
-              redhat = { telemetry = { enabled = false } },
-              yaml = {
-                keyOrdering = false,
-                format = {
-                  enable = false,
-                },
-                hover = true,
-                completion = true,
-                validate = true,
-                schemastore = {
-                  -- Must disable built-in schemaStore support to use
-                  -- schemas from SchemaStore.nvim plugin
-                  enable = false,
-                  -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
-                  url = "",
-                },
-              },
-            },
-          },
-        },
-        -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
-        -- Be aware that you also will need to properly configure your LSP server to
-        -- provide the code lenses.
-        codelens = {
-          enabled = false,
-        },
-        inlay_hints = { enabled = true },
-      }
-      local servers = lspopts.servers
-
-      if file_exists(vim.fn.expand("~/Library/Arduino15/arduino-cli.yaml")) then
-        servers.arduino_language_server = {
-          -- stylua: ignore
-          cmd = {
-            "arduino-language-server",
-            "-cli-config",
-            "~/Library/Arduino15/arduino-cli.yaml", -- Generated with `arduino-cli config init`
-            "-fqbn",
-            "keyboardio:gd32:keyboardio_model_100",
-            "-cli",
-            "arduino-cli",
-            "-clangd",
-            "clangd",
-          },
-        }
-        servers.clangd = {}
-      end
-
-      local install_dir = "/share/homes/admin/opt/vscode-home-assistant"
-      if vim.fn.finddir(install_dir) then
-        local lspconfig = require("lspconfig.configs")
-        local util = require("lspconfig/util")
-
-        -- add the default config for homeassistant
-        lspconfig.homeassistant = {
-          default_config = {
-            cmd = { install_dir .. "/node_modules/.bin/ts-node", install_dir .. "/out/server/server.js", "--stdio" },
-            filetypes = { "yaml.homeassistant" },
-            root_dir = util.root_pattern(".HA_VERSION", "configuration.yaml"),
-            settings = {},
-          },
-        }
-        lspconfig.homeassistant.setup({})
-      end
-
-      return lspopts
-    end,
-    ---@param opts PluginLspOpts
-    config = function(_, opts)
-      local lspconfig = require("lspconfig")
+    ---@type PluginLspOpts
+    opts = {
+      -- Enable this to enable the builtin LSP code lenses on Neovim >= 0.10.0
+      -- Be aware that you also will need to properly configure your LSP server to
+      -- provide the code lenses.
+      codelens = {
+        enabled = false,
+      },
+      inlay_hints = { enabled = true },
+    },
+    config = function()
       ---@type pmsp.neovim.Config
       local nvconfig = require("config")
       local border = nvconfig.ui.border
@@ -266,14 +71,11 @@ return {
 
       require("lspconfig.ui.windows").default_options.border = border
 
-      local blink_cmp = package.loaded["blink.cmp"]
-      if blink_cmp ~= nil then
-        for server, config in pairs(opts.servers) do
-          -- passing config.capabilities to blink.cmp merges with the capabilities in your
-          -- `opts[server].capabilities, if you've defined it
-          config.capabilities = blink_cmp.get_lsp_capabilities(config.capabilities)
-          lspconfig[server].setup(config)
-        end
+      local lsp_path = vim.fn.stdpath("config") .. "/lsp"
+      local lsp_dir = vim.fn.globpath(lsp_path, "*.lua", false, true)
+      for _, file in ipairs(lsp_dir) do
+        local server = vim.fn.fnamemodify(file, ":t:r")
+        vim.lsp.enable(server)
       end
 
       ---@type vim.diagnostic.Opts

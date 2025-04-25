@@ -20,7 +20,6 @@ return {
       "docker-compose-language-service",
       "fixjson",
       "jsonlint",
-      "just-lsp",
       "markdownlint-cli2",
       "prettier",
       "shfmt",

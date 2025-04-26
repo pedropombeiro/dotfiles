@@ -71,7 +71,7 @@ return {
 
       require("lspconfig.ui.windows").default_options.border = border
 
-      local lsp_path = vim.fn.stdpath("config") .. "/lsp"
+      local lsp_path = vim.fn.stdpath("config") .. "/after/lsp"
       local lsp_dir = vim.fn.globpath(lsp_path, "*.lua", false, true)
       for _, file in ipairs(lsp_dir) do
         local server = vim.fn.fnamemodify(file, ":t:r")

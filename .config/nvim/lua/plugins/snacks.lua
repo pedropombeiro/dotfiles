@@ -77,7 +77,7 @@ local keys = {
   { "[w", function() Snacks.words.jump(-1, true) end, desc = "Previous word reference", silent = true },
   { "]w", function() Snacks.words.jump(1, true) end, desc = "Next word reference", silent = true },
 
-  { "<C-\\>", function() Snacks.explorer.reveal() end, mode = { "n", "v" }, desc = "Toggle file explorer" },
+  { "<C-\\>", function() Snacks.explorer() end, mode = { "n", "v" }, desc = "Toggle file explorer" },
 
   -- File operations
   { "<leader>f", group = "Picker" },

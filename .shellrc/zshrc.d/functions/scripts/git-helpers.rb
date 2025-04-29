@@ -19,9 +19,13 @@ def compute_parent_branch(branch_name = nil)
   other_remote_names = remote_names - [active_remote_name]
 
   parent_branch_line = `git log --decorate --simplify-by-decoration --oneline #{branch_name}`.lines[1].rstrip
-  parent_branch_line
+  parent_branch_line = parent_branch_line
     .sub('HEAD -> ', '')
     .gsub(/tag: [^,)]+(, )?/, '')
+  return compute_default_branch if parent_branch_line.match?(/.* \((origin|security)\/(.*)\) .*/)
+  return compute_default_branch unless parent_branch_line.match?(/.* \((.*)\) .*/)
+
+  parent_branch_line
     .sub(/.* \((.*)\) .*/, '\1')
     .split(', ')
     .reject { |b| other_remote_names.any? { |remote_name| b.start_with?("#{remote_name}/") } }
@@ -140,19 +144,20 @@ def rebase_mappings
     .map { |line| line[2..].rstrip }
     .select { |branch| branch.start_with?("#{user_name}/", "security-#{user_name}/", "security/#{user_name}/") }
     .sort_by do |branch|
+      branch_distance     = branch_distance(branch, default_branch)
       seq_mr_match_data   = seq_mr_pattern.match(branch)
       backport_match_data = backport_pattern.match(branch)
       mr_match_data       = mr_pattern.match(branch)
 
-      next [seq_mr_match_data[:mr_id].to_i, 1, seq_mr_match_data[:mr_seq_nr].to_i] if seq_mr_match_data
+      next [branch_distance, seq_mr_match_data[:mr_id].to_i, 1, seq_mr_match_data[:mr_seq_nr].to_i] if seq_mr_match_data
 
       if backport_match_data
-        next [backport_match_data[:mr_id].to_i, 2,
+        next [branch_distance, backport_match_data[:mr_id].to_i, 2,
               backport_match_data[:milestone].tr('.', '-').to_f]
       end
-      next [mr_match_data[:mr_id].to_i, 1] if mr_match_data
+      next [branch_distance, mr_match_data[:mr_id].to_i] if mr_match_data
 
-      []
+      [branch_distance]
     end
 
   chain_previous_branches  = [default_branch]
@@ -182,6 +187,7 @@ def rebase_mappings
       chain_previous_mr_seq_nr = nil
     end
 
+    rebase_onto = nil
     if chain_mr_seq_nr
       if chain_previous_mr_seq_nr.nil? || chain_mr_seq_nr > chain_previous_mr_seq_nr
         parent_branch = chain_previous_branches.last
@@ -199,7 +205,7 @@ def rebase_mappings
       parent_branch = "#{remote}/#{backport_match_data[:milestone].tr('.', '-')}-stable-ee"
       rebase_onto = parent_branch
     else
-      parent_branch = default_branch
+      parent_branch = compute_parent_branch(branch)
     end
 
     {
@@ -216,10 +222,16 @@ def branch_sort_key(branch_info)
   [branch_info[:chain_mr_id] || '', branch_info[:chain_mr_seq_nr].nil? ? 0 : -branch_info[:chain_mr_seq_nr]]
 end
 
+def branch_distance(branch, parent_branch)
+  `git rev-list --count #{parent_branch}..#{branch}`.strip.to_i
+end
+
 def rebase_all
   require 'json'
+  default_branch = compute_default_branch
   mappings = rebase_mappings
              .sort { |b1, b2| branch_sort_key(b1) <=> branch_sort_key(b2) }
+             .sort { |b1, b2| branch_distance(b1[:branch], default_branch) <=> branch_distance(b2[:branch], default_branch) }
              .to_h { |b| [b[:branch], b[:rebase_onto]] }
   rebase_all_per_capture_info(mappings)
 end

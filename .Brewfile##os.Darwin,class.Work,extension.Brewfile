@@ -375,8 +375,6 @@ cask "muzzle"
 cask "netspot"
 # App to write, plan, collaborate, and get organised
 cask "notion"
-# Calculator and converter application
-cask "numi"
 # Visual client for Helix Core
 cask "p4v"
 # Home media player

@@ -5,12 +5,11 @@ local function yadm_repo()
   return vim.fn.expand("~/.local/share/yadm/repo.git") -- hardcode value of vim.fn.systemlist("yadm introspect repo")[1] for startup speed
 end
 
-local function is_yadm_repo()
-  local cwd = vim.fn.getcwd()
+local function is_yadm_repo(dir)
   local homedir = vim.fn.expand("~")
   local configdir = vim.fn.expand("~/.config")
 
-  return cwd == homedir or string.sub(cwd, 1, #configdir) == configdir
+  return dir == homedir or string.sub(dir, 1, #configdir) == configdir
 end
 
 local function yadm_opts()
@@ -23,7 +22,7 @@ local function yadm_opts()
 end
 
 local function git_opts()
-  if is_yadm_repo() then return yadm_opts() end
+  if is_yadm_repo(vim.fn.getcwd()) then return yadm_opts() end
 
   return {}
 end
@@ -45,7 +44,7 @@ local function lazygit_opts()
 end
 
 local function with_git_dir(fn, title)
-  if is_yadm_repo() then
+  if is_yadm_repo(vim.fn.getcwd()) then
     fn({ cwd = vim.fn.expand("~"), args = yadm_opts(), title = title:gsub("Git", "YADM") })
     return
   end
@@ -152,6 +151,12 @@ return {
     local diagnostics_icons = config.ui.icons.diagnostics
     ---@return string
     local function vim_version() return vim.version().major .. "." .. vim.version().minor .. "." .. vim.version().patch end
+
+    local function git_action(picker, action)
+      local git_cmd = "git"
+      if is_yadm_repo(picker:current().parent.file) then git_cmd = "yadm" end
+      vim.cmd({ cmd = "!", args = { git_cmd, action, vim.fn.escape(picker:current().file, "#") } })
+    end
 
     ---@diagnostic disable: missing-fields
     ---@type snacks.Config
@@ -334,7 +339,19 @@ return {
                 keys = {
                   ["C"] = "explorer_close", -- close directory
                   ["<C-Q>"] = "close", -- close explorer
+                  ["<leader>ga"] = "git_add",
+                  ["<leader>gr"] = "git_rm",
                 },
+              },
+            },
+            actions = {
+              git_add = {
+                action = function(picker) git_action(picker, "add") end,
+                desc = "Add file to git repo",
+              },
+              git_rm = {
+                action = function(picker) git_action(picker, "rm") end,
+                desc = "Remove file from git repo",
               },
             },
           },

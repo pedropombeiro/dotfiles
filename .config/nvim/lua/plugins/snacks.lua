@@ -1,9 +1,6 @@
 -- snacks.nvim (https://github.com/folke/snacks.nvim)
 --  🍿 A collection of QoL plugins for Neovim
 
----@type pmsp.neovim.Config
-local config = require("config")
-
 local function yadm_repo()
   return vim.fn.expand("~/.local/share/yadm/repo.git") -- hardcode value of vim.fn.systemlist("yadm introspect repo")[1] for startup speed
 end
@@ -150,14 +147,11 @@ return {
   priority = 1000,
   lazy = false,
   opts = function()
+    ---@type pmsp.neovim.Config
+    local config = require("config")
     local diagnostics_icons = config.ui.icons.diagnostics
     ---@return string
     local function vim_version() return vim.version().major .. "." .. vim.version().minor .. "." .. vim.version().patch end
-
-    Set_hl(
-      { InputBorder = { bg = config.theme.colors.dark0, fg = config.theme.colors.orange } },
-      { prefix = "SnacksPicker", default = true }
-    )
 
     ---@diagnostic disable: missing-fields
     ---@type snacks.Config

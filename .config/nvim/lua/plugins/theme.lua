@@ -11,9 +11,7 @@ return {
   priority = 1000, -- make sure to load this before all the other start plugins
   cond = function()
     local nvim_theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
-    if nvim_theme == nil then
-      nvim_theme = theme.name
-    end
+    if nvim_theme == nil then nvim_theme = theme.name end
 
     return nvim_theme == "gruvbox"
   end,
@@ -31,9 +29,14 @@ return {
 
       -- Change border for float windows (normally grey)
       NormalFloat = { bg = theme.colors.dark0 },
-      FloatBorder = { fg = "#83a598", bg = theme.colors.dark0 },
+      FloatBorder = { fg = theme.colors.dark_blue, bg = theme.colors.dark0 },
       FloatermBorder = { link = "FloatBorder" },
       LspInfoBorder = { link = "FloatBorder" },
+
+      SnacksPickerInputBorder = { bg = theme.colors.dark0, fg = theme.colors.orange },
+      SnacksPickerList = { bg = theme.colors.dark0 },
+      SnacksPickerPreview = { bg = theme.colors.dark0 },
+      SnacksPickerBorder = { link = "GruvboxBlue" },
 
       FoldColumn = { bg = "NONE" },
       SignColumn = { bg = "NONE" },
@@ -41,11 +44,11 @@ return {
 
       DiagnosticVirtualTextWarn = { fg = "#fabd2f", bg = "#473c29" },
       DiagnosticVirtualTextError = { fg = "#fb4934", bg = "#442e2d" },
-      DiagnosticVirtualTextInfo = { fg = "#83a598", bg = "#2e3b3b" },
+      DiagnosticVirtualTextInfo = { fg = theme.colors.dark_blue, bg = "#2e3b3b" },
       DiagnosticVirtualTextHint = { fg = "#b8bb26", bg = "#333e34" },
       LspDiagnosticsVirtualTextWarning = { fg = "#fabd2f" },
       LspDiagnosticsVirtualTextError = { fg = "#fb4934" },
-      LspDiagnosticsVirtualTextInfo = { fg = "#83a598" },
+      LspDiagnosticsVirtualTextInfo = { fg = theme.colors.dark_blue },
       LspDiagnosticsVirtualTextHint = { fg = "#b8bb26" },
 
       -- Remove background from signs (since we made the sign column not have a background)

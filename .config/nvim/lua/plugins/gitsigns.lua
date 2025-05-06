@@ -92,7 +92,17 @@ end
 return {
   {
     "lewis6991/gitsigns.nvim",
-    event = { "BufReadPost", "BufNewFile", "BufWritePre" },
+    event = "VeryLazy",
+    dependencies = {
+      {
+        "purarue/gitsigns-yadm.nvim",
+        lazy = true,
+      },
+      {
+        "nvim-lua/plenary.nvim",
+        lazy = true,
+      },
+    },
     opts = {
       _on_attach_pre = function(bufnr, callback) require("gitsigns-yadm").yadm_signs(callback, { bufnr = bufnr }) end,
       signs = {
@@ -143,13 +153,5 @@ return {
       local branch = string.match(vim.fn.system("git branch -rl '*/HEAD'"), ".*/(.*)\n")
       if branch then require("gitsigns").change_base(branch, true) end
     end,
-  },
-  {
-    "nvim-lua/plenary.nvim",
-    lazy = true,
-  },
-  {
-    "purarue/gitsigns-yadm.nvim",
-    lazy = true,
   },
 }

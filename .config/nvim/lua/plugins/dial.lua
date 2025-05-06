@@ -21,17 +21,17 @@ return {
   },
   opts = function()
     local augend = require("dial.augend")
+    local make_const = function(elements, word)
+      return augend.constant.new({
+        elements = elements,
+        word = word or true,
+        cyclic = true,
+      })
+    end
 
-    local logical_alias = augend.constant.new({
-      elements = { "&&", "||" },
-      word = false,
-      cyclic = true,
-    })
-
-    local ordinal_numbers = augend.constant.new({
-      -- elements through which we cycle. When we increment, we go down
-      -- On decrement we go up
-      elements = {
+    local logical_alias = make_const({ "&&", "||" }, false)
+    local ordinal_numbers = make_const(
+      {
         "first",
         "second",
         "third",
@@ -44,72 +44,37 @@ return {
         "tenth",
         "last",
       },
-      -- if true, it only matches strings with word boundary. firstDate wouldn't work for example
-      word = false,
-      -- do we cycle back and forth (tenth to first on increment, first to tenth on decrement).
-      -- Otherwise nothing will happen when there are no further values
-      cyclic = true,
+      false -- if true, it only matches strings with word boundary. firstDate wouldn't work for example
+    )
+
+    local weekdays = make_const({
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
     })
 
-    local weekdays = augend.constant.new({
-      elements = {
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-      },
-      word = true,
-      cyclic = true,
+    local months = make_const({
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     })
 
-    local months = augend.constant.new({
-      elements = {
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      },
-      word = true,
-      cyclic = true,
-    })
-
-    local capitalized_boolean = augend.constant.new({
-      elements = {
-        "True",
-        "False",
-      },
-      word = true,
-      cyclic = true,
-    })
-
-    local order = augend.constant.new({
-      elements = {
-        "previous",
-        "next",
-      },
-      word = true,
-      cyclic = true,
-    })
-
-    local enable = augend.constant.new({
-      elements = {
-        "enable",
-        "disable",
-      },
-      word = false,
-      cyclic = true,
-    })
+    local capitalized_boolean = make_const({ "True", "False" })
+    local order = make_const({ "previous", "next" })
+    local enable = make_const({ "enable", "disable" }, false)
 
     return {
       dials_by_ft = {
@@ -144,12 +109,12 @@ return {
           order,
         },
         vue = {
-          augend.constant.new({ elements = { "let", "const" } }),
+          make_const({ "let", "const" }),
           augend.hexcolor.new({ case = "lower" }),
           augend.hexcolor.new({ case = "upper" }),
         },
         typescript = {
-          augend.constant.new({ elements = { "let", "const" } }),
+          make_const({ "let", "const" }),
         },
         css = {
           augend.hexcolor.new({
@@ -160,56 +125,26 @@ return {
           }),
         },
         homeassistant = {
-          augend.constant.new({
-            elements = { "turn_off", "turn_on" },
-            word = true,
-            cyclic = true,
-          }),
-          augend.constant.new({
-            elements = { "not_home", "home" },
-            word = true,
-            cyclic = true,
-          }),
-          augend.constant.new({
-            elements = { "unavailable", "available" },
-            word = true,
-            cyclic = true,
-          }),
+          make_const({ "turn_off", "turn_on" }),
+          make_const({ "not_home", "home" }),
+          make_const({ "unavailable", "available" }),
         },
         markdown = {
-          augend.constant.new({
-            elements = { "[ ]", "[x]" },
-            word = false,
-            cyclic = true,
-          }),
+          make_const({ "[ ]", "[x]" }, false),
           augend.misc.alias.markdown_header,
         },
         json = {
           augend.semver.alias.semver, -- versioning (v1.1.2)
         },
         lua = {
-          augend.constant.new({
-            elements = { "and", "or" },
-            word = true, -- if false, "sand" is incremented into "sor", "doctor" into "doctand", etc.
-            cyclic = true, -- "or" is incremented into "and".
-          }),
+          make_const({ "and", "or" }),
         },
         python = {
-          augend.constant.new({
-            elements = { "and", "or" },
-          }),
+          make_const({ "and", "or" }),
         },
         ruby = {
-          augend.constant.new({
-            elements = { "be_allowed", "be_disallowed" },
-            word = true,
-            cyclic = true,
-          }),
-          augend.constant.new({
-            elements = { "to", "not_to" },
-            word = true,
-            cyclic = true,
-          }),
+          make_const({ "be_allowed", "be_disallowed" }),
+          make_const({ "to", "not_to" }),
         },
       },
     }

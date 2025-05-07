@@ -43,14 +43,12 @@ return {
       {
         --- uses Mason to ensure installation of user specified LSP servers and will tell nvim-lspconfig what command
         --- to use to launch those servers.
-        "williamboman/mason-lspconfig.nvim",
+        "mason-org/mason-lspconfig.nvim",
         enabled = function() return vim.fn.has("mac") == 1 end,
-        dependencies = "williamboman/mason.nvim",
-        config = function()
-          require("mason-lspconfig").setup_handlers({
-            function(name) vim.lsp.enable(name) end,
-          })
-        end,
+        dependencies = "mason-org/mason.nvim",
+        opts = {
+          automatic_enable = false
+        },
       },
     },
     config = function()

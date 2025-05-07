@@ -10,7 +10,7 @@ return {
   "jay-babu/mason-null-ls.nvim",
   event = { "BufReadPost", "BufNewFile", "BufWritePre" },
   dependencies = {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     "nvimtools/none-ls.nvim",
   },
   opts = {

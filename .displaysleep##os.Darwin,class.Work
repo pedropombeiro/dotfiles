@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
 # Turn off Stream Deck
-uhubctl --action off --location 2-1 --port 5
+uhubctl --action off --location 2-1.1.1 --port 2

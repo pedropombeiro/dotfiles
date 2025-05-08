@@ -39,6 +39,14 @@ else
 fi
 
 if uhubctl >/dev/null 2>&1; then
+  print_op_stay "Checking Stream Deck USB port location"
+  if uhubctl --location 2-1.1.1 --port 2 | grep "Elgato Stream Deck XL" >/dev/null; then
+    print_ok
+  else
+    print_failure "uhubctl port location for Stream Deck is out of date, please update .wakeup, .displaysleep, and .displaywakeup"
+    any_failed=1
+  fi
+
   print_op_stay "Checking nginx (for Busylight)"
   if pgrep nginx >/dev/null; then
     print_ok

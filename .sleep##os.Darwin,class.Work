@@ -4,4 +4,4 @@ killall Busylight_HTTP_Mac # Stop Busylight_HTTP_Mac so that the system is allow
 #killall Spotify # Spotify has a bug where it hangs after resume, so let's just kill it
 
 # Turn off Stream Deck
-uhubctl --action off --location 2-1 --port 5
+~/.displaysleep

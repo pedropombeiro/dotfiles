@@ -310,6 +310,8 @@ cask "bluesnooze"
 cask "choosy"
 # Graphical configurator for Kaleidoscope-powered keyboards
 cask "chrysalis"
+# Anthropic's official Claude AI desktop app
+cask "claude"
 # Column-oriented database management system
 cask "clickhouse"
 # Allows switching between application windows

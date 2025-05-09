@@ -234,8 +234,6 @@ brew "s3cmd"
 brew "sd"
 # 7-Zip is a file archiver with a high compression ratio
 brew "sevenzip"
-# Monitors sleep, wakeup, and idleness of a Mac
-brew "sleepwatcher", restart_service: :changed
 # SMART hard drive monitoring
 brew "smartmontools"
 # SOcket CAT: netcat on steroids

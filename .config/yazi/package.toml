@@ -1,6 +1,6 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "b12a9ab"
+rev = "864a021"
 hash = "e0ada736ea676c2bbb3ec705a49526ef"
 
 [[plugin.deps]]
@@ -10,8 +10,8 @@ hash = "1a087e707ba0512106408144eeb3e50a"
 
 [[plugin.deps]]
 use = "imsi32/yatline"
-rev = "90e0284"
-hash = "8d4cb2dfadcbda045ddaa5c274441f9c"
+rev = "2ecf715"
+hash = "38e2ea4703ea606d4eef574e8e8b8fd7"
 
 [[plugin.deps]]
 use = "imsi32/yatline-githead"
@@ -25,18 +25,18 @@ hash = "b58a6786383df06dc16fc6dbd1876d31"
 
 [[plugin.deps]]
 use = "dedukun/bookmarks"
-rev = "a70648a"
-hash = "b836fb264381f35dec79930438a906d5"
+rev = "fbb7c00"
+hash = "1d231a808d3344546380df33daf43e91"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "b12a9ab"
+rev = "864a021"
 hash = "7918aab6a71caf31b58411f789195677"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "b12a9ab"
-hash = "5c9dda1a587b8f5b6f63e3d5375bda88"
+rev = "864a021"
+hash = "f3853bbdd1da2fad09d059ab5464abfd"
 
 [[plugin.deps]]
 use = "dedukun/relative-motions"
@@ -50,12 +50,12 @@ hash = "a1fa2b3e1826c3a34804ea8c548e9f80"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:vcs-files"
-rev = "b12a9ab"
+rev = "864a021"
 hash = "36405f8781fcaf33ceab24dffd5cea19"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:chmod"
-rev = "b12a9ab"
+rev = "864a021"
 hash = "2f1053f89d1a301a648ab181d0948e38"
 
 [[plugin.deps]]
@@ -70,10 +70,10 @@ hash = "b209b5db91df69bdc6a4656cb8276cd9"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
-rev = "4b027c7"
+rev = "864a021"
 hash = "ca862f0008f47952e2bd3e19328aca02"
 
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"
-rev = "b4cc9f2"
-hash = "f44c42bcbed3c8564100e45e2fe3649a"
+rev = "91fdfa7"
+hash = "f48f510e5505f5d01e79c4f8257ec5cb"

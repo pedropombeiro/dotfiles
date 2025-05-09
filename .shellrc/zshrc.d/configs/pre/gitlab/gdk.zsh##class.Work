@@ -16,6 +16,6 @@ export RAILS_HOSTS="127.0.0.1,localhost,host.docker.internal,gdk.test,gdk.localh
 export TELEPORT_USE_LOCAL_SSH_AGENT=false
 EOF
 
-  touch "{GDK_ROOT}/.local.envrc"
+  touch "${GDK_ROOT}/.local.envrc"
   direnv allow "${GDK_ROOT}"
 fi

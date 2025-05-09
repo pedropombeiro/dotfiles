@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-YADM_CONFIG=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/config_templates" &>/dev/null && pwd)
+YADM_CONFIG=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../config_templates" &>/dev/null && pwd)
 NGINX_ETC_DIR="$(brew --prefix)/etc/nginx"
 
 if [[ -d "${NGINX_ETC_DIR}" ]]; then

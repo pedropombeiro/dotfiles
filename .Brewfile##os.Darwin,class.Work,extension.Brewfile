@@ -206,10 +206,6 @@ brew "pipx"
 brew "pkgconf"
 # PDF rendering library (based on the xpdf-3.0 code base)
 brew "poppler"
-# Object-relational database system
-brew "postgresql@13"
-# Object-relational database system
-brew "postgresql@14", link: false
 # Unix pager optimized for psql
 brew "pspg"
 # Generic syntax highlighter

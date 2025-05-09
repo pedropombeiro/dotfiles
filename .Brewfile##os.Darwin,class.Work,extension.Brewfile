@@ -1,8 +1,7 @@
 tap "arkweid/lefthook"
 tap "derailed/k9s"
 tap "dteoh/sqa"
-tap "homebrew/bundle"
-tap "homebrew/services"
+tap "fforster/gitlab-mcp", "https://gitlab.com/fforster/homebrew-gitlab-mcp.git"
 tap "jarred-sumner/git-peek"
 tap "jdxcode/tap"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
@@ -285,6 +284,8 @@ brew "ykpers"
 brew "yq"
 # Feature-rich command-line audio/video downloader
 brew "yt-dlp"
+# A Model Context Protocol (MCP) server for GitLab, enabling Claude to interact directly with your GitLab instance.
+brew "fforster/gitlab-mcp/gitlab-mcp"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
 # Reconcile your local git repositories

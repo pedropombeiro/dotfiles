@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+# Ensure that gdk.test points to new interface in /etc/hosts
+if ! grep gdk.test /etc/hosts >/dev/null; then
+  echo "172.16.123.1 gdk.test registry.test" | sudo tee -a /etc/hosts
+fi

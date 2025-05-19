@@ -3,7 +3,7 @@
 YADM_CONFIG=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../config_templates" &>/dev/null && pwd)
 LAUNCH_DAEMONS_DIR="/Library/LaunchDaemons"
 
-if [[ -d "${LAUNCH_DAEMONS_DIR}" ]]; then
+if [[ ! -d "${LAUNCH_DAEMONS_DIR}" ]]; then
   sudo mkdir -p "${LAUNCH_DAEMONS_DIR}"
 fi
 

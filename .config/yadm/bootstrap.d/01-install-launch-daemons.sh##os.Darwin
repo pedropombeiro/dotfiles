@@ -10,5 +10,6 @@ fi
 for file in "${YADM_CONFIG}"/LaunchDaemons/*.plist; do
   sudo cp -fL "${file}" "${LAUNCH_DAEMONS_DIR}/"
 
+  sudo launchctl unload "${LAUNCH_DAEMONS_DIR}/$(basename "${file}")" 2>/dev/null
   sudo launchctl load -w "${LAUNCH_DAEMONS_DIR}/$(basename "${file}")"
 done

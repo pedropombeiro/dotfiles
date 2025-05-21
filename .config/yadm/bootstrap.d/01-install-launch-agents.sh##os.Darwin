@@ -10,5 +10,6 @@ fi
 for file in "${YADM_CONFIG}"/LaunchAgents/*.plist; do
   cp -fL "${file}" "${LAUNCH_AGENTS_DIR}/"
 
+  launchctl unload "${LAUNCH_AGENTS_DIR}/$(basename "${file}")" 2>/dev/null
   launchctl load -w "${LAUNCH_AGENTS_DIR}/$(basename "${file}")"
 done

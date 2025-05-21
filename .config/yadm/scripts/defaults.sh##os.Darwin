@@ -265,7 +265,7 @@ defaults write com.cordlessdog.Stay RegistrationEmail -string "fastspring@pedro.
 defaults write com.cordlessdog.Stay RegistrationName -string "Pedro Pombeiro"
 
 # Disable Apple Music so that the Play button isn't hijacked by it
-launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist
+launchctl unload /System/Library/LaunchAgents/com.apple.rcd.plist 2>/dev/null || echo
 
 # reset the preferences cache
 killall cfprefsd

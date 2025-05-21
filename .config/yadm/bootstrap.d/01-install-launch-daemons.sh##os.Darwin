@@ -3,13 +3,15 @@
 YADM_CONFIG=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../config_templates" &>/dev/null && pwd)
 LAUNCH_DAEMONS_DIR="/Library/LaunchDaemons"
 
-if [[ ! -d "${LAUNCH_DAEMONS_DIR}" ]]; then
-  sudo mkdir -p "${LAUNCH_DAEMONS_DIR}"
+if ls "${YADM_CONFIG}"/LaunchDaemons/*.plist 2>/dev/null; then
+  if [[ ! -d "${LAUNCH_DAEMONS_DIR}" ]]; then
+    sudo mkdir -p "${LAUNCH_DAEMONS_DIR}"
+  fi
+
+  for file in "${YADM_CONFIG}"/LaunchDaemons/*.plist; do
+    sudo cp -fL "${file}" "${LAUNCH_DAEMONS_DIR}/"
+
+    sudo launchctl unload "${LAUNCH_DAEMONS_DIR}/$(basename "${file}")" 2>/dev/null
+    sudo launchctl load -w "${LAUNCH_DAEMONS_DIR}/$(basename "${file}")"
+  done
 fi
-
-for file in "${YADM_CONFIG}"/LaunchDaemons/*.plist; do
-  sudo cp -fL "${file}" "${LAUNCH_DAEMONS_DIR}/"
-
-  sudo launchctl unload "${LAUNCH_DAEMONS_DIR}/$(basename "${file}")" 2>/dev/null
-  sudo launchctl load -w "${LAUNCH_DAEMONS_DIR}/$(basename "${file}")"
-done

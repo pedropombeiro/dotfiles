@@ -3,13 +3,15 @@
 YADM_CONFIG=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../config_templates" &>/dev/null && pwd)
 LAUNCH_AGENTS_DIR="${HOME}/Library/LaunchAgents"
 
-if [[ ! -d "${LAUNCH_AGENTS_DIR}" ]]; then
-  mkdir -p "${LAUNCH_AGENTS_DIR}"
+if ls "${YADM_CONFIG}"/LaunchAgents/*.plist 2>/dev/null; then
+  if [[ ! -d "${LAUNCH_AGENTS_DIR}" ]]; then
+    mkdir -p "${LAUNCH_AGENTS_DIR}"
+  fi
+
+  for file in "${YADM_CONFIG}"/LaunchAgents/*.plist; do
+    cp -fL "${file}" "${LAUNCH_AGENTS_DIR}/"
+
+    launchctl unload "${LAUNCH_AGENTS_DIR}/$(basename "${file}")" 2>/dev/null
+    launchctl load -w "${LAUNCH_AGENTS_DIR}/$(basename "${file}")"
+  done
 fi
-
-for file in "${YADM_CONFIG}"/LaunchAgents/*.plist; do
-  cp -fL "${file}" "${LAUNCH_AGENTS_DIR}/"
-
-  launchctl unload "${LAUNCH_AGENTS_DIR}/$(basename "${file}")" 2>/dev/null
-  launchctl load -w "${LAUNCH_AGENTS_DIR}/$(basename "${file}")"
-done

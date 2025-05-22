@@ -12,6 +12,17 @@ return {
       function() require("which-key").show({ global = false }) end,
       desc = "Buffer-local Keymaps (which-key)",
     },
+    {
+      "<c-w><space>",
+      function()
+        -- Show hydra mode for changing windows
+        require("which-key").show({
+          keys = "<c-w>",
+          loop = true, -- this will keep the popup open until you hit <esc>
+        })
+      end,
+      desc = "Window Hydra mode (which-key)",
+    },
   },
   ---@type wk.Opts
   opts = {

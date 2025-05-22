@@ -1,4 +1,5 @@
 [tools]
+cargo-binstall = "latest"
 dive = "latest"
 fd = "latest"
 glab = "latest"
@@ -12,3 +13,6 @@ rust = "latest"
 yarn = "latest"
 yamllint = "latest"
 teleport-community = "17"
+
+[settings]
+idiomatic_version_file_enable_tools = []

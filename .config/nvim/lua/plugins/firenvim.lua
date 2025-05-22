@@ -11,6 +11,10 @@ return {
     vim.fn["firenvim#install"](0)
   end,
   init = function()
+    if not vim.g.started_by_firenvim then
+      return
+    end
+
     -- Never takeover by default
     local localSettings = {
       [".*"] = {

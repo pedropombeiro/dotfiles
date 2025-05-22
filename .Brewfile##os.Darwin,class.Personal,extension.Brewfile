@@ -259,6 +259,8 @@ cask "mqtt-explorer"
 cask "musescore"
 # Silence embarrassing notifications while screensharing
 cask "muzzle"
+# Neovim Client
+cask "neovide"
 # WiFi site survey software and WiFi scanner
 cask "netspot"
 # App to write, plan, collaborate, and get organised

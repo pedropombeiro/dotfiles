@@ -24,9 +24,7 @@ return {
           id = "csv",
           name = "CsvView",
           get = function() return require("csvview").is_enabled() end,
-          set = function(_state)
-            vim.cmd(string.format("CsvViewToggle display_mode=border header_lnum=1"))
-          end,
+          set = function(_state) vim.cmd(string.format("CsvViewToggle display_mode=border header_lnum=1")) end,
           icon = {
             enabled = " ",
             disabled = " ",
@@ -150,6 +148,10 @@ return {
   },
 
   --### Editor enhancements
+  {
+    "ejrichards/mise.nvim",
+    opts = {},
+  },
   {
     "sitiom/nvim-numbertoggle", -- Neovim plugin to automatically toggle between relative and absolute line numbers.
     event = "BufReadPost",

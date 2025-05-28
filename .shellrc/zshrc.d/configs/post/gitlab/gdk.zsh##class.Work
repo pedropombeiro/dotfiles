@@ -5,7 +5,7 @@ if [[ -d ${GDK_ROOT} ]]; then
 
   source ~/.pgsql_profile
 
-  alias compile_docs="bundle exec rake gitlab:graphql:compile_docs"
+  alias compile_docs="gdk rake gitlab:graphql:compile_docs"
   alias guard="bundle exec guard"
   unalias gswm
   unalias gpsup

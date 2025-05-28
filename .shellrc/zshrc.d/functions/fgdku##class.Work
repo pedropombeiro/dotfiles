@@ -86,10 +86,10 @@ source ~/.config/yadm/scripts/colors.sh
 
   printf "${YELLOW}%s${NC}\n" 'Running simple test...'
   bundle exec rspec --failure-exit-code 0 --error-exit-code 1 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb ||
-    bundle exec rake db:test:prepare
+    gdk rake db:test:prepare
 
   printf "${YELLOW}%s${NC}\n" "Run any pending ClickHouse migrations..."
-  gdk status clickhouse >/dev/null && bundle exec rake gitlab:clickhouse:migrate:main
+  gdk status clickhouse >/dev/null && gdk rake gitlab:clickhouse:migrate:main
 
   printf "${YELLOW}%s${NC}\n" 'Pruning local branches...'
   git fetch --jobs=10

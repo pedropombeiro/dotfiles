@@ -611,7 +611,7 @@ customCommands:
     command: "glab mr view -w {{.SelectedLocalBranch.UpstreamBranch}}"
     context: "localBranches"
     description: "Go to MR in gitlab"
-    stream: true
+    output: log
 
   - key: '<c-E>'
     description: Custom git push
@@ -628,8 +628,8 @@ customCommands:
             description: "Create MR on push"
             value: "-o merge_request.create"
     command: "git push {{.Form.gitOption }}"
-    stream: true
     loadingText: "Pushing changes"
+    output: log
 
   # retrieved from: https://github.com/jesseduffield/lazygit/wiki/Custom-Commands-Compendium#conventional-commit
   - key: "<c-v>"

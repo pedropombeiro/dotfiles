@@ -1,7 +1,7 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "864a021"
-hash = "e0ada736ea676c2bbb3ec705a49526ef"
+rev = "c0ad8a3"
+hash = "bf6f074cd41ee33c3360341d168f9733"
 
 [[plugin.deps]]
 use = "imsi32/yatline-gruvbox"
@@ -30,13 +30,13 @@ hash = "1d231a808d3344546380df33daf43e91"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "864a021"
-hash = "7918aab6a71caf31b58411f789195677"
+rev = "a54b96a"
+hash = "a7ab702e1ef0c097defbc976ed34c186"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "864a021"
-hash = "f3853bbdd1da2fad09d059ab5464abfd"
+rev = "a54b96a"
+hash = "d5d4f3527592da5fbe77fd6f51815f80"
 
 [[plugin.deps]]
 use = "dedukun/relative-motions"
@@ -50,13 +50,13 @@ hash = "a1fa2b3e1826c3a34804ea8c548e9f80"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:vcs-files"
-rev = "864a021"
-hash = "36405f8781fcaf33ceab24dffd5cea19"
+rev = "a54b96a"
+hash = "70898957e9e4c1ca291ff26e8fdc434"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:chmod"
-rev = "864a021"
-hash = "2f1053f89d1a301a648ab181d0948e38"
+rev = "a54b96a"
+hash = "d0ad0c1946b46a30c8489735fe8de41c"
 
 [[plugin.deps]]
 use = "wekauwau/yatline-modified-time"

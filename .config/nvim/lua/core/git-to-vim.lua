@@ -7,7 +7,7 @@ function OpenBranchCommitedFiles()
   let parent_branch_cmd = 'ruby -r ~/.shellrc/zshrc.d/functions/scripts/git-helpers.rb -e "puts compute_parent_branch()"'
   let files = systemlist(l:cmd)
   let parent_branch = system(l:parent_branch_cmd)
-  let cmd = 'git diff --name-only --diff-filter=AMU'
+  let cmd = 'git diff --name-only --diff-filter=AMU | grep -v "^bin/"'
   let unstaged_files = systemlist(l:cmd)
 
   let all_files = uniq(sort(l:files + l:unstaged_files))

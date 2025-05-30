@@ -2,7 +2,7 @@ show_symlink = true
 sort_by = "natural"  # Sort naturally, e.g. 1.md < 2.md < 10.md
 sort_translit = true # Transliterate filenames for sorting, i.e. replaces Â as A, Æ as AE, etc.
 
-[manager]
+[mgr]
 ratio = [2, 3, 5]
 linemode = "size"
 

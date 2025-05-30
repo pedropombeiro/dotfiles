@@ -1,147 +1,147 @@
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["<Space>", ","]
 run = "shell --block -- $EDITOR $HOME/.config/yazi/keymap.toml"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["<C-q>"]
 run = "quit --no-cwd-file"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["<Space>", "d", "u"]
 run = "shell --block -- ncdu --color dark-bg $0"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["[", "["]
 run = "plugin parent-arrow -1"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["]", "]"]
 run = "plugin parent-arrow 1"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = "<C-p>"
 run = 'shell -- qlmanage -p "$@"'
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = "<Enter>"
 run = "plugin smart-enter"
 desc = "Enter the child directory, or open the file"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["g", "r"]
 run = 'shell -- ya emit cd "$(git rev-parse --show-toplevel)"'
 desc = "cd back to the root of the current Git repository"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = "T"
 run = "plugin toggle-pane max-preview"
 desc = "Maximize or restore the preview pane"
 
 # https://github.com/dedukun/relative-motions.yazi
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["1"]
 run = "plugin relative-motions 1"
 desc = "Move in relative steps"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["2"]
 run = "plugin relative-motions 2"
 desc = "Move in relative steps"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["3"]
 run = "plugin relative-motions 3"
 desc = "Move in relative steps"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["4"]
 run = "plugin relative-motions 4"
 desc = "Move in relative steps"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["5"]
 run = "plugin relative-motions 5"
 desc = "Move in relative steps"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["6"]
 run = "plugin relative-motions 6"
 desc = "Move in relative steps"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["7"]
 run = "plugin relative-motions 7"
 desc = "Move in relative steps"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["8"]
 run = "plugin relative-motions 8"
 desc = "Move in relative steps"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["9"]
 run = "plugin relative-motions 9"
 desc = "Move in relative steps"
 
 # https://github.com/dedukun/bookmarks.yazi
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["m"]
 run = "plugin bookmarks save"
 desc = "Save current position as a bookmark"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["'"]
 run = "plugin bookmarks jump"
 desc = "Jump to a bookmark"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["b", "d"]
 run = "plugin bookmarks delete"
 desc = "Delete a bookmark"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["b", "D"]
 run = "plugin bookmarks delete_all"
 desc = "Delete all bookmarks"
 
 # https://yazi-rs.github.io/docs/tips#smart-tab
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = "t"
 run = "plugin smart-tab"
 desc = "Create a tab and enter the hovered directory"
 
 # https://github.com/Lil-Dank/lazygit.yazi
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["<Space>", "t", "g"]
 run = "plugin lazygit"
 desc = "Run lazygit"
 
 # https://github.com/KKV9/command.yazi
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["c", "p"]
 run = "plugin command"
 desc = "Yazi command prompt"
 
 # https://github.com/KKV9/compress.yazi
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["c", "a"]
 run = "plugin compress"
 desc = "Archive selected files"
 
 # https://github.com/yazi-rs/plugins/tree/main/chmod.yazi
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["c", "m"]
 run = "plugin chmod"
 desc = "Chmod on selected files"
 
 # https://github.com/ourongxing/fast-enter.yazi
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["l"]
 run = "plugin fast-enter"
 desc = "Enter the subfolder faster, or open the file directly"
 
 # yazi-rs/plugins:vcs-files
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["g", "c"]
 run = "plugin vcs-files"
 desc = "Show Git file changes"

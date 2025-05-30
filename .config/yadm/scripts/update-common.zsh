@@ -35,7 +35,7 @@ if awk "BEGIN {exit !($mean_time >= 0.6)}"; then
 fi
 
 printf "${YELLOW}%s${NC}\n" "Updating yazi plugins..."
-ya pack --upgrade && \
+ya pkg upgrade && \
   printf "\n${GREEN}%s${NC}\n" "Done"
 
 printf "${YELLOW}%s${NC}\n" "Updating neovim plugins..."

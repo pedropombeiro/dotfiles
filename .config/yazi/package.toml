@@ -30,12 +30,12 @@ hash = "1d231a808d3344546380df33daf43e91"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "a54b96a"
+rev = "c0ad8a3"
 hash = "a7ab702e1ef0c097defbc976ed34c186"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "a54b96a"
+rev = "c0ad8a3"
 hash = "d5d4f3527592da5fbe77fd6f51815f80"
 
 [[plugin.deps]]
@@ -50,12 +50,12 @@ hash = "a1fa2b3e1826c3a34804ea8c548e9f80"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:vcs-files"
-rev = "a54b96a"
+rev = "c0ad8a3"
 hash = "70898957e9e4c1ca291ff26e8fdc434"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:chmod"
-rev = "a54b96a"
+rev = "c0ad8a3"
 hash = "d0ad0c1946b46a30c8489735fe8de41c"
 
 [[plugin.deps]]

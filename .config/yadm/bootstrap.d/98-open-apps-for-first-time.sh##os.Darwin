@@ -1,12 +1,40 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-echo "Opening apps for first time to configure permissions"
-open "/Applications/Alfred 5.app/"
-open "/Applications/Bartender 5.app/"
-open "/Applications/Contexts.app/"
-open "/Applications/Elgato Stream Deck.app/"
-open "/Applications/Neovide.app/"
-open "/Applications/HazeOver.app/"
-open "/Applications/Raycast.app/"
-open "/Applications/Shottr.app/"
-open "/Applications/Stay.app/"
+echo "Scanning /Applications/ for unapproved apps that need Gatekeeper approval..."
+
+# Counter for found apps
+found_count=0
+opened_count=0
+
+# Find all .app bundles in /Applications/
+while IFS= read -r -d '' app; do
+  app_name=$(basename "$app" .app)
+
+  # Check if the app has the quarantine attribute
+  quarantine_value=$(xattr -p com.apple.quarantine "$app" 2>/dev/null)
+
+  if [[ -n "$quarantine_value" ]]; then
+    found_count=$((found_count + 1))
+
+    # Check if the quarantine value indicates unapproved status (starts with 0181;)
+    if [[ "$quarantine_value" == "0181;"* ]]; then
+      echo "🔒 Opening $app_name (unapproved - quarantine: ${quarantine_value:0:10}...)"
+      open "$app"
+      opened_count=$((opened_count + 1))
+      # Small delay to prevent overwhelming the system
+      sleep 2
+    else
+      echo "✅ Skipping $app_name (already approved - quarantine: ${quarantine_value:0:10}...)"
+    fi
+  fi
+done < <(find /Applications -name "*.app" -type d -maxdepth 1 -print0)
+
+echo ""
+echo "Scan complete!"
+echo "📊 Found $found_count quarantined apps"
+echo "🚀 Opened $opened_count unapproved apps"
+
+if [[ $opened_count -gt 0 ]]; then
+  echo ""
+  echo "💡 Click 'Open' on any security dialogs that appeared to approve these apps."
+fi

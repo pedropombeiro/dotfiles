@@ -302,6 +302,8 @@ cask "apparency"
 cask "appcleaner"
 # Menu bar icon organiser
 cask "bartender"
+# Compare files and folders
+cask "beyond-compare@4"
 # Prevents your sleeping computer from connecting to Bluetooth accessories
 cask "bluesnooze"
 # Open links in any browser

@@ -1,0 +1,12 @@
+#!/usr/bin/env sh
+
+echo "Opening apps for first time to configure permissions"
+open "/Applications/Alfred 5.app/"
+open "/Applications/Bartender 5.app/"
+open "/Applications/Contexts.app/"
+open "/Applications/Elgato Stream Deck.app/"
+open "/Applications/Neovide.app/"
+open "/Applications/HazeOver.app/"
+open "/Applications/Raycast.app/"
+open "/Applications/Shottr.app/"
+open "/Applications/Stay.app/"

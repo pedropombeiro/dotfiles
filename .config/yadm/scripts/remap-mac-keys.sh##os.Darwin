@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# Credit to Brad Howes
+FROM='"HIDKeyboardModifierMappingSrc"'
+TO='"HIDKeyboardModifierMappingDst"'
+
+function Map { # FROM TO
+  CMD="${CMD:+${CMD},}{${FROM}: ${1}, ${TO}: ${2}}"
+}
+
+# Referencing :
+# https://opensource.apple.com/source/IOHIDFamily/IOHIDFamily-1035.41.2/IOHIDFamily/IOHIDUsageTables.h.auto.html
+SECTION="0x700000064"
+ESCAPE="0x700000029"
+BACKQUOTE="0x700000035"
+CAPS_LOCK="0x700000039"
+#L_SHIFT="0x7000000E1"
+#R_COMMAND="0x7000000E7"
+#L_CONTROL="0x7000000E0"
+
+Map "${CAPS_LOCK}" "${ESCAPE}"
+Map "${SECTION}" "${BACKQUOTE}"
+#Map ${R_COMMAND} ${SHIFT_LOCK}
+#Map ${BACKQUOTE} ${L_CONTROL}
+
+hidutil property --set "{\"UserKeyMapping\":[${CMD}]}"

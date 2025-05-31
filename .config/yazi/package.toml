@@ -73,6 +73,11 @@ use = "yazi-rs/plugins:piper"
 rev = "c0ad8a3"
 hash = "2bdc137505b8d9a0cc867a57d0e99b01"
 
+[[plugin.deps]]
+use = "yazi-rs/plugins:diff"
+rev = "63f9650"
+hash = "47865a70cade14a0b9b6bc6a54f16bdb"
+
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"
 rev = "91fdfa7"

@@ -155,3 +155,9 @@ desc = "Enter the subfolder faster, or open the file directly"
 on = ["g", "c"]
 run = "plugin vcs-files"
 desc = "Show Git file changes"
+
+# yazi-rs/plugins:diff
+[[mgr.prepend_keymap]]
+on   = "<C-d>"
+run  = "plugin diff"
+desc = "Diff the selected with the hovered file"

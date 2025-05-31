@@ -11,6 +11,11 @@ on = ["<Space>", "d", "u"]
 run = "shell --block -- ncdu --color dark-bg $0"
 
 [[mgr.prepend_keymap]]
+on   = ["<Space>", "<Space>"]
+run  = "toggle"
+desc = "Toggle selection"
+
+[[mgr.prepend_keymap]]
 on = ["[", "["]
 run = "plugin parent-arrow -1"
 

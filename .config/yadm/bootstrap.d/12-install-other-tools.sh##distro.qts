@@ -17,7 +17,7 @@ gping_version=1.19.0
 lnav_version=0.12.4
 nvim_version=0.11.0 # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
 procs_version=0.14.9
-yazi_version=25.4.8
+yazi_version=25.5.31
 
 function download() {
   filename="$(basename "$1")"

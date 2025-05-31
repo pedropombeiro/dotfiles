@@ -10,13 +10,13 @@ hash = "1a087e707ba0512106408144eeb3e50a"
 
 [[plugin.deps]]
 use = "imsi32/yatline"
-rev = "2ecf715"
-hash = "38e2ea4703ea606d4eef574e8e8b8fd7"
+rev = "c01617f"
+hash = "3ff7c256e5744d3b3619260ad0d1053a"
 
 [[plugin.deps]]
 use = "imsi32/yatline-githead"
-rev = "3b0eb7c"
-hash = "bfd30c396bbe2af526cb949d97ce3dcf"
+rev = "f8f969e"
+hash = "4d441b38138ce6492a4e10fa349fd65"
 
 [[plugin.deps]]
 use = "blackdaemon/yatline-tab-path"
@@ -70,8 +70,8 @@ hash = "b209b5db91df69bdc6a4656cb8276cd9"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
-rev = "864a021"
-hash = "ca862f0008f47952e2bd3e19328aca02"
+rev = "c0ad8a3"
+hash = "2bdc137505b8d9a0cc867a57d0e99b01"
 
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"

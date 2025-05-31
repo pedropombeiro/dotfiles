@@ -1,6 +1,7 @@
 [tools]
 bat = "latest"
 bottom = "latest"
+cargo-binstall = "latest"
 ctop = "latest"
 delta = "latest"
 dive = "latest"

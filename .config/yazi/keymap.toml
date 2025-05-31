@@ -16,6 +16,11 @@ run  = "toggle"
 desc = "Toggle selection"
 
 [[mgr.prepend_keymap]]
+on   = ["<C-t>"]
+run  = "shell --block -- nvim -d $@"
+desc = "Open diff in Neovim"
+
+[[mgr.prepend_keymap]]
 on = ["[", "["]
 run = "plugin parent-arrow -1"
 

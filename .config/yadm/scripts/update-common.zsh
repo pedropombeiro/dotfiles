@@ -35,6 +35,10 @@ if awk "BEGIN {exit !($mean_time >= 0.6)}"; then
 fi
 
 printf "${YELLOW}%s${NC}\n" "Updating yazi plugins..."
+# Ensure that there are no local modifications in the Yazi configuration, which would prevent ya pkg from operating
+rm -rf ~/.config/yazi/plugins/* ~/.config/yazi/flavors/*
+yadm checkout -- ~/.config/yazi/
+
 ya pkg upgrade && \
   printf "\n${GREEN}%s${NC}\n" "Done"
 

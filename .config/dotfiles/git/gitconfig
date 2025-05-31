@@ -69,7 +69,7 @@
   # Detect copies as well as renames
   renames     = copies
   colorMoved  = default
-  tool        = vimdiff
+  tool        = nvimdiff
 
 [diff "bin"]
 
@@ -123,14 +123,22 @@
 
   prompt = false
 
+[difftool "nvimdiff"]
+
+  cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
+
 [merge]
 
   keepBackup = false
-  tool = vimdiff
+  tool = nvimdiff
 
 [mergetool]
 
-  prompt = false
+  prompt = true
+
+[mergetool "nvimdiff"]
+
+  cmd = "nvim -d \"$LOCAL\" \"$REMOTE\" \"$MERGED\" -c 'wincmd w' -c 'wincmd J'"
 
 [pager]
   diff    = delta

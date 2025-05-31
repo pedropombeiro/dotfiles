@@ -242,8 +242,6 @@ cask "ledger-live"
 cask "libreoffice"
 # Host-based application firewall
 cask "little-snitch@5"
-# Provides access to camera controls
-cask "logitech-camera-settings"
 # Adaptive brightness for external displays
 cask "lunar"
 # File system integration

@@ -362,8 +362,6 @@ cask "latest"
 cask "launchcontrol"
 # Free cross-platform office suite, fresh version
 cask "libreoffice"
-# Software for Logitech devices
-cask "logitech-options"
 # Adaptive brightness for external displays
 cask "lunar"
 # Provides updates to various Microsoft products

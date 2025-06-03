@@ -1,8 +1,17 @@
 #!/usr/bin/env bash
 
-apps=(/Applications/BusylightHTTP.app)
+apps=(
+  /Applications/BusylightHTTP.app
+  /Applications/Contexts.app
+  /Applications/eqMac.app
+  /Applications/Lunar.app
+  /Applications/Parcel.app
+  /Applications/Raycast.app
+  /Applications/Shottr.app
+  /Applications/Stay.app
+)
 
-for app in $apps; do
+for app in ${apps[@]}; do
   echo "Setting $app to open at login..."
   osascript -e "tell application \"System Events\" to make login item at end with properties {path:\"$app\", hidden:false}"
 done

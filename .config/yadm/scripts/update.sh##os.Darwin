@@ -4,7 +4,6 @@ YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null 
 
 source "${YADM_SCRIPTS}/colors.sh"
 
-source "${YADM_SCRIPTS}/enable-touchid-on-terminal.sh"
 source "${YADM_SCRIPTS}/relink-dotfiles.sh"
 
 # Update Homebrew (Cask) & packages

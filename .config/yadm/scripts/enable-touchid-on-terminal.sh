@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# Enable TouchID on shell
-grep 'pam_tid.so' /etc/pam.d/sudo >/dev/null ||
-  echo -e "auth       sufficient     pam_tid.so\n$(cat /etc/pam.d/sudo)" |
-  sudo tee /etc/pam.d/sudo
+# Enable TouchID on shell (https://apple.stackexchange.com/questions/259093/can-touch-id-on-mac-authenticate-sudo-in-terminal)
+sed "s/^#auth/auth/" /etc/pam.d/sudo_local.template | \
+  sudo tee /etc/pam.d/sudo_local

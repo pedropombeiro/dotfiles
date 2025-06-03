@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+apps=(/Applications/BusylightHTTP.app)
+
+for app in $apps; do
+  echo "Setting $app to open at login..."
+  osascript -e "tell application \"System Events\" to make login item at end with properties {path:\"$app\", hidden:false}"
+done

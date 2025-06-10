@@ -1,6 +1,7 @@
 bundler
 gitlab-development-kit
 neovim
+pgai
 rb-readline
 ruby-lsp
 tty-link

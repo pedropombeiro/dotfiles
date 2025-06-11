@@ -8,6 +8,8 @@ SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
 
 test -f bin/spring && git restore bin/rake bin/rspec bin/rails bin/spring
 
+git fetch
+
 mise x ruby -- ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e git_push_issue -- "$@"
 
 test -x bin/spring && bin/spring binstub --all

@@ -7,14 +7,7 @@ return {
     event = { "BufNewFile", "BufReadPost" },
     dependencies = {
       "kyazdani42/nvim-web-devicons",
-      {
-        -- A simple Neovim plugin providing a lualine component for displaying git status in the status line
-        "abccsss/nvim-gitstatus",
-        event = "VeryLazy",
-        opts = {
-          auto_fetch_interval = false,
-        },
-      },
+      "nvim-lua/plenary.nvim", -- Used by update_gstatus()
     },
     opts = function()
       ---@type pmsp.neovim.Config
@@ -40,6 +33,36 @@ return {
           }
         end
       end
+
+      local gstatus = { ahead = 0, behind = 0 }
+      local function update_gstatus()
+        local Job = require("plenary.job")
+        Job:new({
+          command = "git",
+          args = { "rev-list", "--left-right", "--count", "HEAD...@{upstream}" },
+          on_exit = function(job, _)
+            local res = job:result()[1]
+            if type(res) ~= "string" then
+              gstatus = { ahead = 0, behind = 0 }
+              return
+            end
+            local ok, ahead, behind = pcall(string.match, res, "(%d+)%s*(%d+)")
+            if ok then
+              ahead, behind = tonumber(ahead), tonumber(behind)
+            else
+              ahead, behind = 0, 0
+            end
+            gstatus = { ahead = ahead, behind = behind }
+          end,
+        }):start()
+      end
+
+      if _G.Gstatus_timer == nil then
+        _G.Gstatus_timer = vim.loop.new_timer()
+      else
+        _G.Gstatus_timer:stop()
+      end
+      _G.Gstatus_timer:start(0, 30000, vim.schedule_wrap(update_gstatus))
 
       return {
         options = {
@@ -67,12 +90,16 @@ return {
           lualine_b = {
             { "b:gitsigns_head", icon = "" },
             {
-              "gitstatus",
-              sections = {
-                { "ahead", format = "{}↑" },
-                { "behind", format = "{}↓" },
-              },
-              sep = " ",
+              function()
+                local parts = {}
+                if gstatus.behind > 0 then
+                  table.insert(parts, gstatus.behind .. "↓")
+                end
+                if gstatus.ahead > 0 then
+                  table.insert(parts, gstatus.ahead .. "↑")
+                end
+                return table.concat(parts, " ")
+              end,
             },
             {
               "diff",

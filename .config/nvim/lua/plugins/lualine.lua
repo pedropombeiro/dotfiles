@@ -7,6 +7,14 @@ return {
     event = { "BufNewFile", "BufReadPost" },
     dependencies = {
       "kyazdani42/nvim-web-devicons",
+      {
+        -- A simple Neovim plugin providing a lualine component for displaying git status in the status line
+        "abccsss/nvim-gitstatus",
+        event = "VeryLazy",
+        opts = {
+          auto_fetch_interval = false,
+        },
+      },
     },
     opts = function()
       ---@type pmsp.neovim.Config
@@ -58,6 +66,14 @@ return {
           lualine_a = { "mode" },
           lualine_b = {
             { "b:gitsigns_head", icon = "" },
+            {
+              "gitstatus",
+              sections = {
+                { "ahead", format = "{}↑" },
+                { "behind", format = "{}↓" },
+              },
+              sep = " ",
+            },
             {
               "diff",
               cond = firenvim_cond,

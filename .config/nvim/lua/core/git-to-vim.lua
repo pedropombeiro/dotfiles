@@ -4,7 +4,7 @@ vim.cmd([[
 function OpenBranchCommitedFiles()
 
   let cmd = 'ruby -r ~/.shellrc/zshrc.d/functions/scripts/git-helpers.rb -e "puts changed_branch_files(format: :vim)"'
-  let parent_branch_cmd = 'ruby -r ~/.shellrc/zshrc.d/functions/scripts/git-helpers.rb -e "puts compute_parent_branch()"'
+  let parent_branch_cmd = 'ruby -r ~/.shellrc/zshrc.d/functions/scripts/git-helpers.rb -e "print compute_parent_branch()"'
   let files = systemlist(l:cmd)
   let parent_branch = system(l:parent_branch_cmd)
   let cmd = 'git diff --name-only --diff-filter=AMU | grep -v "^bin/"'
@@ -16,7 +16,7 @@ function OpenBranchCommitedFiles()
   endfor
 
   if strlen(l:parent_branch) > 0
-    execute 'Gitsigns change_base ' . l:parent_branch . ' true'
+    execute 'lua require("gitsigns").change_base("' . l:parent_branch . '", true)'
   endif
 endfunction
 

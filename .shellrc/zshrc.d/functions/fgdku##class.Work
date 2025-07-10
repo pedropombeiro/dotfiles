@@ -130,6 +130,9 @@ source ~/.config/yadm/scripts/colors.sh
     git restore db/structure.sql
   fi
 
+  # Load the app to memory
+  bundle exec rails environment
+
   cd - >/dev/null
 )
 

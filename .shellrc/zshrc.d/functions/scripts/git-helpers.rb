@@ -132,7 +132,6 @@ def rebase_mappings
 
   user_name = ENV['USER']
   default_branch = compute_default_branch
-  update_refs = `git config --bool rebase.updateRefs`.chop == 'true'
 
   mr_pattern       = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/[a-z0-9\-+_]+$}i
   seq_mr_pattern   = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/(?<mr_seq_nr>\d+)-[a-z0-9\-+_]+$}i
@@ -140,65 +139,85 @@ def rebase_mappings
 
   local_branches =
     `git branch --list`
-    .lines
-    .map { |line| line[2..].rstrip }
-    .select { |branch| branch.start_with?("#{user_name}/", "security-#{user_name}/", "security/#{user_name}/") }
-    .sort_by do |branch|
-      branch_distance     = branch_distance(branch, default_branch)
-      seq_mr_match_data   = seq_mr_pattern.match(branch)
+      .lines
+      .map { |line| line[2..].rstrip }
+      .select { |branch| branch.start_with?("#{user_name}/", "security-#{user_name}/", "security/#{user_name}/") }
+      .sort_by do |branch|
+      seq_mr_match_data = seq_mr_pattern.match(branch)
       backport_match_data = backport_pattern.match(branch)
-      mr_match_data       = mr_pattern.match(branch)
+      mr_match_data = mr_pattern.match(branch)
 
-      next [branch_distance, seq_mr_match_data[:mr_id].to_i, 1, seq_mr_match_data[:mr_seq_nr].to_i] if seq_mr_match_data
-
-      if backport_match_data
-        next [branch_distance, backport_match_data[:mr_id].to_i, 2,
-              backport_match_data[:milestone].tr('.', '-').to_f]
+      if seq_mr_match_data
+        # Sort by: [branch_distance, mr_id, seq_nr, branch_name]
+        # This ensures branches are grouped by MR and ordered by sequence within each MR
+        [
+          branch_distance(branch, default_branch),
+          seq_mr_match_data[:mr_id].to_i,
+          seq_mr_match_data[:mr_seq_nr].to_i,
+          branch
+        ]
+      elsif backport_match_data
+        [
+          branch_distance(branch, default_branch),
+          backport_match_data[:mr_id].to_i,
+          999, # Put backport branches after sequenced branches
+          backport_match_data[:milestone].tr(".", "-").to_f
+        ]
+      elsif mr_match_data
+        [
+          branch_distance(branch, default_branch),
+          mr_match_data[:mr_id].to_i,
+          999, # Put non-sequenced branches after sequenced branches
+          branch
+        ]
+      else
+        [
+          branch_distance(branch, default_branch),
+          999999, # Put non-MR branches last
+          999,
+          branch
+        ]
       end
-      next [branch_distance, mr_match_data[:mr_id].to_i] if mr_match_data
-
-      [branch_distance]
     end
 
-  chain_previous_branches  = [default_branch]
-  chain_previous_mr_seq_nr = nil
-  chain_mr_id              = nil
+  # Track branches per MR ID
+  mr_chains = {}
 
   local_branches.map do |branch|
-    seq_mr_match_data   = seq_mr_pattern.match(branch)
-    mr_match_data       = mr_pattern.match(branch)
+    seq_mr_match_data = seq_mr_pattern.match(branch)
+    mr_match_data = mr_pattern.match(branch)
     backport_match_data = backport_pattern.match(branch)
 
-    chain_previous_mr_id = chain_mr_id
+    # Determine current MR info
+    current_mr_id = nil
+    current_mr_seq_nr = nil
 
     if seq_mr_match_data
-      chain_mr_id     = seq_mr_match_data[:mr_id]
-      chain_mr_seq_nr = seq_mr_match_data[:mr_seq_nr].to_i
+      current_mr_id     = seq_mr_match_data[:mr_id]
+      current_mr_seq_nr = seq_mr_match_data[:mr_seq_nr].to_i
     elsif mr_match_data
-      chain_mr_id     = mr_match_data[:mr_id]
-      chain_mr_seq_nr = nil
-    else
-      chain_mr_id     = nil
-      chain_mr_seq_nr = nil
+      current_mr_id = mr_match_data[:mr_id]
     end
 
-    if chain_previous_mr_id && chain_mr_id != chain_previous_mr_id
-      chain_previous_branches  = [default_branch]
-      chain_previous_mr_seq_nr = nil
+    # Get or initialize the chain for this MR
+    if current_mr_id
+      mr_chains[current_mr_id] ||= [default_branch]
+      current_chain = mr_chains[current_mr_id]
+    else
+      current_chain = [default_branch]
     end
 
     rebase_onto = nil
-    if chain_mr_seq_nr
-      if chain_previous_mr_seq_nr.nil? || chain_mr_seq_nr > chain_previous_mr_seq_nr
-        parent_branch = chain_previous_branches.last
-        rebase_onto = default_branch if update_refs
-        chain_previous_branches << branch
+    if current_mr_seq_nr
+      if current_mr_seq_nr == 1
+        parent_branch = current_chain.last
+        rebase_onto = parent_branch  # Always set for sequence 1 (which is default_branch)
+        current_chain << branch
       else
-        parent_branch = chain_previous_branches[-2]
-        rebase_onto = chain_previous_branches[-2]
+        seq_1_branch = current_chain.find { |b| b != default_branch }
+        parent_branch = seq_1_branch || current_chain.last
+        rebase_onto = parent_branch
       end
-
-      chain_previous_mr_seq_nr = chain_mr_seq_nr
     elsif backport_match_data
       remote = 'security'
 
@@ -209,8 +228,8 @@ def rebase_mappings
     end
 
     {
-      chain_mr_id: chain_mr_id,
-      chain_mr_seq_nr: chain_mr_seq_nr,
+      chain_mr_id: current_mr_id,
+      chain_mr_seq_nr: current_mr_seq_nr,
       branch: branch,
       parent_branch: parent_branch,
       rebase_onto: rebase_onto || parent_branch

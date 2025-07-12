@@ -6,6 +6,7 @@
   email = noreply@pedro.pombei.ro
 
 [include]
+
   path = ~/.config/dotfiles/git/gitconfig-specific
   path = ~/.config/dotfiles/git/colors/tomorrow-night-eighties.config
 
@@ -19,6 +20,7 @@
   sort = -committerdate
 
 [core]
+
   editor = nvim
 
   # Repaint the screen, discarding any buffered input.  Useful if the file is changing while it is being viewed.

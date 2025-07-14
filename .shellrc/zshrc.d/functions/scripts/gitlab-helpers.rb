@@ -464,17 +464,20 @@ def gpsup(remote, issue_iid)
       }
     }
   GQL
-  return if $CHILD_STATUS != 0
 
   require 'json'
-  json_res = JSON.parse(res)
-  milestone = json_res.dig(*%w[data project group milestones nodes])
-                      .map { |h| h['title'] }
-                      .select { |title| title.match?(/^[0-9]+\.[0-9]+/) }
-                      .first
-  labels = json_res.dig(*%w[data project issue labels nodes])
-                   &.map { |h| h['title'] }
-                   &.reject { |label| label.match?(REJECTED_LABELS) }
+  milestone = nil
+  labels = []
+  if $CHILD_STATUS == 0
+    json_res = JSON.parse(res)
+    milestone = json_res.dig(*%w[data project group milestones nodes])
+                        .map { |h| h['title'] }
+                        .select { |title| title.match?(/^[0-9]+\.[0-9]+/) }
+                        .first
+    labels = json_res.dig(*%w[data project issue labels nodes])
+                     &.map { |h| h['title'] }
+                     &.reject { |label| label.match?(REJECTED_LABELS) }
+  end
 
   require_relative 'git-helpers'
   branch = `git rev-parse --abbrev-ref HEAD`.strip
@@ -483,13 +486,13 @@ def gpsup(remote, issue_iid)
     'create',
     'squash',
     "target='#{parent_branch}'",
-    "milestone='#{milestone}'",
     "assign='#{ENV['USER']}'",
     "label='Category:Fleet Visibility'",
     "label='section::ci'",
     "label='devops::verify'",
     "label='group::runner'"
   ] + (labels&.map { |label| "label='#{label}'" } || [])
+  options << "milestone='#{milestone}'" if milestone
   cmd = <<~SHELL.lines(chomp: true).join(' ')
     git push --set-upstream "#{remote}" "#{branch}" #{options.uniq.map { |option| "-o merge_request.#{option}" }.join(' ')} #{ARGV.join(' ')}
   SHELL

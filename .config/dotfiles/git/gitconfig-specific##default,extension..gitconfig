@@ -52,3 +52,7 @@
 
   allowedSignersFile = ~/.config/dotfiles/git/.git-allowed-signers
   program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+
+[rerere]
+
+  enabled = true

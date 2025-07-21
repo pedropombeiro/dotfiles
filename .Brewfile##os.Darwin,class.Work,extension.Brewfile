@@ -334,12 +334,12 @@ cask "font-jetbrains-mono"
 cask "font-meslo-lg-nerd-font"
 # GIT client
 cask "fork"
+# Set of tools to manage resources and applications hosted on Google Cloud
+cask "gcloud-cli"
 # Free and open-source image editor
 cask "gimp"
 # Web browser
 cask "google-chrome"
-# Set of tools to manage resources and applications hosted on Google Cloud
-cask "google-cloud-sdk"
 # Companion app for Home Assistant home automation software
 cask "home-assistant"
 # Tool to optimise images to a smaller size
@@ -358,8 +358,6 @@ cask "kap"
 cask "keycastr"
 # Utility that shows the latest app updates
 cask "latest"
-# Create, manage and debug system and user services
-cask "launchcontrol"
 # Free cross-platform office suite, fresh version
 cask "libreoffice"
 # Adaptive brightness for external displays
@@ -371,7 +369,7 @@ cask "microsoft-edge"
 # Silence embarrassing notifications while screensharing
 cask "muzzle"
 # Neovim Client
-cask "neovide"
+cask "neovide-app"
 # WiFi site survey software and WiFi scanner
 cask "netspot"
 # App to write, plan, collaborate, and get organised

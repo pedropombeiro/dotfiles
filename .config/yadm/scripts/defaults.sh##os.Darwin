@@ -19,6 +19,11 @@ sudo nvram BootPreference=%01
 sudo pmset -a womp 0
 sudo pmset -a powernap 0
 
+# Necessary so that closing the lid doesn't wake up the external monitor
+if [[ $(yadm config local.class) == 'Work' ]]; then
+  sudo pmset -a lidwake 0
+fi
+
 # Set Login Window Text
 sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText 'If you found this computer, please call +41 78 713 16 29 or email pedro@pombei.ro'
 

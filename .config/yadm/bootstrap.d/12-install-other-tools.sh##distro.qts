@@ -11,7 +11,7 @@ temp_dir="$(mktemp -d)"
 
 bandwhich_version=0.23.1
 btop_version=1.4.0
-croc_version=10.2.1
+croc_version=10.2.4
 fzf_version=0.60.3
 gping_version=1.19.0
 lnav_version=0.13.0

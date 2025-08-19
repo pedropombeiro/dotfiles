@@ -68,6 +68,8 @@ source ~/.config/yadm/scripts/colors.sh
     git stash push -m "Rolled back migration from ${ORIGINAL_BRANCH}"
   fi
 
+  gem uninstall json --all --ignore-dependencies && mise x ruby -- bundle install
+
   bin/spring stop || echo 'Spring not running'
   pkill spring || echo 'No remaining spring processes' # Ensure there are no leftover spring processes, this sometimes causes issues with the RubyMine debugger hanging trying to establish a connection
   git restore bin/rake bin/rspec bin/rails bin/spring
@@ -80,7 +82,7 @@ source ~/.config/yadm/scripts/colors.sh
   git restore db/structure.sql
   sleep 5
 
-  mise x ruby -- bundle install # Needed if Ruby version changed
+  gem uninstall json --all --ignore-dependencies && mise x ruby -- bundle install # Needed if Ruby version changed
 
   bin/spring binstub --all
 

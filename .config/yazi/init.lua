@@ -66,6 +66,15 @@ th.git.deleted_sign = ""
 require("git"):setup()
 
 local gruvbox_theme = require("yatline-gruvbox"):setup("dark") -- or "light"
+-- Use colors from light theme, because the default background of section_a is too light
+gruvbox_theme.branch_color = "#076678"
+gruvbox_theme.commit_color = "#8f3f71"
+gruvbox_theme.behind_color = "#af3a03"
+gruvbox_theme.ahead_color = "#427b58"
+gruvbox_theme.stashes_color = "#8f3f71"
+gruvbox_theme.state_color = "#9d0006"
+gruvbox_theme.unstaged_color = "#af3a03"
+gruvbox_theme.untracked_color = "#427b58"
 
 require("yatline"):setup({
   theme = gruvbox_theme,
@@ -120,40 +129,40 @@ require("yatline-modified-time"):setup()
 
 require("yatline-githead"):setup({
   show_branch = true,
-  branch_prefix = "on",
-  branch_color = "blue",
-  branch_symbol = "",
-  branch_borders = "()",
+  branch_prefix = "",
+  branch_color = gruvbox_theme.branch_color,
+  branch_symbol = "",
+  branch_borders = "",
 
-  commit_color = "bright magenta",
+  commit_color = gruvbox_theme.commit_color,
   commit_symbol = "",
 
   show_behind_ahead = true,
-  behind_color = "bright magenta",
-  behind_symbol = "⇣",
-  ahead_color = "bright magenta",
-  ahead_symbol = "⇡",
+  behind_color = gruvbox_theme.behind_color,
+  behind_symbol = " ",
+  ahead_color = gruvbox_theme.ahead_color,
+  ahead_symbol = " ",
 
   show_stashes = true,
-  stashes_color = "bright magenta",
+  stashes_color = gruvbox_theme.stashes_color,
   stashes_symbol = " ",
 
   show_state = true,
   show_state_prefix = true,
-  state_color = "red",
+  state_color = gruvbox_theme.state_color,
   state_symbol = "~",
 
   show_staged = true,
-  staged_color = "bright yellow",
-  staged_symbol = " ",
+  staged_color = gruvbox_theme.staged_color,
+  staged_symbol = " ",
 
   show_unstaged = true,
-  unstaged_color = "bright yellow",
-  unstaged_symbol = "󰄱 ",
+  unstaged_color = gruvbox_theme.unstaged_color,
+  unstaged_symbol = " ",
 
   show_untracked = true,
-  untracked_color = "blue",
-  untracked_symbol = "?",
+  untracked_color = gruvbox_theme.untracked_color,
+  untracked_symbol = " ",
 })
 
 require("yatline-tab-path"):setup({

@@ -153,7 +153,6 @@
   # https://git-scm.com/docs/git-config#git-config-pushdefault
   default = simple
   autoSetupRemote = true
-  followTags = true ; push all tags that you have locally that aren’t on the server, every time you push anything.
 
 [pull]
 

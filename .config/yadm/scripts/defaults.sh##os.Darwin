@@ -181,7 +181,16 @@ defaults write com.apple.finder EmptyTrashSecurely -bool true
 
 # Open text file types with Neovide
 duti -s com.neovide.neovide public.text all
-duti -s com.neovide.neovide public.json all
+duti -s com.neovide.neovide public.json all                        # json files
+duti -s com.neovide.neovide net.daringfireball.markdown all        # .md files
+duti -s com.neovide.neovide public.yaml all                        # .yml/.yaml files
+duti -s com.neovide.neovide public.xml all                         # .xml files
+duti -s com.neovide.neovide public.comma-separated-values-text all # .csv files
+duti -s com.neovide.neovide public.tab-separated-values-text all   # .tsv files
+duti -s com.neovide.neovide public.log all                         # .log files
+duti -s com.neovide.neovide com.apple.log all                      # .log files
+duti -s com.neovide.neovide public.plain-text all                  # Catch-all for plain text files without extensions
+duti -s com.neovide.neovide public.data all                        # Catch-all for plain text files without extensions
 
 ###############################################################################
 # Dock, Dashboard, and hot corners                                            #

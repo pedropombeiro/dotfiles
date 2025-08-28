@@ -11,7 +11,7 @@ default: pull update
     ~/.config/yadm/scripts/update.sh
 
 @brew-dump:
-    brew bundle dump --file ~/.Brewfile --global --describe --force
+    brew bundle dump --global --describe --force
 
 @brew-cleanup:
     brew bundle cleanup ~/.Brewfile --force --file

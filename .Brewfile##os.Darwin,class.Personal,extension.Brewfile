@@ -140,8 +140,6 @@ brew "qrencode"
 brew "ripgrep"
 # 7-Zip is a file archiver with a high compression ratio
 brew "sevenzip"
-# Monitors sleep, wakeup, and idleness of a Mac
-brew "sleepwatcher", restart_service: :changed
 # SMART hard drive monitoring
 brew "smartmontools"
 # Very fast implementation of tldr in Rust
@@ -200,18 +198,16 @@ cask "bartender"
 cask "beyond-compare"
 # Bluetooth Low Energy browser
 cask "bluetility"
-# Volume booster and equaliser software
-cask "boom-3d"
 # E-books management software
 cask "calibre"
 # Allows switching between application windows
 cask "contexts"
 # API documentation browser and code snippet manager
 cask "dash"
-# App to build and share containerised applications and microservices
-cask "docker-desktop"
 # Assign keys, and then decorate and label them
 cask "elgato-stream-deck"
+# System-wide audio equaliser
+cask "eqmac"
 # Web browser
 cask "firefox"
 cask "font-jetbrains-mono"
@@ -234,6 +230,8 @@ cask "istat-menus"
 cask "iterm2"
 # Open-source screen recorder built with web technology
 cask "kap"
+# Utility that shows the latest app updates
+cask "latest"
 # Wallet desktop application to maintain multiple cryptocurrencies
 cask "ledger-live"
 # Free cross-platform office suite, fresh version
@@ -244,8 +242,6 @@ cask "little-snitch@5"
 cask "lunar"
 # File system integration
 cask "macfuse"
-# Track and update to the latest versions of installed software
-cask "macupdater"
 # Display technical and tag data for video and audio files
 cask "mediainfo"
 # Provides updates to various Microsoft products

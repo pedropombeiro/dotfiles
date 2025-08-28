@@ -12,10 +12,10 @@ brew "arduino-cli"
 brew "sqlite"
 # General-purpose data compression with high compression ratio
 brew "xz"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.12"
 # Record and share terminal sessions
 brew "asciinema"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.12"
 # Shell extension to jump to frequently used directories
 brew "autojump"
 # Bourne-Again SHell, a UNIX command interpreter
@@ -209,7 +209,7 @@ cask "contexts"
 # API documentation browser and code snippet manager
 cask "dash"
 # App to build and share containerised applications and microservices
-cask "docker"
+cask "docker-desktop"
 # Assign keys, and then decorate and label them
 cask "elgato-stream-deck"
 # Web browser
@@ -258,7 +258,7 @@ cask "musescore"
 # Silence embarrassing notifications while screensharing
 cask "muzzle"
 # Neovim Client
-cask "neovide"
+cask "neovide-app"
 # WiFi site survey software and WiFi scanner
 cask "netspot"
 # App to write, plan, collaborate, and get organised
@@ -286,7 +286,7 @@ cask "spotify"
 # Windows manager
 cask "stay"
 # Real time file synchronisation software
-cask "syncthing"
+cask "syncthing-app"
 # Quicklook extension for source files
 cask "syntax-highlight"
 # Native GUI tool for relational databases
@@ -304,7 +304,7 @@ cask "visual-studio-code"
 # Native desktop client for WhatsApp
 cask "whatsapp"
 # Network protocol analyzer
-cask "wireshark"
+cask "wireshark-app"
 # Application for configuring any YubiKey
 cask "yubico-yubikey-manager"
 # Video communication and virtual meeting platform

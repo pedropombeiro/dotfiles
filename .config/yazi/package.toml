@@ -60,8 +60,8 @@ hash = "1adc12c2b2b025411ab61eb8f0879574"
 
 [[plugin.deps]]
 use = "wekauwau/yatline-modified-time"
-rev = "286680b"
-hash = "d5f86be5c73c480afecf99c1ca381d04"
+rev = "2d33471"
+hash = "8fa6028ef832b34cf32f4ee43cb0ae35"
 
 [[plugin.deps]]
 use = "ourongxing/fast-enter"

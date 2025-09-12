@@ -74,6 +74,8 @@ source ~/.config/yadm/scripts/colors.sh
   pkill spring || echo 'No remaining spring processes' # Ensure there are no leftover spring processes, this sometimes causes issues with the RubyMine debugger hanging trying to establish a connection
   git restore bin/rake bin/rspec bin/rails bin/spring
 
+  gdk restart postgresql # Ensure that the test database isn't locked by any session, which would cause gdk update to fail. This will ensure all sessions are terminated
+
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
   cd $GDK_ROOT
   mise x ruby -- gdk update

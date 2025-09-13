@@ -26,6 +26,8 @@ brew "bat"
 brew "btop"
 # Linter/analyzer for Makefiles
 brew "checkmake"
+# Container runtimes on MacOS (and Linux) with minimal setup
+brew "colima"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
 # Securely send things from one computer to another
@@ -36,6 +38,8 @@ brew "ctop"
 brew "curl"
 # Load/unload environment variables based on $PWD
 brew "direnv"
+# Pack, ship and run any application as a lightweight container
+brew "docker"
 # Command-line DNS client
 brew "dog"
 # Disk Usage/Free Utility - a better 'df' alternative

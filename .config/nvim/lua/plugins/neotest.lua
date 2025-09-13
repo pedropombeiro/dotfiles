@@ -24,7 +24,7 @@ return {
     "antoinemadec/FixCursorHold.nvim",
     "nvim-treesitter/nvim-treesitter",
 
-    "nvim-neotest/neotest-go",
+    "fredrikaverpil/neotest-golang",
     {
       "olimorris/neotest-rspec",
       ---@module "lazy"
@@ -89,11 +89,8 @@ return {
     ---@diagnostic disable-next-line: missing-fields
     require("neotest").setup({
       adapters = {
-        require("neotest-go")({
-          experimental = {
-            test_table = true,
-          },
-          args = { "-count=1", "-timeout=60s" },
+        require("neotest-golang")({
+          go_test_args = { "-v", "-count=1", "-timeout=60s" },
         }),
         require("neotest-rspec")({
           rspec_cmd = function(position_type)

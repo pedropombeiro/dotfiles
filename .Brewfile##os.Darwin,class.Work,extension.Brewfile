@@ -5,6 +5,7 @@ tap "fforster/gitlab-mcp", "https://gitlab.com/fforster/homebrew-gitlab-mcp.git"
 tap "jarred-sumner/git-peek"
 tap "jdxcode/tap"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
+tap "lihaoyun6/tap"
 tap "mike-engel/jwt-cli"
 tap "minio/stable"
 tap "moul/moul"
@@ -212,6 +213,8 @@ brew "poppler"
 brew "pspg"
 # Generic syntax highlighter
 brew "pygments"
+# Sampling profiler for Ruby
+brew "rbspy"
 # Alternative to backtracking PCRE-style regular expression engines
 brew "re2"
 # Persistent key-value database, with built-in net interface
@@ -294,6 +297,8 @@ brew "moul/moul/docker-diff"
 cask "1password"
 # Command-line interface for 1Password
 cask "1password-cli"
+# AirPods companion app
+cask "airbuddy"
 # Application launcher and productivity software
 cask "alfred"
 # Inspect application bundles
@@ -366,6 +371,8 @@ cask "lunar"
 cask "microsoft-auto-update"
 # Multi-platform web browser
 cask "microsoft-edge"
+# Multi-platform web browser
+cask "microsoft-edge@canary"
 # Silence embarrassing notifications while screensharing
 cask "muzzle"
 # Neovim Client
@@ -394,6 +401,8 @@ cask "spotify"
 cask "stay"
 # Quicklook extension for source files
 cask "syntax-highlight"
+# Open-source code editor
+cask "visual-studio-code"
 # Native desktop client for WhatsApp
 cask "whatsapp"
 mas "Amphetamine", id: 937984704
@@ -417,3 +426,9 @@ mas "PLIST Editor", id: 1157491961
 mas "Speedtest", id: 1153157709
 mas "Time Out", id: 402592703
 mas "WireGuard", id: 1451685025
+vscode "chrischinchilla.vale-vscode"
+vscode "davidanson.vscode-markdownlint"
+vscode "deque-systems.vscode-axe-linter"
+vscode "editorconfig.editorconfig"
+vscode "gitlab.gitlab-workflow"
+vscode "shopify.ruby-lsp"

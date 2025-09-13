@@ -180,6 +180,8 @@ brew "leipert-projects/git-recon/git-recon"
 cask "1password"
 # Command-line interface for 1Password
 cask "1password-cli"
+# AirPods companion app
+cask "airbuddy"
 # Application launcher and productivity software
 cask "alfred"
 # Android SDK component

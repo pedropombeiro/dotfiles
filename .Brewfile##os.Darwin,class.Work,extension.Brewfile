@@ -361,6 +361,8 @@ cask "jetbrains-toolbox"
 cask "kap"
 # Open-source keystroke visualiser
 cask "keycastr"
+# Find shortcuts for any installed application
+cask "keyclu"
 # Utility that shows the latest app updates
 cask "latest"
 # Free cross-platform office suite, fresh version

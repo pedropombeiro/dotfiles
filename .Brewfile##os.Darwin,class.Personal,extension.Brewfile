@@ -236,6 +236,8 @@ cask "istat-menus"
 cask "iterm2"
 # Open-source screen recorder built with web technology
 cask "kap"
+# Find shortcuts for any installed application
+cask "keyclu"
 # Utility that shows the latest app updates
 cask "latest"
 # Wallet desktop application to maintain multiple cryptocurrencies

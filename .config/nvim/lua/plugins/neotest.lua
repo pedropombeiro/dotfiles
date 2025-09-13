@@ -59,7 +59,7 @@ return {
         Failed = { ctermfg = "Red", fg = config.theme.colors.dark_red },
         Running = { ctermfg = "Yellow", fg = config.theme.colors.dark_yellow },
         Skipped = { ctermfg = "Cyan", fg = config.theme.colors.dark_blue },
-        Test = { link = "Normal" },
+        Test = { ctermfg = "Grey", fg = config.theme.colors.fg0 },
         Namespace = { ctermfg = "Magenta", fg = config.theme.colors.purple },
         Focused = { bold = true, underline = true },
         File = { ctermfg = "Cyan", fg = config.theme.colors.dark_blue },
@@ -70,7 +70,7 @@ return {
         WinSelect = { ctermfg = "Cyan", fg = config.theme.colors.dark_blue, bold = true },
         Marked = { ctermfg = "Brown", fg = config.theme.colors.orange, bold = true },
         Target = { ctermfg = "Red", fg = config.theme.colors.red },
-        Unknown = { link = "Normal" },
+        Unknown = { ctermfg = "Grey", fg = config.theme.colors.fg3 },
       }, { prefix = "Neotest", default = true })
     end
 
@@ -106,12 +106,12 @@ return {
         }),
       },
       icons = {
-        expanded = icons.expander.expanded,
         child_prefix = "",
-        child_indent = "",
+        child_indent = "  ",
         final_child_prefix = "",
         non_collapsible = "",
         collapsed = icons.expander.collapsed,
+        expanded = icons.expander.expanded,
         passed = icons.tests.passed,
         running = icons.tests.running,
         failed = icons.tests.failed,

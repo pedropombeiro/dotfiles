@@ -100,12 +100,13 @@ local config = {
         readonly = "",
       },
       tests = {
-        passed     = "",
-        running    = "",
-        failed     = "",
-        cancelled  = "⊘",
-        skipped    = "◌",
-        unknown    = ""
+        passed           = "",
+        running          = "",
+        running_animated = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
+        failed           = "",
+        cancelled        = "⊘",
+        skipped          = "◌",
+        unknown          = ""
       }
     },
   },

@@ -111,6 +111,7 @@ return {
         expanded = icons.expander.expanded,
         passed = icons.tests.passed,
         running = icons.tests.running,
+        running_animated = icons.tests.running_animated,
         failed = icons.tests.failed,
         unknown = icons.tests.unknown,
       },

@@ -5,7 +5,9 @@
 #
 
 if [[ $PWD/ = ${GDK_ROOT}/* ]]; then
-  undo-migrations
   git restore db/ package.json
 fi
 git switch "$(git_main_branch)"
+if [[ $PWD/ = ${GDK_ROOT}/* ]]; then
+  gdk sandbox reset
+fi

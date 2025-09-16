@@ -101,7 +101,10 @@ return {
         -- Default list of enabled providers defined so that you can extend it
         -- elsewhere in your config, without redefining it, due to `opts_extend`
         sources = {
-          default = { "lazydev", "conventional_commits", "lsp", "path", "snippets", "buffer", "env" },
+          default = { "conventional_commits", "lsp", "path", "snippets", "buffer", "env" },
+          per_filetype = {
+            lua = { inherit_defaults = true, "lazydev" },
+          },
           providers = {
             lazydev = {
               name = "LazyDev",

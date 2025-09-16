@@ -35,6 +35,12 @@ typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
 )
 typeset -g POWERLEVEL9K_PROMPT_ON_NEWLINE=false
 
+# Prevent gitstatusd from scanning dirty files in repositories with >100K files
+typeset -g POWERLEVEL9K_VCS_MAX_INDEX_SIZE_DIRTY=100000
+
+# Increase timeout to prevent the branch indicator from disappearing
+typeset -g POWERLEVEL9K_VCS_MAX_SYNC_LATENCY_SECONDS=1.0
+
 # Hot reload allows you to change POWERLEVEL9K options
 # after Powerlevel10k has been initialized. For example,
 # you can type POWERLEVEL9K_FOREGROUND=red and see your

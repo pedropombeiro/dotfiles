@@ -173,7 +173,7 @@ return {
     keys = ".",
   },
   {
-    "echasnovski/mini.surround",
+    "nvim-mini/mini.surround",
     version = false,
     event = { "BufReadPre", "BufNewFile" },
     opts = {

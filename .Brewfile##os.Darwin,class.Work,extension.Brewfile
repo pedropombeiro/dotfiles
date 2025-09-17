@@ -19,12 +19,12 @@ brew "angle-grinder"
 brew "xz"
 # Arduino command-line interface
 brew "arduino-cli"
+# Record and share terminal sessions
+brew "asciinema"
 # Library for command-line editing
 brew "readline"
 # Command-line interface for SQLite
 brew "sqlite"
-# Record and share terminal sessions
-brew "asciinema"
 # Shell extension to jump to frequently used directories
 brew "autojump"
 # Bourne-Again SHell, a UNIX command interpreter
@@ -253,6 +253,8 @@ brew "terraform"
 brew "the_silver_searcher"
 # Program that allows you to count code, quickly
 brew "tokei"
+# Parser generator tool
+brew "tree-sitter-cli"
 # USB hub per-port power control
 brew "uhubctl"
 # Syntax-aware linter for prose
@@ -423,7 +425,7 @@ mas "Numbers", id: 409203825
 mas "Okta Extension App", id: 1439967473
 mas "Okta Verify", id: 490179405
 mas "Pages", id: 409201541
-mas "Parcel", id: 639968404
+mas "Parcel Classic", id: 639968404
 mas "PLIST Editor", id: 1157491961
 mas "Speedtest", id: 1153157709
 mas "Time Out", id: 402592703

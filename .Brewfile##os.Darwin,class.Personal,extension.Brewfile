@@ -8,12 +8,12 @@ tap "showwin/speedtest"
 tap "zaquestion/tap"
 # Arduino command-line interface
 brew "arduino-cli"
+# Record and share terminal sessions
+brew "asciinema"
 # Command-line interface for SQLite
 brew "sqlite"
 # General-purpose data compression with high compression ratio
 brew "xz"
-# Record and share terminal sessions
-brew "asciinema"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.12"
 # Shell extension to jump to frequently used directories
@@ -150,6 +150,8 @@ brew "smartmontools"
 brew "tealdeer"
 # Code-search similar to ack
 brew "the_silver_searcher"
+# Parser generator tool
+brew "tree-sitter-cli"
 # Syntax-aware linter for prose
 brew "vale"
 # Modern watch command
@@ -327,7 +329,7 @@ mas "Kindle Classic", id: 405399194
 mas "Mactracker", id: 430255202
 mas "Microsoft To Do", id: 1274495053
 mas "Paperparrot", id: 1663665267
-mas "Parcel", id: 639968404
+mas "Parcel Classic", id: 639968404
 mas "Pocket", id: 568494494
 mas "Router", id: 1229416813
 mas "Shazam", id: 897118787

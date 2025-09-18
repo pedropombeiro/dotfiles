@@ -36,7 +36,7 @@ return {
   },
   {
     "neovim/nvim-lspconfig", -- Quickstart configs for Nvim LSP
-    event = { "BufReadPre", "BufNewFile" },
+    event = { "BufReadPre", "BufNewFile", "BufWritePre" },
     keys = keys,
     dependencies = {
       { "saghen/blink.cmp" },
@@ -68,6 +68,18 @@ return {
 
       ---@type vim.diagnostic.Opts
       vim.diagnostic.config({
+        folds = {
+          enabled = true,
+        },
+        -- add any global capabilities here
+        capabilities = {
+          workspace = {
+            fileOperations = {
+              didRename = true,
+              willRename = true,
+            },
+          },
+        },
         severity_sort = true,
         float = { -- Show diagnostic source in float (e.g. goto_next, goto_prev)
           focusable = false,

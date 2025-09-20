@@ -8,6 +8,7 @@ printf "${YELLOW}%s${NC}\n" "Updating Entware packages..."
 opkg update && opkg upgrade
 
 printf "${YELLOW}%s${NC}\n" "Updating mise packages..."
+export MISE_INSTALL_ARCH=x64-musl
 yes | mise self-update
 (cd ~ && mise plugin update && mise install --yes && mise upgrade)
 

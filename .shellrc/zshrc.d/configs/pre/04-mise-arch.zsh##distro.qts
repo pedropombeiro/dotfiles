@@ -1,0 +1,3 @@
+#!/usr/bin/env zsh
+
+export MISE_INSTALL_ARCH=x64-musl

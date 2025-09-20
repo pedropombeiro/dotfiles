@@ -91,20 +91,37 @@ end
 
 return {
   {
+    "purarue/gitsigns-yadm.nvim",
+    lazy = true,
+    ---@module "gitsigns-yadm"
+    ---@type GitsignsYadm.Config
+    opts = {
+      disable_inside_gitdir = true,
+      on_yadm_attach = function()
+        -- set a buffer-local variable so that other code can run custom
+        -- code if we're editing a yadm file
+        vim.b.yadm_tracked = true
+      end,
+    },
+  },
+  {
+    "nvim-lua/plenary.nvim",
+    lazy = true,
+  },
+  {
     "lewis6991/gitsigns.nvim",
     event = "VeryLazy",
-    dependencies = {
-      {
-        "purarue/gitsigns-yadm.nvim",
-        lazy = true,
-      },
-      {
-        "nvim-lua/plenary.nvim",
-        lazy = true,
-      },
-    },
+    ---@module "gitsigns"
+    ---@type Gitsigns.Config
+    ---@diagnostic disable: missing-fields
     opts = {
-      _on_attach_pre = function(bufnr, callback) require("gitsigns-yadm").yadm_signs(callback, { bufnr = bufnr }) end,
+      _on_attach_pre = function(bufnr, callback)
+        if vim.fn.executable("yadm") == 1 then
+          require("gitsigns-yadm").yadm_signs(callback, { bufnr = bufnr })
+        else
+          callback({ bufnr = bufnr })
+        end
+      end,
       signs = {
         add = { text = "▌", show_count = true },
         change = { text = "▌", show_count = true },
@@ -154,6 +171,7 @@ return {
         col = 1,
       },
     },
+    ---@diagnostic enable: missing-fields
     config = function(_, opts)
       require("gitsigns").setup(opts)
 

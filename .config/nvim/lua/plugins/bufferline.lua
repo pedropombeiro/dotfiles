@@ -45,6 +45,15 @@ return {
               return buf.name:match("%_test") or buf.name:match("%_spec")
             end,
           },
+          {
+            name = "YADM", -- Mandatory
+            highlight = { underline = true, sp = "orange" }, -- Optional
+            icon = "⊛", -- Optional
+            auto_close = false, -- whether or not close this group if it doesn't contain the current buffer
+            matcher = function(buf) -- Mandatory
+              return vim.b[buf.id].yadm_tracked
+            end,
+          },
         },
       },
       separator_style = "slant",

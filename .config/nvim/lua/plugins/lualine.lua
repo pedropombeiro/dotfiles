@@ -88,16 +88,16 @@ return {
         sections = {
           lualine_a = { "mode" },
           lualine_b = {
+            {
+              function() return "⊛ YADM" end,
+              cond = function() return vim.b.yadm_tracked == true end,
+            },
             { "b:gitsigns_head", icon = "" },
             {
               function()
                 local parts = {}
-                if gstatus.behind > 0 then
-                  table.insert(parts, gstatus.behind .. "↓")
-                end
-                if gstatus.ahead > 0 then
-                  table.insert(parts, gstatus.ahead .. "↑")
-                end
+                if gstatus.behind > 0 then table.insert(parts, gstatus.behind .. "↓") end
+                if gstatus.ahead > 0 then table.insert(parts, gstatus.ahead .. "↑") end
                 return table.concat(parts, " ")
               end,
             },

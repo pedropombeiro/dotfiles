@@ -10,6 +10,9 @@ default: pull update
 @update:
     ~/.config/yadm/scripts/update.sh
 
+@checkhealth:
+    ~/.config/yadm/scripts/run-checks.zsh
+
 @brew-dump:
     brew bundle dump --global --describe --force
 

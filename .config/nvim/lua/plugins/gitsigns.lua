@@ -93,6 +93,7 @@ return {
   {
     "purarue/gitsigns-yadm.nvim",
     lazy = true,
+    cond = function() return vim.fn.executable("yadm") == 1 end,
     ---@module "gitsigns-yadm"
     ---@type GitsignsYadm.Config
     opts = {
@@ -116,7 +117,8 @@ return {
     ---@diagnostic disable: missing-fields
     opts = {
       _on_attach_pre = function(bufnr, callback)
-        if vim.fn.executable("yadm") == 1 then
+        local plugins = require("lazy.core.config").plugins
+        if plugins["gitsigns-yadm.nvim"] ~= nil then
           require("gitsigns-yadm").yadm_signs(callback, { bufnr = bufnr })
         else
           callback({ bufnr = bufnr })

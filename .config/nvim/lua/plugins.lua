@@ -92,19 +92,6 @@ return {
     opts = { headerMaxWidth = 80 },
   },
 
-  --### Snippets
-  {
-    "aduros/ai.vim", -- Generate and edit text in Neovim using OpenAI and GPT.
-    ---@module "lazy"
-    ---@type LazyKeysSpec[]
-    keys = {
-      { "<leader>=", ":AI ", mode = { "n", "v" }, desc = "Perform action with OpenAI" },
-      { "<C-A>", "<Esc><Cmd>AI<CR>a", mode = "i", desc = "Autocomplete with OpenAI" },
-    },
-    cmd = { "AI" },
-    init = function() vim.g.ai_no_mappings = 1 end,
-  },
-
   --### Navigation
   {
     "ruanyl/vim-gh-line", -- vim plugin that open the link of current line on github

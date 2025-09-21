@@ -12,7 +12,7 @@ brew update
 brew upgrade
 
 printf "${YELLOW}%s${NC}\n" "Updating mise plugins..."
-(cd ~ && mise plugins update && mise install --yes && mise upgrade)
+(cd ~ && mise plugins update && mise upgrade)
 
 # Update npm packages
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."

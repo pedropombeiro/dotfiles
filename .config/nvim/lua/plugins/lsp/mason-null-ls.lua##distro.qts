@@ -24,7 +24,6 @@ return {
       "prettier",
       "shfmt",
       "shellcheck",
-      "vale",
     }
   }
 }

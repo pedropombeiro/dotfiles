@@ -253,8 +253,6 @@ brew "terraform"
 brew "the_silver_searcher"
 # Program that allows you to count code, quickly
 brew "tokei"
-# Parser generator tool
-brew "tree-sitter-cli"
 # USB hub per-port power control
 brew "uhubctl"
 # Syntax-aware linter for prose

@@ -150,8 +150,6 @@ brew "smartmontools"
 brew "tealdeer"
 # Code-search similar to ack
 brew "the_silver_searcher"
-# Parser generator tool
-brew "tree-sitter-cli"
 # Syntax-aware linter for prose
 brew "vale"
 # Modern watch command

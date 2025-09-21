@@ -39,6 +39,7 @@ return {
       "shellcheck",
       "stylua",
       "taplo",
+      "tree-sitter-cli",
       "vale",
       "yamlfmt",
     },

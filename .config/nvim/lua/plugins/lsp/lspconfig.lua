@@ -8,7 +8,6 @@
 local keys = {
   { "[oH",         function() vim.lsp.inlay_hint.enable(true) end,  desc = "Enable inlay hints" },
   { "]oH",         function() vim.lsp.inlay_hint.enable(false) end, desc = "Disable inlay hints" },
-  { "<leader>uh",  function() vim.lsp.inlay_hint.enable(false) end, desc = "Disable inlay hints" },
   { "[d",          function() vim.diagnostic.goto_prev() end,       desc = "Previous LSP diagnostic" },
   { "]d",          function() vim.diagnostic.goto_next() end,       desc = "Next LSP diagnostic" },
   { "<f2>",        function() vim.lsp.buf.rename() end,             desc = "Rename symbol" },

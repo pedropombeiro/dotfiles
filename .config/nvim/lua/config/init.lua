@@ -104,7 +104,7 @@ local config = {
         running          = "",
         running_animated = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" },
         failed           = "",
-        cancelled        = "⊘",
+        canceled         = "⊘",
         skipped          = "◌",
         unknown          = ""
       }

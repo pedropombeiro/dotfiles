@@ -21,7 +21,7 @@ return {
           success = icons.passed,
           failure = icons.failed,
           startup_failure = icons.failed,
-          cancelled = icons.cancelled,
+          cancelled = icons.canceled,
           skipped = icons.skipped,
         },
         status = {

@@ -151,6 +151,22 @@ return {
               "pipeline", -- https://github.com/topaxi/pipeline.nvim
               cond = firenvim_cond,
             },
+            {
+              "overseer",
+              label = "", -- Prefix for task counts
+              colored = true, -- Color the task icons and counts
+              symbols = {
+                [require("overseer").STATUS.FAILURE] = config.ui.icons.tests.failed .. ":",
+                [require("overseer").STATUS.CANCELED] = config.ui.icons.tests.canceled .. ":",
+                [require("overseer").STATUS.SUCCESS] = config.ui.icons.tests.passed .. ":",
+                [require("overseer").STATUS.RUNNING] = config.ui.icons.tests.running .. ":",
+              },
+              unique = false, -- Unique-ify non-running task count by name
+              name = nil, -- List of task names to search for
+              name_not = false, -- When true, invert the name search
+              status = nil, -- List of task statuses to display
+              status_not = false, -- When true, invert the status search
+            },
             "encoding",
             "fileformat",
             "filetype",

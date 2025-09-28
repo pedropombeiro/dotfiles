@@ -95,10 +95,9 @@ return {
         { "<leader>yw", "yiww", desc = "Yank whole inner word", remap = true, silent = false, icon = "" },
       },
 
-      -- <leader>ow = 'overwrite word', replace a word with what's in the yank buffer
+      -- <leader>P = 'overwrite word', replace a word with what's in the yank buffer
       -- FIXME: will not properly repeat when you use a dot (tie into repeat.vim)
-      { "<leader>o", group = "Overwrite", icon = "" },
-      { "<leader>ow", '"_diwhp', desc = "Overwrite whole word", remap = true, silent = false },
+      { "<leader>P", '"_diwhp', desc = "Overwrite whole word", remap = true, silent = false },
 
       { "gv", "`[v`]", desc = "Select last pasted text" },
 

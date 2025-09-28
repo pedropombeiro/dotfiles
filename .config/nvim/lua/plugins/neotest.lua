@@ -102,6 +102,9 @@ return {
           end,
         }),
       },
+      consumers = {
+        overseer = require("neotest.consumers.overseer"),
+      },
       icons = {
         child_prefix = "",
         child_indent = "  ",

@@ -193,10 +193,6 @@ return {
   --### Other
   { "tmux-plugins/vim-tmux", ft = "tmux" }, -- Vim plugin for .tmux.conf
   {
-    "tpope/vim-dispatch", -- dispatch.vim: Asynchronous build and test dispatcher
-    cmd = { "Dispatch", "Make", "Focus", "Start" },
-  },
-  {
     "tpope/vim-eunuch", -- eunuch.vim: Helpers for UNIX
     cmd = {
       "Remove",

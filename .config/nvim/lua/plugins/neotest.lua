@@ -25,18 +25,7 @@ return {
     "nvim-treesitter/nvim-treesitter",
 
     "fredrikaverpil/neotest-golang",
-    {
-      "olimorris/neotest-rspec",
-      ---@module "lazy"
-      ---@type LazyKeysSpec[]
-      keys = {
-        {
-          "<leader>rb",
-          ":Dispatch bin/rspec $(git diff --name-only --diff-filter=AM master | grep 'spec/')<CR>",
-          desc = "Run MR tests",
-        },
-      },
-    },
+    "olimorris/neotest-rspec",
   },
   config = function()
     -- get neotest namespace (api call creates or returns namespace)

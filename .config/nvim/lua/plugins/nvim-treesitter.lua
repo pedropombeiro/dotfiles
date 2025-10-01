@@ -145,20 +145,6 @@ return {
           desc = "Swap previous inner parameter",
           function() require("nvim-treesitter-textobjects.swap").swap_previous("@parameter.inner") end,
         },
-
-        -- repeat
-        {
-          ";",
-          mode = { "n", "x", "o" },
-          desc = "Repeat last move",
-          function() require("nvim-treesitter-textobjects.repeatable_move").repeat_last_move() end,
-        },
-        {
-          ",",
-          mode = { "n", "x", "o" },
-          desc = "Repeat last move (opposite)",
-          function() require("nvim-treesitter-textobjects.repeatable_move").repeat_last_move_opposite() end,
-        },
       }
 
       for method, keymaps in pairs(moves) do

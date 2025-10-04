@@ -43,8 +43,6 @@ brew "glib"
 brew "checkmake"
 # Cross-platform make
 brew "cmake"
-# Container runtimes on MacOS (and Linux) with minimal setup
-brew "colima"
 # Diff your Docker containers
 brew "container-diff"
 # GNU File, Shell, and Text utilities
@@ -59,8 +57,6 @@ brew "curl"
 brew "direnv"
 # Tool for exploring each layer in a docker image
 brew "dive"
-# Pack, ship and run any application as a lightweight container
-brew "docker"
 # Docker CLI plugin for extended build capabilities with BuildKit
 brew "docker-buildx"
 # Platform keystore credential helper for Docker
@@ -319,6 +315,8 @@ cask "chrysalis"
 cask "claude"
 # Column-oriented database management system
 cask "clickhouse"
+# Create and run Linux containers using lightweight virtual machines
+cask "container"
 # Allows switching between application windows
 cask "contexts"
 # API documentation browser and code snippet manager

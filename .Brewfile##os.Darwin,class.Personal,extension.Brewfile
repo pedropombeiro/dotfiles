@@ -211,6 +211,8 @@ cask "beyond-compare"
 cask "bluetility"
 # E-books management software
 cask "calibre"
+# Create and run Linux containers using lightweight virtual machines
+cask "container"
 # Allows switching between application windows
 cask "contexts"
 # Disk space visualiser

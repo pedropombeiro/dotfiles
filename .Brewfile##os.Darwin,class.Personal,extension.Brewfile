@@ -1,3 +1,4 @@
+tap "adembc/tap"
 tap "borgbackup/tap"
 tap "homebrew/bundle"
 tap "homebrew/services"
@@ -6,14 +7,14 @@ tap "jdxcode/tap"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
 tap "zaquestion/tap"
+# General-purpose data compression with high compression ratio
+brew "xz"
 # Arduino command-line interface
 brew "arduino-cli"
 # Record and share terminal sessions
 brew "asciinema"
 # Command-line interface for SQLite
 brew "sqlite"
-# General-purpose data compression with high compression ratio
-brew "xz"
 # Interpreted, interactive, object-oriented programming language
 brew "python@3.12"
 # Shell extension to jump to frequently used directories
@@ -124,12 +125,14 @@ brew "neovim"
 brew "neovim-remote"
 # Port scanning utility for large networks
 brew "nmap"
+# PNG image optimizing utility
+brew "pngquant"
+# Adds an OCR text layer to scanned PDF files
+brew "ocrmypdf"
 # PNG file optimizer
 brew "optipng"
 # CLI for Postgres with auto-completion and syntax highlighting
 brew "pgcli"
-# PNG image optimizing utility
-brew "pngquant"
 # PDF rendering library (based on the xpdf-3.0 code base)
 brew "poppler"
 # Unix pager optimized for psql
@@ -148,6 +151,8 @@ brew "sevenzip"
 brew "smartmontools"
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
+# Enables extra languages support for Tesseract
+brew "tesseract-lang"
 # Code-search similar to ack
 brew "the_silver_searcher"
 # Syntax-aware linter for prose

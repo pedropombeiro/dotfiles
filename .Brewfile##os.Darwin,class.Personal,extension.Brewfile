@@ -324,8 +324,6 @@ mas "Brother iPrint&Scan", id: 1193539993
 mas "Developer", id: 640199958
 mas "Discovery", id: 1381004916
 mas "feedly", id: 865500966
-mas "GarageBand", id: 682658836
-mas "iMovie", id: 408981434
 mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
 mas "Kindle Classic", id: 405399194

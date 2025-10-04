@@ -213,6 +213,8 @@ cask "bluetility"
 cask "calibre"
 # Allows switching between application windows
 cask "contexts"
+# Disk space visualiser
+cask "daisydisk"
 # API documentation browser and code snippet manager
 cask "dash"
 # Assign keys, and then decorate and label them

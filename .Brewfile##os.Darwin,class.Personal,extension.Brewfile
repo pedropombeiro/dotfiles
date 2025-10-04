@@ -314,8 +314,6 @@ cask "utm"
 cask "visual-studio-code"
 # Native desktop client for WhatsApp
 cask "whatsapp"
-# Network protocol analyzer
-cask "wireshark-app"
 # Application for configuring any YubiKey
 cask "yubico-yubikey-manager"
 # Video communication and virtual meeting platform
@@ -325,15 +323,11 @@ mas "Amphetamine", id: 937984704
 mas "Brother iPrint&Scan", id: 1193539993
 mas "Developer", id: 640199958
 mas "Discovery", id: 1381004916
-mas "feedly", id: 865500966
-mas "Keynote", id: 409183694
 mas "Kindle", id: 302584613
-mas "Kindle Classic", id: 405399194
 mas "Mactracker", id: 430255202
 mas "Microsoft To Do", id: 1274495053
 mas "Paperparrot", id: 1663665267
 mas "Parcel Classic", id: 639968404
-mas "Pocket", id: 568494494
 mas "Router", id: 1229416813
 mas "Shazam", id: 897118787
 mas "Speedtest", id: 1153157709

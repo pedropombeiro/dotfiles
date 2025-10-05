@@ -187,6 +187,8 @@ brew "nginx", restart_service: :changed
 brew "nmap"
 # Prometheus exporter for machine metrics
 brew "node_exporter", restart_service: :changed
+# Cryptography and SSL/TLS Toolkit
+brew "openssl@3.5"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
 # CLI for Postgres with auto-completion and syntax highlighting

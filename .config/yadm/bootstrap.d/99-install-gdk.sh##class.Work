@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+curl "https://gitlab.com/gitlab-org/gitlab-development-kit/-/raw/main/support/install" | bash
+if [[ -d ~/gitlab-development-kit ]]; then
+  touch ~/gitlab-development-kit/.metadata_never_index
+else
+  touch ~/gdk/.metadata_never_index
+fi

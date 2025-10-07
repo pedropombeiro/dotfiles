@@ -99,9 +99,7 @@
   diffFilter = delta --color-only --features=interactive
 
 [delta]
-  line-numbers = true
-  features     = decorations
-  side-by-side = true
+  features     = decorations side-by-side
   light        = false      # set to true if you're in a terminal w/ a light background color
   plus-style   = "syntax #012800"
   minus-style  = "syntax #340001"
@@ -111,6 +109,10 @@
 
 [delta "interactive"]
   keep-plus-minus-markers = false
+
+[delta "side-by-side"]
+  side-by-side = true
+  line-numbers = true
 
 [delta "decorations"]
   commit-decoration-style       = blue ol

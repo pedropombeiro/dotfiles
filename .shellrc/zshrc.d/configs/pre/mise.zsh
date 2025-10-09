@@ -4,13 +4,17 @@ for mise_path in "${HOME}/.local/share/mise/bin/mise" "${HOME}/.local/bin/mise" 
   if command -v $mise_path >/dev/null; then
     export RTX_DISABLE_DIRENV_WARNING=1
 
-    eval "$(${mise_path} activate zsh)"
+    # Use -c to defer the entire command
+    zsh-defer -t 0.3 -c 'eval "$(mise activate zsh)"'
+    break
   fi
 done
 
-if [[ -n $MISE_SHELL ]]; then
-  if [[ ! -f ~/.config/zsh/site-functions/_mise ]]; then
-    mise complete -s zsh >~/.config/zsh/site-functions/_mise
-    rm -f '~/.zcompdump*' >/dev/null 2>&1
+zsh-defer -c "
+  if [[ -n \$MISE_SHELL ]]; then
+    if [[ ! -f ~/.config/zsh/site-functions/_mise ]]; then
+      mise complete -s zsh >~/.config/zsh/site-functions/_mise
+      rm -f ~/.zcompdump* >/dev/null 2>&1
+    fi
   fi
-fi
+"

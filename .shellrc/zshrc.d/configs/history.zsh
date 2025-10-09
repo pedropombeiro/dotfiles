@@ -10,3 +10,4 @@ setopt HIST_IGNORE_DUPS   # Don't record an entry that was just recorded again.
 setopt HIST_FIND_NO_DUPS  # Do not display a line previously found.
 setopt sharehistory
 setopt extendedhistory
+setopt histignorespace

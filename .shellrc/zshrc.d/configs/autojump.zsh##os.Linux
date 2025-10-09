@@ -2,4 +2,4 @@
 
 INSTALL_DIR="/usr/share/autojump"
 
-[[ -s "${INSTALL_DIR}/autojump.zsh" ]] && zvm_after_init_commands+=("source '${INSTALL_DIR}/autojump.zsh'")
+[[ -s "${INSTALL_DIR}/autojump.zsh" ]] && zsh-defer source "${INSTALL_DIR}/autojump.zsh"

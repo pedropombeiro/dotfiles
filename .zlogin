@@ -21,7 +21,7 @@
 
   setopt EXTENDED_GLOB
 
-  # zcompile the completion cache; siginificant speedup.
+  # zcompile the completion cache; significant speedup.
   zcompare ${ZDOTDIR:-${HOME}}/.zcompdump
   zcompare ${HOME}/.zshrc
   zcompare ${HOME}/.zshrc.shared

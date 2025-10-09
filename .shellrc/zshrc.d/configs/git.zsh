@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 
-plugins+=(git git-extras)
+zsh-defer source "$ZSH/plugins/git/git.plugin.zsh"
+zsh-defer source "$ZSH/plugins/git/git-extras.plugin.zsh"
 
 export GIT_COMPLETION_CHECKOUT_NO_GUESS=1 # only autocomplete with local branches
 

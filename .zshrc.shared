@@ -32,20 +32,23 @@ _load_settings() {
   _dir="$1"
   if [[ -d "$_dir" ]]; then
     if [[ -d "$_dir/pre" ]]; then
-      source_files $(find "$_dir"/pre -mindepth 1 -name '*.*sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) | sort -n 2>/dev/null)
+      source_files $(find "$_dir"/pre -mindepth 1 -name '*.*sh' -and -not -name '*##*' -and -not -name '*~$*' -and -not -name '*.zwc' -and \( -type f -or -type l \) | sort -n 2>/dev/null)
     fi
 
-    source_files $(find "$_dir" -mindepth 1 -and -not -path '*/pre/**' -and -not -path '*/post/**' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \))
+    source_files $(find "$_dir" -mindepth 1 -and -name '*.*sh' -and -not -path '*/pre/**' -and -not -path '*/post/**' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \))
 
     if [[ -f "$ZSH/oh-my-zsh.sh" && -z "$INTELLIJ_ENVIRONMENT_READER" ]]; then
       source_file $ZSH/oh-my-zsh.sh
     fi
 
     if [ -d "$_dir/post" ]; then
-      source_files $(find "$_dir"/post -mindepth 1 -name '*.*sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) | sort -n 2>/dev/null)
+      source_files $(find "$_dir"/post -mindepth 1 -name '*.*sh' -and -not -name '*##*' -and -not -name '*~$*' -and -not -name '*.zwc' -and \( -type f -or -type l \) | sort -n 2>/dev/null)
     fi
   fi
 }
+
+autoload -Uz ${ZSH}/custom/plugins/zsh-defer/zsh-defer
+
 _load_settings "$HOME/.shellrc/zshrc.d/configs"
 
 # Load all files from .shell/rc.d directory
@@ -56,7 +59,7 @@ fi
 # aliases
 source_file ~/.aliases.sh
 
-unfunction source_files
+unfunction zcompare source_file source_files
 
 # autoload custom executable functions
 _func_dir="${HOME}/.shellrc/zshrc.d/functions"
@@ -66,10 +69,12 @@ if [[ ${#_function_files[@]} -gt 0 ]]; then
   autoload -Uz $_function_files[@]
 fi
 
-sessions=$(tmux ls 2>&1)
-if [[ $? -eq 0 ]]; then
-  if [[ $(echo $sessions | wc -l) -gt 1 ]]; then
-    echo "Existing tmux sessions:"
-    echo "$sessions"
+zsh-defer '
+  sessions=$(tmux ls 2>&1)
+  if [[ $? -eq 0 ]]; then
+    if [[ $(echo $sessions | wc -l) -gt 1 ]]; then
+      echo "Existing tmux sessions:"
+      echo "$sessions"
+    fi
   fi
-fi
+'

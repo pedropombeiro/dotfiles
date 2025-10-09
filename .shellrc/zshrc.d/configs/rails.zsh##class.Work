@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
 
-plugins+=(rake-fast)
+zsh-defer source $ZSH/plugins/rake-fast/rake-fast.plugin.zsh
 
 alias reset_test_db='bundle exec rails db:drop db:create db:test:prepare db:migrate RAILS_ENV=test'

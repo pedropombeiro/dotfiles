@@ -316,6 +316,8 @@ cask "tripmode"
 cask "utm"
 # Open-source code editor
 cask "visual-studio-code"
+# Multimedia player
+cask "vlc"
 # Native desktop client for WhatsApp
 cask "whatsapp"
 # Application for configuring any YubiKey

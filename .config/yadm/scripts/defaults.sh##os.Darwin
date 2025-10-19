@@ -192,6 +192,10 @@ duti -s com.neovide.neovide com.apple.log all                      # .log files
 duti -s com.neovide.neovide public.plain-text all                  # Catch-all for plain text files without extensions
 duti -s com.neovide.neovide public.data all                        # Catch-all for plain text files without extensions
 
+# Open video file types with vlc
+duti -s org.videolan.vlc m4v viewer
+duti -s org.videolan.vlc mp4 viewer
+
 ###############################################################################
 # Dock, Dashboard, and hot corners                                            #
 ###############################################################################

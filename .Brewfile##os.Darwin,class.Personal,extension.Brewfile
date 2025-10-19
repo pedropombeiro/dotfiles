@@ -27,6 +27,8 @@ brew "bat"
 brew "btop"
 # Linter/analyzer for Makefiles
 brew "checkmake"
+# Copy files from your terminal that actually paste into GUI apps
+brew "clippy"
 # Container runtimes on MacOS (and Linux) with minimal setup
 brew "colima"
 # GNU File, Shell, and Text utilities

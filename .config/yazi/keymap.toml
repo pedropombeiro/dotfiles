@@ -31,6 +31,20 @@ run = "plugin parent-arrow 1"
 [[mgr.prepend_keymap]]
 on = "<C-p>"
 run = 'shell -- qlmanage -p "$@"'
+desc = "Open preview"
+
+[[mgr.prepend_keymap]]
+on = ["c", "c"]
+run = 'shell -- clippy "$@"'
+desc = "Copy selection to clipboard"
+[[mgr.prepend_keymap]]
+on = ["c", "C"]
+run = 'shell -- clippy -t "$@"'
+desc = "Copy selection's content to clipboard"
+[[mgr.prepend_keymap]]
+on = ["c", "v"]
+run = 'shell -- pasty'
+desc = "Paste from clipboard"
 
 [[mgr.prepend_keymap]]
 on = "<Enter>"

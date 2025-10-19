@@ -170,7 +170,7 @@ brew "wget"
 # Show the current WiFi network password
 brew "wifi-password"
 # Network analyzer and capture tool - without graphical user interface
-brew "wireshark", link: false
+brew "wireshark"
 # Friendly and fast tool for sending HTTP requests
 brew "xh"
 # Yet Another Dotfiles Manager
@@ -329,7 +329,7 @@ mas "Kindle", id: 302584613
 mas "Mactracker", id: 430255202
 mas "Microsoft To Do", id: 1274495053
 mas "Paperparrot", id: 1663665267
-mas "Parcel Classic", id: 639968404
+mas "Parcel", id: 375589283
 mas "Router", id: 1229416813
 mas "Shazam", id: 897118787
 mas "Speedtest", id: 1153157709

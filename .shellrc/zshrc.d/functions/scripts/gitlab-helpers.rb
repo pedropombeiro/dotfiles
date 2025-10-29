@@ -490,7 +490,7 @@ def gpsup(remote, issue_iid)
     "label='Category:Fleet Visibility'",
     "label='section::ci'",
     "label='devops::verify'",
-    "label='group::runner'"
+    "label='group::ci platform'"
   ] + (labels&.map { |label| "label='#{label}'" } || [])
   options << "milestone='#{milestone}'" if milestone
   cmd = <<~SHELL.lines(chomp: true).join(' ')

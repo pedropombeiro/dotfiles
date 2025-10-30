@@ -17,13 +17,6 @@ local function fuzzy_implementation()
 end
 
 return {
-  {
-    "https://gitlab.com/tachyons-gitlab/gitlab-lsp",
-    dependencies = { "nvim-lua/plenary.nvim" },
-    ft = { "go", "javascript", "lua", "python", "ruby", "rust", "typescript" },
-    opts = {},
-  },
-
   -- auto completion
   {
     "saghen/blink.cmp",

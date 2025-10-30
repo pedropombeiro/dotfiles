@@ -20,8 +20,8 @@ return {
   {
     "https://gitlab.com/tachyons-gitlab/gitlab-lsp",
     dependencies = { "nvim-lua/plenary.nvim" },
-    cond = function() return vim.fn.split(vim.fn.system("yadm config --get local.class"))[1] == "Work" end,
-    config = function() require("gitlab-lsp").setup() end,
+    ft = { "go", "javascript", "lua", "python", "ruby", "rust", "typescript" },
+    opts = {},
   },
 
   -- auto completion

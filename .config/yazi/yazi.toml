@@ -11,6 +11,19 @@ extract = [
   { run = 'ya pub extract --list "$@"', desc = "Extract here", for = "unix" },
   { run = 'ya pub extract --list %*', desc = "Extract here", for = "windows" },
 ]
+visidata = [
+	{ run = 'vd "$@"', block = true, desc = "Open in VisiData" },
+]
+
+[open]
+prepend_rules = [
+	{ name = "*.csv", use = "visidata" },
+	{ name = "*.tsv", use = "visidata" },
+  { name = "*.db", use = "visidata" },
+	{ name = "*.json", use = "visidata" },
+	{ name = "*.sql", use = "visidata" },
+	{ name = "*.sqlite3", use = "visidata" },
+]
 
 [plugin]
 prepend_fetchers = [

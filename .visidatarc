@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+
+import datetime  # Allow additional datetime column formats
+
+options.motd_url = ""
+
+options.color_active_status = "black on 234"
+options.color_bottom_hdr = "underline white"
+options.color_cmdpalette = "white on 234"
+options.color_current_cell = "16 on white"
+options.color_current_col = ""
+options.color_current_row = "bold on 240"
+options.color_default = "255 on black"
+options.color_current_hdr = "bold white on black"
+options.color_heading = "black on white"
+options.color_key_col = "cyan"
+options.color_keystrokes = "green"
+options.color_longname_guide = "green"
+options.color_menu = "white on 234"
+options.color_menu_active = "white on black"
+options.color_menu_help = "white on black"
+options.color_menu_spec = "bold on 240"
+options.color_sidebar = "white on black"
+options.color_sidebar_title = "black on 255 white"
+
+
+def agg_range(values):
+    # Filter out invalid or incompatible values
+    valid = []
+    for v in values:
+        if v is None:
+            continue
+        # ignore arrays like [1] value
+        if isinstance(v, (list, tuple, dict)):
+            continue
+        valid.append(v)
+
+    if not valid:
+        return None
+
+    try:
+        diff = max(valid) - min(valid)
+        return diff
+    except Exception:
+        return None
+
+
+def agg_non_empty(values):
+    return sum(1 for v in values if v is not None and v != "")
+
+
+vd.aggregator("range", agg_range, "returns (max - min)", type=float)
+vd.aggregator("non_empty", agg_non_empty, "returns non empty values")

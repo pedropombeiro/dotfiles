@@ -257,6 +257,8 @@ brew "vale"
 brew "viddy"
 # Use ViM as PAGER
 brew "vimpager"
+# Terminal spreadsheet multitool for discovering and arranging data
+brew "visidata"
 # Pager/text based browser
 brew "w3m"
 # Executes a program periodically, showing output fullscreen

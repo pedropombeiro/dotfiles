@@ -22,7 +22,6 @@ return {
       local sources = {
         code_actions.gomodifytags, -- Go tool to modify struct field tags
         code_actions.impl, -- impl generates method stubs for implementing an interface.
-        code_actions.gitsigns, -- Injects code actions for Git operations at the current cursor position (stage / preview / reset hunks, blame, etc.).
 
         completion.spell.with({
           filetypes = { "json", "yaml", "markdown" },

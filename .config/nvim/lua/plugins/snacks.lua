@@ -180,7 +180,26 @@ return {
     ---@diagnostic disable: missing-fields
     ---@type snacks.Config
     return {
-      bigfile = { enabled = not vim.g.started_by_firenvim },
+      bigfile = {
+        enabled = not vim.g.started_by_firenvim,
+        setup = function(ctx)
+          if vim.fn.exists(":NoMatchParen") ~= 0 then
+            vim.cmd([[NoMatchParen]])
+          end
+          Snacks.util.wo(0, { foldmethod = "manual", statuscolumn = "", conceallevel = 0 })
+          vim.b.minianimate_disable = true
+          vim.b.minihipatterns_disable = true
+          vim.schedule(function()
+            if vim.api.nvim_buf_is_valid(ctx.buf) then
+              vim.bo[ctx.buf].syntax = ctx.ft
+            end
+          end)
+          vim.b.completion = false
+          if vim.fn.exists(":UfoDetach") ~= 0 then
+            vim.cmd("UfoDetach")
+          end
+        end,
+      },
       dashboard = {
         enabled = not vim.g.started_by_firenvim,
         preset = {

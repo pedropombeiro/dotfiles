@@ -4,27 +4,127 @@ import datetime  # Allow additional datetime column formats
 
 import dateutil
 
+from visidata import vd, options, colors, BaseSheet, DirSheet, GraphSheet
+
+################################################################################
+# visidata gruvbox dark theme configuration
+
+# Gruvbox Dark color palette mapped to 256-color terminal codes
+# Using the closest matches to original Gruvbox colors
+GRUVBOX = {
+    'bg0':     234,   # #1d2021 (hard dark)
+    'bg1':     235,   # #282828 (main dark)
+    'bg2':     236,   # #32302f
+    'bg3':     237,   # #3c3836
+    'bg4':     239,   # #504945
+    'fg0':     223,   # #fbf1c7 (hard light)
+    'fg1':     187,   # #ebdbb2 (main light)
+    'fg2':     250,   # #d5c4a1
+    'fg3':     248,   # #bdae93
+    'fg4':     246,   # #a89984
+    'red':     167,   # #fb4934 (bright red)
+    'green':   142,   # #b8bb26 (bright green)
+    'yellow':  214,   # #fabd2f (bright yellow)
+    'blue':    109,   # #83a598 (bright blue)
+    'purple':  175,   # #d3869b (bright purple)
+    'aqua':    108,   # #8ec07c (bright aqua)
+    'orange':  208,   # #fe8019 (bright orange)
+    'gray':    245,   # #928374 (gray)
+}
+
+vd.themes['gruvbox-dark'] = dict(
+  # Base colors
+  color_default = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg1"]}',
+  color_default_hdr = f'bold {GRUVBOX["yellow"]} on {GRUVBOX["bg2"]}',
+
+  # Key column highlighting with good contrast
+  color_key_col = f'{GRUVBOX["green"]} on {GRUVBOX["bg1"]}',
+
+  # Current column/row (cursor position)
+  color_current_row = f'bold {GRUVBOX["bg1"]} on {GRUVBOX["blue"]}',  # Inverted for visibility
+  color_current_col = f'{GRUVBOX["blue"]} on {GRUVBOX["bg2"]}',
+  color_current_cell = f'bold {GRUVBOX["bg1"]} on {GRUVBOX["blue"]}',
+
+  # Selected rows - high contrast for readability
+  color_selected_row = f'{GRUVBOX["bg1"]} on {GRUVBOX["green"]}',  # Inverted green background
+
+  # Column separators
+  color_column_sep = f'{GRUVBOX["bg4"]} on {GRUVBOX["bg1"]}',
+
+  # Status bars and messages
+  color_status = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0"]}',
+  color_active_status = f'{GRUVBOX["fg2"]} on {GRUVBOX["bg2"]}',
+  color_error = f'bold {GRUVBOX["red"]} on {GRUVBOX["bg0"]}',
+  color_warning = f'{GRUVBOX["yellow"]} on {GRUVBOX["bg0"]}',
+
+  # Sidebar
+  color_sidebar = f'{GRUVBOX["fg0"]} on {GRUVBOX["bg4"]}',
+  color_sidebar_title = f'{GRUVBOX["orange"]} on {GRUVBOX["bg4"]}',
+  color_longname_guide = f'{GRUVBOX["fg4"]} on {GRUVBOX["bg4"]}',
+  color_heading = f'{GRUVBOX["orange"]} on {GRUVBOX["bg4"]}',
+
+  # Cell content types
+  color_note_row = f'{GRUVBOX["blue"]} on {GRUVBOX["bg1"]}',
+
+  # Graph colors
+  color_graph_hidden = f'{GRUVBOX["bg3"]} on {GRUVBOX["bg1"]}',
+  color_graph_selected = f'{GRUVBOX["green"]} on {GRUVBOX["bg1"]}',
+  color_graph_axis = f'{GRUVBOX["fg4"]} on {GRUVBOX["bg1"]}',
+
+  # Canvas/plot colors
+  plot_colors = ' '.join([
+      str(GRUVBOX["green"]),
+      str(GRUVBOX["blue"]),
+      str(GRUVBOX["purple"]),
+      str(GRUVBOX["aqua"]),
+      str(GRUVBOX["orange"]),
+      str(GRUVBOX["yellow"]),
+      str(GRUVBOX["red"]),
+  ]),
+
+  # Bottom sheet colors
+  color_bottom_hdr = f'bold {GRUVBOX["yellow"]} on {GRUVBOX["bg0"]}',
+
+  # Command palette and menus
+  color_cmdpalette = f'{GRUVBOX["fg2"]} on {GRUVBOX["bg3"]}',
+  color_menu = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg2"]}',
+  color_menu_active = f'bold {GRUVBOX["fg0"]} on {GRUVBOX["bg2"]}',
+
+  # Hidden columns
+  color_hidden_col = f'{GRUVBOX["gray"]} on {GRUVBOX["bg1"]}',
+
+  # Add-on status colors
+  color_add_pending = f'{GRUVBOX["yellow"]} on {GRUVBOX["bg1"]}',
+  color_change_pending = f'{GRUVBOX["purple"]} on {GRUVBOX["bg1"]}',
+  color_delete_pending = f'{GRUVBOX["red"]} on {GRUVBOX["bg1"]}',
+
+  disp_status_fmt = '{sheet.sheetlist} ',
+  disp_rstatus_fmt = '{sheet.threadStatus} {sheet.keystrokeStatus}   [:longname_status]{sheet.longname}[/]  {sheet.nRows:9d} {sheet.rowtype} {sheet.modifiedStatus}{sheet.selectedStatus}{vd.replayStatus}{vd.sidebarStatus}',
+)
+
+if options.theme == '':
+  options.theme = 'gruvbox-dark'
+
+################################################################################
+# Set some UI preferences for better experience
+
 options.motd_url = ""
+vd.motd = ""
 
-options.color_active_status = "black on 234"
-options.color_bottom_hdr = "underline white"
-options.color_cmdpalette = "white on 234"
-options.color_current_cell = "16 on white"
-options.color_current_col = ""
-options.color_current_row = "bold on 240"
-options.color_default = "255 on black"
-options.color_current_hdr = "bold white on black"
-options.color_heading = "black on white"
-options.color_key_col = "cyan"
-options.color_keystrokes = "green"
-options.color_longname_guide = "green"
-options.color_menu = "white on 234"
-options.color_menu_active = "white on black"
-options.color_menu_help = "white on black"
-options.color_menu_spec = "bold on 240"
-options.color_sidebar = "white on black"
-options.color_sidebar_title = "black on 255 white"
+@Sheet.after
+def afterLoad(sheet):
+  options.numeric_binning = True
+  options.disp_date_fmt = '%Y-%m-%d'
 
+################################################################################
+# Key bindings
+
+# Optional: Custom keybindings can be added here
+# Example: bindkey('Alt+q', 'quit-sheet')
+
+
+################################################################################
+# Aggregators
 
 def agg_range(values):
     # Filter out invalid or incompatible values
@@ -182,6 +282,7 @@ def autotune(sheet: BaseSheet) -> None:
 
         guess_column_types(sheet)
         guess_key_columns(sheet)
+
 
 @BaseSheet.api
 def autowidth(sheet: BaseSheet) -> None:

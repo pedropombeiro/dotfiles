@@ -4,7 +4,7 @@ import datetime  # Allow additional datetime column formats
 
 import dateutil
 
-from visidata import vd, options, colors, BaseSheet, DirSheet, GraphSheet
+from visidata import vd, options, colors, BaseSheet, DirSheet, GraphSheet, Sheet
 
 ################################################################################
 # visidata gruvbox dark theme configuration
@@ -123,6 +123,9 @@ if options.theme == '':
 options.motd_url = ""
 vd.motd = ""
 
+# Make @ use datetime instead of time
+Sheet.addCommand('@', 'type-datetime', 'cursorCol.type=date; cursorCol.fmtstr="%Y-%m-%d %H:%M:%S"', 'set type of current column to datetime')
+
 @Sheet.after
 def afterLoad(sheet):
   options.numeric_binning = True
@@ -235,7 +238,7 @@ def guess_column_types(sheet: BaseSheet) -> None:
                             column.fmtstr = datefmt
                             found = True
                             break
-                        except ValueError:
+                        except ValueError, TypeError:
                             pass
                     if not found:
                         try:

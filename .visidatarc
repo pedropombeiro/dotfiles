@@ -12,91 +12,103 @@ from visidata import vd, options, colors, BaseSheet, DirSheet, GraphSheet
 # Gruvbox Dark color palette mapped to 256-color terminal codes
 # Using the closest matches to original Gruvbox colors
 GRUVBOX = {
-    'bg0':     234,   # #1d2021 (hard dark)
-    'bg1':     235,   # #282828 (main dark)
-    'bg2':     236,   # #32302f
-    'bg3':     237,   # #3c3836
-    'bg4':     239,   # #504945
-    'fg0':     223,   # #fbf1c7 (hard light)
-    'fg1':     187,   # #ebdbb2 (main light)
-    'fg2':     250,   # #d5c4a1
-    'fg3':     248,   # #bdae93
-    'fg4':     246,   # #a89984
-    'red':     167,   # #fb4934 (bright red)
-    'green':   142,   # #b8bb26 (bright green)
-    'yellow':  214,   # #fabd2f (bright yellow)
-    'blue':    109,   # #83a598 (bright blue)
-    'purple':  175,   # #d3869b (bright purple)
-    'aqua':    108,   # #8ec07c (bright aqua)
-    'orange':  208,   # #fe8019 (bright orange)
-    'gray':    245,   # #928374 (gray)
+    'bg0_h':         234,   # #1d2021 (hard dark)
+    'bg0':           235,   # #282828 (main dark)
+    'bg0_s':         236,   # #32302f
+    'bg1':           237,   # #3c3836
+    'bg2':           239,   # #504945
+    'bg3':           241,   # #665c54
+    'bg4':           243,   # #7c6f64
+    'fg0':           229,   # #fbf1c7 (hard light)
+    'fg':            223,   # #ebdbb2 (main light)
+    'fg1':           223,   # #ebdbb2 (main light)
+    'fg2':           250,   # #d5c4a1
+    'fg3':           248,   # #bdae93
+    'fg4':           246,   # #a89984
+    'red':           124,   # #cc241d (red)
+    'green':         106,   # #98971a (green)
+    'yellow':        172,   # #d79921 (yellow)
+    'blue':          66,    # #458588 (blue)
+    'purple':        132,   # #b16286 (purple)
+    'aqua':          108,   # #689d6a (aqua)
+    'orange':        166,   # #d65d0e (orange)
+    'bright_red':    167,   # #fb4934 (bright red)
+    'bright_green':  142,   # #b8bb26 (bright green)
+    'bright_yellow': 214,   # #fabd2f (bright yellow)
+    'bright_blue':   109,   # #83a598 (bright blue)
+    'bright_purple': 175,   # #d3869b (bright purple)
+    'bright_aqua':   108,   # #8ec07c (bright aqua)
+    'bright_orange': 208,   # #fe8019 (bright orange)
+    'gray':          245,   # #928374 (gray)
 }
 
 vd.themes['gruvbox-dark'] = dict(
   # Base colors
-  color_default = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg1"]}',
-  color_default_hdr = f'bold {GRUVBOX["yellow"]} on {GRUVBOX["bg2"]}',
+  color_default = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0"]}',
+  color_default_hdr = f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_s"]}',
 
   # Key column highlighting with good contrast
-  color_key_col = f'{GRUVBOX["green"]} on {GRUVBOX["bg1"]}',
+  color_key_col = f'{GRUVBOX["bright_green"]} on {GRUVBOX["bg0"]}',
 
   # Current column/row (cursor position)
-  color_current_row = f'bold {GRUVBOX["bg1"]} on {GRUVBOX["blue"]}',  # Inverted for visibility
-  color_current_col = f'{GRUVBOX["blue"]} on {GRUVBOX["bg2"]}',
-  color_current_cell = f'bold {GRUVBOX["bg1"]} on {GRUVBOX["blue"]}',
+  color_current_row = f'bold {GRUVBOX["bg0"]} on {GRUVBOX["blue"]}',  # Inverted for visibility
+  color_current_col = f'{GRUVBOX["bright_blue"]} on {GRUVBOX["bg0_s"]}',
+  color_current_cell = f'bold {GRUVBOX["bg0"]} on {GRUVBOX["bright_blue"]}',
 
   # Selected rows - high contrast for readability
-  color_selected_row = f'{GRUVBOX["bg1"]} on {GRUVBOX["green"]}',  # Inverted green background
+  color_selected_row = f'{GRUVBOX["bg0"]} on {GRUVBOX["bright_green"]}',  # Inverted green background
 
   # Column separators
-  color_column_sep = f'{GRUVBOX["bg4"]} on {GRUVBOX["bg1"]}',
+  color_column_sep = f'{GRUVBOX["bg2"]} on {GRUVBOX["bg0"]}',
+
+  # Aggregator
+  color_aggregator = f'bold {GRUVBOX["fg0"]} on {GRUVBOX["bg0_h"]}',
 
   # Status bars and messages
-  color_status = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0"]}',
-  color_active_status = f'{GRUVBOX["fg2"]} on {GRUVBOX["bg2"]}',
-  color_error = f'bold {GRUVBOX["red"]} on {GRUVBOX["bg0"]}',
-  color_warning = f'{GRUVBOX["yellow"]} on {GRUVBOX["bg0"]}',
+  color_status = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0_h"]}',
+  color_active_status = f'{GRUVBOX["fg2"]} on {GRUVBOX["bg0_s"]}',
+  color_error = f'bold {GRUVBOX["bright_red"]} on {GRUVBOX["bg0_h"]}',
+  color_warning = f'{GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_h"]}',
 
   # Sidebar
-  color_sidebar = f'{GRUVBOX["fg0"]} on {GRUVBOX["bg4"]}',
-  color_sidebar_title = f'{GRUVBOX["orange"]} on {GRUVBOX["bg4"]}',
-  color_longname_guide = f'{GRUVBOX["fg4"]} on {GRUVBOX["bg4"]}',
-  color_heading = f'{GRUVBOX["orange"]} on {GRUVBOX["bg4"]}',
+  color_sidebar = f'{GRUVBOX["fg0"]} on {GRUVBOX["bg2"]}',
+  color_sidebar_title = f'{GRUVBOX["bright_orange"]} on {GRUVBOX["bg2"]}',
+  color_longname_guide = f'{GRUVBOX["fg4"]} on {GRUVBOX["bg2"]}',
+  color_heading = f'{GRUVBOX["bright_orange"]} on {GRUVBOX["bg2"]}',
 
   # Cell content types
-  color_note_row = f'{GRUVBOX["blue"]} on {GRUVBOX["bg1"]}',
+  color_note_row = f'{GRUVBOX["bright_blue"]} on {GRUVBOX["bg0"]}',
 
   # Graph colors
-  color_graph_hidden = f'{GRUVBOX["bg3"]} on {GRUVBOX["bg1"]}',
-  color_graph_selected = f'{GRUVBOX["green"]} on {GRUVBOX["bg1"]}',
-  color_graph_axis = f'{GRUVBOX["fg4"]} on {GRUVBOX["bg1"]}',
+  color_graph_hidden = f'{GRUVBOX["blue"]}',
 
   # Canvas/plot colors
   plot_colors = ' '.join([
-      str(GRUVBOX["green"]),
-      str(GRUVBOX["blue"]),
-      str(GRUVBOX["purple"]),
-      str(GRUVBOX["aqua"]),
-      str(GRUVBOX["orange"]),
-      str(GRUVBOX["yellow"]),
-      str(GRUVBOX["red"]),
+      str(GRUVBOX["bright_green"]),
+      str(GRUVBOX["bright_blue"]),
+      str(GRUVBOX["bright_purple"]),
+      str(GRUVBOX["bright_aqua"]),
+      str(GRUVBOX["bright_orange"]),
+      str(GRUVBOX["bright_yellow"]),
+      str(GRUVBOX["bright_red"]),
   ]),
 
   # Bottom sheet colors
-  color_bottom_hdr = f'bold {GRUVBOX["yellow"]} on {GRUVBOX["bg0"]}',
+  color_bottom_hdr = f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_h"]}',
 
   # Command palette and menus
-  color_cmdpalette = f'{GRUVBOX["fg2"]} on {GRUVBOX["bg3"]}',
-  color_menu = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg2"]}',
-  color_menu_active = f'bold {GRUVBOX["fg0"]} on {GRUVBOX["bg2"]}',
+  color_cmdpalette = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg3"]}',
+  color_menu = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg3"]}',
+  color_menu_active = f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_s"]}',
+  color_menu_help = f'italic {GRUVBOX["bg0_h"]} on {GRUVBOX["blue"]}',
 
   # Hidden columns
-  color_hidden_col = f'{GRUVBOX["gray"]} on {GRUVBOX["bg1"]}',
+  color_hidden_col = f'{GRUVBOX["gray"]} on {GRUVBOX["bg0"]}',
 
   # Add-on status colors
-  color_add_pending = f'{GRUVBOX["yellow"]} on {GRUVBOX["bg1"]}',
-  color_change_pending = f'{GRUVBOX["purple"]} on {GRUVBOX["bg1"]}',
-  color_delete_pending = f'{GRUVBOX["red"]} on {GRUVBOX["bg1"]}',
+  color_add_pending = f'{GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0"]}',
+  color_change_pending = f'{GRUVBOX["bright_purple"]} on {GRUVBOX["bg0"]}',
+  color_delete_pending = f'{GRUVBOX["bright_red"]} on {GRUVBOX["bg0"]}',
 
   disp_status_fmt = '{sheet.sheetlist} ',
   disp_rstatus_fmt = '{sheet.threadStatus} {sheet.keystrokeStatus}   [:longname_status]{sheet.longname}[/]  {sheet.nRows:9d} {sheet.rowtype} {sheet.modifiedStatus}{sheet.selectedStatus}{vd.replayStatus}{vd.sidebarStatus}',
@@ -115,6 +127,7 @@ vd.motd = ""
 def afterLoad(sheet):
   options.numeric_binning = True
   options.disp_date_fmt = '%Y-%m-%d'
+  options.disp_menu_boxchars = '││──╭╮╰╯├┤'
 
 ################################################################################
 # Key bindings

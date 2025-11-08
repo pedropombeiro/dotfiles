@@ -1,0 +1,22 @@
+#!/usr/bin/env zsh
+
+#
+# `vdpip` is used to install Python packages for VisiData with pip
+#
+
+local vd_path
+vd_path=$(brew --prefix visidata 2>/dev/null)
+
+if [[ -z "$vd_path" ]]; then
+    echo "VisiData not found via Homebrew."
+    return 1
+fi
+
+local vdp_python="$vd_path/libexec/bin/python3"
+
+if [[ ! -x "$vdp_python" ]]; then
+    echo "Embedded Python not found at: $vdp_python"
+    return 1
+fi
+
+"$vdp_python" -m pip "$@"

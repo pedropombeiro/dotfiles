@@ -45,6 +45,12 @@ return {
       { "&", ":&&<CR>", mode = { "n", "x" }, hidden = true },
 
       { "<leader>t", group = "Terminal" },
+      {
+        "<leader>tv",
+        mode = "n",
+        function() Snacks.terminal("vd " .. vim.fn.expand("%"), { interactive = true }) end,
+        desc = "Open file in VisiData",
+      },
 
       -- Switch between recently edited buffers (Mastering Vim Quickly)
       { "<C-b>", "<C-^>", desc = "Switch to recent buffer", silent = false },

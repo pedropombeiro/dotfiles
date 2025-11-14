@@ -15,7 +15,7 @@ croc_version=10.2.5
 fzf_version=0.65.2
 gping_version=1.19.0
 lnav_version=0.13.2
-nvim_version=0.11.4 # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
+nvim_version=0.11.5 # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
 procs_version=0.14.9
 yazi_version=25.5.31
 

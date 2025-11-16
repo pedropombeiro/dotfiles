@@ -121,7 +121,7 @@ Sheet.addCommand(
 
 
 @Sheet.after
-def afterLoad(sheet):
+def afterLoad(_sheet):
     options.numeric_binning = True
     options.disp_date_fmt = "%Y-%m-%d"
     options.disp_menu_boxchars = "││──╭╮╰╯├┤"
@@ -251,7 +251,9 @@ def guess_column_types(sheet: BaseSheet) -> None:
                             column.fmtstr = datefmt
                             found = True
                             break
-                        except ValueError, TypeError:
+                        except TypeError:
+                            pass
+                        except ValueError:
                             pass
                     if not found:
                         try:

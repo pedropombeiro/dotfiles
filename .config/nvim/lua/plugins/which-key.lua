@@ -48,7 +48,7 @@ return {
       {
         "<leader>tv",
         mode = "n",
-        function() Snacks.terminal("vd " .. vim.fn.expand("%"), { interactive = true }) end,
+        function() Snacks.terminal("vd '" .. vim.fn.expand("%") .. "'", { interactive = true }) end,
         desc = "Open file in VisiData",
       },
 

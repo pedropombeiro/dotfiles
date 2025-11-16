@@ -3,119 +3,107 @@
 import datetime  # Allow additional datetime column formats
 
 import dateutil
-
-from visidata import vd, options, colors, BaseSheet, DirSheet, GraphSheet, Sheet
+from visidata import BaseSheet, DirSheet, GraphSheet, Sheet, colors, options, vd
 
 ################################################################################
 # visidata gruvbox dark theme configuration
 
 # Gruvbox Dark color palette mapped to 256-color terminal codes
 # Using the closest matches to original Gruvbox colors
+# fmt: off
 GRUVBOX = {
-    'bg0_h':         234,   # #1d2021 (hard dark)
-    'bg0':           235,   # #282828 (main dark)
-    'bg0_s':         236,   # #32302f
-    'bg1':           237,   # #3c3836
-    'bg2':           239,   # #504945
-    'bg3':           241,   # #665c54
-    'bg4':           243,   # #7c6f64
-    'fg0':           229,   # #fbf1c7 (hard light)
-    'fg':            223,   # #ebdbb2 (main light)
-    'fg1':           223,   # #ebdbb2 (main light)
-    'fg2':           250,   # #d5c4a1
-    'fg3':           248,   # #bdae93
-    'fg4':           246,   # #a89984
-    'red':           124,   # #cc241d (red)
-    'green':         106,   # #98971a (green)
-    'yellow':        172,   # #d79921 (yellow)
-    'blue':          66,    # #458588 (blue)
-    'purple':        132,   # #b16286 (purple)
-    'aqua':          108,   # #689d6a (aqua)
-    'orange':        166,   # #d65d0e (orange)
-    'bright_red':    167,   # #fb4934 (bright red)
-    'bright_green':  142,   # #b8bb26 (bright green)
-    'bright_yellow': 214,   # #fabd2f (bright yellow)
-    'bright_blue':   109,   # #83a598 (bright blue)
-    'bright_purple': 175,   # #d3869b (bright purple)
-    'bright_aqua':   108,   # #8ec07c (bright aqua)
-    'bright_orange': 208,   # #fe8019 (bright orange)
-    'gray':          245,   # #928374 (gray)
+    "bg0_h":         234,   # #1d2021 (hard dark)
+    "bg0":           235,   # #282828 (main dark)
+    "bg0_s":         236,   # #32302f
+    "bg1":           237,   # #3c3836
+    "bg2":           239,   # #504945
+    "bg3":           241,   # #665c54
+    "bg4":           243,   # #7c6f64
+    "fg0":           229,   # #fbf1c7 (hard light)
+    "fg":            223,   # #ebdbb2 (main light)
+    "fg1":           223,   # #ebdbb2 (main light)
+    "fg2":           250,   # #d5c4a1
+    "fg3":           248,   # #bdae93
+    "fg4":           246,   # #a89984
+    "red":           124,   # #cc241d (red)
+    "green":         106,   # #98971a (green)
+    "yellow":        172,   # #d79921 (yellow)
+    "blue":          66,    # #458588 (blue)
+    "purple":        132,   # #b16286 (purple)
+    "aqua":          108,   # #689d6a (aqua)
+    "orange":        166,   # #d65d0e (orange)
+    "bright_red":    167,   # #fb4934 (bright red)
+    "bright_green":  142,   # #b8bb26 (bright green)
+    "bright_yellow": 214,   # #fabd2f (bright yellow)
+    "bright_blue":   109,   # #83a598 (bright blue)
+    "bright_purple": 175,   # #d3869b (bright purple)
+    "bright_aqua":   108,   # #8ec07c (bright aqua)
+    "bright_orange": 208,   # #fe8019 (bright orange)
+    "gray":          245,   # #928374 (gray)
 }
+# fmt: on
 
-vd.themes['gruvbox-dark'] = dict(
-  # Base colors
-  color_default = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0"]}',
-  color_default_hdr = f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_s"]}',
-
-  # Key column highlighting with good contrast
-  color_key_col = f'{GRUVBOX["bright_green"]} on {GRUVBOX["bg0"]}',
-
-  # Current column/row (cursor position)
-  color_current_row = f'bold {GRUVBOX["bg0"]} on {GRUVBOX["blue"]}',  # Inverted for visibility
-  color_current_col = f'{GRUVBOX["bright_blue"]} on {GRUVBOX["bg0_s"]}',
-  color_current_cell = f'bold {GRUVBOX["bg0"]} on {GRUVBOX["bright_blue"]}',
-
-  # Selected rows - high contrast for readability
-  color_selected_row = f'{GRUVBOX["bg0"]} on {GRUVBOX["bright_green"]}',  # Inverted green background
-
-  # Column separators
-  color_column_sep = f'{GRUVBOX["bg2"]} on {GRUVBOX["bg0"]}',
-
-  # Aggregator
-  color_aggregator = f'bold {GRUVBOX["fg0"]} on {GRUVBOX["bg0_h"]}',
-
-  # Status bars and messages
-  color_status = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0_h"]}',
-  color_active_status = f'{GRUVBOX["fg2"]} on {GRUVBOX["bg0_s"]}',
-  color_error = f'bold {GRUVBOX["bright_red"]} on {GRUVBOX["bg0_h"]}',
-  color_warning = f'{GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_h"]}',
-
-  # Sidebar
-  color_sidebar = f'{GRUVBOX["fg0"]} on {GRUVBOX["bg2"]}',
-  color_sidebar_title = f'{GRUVBOX["bright_orange"]} on {GRUVBOX["bg2"]}',
-  color_longname_guide = f'{GRUVBOX["fg4"]} on {GRUVBOX["bg2"]}',
-  color_heading = f'{GRUVBOX["bright_orange"]} on {GRUVBOX["bg2"]}',
-
-  # Cell content types
-  color_note_row = f'{GRUVBOX["bright_blue"]} on {GRUVBOX["bg0"]}',
-
-  # Graph colors
-  color_graph_hidden = f'{GRUVBOX["blue"]}',
-
-  # Canvas/plot colors
-  plot_colors = ' '.join([
-      str(GRUVBOX["bright_green"]),
-      str(GRUVBOX["bright_blue"]),
-      str(GRUVBOX["bright_purple"]),
-      str(GRUVBOX["bright_aqua"]),
-      str(GRUVBOX["bright_orange"]),
-      str(GRUVBOX["bright_yellow"]),
-      str(GRUVBOX["bright_red"]),
-  ]),
-
-  # Bottom sheet colors
-  color_bottom_hdr = f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_h"]}',
-
-  # Command palette and menus
-  color_cmdpalette = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg3"]}',
-  color_menu = f'{GRUVBOX["fg1"]} on {GRUVBOX["bg3"]}',
-  color_menu_active = f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_s"]}',
-  color_menu_help = f'italic {GRUVBOX["bg0_h"]} on {GRUVBOX["blue"]}',
-
-  # Hidden columns
-  color_hidden_col = f'{GRUVBOX["gray"]} on {GRUVBOX["bg0"]}',
-
-  # Add-on status colors
-  color_add_pending = f'{GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0"]}',
-  color_change_pending = f'{GRUVBOX["bright_purple"]} on {GRUVBOX["bg0"]}',
-  color_delete_pending = f'{GRUVBOX["bright_red"]} on {GRUVBOX["bg0"]}',
-
-  disp_status_fmt = '{sheet.sheetlist} ',
-  disp_rstatus_fmt = '{sheet.threadStatus} {sheet.keystrokeStatus}   [:longname_status]{sheet.longname}[/]  {sheet.nRows:9d} {sheet.rowtype} {sheet.modifiedStatus}{sheet.selectedStatus}{vd.replayStatus}{vd.sidebarStatus}',
+vd.themes["gruvbox-dark"] = dict(
+    # Base colors
+    color_default=f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0"]}',
+    color_default_hdr=f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_s"]}',
+    # Key column highlighting with good contrast
+    color_key_col=f'{GRUVBOX["bright_green"]} on {GRUVBOX["bg0"]}',
+    # Current column/row (cursor position)
+    color_current_row=f'bold {GRUVBOX["bg0"]} on {GRUVBOX["blue"]}',  # Inverted for visibility
+    color_current_col=f'{GRUVBOX["bright_blue"]} on {GRUVBOX["bg0_s"]}',
+    color_current_cell=f'bold {GRUVBOX["bg0"]} on {GRUVBOX["bright_blue"]}',
+    # Selected rows - high contrast for readability
+    color_selected_row=f'{GRUVBOX["bg0"]} on {GRUVBOX["bright_green"]}',  # Inverted green background
+    # Column separators
+    color_column_sep=f'{GRUVBOX["bg2"]} on {GRUVBOX["bg0"]}',
+    # Aggregator
+    color_aggregator=f'bold {GRUVBOX["fg0"]} on {GRUVBOX["bg0_h"]}',
+    # Status bars and messages
+    color_status=f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0_h"]}',
+    color_active_status=f'{GRUVBOX["fg2"]} on {GRUVBOX["bg0_s"]}',
+    color_error=f'bold {GRUVBOX["bright_red"]} on {GRUVBOX["bg0_h"]}',
+    color_warning=f'{GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_h"]}',
+    # Sidebar
+    color_sidebar=f'{GRUVBOX["fg0"]} on {GRUVBOX["bg2"]}',
+    color_sidebar_title=f'{GRUVBOX["bright_orange"]} on {GRUVBOX["bg2"]}',
+    color_longname_guide=f'{GRUVBOX["fg4"]} on {GRUVBOX["bg2"]}',
+    color_heading=f'{GRUVBOX["bright_orange"]} on {GRUVBOX["bg2"]}',
+    # Cell content types
+    color_note_row=f'{GRUVBOX["bright_blue"]} on {GRUVBOX["bg0"]}',
+    # Graph colors
+    color_graph_hidden=f'{GRUVBOX["blue"]}',
+    # Canvas/plot colors
+    plot_colors=" ".join(
+        [
+            str(GRUVBOX["bright_green"]),
+            str(GRUVBOX["bright_blue"]),
+            str(GRUVBOX["bright_purple"]),
+            str(GRUVBOX["bright_aqua"]),
+            str(GRUVBOX["bright_orange"]),
+            str(GRUVBOX["bright_yellow"]),
+            str(GRUVBOX["bright_red"]),
+        ]
+    ),
+    # Bottom sheet colors
+    color_bottom_hdr=f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_h"]}',
+    # Command palette and menus
+    color_cmdpalette=f'{GRUVBOX["fg1"]} on {GRUVBOX["bg3"]}',
+    color_menu=f'{GRUVBOX["fg1"]} on {GRUVBOX["bg3"]}',
+    color_menu_active=f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_s"]}',
+    color_menu_help=f'italic {GRUVBOX["bg0_h"]} on {GRUVBOX["blue"]}',
+    # Hidden columns
+    color_hidden_col=f'{GRUVBOX["gray"]} on {GRUVBOX["bg0"]}',
+    # Add-on status colors
+    color_add_pending=f'{GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0"]}',
+    color_change_pending=f'{GRUVBOX["bright_purple"]} on {GRUVBOX["bg0"]}',
+    color_delete_pending=f'{GRUVBOX["bright_red"]} on {GRUVBOX["bg0"]}',
+    disp_status_fmt="{sheet.sheetlist} ",
+    disp_rstatus_fmt="{sheet.threadStatus} {sheet.keystrokeStatus}   [:longname_status]{sheet.longname}[/]  {sheet.nRows:9d} {sheet.rowtype} {sheet.modifiedStatus}{sheet.selectedStatus}{vd.replayStatus}{vd.sidebarStatus}",
 )
 
-if options.theme == '':
-  options.theme = 'gruvbox-dark'
+if options.theme == "":
+    options.theme = "gruvbox-dark"
 
 ################################################################################
 # Set some UI preferences for better experience
@@ -124,13 +112,20 @@ options.motd_url = ""
 vd.motd = ""
 
 # Make @ use datetime instead of time
-Sheet.addCommand('@', 'type-datetime', 'cursorCol.type=date; cursorCol.fmtstr="%Y-%m-%d %H:%M:%S"', 'set type of current column to datetime')
+Sheet.addCommand(
+    "@",
+    "type-datetime",
+    'cursorCol.type=date; cursorCol.fmtstr="%Y-%m-%d %H:%M:%S"',
+    "set type of current column to datetime",
+)
+
 
 @Sheet.after
 def afterLoad(sheet):
-  options.numeric_binning = True
-  options.disp_date_fmt = '%Y-%m-%d'
-  options.disp_menu_boxchars = '││──╭╮╰╯├┤'
+    options.numeric_binning = True
+    options.disp_date_fmt = "%Y-%m-%d"
+    options.disp_menu_boxchars = "││──╭╮╰╯├┤"
+
 
 ################################################################################
 # Key bindings
@@ -141,6 +136,7 @@ def afterLoad(sheet):
 
 ################################################################################
 # Aggregators
+
 
 def agg_range(values):
     # Filter out invalid or incompatible values
@@ -169,6 +165,23 @@ def agg_non_empty(values):
 
 vd.aggregator("range", agg_range, "returns (max - min)", type=float)
 vd.aggregator("non_empty", agg_non_empty, "returns non empty values")
+
+
+@BaseSheet.api
+def apply_aggregator_to_all_columns(sheet: BaseSheet) -> None:
+    agg = vd.input("Aggregator: ")
+    if agg:
+        sheet.addAggregators(
+            [col for col in sheet.visibleCols if vd.isNumeric(col)], [agg]
+        )
+
+
+BaseSheet.addCommand(
+    "g+",
+    "add-aggregator-to-all-columns",
+    "apply_aggregator_to_all_columns()",
+    "add aggregator to all visible columns (prompt for name)",
+)
 
 
 ################################################################################

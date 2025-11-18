@@ -14,27 +14,11 @@ if [ -z "$WORKFLOW" ]; then
   exit 1
 fi
 
-if [[ $WORKFLOW == 'runtrigger/com.pedropombeiro.homeassistant/lock' ]]; then
-  osascript -e 'tell application "Spotify"
-          if it is running then
-              if player state is playing then
-                  pause
-              end if
-          end if
-      end tell'
+# URL decode the workflow parameter
+WORKFLOW="alfred://$(echo "$WORKFLOW" | sed 's/+/ /g; s/%/\\x/g' | xargs -0 printf "%b")"
 
-  pmset displaysleepnow >> /tmp/alfred-trigger.log 2>&1
-elif [[ $WORKFLOW == 'runtrigger/com.pedropombeiro.homeassistant/sleep' ]]; then
-  osascript -e 'tell application "Spotify"
-          if it is running then
-              if player state is playing then
-                  pause
-              end if
-          end if
-      end tell'
-
-  pmset sleepnow >> /tmp/alfred-trigger.log 2>&1
-fi
+# Execute the Alfred workflow using 'open'
+/usr/bin/open "$WORKFLOW" >> /tmp/alfred-trigger.log 2>&1
 
 # Return success response
 echo "Content-Type: text/plain"

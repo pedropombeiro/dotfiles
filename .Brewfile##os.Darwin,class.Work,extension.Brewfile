@@ -182,11 +182,13 @@ brew "neovim"
 # Control nvim processes using `nvr` command-line tool
 brew "neovim-remote"
 # HTTP(S) server and reverse proxy, and IMAP/POP3 proxy server
-brew "nginx", restart_service: :changed
+brew "nginx", restart_service: :changed, link: false
 # Port scanning utility for large networks
 brew "nmap"
 # Prometheus exporter for machine metrics
 brew "node_exporter", restart_service: :changed
+# Cryptography and SSL/TLS Toolkit
+brew "openssl@3.5"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
 # CLI for Postgres with auto-completion and syntax highlighting
@@ -420,7 +422,7 @@ mas "MusicBuddy", id: 563706976
 mas "Numbers", id: 409203825
 mas "Okta Extension App", id: 1439967473
 mas "Okta Verify", id: 490179405
-mas "Parcel Classic", id: 639968404
+mas "Parcel", id: 375589283
 mas "PLIST Editor", id: 1157491961
 mas "Speedtest", id: 1153157709
 mas "WireGuard", id: 1451685025
@@ -430,3 +432,5 @@ vscode "deque-systems.vscode-axe-linter"
 vscode "editorconfig.editorconfig"
 vscode "gitlab.gitlab-workflow"
 vscode "shopify.ruby-lsp"
+go "cmd/go"
+go "cmd/gofmt"

@@ -31,6 +31,8 @@ brew "checkmake"
 brew "clippy"
 # Container runtimes on MacOS (and Linux) with minimal setup
 brew "colima"
+# Create and run Linux containers using lightweight virtual machines
+brew "container"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
 # Securely send things from one computer to another

@@ -4,6 +4,7 @@ tap "homebrew/bundle"
 tap "homebrew/services"
 tap "jarred-sumner/git-peek"
 tap "jdxcode/tap"
+tap "jstkdng/programs"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
 tap "zaquestion/tap"
@@ -87,6 +88,8 @@ brew "homeassistant-cli"
 brew "htop"
 # Command-line benchmarking tool
 brew "hyperfine"
+# Tools and libraries to manipulate images in many formats
+brew "imagemagick"
 # Update of iperf: measures TCP, UDP, and SCTP bandwidth
 brew "iperf3"
 # Official CLI for the IPinfo IP Address API
@@ -109,6 +112,8 @@ brew "libpq", link: true
 brew "libyaml"
 # Curses-based tool for viewing and analyzing log files
 brew "lnav"
+# Just-In-Time Compiler (JIT) for the Lua programming language
+brew "luajit"
 # Package manager for the Lua programming language
 brew "luarocks"
 # Keep your Mac's application settings in sync
@@ -189,6 +194,8 @@ brew "yq"
 brew "yt-dlp"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
+# Drop in replacement for ueberzug written in C++
+brew "jstkdng/programs/ueberzugpp"
 # Reconcile your local git repositories
 brew "leipert-projects/git-recon/git-recon"
 # Password manager that keeps all passwords secure behind one password

@@ -24,7 +24,7 @@
 | Label | Screenshot |
 | ----- | ---------- |
 | Oh-my-zsh | ![Oh-my-zsh](https://github.com/pedropombeiro/dotfiles/assets/138074/170565d5-e6cc-45f3-bfcc-2a114d8be5bf) |
-| Yazi      | ![Yazi]() |
+| Yazi      | ![Yazi](https://github.com/user-attachments/assets/e32158c3-5bd4-46ff-8155-c99e2eabb536) |
 | Neovim    | ![Neovim](https://github.com/pedropombeiro/dotfiles/assets/138074/a72f5baa-53ca-4e66-8e04-29be19cfd6bf) |
 
 # Abstract

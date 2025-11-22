@@ -23,9 +23,9 @@
 
 | Label | Screenshot |
 | ----- | ---------- |
-| Oh-my-zsh | <img width="800" alt="image" src="https://github.com/pedropombeiro/dotfiles/assets/138074/170565d5-e6cc-45f3-bfcc-2a114d8be5bf"> |
-| Vifm      | <img width="800" alt="image" src="https://github.com/pedropombeiro/dotfiles/assets/138074/9c58e32f-6791-4d91-a5a7-a362ba124582"> |
-| Neovim    | <img width="1582" alt="image" src="https://github.com/pedropombeiro/dotfiles/assets/138074/a72f5baa-53ca-4e66-8e04-29be19cfd6bf"> |
+| Oh-my-zsh | ![Oh-my-zsh](https://github.com/pedropombeiro/dotfiles/assets/138074/170565d5-e6cc-45f3-bfcc-2a114d8be5bf) |
+| Yazi      | ![Yazi]() |
+| Neovim    | ![Neovim](https://github.com/pedropombeiro/dotfiles/assets/138074/a72f5baa-53ca-4e66-8e04-29be19cfd6bf) |
 
 # Abstract
 

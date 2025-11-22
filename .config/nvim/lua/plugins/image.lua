@@ -1,0 +1,23 @@
+-- image.nvim (https://github.com/3rd/image.nvim)
+
+--  🖼️ Bringing images to Neovim.
+
+return {
+  "3rd/image.nvim",
+  ft = { "markdown" },
+  opts = {
+    backend = "sixel",
+    processor = "magick_rock",
+    integrations = {
+      markdown = {
+        enabled = true,
+        clear_in_insert_mode = true,
+        download_remote_images = true,
+        only_render_image_at_cursor = true,
+        only_render_image_at_cursor_mode = "popup", -- or "inline"
+        floating_windows = false, -- if true, images will be rendered in floating markdown windows
+        filetypes = { "markdown" },
+      },
+    },
+  },
+}

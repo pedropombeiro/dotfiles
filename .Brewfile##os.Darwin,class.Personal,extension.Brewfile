@@ -213,6 +213,8 @@ cask "balenaetcher"
 cask "bartender"
 # Compare files and folders
 cask "beyond-compare"
+# Prevents your sleeping computer from connecting to Bluetooth accessories
+cask "bluesnooze"
 # Bluetooth Low Energy browser
 cask "bluetility"
 # E-books management software
@@ -256,7 +258,7 @@ cask "keyclu"
 # Utility that shows the latest app updates
 cask "latest"
 # Wallet desktop application to maintain multiple cryptocurrencies
-cask "ledger-live"
+cask "ledger-wallet"
 # Free cross-platform office suite, fresh version
 cask "libreoffice"
 # Host-based application firewall

@@ -26,8 +26,6 @@ typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir dir_writable newline vcs)
 typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   status
   direnv    # direnv status (https://direnv.net/)
-  vim_shell # vim shell indicator (:sh)
-  nix_shell # nix shell (https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html)
   background_jobs
   history
   ram
@@ -35,8 +33,8 @@ typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
 )
 typeset -g POWERLEVEL9K_PROMPT_ON_NEWLINE=false
 
-# Prevent gitstatusd from scanning dirty files in repositories with >100K files
-typeset -g POWERLEVEL9K_VCS_MAX_INDEX_SIZE_DIRTY=100000
+# Prevent gitstatusd from scanning dirty files in repositories with >20K files
+typeset -g POWERLEVEL9K_VCS_MAX_INDEX_SIZE_DIRTY=20000
 
 # Increase timeout to prevent the branch indicator from disappearing
 typeset -g POWERLEVEL9K_VCS_MAX_SYNC_LATENCY_SECONDS=1.0

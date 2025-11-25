@@ -25,6 +25,8 @@ typeset -g POWERLEVEL9K_DIR_NOT_WRITABLE_VISUAL_IDENTIFIER_COLOR=red
 typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir dir_writable newline vcs)
 typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   status
+  vpn_ip
+  yazi
   direnv    # direnv status (https://direnv.net/)
   background_jobs
   history

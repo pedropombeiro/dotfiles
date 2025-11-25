@@ -73,18 +73,6 @@ vd.themes["gruvbox-dark"] = dict(
     color_note_row=f'{GRUVBOX["bright_blue"]} on {GRUVBOX["bg0"]}',
     # Graph colors
     color_graph_hidden=f'{GRUVBOX["blue"]}',
-    # Canvas/plot colors
-    plot_colors=" ".join(
-        [
-            str(GRUVBOX["bright_green"]),
-            str(GRUVBOX["bright_blue"]),
-            str(GRUVBOX["bright_purple"]),
-            str(GRUVBOX["bright_aqua"]),
-            str(GRUVBOX["bright_orange"]),
-            str(GRUVBOX["bright_yellow"]),
-            str(GRUVBOX["bright_red"]),
-        ]
-    ),
     # Bottom sheet colors
     color_bottom_hdr=f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_h"]}',
     # Command palette and menus

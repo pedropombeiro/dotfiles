@@ -1,0 +1,28 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "packageRules": [
+    {
+      "prCreation": "not-pending",
+      "internalChecksFilter": "strict",
+      "matchUpdateTypes": ["patch", "pin", "digest"],
+      "automerge": true,
+      "automergeStrategy": "rebase"
+    },
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchPackageNames": ["pre-commit"],
+      "automerge": true
+    }
+  ],
+  "mise": {
+    "managerFilePatterns": [
+      "/(^|/)\\.?mise\\.toml$/",
+      "/(^|/)\\.?mise/config\\.toml$/",
+      "/(^|/)\\.config/mise/\\.?config\\.toml$/"
+    ]
+  },
+  "pre-commit": {
+    "enabled": true
+  }
+}

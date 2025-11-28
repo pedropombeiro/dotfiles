@@ -1,246 +1,373 @@
+# Pedro's Dotfiles 🛠️
+
+A comprehensive dotfiles configuration managed with [YADM](https://yadm.io/) for macOS and Linux systems, featuring a carefully curated development environment with powerful CLI tools and integrations.
+
 <!--toc:start-->
-- [Abstract](#abstract)
-- [Prerequisites](#prerequisites)
-  - [Mac OS X](#mac-os-x)
-  - [Installation](#installation)
-  - [Linux Debian/Ubuntu](#linux-debianubuntu)
-- [Post-install procedure](#post-install-procedure)
-  - [On a fresh installation - Linux](#on-a-fresh-installation-linux)
-  - [On a fresh installation - Mac OS X](#on-a-fresh-installation-mac-os-x)
-    - [After factory reset](#after-factory-reset)
-    - [Mac OS X Settings](#mac-os-x-settings)
-    - [Apps to install](#apps-to-install)
+- [Overview](#overview)
+- [Screenshots](#screenshots)
 - [Features](#features)
-- [Misc](#misc)
+- [Quick Start](#quick-start)
+  - [macOS](#macos)
+  - [Linux (Debian/Ubuntu)](#linux-debianubuntu)
+- [Post-Installation](#post-installation)
+  - [Fresh Installation - macOS](#fresh-installation---macos)
+  - [Fresh Installation - Linux](#fresh-installation---linux)
+- [Configuration](#configuration)
+  - [macOS Settings](#macos-settings)
+  - [Apps to Install](#apps-to-install)
+- [Development Tools](#development-tools)
+- [Maintenance](#maintenance)
   - [Profiling ZSH](#profiling-zsh)
-  - [Useful software (not installed by default)](#useful-software-not-installed-by-default)
-  - [Checklist before reinstall](#checklist-before-reinstall)
-  - [Checklist after install](#checklist-after-install)
-  - [Useful commands](#useful-commands)
-    - [Use vim in YADM Git context](#use-vim-in-yadm-git-context)
+  - [Checklist Before Reinstall](#checklist-before-reinstall)
+  - [Checklist After Install](#checklist-after-install)
+  - [Useful Commands](#useful-commands)
 - [Acknowledgments](#acknowledgments)
 <!--toc:end-->
 
-| Label | Screenshot |
-| ----- | ---------- |
-| Oh-my-zsh | ![Oh-my-zsh](https://github.com/pedropombeiro/dotfiles/assets/138074/170565d5-e6cc-45f3-bfcc-2a114d8be5bf) |
-| Yazi      | ![Yazi](https://github.com/user-attachments/assets/e32158c3-5bd4-46ff-8155-c99e2eabb536) |
-| Neovim    | ![Neovim](https://github.com/user-attachments/assets/6d3479cb-c82e-475b-aafe-a7ef06d4e85a) |
+## Overview
 
-# Abstract
+This repository contains my personal dotfiles configuration, providing a consistent and productive development environment across different machines. It uses YADM (Yet Another Dotfiles Manager) for seamless synchronization and supports both macOS and Linux platforms with platform-specific configurations.
 
-This dotfiles repo leverages [YADM](https://yadm.io/) as the dotfiles manager.
+## Screenshots
 
-# Prerequisites
+| Tool | Preview |
+| ---- | ------- |
+| **Oh-my-zsh** | ![Oh-my-zsh](https://github.com/pedropombeiro/dotfiles/assets/138074/170565d5-e6cc-45f3-bfcc-2a114d8be5bf) |
+| **Yazi** | ![Yazi](https://github.com/user-attachments/assets/e32158c3-5bd4-46ff-8155-c99e2eabb536) |
+| **Neovim** | ![Neovim](https://github.com/user-attachments/assets/6d3479cb-c82e-475b-aafe-a7ef06d4e85a) |
 
-## Mac OS X
+## Features
 
-Log in to the App Store.
+This dotfiles setup includes:
 
-Install the YADM and the [Brew package manager](https://brew.sh/):
+- **🐚 Shell Configuration**
+  - [Oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) with custom themes and plugins
+  - Custom aliases and functions for productivity
+  - [fzf](https://github.com/junegunn/fzf) integration - fuzzy file finder (use `**<TAB>` for fuzzy completion, e.g., `vim **<TAB>`)
+  - [autojump](https://github.com/wting/autojump) - intelligent directory navigation
+  - [direnv](https://direnv.net/) - environment switcher for the shell
+
+- **📝 Editor Configuration**
+  - [Neovim](https://neovim.io/) with comprehensive plugin setup
+  - [Neovide](https://neovide.dev/) - Neovim GUI client
+  - Vim configuration with fzf integration
+  - VS Code settings sync
+
+- **🔧 Development Tools**
+  - Git configuration with aliases and utilities ([git-extras](https://github.com/tj/git-extras), [git-delta](https://github.com/dandavison/delta), [git-peek](https://github.com/Jarred-Sumner/git-peek))
+  - Programming language environments (Ruby, Go, Python, Node.js, Rust)
+  - [Docker](https://www.docker.com/) and [Colima](https://github.com/abiosoft/colima) for container development
+  - Database tools (PostgreSQL with [pgcli](https://www.pgcli.com/), [pspg](https://github.com/okbob/pspg))
+
+- **🎨 Terminal Enhancements**
+  - [iTerm2](https://iterm2.com/) with shell integration
+  - Custom color schemes
+  - [Yazi](https://github.com/sxyazi/yazi) - blazing fast terminal file manager
+  - [bat](https://github.com/sharkdp/bat) - cat clone with syntax highlighting
+  - [eza](https://github.com/eza-community/eza) - modern replacement for ls
+  - [btop](https://github.com/aristocratos/btop) - resource monitor
+  - [grc](https://github.com/garabik/grc) - generic colouriser
+
+- **📦 Package Management**
+  - [Homebrew](https://brew.sh/) bundle configuration
+  - [mise](https://mise.jdx.dev/) - polyglot runtime manager (modern alternative to asdf)
+  - Language-specific package managers
+
+- **🔐 Security & Privacy**
+  - [1Password](https://1password.com/) with CLI integration
+  - SSH configuration
+  - GPG setup
+  - Secure credential management
+
+## Quick Start
+
+### macOS
+
+**Prerequisites:**
+1. Log in to the App Store
+2. Install Xcode and accept the license agreement
+
+**Installation:**
 
 ```shell
+# Install Homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 eval "$(/opt/homebrew/bin/brew shellenv)"
+
+# Install YADM
 brew install yadm
-```
 
-## Installation
+# Clone dotfiles repository
+yadm clone --no-bootstrap https://github.com/pedropombeiro/dotfiles.git
 
-Install dotfiles:
+# Set class configuration (Personal or Work)
+yadm config local.class Personal
 
-```shell
-# Use HTTPS protocol for anonymous access
-yadm clone --no-bootstrap https://github.com/pedropombeiro/dotfiles.git && \
-yadm config local.class Personal && \
-yadm bootstrap && \
+# Run bootstrap script to set up environment
+yadm bootstrap
+
+# Reload shell configuration
 source ~/.zshrc.shared
 ```
 
-See the [fresh install section](#on-a-fresh-installation---mac-os-x) below.
-
-## Linux Debian/Ubuntu
+### Linux (Debian/Ubuntu)
 
 ```shell
+# Install YADM
 sudo apt update && sudo apt install -y yadm
-```
 
-Install dotfiles:
-
-```shell
-yadm clone --no-bootstrap https://github.com/pedropombeiro/dotfiles.git && \
-yadm config local.class Personal && \
-yadm bootstrap && \
+# Clone dotfiles and bootstrap
+yadm clone --no-bootstrap https://github.com/pedropombeiro/dotfiles.git
+yadm config local.class Personal
+yadm bootstrap
 source ~/.zshrc.shared
 ```
 
-# Post-install procedure
+## Post-Installation
+
+After installing the dotfiles, symlink the configuration files in Syncthing:
 
 ```shell
-# Symlink the dotfiles in Syncthing
 ~/.config/yadm/scripts/relink-dotfiles.sh
 ```
 
-## On a fresh installation - Linux
+### Fresh Installation - macOS
+
+**After Factory Reset:**
+
+1. Install any available OS upgrades
+2. Install Xcode from the App Store and accept the T&C
+3. Run the quick start installation steps above
+4. Verify SSH connectivity:
 
 ```shell
-# Verify you can connect to github and gitlab with the generated SSH keys:
 ssh -T git@github.com
 ssh -T git@gitlab.com
 ```
 
-## On a fresh installation - Mac OS X
-
-### After factory reset
-
-1. Install any OS upgrade
-1. Install XCode from the App Store. Open it and accept the T&C.
-1. Run the steps below
-
-```shell
-# Verify you can connect to github and gitlab with the generated SSH keys:
-ssh -T git@github.com
-ssh -T git@gitlab.com
-```
-
-1. After doing the first sync with Syncthing, restore Mackup backup:
+5. After first Syncthing sync, restore Mackup backup:
 
 ```shell
 mackup restore
 ```
 
-### Mac OS X Settings
+### Fresh Installation - Linux
 
-- Change the computer name
-- Change the default terminal font to 'MesloLGS NF'
-- [Disable notifications when screen is off](https://www.jeffgeerling.com/blog/2016/external-display-waking-disable-notifications-when-your-screen)
-- Disable Location Services
-- Set keyboard shortcuts
-  - Set the change input source shortcuts
-
-### Apps to install
-
-- Installed via brew:
-  - [1Password](https://1password.com/downloads/mac/)
-  - [Alfred](https://www.alfredapp.com/)
-  - [Beyond Compare](https://scootersoftware.com/download.php)
-  - [Boom 3D](https://www.globaldelight.com/boom/)
-  - [Camera Live](https://github.com/v002/v002-Camera-Live)
-  - [Croc file transfer](https://github.com/schollz/croc)
-  - [Dash](https://kapeli.com/dash)
-  - [Docker](https://www.docker.com/products/docker-desktop)
-  - [Dropbox](https://www.dropbox.com/install)
-  - [Fork Git client](https://git-fork.com/update/files/Fork.dmg)
-  - [Google Chrome](https://www.google.com/chrome/)
-  - [iTerm2](https://www.iterm2.com/downloads.html)
-  - [Kap](https://getkap.co/)
-  - [Krisp](https://krisp.ai/)
-  - [LibreOffice](https://www.libreoffice.org/download/download/)
-  - [Little Snitch](https://www.obdev.at/products/littlesnitch/download.html)
-  - [Mac App Store command line interface](https://github.com/mas-cli/mas)
-  - [Mackup](https://github.com/lra/mackup)
-  - [Microsoft Edge](https://www.microsoft.com/en-us/edge)
-  - [Muzzle](https://muzzleapp.com/)
-  - [Notion](https://notion.so)
-  - [Numi](https://numi.io/)
-  - [P4Merge](https://www.perforce.com/products/helix-core-apps/merge-diff-tool-p4merge)
-  - [Plex](https://www.plex.tv/media-server-downloads/#plex-app)
-  - [ProtonMail Bridge](https://protonmail.com/bridge/install)
-  - [ProtonVPN](https://protonvpn.com/download)
-  - [Skype](https://www.skype.com/en/get-skype/)
-  - [Slack](https://slack.com/downloads)
-  - [Spotify](https://www.spotify.com/download/mac)
-  - [Syncthing](https://syncthing.net/downloads/)
-  - [switchaudio-osx](https://github.com/deweller/switchaudio-osx)
-  - [TripMode 3](https://www.tripmode.ch/)
-  - [Visual Studio Code](https://code.visualstudio.com/Download)
-- Installed via mas-cli:
-  - Amphetamine ([App Store](https://apps.apple.com/us/app/amphetamine/id937984704))
-  - Pocket ([App Store](https://apps.apple.com/us/app/pocket/id568494494))
-  - Toggl Desktop ([App Store](https://apps.apple.com/us/app/toggl-time-tracker-for-work/id957734279))
-  - Time Out - Break Reminders ([App Store](https://apps.apple.com/us/app/time-out-break-reminders/id402592703))
-  - WhatsApp ([App Store](https://apps.apple.com/us/app/whatsapp-desktop/id1147396723))
-- [Elgato Control Center](https://www.elgato.com/en/gaming/downloads)
-- [Microsoft To Do](https://todo.microsoft.com/tasks/)
-- [Oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) (installed via curl/git clone)
-- [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
-- GitLab-specific:
-  - [Install GitLink](https://plugins.jetbrains.com/plugin/8183-gitlink)
-
-Setup the following apps:
-
-- Beyond Compare (import settings backup and install command line tools)
-- Password application
-  - 1Password
-  - MacPass
-- Syncthing
-- Time Machine
-- Microsoft Edge
-- Visual Studio Code
-  - Enable settings sync
-- Printers
-- Time Out
-  - Name: Pomodoro
-  - Pomodoro time: 20m
-  - Break time: 1m
-  - Theme: Muscles
-  - Show button to postpone: 1 minutes
-  - Show button to postpone: 5 minutes
-  - Show button to skip break
-
-# Features
-
-- [fzf](https://github.com/junegunn/fzf): fuzzy file finder. To use it on the command line, prefix with `**`, then press tab. For instance: `vim **<TAB>`.
-- [autojump](https://github.com/wting/autojump): a cd commands that learns
-  about your favorite directories.
-
-# Misc
-
-## Profiling ZSH
-
-Use `zprof`:
+Verify SSH connectivity to Git services:
 
 ```shell
-# At the beginning of your file, e.g. zshrc
+ssh -T git@github.com
+ssh -T git@gitlab.com
+```
+
+## Configuration
+
+### macOS Settings
+
+Manual configuration steps:
+
+- Change the computer name in System Preferences
+- Set default terminal font to 'MesloLGS NF'
+- [Disable notifications when screen is off](https://www.jeffgeerling.com/blog/2016/external-display-waking-disable-notifications-when-your-screen)
+- Disable Location Services (if desired)
+- Configure keyboard shortcuts:
+  - Set input source switching shortcuts
+
+### Apps to Install
+
+**Installed via Homebrew:**
+
+*Productivity & Utilities:*
+- [1Password](https://1password.com/) - Password manager with CLI support
+- [Alfred](https://www.alfredapp.com/) - Productivity launcher
+- [Raycast](https://raycast.com/) - Launcher and productivity tool
+- [Bartender](https://www.macbartender.com/) - Menu bar organizer
+- [Mackup](https://github.com/lra/mackup) - Application settings backup
+- [Muzzle](https://muzzleapp.com/) - Notification manager for screen sharing
+- [Notion](https://notion.so) - Note-taking and collaboration
+- [AirBuddy](https://airbuddy.app/) - AirPods companion app
+
+*Development Tools:*
+- [Visual Studio Code](https://code.visualstudio.com/) - Code editor
+- [iTerm2](https://iterm2.com/) - Terminal emulator
+- [Fork](https://git-fork.com/) - Git client
+- [TablePlus](https://tableplus.com/) - Database client
+- [Docker](https://www.docker.com/products/docker-desktop) - Container platform
+- [Dash](https://kapeli.com/dash) - API documentation browser
+- [Neovide](https://neovide.dev/) - Neovim GUI client
+
+*File Management & Comparison:*
+- [Beyond Compare](https://scootersoftware.com/) - File/folder comparison
+- [P4V](https://www.perforce.com/products/helix-core-apps/merge-diff-tool-p4merge) - Perforce visual client
+- [The Unarchiver](https://theunarchiver.com/) - Archive extraction
+- [Syncthing](https://syncthing.net/) - File synchronization
+- [DaisyDisk](https://daisydiskapp.com/) - Disk space visualizer
+
+*Media & Entertainment:*
+- [Spotify](https://www.spotify.com/) - Music streaming
+- [Plex](https://www.plex.tv/) - Media server
+- [VLC](https://www.videolan.org/vlc/) - Multimedia player
+- [Calibre](https://calibre-ebook.com/) - E-book management
+- [GIMP](https://www.gimp.org/) - Image editor
+- [MuseScore](https://musescore.org/) - Music notation software
+
+*System Tools & Utilities:*
+- [iStat Menus](https://bjango.com/mac/istatmenus/) - System monitoring
+- [Lunar](https://lunar.fyi/) - Adaptive brightness for external displays
+- [AppCleaner](https://freemacsoft.net/appcleaner/) - Application uninstaller
+- [Stay](https://cordlessdog.com/stay/) - Window manager
+- [Contexts](https://contexts.co/) - Window switcher
+- [Input Source Pro](https://inputsource.pro/) - Multi-language input tool
+
+*Web Browsers:*
+- [Microsoft Edge](https://www.microsoft.com/edge) - Chromium-based browser
+- [Firefox](https://www.firefox.com/) - Privacy-focused browser
+
+*Communication:*
+- [Slack](https://slack.com/) - Team communication
+- [WhatsApp](https://www.whatsapp.com/) - Messaging
+- [Zoom](https://zoom.us/) - Video conferencing
+
+*Hardware & Specialty Tools:*
+- [Elgato Stream Deck](https://www.elgato.com/stream-deck) - Customizable control pad
+- [Garmin Express](https://www.garmin.com/express) - Garmin device management
+- [Raspberry Pi Imager](https://www.raspberrypi.com/software/) - OS imaging tool
+- [balenaEtcher](https://www.balena.io/etcher/) - USB/SD card flasher
+- [ApplePi-Baker](https://www.tweaking4all.com/software/macosx-software/applepi-baker-v2/) - SD card backup/restore
+- [YubiKey Manager](https://www.yubico.com/support/download/yubikey-manager/) - YubiKey configuration
+
+*Networking & Security:*
+- [ProtonVPN](https://protonvpn.com/) - VPN client
+- [BlueSnooze](https://github.com/odlp/bluesnooze) - Bluetooth sleep blocker
+- [Bluetility](https://github.com/jnross/Bluetility) - BLE browser
+
+*Misc:*
+- [Kap](https://getkap.co/) - Screen recorder
+- [Shottr](https://shottr.cc/) - Screenshot annotation tool
+- [UTM](https://mac.getutm.app/) - Virtual machines
+- [EQMac](https://eqmac.app/) - System-wide equalizer
+- [NetSpot](https://www.netspotapp.com/) - WiFi analyzer
+- [Google Earth Pro](https://www.google.com/earth/about/versions/)
+- [MediaInfo](https://mediaarea.net/en/MediaInfo)
+
+**Installed via mas-cli (Mac App Store):**
+- [1Password for Safari](https://apps.apple.com/app/id1569813296) - Safari extension
+- [Amphetamine](https://apps.apple.com/app/id937984704) - Keep Mac awake
+- [Kindle](https://apps.apple.com/app/id302584613) - E-book reader
+- [WireGuard](https://apps.apple.com/app/id1451685025) - VPN client
+- [Parcel](https://apps.apple.com/app/id375589283) - Package tracking
+- [Mactracker](https://apps.apple.com/app/id430255202) - Apple hardware database
+- [Discovery](https://apps.apple.com/app/id1381004916) - Bonjour browser
+
+**Post-Installation Setup:**
+
+Configure the following applications:
+- **Beyond Compare** - Import settings backup and install command line tools
+- **Password Manager** - Set up 1Password or MacPass
+- **Syncthing** - Configure synchronization
+- **Time Machine** - Set up backups
+- **Microsoft Edge** - Configure browser settings
+- **Visual Studio Code** - Enable settings sync
+- **Printers** - Add network/local printers
+
+## Development Tools
+
+Key tools included in this setup:
+
+- **Version Managers:** [mise](https://mise.jdx.dev/) (formerly rtx/asdf alternative)
+- **Languages:** Ruby, Go, Python, Node.js, Rust
+- **Databases:**
+  - PostgreSQL ([pgcli](https://www.pgcli.com/), [pspg](https://github.com/okbob/pspg), [libpq](https://www.postgresql.org/docs/current/libpq.html))
+- **Containerization:**
+  - [Docker](https://www.docker.com/)
+  - [Colima](https://github.com/abiosoft/colima) - container runtime for macOS
+  - [lazydocker](https://github.com/jesseduffield/lazydocker) - terminal UI for Docker
+  - [ctop](https://github.com/bcicen/ctop) - top-like interface for containers
+- **CLI Tools:**
+  - **Search & Find:** [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [the_silver_searcher](https://github.com/ggreer/the_silver_searcher)
+  - **File Viewers:** [bat](https://github.com/sharkdp/bat), [highlight](http://www.andre-simon.de/doku/highlight/en/highlight.php), [vimpager](https://github.com/rkitover/vimpager)
+  - **File Management:** [yazi](https://github.com/sxyazi/yazi), [vifm](https://vifm.info/)
+  - **System Monitoring:** [btop](https://github.com/aristocratos/btop), [htop](https://htop.dev/), [viddy](https://github.com/sachaos/viddy)
+  - **Disk Usage:** [ncdu](https://dev.yorhel.nl/ncdu), [dust](https://github.com/bootandy/dust), [duf](https://github.com/muesli/duf)
+  - **Network Tools:** [gping](https://github.com/orf/gping), [dog](https://dns.lookup.dog/), [nmap](https://nmap.org/), [wireshark](https://www.wireshark.org/), [fping](https://fping.org/)
+  - **Data Processing:** [jq](https://stedolan.github.io/jq/), [yq](https://github.com/mikefarah/yq), [miller](https://miller.readthedocs.io/), [visidata](https://www.visidata.org/), [jless](https://jless.io/)
+  - **Benchmarking:** [hyperfine](https://github.com/sharkdp/hyperfine)
+  - **Documentation:** [tealdeer](https://github.com/dbrgn/tealdeer) (tldr client)
+- **Git Tools:**
+  - [lazygit](https://github.com/jesseduffield/lazygit) - terminal UI for git
+  - [gh](https://cli.github.com/) - GitHub CLI
+  - [git-delta](https://github.com/dandavison/delta) - syntax-highlighting pager
+  - [git-extras](https://github.com/tj/git-extras) - additional git utilities
+  - [git-peek](https://github.com/Jarred-Sumner/git-peek) - instantly open remote repos
+  - [Fork](https://git-fork.com/) - GUI Git client
+- **Productivity:**
+  - [croc](https://github.com/schollz/croc) - secure file transfer
+  - [asciinema](https://asciinema.org/) - terminal session recorder
+  - [entr](https://eradman.com/entrproject/) - run commands when files change
+
+## Maintenance
+
+### Profiling ZSH
+
+To identify slow startup times, use `zprof`:
+
+```shell
+# Add at the beginning of your .zshrc
 zmodload zsh/zprof
 
-...
+# ... your configuration ...
 
-# At the end:
+# Add at the end
 zprof
 ```
 
-## Useful software (not installed by default)
+### Checklist Before Reinstall
 
-## Checklist before reinstall
+- [ ] Create Time Machine or SuperDuper! backup
+- [ ] Verify application-specific backups
+- [ ] Backup hidden files in repository
+- [ ] Push all Git branches
+- [ ] Search for "what folders to backup"
+- [ ] Verify iCloud sync is complete (check Finder status bar)
+- [ ] Confirm all critical data is backed up
 
-- Make Time Machine or SuperDuper! backup
-- Check each app for backup
-- Backup hidden files in repo
-- Make sure branches in repo are pushed
-- Search for "what folders to backup"
-- Search for "checklist before factory reset"
-- Make sure iCloud sync is finished (check status bar in Finder)
-- What's most important? Is it backed up?
+### Checklist After Install
 
-## Checklist after install
+- [ ] Add Terminal, iTerm, VS Code, and IDEs to `System Preferences → Security & Privacy → Privacy → Developer Tools` to avoid Apple notarization slowdowns
+- [ ] Configure [`$HOME/.git-peek`](https://awesomeopensource.com/project/Jarred-Sumner/git-peek#private-repositories--choosing-an-editor) for repository peeking
+- [ ] Restore relevant folders from backup under `~/Library/Application Support` and `~/Library/Preferences`
 
-- Add Terminal, iTerm, Visual Studio Code, RubyMine, and GoLand to `System Preferences/Security & Privacy/Privacy/Developer Tools` list, to avoid Apple notarisation checks that cause slowdowns.
-- Configure [`$HOME/.git-peek`](https://awesomeopensource.com/project/Jarred-Sumner/git-peek#private-repositories--choosing-an-editor)
-- Copy relevant folders from backup, under `~/Library/Application Support` and `~/Library/Preferences`
+### Useful Commands
 
-## Useful commands
+**Use Vim in YADM Git context:**
 
-### Use vim in YADM Git context
-
-Running vim from inside yadm ensures that integration with fzf.vim works correctly, and the Git worktree is correctly configured:
+Running vim from inside YADM ensures proper fzf.vim integration and Git worktree configuration:
 
 ```shell
 yadm enter vim
 ```
 
-# Acknowledgments
+**Update all packages:**
 
-- [holman](https://github.com/holman/dotfiles)
-- [thoughtbot](https://github.com/thoughtbot/dotfiles)
+```shell
+brew update && brew upgrade && brew cleanup
+```
+
+**Check YADM status:**
+
+```shell
+yadm status
+yadm diff
+```
+
+## Acknowledgments
+
+This dotfiles configuration was inspired by and builds upon ideas from:
+
+- [holman/dotfiles](https://github.com/holman/dotfiles)
+- [thoughtbot/dotfiles](https://github.com/thoughtbot/dotfiles)
 - [conf.d like directories for zsh/bash dotfiles](https://chr4.org/blog/2014/09/10/conf-dot-d-like-directories-for-zsh-slash-bash-dotfiles/)
+
+---
+
+**License:** See [LICENSE](LICENSE) file for details

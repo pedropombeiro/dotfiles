@@ -625,7 +625,7 @@ customCommands:
             value: "test"
     command:
       msg=$(claude --model Haiku --system-prompt "You are an experienced code reviewer, and you help generate succinct, helpful commit messages"
-        -p "Output a plain text commit message that can be fed to a \`.commit_msg\` file, based on the staged changes in the git repository. The content of the .git/.commit_msg file is to be placed inside a __BEGIN__ / __END__ block. The commit message lines are at most 72 characters wide{{ if .Form.Type }} and the first line starts capitalized. Create a conventional commit of type \`{{ .Form.Type }}\`{{ else }}Do not use conventional commits{{ end }}:"
+        -p "Output a plain text commit message that can be fed to a \`.commit_msg\` file, based on the staged changes in the git repository. The content of the .git/.commit_msg file is to be placed inside a __BEGIN__ / __END__ block. The commit message lines are at most 72 characters wide{{ if .Form.Type }}. Create a conventional commit of type \`{{ .Form.Type }}\`{{ else }}Do not use conventional commits{{ end }}:"
         --tools "Bash,Read");
       echo "$msg";
       echo "$msg" | awk '/^__BEGIN__$/ {flag=1; next} /^__END__$/ {flag=0} flag' > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT

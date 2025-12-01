@@ -20,5 +20,13 @@
       "matchPackageNames": ["pre-commit"],
       "automerge": true
     }
-  ]
+  ],
+  "mise": {
+    "managerFilePatterns": [
+      "/(^|/)\\.?mise\\.toml$/",
+      "/(^|/)\\.?mise/config\\.toml$/",
+      "/(^|/)\\.config/mise/config\\.toml##.*\\.toml$/",
+      "/(^|/)\\.config/mise/config\\.toml$/"
+    ]
+  }
 }

@@ -5,4 +5,4 @@ YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null 
 source "${YADM_SCRIPTS}/colors.sh"
 
 printf "${YELLOW}%s${NC}\n" "Linking /share/Container/.mise.toml"
-ln -sf ~/.mise.toml /share/Container/
+ln -sf ~/.config/mise/config.toml /share/Container/

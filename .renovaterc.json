@@ -11,11 +11,13 @@
   ],
   "packageRules": [
     {
+      "description": "Use rebase strategy for automerging patch/pin/digest updates with strict checks",
       "matchUpdateTypes": ["patch", "pin", "digest"],
       "internalChecksFilter": "strict",
       "automergeStrategy": "rebase"
     },
     {
+      "description": "Enable automerge for pre-commit package updates",
       "matchDepTypes": ["devDependencies"],
       "matchPackageNames": ["pre-commit"],
       "automerge": true

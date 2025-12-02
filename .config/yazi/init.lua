@@ -24,11 +24,6 @@ Status:children_add(function()
   })
 end, 500, Status.RIGHT)
 
--- https://github.com/yazi-rs/plugins/tree/main/toggle-pane.yazi#advanced
-if os.getenv("NVIM") then
-  require("toggle-pane"):entry("min-preview")
-end
-
 -- https://github.com/dedukun/relative-motions.yazi
 require("relative-motions"):setup({ show_numbers = "relative", show_motion = true, enter_mode = "first" })
 

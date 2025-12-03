@@ -11,7 +11,6 @@ opkg install asciinema bind-dig column coreutils entr \
   mount-utils ncdu nmap nethogs make rustc tar terminfo tmux whois whereis yt-dlp zsh
 opkg install procps-ng-ps     # installs a more modern version of ps, supporting command line switches
 opkg install coreutils-mkfifo # required for powerlevel10k ZSH theme
-opkg install node node-npm    # installs a more modern version of node.js
 opkg install bash sysstat     # required for qnapnodeexporter/grafana
 opkg install lua gzip         # required for neovim plugins
 opkg install patch            # required for conform.nvim neovim plugin

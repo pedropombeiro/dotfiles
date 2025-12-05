@@ -2,6 +2,7 @@
 
 YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
+# shellcheck source=./colors.sh
 source "${YADM_SCRIPTS}/colors.sh"
 
 class="$(yadm config local.class)"

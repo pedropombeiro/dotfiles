@@ -6,11 +6,13 @@
 #
 # Example aliases
 alias ohmyzsh="\$EDITOR ~/.oh-my-zsh"
-alias mkcd='foo(){ mkdir -p "$1"; cd "$1" }; foo'
+# shellcheck disable=SC2142  # This pattern works in bash/zsh
+alias mkcd='mkcd_impl() { mkdir -p "$1" && cd "$1" || return; }; mkcd_impl'
 alias myip="curl http://ipecho.net/plain; echo"
 alias vimdiff="vim -d"
 
 # Include custom aliases
 if [[ -f ~/.aliases.local ]]; then
+  # shellcheck source=/dev/null
   source ~/.aliases.local
 fi

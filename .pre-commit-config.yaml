@@ -22,6 +22,15 @@ repos:
       - id: shellcheck
         exclude: '^\.config/.*|^\.local/.*|^\.shellrc/zshrc\.d/.*|\.zsh(##.*)?$|^\.zlogin$|\.sh##default$'
 
+  - repo: local
+    hooks:
+      - id: zsh-syntax-check
+        name: zsh syntax check
+        entry: zsh -n
+        language: system
+        files: '\.zsh(##.*)?$|^\.zlogin$|^\.shellrc/zshrc\.d/functions/[^/]+$'
+        exclude: '^\.config/.*|^\.local/.*'
+
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.35.1
     hooks:

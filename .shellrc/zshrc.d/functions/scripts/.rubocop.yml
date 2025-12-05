@@ -1,0 +1,61 @@
+AllCops:
+  NewCops: enable
+
+# Allow longer methods in shell helper scripts
+Metrics/MethodLength:
+  Max: 150
+
+# Allow higher complexity in shell helper scripts
+Metrics/AbcSize:
+  Max: 150
+
+Metrics/CyclomaticComplexity:
+  Max: 35
+
+Metrics/PerceivedComplexity:
+  Max: 35
+
+# Allow longer blocks for shell scripts
+Metrics/BlockLength:
+  Max: 50
+
+# Allow long lines for terminal-notifier and other shell commands
+Layout/LineLength:
+  Max: 180
+
+# Don't enforce documentation for utility scripts
+Style/Documentation:
+  Enabled: false
+
+# Allow Gemfile filename
+Naming/FileName:
+  Exclude:
+    - "Gemfile"
+
+# Allow non-local exits in shell helper scripts (common pattern)
+Lint/NonLocalExitFromIterator:
+  Enabled: false
+
+# Allow multi-line block chains (common in shell scripts)
+Style/MultilineBlockChain:
+  Enabled: false
+
+# Allow duplicate branches (common in case statements)
+Lint/DuplicateBranch:
+  Enabled: false
+
+# Disable picky style cops for utility scripts
+Style/RedundantFilterChain:
+  Enabled: false
+
+Style/SelectByRegexp:
+  Enabled: false
+
+Style/FileNull:
+  Enabled: false
+
+Lint/PercentStringArray:
+  Enabled: false
+
+Layout/BlockAlignment:
+  Enabled: false

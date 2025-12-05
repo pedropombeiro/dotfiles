@@ -5,4 +5,3 @@
 
 export PGPASSWORD=$(echo "$1" | sed 's/host=\([^[:space:]]*\) port=\([^[:space:]]*\) user=\([^[:space:]]*\) dbname=\([^[:space:]]*\) password=\([^[:space:]]*\)/\5/')
 pgcli $(echo "$1" | sed 's/host=\([^[:space:]]*\) port=\([^[:space:]]*\) user=\([^[:space:]]*\) dbname=\([^[:space:]]*\) password=\([^[:space:]]*\)/--host \1 --port \2 --user \3 --dbname \4/')
-

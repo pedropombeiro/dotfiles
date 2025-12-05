@@ -20,9 +20,9 @@ def compute_parent_branch(branch_name = nil)
 
   parent_branch_line = `git log --decorate --simplify-by-decoration --oneline #{branch_name}`.lines[1].rstrip
   parent_branch_line = parent_branch_line
-    .sub('HEAD -> ', '')
-    .gsub(/tag: [^,)]+(, )?/, '')
-  return compute_default_branch if parent_branch_line.match?(/.* \((origin|security)\/(.*)\) .*/)
+                       .sub('HEAD -> ', '')
+                       .gsub(/tag: [^,)]+(, )?/, '')
+  return compute_default_branch if parent_branch_line.match?(%r{.* \((origin|security)/(.*)\) .*})
   return compute_default_branch unless parent_branch_line.match?(/.* \((.*)\) .*/)
 
   parent_branch_line
@@ -130,7 +130,7 @@ def rebase_mappings
     abort 'Please stash the changes in the current branch before calling rebase_all!'.red
   end
 
-  user_name = ENV['USER']
+  user_name = ENV.fetch('USER', nil)
   default_branch = compute_default_branch
 
   mr_pattern       = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/[a-z0-9\-+_]+$}i
@@ -139,10 +139,10 @@ def rebase_mappings
 
   local_branches =
     `git branch --list`
-      .lines
-      .map { |line| line[2..].rstrip }
-      .select { |branch| branch.start_with?("#{user_name}/", "security-#{user_name}/", "security/#{user_name}/") }
-      .sort_by do |branch|
+    .lines
+    .map { |line| line[2..].rstrip }
+    .select { |branch| branch.start_with?("#{user_name}/", "security-#{user_name}/", "security/#{user_name}/") }
+    .sort_by do |branch|
       seq_mr_match_data = seq_mr_pattern.match(branch)
       backport_match_data = backport_pattern.match(branch)
       mr_match_data = mr_pattern.match(branch)
@@ -161,7 +161,7 @@ def rebase_mappings
           branch_distance(branch, default_branch),
           backport_match_data[:mr_id].to_i,
           999, # Put backport branches after sequenced branches
-          backport_match_data[:milestone].tr(".", "-").to_f
+          backport_match_data[:milestone].tr('.', '-').to_f
         ]
       elsif mr_match_data
         [
@@ -173,7 +173,7 @@ def rebase_mappings
       else
         [
           branch_distance(branch, default_branch),
-          999999, # Put non-MR branches last
+          999_999, # Put non-MR branches last
           999,
           branch
         ]
@@ -211,7 +211,7 @@ def rebase_mappings
     if current_mr_seq_nr
       if current_mr_seq_nr == 1
         parent_branch = current_chain.last
-        rebase_onto = parent_branch  # Always set for sequence 1 (which is default_branch)
+        rebase_onto = parent_branch # Always set for sequence 1 (which is default_branch)
         current_chain << branch
       else
         seq_1_branch = current_chain.find { |b| b != default_branch }
@@ -250,8 +250,11 @@ def rebase_all
   default_branch = compute_default_branch
   mappings = rebase_mappings
              .sort { |b1, b2| branch_sort_key(b1) <=> branch_sort_key(b2) }
-             .sort { |b1, b2| branch_distance(b1[:branch], default_branch) <=> branch_distance(b2[:branch], default_branch) }
-             .to_h { |b| [b[:branch], b[:rebase_onto]] }
+             .sort do |b1, b2|
+    branch_distance(b1[:branch],
+                    default_branch) <=> branch_distance(b2[:branch], default_branch)
+  end
+    .to_h { |b| [b[:branch], b[:rebase_onto]] }
   rebase_all_per_capture_info(mappings)
 end
 
@@ -260,7 +263,7 @@ def git_push_issue(*args)
 
   current_branch = `git branch --show-current`.strip
 
-  user_name = ENV['USER']
+  user_name = ENV.fetch('USER', nil)
   mr_pattern = %r{^(?<prefix>(security[-/])?#{user_name})/(?<mr_id>\d+)/[a-z0-9\-+_]+$}
   mr_match_data = mr_pattern.match(current_branch)
 
@@ -285,13 +288,13 @@ def git_push_issue(*args)
     branches << branch
   end
 
-  if branches.any?
-    active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
+  return unless branches.any?
 
-    puts 'Pushing '.brown + branches.map(&:cyan).join(', ') + ' to '.brown + active_remote_name.green + '...'.brown
+  active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split('/').first
 
-    system(*%W[git push --force-with-lease #{active_remote_name}], *branches, *args)
-  end
+  puts 'Pushing '.brown + branches.map(&:cyan).join(', ') + ' to '.brown + active_remote_name.green + '...'.brown
+
+  system(*%W[git push --force-with-lease #{active_remote_name}], *branches, *args)
 end
 
 def changed_branch_files(format: nil)

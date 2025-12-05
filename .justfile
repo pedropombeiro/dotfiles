@@ -2,7 +2,7 @@ default: pull update
 
 @pull:
     yadm fetch && \
-      yadm reset --hard origin/master
+        yadm reset --hard origin/master
 
 @install:
     yadm bootstrap

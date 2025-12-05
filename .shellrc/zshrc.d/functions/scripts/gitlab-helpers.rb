@@ -4,7 +4,7 @@
 require 'English'
 require 'tty-link'
 
-REJECTED_LABELS = /^(workflow:|missed:|estimate:|Effort:|\[Deprecated|auto updated).*/.freeze
+REJECTED_LABELS = /^(workflow:|missed:|estimate:|Effort:|\[Deprecated|auto updated).*/
 
 class String
   def black
@@ -40,7 +40,7 @@ class String
   end
 
   def with_hyperlink(url)
-    ' ' * (length - lstrip.length) + TTY::Link.link_to(strip, url) + ' ' * (length - rstrip.length)
+    (' ' * (length - lstrip.length)) + TTY::Link.link_to(strip, url) + (' ' * (length - rstrip.length))
   end
 
   def truncate(length, options = {})
@@ -223,15 +223,15 @@ def filter_sort_reviewers(candidates)
     .reject { |c| c['bot'] || c['username'].include?('-bot') }
     .filter { |c| c['state'] == 'active' }
     .sort_by do |c|
-      message = c.dig("status", "message")
-      has_message = message && !message.include?("Verify reviews") && !message.include?('Please @')
-      ooo = has_message && message.include?("OOO")
-      busy = c.dig("status", "availability") == "BUSY" && (!message || !message.include?("Verify reviews"))
+      message = c.dig('status', 'message')
+      has_message = message && !message.include?('Verify reviews') && !message.include?('Please @')
+      ooo = has_message && message.include?('OOO')
+      busy = c.dig('status', 'availability') == 'BUSY' && (!message || !message.include?('Verify reviews'))
 
       (ooo ? 20 : 0) +
         (busy ? 10 : 0) +
         (has_message ? 5 : 0) +
-        (c.dig("reviewRequestedMergeRequests", "count").to_i + c.dig("assignedMergeRequests", "count").to_i / 2)
+        (c.dig('reviewRequestedMergeRequests', 'count').to_i + (c.dig('assignedMergeRequests', 'count').to_i / 2))
     end
 end
 
@@ -240,8 +240,8 @@ def pick_reviewer(candidates)
 
   candidates = filter_sort_reviewers(candidates)
 
-  candidate = candidates.filter { |c| c["username"] != "pedropombeiro" }.first
-  puts "Chosen reviewer: @#{candidate["username"].with_hyperlink(candidate["webUrl"])}"
+  candidate = candidates.filter { |c| c['username'] != 'pedropombeiro' }.first
+  puts "Chosen reviewer: @#{candidate['username'].with_hyperlink(candidate['webUrl'])}"
   puts
 
   table = TTY::Table.new(
@@ -486,7 +486,7 @@ def gpsup(remote, issue_iid)
     'create',
     'squash',
     "target='#{parent_branch}'",
-    "assign='#{ENV['USER']}'",
+    "assign='#{ENV.fetch('USER', nil)}'",
     "label='Category:Fleet Visibility'",
     "label='section::ci'",
     "label='devops::verify'",

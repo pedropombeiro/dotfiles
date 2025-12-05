@@ -8,14 +8,22 @@ fi
 
 # Load all files from .shell/bashrc.d directory
 if [ -d "${HOME}/.shellrc/bashrc.d" ]; then
-  for file in $(ls ${HOME}/.shellrc/bashrc.d/{,**/}*.bash 2>/dev/null); do
+  shopt -s globstar nullglob
+  for file in "${HOME}"/.shellrc/bashrc.d/*.bash "${HOME}"/.shellrc/bashrc.d/**/*.bash; do
+    [ -f "${file}" ] || continue
+    # shellcheck source=/dev/null
     source "${file}"
   done
+  shopt -u globstar nullglob
 fi
 
 # Load all files from .shell/rc.d directory
 if [ -d "${HOME}/.shellrc/rc.d" ]; then
-  for file in $(ls ${HOME}/.shellrc/rc.d/{,**/}*.sh 2>/dev/null); do
+  shopt -s globstar nullglob
+  for file in "${HOME}"/.shellrc/rc.d/*.sh "${HOME}"/.shellrc/rc.d/**/*.sh; do
+    [ -f "${file}" ] || continue
+    # shellcheck source=/dev/null
     source "${file}"
   done
+  shopt -u globstar nullglob
 fi

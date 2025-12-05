@@ -3,15 +3,19 @@
 # .bash_profile
 
 if [ -f "${HOME}/.bashrc" ]; then
+  # shellcheck source=/dev/null
   source "${HOME}/.bashrc"
 fi
 
 # Load all files from .shell/login.d directory
 if [ -d "${HOME}/.shellrc/login.d" ]; then
-  for file in ${HOME}/.shellrc/login.d/*.sh; do
+  for file in "${HOME}"/.shellrc/login.d/*.sh; do
+    [ -f "${file}" ] || continue
+    # shellcheck source=/dev/null
     source "${file}"
   done
 fi
 
 # Load local files
+# shellcheck source=/dev/null
 test -f ~/.bash_profile.local && source ~/.bash_profile.local

@@ -291,7 +291,7 @@ _Misc:_
 Configure the following applications:
 
 - **Beyond Compare** - Import settings backup and install command line tools
-- **Password Manager** - Set up 1Password or MacPass
+- **Password Manager** - Set up 1Password
 - **Syncthing** - Configure synchronization
 - **Time Machine** - Set up backups
 - **Microsoft Edge** - Configure browser settings
@@ -316,7 +316,7 @@ Key tools included in this setup:
     [the_silver_searcher](https://github.com/ggreer/the_silver_searcher)
   - **File Viewers:** [bat](https://github.com/sharkdp/bat),
     [highlight](http://www.andre-simon.de/doku/highlight/en/highlight.php), [vimpager](https://github.com/rkitover/vimpager)
-  - **File Management:** [yazi](https://github.com/sxyazi/yazi), [vifm](https://vifm.info/)
+  - **File Management:** [yazi](https://github.com/sxyazi/yazi)
   - **System Monitoring:** [btop](https://github.com/aristocratos/btop), [htop](https://htop.dev/), [viddy](https://github.com/sachaos/viddy)
   - **Disk Usage:** [ncdu](https://dev.yorhel.nl/ncdu), [dust](https://github.com/bootandy/dust), [duf](https://github.com/muesli/duf)
   - **Network Tools:** [gping](https://github.com/orf/gping), [dog](https://dns.lookup.dog/), [nmap](https://nmap.org/),

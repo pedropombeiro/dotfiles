@@ -5,6 +5,10 @@ return {
     ft = "log",
   },
   {
+    "grafana/vim-alloy", -- Provides syntax highlighting for alloy files
+    ft = "alloy",
+  },
+  {
     "hat0uma/csvview.nvim",
     cmd = { "CsvViewEnable", "CsvViewDisable", "CsvViewToggle" },
     ft = {

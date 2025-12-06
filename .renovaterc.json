@@ -21,6 +21,11 @@
       "matchDepTypes": ["devDependencies"],
       "matchPackageNames": ["pre-commit"],
       "automerge": true
+    },
+    {
+      "description": "Group pre-commit hook updates",
+      "matchManagers": ["pre-commit"],
+      "groupName": "pre-commit hooks"
     }
   ],
   "mise": {

@@ -1,4 +1,6 @@
 ---
+exclude: '^\.config/.*|^\.local/.*'
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -7,7 +9,6 @@ repos:
       - id: check-executables-have-shebangs
       - id: check-json
       - id: check-symlinks
-        exclude: '^\.config/.*|^\.local/.*'
       - id: check-yaml
         exclude: '^\.local/share/.*'
       - id: double-quote-string-fixer
@@ -27,17 +28,14 @@ repos:
     hooks:
       - id: yamllint
         args: ["-c", ".yamllint.yml"]
-        exclude: '^\.config/.*|^\.local/.*'
 
   - repo: https://github.com/igorshubovych/markdownlint-cli
     rev: v0.46.0
     hooks:
       - id: markdownlint
         args: ["--config", ".markdownlintrc"]
-        exclude: '^\.config/.*|^\.local/.*'
       - id: markdownlint-fix
         args: ["--config", ".markdownlintrc"]
-        exclude: '^\.config/.*|^\.local/.*'
         stages: [manual]
 
   - repo: https://github.com/JohnnyMorganz/StyLua
@@ -46,12 +44,10 @@ repos:
       - id: stylua
         name: stylua (check)
         args: ["--check", "--config-path", ".config/nvim/.stylua.toml"]
-        exclude: '^\.config/.*|^\.local/.*'
       - id: stylua
         name: stylua (fix)
         alias: stylua-fix
         args: ["--config-path", ".config/nvim/.stylua.toml"]
-        exclude: '^\.config/.*|^\.local/.*'
         stages: [manual]
 
   - repo: https://github.com/rubocop/rubocop
@@ -59,12 +55,10 @@ repos:
     hooks:
       - id: rubocop
         name: rubocop (check)
-        exclude: '^\.config/.*|^\.local/.*'
       - id: rubocop
         name: rubocop (fix)
         alias: rubocop-fix
         args: ["-a"]
-        exclude: '^\.config/.*|^\.local/.*'
         stages: [manual]
 
   - repo: https://github.com/pre-commit/mirrors-prettier
@@ -73,13 +67,11 @@ repos:
       - id: prettier
         name: prettier (check)
         types_or: [json, markdown, yaml]
-        exclude: '^\.config/.*|^\.local/.*'
       - id: prettier
         name: prettier (fix)
         alias: prettier-fix
         args: ["--write", "--list-different"]
         types_or: [json, markdown, yaml]
-        exclude: '^\.config/.*|^\.local/.*'
         stages: [manual]
 
   - repo: local
@@ -89,7 +81,6 @@ repos:
         entry: zsh -n
         language: system
         files: '\.zsh(##.*)?$|^\.zlogin$|^\.shellrc/zshrc\.d/functions/[^/]+$'
-        exclude: '^\.config/.*|^\.local/.*'
 
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
     rev: 3.6.0

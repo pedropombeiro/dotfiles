@@ -21,3 +21,9 @@ default: pull update
 
 @wifi-traffic:
     ssh ap-u6pro.infra.pombei.ro "tcpdump -np"
+
+@fix:
+    yadm enter pre-commit run --all-files --hook-stage manual
+
+@lint:
+    yadm enter pre-commit run --all-files

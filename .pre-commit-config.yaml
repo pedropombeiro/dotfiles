@@ -22,15 +22,6 @@ repos:
       - id: shellcheck
         exclude: '^\.config/.*|^\.local/.*|^\.shellrc/zshrc\.d/.*|\.zsh(##.*)?$|^\.zlogin$|\.sh##default$'
 
-  - repo: local
-    hooks:
-      - id: zsh-syntax-check
-        name: zsh syntax check
-        entry: zsh -n
-        language: system
-        files: '\.zsh(##.*)?$|^\.zlogin$|^\.shellrc/zshrc\.d/functions/[^/]+$'
-        exclude: '^\.config/.*|^\.local/.*'
-
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.37.1
     hooks:
@@ -44,18 +35,60 @@ repos:
       - id: markdownlint
         args: ["--config", ".markdownlintrc"]
         exclude: '^\.config/.*|^\.local/.*'
+      - id: markdownlint-fix
+        args: ["--config", ".markdownlintrc"]
+        exclude: '^\.config/.*|^\.local/.*'
+        stages: [manual]
 
   - repo: https://github.com/JohnnyMorganz/StyLua
     rev: v2.3.1
     hooks:
       - id: stylua
+        name: stylua (check)
+        args: ["--check", "--config-path", ".config/nvim/.stylua.toml"]
+        exclude: '^\.config/.*|^\.local/.*'
+      - id: stylua
+        name: stylua (fix)
+        alias: stylua-fix
         args: ["--config-path", ".config/nvim/.stylua.toml"]
         exclude: '^\.config/.*|^\.local/.*'
+        stages: [manual]
 
   - repo: https://github.com/rubocop/rubocop
     rev: v1.81.7
     hooks:
       - id: rubocop
+        name: rubocop (check)
+        exclude: '^\.config/.*|^\.local/.*'
+      - id: rubocop
+        name: rubocop (fix)
+        alias: rubocop-fix
+        args: ["-a"]
+        exclude: '^\.config/.*|^\.local/.*'
+        stages: [manual]
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.1.0
+    hooks:
+      - id: prettier
+        name: prettier (check)
+        types_or: [json, markdown, yaml]
+        exclude: '^\.config/.*|^\.local/.*'
+      - id: prettier
+        name: prettier (fix)
+        alias: prettier-fix
+        args: ["--write", "--list-different"]
+        types_or: [json, markdown, yaml]
+        exclude: '^\.config/.*|^\.local/.*'
+        stages: [manual]
+
+  - repo: local
+    hooks:
+      - id: zsh-syntax-check
+        name: zsh syntax check
+        entry: zsh -n
+        language: system
+        files: '\.zsh(##.*)?$|^\.zlogin$|^\.shellrc/zshrc\.d/functions/[^/]+$'
         exclude: '^\.config/.*|^\.local/.*'
 
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
@@ -63,10 +96,3 @@ repos:
     hooks:
       - id: editorconfig-checker
         exclude: '^\.config/.*|^\.local/.*|^\.shellrc/zshrc\.d/functions/scripts/.*\.rb$|\.md$'
-
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.1.0
-    hooks:
-      - id: prettier
-        types_or: [json, markdown, yaml]
-        exclude: '^\.config/.*|^\.local/.*'

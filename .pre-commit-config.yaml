@@ -59,7 +59,7 @@ repos:
         exclude: '^\.config/.*|^\.local/.*'
 
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: 3.0.3
+    rev: 3.6.0
     hooks:
       - id: editorconfig-checker
         exclude: '^\.config/.*|^\.local/.*|^\.shellrc/zshrc\.d/functions/scripts/.*\.rb$|\.md$'

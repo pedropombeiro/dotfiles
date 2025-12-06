@@ -50,81 +50,10 @@
       "managerFilePatterns": [
         "/^\\.config/yadm/bootstrap\\.d/12-install-other-tools\\.sh##distro\\.qts$/"
       ],
-      "matchStrings": ["bandwhich_version=(?<currentValue>[^\\s#]+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "imsnif/bandwhich"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^\\.config/yadm/bootstrap\\.d/12-install-other-tools\\.sh##distro\\.qts$/"
+      "matchStrings": [
+        "\\w+_version=(?<currentValue>[^\\s#]+)\\s*#\\s*(?<depName>\\S+/\\S+)"
       ],
-      "matchStrings": ["btop_version=(?<currentValue>[^\\s#]+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "aristocratos/btop"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^\\.config/yadm/bootstrap\\.d/12-install-other-tools\\.sh##distro\\.qts$/"
-      ],
-      "matchStrings": ["croc_version=(?<currentValue>[^\\s#]+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "schollz/croc"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^\\.config/yadm/bootstrap\\.d/12-install-other-tools\\.sh##distro\\.qts$/"
-      ],
-      "matchStrings": ["fzf_version=(?<currentValue>[^\\s#]+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "junegunn/fzf"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^\\.config/yadm/bootstrap\\.d/12-install-other-tools\\.sh##distro\\.qts$/"
-      ],
-      "matchStrings": ["gping_version=(?<currentValue>[^\\s#]+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "orf/gping"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^\\.config/yadm/bootstrap\\.d/12-install-other-tools\\.sh##distro\\.qts$/"
-      ],
-      "matchStrings": ["lnav_version=(?<currentValue>[^\\s#]+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "tstack/lnav"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^\\.config/yadm/bootstrap\\.d/12-install-other-tools\\.sh##distro\\.qts$/"
-      ],
-      "matchStrings": ["nvim_version=(?<currentValue>[^\\s#]+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "neovim/neovim"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^\\.config/yadm/bootstrap\\.d/12-install-other-tools\\.sh##distro\\.qts$/"
-      ],
-      "matchStrings": ["procs_version=(?<currentValue>[^\\s#]+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "dalance/procs"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^\\.config/yadm/bootstrap\\.d/12-install-other-tools\\.sh##distro\\.qts$/"
-      ],
-      "matchStrings": ["yazi_version=(?<currentValue>[^\\s#]+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "sxyazi/yazi"
+      "datasourceTemplate": "github-releases"
     }
   ]
 }

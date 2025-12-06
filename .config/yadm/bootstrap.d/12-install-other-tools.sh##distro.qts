@@ -9,15 +9,15 @@ printf "${YELLOW}%s${NC}\n" "Installing helper tools..."
 target_dir="${HOME}/opt/bin"
 temp_dir="$(mktemp -d)"
 
-bandwhich_version=0.23.1
-btop_version=1.4.5
-croc_version=10.3.1
-fzf_version=0.67.0
-gping_version=1.19.0
-lnav_version=0.13.2
-nvim_version=0.11.5 # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
-procs_version=0.14.9
-yazi_version=25.5.31
+bandwhich_version=0.23.1 # imsnif/bandwhich
+btop_version=1.4.5 # aristocratos/btop
+croc_version=10.3.1 # schollz/croc
+fzf_version=0.67.0 # junegunn/fzf
+gping_version=1.19.0 # orf/gping
+lnav_version=0.13.2 # tstack/lnav
+nvim_version=0.11.5 # neovim/neovim # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
+procs_version=0.14.9 # dalance/procs
+yazi_version=25.5.31 # sxyazi/yazi
 
 function download() {
   filename="$(basename "$1")"

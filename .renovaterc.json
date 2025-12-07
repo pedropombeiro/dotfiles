@@ -33,7 +33,10 @@
       "matchFileNames": [
         ".config/yadm/bootstrap.d/12-install-other-tools.sh##distro.qts"
       ],
-      "groupName": "QTS bootstrap tools"
+      "groupName": "QTS bootstrap tools",
+      "commitMessagePrefix": "chore(qts):",
+      "commitMessageTopic": "bootstrap tools",
+      "commitMessageExtra": ""
     }
   ],
   "mise": {

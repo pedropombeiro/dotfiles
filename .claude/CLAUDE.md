@@ -1,9 +1,15 @@
 # Agent Instructions
 
-## Repository Management
+This file contains core instructions applicable to most tasks. For specialized topics, see the linked documents below.
 
-Git commands on the `~` directory are managed through `yadm` instead of `git`.
+## Critical: Repository Management
 
-## Renovate Bot
+**Git commands on the `~` directory are managed through `yadm` instead of `git`.**
 
-Renovate Bot configuration is stored in `.renovaterc.json` files by default.
+When working in the home directory (`~`), use `yadm` commands instead of `git` commands for version control operations.
+
+## Specialized Topics
+
+For task-specific guidance, reference these documents as needed:
+
+- [Renovate Bot](~/.agent_docs/renovate.md) - Dependency update configuration and troubleshooting

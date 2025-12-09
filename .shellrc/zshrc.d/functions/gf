@@ -3,5 +3,6 @@
 #
 # The `gf` alias fetches branches/tags from the remote, and notifying when branches have been merged
 
+killall gitstatusd-darwin-arm64
 git fetch --jobs=10
 git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | awk '{print $1 " has been merged!"}' | xargs -I _ terminal-notifier -title 'Git fetch' -message _ -sound boop -ignoreDnD

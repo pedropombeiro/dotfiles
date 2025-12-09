@@ -489,7 +489,7 @@ def gpsup(remote, issue_iid)
     "assign='#{ENV.fetch('USER', nil)}'",
     "label='Category:Fleet Visibility'",
     "label='section::ci'",
-    "label='devops::verify'",
+    "label='stage::Verify'",
     "label='group::ci platform'"
   ] + (labels&.map { |label| "label='#{label}'" } || [])
   options << "milestone='#{milestone}'" if milestone

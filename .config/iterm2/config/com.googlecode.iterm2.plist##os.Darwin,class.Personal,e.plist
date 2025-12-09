@@ -3643,6 +3643,8 @@ The script should do this: \(ai.prompt)</string>
 			</array>
 			<key>Terminal Type</key>
 			<string>xterm-256color</string>
+			<key>Timestamps Visible</key>
+			<false/>
 			<key>Title Components</key>
 			<integer>34</integer>
 			<key>Transparency</key>

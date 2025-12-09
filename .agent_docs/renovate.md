@@ -9,3 +9,4 @@ Renovate Bot configuration is stored in `.renovaterc.json` files by default.
 - When working with dependency updates
 - When modifying or creating Renovate configuration
 - When troubleshooting automated dependency PRs
+- `packageRules` in the configuration file should be ordered from generic to specific

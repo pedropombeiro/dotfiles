@@ -34,9 +34,6 @@ if awk "BEGIN {exit !($mean_time >= 0.6)}"; then
   printf "${RED}%s${NC}\n" "Zsh performance is too slow!"
 fi
 
-printf "${YELLOW}%s${NC}\n" "Updating pre-commit hooks..."
-pre-commit autoupdate
-
 printf "${YELLOW}%s${NC}\n" "Updating yazi plugins..."
 # Ensure that there are no local modifications in the Yazi configuration, which would prevent ya pkg from operating
 rm -rf ~/.config/yazi/plugins/* ~/.config/yazi/flavors/*

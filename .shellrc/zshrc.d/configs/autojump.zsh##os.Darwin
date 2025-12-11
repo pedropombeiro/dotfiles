@@ -2,4 +2,5 @@
 
 INSTALL_DIR="${HOMEBREW_PREFIX}/share/autojump"
 
-[[ -s "${INSTALL_DIR}/autojump.zsh" ]] && zsh-defer source "${INSTALL_DIR}/autojump.zsh"
+# Load autojump immediately so it's available right away
+[[ -s "${INSTALL_DIR}/autojump.zsh" ]] && source "${INSTALL_DIR}/autojump.zsh"

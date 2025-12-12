@@ -1,0 +1,12 @@
+#!/usr/bin/env zsh
+
+#
+# `renovate` is used to run renovate on all or a specific repo
+#
+
+local repo=$1
+if [[ -n $repo ]]; then
+  docker exec -e RENOVATE_REPOSITORIES=pedropombeiro/$1 -e RENOVATE_AUTODISCOVER=false -e LOG_LEVEL=info it_renovate renovate
+else
+  docker exec -e LOG_LEVEL=info it_renovate renovate
+fi

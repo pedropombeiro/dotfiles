@@ -2,7 +2,7 @@
 bat = "latest"
 bottom = "latest"
 cargo-binstall = "latest"
-"cargo:tree-sitter-cli" = "0.25.10"
+"cargo:tree-sitter-cli" = "0.26.0"
 ctop = "latest"
 delta = "latest"
 dive = "latest"

@@ -36,6 +36,8 @@ return {
       { "<S-Space>", "<Space>", mode = "t", remap = false, hidden = true },
       -- Map Esc to normal mode in terminal mode
       { "<Esc><Esc>", "<C-\\><C-n>", mode = "t", remap = false, hidden = true },
+      -- Workaround: Allow <C-w> for window navigation from terminal mode
+      { "<C-w>", [[<C-\><C-n><C-w>]], mode = "t", desc = "Window command from terminal" },
       -- make . work with visually selected lines
       { ".", ":normal.<CR>", mode = "v", remap = false, hidden = true },
 

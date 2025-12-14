@@ -1,20 +1,24 @@
 -- claudecode.nvim (https://github.com/coder/claudecode.nvim)
 --  Integrate Claude Code CLI with Neovim via WebSocket MCP
 
----@type wk.Spec
-local keys = {
-  { "<leader>a", group = "AI (Claude Code)" },
-  { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude Code terminal" },
-  { "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude Code terminal" },
-  { "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send selection to Claude" },
-  { "<leader>ad", group = "Diff actions" },
-  { "<leader>ada", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept Claude's diff" },
-  { "<leader>add", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny Claude's diff" },
-}
-
 return {
   "coder/claudecode.nvim",
   dependencies = { "folke/snacks.nvim" },
+  lazy = true,
+  cmd = {
+    "ClaudeCode",
+    "ClaudeCodeFocus",
+    "ClaudeCodeSend",
+    "ClaudeCodeDiffAccept",
+    "ClaudeCodeDiffDeny",
+  },
+  keys = {
+    { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude Code terminal" },
+    { "<leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "Focus Claude Code terminal" },
+    { "<leader>as", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "Send selection to Claude" },
+    { "<leader>ada", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept Claude's diff" },
+    { "<leader>add", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny Claude's diff" },
+  },
   config = true,
   specs = {
     {
@@ -22,7 +26,10 @@ return {
       opts = {
         ---@module "which-key"
         ---@type wk.Spec
-        spec = keys,
+        spec = {
+          { "<leader>a", group = "AI (Claude Code)" },
+          { "<leader>ad", group = "Diff actions" },
+        },
       },
       opts_extend = { "spec" },
     },

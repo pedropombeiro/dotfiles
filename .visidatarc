@@ -87,7 +87,7 @@ vd.themes["gruvbox-dark"] = dict(
     color_change_pending=f'{GRUVBOX["bright_purple"]} on {GRUVBOX["bg0"]}',
     color_delete_pending=f'{GRUVBOX["bright_red"]} on {GRUVBOX["bg0"]}',
     disp_status_fmt="{sheet.sheetlist} ",
-    disp_rstatus_fmt="{sheet.threadStatus} {sheet.keystrokeStatus}   [:longname_status]{sheet.longname}[/]  {sheet.nRows:9d} {sheet.rowtype} {sheet.modifiedStatus}{sheet.selectedStatus}{vd.replayStatus}{vd.sidebarStatus}",
+    disp_rstatus_fmt="{sheet.threadStatus} {sheet.keystrokeStatus}   {sheet.longname}[/]   {sheet.nRows} {sheet.rowtype} {sheet.modifiedStatus}{sheet.selectedStatus}{vd.replayStatus} [:longname_status]{sheet.cursorRowIndex1:2d}:{sheet.cursorVisibleColIndex1} {sheet.vertPos}[/] {vd.sidebarStatus}",
 )
 
 if options.theme == "":
@@ -113,6 +113,27 @@ def afterLoad(_sheet):
     options.numeric_binning = True
     options.disp_date_fmt = "%Y-%m-%d"
     options.disp_menu_boxchars = "││──╭╮╰╯├┤"
+
+
+################################################################################
+# Statusline variables
+
+
+@Sheet.property
+def cursorRowIndex1(sheet):
+    return sheet.cursorRowIndex + 1
+
+
+@Sheet.property
+def cursorVisibleColIndex1(sheet):
+    return sheet.cursorVisibleColIndex + 1
+
+
+@Sheet.property
+def vertPos(sheet):
+    if sheet.cursorRowIndex == 0:
+        return str(1) + "%"
+    return str(int((sheet.cursorRowIndex + 1) * 100 / sheet.nRows)) + "%"
 
 
 ################################################################################

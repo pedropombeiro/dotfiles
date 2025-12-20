@@ -87,7 +87,7 @@ vd.themes["gruvbox-dark"] = dict(
     color_change_pending=f'{GRUVBOX["bright_purple"]} on {GRUVBOX["bg0"]}',
     color_delete_pending=f'{GRUVBOX["bright_red"]} on {GRUVBOX["bg0"]}',
     disp_status_fmt="{sheet.sheetlist} ",
-    disp_rstatus_fmt="{sheet.threadStatus} {sheet.keystrokeStatus}   {sheet.longname}[/]   {sheet.nRows} {sheet.rowtype} {sheet.modifiedStatus}{sheet.selectedStatus}{vd.replayStatus} [:longname_status]{sheet.cursorRowIndex1:2d}:{sheet.cursorVisibleColIndex1} {sheet.vertPos}[/] {vd.sidebarStatus}",
+    disp_rstatus_fmt="{sheet.threadStatus} {sheet.keystrokeStatus}   {sheet.longname}[/]   {sheet.nRows} {sheet.rowtype} {sheet.modifiedStatus}{sheet.selectedStatus}{vd.replayStatus} [:longname_status]{sheet.cursorRowIndex1}:{sheet.cursorVisibleColIndex1} {sheet.vertPos}[/] {vd.sidebarStatus}",
 )
 
 if options.theme == "":

@@ -43,6 +43,36 @@ GRUVBOX = {
 }
 # fmt: on
 
+# Plot colors for better visibility in graphs
+PLOT_COLORS = {
+    "c1": 2,    # green
+    "c2": 1,    # red
+    "c3": 6,    # cyan
+    "c4": 3,    # yellow
+    "c5": 7,    # white
+    "c6": 201,
+    "c7": 226,
+    "c8": 51,
+    "c9": 196,
+    "c10": 46,
+    "c11": 33,
+    "c12": 207,
+    "c13": 8,   # gray
+    "c14": 19,
+    "c15": 220,
+    "c16": 88,
+    "c17": 45,
+    "c18": 22,
+    "c19": 141,
+    "c20": 118,
+    "c21": 39,
+    "c22": 208,
+    "c23": 52,
+    "c24": 156,
+    "c25": 213,
+    "c26": 224,
+}
+
 vd.themes["gruvbox-dark"] = dict(
     # Base colors
     color_default=f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0"]}',
@@ -73,6 +103,9 @@ vd.themes["gruvbox-dark"] = dict(
     color_note_row=f'{GRUVBOX["bright_blue"]} on {GRUVBOX["bg0"]}',
     # Graph colors
     color_graph_hidden=f'{GRUVBOX["blue"]}',
+    plot_colors=" ".join(
+        [f"{PLOT_COLORS[f'c{i}']}" for i in range(1, len(PLOT_COLORS) + 1)]
+    ),
     # Bottom sheet colors
     color_bottom_hdr=f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_h"]}',
     # Command palette and menus

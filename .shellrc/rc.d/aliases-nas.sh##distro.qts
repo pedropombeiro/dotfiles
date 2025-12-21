@@ -22,4 +22,4 @@ alias esphome="docker run --rm -v /share/Container/config/esphome:/config -t ghc
 
 alias reload_traefik='docker kill --signal=USR1 traefik'
 
-alias cscli='docker exec crowdsec_crowdsec cscli' # CrowdSec CLI alias - execute cscli commands within the crowdsec_crowdsec container
+alias cscli='docker exec crowdsec cscli' # CrowdSec CLI alias - execute cscli commands within the crowdsec container

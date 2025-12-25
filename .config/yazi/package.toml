@@ -1,6 +1,6 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "05234ed"
+rev = "7ca66b4"
 hash = "d2aa1b2f32c8b4fd1775e8f5c45f8fab"
 
 [[plugin.deps]]
@@ -30,12 +30,12 @@ hash = "92fbb5483657fa7976cdf4e0104e18e0"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "05234ed"
+rev = "7ca66b4"
 hash = "56fdabc96fc1f4d53c96eb884b02a5be"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "05234ed"
+rev = "7ca66b4"
 hash = "8a7c58225816a163a6e8730c0adafbc8"
 
 [[plugin.deps]]
@@ -50,12 +50,12 @@ hash = "894e801b788d0fca94627b58f8c9e1d4"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:vcs-files"
-rev = "05234ed"
+rev = "7ca66b4"
 hash = "4ee57085277d616acfa0ef1fef37dc00"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:chmod"
-rev = "05234ed"
+rev = "7ca66b4"
 hash = "5b2eb0cc2050cec1e4de83cfa51a5b90"
 
 [[plugin.deps]]
@@ -70,12 +70,12 @@ hash = "b209b5db91df69bdc6a4656cb8276cd9"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
-rev = "05234ed"
-hash = "b26d542e75151835d7bc885f6dda74cb"
+rev = "7ca66b4"
+hash = "d00cacddd5e4f58e2fb13aecae42d655"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:diff"
-rev = "05234ed"
+rev = "7ca66b4"
 hash = "82376c3381ae915fd799d40f4dd4c6cd"
 
 [[plugin.deps]]

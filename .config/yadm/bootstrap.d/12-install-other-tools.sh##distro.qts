@@ -10,7 +10,7 @@ target_dir="${HOME}/opt/bin"
 temp_dir="$(mktemp -d)"
 
 bandwhich_version=0.23.1 # imsnif/bandwhich
-btop_version=1.4.5 # aristocratos/btop
+btop_version=1.4.6 # aristocratos/btop
 croc_version=10.3.1 # schollz/croc
 fzf_version=0.67.0 # junegunn/fzf
 gping_version=1.19.0 # orf/gping

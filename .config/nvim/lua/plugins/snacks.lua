@@ -370,6 +370,7 @@ return {
                   ["<C-Q>"] = "close", -- close explorer
                   ["<leader>ga"] = "git_add",
                   ["<leader>gr"] = "git_rm",
+                  ["<leader>F"] = "open_yazi",
                 },
               },
             },
@@ -381,6 +382,14 @@ return {
               git_rm = {
                 action = function(picker) git_action(picker, "rm") end,
                 desc = "Remove file from git repo",
+              },
+              open_yazi = {
+                action = function(picker)
+                  local item = picker:current()
+                  -- Open Yazi with the selected item
+                  require("yazi").yazi(nil, item.file)
+                end,
+                desc = "Open Yazi at selected item",
               },
             },
           },

@@ -61,7 +61,15 @@ th.git.deleted_sign = ""
 require("git"):setup()
 
 local gruvbox_theme = require("yatline-gruvbox"):setup("dark") -- or "light"
--- Use colors from light theme, because the default background of section_a is too light
+-- Match Lualine gruvbox theme colors exactly
+gruvbox_theme.style_a.bg_mode.normal = "#a89984"  -- Lualine section_a/z bg (gray) - highlighted
+gruvbox_theme.style_a.fg = "#282828"              -- Dark fg on light bg
+gruvbox_theme.style_b.bg = "#504945"              -- Lualine section_b/y bg (lightgray)
+gruvbox_theme.style_b.fg = "#ebdbb2"              -- Lualine section_b/y fg (white)
+gruvbox_theme.style_c.bg = "#3c3836"              -- Lualine section_c/x bg (darkgray) - darkest
+gruvbox_theme.style_c.fg = "#a89984"              -- Lualine section_c/x fg (gray text)
+
+-- Use colors from light theme for git elements, because the defaults are too light
 gruvbox_theme.branch_color = "#076678"
 gruvbox_theme.commit_color = "#8f3f71"
 gruvbox_theme.behind_color = "#af3a03"
@@ -73,14 +81,13 @@ gruvbox_theme.untracked_color = "#427b58"
 
 require("yatline"):setup({
   theme = gruvbox_theme,
-  show_background = false,
+  show_background = true,
+  display_header_line = false,
+  display_status_line = true,
 
   header_line = {
     left = {
-      section_a = {
-        { type = "coloreds", custom = false, name = "tab_path" },
-        { type = "coloreds", custom = false, name = "githead" },
-      },
+      section_a = {},
       section_b = {},
       section_c = {},
     },
@@ -97,11 +104,12 @@ require("yatline"):setup({
         { type = "string", custom = false, name = "tab_mode" },
       },
       section_b = {
+        { type = "coloreds", custom = false, name = "githead" },
+        { type = "coloreds", custom = false, name = "count" },
         { type = "string", custom = false, name = "hovered_size" },
       },
       section_c = {
-        { type = "string", custom = false, name = "hovered_path" },
-        { type = "coloreds", custom = false, name = "count" },
+        { type = "coloreds", custom = false, name = "tab_path" },
       },
     },
     right = {
@@ -179,7 +187,7 @@ require("yatline-githead"):setup({
 
 require("yatline-tab-path"):setup({
   theme = gruvbox_theme,
-  path_fg = "cyan",
+  path_fg = "#a89984",  -- Match Lualine section_c fg (gray)
   filter_fg = "brightyellow",
   search_label = " search",
   filter_label = " filter",

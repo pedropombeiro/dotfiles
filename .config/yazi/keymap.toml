@@ -8,7 +8,7 @@ run = "quit --no-cwd-file"
 
 [[mgr.prepend_keymap]]
 on = ["<Space>", "d", "u"]
-run = "shell --block -- ncdu --color dark-bg $0"
+run = "shell --block -- ncdu --color dark-bg %h"
 
 [[mgr.prepend_keymap]]
 on   = ["<Space>", "<Space>"]
@@ -17,7 +17,7 @@ desc = "Toggle selection"
 
 [[mgr.prepend_keymap]]
 on   = ["<C-t>"]
-run  = "shell --block -- nvim -d $@"
+run  = "shell --block -- nvim -d %s"
 desc = "Open diff in Neovim"
 
 [[mgr.prepend_keymap]]
@@ -30,16 +30,16 @@ run = "plugin parent-arrow 1"
 
 [[mgr.prepend_keymap]]
 on = "<C-p>"
-run = 'shell -- qlmanage -p "$@"'
+run = 'shell -- qlmanage -p "%s"'
 desc = "Open preview"
 
 [[mgr.prepend_keymap]]
 on = ["c", "c"]
-run = 'shell -- clippy "$@"'
+run = 'shell -- clippy "%s"'
 desc = "Copy selection to clipboard"
 [[mgr.prepend_keymap]]
 on = ["c", "C"]
-run = 'shell -- clippy -t "$@"'
+run = 'shell -- clippy -t "%s"'
 desc = "Copy selection's content to clipboard"
 [[mgr.prepend_keymap]]
 on = ["c", "v"]

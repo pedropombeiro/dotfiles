@@ -6,7 +6,7 @@
 
 local repo=$1
 if [[ -n $repo ]]; then
-  docker exec -e RENOVATE_REPOSITORIES=pedropombeiro/$1 -e RENOVATE_AUTODISCOVER=false -e LOG_LEVEL=info it_renovate renovate
+  docker exec -e RENOVATE_REPOSITORIES=pedropombeiro/$1 -e RENOVATE_AUTODISCOVER=false -e LOG_LEVEL=info renovate renovate
 else
-  docker exec -e LOG_LEVEL=info it_renovate renovate
+  docker exec -e LOG_LEVEL=info renovate renovate
 fi

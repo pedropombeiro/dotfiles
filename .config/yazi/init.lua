@@ -85,19 +85,6 @@ require("yatline"):setup({
   display_header_line = false,
   display_status_line = true,
 
-  header_line = {
-    left = {
-      section_a = {},
-      section_b = {},
-      section_c = {},
-    },
-    right = {
-      section_a = {},
-      section_b = {},
-      section_c = {},
-    },
-  },
-
   status_line = {
     left = {
       section_a = {

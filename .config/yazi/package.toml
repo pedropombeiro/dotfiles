@@ -83,6 +83,11 @@ use = "TheronStein/yatline-githead"
 rev = "5cfe34d"
 hash = "6915e57a389a41b4d709f456cb3c1d6f"
 
+[[plugin.deps]]
+use = "yazi-rs/plugins:zoom"
+rev = "1612f00"
+hash = "7cf11690b16255b11b15a325e2e9791a"
+
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"
 rev = "2c61c90"

@@ -61,21 +61,12 @@ th.git.deleted_sign = ""
 require("git"):setup()
 
 local gruvbox_theme = require("yatline-gruvbox"):setup("dark") -- or "light"
--- Match Lualine gruvbox theme colors exactly
-gruvbox_theme.style_a.bg_mode.normal = "#a89984"  -- Lualine section_a/z bg (gray) - highlighted
-gruvbox_theme.style_a.fg = "#282828"              -- Dark fg on light bg
-gruvbox_theme.style_b.bg = "#504945"              -- Lualine section_b/y bg (lightgray)
-gruvbox_theme.style_b.fg = "#ebdbb2"              -- Lualine section_b/y fg (white)
-gruvbox_theme.style_c.bg = "#3c3836"              -- Lualine section_c/x bg (darkgray) - darkest
-gruvbox_theme.style_c.fg = "#a89984"              -- Lualine section_c/x fg (gray text)
-
--- Use colors from light theme for git elements, because the defaults are too light
-gruvbox_theme.branch_color = "#076678"
-gruvbox_theme.commit_color = "#8f3f71"
+gruvbox_theme.branch_color = "#ebdbb2"
+gruvbox_theme.commit_color = "#d3869b"
 gruvbox_theme.behind_color = "#af3a03"
 gruvbox_theme.ahead_color = "#427b58"
-gruvbox_theme.stashes_color = "#8f3f71"
-gruvbox_theme.state_color = "#9d0006"
+gruvbox_theme.stashes_color = "#d3869b"
+gruvbox_theme.state_color = "#cc241d"
 gruvbox_theme.unstaged_color = "#af3a03"
 gruvbox_theme.untracked_color = "#427b58"
 
@@ -85,34 +76,38 @@ require("yatline"):setup({
   display_header_line = false,
   display_status_line = true,
 
-  -- status_line = {
-  --   left = {
-  --     section_a = {
-  --       { type = "string", custom = false, name = "tab_mode" },
-  --     },
-  --     section_b = {
-  --       { type = "coloreds", custom = false, name = "githead" },
-  --       { type = "coloreds", custom = false, name = "count" },
-  --       { type = "string", custom = false, name = "hovered_size" },
-  --     },
-  --     section_c = {
-  --       { type = "coloreds", custom = false, name = "tab_path" },
-  --     },
-  --   },
-  --   right = {
-  --     section_a = {
-  --       { type = "string", custom = false, name = "cursor_position" },
-  --     },
-  --     section_b = {
-  --       { type = "string", custom = false, name = "cursor_percentage" },
-  --     },
-  --     section_c = {
-  --       { type = "string", custom = false, name = "hovered_mime", params = { true } },
-  --       { type = "coloreds", custom = false, name = "permissions" },
-  --       { type = "coloreds", custom = false, name = "modified_time" },
-  --     },
-  --   },
-  -- },
+  section_separator = { open = " ", close = " " },
+  part_separator = { open = "  ", close = "  " },
+  inverse_separator = { open = "", close = "" },
+
+  status_line = {
+    left = {
+      section_a = {
+        { type = "string", custom = false, name = "tab_mode" },
+      },
+      section_b = {
+        { type = "coloreds", custom = false, name = "githead" },
+        { type = "coloreds", custom = false, name = "count" },
+        { type = "string", custom = false, name = "hovered_size" },
+      },
+      section_c = {
+        { type = "coloreds", custom = false, name = "hovered_path" },
+      },
+    },
+    right = {
+      section_a = {
+        { type = "string", custom = false, name = "cursor_position" },
+      },
+      section_b = {
+        { type = "string", custom = false, name = "cursor_percentage" },
+      },
+      section_c = {
+        { type = "string", custom = false, name = "hovered_mime", params = { true } },
+        { type = "coloreds", custom = false, name = "permissions" },
+        { type = "coloreds", custom = false, name = "modified_time" },
+      },
+    },
+  },
 })
 
 require("yatline-modified-time"):setup()

@@ -9,16 +9,6 @@ rev = "1ce46eb"
 hash = "1a087e707ba0512106408144eeb3e50a"
 
 [[plugin.deps]]
-use = "imsi32/yatline"
-rev = "88bd1c5"
-hash = "981acbe9b758b1af3a8154c932bb936d"
-
-[[plugin.deps]]
-use = "imsi32/yatline-githead"
-rev = "f8f969e"
-hash = "4d441b38138ce6492a4e10fa349fd65"
-
-[[plugin.deps]]
 use = "blackdaemon/yatline-tab-path"
 rev = "101fe7c"
 hash = "b58a6786383df06dc16fc6dbd1876d31"
@@ -82,6 +72,16 @@ hash = "82376c3381ae915fd799d40f4dd4c6cd"
 use = "KKV9/compress"
 rev = "c264639"
 hash = "e17c11b605d989568a1d1741ca17c584"
+
+[[plugin.deps]]
+use = "carlosedp/yatline"
+rev = "61d3a3a"
+hash = "37fe452b2406df3f24e33b429ef699c2"
+
+[[plugin.deps]]
+use = "TheronStein/yatline-githead"
+rev = "5cfe34d"
+hash = "6915e57a389a41b4d709f456cb3c1d6f"
 
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"

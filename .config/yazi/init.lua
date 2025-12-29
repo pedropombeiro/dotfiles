@@ -85,34 +85,34 @@ require("yatline"):setup({
   display_header_line = false,
   display_status_line = true,
 
-  status_line = {
-    left = {
-      section_a = {
-        { type = "string", custom = false, name = "tab_mode" },
-      },
-      section_b = {
-        { type = "coloreds", custom = false, name = "githead" },
-        { type = "coloreds", custom = false, name = "count" },
-        { type = "string", custom = false, name = "hovered_size" },
-      },
-      section_c = {
-        { type = "coloreds", custom = false, name = "tab_path" },
-      },
-    },
-    right = {
-      section_a = {
-        { type = "string", custom = false, name = "cursor_position" },
-      },
-      section_b = {
-        { type = "string", custom = false, name = "cursor_percentage" },
-      },
-      section_c = {
-        { type = "string", custom = false, name = "hovered_mime", params = { true } },
-        { type = "coloreds", custom = false, name = "permissions" },
-        { type = "coloreds", custom = false, name = "modified_time" },
-      },
-    },
-  },
+  -- status_line = {
+  --   left = {
+  --     section_a = {
+  --       { type = "string", custom = false, name = "tab_mode" },
+  --     },
+  --     section_b = {
+  --       { type = "coloreds", custom = false, name = "githead" },
+  --       { type = "coloreds", custom = false, name = "count" },
+  --       { type = "string", custom = false, name = "hovered_size" },
+  --     },
+  --     section_c = {
+  --       { type = "coloreds", custom = false, name = "tab_path" },
+  --     },
+  --   },
+  --   right = {
+  --     section_a = {
+  --       { type = "string", custom = false, name = "cursor_position" },
+  --     },
+  --     section_b = {
+  --       { type = "string", custom = false, name = "cursor_percentage" },
+  --     },
+  --     section_c = {
+  --       { type = "string", custom = false, name = "hovered_mime", params = { true } },
+  --       { type = "coloreds", custom = false, name = "permissions" },
+  --       { type = "coloreds", custom = false, name = "modified_time" },
+  --     },
+  --   },
+  -- },
 })
 
 require("yatline-modified-time"):setup()

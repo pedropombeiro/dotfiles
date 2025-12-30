@@ -1,7 +1,7 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "1612f00"
-hash = "5f5ff760eee73db3f9ac9268318267a6"
+rev = "da5b695"
+hash = "73788c7dc5827ef4677c502c3ea8fa19"
 
 [[plugin.deps]]
 use = "imsi32/yatline-gruvbox"
@@ -20,12 +20,12 @@ hash = "92fbb5483657fa7976cdf4e0104e18e0"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "1612f00"
+rev = "da5b695"
 hash = "56fdabc96fc1f4d53c96eb884b02a5be"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "1612f00"
+rev = "da5b695"
 hash = "8a7c58225816a163a6e8730c0adafbc8"
 
 [[plugin.deps]]
@@ -40,13 +40,13 @@ hash = "894e801b788d0fca94627b58f8c9e1d4"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:vcs-files"
-rev = "1612f00"
+rev = "da5b695"
 hash = "4ee57085277d616acfa0ef1fef37dc00"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:chmod"
-rev = "1612f00"
-hash = "5b2eb0cc2050cec1e4de83cfa51a5b90"
+rev = "da5b695"
+hash = "8da0b15a97b5dfd13941d1ecc617ac7c"
 
 [[plugin.deps]]
 use = "wekauwau/yatline-modified-time"
@@ -60,12 +60,12 @@ hash = "b209b5db91df69bdc6a4656cb8276cd9"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
-rev = "1612f00"
+rev = "da5b695"
 hash = "d00cacddd5e4f58e2fb13aecae42d655"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:diff"
-rev = "1612f00"
+rev = "da5b695"
 hash = "82376c3381ae915fd799d40f4dd4c6cd"
 
 [[plugin.deps]]
@@ -85,7 +85,7 @@ hash = "6915e57a389a41b4d709f456cb3c1d6f"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:zoom"
-rev = "1612f00"
+rev = "da5b695"
 hash = "7cf11690b16255b11b15a325e2e9791a"
 
 [[flavor.deps]]

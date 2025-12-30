@@ -574,14 +574,21 @@ customCommands:
         title: "message"
         key: "Message"
         initialValue: ""
+      - type: "input"
+        title: "description"
+        key: "Description"
+        initialValue: ""
       - type: "confirm"
         key: "Confirm"
         title: "Commit"
         body: "Are you sure you want to commit?"
     command: >-
-      message="{{.Form.Type}}{{ if .Form.Scope }}({{ .Form.Scope }}){{ end }}{{.Form.Breaking}}: {{.Form.Message}}";
+      message=$'{{.Form.Type}}{{ if .Form.Scope }}({{ .Form.Scope }}){{ end }}{{.Form.Breaking}}: {{.Form.Message}}';
+      description=$'{{.Form.Description}}';
       echo $message > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT;
-      git commit --message $message && echo -n > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT
+      echo $description >> {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT;
+      git commit --message $message {{ if .Form.Description }} --message $description {{ end }} &&
+        echo -n > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT
     loadingText: "Creating conventional commit..."
   - key: "<c-g>"
     description: Generate commit message with Claude

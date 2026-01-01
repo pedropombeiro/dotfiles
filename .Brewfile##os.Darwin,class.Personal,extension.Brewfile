@@ -46,6 +46,8 @@ brew "curl"
 brew "direnv"
 # Pack, ship and run any application as a lightweight container
 brew "docker"
+# Docker CLI plugin for extended build capabilities with BuildKit
+brew "docker-buildx"
 # Command-line DNS client
 brew "dog"
 # Disk Usage/Free Utility - a better 'df' alternative

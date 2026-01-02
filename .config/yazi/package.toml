@@ -1,7 +1,7 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "398796d"
-hash = "73788c7dc5827ef4677c502c3ea8fa19"
+rev = "80cd5b5"
+hash = "170317244d60fbe70ad3cc3353358480"
 
 [[plugin.deps]]
 use = "imsi32/yatline-gruvbox"
@@ -20,12 +20,12 @@ hash = "92fbb5483657fa7976cdf4e0104e18e0"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "398796d"
+rev = "80cd5b5"
 hash = "56fdabc96fc1f4d53c96eb884b02a5be"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "398796d"
+rev = "80cd5b5"
 hash = "8a7c58225816a163a6e8730c0adafbc8"
 
 [[plugin.deps]]
@@ -40,12 +40,12 @@ hash = "ab2e66065a94cca4886b303518e44bd8"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:vcs-files"
-rev = "398796d"
+rev = "80cd5b5"
 hash = "4ee57085277d616acfa0ef1fef37dc00"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:chmod"
-rev = "398796d"
+rev = "80cd5b5"
 hash = "8da0b15a97b5dfd13941d1ecc617ac7c"
 
 [[plugin.deps]]
@@ -55,17 +55,17 @@ hash = "8fa6028ef832b34cf32f4ee43cb0ae35"
 
 [[plugin.deps]]
 use = "ourongxing/fast-enter"
-rev = "738356f"
-hash = "b209b5db91df69bdc6a4656cb8276cd9"
+rev = "9fe77d8"
+hash = "7ac02a3fa73cd734ddf4ac85af4c0507"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
-rev = "398796d"
+rev = "80cd5b5"
 hash = "2dd68af59418b631b9703a03f606b31f"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:diff"
-rev = "398796d"
+rev = "80cd5b5"
 hash = "492e4757f332e29f982556bf507e043c"
 
 [[plugin.deps]]
@@ -85,7 +85,7 @@ hash = "6915e57a389a41b4d709f456cb3c1d6f"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:zoom"
-rev = "398796d"
+rev = "80cd5b5"
 hash = "a638db397a5a41d3f3a08a7427ccead1"
 
 [[flavor.deps]]

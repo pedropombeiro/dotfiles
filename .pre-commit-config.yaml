@@ -24,7 +24,7 @@ repos:
         exclude: '^\.config/.*|^\.local/.*|^\.shellrc/zshrc\.d/.*|\.zsh(##.*)?$|^\.zlogin$|\.sh##default$'
 
   - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 42.69.2
+    rev: 42.70.0
     hooks:
       - id: renovate-config-validator
         args: [--strict]

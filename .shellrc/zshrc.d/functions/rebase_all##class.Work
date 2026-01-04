@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 #
-# `rebase-all` rebases all branches matching the "${GILAB_USERNAME}/<MR_ID>/<BRANCH_NAME>",
+# `rebase_all` rebases all branches matching the "${GILAB_USERNAME}/<MR_ID>/<BRANCH_NAME>",
 # striving to keep the branch dependencies intact
 #
 

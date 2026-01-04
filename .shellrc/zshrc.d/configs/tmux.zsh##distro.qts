@@ -8,7 +8,7 @@ if command -v tmux >/dev/null; then
 
   export ZSH_TMUX_UNICODE=true
   export ZSH_TMUX_CONFIG="$HOME/.shellrc/zshrc.d/configs/tmux.conf"
-  export ZSH_TMUX_DEFAULT_SESSION_NAME="$(hostname) - $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+  export ZSH_TMUX_DEFAULT_SESSION_NAME="$(hostname)-$(date +"%H-%M")"
   export ZSH_TMUX_AUTOCONNECT=false
   export ZSH_TMUX_ITERM2=false
   export ZSH_TMUX_TERM="tmux-256color"

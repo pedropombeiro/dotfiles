@@ -19,3 +19,7 @@ bind-key -n Home send Escape "OH"
 bind-key -n End send Escape "OF"
 
 source $HOME/.shellrc/zshrc.d/configs/tmux-common.conf
+
+# Status bar configuration - show session name only (after theme loads)
+set -g status-left "[#S] "
+set -g status-left-length 50

@@ -1,0 +1,2 @@
+# Source the actual tmux configuration
+source-file ~/.shellrc/zshrc.d/configs/tmux.conf

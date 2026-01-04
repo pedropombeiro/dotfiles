@@ -20,6 +20,6 @@ alias dockerstats='docker stats --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemU
 
 alias esphome="docker run --rm -v /share/Container/config/esphome:/config -t ghcr.io/esphome/esphome"
 
-alias reload_traefik='docker kill --signal=USR1 traefik'
+alias reload_traefik='docker restart traefik'
 
 alias cscli='docker exec crowdsec cscli' # CrowdSec CLI alias - execute cscli commands within the crowdsec container

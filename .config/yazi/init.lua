@@ -91,7 +91,7 @@ require("yatline"):setup({
         { type = "string", custom = false, name = "hovered_size" },
       },
       section_c = {
-        { type = "coloreds", custom = false, name = "hovered_path" },
+        { type = "string", custom = false, name = "hovered_path" },
       },
     },
     right = {
@@ -109,6 +109,18 @@ require("yatline"):setup({
     },
   },
 })
+
+-- Override hovered_path to include file icon
+function Yatline.string.get:hovered_path(config)
+  local h = cx.active.current.hovered
+  if not h then
+    return ""
+  end
+
+  local icon = h:icon().text
+  local path = ya.readable_path(tostring(h.url))
+  return icon .. " " .. path
+end
 
 require("yatline-modified-time"):setup()
 

@@ -7,7 +7,6 @@ osascript -e 'tell application "Stay.app" to restore all windows'
 
 open -a BusylightHTTP # Reopen Busylight_HTTP_Mac at wake
 
-killall gitstatusd-darwin-arm64
 brew services restart nginx
 
 if pgrep 'Elgato Control Center' >/dev/null 2>&1; then

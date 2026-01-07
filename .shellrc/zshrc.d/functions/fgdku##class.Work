@@ -25,10 +25,18 @@ source ~/.config/yadm/scripts/colors.sh
 
   git restore db/structure.sql bin/rake bin/rspec bin/rails bin/spring package.json
 
-  if [[ $(git diff --shortstat 2>/dev/null | tail -n1) != "" ]]; then
-    printf "${RED}%s${NC}\n" 'Please stash the changes in the current branch before calling fgdku!'
-    cd - >/dev/null
-    exit 1
+  if [[ $(git diff --shortstat 2>/dev/null | tail -n1) != "" || $(git diff --shortstat --cached 2>/dev/null | tail -n1) != "" ]]; then
+    git status
+
+    echo
+    printf "${RED}%s${NC}\n" 'There are changes in the local repository. Would you like to reset them and proceed with fgdku? [y/N]'
+    read response
+    if [[ ! "$response" =~ ^[Yy]$ ]]; then
+      cd - >/dev/null
+      exit 1
+    fi
+
+    git full-reset
   fi
 
   # Reset network adapter if network is not reachable

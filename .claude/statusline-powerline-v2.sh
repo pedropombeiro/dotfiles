@@ -10,8 +10,14 @@ current_dir=$(echo "$input" | jq -r '.workspace.current_dir')
 model_name=$(echo "$input" | jq -r '.model.display_name')
 context_window=$(echo "$input" | jq -r '.context_window')
 
-# Get directory name (like \W in PS1)
-dir_name=$(basename "$current_dir")
+dir_name="$current_dir"
+
+# Replace home directory with ~
+if [[ "$dir_name" == "$HOME" ]]; then
+  dir_name="~"
+elif [[ "$dir_name" == "$HOME"/* ]]; then
+  dir_name="~${dir_name#"$HOME"}"
+fi
 
 # Get git branch (skip optional locks for performance)
 git_branch=""

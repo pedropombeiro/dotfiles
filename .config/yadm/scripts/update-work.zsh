@@ -86,4 +86,8 @@ EOF
   (cd ${GDK_ROOT} && lefthook install)
 fi
 
+git -C ${GDK_ROOT}/gitlab config --unset-all remote.origin.fetch
+git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/master:refs/remotes/origin/master'
+git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/pedropombeiro/*:refs/remotes/origin/pedropombeiro/*'
+
 ${YADM_SCRIPTS}/run-checks.zsh

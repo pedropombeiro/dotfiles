@@ -6,6 +6,7 @@ set-option -g allow-passthrough on
 
 # Enable clipboard integration via OSC 52 for remote sessions
 set -g set-clipboard on
+set -as terminal-features ',tmux*:clipboard'
 
 # Use the mouse drag to re-order windows
 bind-key -n MouseDrag1Status swap-window -t=

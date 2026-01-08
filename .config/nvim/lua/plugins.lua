@@ -162,7 +162,7 @@ return {
 
   --### Editor enhancements
   {
-    "ejrichards/mise.nvim",
+    "https://plugins.ejri.dev/mise.nvim",
     opts = {},
   },
   {

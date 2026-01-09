@@ -26,6 +26,10 @@ zsh -i -c 'sleep 5' # Allow time for .zlogin to asynchronously regenerate the .z
 
 bat cache --build # Ensure any custom themes and syntax definition files are compiled
 
+# Update npm packages
+printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."
+command -v npm >/dev/null && npm update -g
+
 printf "${YELLOW}%s${NC}\n" "Testing shell instantiation performance..."
 hf_file="$(mktemp)"
 hyperfine --warmup=1 --max-runs 5 'zsh -i -c exit' --export-json "${hf_file}"

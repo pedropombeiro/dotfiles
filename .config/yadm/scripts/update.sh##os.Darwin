@@ -14,10 +14,6 @@ brew upgrade
 printf "${YELLOW}%s${NC}\n" "Updating mise plugins..."
 (cd ~ && mise plugins update && mise install --yes && mise upgrade)
 
-# Update npm packages
-printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."
-command -v npm >/dev/null && npm update -g
-
 "${YADM_SCRIPTS}/update-common.zsh"
 
 if [[ $(yadm config local.class) == 'Work' ]]; then

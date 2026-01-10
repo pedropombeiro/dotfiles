@@ -26,18 +26,6 @@ if git -C "$current_dir" rev-parse --git-dir >/dev/null 2>&1; then
     git -C "$current_dir" --no-optional-locks rev-parse --short HEAD 2>/dev/null)
 fi
 
-# Calculate context usage percentage
-usage=$(echo "$context_window" | jq '.current_usage')
-context_pct=""
-if [ "$usage" != "null" ]; then
-  current=$(echo "$usage" | jq '.input_tokens + .cache_creation_input_tokens + .cache_read_input_tokens')
-  size=$(echo "$context_window" | jq '.context_window_size')
-  if [ "$current" != "null" ] && [ "$size" != "null" ] && [ "$size" -gt 0 ]; then
-    pct=$((current * 100 / size))
-    context_pct="${pct}%"
-  fi
-fi
-
 # Gruvbox-dark subtle color codes (matching lualine aesthetic)
 # Using muted background shades for a professional, cohesive look
 DIR_BG="241"     # Gruvbox bg3 (#665c54) - Lighter dark gray
@@ -63,16 +51,7 @@ fi
 # Combined model/context segment
 if [ -n "$model_name" ] && [ "$model_name" != "null" ]; then
   printf "\033[38;5;%sm\033[48;5;%sm%s" "$LAST_BG" "$MODEL_BG" "$SEP"
-  printf "\033[38;5;%sm  %s" "$MODEL_FG" "$model_name"
-  if [ -n "$context_pct" ]; then
-    printf " %s  %s " "" "$context_pct"
-  else
-    printf " "
-  fi
-  LAST_BG="$MODEL_BG"
-elif [ -n "$context_pct" ]; then
-  printf "\033[38;5;%sm\033[48;5;%sm%s" "$LAST_BG" "$MODEL_BG" "$SEP"
-  printf "\033[38;5;%sm  %s " "$MODEL_FG" "$context_pct"
+  printf "\033[38;5;%sm  %s " "$MODEL_FG" "$model_name"
   LAST_BG="$MODEL_BG"
 fi
 

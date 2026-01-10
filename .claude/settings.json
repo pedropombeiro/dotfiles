@@ -9,5 +9,27 @@
     "feature-dev@claude-plugins-official": true,
     "lua-lsp@claude-plugins-official": true
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "just fix $CLAUDE_FILE_PATHS"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "just fix $CLAUDE_FILE_PATHS"
+          }
+        ]
+      }
+    ]
+  }
 }

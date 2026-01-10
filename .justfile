@@ -22,8 +22,18 @@ default: pull update
 @wifi-traffic:
     ssh ap-u6pro.infra.pombei.ro "tcpdump -np"
 
-@fix:
-    yadm enter pre-commit run --all-files --hook-stage manual
+@fix *FILES='':
+    #!/usr/bin/env bash
+    if [ -n "{{FILES}}" ]; then \
+        yadm enter pre-commit run --files {{FILES}} --hook-stage manual; \
+    else \
+        yadm enter pre-commit run --all-files --hook-stage manual; \
+    fi
 
-@lint:
-    yadm enter pre-commit run --all-files
+@lint *FILES='':
+    #!/usr/bin/env bash
+    if [ -n "{{FILES}}" ]; then \
+        yadm enter pre-commit run --files {{FILES}}; \
+    else \
+        yadm enter pre-commit run --all-files; \
+    fi

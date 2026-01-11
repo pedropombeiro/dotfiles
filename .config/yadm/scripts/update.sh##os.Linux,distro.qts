@@ -21,4 +21,8 @@ pip3 list --outdated --format=json | jq -r '.[] | .name+"="+.latest_version' |
 wget -q https://raw.githubusercontent.com/git/git/master/contrib/git-jump/git-jump -O "$HOME/opt/bin/git-jump"
 chmod +x "$HOME/opt/bin/git-jump"
 
+printf "${YELLOW}%s${NC}\n" "Updating tmux plugins..."
+~/.tmux/plugins/tpm/bin/update_plugins all
+~/.tmux/plugins/tpm/bin/clean_plugins
+
 "${YADM_SCRIPTS}/update-common.zsh"

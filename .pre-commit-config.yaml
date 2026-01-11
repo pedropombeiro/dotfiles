@@ -64,12 +64,12 @@ repos:
     hooks:
       - id: standardrb
         name: standardrb (check)
-        entry: standardrb
+        entry: bash -c 'BUNDLE_GEMFILE=~/.shellrc/zshrc.d/functions/scripts/Gemfile bundle exec standardrb "$@"' --
         language: system
         types: [ruby]
       - id: standardrb-fix
         name: standardrb (fix)
-        entry: standardrb --fix
+        entry: bash -c 'BUNDLE_GEMFILE=~/.shellrc/zshrc.d/functions/scripts/Gemfile bundle exec standardrb --fix "$@"' --
         language: system
         types: [ruby]
         stages: [manual]

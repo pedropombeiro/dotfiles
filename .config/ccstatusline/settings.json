@@ -25,6 +25,14 @@
         }
       },
       {
+        "id": "82589c35-ee33-430c-a7e3-d3854926088d",
+        "type": "current-working-dir",
+        "backgroundColor": "bgBrightYellow",
+        "metadata": {
+          "fishStyle": "true"
+        }
+      },
+      {
         "id": "5",
         "type": "git-branch",
         "color": "magenta",

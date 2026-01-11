@@ -83,18 +83,13 @@ jobs:
 
   # Job 4: Bootstrap script validation
   bootstrap-validate:
-    name: Bootstrap scripts validation
+    name: Bootstrap scripts syntax
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # Install shellcheck
-      - name: Install shellcheck
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y shellcheck
-
       # Validate bash syntax for all bootstrap scripts
+      # Note: shellcheck runs in pre-commit job
       - name: Bash syntax check
         run: |
           echo "Checking bash syntax for bootstrap scripts..."
@@ -121,13 +116,6 @@ jobs:
           fi
 
           exit $EXIT_CODE
-
-      # Additional shellcheck for bootstrap scripts
-      - name: ShellCheck bootstrap scripts
-        run: |
-          echo "Running shellcheck on bootstrap scripts..."
-          find .config/yadm/bootstrap.d -type f -name '*.sh' -exec shellcheck {} +
-          shellcheck .config/yadm/bootstrap
 
   # Job 5: Secret scanning
   secret-scanning:

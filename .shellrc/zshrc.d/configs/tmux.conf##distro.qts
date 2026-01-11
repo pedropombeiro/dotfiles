@@ -22,8 +22,17 @@ set -as terminal-features ",*:RGB"
 bind-key -n Home send Escape "OH"
 bind-key -n End send Escape "OF"
 
-source $HOME/.shellrc/zshrc.d/configs/tmux-common.conf
+# List of plugins
+set -g @plugin tmux-plugins/tpm
+set -g @plugin tmux-plugins/tmux-sensible
+set -g @plugin tmux-plugins/tmux-pain-control
+
+set -g @plugin egel/tmux-gruvbox
+set -g @tmux-gruvbox 'dark256' # or 'light256'
 
 # Status bar configuration - show session name only (after theme loads)
 set -g status-left "[#S] "
 set -g status-left-length 50
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run '~/.tmux/plugins/tpm/tpm'

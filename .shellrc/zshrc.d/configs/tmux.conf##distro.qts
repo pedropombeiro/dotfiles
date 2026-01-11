@@ -28,6 +28,13 @@ set -g @plugin tmux-plugins/tmux-sensible
 set -g @plugin tmux-plugins/tmux-pain-control
 set -g @plugin 'alexwforsythe/tmux-which-key'
 
+set -g @plugin 'christoomey/vim-tmux-navigator' # Pairs with https://github.com/christoomey/vim-tmux-navigator
+set -g @vim_navigator_mapping_left "C-Left M-h"
+set -g @vim_navigator_mapping_right "C-Right M-l"
+set -g @vim_navigator_mapping_up "M-k"
+set -g @vim_navigator_mapping_down "M-j"
+set -g @vim_navigator_mapping_prev "M-\\"
+
 set -g @plugin egel/tmux-gruvbox
 set -g @tmux-gruvbox 'dark256' # or 'light256'
 

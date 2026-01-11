@@ -19,7 +19,7 @@ jobs:
     name: Pre-commit hooks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-python@v5
         with:
@@ -41,7 +41,7 @@ jobs:
     name: Neovim config validation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Install Neovim (latest stable)
       - name: Install Neovim
@@ -73,7 +73,7 @@ jobs:
     name: Luacheck (Neovim Lua)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run luacheck
         uses: nebularg/actions-luacheck@v1
@@ -86,7 +86,7 @@ jobs:
     name: Bootstrap scripts syntax
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       # Validate bash syntax for all bootstrap scripts
       # Note: shellcheck runs in pre-commit job
@@ -122,7 +122,7 @@ jobs:
     name: Secret scanning (Gitleaks)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0 # Full history for gitleaks
 

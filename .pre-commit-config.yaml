@@ -47,17 +47,6 @@ repos:
         args: ["--config-path", ".config/nvim/.stylua.toml"]
         stages: [manual]
 
-  - repo: https://github.com/rubocop/rubocop
-    rev: v1.82.1
-    hooks:
-      - id: rubocop
-        name: rubocop (check)
-      - id: rubocop
-        name: rubocop (fix)
-        alias: rubocop-fix
-        args: ["-a"]
-        stages: [manual]
-
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
     hooks:
@@ -73,6 +62,17 @@ repos:
 
   - repo: local
     hooks:
+      - id: standardrb
+        name: standardrb (check)
+        entry: standardrb
+        language: system
+        types: [ruby]
+      - id: standardrb-fix
+        name: standardrb (fix)
+        entry: standardrb --fix
+        language: system
+        types: [ruby]
+        stages: [manual]
       - id: markdownlint-cli2
         name: markdownlint-cli2
         entry: npx markdownlint-cli2

@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'English'
-require 'tty-link'
+require "English"
+require "tty-link"
 
 REJECTED_LABELS = /^(workflow:|missed:|estimate:|Effort:|\[Deprecated|auto updated).*/
 
@@ -40,33 +40,33 @@ class String
   end
 
   def with_hyperlink(url)
-    (' ' * (length - lstrip.length)) + TTY::Link.link_to(strip, url) + (' ' * (length - rstrip.length))
+    (" " * (length - lstrip.length)) + TTY::Link.link_to(strip, url) + (" " * (length - rstrip.length))
   end
 
   def truncate(length, options = {})
     text = dup
-    options[:omission] ||= '…'
+    options[:omission] ||= "…"
 
     length_with_room_for_omission = length - options[:omission].length
 
-    (chars.length > length ? trim(text, length_with_room_for_omission, options) : text).to_s
+    ((chars.length > length) ? trim(text, length_with_room_for_omission, options) : text).to_s
   end
 
   private
 
   def trim(text, length_with_room_for_omission, options)
     stop = if options[:separator]
-             text.rindex(options[:separator], length_with_room_for_omission) || length_with_room_for_omission
-           else
-             length_with_room_for_omission
-           end
+      text.rindex(options[:separator], length_with_room_for_omission) || length_with_room_for_omission
+    else
+      length_with_room_for_omission
+    end
 
     text[0...stop] + options[:omission]
   end
 end
 
 def graphql_execute(query, **kwargs)
-  `op plugin run -- glab api graphql -f query='#{query}' #{kwargs.map { |k, v| "--field #{k}='#{v}'" }.join(' ')}`
+  `op plugin run -- glab api graphql -f query='#{query}' #{kwargs.map { |k, v| "--field #{k}='#{v}'" }.join(" ")}`
 end
 
 BASELINE_MR_RATE = 13
@@ -74,20 +74,20 @@ BASELINE_MR_RATE = 13
 def gitlab_mr_rate(*author)
   author = ARGV[0] if author.empty?
 
-  require 'date'
-  require 'json'
+  require "date"
+  require "json"
 
   mrs = []
   start_cursor = nil
   best_month = nil
   best_month_mr_rate = 0
   total_time_to_merge = 0
-  $stderr.print 'Fetching '
+  $stderr.print "Fetching "
 
   loop do
-    $stderr.putc '.'
+    $stderr.putc "."
 
-    res = graphql_execute(<<~GQL, groupPath: 'gitlab-org', author: author, after: start_cursor, createdAfter: '2020-01-27')
+    res = graphql_execute(<<~GQL, groupPath: "gitlab-org", author: author, after: start_cursor, createdAfter: "2020-01-27")
       query($groupPath: ID!, $author: String!, $after: String, $createdAfter: Time) {
         group(fullPath: $groupPath) {
           mergeRequests(
@@ -112,29 +112,29 @@ def gitlab_mr_rate(*author)
     return if $CHILD_STATUS != 0
 
     json_res = JSON.parse(res)
-    merge_requests = json_res.dig('data', 'group', 'mergeRequests')
+    merge_requests = json_res.dig("data", "group", "mergeRequests")
     mrs +=
-      merge_requests['nodes']
-      .select { |mr| mr['mergedAt'] }
-      .map do |mr|
-        { merged_at: DateTime.iso8601(mr['mergedAt']) }
-      rescue StandardError
+      merge_requests["nodes"]
+        .select { |mr| mr["mergedAt"] }
+        .map do |mr|
+        {merged_at: DateTime.iso8601(mr["mergedAt"])}
+      rescue
         $stderr.print "\n#{mr}\n"
         raise
       end
 
-    total_time_to_merge = merge_requests['totalTimeToMerge']
-    page_info = merge_requests['pageInfo']
-    break unless page_info['hasNextPage']
+    total_time_to_merge = merge_requests["totalTimeToMerge"]
+    page_info = merge_requests["pageInfo"]
+    break unless page_info["hasNextPage"]
 
-    start_cursor = page_info['endCursor']
+    start_cursor = page_info["endCursor"]
   end
 
   puts
   now = DateTime.now
   mrs_merged_by_month = mrs
-                        .sort_by { |mr| now - mr[:merged_at] }
-                        .group_by { |mr| [now, DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min }
+    .sort_by { |mr| now - mr[:merged_at] }
+    .group_by { |mr| [now, DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min }
   mrs_merged_by_month.reverse_each do |ym, monthly_mrs|
     prorated_mr_count = monthly_mrs.count
     if ym.year == now.year && ym.month == now.month
@@ -147,7 +147,7 @@ def gitlab_mr_rate(*author)
       best_month_mr_rate = monthly_mrs.count
     end
 
-    msg = "#{ym.strftime('%Y-%m')}: #{monthly_mrs.count.to_s.rjust(3)}\t#{'▁' * monthly_mrs.count}"
+    msg = "#{ym.strftime("%Y-%m")}: #{monthly_mrs.count.to_s.rjust(3)}\t#{"▁" * monthly_mrs.count}"
 
     if prorated_mr_count < BASELINE_MR_RATE
       print msg.red
@@ -166,12 +166,12 @@ def gitlab_mr_rate(*author)
   monthly_average =
     if last_mr_at.year == first_mr_at.year && last_mr_at.month == first_mr_at.month
       mrs.count.to_f / ((DateTime.civil(last_mr_at.year, last_mr_at.month,
-                                        -1) - DateTime.civil(first_mr_at.year, first_mr_at.month, 1)).to_f / 30)
+        -1) - DateTime.civil(first_mr_at.year, first_mr_at.month, 1)).to_f / 30)
     else
       mrs.count.to_f / ((last_mr_at - first_mr_at).to_f / 30)
     end
 
-  puts '-' * 12
+  puts "-" * 12
   msg = "Average MRs merged per month: #{monthly_average.round}"
   if monthly_average > BASELINE_MR_RATE
     puts msg.green
@@ -180,11 +180,11 @@ def gitlab_mr_rate(*author)
   end
   puts "Average per MR: #{(total_time_to_merge / (60 * 60 * 24) / mrs.count).round(1)} days"
   puts "Total MRs merged: #{mrs.count}"
-  puts "Best month: #{best_month.strftime('%Y-%m')} (#{best_month_mr_rate} MRs)"
+  puts "Best month: #{best_month.strftime("%Y-%m")} (#{best_month_mr_rate} MRs)"
 end
 
 def retrieve_group_owners(group_path)
-  require('json')
+  require("json")
 
   res = graphql_execute(<<~GQL, fullPath: group_path)
     query groupMembers($fullPath: ID!) {
@@ -215,48 +215,48 @@ def retrieve_group_owners(group_path)
   GQL
   return if $CHILD_STATUS != 0
 
-  JSON.parse(res).dig(*%w[data group groupMembers nodes]).map { |v| v['user'] }
+  JSON.parse(res).dig(*%w[data group groupMembers nodes]).map { |v| v["user"] }
 end
 
 def filter_sort_reviewers(candidates)
   candidates
-    .reject { |c| c['bot'] || c['username'].include?('-bot') }
-    .filter { |c| c['state'] == 'active' }
+    .reject { |c| c["bot"] || c["username"].include?("-bot") }
+    .filter { |c| c["state"] == "active" }
     .sort_by do |c|
-      message = c.dig('status', 'message')
-      has_message = message && !message.include?('Verify reviews') && !message.include?('Please @')
-      ooo = has_message && message.include?('OOO')
-      busy = c.dig('status', 'availability') == 'BUSY' && (!message || !message.include?('Verify reviews'))
+      message = c.dig("status", "message")
+      has_message = message && !message.include?("Verify reviews") && !message.include?("Please @")
+      ooo = has_message && message.include?("OOO")
+      busy = c.dig("status", "availability") == "BUSY" && (!message || !message.include?("Verify reviews"))
 
       (ooo ? 20 : 0) +
         (busy ? 10 : 0) +
         (has_message ? 5 : 0) +
-        (c.dig('reviewRequestedMergeRequests', 'count').to_i + (c.dig('assignedMergeRequests', 'count').to_i / 2))
+        (c.dig("reviewRequestedMergeRequests", "count").to_i + (c.dig("assignedMergeRequests", "count").to_i / 2))
     end
 end
 
 def pick_reviewer(candidates)
-  require 'tty-table'
+  require "tty-table"
 
   candidates = filter_sort_reviewers(candidates)
 
-  candidate = candidates.filter { |c| c['username'] != 'pedropombeiro' }.first
-  puts "Chosen reviewer: @#{candidate['username'].with_hyperlink(candidate['webUrl'])}"
+  candidate = candidates.find { |c| c["username"] != "pedropombeiro" }
+  puts "Chosen reviewer: @#{candidate["username"].with_hyperlink(candidate["webUrl"])}"
   puts
 
   table = TTY::Table.new(
-    header: ['Username', 'Availability', 'Message', 'Assigned MRs', 'Requested MR reviews'].map(&:green),
+    header: ["Username", "Availability", "Message", "Assigned MRs", "Requested MR reviews"].map(&:green),
     rows: candidates.map do |c|
-      availability = c.dig('status', 'availability')
-      message = c.dig('status', 'message')
-      assigned_count = c.dig('assignedMergeRequests', 'count')
-      requested_count = c.dig('reviewRequestedMergeRequests', 'count')
+      availability = c.dig("status", "availability")
+      message = c.dig("status", "message")
+      assigned_count = c.dig("assignedMergeRequests", "count")
+      requested_count = c.dig("reviewRequestedMergeRequests", "count")
       [
-        "@#{c['username']}",
+        "@#{c["username"]}",
         availability,
         message,
-        { value: assigned_count, alignment: :right },
-        { value: requested_count, alignment: :right }
+        {value: assigned_count, alignment: :right},
+        {value: requested_count, alignment: :right}
       ]
     end
   )
@@ -268,7 +268,7 @@ def pick_reviewer(candidates)
         candidate = candidates[row_index - 1]
         case col_index
         when 0
-          val.with_hyperlink(candidate['webUrl'])
+          val.with_hyperlink(candidate["webUrl"])
         else
           val
         end
@@ -294,8 +294,8 @@ end
 def retrieve_mrs(*args)
   username = ARGV[0] if args.empty?
 
-  require 'date'
-  require 'json'
+  require "date"
+  require "json"
 
   res = graphql_execute(<<~GQL, username: username)
     query authoredMergeRequests($username: String) {
@@ -337,7 +337,7 @@ def retrieve_mrs(*args)
   GQL
   return if $CHILD_STATUS != 0
 
-  if res.start_with?('glab:')
+  if res.start_with?("glab:")
     puts res
     exit 1
   end
@@ -348,60 +348,60 @@ def retrieve_mrs(*args)
     exit 1
   end
 
-  require 'tty-table'
-  require 'time'
+  require "tty-table"
+  require "time"
 
-  pipeline_aliases = { 'SUCCESS' => '✔︎'.green, 'FAILED' => '‼'.red, 'RUNNING' => '▶︎'.brown }
-  merge_status_aliases = { 'CI_STILL_RUNNING' => 'CI_STILL_RUNNING'.green }
-  any_conflicts = mrs.any? { |mr| mr['conflicts'] }
-  headings = ['Reference'.truncate(7), 'Merge status']
+  pipeline_aliases = {"SUCCESS" => "✔︎".green, "FAILED" => "‼".red, "RUNNING" => "▶︎".brown}
+  merge_status_aliases = {"CI_STILL_RUNNING" => "CI_STILL_RUNNING".green}
+  any_conflicts = mrs.any? { |mr| mr["conflicts"] }
+  headings = ["Reference".truncate(7), "Merge status"]
   pipeline_col_index = headings.count
   headings += %w[Pipeline Squash]
-  headings << 'Conflicts' if any_conflicts
-  headings += ['Approvals'.truncate(5), 'Reviewers', 'Title', 'Source branch']
+  headings << "Conflicts" if any_conflicts
+  headings += ["Approvals".truncate(5), "Reviewers", "Title", "Source branch"]
   reviewers_col_index = headings.count - 3
   title_col_index = headings.count - 2
 
   table = TTY::Table.new(
     header: headings.map(&:green),
     rows: mrs.map do |mr|
-      title = mr['title'].truncate(69)
-      merge_status = merge_status_aliases.fetch(mr['detailedMergeStatus'], mr['detailedMergeStatus'])
+      title = mr["title"].truncate(69)
+      merge_status = merge_status_aliases.fetch(mr["detailedMergeStatus"], mr["detailedMergeStatus"])
       merge_status.truncate(21)
-      merge_status += ' 🚀' if mr['autoMergeEnabled']
-      squash = mr['squashOnMerge'] ? '✔︎'.green : '⨯'.red
-      conflicts = mr['conflicts'] ? '⨯'.red : '✔︎'.green
-      approved = mr['approved']
-      approvals_left = mr['approvalsLeft']
-      approvals_required = mr['approvalsRequired']
-      pipeline_status = mr.dig('headPipeline', 'status')
-      pipeline_started_at = mr.dig('headPipeline', 'startedAt')
-      pipeline_finished_at = mr.dig('headPipeline', 'finishedAt')
+      merge_status += " 🚀" if mr["autoMergeEnabled"]
+      squash = mr["squashOnMerge"] ? "✔︎".green : "⨯".red
+      conflicts = mr["conflicts"] ? "⨯".red : "✔︎".green
+      approved = mr["approved"]
+      approvals_left = mr["approvalsLeft"]
+      approvals_required = mr["approvalsRequired"]
+      pipeline_status = mr.dig("headPipeline", "status")
+      pipeline_started_at = mr.dig("headPipeline", "startedAt")
+      pipeline_finished_at = mr.dig("headPipeline", "finishedAt")
       pipeline_started_at = DateTime.parse(pipeline_started_at) if pipeline_started_at
       pipeline_finished_at = DateTime.parse(pipeline_finished_at) if pipeline_finished_at
-      pipeline_duration = pipeline_finished_at || pipeline_started_at.nil? ? nil : (DateTime.now - pipeline_started_at).to_f * 24 * 60 * 60
+      pipeline_duration = (pipeline_finished_at || pipeline_started_at.nil?) ? nil : (DateTime.now - pipeline_started_at).to_f * 24 * 60 * 60
       pipeline_age = pipeline_finished_at ? (DateTime.now - pipeline_finished_at).to_f * 24 * 60 * 60 : nil
-      pipeline_failed_jobs = mr.dig('headPipeline', 'failedJobs', 'count').to_i
-      reviewers = mr.dig('reviewers', 'nodes').map { |reviewer| reviewer['username'] }
+      pipeline_failed_jobs = mr.dig("headPipeline", "failedJobs", "count").to_i
+      reviewers = mr.dig("reviewers", "nodes").map { |reviewer| reviewer["username"] }
 
       row = [
-        mr['reference'],
+        mr["reference"],
         merge_status,
         [
-          pipeline_aliases.fetch(pipeline_status, pipeline_status) || '??',
-          pipeline_failed_jobs.positive? ? '⨯'.red : nil,
+          pipeline_aliases.fetch(pipeline_status, pipeline_status) || "??",
+          pipeline_failed_jobs.positive? ? "⨯".red : nil,
           pipeline_duration ? "(#{(pipeline_duration / 60).round} mins)" : nil,
-          pipeline_age && pipeline_age > 8 * 60 * 60 ? '🥶' : nil
-        ].compact.join(' '),
-        { value: squash, alignment: :center }
+          (pipeline_age && pipeline_age > 8 * 60 * 60) ? "🥶" : nil
+        ].compact.join(" "),
+        {value: squash, alignment: :center}
       ]
       row << conflicts if any_conflicts
       row + [
-        { value: approved ? '✔︎'.green : "#{approvals_required - approvals_left}/#{approvals_required}",
-          alignment: :right },
-        reviewers.map { |name| format_reviewer_name(name, reviewers.count) }.join(', '),
+        {value: approved ? "✔︎".green : "#{approvals_required - approvals_left}/#{approvals_required}",
+         alignment: :right},
+        reviewers.map { |name| format_reviewer_name(name, reviewers.count) }.join(", "),
         title,
-        mr['sourceBranch'].truncate(50).green
+        mr["sourceBranch"].truncate(50).green
       ]
     end
   )
@@ -414,22 +414,22 @@ def retrieve_mrs(*args)
         mr = mrs[row_index - 1]
         case col_index
         when 0
-          val.with_hyperlink(mr['webUrl'])
+          val.with_hyperlink(mr["webUrl"])
         when pipeline_col_index
-          if mr.dig('headPipeline', 'path')
-            val.with_hyperlink("https://gitlab.com#{mr.dig('headPipeline', 'path')}")
+          if mr.dig("headPipeline", "path")
+            val.with_hyperlink("https://gitlab.com#{mr.dig("headPipeline", "path")}")
           else
             val
           end
         when reviewers_col_index
-          reviewers = mr.dig('reviewers', 'nodes')
+          reviewers = mr.dig("reviewers", "nodes")
           new_val = reviewers.map do |reviewer|
-            format_reviewer_name(reviewer['username'], reviewers.count).with_hyperlink(reviewer['webUrl'])
-          end.join(', ')
+            format_reviewer_name(reviewer["username"], reviewers.count).with_hyperlink(reviewer["webUrl"])
+          end.join(", ")
 
-          " #{new_val}#{' ' * (val.length - val.strip.length - 1)}"
+          " #{new_val}#{" " * (val.length - val.strip.length - 1)}"
         when title_col_index
-          val.with_hyperlink(mr['webUrl'])
+          val.with_hyperlink(mr["webUrl"])
         else
           val
         end
@@ -442,7 +442,7 @@ def retrieve_mrs(*args)
 end
 
 def gpsup(remote, issue_iid)
-  require 'date'
+  require "date"
 
   res = graphql_execute(<<~GQL)
     query issueLabels {
@@ -465,36 +465,35 @@ def gpsup(remote, issue_iid)
     }
   GQL
 
-  require 'json'
+  require "json"
   milestone = nil
   labels = []
   if $CHILD_STATUS == 0
     json_res = JSON.parse(res)
     milestone = json_res.dig(*%w[data project group milestones nodes])
-                        .map { |h| h['title'] }
-                        .select { |title| title.match?(/^[0-9]+\.[0-9]+/) }
-                        .first
+      .map { |h| h["title"] }
+      .find { |title| title.match?(/^[0-9]+\.[0-9]+/) }
     labels = json_res.dig(*%w[data project issue labels nodes])
-                     &.map { |h| h['title'] }
-                     &.reject { |label| label.match?(REJECTED_LABELS) }
+      &.map { |h| h["title"] }
+      &.reject { |label| label.match?(REJECTED_LABELS) }
   end
 
-  require_relative 'git-helpers'
+  require_relative "git-helpers"
   branch = `git rev-parse --abbrev-ref HEAD`.strip
   parent_branch = compute_parent_branch(branch)
   options = [
-    'create',
-    'squash',
+    "create",
+    "squash",
     "target='#{parent_branch}'",
-    "assign='#{ENV.fetch('USER', nil)}'",
+    "assign='#{ENV.fetch("USER", nil)}'",
     "label='Category:Fleet Visibility'",
     "label='section::ci'",
     "label='devops::verify'",
     "label='group::ci platform'"
   ] + (labels&.map { |label| "label='#{label}'" } || [])
   options << "milestone='#{milestone}'" if milestone
-  cmd = <<~SHELL.lines(chomp: true).join(' ')
-    git push --set-upstream "#{remote}" "#{branch}" #{options.uniq.map { |option| "-o merge_request.#{option}" }.join(' ')} #{ARGV.join(' ')}
+  cmd = <<~SHELL.lines(chomp: true).join(" ")
+    git push --set-upstream "#{remote}" "#{branch}" #{options.uniq.map { |option| "-o merge_request.#{option}" }.join(" ")} #{ARGV.join(" ")}
   SHELL
 
   puts cmd

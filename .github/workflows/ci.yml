@@ -1,0 +1,145 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+# Cancel in-progress runs when new commit pushed
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Job 1: Pre-commit hooks
+  pre-commit:
+    name: Pre-commit hooks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Cache pre-commit environments
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+
+      # Run pre-commit on all files
+      - uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files
+
+  # Job 2: Neovim config validation
+  neovim-validate:
+    name: Neovim config validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Install Neovim (latest stable)
+      - name: Install Neovim
+        run: |
+          curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
+          sudo tar xzf nvim-linux64.tar.gz -C /usr/local --strip-components=1
+          nvim --version
+
+      # Test config loads without errors
+      - name: Test Neovim config loads
+        run: |
+          # Create minimal test that loads config
+          nvim --headless --noplugin -u NONE -c "
+            set runtimepath+=$HOME/.config/nvim
+            lua dofile(vim.fn.expand('~/.config/nvim/lua/config/init.lua'))
+            lua print('Config module loaded successfully')
+          " -c 'quitall!' 2>&1 | tee nvim-output.log
+
+          # Check for Lua errors
+          if grep -i "error" nvim-output.log; then
+            echo "Neovim config has errors"
+            exit 1
+          fi
+
+          echo "Neovim config validation passed"
+
+  # Job 3: Luacheck for Neovim Lua files
+  luacheck:
+    name: Luacheck (Neovim Lua)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run luacheck
+        uses: nebularg/actions-luacheck@v1
+        with:
+          files: ".config/nvim"
+          args: "--config .luacheckrc --formatter plain"
+
+  # Job 4: Bootstrap script validation
+  bootstrap-validate:
+    name: Bootstrap scripts validation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Install shellcheck
+      - name: Install shellcheck
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+
+      # Validate bash syntax for all bootstrap scripts
+      - name: Bash syntax check
+        run: |
+          echo "Checking bash syntax for bootstrap scripts..."
+          EXIT_CODE=0
+
+          # Find all .sh files (not symlinks)
+          while IFS= read -r script; do
+            echo "Checking: $script"
+            if ! bash -n "$script"; then
+              echo "❌ Syntax error in: $script"
+              EXIT_CODE=1
+            else
+              echo "✓ Syntax OK: $script"
+            fi
+          done < <(find .config/yadm/bootstrap.d -type f -name '*.sh')
+
+          # Check main bootstrap script
+          echo "Checking: .config/yadm/bootstrap"
+          if ! bash -n .config/yadm/bootstrap; then
+            echo "❌ Syntax error in: .config/yadm/bootstrap"
+            EXIT_CODE=1
+          else
+            echo "✓ Syntax OK: .config/yadm/bootstrap"
+          fi
+
+          exit $EXIT_CODE
+
+      # Additional shellcheck for bootstrap scripts
+      - name: ShellCheck bootstrap scripts
+        run: |
+          echo "Running shellcheck on bootstrap scripts..."
+          find .config/yadm/bootstrap.d -type f -name '*.sh' -exec shellcheck {} +
+          shellcheck .config/yadm/bootstrap
+
+  # Job 5: Secret scanning
+  secret-scanning:
+    name: Secret scanning (Gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for gitleaks
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}  # Uncomment if org repo

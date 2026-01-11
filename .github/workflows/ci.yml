@@ -46,8 +46,8 @@ jobs:
       # Install Neovim (latest stable)
       - name: Install Neovim
         run: |
-          curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz
-          sudo tar xzf nvim-linux64.tar.gz -C /usr/local --strip-components=1
+          curl -LO https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux-x86_64.tar.gz
+          sudo tar xzf nvim-linux-x86_64.tar.gz -C /usr/local --strip-components=1
           nvim --version
 
       # Test config loads without errors

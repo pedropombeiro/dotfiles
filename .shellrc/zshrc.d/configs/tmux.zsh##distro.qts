@@ -1,19 +1,14 @@
 #!/usr/bin/env zsh
 
 if command -v tmux >/dev/null; then
-  if [[ -z $ZSH_TMUX_AUTOSTART ]]; then
-    # Automatically start tmux
-    export ZSH_TMUX_AUTOSTART=true
-  fi
-
-  export ZSH_TMUX_UNICODE=true
+  export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
+  export ZSH_TMUX_AUTOCONNECT=true
+  export ZSH_TMUX_AUTOSTART=true
   export ZSH_TMUX_CONFIG="$HOME/.shellrc/zshrc.d/configs/tmux.conf"
   export ZSH_TMUX_DEFAULT_SESSION_NAME="$(hostname)-$(date +"%H-%M")"
-  export ZSH_TMUX_AUTOCONNECT=false
-  export ZSH_TMUX_ITERM2=false
-  export ZSH_TMUX_TERM="tmux-256color"
   export ZSH_TMUX_FIXTERM_WITH_256COLOR="$ZSH_TMUX_TERM"
-  export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
+  export ZSH_TMUX_ITERM2=false
+  export ZSH_TMUX_UNICODE=true
 
   plugins+=(tmux)
 fi

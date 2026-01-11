@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "just fix $CLAUDE_FILE_PATHS"
+            "command": "just fix $CLAUDE_FILE_PATHS || true"
           }
         ]
       },
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "just fix $CLAUDE_FILE_PATHS"
+            "command": "just fix $CLAUDE_FILE_PATHS || true"
           }
         ]
       }

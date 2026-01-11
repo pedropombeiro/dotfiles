@@ -90,6 +90,7 @@ repos:
         entry: zsh -n
         language: system
         files: '\.zsh(##.*)?$|^\.zlogin$|^\.shellrc/zshrc\.d/functions/[^/]+$'
+        stages: [manual]
 
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
     rev: 3.6.0

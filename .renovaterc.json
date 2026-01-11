@@ -11,6 +11,11 @@
   ],
   "packageRules": [
     {
+      "description": "Pin GitHub Actions to commit SHAs for security",
+      "matchManagers": ["github-actions"],
+      "pinDigests": true
+    },
+    {
       "description": "Use rebase strategy for automerging patch/pin/digest updates with strict checks",
       "matchUpdateTypes": ["patch", "pin", "digest"],
       "internalChecksFilter": "strict",

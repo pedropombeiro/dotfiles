@@ -63,7 +63,7 @@
     "endCaps": [
       ""
     ],
-    "theme": "gruvbox",
+    "theme": "minimal",
     "autoAlign": false
   }
 }

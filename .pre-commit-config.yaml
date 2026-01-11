@@ -67,7 +67,6 @@ repos:
         entry: standardrb
         language: system
         types: [ruby]
-        stages: [manual]
       - id: standardrb-fix
         name: standardrb (fix)
         entry: standardrb --fix
@@ -91,7 +90,6 @@ repos:
         entry: zsh -n
         language: system
         files: '\.zsh(##.*)?$|^\.zlogin$|^\.shellrc/zshrc\.d/functions/[^/]+$'
-        stages: [manual]
 
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
     rev: 3.6.0

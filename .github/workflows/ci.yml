@@ -31,8 +31,14 @@ jobs:
           path: ~/.cache/pre-commit
           key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
 
+      # Install zsh for syntax checking
+      - name: Install zsh
+        run: sudo apt-get update && sudo apt-get install -y zsh
+
       # Run pre-commit on all files
       - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+        env:
+          SKIP: standardrb
         with:
           extra_args: --all-files
 

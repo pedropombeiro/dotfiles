@@ -8,15 +8,15 @@ The tmux configuration is managed through yadm with multiple files working toget
 
 ### Main Configuration Files
 
-1. **`~/.tmux.conf##distro.qts`** (88 bytes)
+1. **`~/.tmux.conf##distro.qts`** (Entry point)
 
-   - Entry point that sources the actual configuration
-   - Content: `source-file ~/.shellrc/zshrc.d/configs/tmux.conf`
+   - Sources the actual configuration from XDG location
+   - Content: `source-file ~/.config/tmux/tmux.conf`
 
-2. **`~/.shellrc/zshrc.d/configs/tmux.conf##distro.qts`** (Primary config)
+2. **`~/.config/tmux/tmux.conf##distro.qts`** (Primary config)
 
    - The actual tmux configuration file with all settings
-   - Location: `/Users/pedro/.shellrc/zshrc.d/configs/tmux.conf##distro.qts`
+   - Location: `/Users/pedro/.config/tmux/tmux.conf##distro.qts`
    - Features:
      - Mouse support enabled
      - Clipboard integration via OSC 52
@@ -32,13 +32,9 @@ The tmux configuration is managed through yadm with multiple files working toget
    - Sets environment variables for tmux behavior:
      - `ZSH_TMUX_AUTOCONNECT=true`
      - `ZSH_TMUX_AUTOSTART=true`
-     - `ZSH_TMUX_CONFIG` points to the main tmux.conf
+     - `ZSH_TMUX_CONFIG` points to `~/.config/tmux/tmux.conf`
      - `ZSH_TMUX_DEFAULT_SESSION_NAME` set to hostname
    - Enables the oh-my-zsh tmux plugin
-
-4. **`~/.config/tmux/tmux.conf`** (49 bytes)
-   - Alternative config location (XDG-style)
-   - Also sources: `~/.shellrc/zshrc.d/configs/tmux.conf`
 
 ### Plugins Configured
 
@@ -86,6 +82,6 @@ Installation command (within tmux): `prefix + I` (capital i)
 
 To modify tmux settings:
 
-1. Edit `~/.shellrc/zshrc.d/configs/tmux.conf##distro.qts`
+1. Edit `~/.config/tmux/tmux.conf##distro.qts`
 2. Reload tmux: `tmux source-file ~/.tmux.conf` or `prefix + r` (if configured)
 3. Commit changes with `yadm` (not `git`)

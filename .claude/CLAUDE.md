@@ -14,3 +14,4 @@ For task-specific guidance, reference these documents as needed:
 
 - [Neovim](~/.agent_docs/neovim.md) - Configuration structure and plugin management
 - [Renovate Bot](~/.agent_docs/renovate.md) - Dependency update configuration and troubleshooting
+- [Tmux](~/.agent_docs/tmux.md) - Configuration structure, plugins, and shell integration

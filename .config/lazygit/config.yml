@@ -633,12 +633,13 @@ customCommands:
           - name: "test"
             description: "Adding missing tests or correcting existing tests"
             value: "test"
-    command:
-      msg=$(claude --model Haiku --system-prompt "You are an experienced code reviewer, and you help generate succinct, helpful commit messages"
-      -p "Output a plain text commit message that can be fed to a \`.commit_msg\` file, based on the staged changes in the git repository. The content of the .git/.commit_msg file is to be placed inside a __BEGIN__ / __END__ block. The commit message lines are at most 72 characters wide{{ if .Form.Type }}. Create a conventional commit of type \`{{ .Form.Type }}\`{{ else }}Do not use conventional commits{{ end }}:"
-      --tools "Bash,Read");
-      echo "$msg";
-      echo "$msg" | awk '/^__BEGIN__$/ {flag=1; next} /^__END__$/ {flag=0} flag' > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT
+    command: |
+      system_prompt="Generate git commit messages. Output only the raw message, no commentary."
+      prompt="Generate a commit message for the staged changes: a subject line (max 72 chars), blank line, then a body explaining what and why (wrap at 72 chars).{{ if .Form.Type }} Use conventional commit format with type: {{ .Form.Type }}.{{ end }}"
+      msg=$(claude --model haiku --output-format json --system-prompt "$system_prompt" -p "$prompt" \
+        --tools "Bash,Read" | jq -r '.result')
+      echo "$msg"
+      echo "$msg" > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT
     loadingText: "Claude is analyzing changes..."
     context: files
     output: log

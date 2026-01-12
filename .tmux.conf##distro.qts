@@ -1,2 +1,0 @@
-# Source the actual tmux configuration
-source-file ~/.config/tmux/tmux.conf

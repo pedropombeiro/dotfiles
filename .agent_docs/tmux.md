@@ -8,14 +8,11 @@ The tmux configuration is managed through yadm with multiple files working toget
 
 ### Main Configuration Files
 
-1. **`~/.tmux.conf##distro.qts`** (Entry point)
+Tmux automatically loads configuration from the XDG location `~/.config/tmux/tmux.conf`.
 
-   - Sources the actual configuration from XDG location
-   - Content: `source-file ~/.config/tmux/tmux.conf`
+1. **`~/.config/tmux/tmux.conf##distro.qts`** (Primary config)
 
-2. **`~/.config/tmux/tmux.conf##distro.qts`** (Primary config)
-
-   - The actual tmux configuration file with all settings
+   - The tmux configuration file with all settings
    - Location: `/Users/pedro/.config/tmux/tmux.conf##distro.qts`
    - Features:
      - Mouse support enabled
@@ -26,7 +23,7 @@ The tmux configuration is managed through yadm with multiple files working toget
      - Custom keybindings (Home/End, mouse drag for window reordering)
      - Plugin management via TPM (Tmux Plugin Manager)
 
-3. **`~/.shellrc/zshrc.d/configs/tmux.zsh##distro.qts`** (Shell integration)
+2. **`~/.shellrc/zshrc.d/configs/tmux.zsh##distro.qts`** (Shell integration)
 
    - Shell-side tmux configuration
    - Sets environment variables for tmux behavior:
@@ -83,5 +80,5 @@ Installation command (within tmux): `prefix + I` (capital i)
 To modify tmux settings:
 
 1. Edit `~/.config/tmux/tmux.conf##distro.qts`
-2. Reload tmux: `tmux source-file ~/.tmux.conf` or `prefix + r` (if configured)
+2. Reload tmux: `tmux source-file ~/.config/tmux/tmux.conf` or `prefix + r` (if configured)
 3. Commit changes with `yadm` (not `git`)

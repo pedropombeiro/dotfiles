@@ -5383,7 +5383,7 @@
 			<key>Columns</key>
 			<integer>160</integer>
 			<key>Command</key>
-			<string>/opt/homebrew/bin/clickhouse client --port 9001 -d gitlab_clickhouse_development</string>
+			<string>/opt/homebrew/bin/clickhouse client --port 9001 -d gitlab_clickhouse_development -u gitlab --password PASSWORD_HERE</string>
 			<key>Cursor Color</key>
 			<dict>
 				<key>Blue Component</key>

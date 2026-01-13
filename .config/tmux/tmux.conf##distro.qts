@@ -22,11 +22,27 @@ set -as terminal-features ",*:RGB"
 bind-key -n Home send Escape "OH"
 bind-key -n End send Escape "OF"
 
+set -g @tmux-gruvbox 'dark256' # or 'light256'
+set -g @tmux-gruvbox-statusbar-alpha 'true'
+set -g @tmux-gruvbox-right-status-z '#{tmux_mode_indicator}'
+
 # List of plugins
 set -g @plugin tmux-plugins/tpm
 set -g @plugin tmux-plugins/tmux-sensible
 set -g @plugin tmux-plugins/tmux-pain-control
+set -g @plugin egel/tmux-gruvbox
 set -g @plugin 'alexwforsythe/tmux-which-key'
+
+set -g @plugin 'MunifTanjim/tmux-mode-indicator'
+## Mode indicator prompts
+set -g @mode_indicator_prefix_prompt ' WAIT '
+set -g @mode_indicator_copy_prompt ' COPY '
+set -g @mode_indicator_sync_prompt ' SYNC '
+set -g @mode_indicator_empty_prompt ' TMUX '
+set -g @mode_indicator_prefix_mode_style 'bg=colour214,fg=colour237'
+set -g @mode_indicator_copy_mode_style 'bg=colour109,fg=colour237'
+set -g @mode_indicator_sync_mode_style 'bg=colour208,fg=colour237'
+set -g @mode_indicator_empty_mode_style 'bg=colour248,fg=colour237'
 
 set -g @plugin 'christoomey/vim-tmux-navigator' # Pairs with https://github.com/christoomey/vim-tmux-navigator
 set -g @vim_navigator_mapping_left "C-Left M-h"
@@ -34,13 +50,6 @@ set -g @vim_navigator_mapping_right "C-Right M-l"
 set -g @vim_navigator_mapping_up "M-k"
 set -g @vim_navigator_mapping_down "M-j"
 set -g @vim_navigator_mapping_prev "M-\\"
-
-set -g @plugin egel/tmux-gruvbox
-set -g @tmux-gruvbox 'dark256' # or 'light256'
-
-# Status bar configuration - show session name only (after theme loads)
-set -g status-left "[#S] "
-set -g status-left-length 50
 
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
 run '~/.tmux/plugins/tpm/tpm'

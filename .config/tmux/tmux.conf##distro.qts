@@ -4,6 +4,9 @@ set -g mouse on
 set-option -g focus-events on
 set-option -g allow-passthrough on
 
+# Enable VI mode
+setw -g mode-keys vi
+
 # Enable clipboard integration via OSC 52 for remote sessions
 set -g set-clipboard on
 set -as terminal-features ',tmux*:clipboard'

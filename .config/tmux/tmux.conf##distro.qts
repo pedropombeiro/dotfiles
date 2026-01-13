@@ -14,16 +14,18 @@ set -as terminal-features ',tmux*:clipboard'
 # Use the mouse drag to re-order windows
 bind-key -n MouseDrag1Status swap-window -t=
 
+# QNAP settings
 # Fix Ctrl-arrows bindings on QNAP
 set -g xterm-keys on
+
+# Fix Home/End bindings on QNAP
+bind-key -n Home send Escape "OH"
+bind-key -n End send Escape "OF"
 
 # Enable italics in tmux (as per https://weibeld.net/terminals-and-shells/italics.html)
 set -g default-terminal $ZSH_TMUX_TERM
 set -as terminal-overrides ',xterm*:sitm=\E[3m'
 set -as terminal-features ",*:RGB"
-
-bind-key -n Home send Escape "OH"
-bind-key -n End send Escape "OF"
 
 set -g @tmux-gruvbox 'dark256' # or 'light256'
 set -g @tmux-gruvbox-statusbar-alpha 'true'

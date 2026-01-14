@@ -8,6 +8,11 @@ This file contains core instructions applicable to most tasks. For specialized t
 
 When working in the home directory (`~`), use `yadm` commands instead of `git` commands for version control operations.
 
+## Git Commit/Push Behavior
+
+When committing/pushing code, first attempt to do it without output (e.g., `git push > /dev/null 2>&1`) to
+minimize token usage. Only display output if the operation fails and diagnostics are needed.
+
 ## Specialized Topics
 
 For task-specific guidance, reference these documents as needed:

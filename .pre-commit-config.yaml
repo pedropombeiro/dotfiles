@@ -36,16 +36,18 @@ repos:
       - id: yamllint
         args: ["-c", ".yamllint.yml"]
 
-  - repo: https://github.com/JohnnyMorganz/StyLua
-    rev: v2.3.1
+  - repo: local
     hooks:
       - id: stylua
         name: stylua (check)
-        args: ["--check", "--config-path", ".config/nvim/.stylua.toml"]
-      - id: stylua
+        entry: stylua --check --config-path .config/nvim/.stylua.toml
+        language: system
+        types: [lua]
+      - id: stylua-fix
         name: stylua (fix)
-        alias: stylua-fix
-        args: ["--config-path", ".config/nvim/.stylua.toml"]
+        entry: stylua --config-path .config/nvim/.stylua.toml
+        language: system
+        types: [lua]
         stages: [manual]
 
   - repo: https://github.com/pre-commit/mirrors-prettier

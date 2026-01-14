@@ -46,6 +46,9 @@ yadm checkout -- ~/.config/yazi/
 ya pkg upgrade && \
   printf "\n${GREEN}%s${NC}\n" "Done"
 
+printf "${YELLOW}%s${NC}\n" "Installing pre-commit hooks..."
+yadm enter pre-commit install --install-hooks 2>/dev/null || true
+
 printf "${YELLOW}%s${NC}\n" "Updating neovim plugins..."
 nvim --headless '+Lazy! sync' +qa && \
   nvim --headless "+Lazy! build firenvim" +qa && \

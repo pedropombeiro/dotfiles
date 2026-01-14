@@ -25,4 +25,7 @@ printf "${YELLOW}%s${NC}\n" "Updating tmux plugins..."
 ~/.tmux/plugins/tpm/bin/update_plugins all
 ~/.tmux/plugins/tpm/bin/clean_plugins
 
+printf "${YELLOW}%s${NC}\n" "Installing /share/Container pre-commit hooks..."
+(cd /share/Container && pre-commit install --install-hooks)
+
 "${YADM_SCRIPTS}/update-common.zsh"

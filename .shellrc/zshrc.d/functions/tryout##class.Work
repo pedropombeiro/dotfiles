@@ -7,4 +7,4 @@
 #
 
 /usr/bin/curl "$(echo $1 | sed -E 's|^(https://[a-z\.]+/[a-z\._\-]+/[a-z\._\-]+/-/merge_requests/[0-9]+).*|\1.diff|')" |
-  git apply && git add --all .
+  git apply && git add --all . ':!bin/'

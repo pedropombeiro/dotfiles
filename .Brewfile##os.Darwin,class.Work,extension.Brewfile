@@ -1,3 +1,4 @@
+tap "anomalyco/tap"
 tap "arkweid/lefthook"
 tap "derailed/k9s"
 tap "dteoh/sqa"
@@ -289,6 +290,8 @@ brew "ykpers"
 brew "yq"
 # Feature-rich command-line audio/video downloader
 brew "yt-dlp"
+# The AI coding agent built for the terminal.
+brew "anomalyco/tap/opencode"
 # A Model Context Protocol (MCP) server for GitLab, enabling Claude to interact directly with your GitLab instance.
 brew "fforster/gitlab-mcp/gitlab-mcp"
 # git repo to local editor instantly

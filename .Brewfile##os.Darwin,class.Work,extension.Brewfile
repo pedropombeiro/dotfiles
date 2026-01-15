@@ -5,6 +5,7 @@ tap "dteoh/sqa"
 tap "fforster/gitlab-mcp", "https://gitlab.com/fforster/homebrew-gitlab-mcp.git"
 tap "jarred-sumner/git-peek"
 tap "jdxcode/tap"
+tap "jstkdng/programs"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "lihaoyun6/tap"
 tap "mike-engel/jwt-cli"
@@ -294,6 +295,8 @@ brew "anomalyco/tap/opencode"
 brew "fforster/gitlab-mcp/gitlab-mcp"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
+# Drop in replacement for ueberzug written in C++
+brew "jstkdng/programs/ueberzugpp"
 # Reconcile your local git repositories
 brew "leipert-projects/git-recon/git-recon"
 # Super fast CLI tool to decode and encode JWTs built in Rust

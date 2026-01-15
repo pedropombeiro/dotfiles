@@ -40,6 +40,10 @@ brew "boost"
 brew "btop"
 # Core application library for C
 brew "glib"
+# OpenType text shaping engine
+brew "harfbuzz"
+# Framework for layout and rendering of i18n text
+brew "pango"
 # Linter/analyzer for Makefiles
 brew "checkmake"
 # Cross-platform make
@@ -47,7 +51,7 @@ brew "cmake"
 # Container runtimes on MacOS (and Linux) with minimal setup
 brew "colima", restart_service: :changed
 # Create and run Linux containers using lightweight virtual machines
-brew "container"
+brew "container", link: false
 # Diff your Docker containers
 brew "container-diff"
 # GNU File, Shell, and Text utilities
@@ -92,14 +96,6 @@ brew "eza"
 brew "fcgiwrap"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
-# Validating, recursive, caching DNS resolver
-brew "unbound"
-# GNU Transport Layer Security (TLS) Library
-brew "gnutls"
-# OpenType text shaping engine
-brew "harfbuzz"
-# Framework for layout and rendering of i18n text
-brew "pango"
 # Play, record, convert, and stream audio and video
 brew "ffmpeg"
 # I/O benchmark and stress test
@@ -120,7 +116,11 @@ brew "gitleaks"
 brew "glab"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
-# GNU Pretty Good Privacy (PGP) package
+# Validating, recursive, caching DNS resolver
+brew "unbound"
+# GNU Transport Layer Security (TLS) Library
+brew "gnutls"
+# GNU Privacy Guard (OpenPGP)
 brew "gnupg"
 # Library access to GnuPG
 brew "gpgme"
@@ -130,6 +130,8 @@ brew "graphicsmagick"
 brew "grc"
 # GNU troff text-formatting system
 brew "groff"
+# Package compiler and linker metadata toolkit
+brew "pkgconf"
 # Free Kerberos 5 implementation
 brew "heimdal"
 # Kubernetes package manager
@@ -189,7 +191,7 @@ brew "neovim"
 # Control nvim processes using `nvr` command-line tool
 brew "neovim-remote"
 # HTTP(S) server and reverse proxy, and IMAP/POP3 proxy server
-brew "nginx", restart_service: :changed, link: false
+brew "nginx", restart_service: :changed
 # Port scanning utility for large networks
 brew "nmap"
 # Prometheus exporter for machine metrics
@@ -210,8 +212,6 @@ brew "pinentry-mac"
 brew "pipenv"
 # Execute binaries from Python packages in isolated environments
 brew "pipx"
-# Package compiler and linker metadata toolkit
-brew "pkgconf"
 # PDF rendering library (based on the xpdf-3.0 code base)
 brew "poppler"
 # Unix pager optimized for psql

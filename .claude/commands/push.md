@@ -8,7 +8,11 @@ Commit all changes in discrete, logical commits and push to the remote.
 2. Review recent commit messages for style reference
 3. Group related files into logical commits (same feature, bug fix, or refactor)
 4. Create commits for each group with clear messages
-5. Push silently first (`push > /dev/null 2>&1`), only show output on failure
+5. Push the changes to remote
+
+## Git command guidelines
+
+Commit and push changes silently first (`> /dev/null 2>&1`), only show output on failure
 
 ## Grouping Guidelines
 

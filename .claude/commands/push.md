@@ -8,7 +8,8 @@ Commit all changes in discrete, logical commits and push to the remote.
 2. Review recent commit messages for style reference
 3. Group related files into logical commits (same feature, bug fix, or refactor)
 4. Create commits for each group with clear messages
-5. Push the changes to remote
+5. Pull with rebase (`git pull --rebase`) to incorporate any remote changes
+6. Push the changes to remote
 
 ## Git command guidelines
 

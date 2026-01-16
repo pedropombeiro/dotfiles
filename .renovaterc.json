@@ -33,6 +33,12 @@
       "groupName": "pre-commit hooks"
     },
     {
+      "description": "Limit renovatebot/pre-commit-hooks updates to monthly",
+      "matchManagers": ["pre-commit"],
+      "matchPackageNames": ["renovatebot/pre-commit-hooks"],
+      "schedule": ["on the first day of the month"]
+    },
+    {
       "description": "Disable automerge for cargo packages in QTS mise config",
       "matchManagers": ["cargo"],
       "matchFileNames": [".config/mise/config.toml##distro.qts,extension.toml"],

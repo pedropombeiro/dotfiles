@@ -2,7 +2,10 @@
 
 ## Configuration Files
 
-Renovate Bot configuration is stored in `.renovaterc.json` files by default.
+The Renovate config typically lives at the root of the repository under `.renovaterc.json`.
+
+After making changes, validate with: `pre-commit run renovate-config-validator --all-files` (prefixing with `yadm enter`
+if running on a YADM-managed repo).
 
 ## When to Reference This
 

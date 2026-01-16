@@ -11,6 +11,12 @@
   ],
   "packageRules": [
     {
+      "description": "Group GitHub Actions updates weekly",
+      "matchManagers": ["github-actions"],
+      "groupName": "github-actions",
+      "schedule": ["before 9am on sunday"]
+    },
+    {
       "description": "Pin GitHub Actions to commit SHAs for security",
       "matchManagers": ["github-actions"],
       "pinDigests": true

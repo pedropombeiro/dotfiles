@@ -3,7 +3,6 @@ default: pull update
 @pull:
     yadm fetch && \
         yadm reset --hard origin/master
-    omz reload
 
 @install:
     yadm bootstrap

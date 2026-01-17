@@ -2,6 +2,12 @@
 
 export TERM="xterm-256color"
 
+# Directory navigation
+setopt AUTO_CD           # If command is a directory path, cd into it
+setopt AUTO_PUSHD        # Make cd push the old directory onto the stack
+setopt PUSHD_IGNORE_DUPS # Don't push multiple copies of the same directory
+setopt PUSHDMINUS        # Swap meaning of + and - for pushd
+
 # Say how long a command took, if it took more than 10 seconds
 REPORTTIME=10
 

@@ -16,6 +16,7 @@ if command -v tmux >/dev/null; then
     export LINES=$(tmux display-message -p '#{pane_height}')
   fi
 
-  # Load tmux plugin via zinit
+  # Load tmux plugin via zinit (svn = download full directory with extra conf files)
+  zinit ice svn
   zinit snippet OMZP::tmux
 fi

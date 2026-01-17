@@ -27,7 +27,6 @@ typeset -g POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(
   status
   vpn_ip
   yazi
-  direnv    # direnv status (https://direnv.net/)
   background_jobs
   history
   ram

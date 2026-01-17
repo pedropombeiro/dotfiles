@@ -42,8 +42,6 @@ brew "croc"
 brew "ctop"
 # Get a file from an HTTP, HTTPS or FTP server
 brew "curl"
-# Load/unload environment variables based on $PWD
-brew "direnv"
 # Pack, ship and run any application as a lightweight container
 brew "docker"
 # Docker CLI plugin for extended build capabilities with BuildKit

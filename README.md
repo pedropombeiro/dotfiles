@@ -55,7 +55,7 @@ This dotfiles setup includes:
   - [fzf](https://github.com/junegunn/fzf) integration - fuzzy file finder (use `**<TAB>` for fuzzy completion,
     e.g., `vim **<TAB>`)
   - [autojump](https://github.com/wting/autojump) - intelligent directory navigation
-  - [direnv](https://direnv.net/) - environment switcher for the shell
+  - [mise](https://mise.jdx.dev/) - polyglot runtime manager and environment switcher
 
 - **📝 Editor Configuration**
 

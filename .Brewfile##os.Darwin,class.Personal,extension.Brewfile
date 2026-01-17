@@ -46,6 +46,8 @@ brew "curl"
 brew "docker"
 # Docker CLI plugin for extended build capabilities with BuildKit
 brew "docker-buildx"
+# Isolated development environments using Docker
+brew "docker-compose"
 # Command-line DNS client
 brew "dog"
 # Disk Usage/Free Utility - a better 'df' alternative
@@ -112,6 +114,8 @@ brew "libpq", link: true
 brew "libyaml"
 # Curses-based tool for viewing and analyzing log files
 brew "lnav"
+# Tool for linting and static analysis of Lua code
+brew "luacheck"
 # Just-In-Time Compiler (JIT) for the Lua programming language
 brew "luajit"
 # Package manager for the Lua programming language
@@ -152,6 +156,8 @@ brew "pygments"
 brew "python-setuptools"
 # QR Code generation
 brew "qrencode"
+# Automated dependency updates. Flexible so you don't need to be
+brew "renovate"
 # Search tool like grep and The Silver Searcher
 brew "ripgrep"
 # 7-Zip is a file archiver with a high compression ratio

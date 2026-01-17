@@ -31,6 +31,9 @@ set -g @tmux-gruvbox 'dark256' # or 'light256'
 set -g @tmux-gruvbox-statusbar-alpha 'true'
 set -g @tmux-gruvbox-right-status-z '#{tmux_mode_indicator}'
 
+# TPM plugin manager path (required by TPM scripts)
+set-environment -g TMUX_PLUGIN_MANAGER_PATH "~/.tmux/plugins/"
+
 # List of plugins
 set -g @plugin tmux-plugins/tpm
 set -g @plugin tmux-plugins/tmux-sensible

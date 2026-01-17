@@ -14,9 +14,13 @@ function source_file() {
   builtin source "$1"
 }
 
+# Source executable files, skipping yadm alternates (##), backups (~$), and compiled (.zwc)
 function source_files() {
   local f
   for f; do
+    [[ $f == *.zwc ]] && continue
+    [[ $f == *"##"* ]] && continue
+    [[ $f == *'~$'* ]] && continue
     test -x "$f" && source_file "$f"
   done
 }
@@ -29,24 +33,32 @@ skip_global_compinit=1
 
 plugins=()
 
-# extra files in $HOME/.shellrc/zshrc.d/configs/pre, $HOME/.shellrc/zshrc.d/configs, and $HOME/.shellrc/zshrc.d/configs/post
-# these are loaded first, second, and third, respectively.
+# Load config files from pre/, main dir, then post/ (in sorted order)
+# Uses zsh globs instead of find for speed. Glob qualifiers:
+#   (N) = nullglob (no error if no matches)
+#   (-) = follow symlinks
+#   (.) = regular files only
+#   ${(o)...} = sort alphabetically
 _load_settings() {
-  _dir="$1"
-  if [[ -d "$_dir" ]]; then
-    if [[ -d "$_dir/pre" ]]; then
-      source_files $(find "$_dir"/pre -mindepth 1 -name '*.*sh' -and -not -name '*##*' -and -not -name '*~$*' -and -not -name '*.zwc' -and \( -type f -or -type l \) | sort -n 2>/dev/null)
-    fi
+  local _dir="$1"
+  local _files
+  [[ -d "$_dir" ]] || return
 
-    source_files $(find "$_dir" -mindepth 1 -and -name '*.*sh' -and -not -path '*/pre/**' -and -not -path '*/post/**' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \))
+  if [[ -d "$_dir/pre" ]]; then
+    _files=("$_dir"/pre/**/*.*sh(N-.))
+    (( ${#_files} )) && source_files ${(o)_files}
+  fi
 
-    if [[ -f "$ZSH/oh-my-zsh.sh" && -z "$INTELLIJ_ENVIRONMENT_READER" ]]; then
-      source_file $ZSH/oh-my-zsh.sh
-    fi
+  _files=("$_dir"/*.*sh(N-.))
+  (( ${#_files} )) && source_files ${(o)_files}
 
-    if [ -d "$_dir/post" ]; then
-      source_files $(find "$_dir"/post -mindepth 1 -name '*.*sh' -and -not -name '*##*' -and -not -name '*~$*' -and -not -name '*.zwc' -and \( -type f -or -type l \) | sort -n 2>/dev/null)
-    fi
+  if [[ -f "$ZSH/oh-my-zsh.sh" && -z "$INTELLIJ_ENVIRONMENT_READER" ]]; then
+    source_file $ZSH/oh-my-zsh.sh
+  fi
+
+  if [[ -d "$_dir/post" ]]; then
+    _files=("$_dir"/post/**/*.*sh(N-.))
+    (( ${#_files} )) && source_files ${(o)_files}
   fi
 }
 
@@ -61,7 +73,9 @@ _load_settings "$HOME/.shellrc/zshrc.d/configs"
 
 # Load all files from .shell/rc.d directory
 if [[ -d $HOME/.shellrc/rc.d ]]; then
-  source_files $(find $HOME/.shellrc/rc.d -mindepth 1 -name '*.sh' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \) | sort -n 2>/dev/null | uniq)
+  _rc_files=("$HOME"/.shellrc/rc.d/**/*.sh(N-.))
+  (( ${#_rc_files} )) && source_files ${(o)_rc_files}
+  unset _rc_files
 fi
 
 # aliases
@@ -71,11 +85,15 @@ unfunction zcompare source_file source_files
 
 # autoload custom executable functions
 _func_dir="${HOME}/.shellrc/zshrc.d/functions"
-_function_files=($(find ${_func_dir} -mindepth 1 -maxdepth 1 -not -name '*.zwc' -and -not -name '*##*' -and -not -name '*~$*' -and \( -type f -or -type l \)))
-if [[ ${#_function_files[@]} -gt 0 ]]; then
+_function_files=("${_func_dir}"/*(N-.:t))  # :t = tail (basename only)
+_function_files=(${_function_files:#*.zwc})
+_function_files=(${_function_files:#*\#\#*})
+_function_files=(${_function_files:#*~\$*})
+if (( ${#_function_files} )); then
   fpath+=("${_func_dir}")
-  autoload -Uz $_function_files[@]
+  autoload -Uz ${_function_files[@]}
 fi
+unset _func_dir _function_files
 
 zsh-defer '
   sessions=$(tmux ls 2>&1)

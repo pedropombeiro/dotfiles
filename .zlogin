@@ -15,7 +15,7 @@
   # These jobs are asynchronous, and will not impact the interactive shell
   function zcompare() {
     if [[ -s ${1} && ( ! -s ${1}.zwc || ${1} -nt ${1}.zwc) ]]; then
-      zcompile ${1}
+      zcompile -R -- "${1}.zwc" "$1"
     fi
   }
 
@@ -26,22 +26,13 @@
   zcompare ${HOME}/.zshrc
   zcompare ${HOME}/.zshrc.shared
 
-  # zcompile all .zsh files in the theme
-  for file in ${HOME}/.oh-my-zsh/custom/themes/powerlevel10k/**/*.zsh; do
-    zcompare ${file}
-  done
-
-  for file in ${HOME}/.oh-my-zsh/lib/*.zsh; do
-    zcompare ${file}
-  done
-
-  for file in ${HOME}/.oh-my-zsh/custom/plugins/*/*.zsh; do
-    zcompare ${file}
-  done
-
-  for file in ${HOME}/.oh-my-zsh/plugins/{common-aliases,git,git-extras,history-substring-search}/*.zsh; do
-    zcompare ${file}
-  done
+  # zcompile zinit and its plugins
+  local zinit_home="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit"
+  if [[ -d "$zinit_home" ]]; then
+    for file in ${zinit_home}/**/*.zsh; do
+      zcompare ${file}
+    done
+  fi
 
 ) &!
 

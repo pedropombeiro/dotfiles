@@ -34,13 +34,13 @@ and supports both macOS and Linux platforms with platform-specific configuration
 
 ## Screenshots
 
-| Tool          | Preview                          |
-| ------------- | -------------------------------- |
-| **Oh-my-zsh** | ![Oh-my-zsh][ohmyzsh-screenshot] |
-| **Yazi**      | ![Yazi][yazi-screenshot]         |
-| **Neovim**    | ![Neovim][neovim-screenshot]     |
+| Tool       | Preview                      |
+| ---------- | ---------------------------- |
+| **Zsh**    | ![Zsh][zsh-screenshot]       |
+| **Yazi**   | ![Yazi][yazi-screenshot]     |
+| **Neovim** | ![Neovim][neovim-screenshot] |
 
-[ohmyzsh-screenshot]: https://github.com/pedropombeiro/dotfiles/assets/138074/170565d5-e6cc-45f3-bfcc-2a114d8be5bf
+[zsh-screenshot]: https://github.com/pedropombeiro/dotfiles/assets/138074/170565d5-e6cc-45f3-bfcc-2a114d8be5bf
 [yazi-screenshot]: https://github.com/user-attachments/assets/e32158c3-5bd4-46ff-8155-c99e2eabb536
 [neovim-screenshot]: https://github.com/user-attachments/assets/6d3479cb-c82e-475b-aafe-a7ef06d4e85a
 
@@ -50,7 +50,7 @@ This dotfiles setup includes:
 
 - **🐚 Shell Configuration**
 
-  - [Oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) with custom themes and plugins
+  - [zinit](https://github.com/zdharma-continuum/zinit) plugin manager with [Oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) plugins
   - Custom aliases and functions for productivity
   - [fzf](https://github.com/junegunn/fzf) integration - fuzzy file finder (use `**<TAB>` for fuzzy completion,
     e.g., `vim **<TAB>`)

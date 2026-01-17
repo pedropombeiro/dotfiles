@@ -9,13 +9,17 @@ sudo apt-get install -y autojump build-essential curl file git libssl-dev make m
 
 curl https://mise.jdx.dev/install.sh | sh
 
-if [ ! -d ~/.oh-my-zsh ]; then
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+if [ ! -d "$ZINIT_HOME" ]; then
   # Install zsh
   sudo apt-get install -y zsh
   echo 'source ~/.zshrc.shared' >~/.zshrc
   zsh --version
   chsh -s "$(which zsh)"
-  sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+  # Install zinit
+  mkdir -p "$(dirname "$ZINIT_HOME")"
+  git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 
 if ! cat ~/.zshrc | grep 'source ~/.zshrc.shared'; then

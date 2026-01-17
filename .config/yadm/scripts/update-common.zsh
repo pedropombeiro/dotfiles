@@ -10,8 +10,12 @@ echo
 
 # Update zinit and its plugins
 printf "${YELLOW}%s${NC}\n" "Updating zinit and plugins..."
-zinit self-update
-zinit update --parallel
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+if [[ -f "${ZINIT_HOME}/zinit.zsh" ]]; then
+  source "${ZINIT_HOME}/zinit.zsh"
+  zinit self-update
+  zinit update --parallel
+fi
 
 # Delete dead symlinks in ~/.shellrc
 find -L ~/.shellrc -type l -exec rm -f {} \;

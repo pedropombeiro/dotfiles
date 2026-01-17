@@ -16,7 +16,10 @@ if command -v tmux >/dev/null; then
     export LINES=$(tmux display-message -p '#{pane_height}')
   fi
 
-  # Load tmux plugin via zinit (svn = download full directory with extra conf files)
-  zinit ice svn
+  # Load tmux plugin via zinit - download individual files (required tmux.*.conf files)
+  zinit ice as"null" id-as"OMZP::tmux-extra"
+  zinit snippet https://github.com/ohmyzsh/ohmyzsh/raw/master/plugins/tmux/tmux.extra.conf
+  # Now load the plugin, pointing _ZSH_TMUX_FIXED_CONFIG to the downloaded extra.conf
+  zinit ice atload'export _ZSH_TMUX_FIXED_CONFIG="${XDG_DATA_HOME:-$HOME/.local/share}/zinit/snippets/OMZP::tmux-extra/tmux.extra.conf"'
   zinit snippet OMZP::tmux
 fi

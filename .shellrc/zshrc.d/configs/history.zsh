@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 
+HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
 HISTSIZE=50000
 SAVEHIST=4000
 HISTORY_IGNORE='(\/1PE)'

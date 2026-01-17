@@ -63,8 +63,6 @@ brew "croc"
 brew "ctop"
 # Get a file from an HTTP, HTTPS or FTP server
 brew "curl"
-# Load/unload environment variables based on $PWD
-brew "direnv"
 # Tool for exploring each layer in a docker image
 brew "dive"
 # Pack, ship and run any application as a lightweight container

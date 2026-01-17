@@ -26,7 +26,13 @@
   zcompare ${HOME}/.zshrc
   zcompare ${HOME}/.zshrc.shared
 
-  # Note: zinit handles its own zcompile during updates
+  # zcompile zinit and its plugins
+  local zinit_home="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit"
+  if [[ -d "$zinit_home" ]]; then
+    for file in ${zinit_home}/**/*.zsh; do
+      zcompare ${file}
+    done
+  fi
 
 ) &!
 

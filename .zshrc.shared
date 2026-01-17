@@ -50,14 +50,10 @@ _load_settings() {
   fi
 }
 
-# Run compinit early with -C flag (skip rebuild if dump exists)
-autoload -Uz compinit
-compinit -C
-
 _load_settings "$HOME/.shellrc/zshrc.d/configs"
 
-# Replay compdefs accumulated during loading
-zinit cdreplay -q
+# Use zinit's optimized compinit (runs after turbo-loaded plugins)
+zicompinit; zicdreplay
 
 # Load all files from .shell/rc.d directory
 if [[ -d $HOME/.shellrc/rc.d ]]; then

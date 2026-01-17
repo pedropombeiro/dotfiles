@@ -1,7 +1,10 @@
 #!/usr/bin/env zsh
 
-# Load git plugin from oh-my-zsh via zinit
+# Load git plugins via zinit with turbo mode
+zinit ice wait'0b' lucid
 zinit snippet OMZP::git
+
+zinit ice wait'0c' lucid
 zinit snippet OMZP::git-extras
 
 export GIT_COMPLETION_CHECKOUT_NO_GUESS=1 # only autocomplete with local branches

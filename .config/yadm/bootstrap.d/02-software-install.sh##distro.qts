@@ -26,9 +26,11 @@ opkg install nut-upscmd
 # Replace `mount` utility with the Entware version
 mv /bin/mount /bin/mount.old && ln -sf /opt/bin/mount /bin
 
-if [[ ! -d "/share/homes/${USER}/.oh-my-zsh" ]]; then
-  CHSH=no RUNZSH=no KEEP_ZSHRC=yes ZSH=/share/homes/${USER}/.oh-my-zsh sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  printf "${YELLOW}%s${NC}\n" "Oh-my-zsh installed"
+ZINIT_HOME="${XDG_DATA_HOME:-/share/homes/${USER}/.local/share}/zinit/zinit.git"
+if [[ ! -d "$ZINIT_HOME" ]]; then
+  mkdir -p "$(dirname "$ZINIT_HOME")"
+  git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+  printf "${YELLOW}%s${NC}\n" "zinit installed"
 fi
 
 if [[ ! -x "${HOME}/.local/share/mise/bin/mise" ]]; then

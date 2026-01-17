@@ -1,3 +1,4 @@
 #!/usr/bin/env zsh
 
-plugins+=(debian)
+# Load debian plugin via zinit
+zinit snippet OMZP::debian

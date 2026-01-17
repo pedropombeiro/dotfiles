@@ -8,20 +8,17 @@ printf "${YELLOW}%s${NC}" "Updating tldr... "
 tldr --update
 echo
 
-# Update Oh-my-zsh custom themes and plugins
-DISABLE_AUTO_UPDATE=true source "${HOME}/.oh-my-zsh/oh-my-zsh.sh"
-omz update
-find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/themes" -mindepth 1 -maxdepth 1 -type d -print0 | \
-  xargs -r -0 -P 8 -I {} git -C {} pull --prune --stat -v --ff-only
-find "${ZSH_CUSTOM:-${HOME}/.oh-my-zsh/custom}/plugins" -mindepth 1 -maxdepth 1 -type d -print0 | \
-  xargs -r -0 -P 8 -I {} git -C {} pull --prune --stat -v --ff-only
+# Update zinit and its plugins
+printf "${YELLOW}%s${NC}\n" "Updating zinit and plugins..."
+zinit self-update
+zinit update --parallel
 
 # Delete dead symlinks in ~/.shellrc
 find -L ~/.shellrc -type l -exec rm -f {} \;
 # Delete all zsh word code files, and regenerate them again
 find ~/. -maxdepth 1 -name '*.zwc' -delete
 find ~/.shellrc -name '*.zwc' -delete
-find ~/.oh-my-zsh -name '*.zwc' -delete
+find "${XDG_DATA_HOME:-${HOME}/.local/share}/zinit" -name '*.zwc' -delete
 zsh -i -c 'sleep 5' # Allow time for .zlogin to asynchronously regenerate the .zwc files
 
 bat cache --build # Ensure any custom themes and syntax definition files are compiled

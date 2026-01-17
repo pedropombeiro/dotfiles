@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
 
-export ZVM_INIT_MODE=precmd
-
-plugins+=(zsh-vi-mode)
+# Load zsh-vi-mode via zinit (depth=1 for shallow clone)
+zinit ice depth=1
+zinit light jeffreytse/zsh-vi-mode

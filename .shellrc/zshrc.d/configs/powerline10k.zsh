@@ -1,18 +1,6 @@
 #!/usr/bin/env zsh
 
-# Set name of the theme to load --- if set to "random", it will load a random theme each time oh-my-zsh is loaded, in which
-# case, to know which specific one was loaded, run: echo $RANDOM_THEME See
-# https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-#ZSH_THEME="robbyrussell"
-#ZSH_THEME="agnoster"
-ZSH_THEME="powerlevel10k/powerlevel10k"
-
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in ~/.oh-my-zsh/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
-
+# p10k config (must be set before loading theme)
 typeset -g POWERLEVEL9K_MODE='awesome-fontconfig'
 
 typeset -g POWERLEVEL9K_DIR_HOME_FOREGROUND='gray93'
@@ -48,3 +36,7 @@ typeset -g POWERLEVEL9K_VCS_MAX_SYNC_LATENCY_SECONDS=1.0
 # 1-2 milliseconds, so it's better to keep it turned off
 # unless you really need it.
 typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
+
+# Load powerlevel10k via zinit (depth=1 for shallow clone)
+zinit ice depth=1
+zinit light romkatv/powerlevel10k

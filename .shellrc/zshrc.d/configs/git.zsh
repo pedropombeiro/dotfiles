@@ -1,10 +1,8 @@
 #!/usr/bin/env zsh
 
-# Load git aliases immediately so they're available right away
-# compdef is now available because we autoload compinit early
-source "$ZSH/plugins/git/git.plugin.zsh"
-# Git extras can be deferred (less commonly used)
-zsh-defer source "$ZSH/plugins/git/git-extras.plugin.zsh"
+# Load git plugin from oh-my-zsh via zinit
+zinit snippet OMZP::git
+zinit snippet OMZP::git-extras
 
 export GIT_COMPLETION_CHECKOUT_NO_GUESS=1 # only autocomplete with local branches
 

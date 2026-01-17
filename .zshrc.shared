@@ -5,7 +5,7 @@
 
 function zcompare() {
   if [[ -s ${1} && (! -s ${1}.zwc || ${1} -nt ${1}.zwc) ]]; then
-    zcompile ${1}
+    zcompile -R -- "${1}.zwc" "$1"
   fi
 }
 
@@ -24,14 +24,6 @@ function source_files() {
     test -x "$f" && source_file "$f"
   done
 }
-
-# Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
-
-# Skip oh-my-zsh compaudit security check (we trust our fpath)
-ZSH_DISABLE_COMPFIX=true
-
-plugins=()
 
 # Load config files from pre/, main dir, then post/ (in sorted order)
 # Uses zsh globs instead of find for speed. Glob qualifiers:
@@ -52,23 +44,20 @@ _load_settings() {
   _files=("$_dir"/*.*sh(N-.))
   (( ${#_files} )) && source_files ${(o)_files}
 
-  if [[ -f "$ZSH/oh-my-zsh.sh" && -z "$INTELLIJ_ENVIRONMENT_READER" ]]; then
-    source_file $ZSH/oh-my-zsh.sh
-  fi
-
   if [[ -d "$_dir/post" ]]; then
     _files=("$_dir"/post/**/*.*sh(N-.))
     (( ${#_files} )) && source_files ${(o)_files}
   fi
 }
 
-autoload -Uz ${ZSH}/custom/plugins/zsh-defer/zsh-defer
-
 # Run compinit early with -C flag (skip rebuild if dump exists)
 autoload -Uz compinit
 compinit -C
 
 _load_settings "$HOME/.shellrc/zshrc.d/configs"
+
+# Replay compdefs accumulated during loading
+zinit cdreplay -q
 
 # Load all files from .shell/rc.d directory
 if [[ -d $HOME/.shellrc/rc.d ]]; then

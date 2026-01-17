@@ -1,3 +1,4 @@
 #!/usr/bin/env zsh
 
-plugins+=(common-aliases)
+# Load common-aliases from oh-my-zsh via zinit snippet
+zinit snippet OMZP::common-aliases

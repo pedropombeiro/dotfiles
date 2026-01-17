@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
 
-# https://github.com/zsh-users/zsh-history-substring-search/blob/master/README.md#install
-zsh-defer -a -t 0.1 source $ZSH/plugins/history-substring-search/history-substring-search.zsh
-
-bindkey -M vicmd 'k' history-substring-search-up
-bindkey -M vicmd 'j' history-substring-search-down
+# Load history-substring-search via zinit (deferred, with vi keybindings)
+zinit wait lucid light-mode for \
+  atload'bindkey -M vicmd "k" history-substring-search-up; bindkey -M vicmd "j" history-substring-search-down' \
+  zsh-users/zsh-history-substring-search

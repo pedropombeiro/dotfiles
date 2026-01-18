@@ -83,7 +83,7 @@ if [[ -n ${GDK_ROOT} ]]; then
   cat << EOF > ${GDK_ROOT}/lefthook-local.yml
 EOF
 
-  (cd ${GDK_ROOT} && lefthook install)
+  (cd ${GDK_ROOT} && mise x -- lefthook install)
 fi
 
 git -C ${GDK_ROOT}/gitlab config --unset-all remote.origin.fetch

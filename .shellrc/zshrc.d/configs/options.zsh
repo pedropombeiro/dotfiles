@@ -2,6 +2,9 @@
 
 export TERM="xterm-256color"
 
+# Make Ctrl-W stop at path separators, dashes, etc. (but not underscores)
+WORDCHARS='_'
+
 # Directory navigation
 setopt AUTO_CD           # If command is a directory path, cd into it
 setopt AUTO_PUSHD        # Make cd push the old directory onto the stack

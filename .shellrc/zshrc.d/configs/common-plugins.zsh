@@ -14,6 +14,7 @@ zinit wait'0a' lucid light-mode for \
   Aloxaf/fzf-tab
 
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons $realpath'
+zstyle ':fzf-tab:complete:eza:*' fzf-preview '[[ -d $realpath ]] && eza -1 --color=always --icons $realpath || bat --color=always --style=numbers --line-range=:500 $realpath'
 
 # OMZ completions only (no aliases)
 zinit wait lucid as"completion" for \

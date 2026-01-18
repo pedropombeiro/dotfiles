@@ -11,5 +11,5 @@ fi
 
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Load zsh-defer for deferred loading
-zinit light romkatv/zsh-defer
+# Initialize compdef early so turbo-loaded plugins can use it
+autoload -Uz compinit && compinit -C

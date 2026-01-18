@@ -51,11 +51,16 @@ require("lazy").setup({
   checker = {
     enabled = true,
     notify = true,
+    frequency = 86400, -- Check once per day instead of on every startup
   },
   change_detection = {
     notify = false,
   },
   performance = {
+    cache = {
+      enabled = true,
+    },
+    reset_packpath = true,
     rtp = {
       -- disable some rtp plugins
       disabled_plugins = {

@@ -14,3 +14,9 @@ zinit wait'0a' lucid light-mode for \
   Aloxaf/fzf-tab
 
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons $realpath'
+
+# OMZ completions only (no aliases)
+zinit wait lucid as"completion" for \
+  OMZP::rails/_rails \
+  OMZP::yarn/_yarn \
+  OMZP::redis-cli/_redis-cli

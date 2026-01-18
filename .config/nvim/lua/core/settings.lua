@@ -137,6 +137,7 @@ vim.api.nvim_create_autocmd("BufEnter", {
     if vim.api.nvim_get_option("makeprg") == "make" then
       local makefile = find_file_upwards("Makefile")
       local justfile = find_file_upwards(".justfile")
+      if #justfile == 0 then justfile = find_file_upwards("justfile") end
 
       if #justfile > 0 and (#makefile == 0 or #justfile > #makefile) then vim.opt_local.makeprg = "just" end
     end

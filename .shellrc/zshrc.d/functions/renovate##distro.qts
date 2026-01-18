@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # `renovate` is used to run renovate on all or a specific repo

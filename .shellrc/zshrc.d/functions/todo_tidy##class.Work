@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 source ~/.config/yadm/scripts/colors.sh
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # `lg` opens lazygit, invoking 'yadm enter' if needed

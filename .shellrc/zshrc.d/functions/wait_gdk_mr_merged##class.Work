@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # `wait-gdk-mr-merged` waits for an MR (specified by its number) to be merged, making it easy to chain commands like fgdku

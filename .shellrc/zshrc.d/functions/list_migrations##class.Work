@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # `list-migrations` lists the migrations in the current branch

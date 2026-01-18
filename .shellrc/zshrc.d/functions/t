@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # `t` tails a file with `bat`

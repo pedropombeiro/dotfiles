@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # The `gfa` fetches branches/tags from all remotes, deleting local references to remote branches that have been deleted upstream,

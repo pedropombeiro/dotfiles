@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # `rebase_all` rebases all branches matching the "${GILAB_USERNAME}/<MR_ID>/<BRANCH_NAME>",

@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 
 SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
 GITLAB_USERNAME="${USER}"

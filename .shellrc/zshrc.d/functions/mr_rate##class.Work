@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # `mr_rate` calculates the MR rate of a given GitLab user (defaults to $USER)

@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # The `gdp` copies the current diff as a patch into the clipboard

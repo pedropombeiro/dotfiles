@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # `tryout` applies a patch given the MR URL

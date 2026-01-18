@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # `vdpip` is used to install Python packages for VisiData with pip

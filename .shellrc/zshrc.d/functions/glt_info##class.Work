@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 
 # Usage: glt_info pipeline
 curl -s 'https://gitlab.com/gitlab-com/www-gitlab-com/-/raw/master/data/stages.yml' | \

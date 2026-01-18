@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # `diff-structure` outputs a clean patch that can be copy/pasted (using `diff-structure | pbcopy`) to the SSH session

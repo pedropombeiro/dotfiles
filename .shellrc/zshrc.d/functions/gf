@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # The `gf` alias fetches branches/tags from the remote, and notifying when branches have been merged

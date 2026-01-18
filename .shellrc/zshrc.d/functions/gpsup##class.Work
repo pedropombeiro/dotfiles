@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # `gpsup` pushes the current branch and creates a merge request with appropriate defaults

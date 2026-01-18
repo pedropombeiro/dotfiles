@@ -1,4 +1,3 @@
-#!/usr/bin/env zsh
 
 #
 # The `gpif` function performs a 'git push --force-with-lease' on all branches related to the current branch's issue.

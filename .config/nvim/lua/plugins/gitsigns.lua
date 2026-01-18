@@ -111,7 +111,7 @@ return {
   },
   {
     "lewis6991/gitsigns.nvim",
-    event = { "BufReadPost", "BufNewFile", "BufWritePre", "VeryLazy" },
+    event = { "BufReadPost", "BufNewFile", "BufWritePre" },
     ---@module "gitsigns"
     ---@type Gitsigns.Config
     ---@diagnostic disable: missing-fields
@@ -175,9 +175,12 @@ return {
     },
     ---@diagnostic enable: missing-fields
     init = function()
-      -- Ensure that gitsigns is loaded immediately if opening a file directly, so that gitsigns-yadm has a chance to process it
+      -- Ensure that gitsigns is loaded when opening a file directly, so that gitsigns-yadm has a chance to process it
+      -- Use vim.schedule to defer loading until after vim-fetch processes file:line arguments
       if vim.fn.argc() > 0 then
-        require("gitsigns")
+        vim.schedule(function()
+          require("gitsigns")
+        end)
       end
     end,
     config = function(_, opts)

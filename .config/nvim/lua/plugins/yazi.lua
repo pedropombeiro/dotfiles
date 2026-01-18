@@ -5,7 +5,7 @@
 ---@type LazySpec
 return {
   "mikavilpas/yazi.nvim",
-  event = "VeryLazy",
+  -- Load only when keys are pressed or directories are opened
   dependencies = { "folke/snacks.nvim" },
   keys = {
     {

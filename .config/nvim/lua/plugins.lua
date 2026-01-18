@@ -163,6 +163,8 @@ return {
   --### Editor enhancements
   {
     "https://plugins.ejri.dev/mise.nvim",
+    cond = function() return vim.g.neovide end, -- Only needed in Neovide
+    event = { "BufReadPost", "BufNewFile" },
     opts = {},
   },
   {
@@ -246,10 +248,10 @@ return {
     ft = "ruby",
     cmd = { "Bundle", "Bopen", "Bsplit", "Btabedit" },
   },
-  "tpope/vim-projectionist", -- Granular project configuration
+  { "tpope/vim-projectionist", event = { "BufReadPost", "BufNewFile" } }, -- Commands created after opening a file in project
   { "tpope/vim-rails", ft = "ruby" }, -- rails.vim: Ruby on Rails power tools
   { "bfontaine/Brewfile.vim", ft = "ruby" }, -- Brewfile syntax for Vim
-  "wsdjeg/vim-fetch", -- Make Vim handle line and column numbers in file names with a minimum of fuss
+  { "wsdjeg/vim-fetch", lazy = false }, -- Must load at startup to parse file:line arguments
 
   {
     "iamcco/markdown-preview.nvim", -- markdown preview plugin for (neo)vim

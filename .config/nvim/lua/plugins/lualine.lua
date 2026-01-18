@@ -36,7 +36,8 @@ return {
 
       local gstatus = { ahead = 0, behind = 0 }
       local function update_gstatus()
-        local Job = require("plenary.job")
+        local ok, Job = pcall(require, "plenary.job")
+        if not ok then return end
         Job:new({
           command = "git",
           args = { "rev-list", "--left-right", "--count", "HEAD...@{upstream}" },
@@ -46,8 +47,8 @@ return {
               gstatus = { ahead = 0, behind = 0 }
               return
             end
-            local ok, ahead, behind = pcall(string.match, res, "(%d+)%s*(%d+)")
-            if ok then
+            local match_ok, ahead, behind = pcall(string.match, res, "(%d+)%s*(%d+)")
+            if match_ok then
               ahead, behind = tonumber(ahead), tonumber(behind)
             else
               ahead, behind = 0, 0
@@ -57,12 +58,15 @@ return {
         }):start()
       end
 
-      if _G.Gstatus_timer == nil then
-        _G.Gstatus_timer = vim.loop.new_timer()
-      else
-        _G.Gstatus_timer:stop()
-      end
-      _G.Gstatus_timer:start(0, 30000, vim.schedule_wrap(update_gstatus))
+      -- Defer timer start to avoid blocking startup
+      vim.defer_fn(function()
+        if _G.Gstatus_timer == nil then
+          _G.Gstatus_timer = vim.uv.new_timer()
+        else
+          _G.Gstatus_timer:stop()
+        end
+        _G.Gstatus_timer:start(0, 30000, vim.schedule_wrap(update_gstatus))
+      end, 100)
 
       return {
         options = {

@@ -52,8 +52,8 @@ _load_settings() {
 
 _load_settings "$HOME/.shellrc/zshrc.d/configs"
 
-# Use zinit's optimized compinit (runs after turbo-loaded plugins)
-zicompinit; zicdreplay
+# Replay compdefs from turbo-loaded plugins (compinit already ran in 00-zinit.zsh)
+zicdreplay
 
 # Load all files from .shell/rc.d directory
 if [[ -d $HOME/.shellrc/rc.d ]]; then

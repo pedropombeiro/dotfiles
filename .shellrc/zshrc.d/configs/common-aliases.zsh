@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 
 # Load common-aliases via zinit with turbo mode
-zinit ice wait'0b' lucid
+# Re-source custom aliases after plugin loads to override plugin defaults (e.g., `la`)
+zinit ice wait'0b' lucid atload'source ~/.shellrc/rc.d/aliases.sh'
 zinit snippet OMZP::common-aliases

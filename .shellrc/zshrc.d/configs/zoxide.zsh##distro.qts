@@ -1,9 +1,0 @@
-#!/usr/bin/env zsh
-
-# zoxide - fast directory jumping (replacement for autojump)
-# Install: curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
-if command -v zoxide &>/dev/null; then
-  eval "$(zoxide init zsh)"
-  alias j='z'   # autojump compatibility
-  alias ji='zi' # interactive mode
-fi

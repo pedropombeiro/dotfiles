@@ -8,3 +8,9 @@ ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 zinit wait'0' lucid light-mode for \
   atload'_zsh_autosuggest_start' zsh-users/zsh-autosuggestions \
   zdharma-continuum/fast-syntax-highlighting
+
+# fzf-tab: replace zsh completion menu with fzf popup
+zinit wait'0a' lucid light-mode for \
+  Aloxaf/fzf-tab
+
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons $realpath'

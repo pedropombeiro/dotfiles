@@ -54,7 +54,7 @@ This dotfiles setup includes:
   - Custom aliases and functions for productivity
   - [fzf](https://github.com/junegunn/fzf) integration - fuzzy file finder (use `**<TAB>` for fuzzy completion,
     e.g., `vim **<TAB>`)
-  - [autojump](https://github.com/wting/autojump) - intelligent directory navigation
+  - [zoxide](https://github.com/ajeetdsouza/zoxide) - smarter directory navigation
   - [mise](https://mise.jdx.dev/) - polyglot runtime manager and environment switcher
 
 - **📝 Editor Configuration**

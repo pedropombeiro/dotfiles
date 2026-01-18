@@ -3,5 +3,6 @@
 mkdir -p $HOME/.config/zsh/site-functions
 fpath+=($HOME/.config/zsh/site-functions)
 
-# Recreate any compdump older than a day
-find $HOME -maxdepth 1 -iname '.zcompdump*' -mtime 1 -delete
+# Recreate any compdump older than a day (using zsh glob instead of slow find)
+# (N) = nullglob, (.) = regular files, (md+1) = modified more than 1 day ago
+rm -f $HOME/.zcompdump*(N.md+1) 2>/dev/null

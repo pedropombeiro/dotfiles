@@ -25,10 +25,6 @@ brew "arduino-cli"
 brew "asciinema"
 # Library for command-line editing
 brew "readline"
-# Command-line interface for SQLite
-brew "sqlite"
-# Shell extension to jump to frequently used directories
-brew "autojump"
 # Bourne-Again SHell, a UNIX command interpreter
 brew "bash"
 # Clone of cat(1) with syntax highlighting and Git integration
@@ -63,6 +59,8 @@ brew "croc"
 brew "ctop"
 # Get a file from an HTTP, HTTPS or FTP server
 brew "curl"
+# Command-line interface for SQLite
+brew "sqlite"
 # Tool for exploring each layer in a docker image
 brew "dive"
 # Pack, ship and run any application as a lightweight container
@@ -95,7 +93,7 @@ brew "eza"
 brew "fcgiwrap"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
-# Play, record, convert, and stream audio and video
+# Play, record, convert, and stream select audio and video codecs
 brew "ffmpeg"
 # I/O benchmark and stress test
 brew "fio"

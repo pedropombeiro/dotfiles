@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Add a `fm` function to zsh that opens yazi either at the given directory or
-# at the one autojump suggests
+# at the one zoxide suggests
 if [ "$2" != "" ]; then
   yazi "$@"
 elif [ "$1" != "" ]; then
@@ -10,7 +10,7 @@ elif [ "$1" != "" ]; then
   elif [ -f "$1" ]; then
     yazi "$1"
   else
-    out="$(autojump $1)"
+    out="$(zoxide query $1)"
     yazi "$out"
   fi
 else

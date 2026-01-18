@@ -1,6 +1,0 @@
-#!/usr/bin/env zsh
-
-INSTALL_DIR="${HOMEBREW_PREFIX}/share/autojump"
-
-# Load autojump immediately so it's available right away
-[[ -s "${INSTALL_DIR}/autojump.zsh" ]] && source "${INSTALL_DIR}/autojump.zsh"

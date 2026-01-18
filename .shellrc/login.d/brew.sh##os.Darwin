@@ -1,11 +1,15 @@
 #!/usr/bin/env sh
 
 if [ -z "$HOMEBREW_PREFIX" ]; then
-  if command -v brew >/dev/null; then
-    HOMEBREW_PREFIX="$(brew --prefix 2>/dev/null)"
-  elif [ -d /opt/homebrew ]; then
-    # Apple Silicon uses a different prefix
-    HOMEBREW_PREFIX="$(/opt/homebrew/bin/brew --prefix 2>/dev/null)"
+  # Hardcode common paths to avoid slow `brew --prefix` call
+  if [ -d /opt/homebrew ]; then
+    HOMEBREW_PREFIX="/opt/homebrew"  # Apple Silicon
+  elif [ -d /usr/local/Homebrew ]; then
+    HOMEBREW_PREFIX="/usr/local"     # Intel Mac
+  elif [ -d "$HOME/.linuxbrew" ]; then
+    HOMEBREW_PREFIX="$HOME/.linuxbrew"  # Linux (user install)
+  elif [ -d /home/linuxbrew/.linuxbrew ]; then
+    HOMEBREW_PREFIX="/home/linuxbrew/.linuxbrew"  # Linux (system-wide)
   fi
 fi
 

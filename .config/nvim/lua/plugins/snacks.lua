@@ -207,7 +207,7 @@ return {
         },
         sections = {
           { section = "header" },
-          { pane = 2, section = "terminal", cmd = "curl -s 'https://wttr.in/?0' || echo", height = 8 },
+          { pane = 2, section = "terminal", cmd = "curl -s --max-time 2 'https://wttr.in/?0' 2>/dev/null || echo 'Weather unavailable'", height = 8, ttl = 300 },
           {
             { icon = " ", key = "f", desc = "Find File", action = ':lua Snacks.dashboard.pick("files")' },
             { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },

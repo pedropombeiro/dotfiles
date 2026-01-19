@@ -15,6 +15,8 @@ zinit wait'0a' lucid light-mode for \
 
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons $realpath'
 zstyle ':fzf-tab:complete:eza:*' fzf-preview '[[ -d $realpath ]] && eza -1 --color=always --icons $realpath || bat --color=always --style=numbers --line-range=:500 $realpath'
+zstyle ':fzf-tab:complete:brew-(install|info|upgrade):*' fzf-preview 'CACHE="/tmp/brew-info-$word"; [[ -f $CACHE && $((EPOCHSECONDS - $(stat -f%m $CACHE))) -lt 86400 ]] || HOMEBREW_COLOR=1 brew info $word 2>/dev/null >$CACHE; cat $CACHE'
+zstyle ':fzf-tab:complete:brew-(install|info|upgrade):*' fzf-flags --preview-window=right:50%:wrap:~3
 
 # OMZ completions only (no aliases)
 zinit wait lucid as"completion" for \

@@ -29,7 +29,7 @@
   # zcompile zinit and its plugins
   local zinit_home="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit"
   if [[ -d "$zinit_home" ]]; then
-    for file in ${zinit_home}/**/*.zsh; do
+    for file in ${zinit_home}/**/*.zsh(.N); do
       zcompare ${file}
     done
   fi

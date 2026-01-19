@@ -22,3 +22,23 @@ EOF
 
   mise trust "${GDK_ROOT}"
 fi
+
+if [[ -d ${GDK_ROOT}/gitlab && ! -f ${GDK_ROOT}/gitlab/opencode.jsonc ]]; then
+  cat <<'EOF' >"${GDK_ROOT}/gitlab/opencode.jsonc"
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "knowledge-graph": {
+      "type": "remote",
+      "url": "http://localhost:27495/mcp/sse"
+    }
+  }
+}
+EOF
+
+  # Add to local git exclude if not already present
+  local exclude_file="${GDK_ROOT}/gitlab/.git/info/exclude"
+  if [[ -f ${exclude_file} ]] && ! grep -q '^opencode\.jsonc$' "${exclude_file}"; then
+    echo 'opencode.jsonc' >>"${exclude_file}"
+  fi
+fi

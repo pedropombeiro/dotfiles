@@ -1,0 +1,11 @@
+
+#
+# The `gp` function pushes to the remote, using yadm when in the home directory
+#
+
+local git_cmd=git
+if [[ "$PWD" == "$HOME" ]]; then
+  git_cmd=yadm
+fi
+
+$git_cmd push "$@"

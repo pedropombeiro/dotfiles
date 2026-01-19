@@ -4,7 +4,7 @@
 zinit snippet OMZL::git.zsh
 
 # Load git plugin immediately (provides aliases)
-zinit ice lucid atload'unalias gf gfa gpsup gswm 2>/dev/null'
+zinit ice lucid atload'unalias gf gfa gp gpsup gswm 2>/dev/null'
 zinit snippet OMZP::git
 
 zinit ice wait'0c' lucid

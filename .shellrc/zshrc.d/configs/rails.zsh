@@ -1,0 +1,8 @@
+#!/usr/bin/env zsh
+
+# rake-fast: cache rake tasks for fast completion
+# Use rake completion for rails (rails runs rake tasks too)
+zinit wait lucid atload'compdef _rake rails' for \
+  OMZP::rake-fast
+
+alias reset_test_db='bundle exec rails db:drop db:create db:test:prepare db:migrate RAILS_ENV=test'

@@ -18,6 +18,5 @@ zstyle ':fzf-tab:complete:eza:*' fzf-preview '[[ -d $realpath ]] && eza -1 --col
 
 # OMZ completions only (no aliases)
 zinit wait lucid as"completion" for \
-  OMZP::rails/_rails \
   OMZP::yarn/_yarn \
   OMZP::redis-cli/_redis-cli

@@ -18,6 +18,12 @@ zstyle ':fzf-tab:complete:eza:*' fzf-preview '[[ -d $realpath ]] && eza -1 --col
 zstyle ':fzf-tab:complete:brew-(install|info|upgrade):*' fzf-preview 'CACHE="/tmp/brew-info-$word"; [[ -f $CACHE && $((EPOCHSECONDS - $(stat -f%m $CACHE))) -lt 86400 ]] || HOMEBREW_COLOR=1 brew info $word 2>/dev/null >$CACHE; cat $CACHE'
 zstyle ':fzf-tab:complete:brew-(install|info|upgrade):*' fzf-flags --preview-window=right:50%:wrap:~3
 
+# ipinfo completion (uses bash complete, needs bashcompinit)
+zinit wait lucid for \
+  atinit'autoload -U +X bashcompinit && bashcompinit' \
+  atload'complete -o default -C /opt/homebrew/bin/ipinfo ipinfo' \
+  zdharma-continuum/null
+
 # OMZ completions only (no aliases)
 zinit wait lucid as"completion" for \
   OMZP::yarn/_yarn \

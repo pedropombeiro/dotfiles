@@ -18,6 +18,18 @@ zstyle ':fzf-tab:complete:eza:*' fzf-preview '[[ -d $realpath ]] && eza -1 --col
 zstyle ':fzf-tab:complete:brew-(install|info|upgrade):*' fzf-preview 'CACHE="/tmp/brew-info-$word"; [[ -f $CACHE && $((EPOCHSECONDS - $(stat -f%m $CACHE))) -lt 86400 ]] || HOMEBREW_COLOR=1 brew info $word 2>/dev/null >$CACHE; cat $CACHE'
 zstyle ':fzf-tab:complete:brew-(install|info|upgrade):*' fzf-flags --preview-window=right:50%:wrap:~3
 
+# git: preview branches with commits since default branch, or file diff
+zstyle ':fzf-tab:complete:git:*' fzf-preview \
+  'w=${word%% }; base=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed "s@refs/remotes/@@"); log=$(git log --oneline --graph --color=always --date=short --pretty="format:%C(auto)%cd %h%d %s" ${base:+$base..}$w 2>/dev/null); [[ -n $log ]] && echo $log || git log --oneline --graph --color=always --date=short --pretty="format:%C(auto)%cd %h%d %s" -n 20 $w 2>/dev/null || git diff --color=always -- $w 2>/dev/null | head -100'
+
+# just: show recipe contents with syntax highlighting
+zstyle ':fzf-tab:complete:just:*' fzf-preview \
+  'just --show $word 2>/dev/null | bat --color=always --style=plain -l Makefile'
+
+# mise: show installed versions or available versions for tool
+zstyle ':fzf-tab:complete:mise:*' fzf-preview \
+  'tool=${word%@}; mise ls $tool 2>/dev/null || mise ls-remote $tool 2>/dev/null | tail -20'
+
 # ipinfo completion (uses bash complete, needs bashcompinit)
 zinit wait lucid for \
   atinit'autoload -U +X bashcompinit && bashcompinit' \

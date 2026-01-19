@@ -26,10 +26,6 @@ zstyle ':fzf-tab:complete:git:*' fzf-preview \
 zstyle ':fzf-tab:complete:just:*' fzf-preview \
   'just --show $word 2>/dev/null | bat --color=always --style=plain -l Makefile'
 
-# mise: show installed versions or available versions for tool
-zstyle ':fzf-tab:complete:mise:*' fzf-preview \
-  'tool=${word%@}; mise ls $tool 2>/dev/null || mise ls-remote $tool 2>/dev/null | tail -20'
-
 # ipinfo completion (uses bash complete, needs bashcompinit)
 zinit wait lucid for \
   atinit'autoload -U +X bashcompinit && bashcompinit' \

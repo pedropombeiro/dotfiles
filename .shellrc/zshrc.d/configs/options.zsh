@@ -5,7 +5,7 @@ export TERM="xterm-256color"
 # Make Ctrl-W stop at path separators, dashes, etc. (but not underscores)
 WORDCHARS='_'
 
-# Directory navigation
+# Directory navigation (setopts here for immediate availability; aliases loaded via OMZL::directories in common-aliases.zsh)
 setopt AUTO_CD           # If command is a directory path, cd into it
 setopt AUTO_PUSHD        # Make cd push the old directory onto the stack
 setopt PUSHD_IGNORE_DUPS # Don't push multiple copies of the same directory

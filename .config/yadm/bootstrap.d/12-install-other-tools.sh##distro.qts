@@ -124,6 +124,5 @@ download_and_extract "https://github.com/dalance/procs/releases/download/v${proc
 for yazi_file in yazi ya; do
   download_and_extract "https://github.com/sxyazi/yazi/releases/download/v${yazi_version}/yazi-x86_64-unknown-linux-musl.zip" yazi-x86_64-unknown-linux-musl/${yazi_file} $yazi_version
 done
-download_and_extract "https://github.com/pedropombeiro/qnapexporter/releases/latest/download/qnapexporter-linux-amd64.tar.gz" qnapexporter
 
 rm -rf "${temp_dir}"

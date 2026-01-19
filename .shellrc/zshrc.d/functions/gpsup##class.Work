@@ -1,4 +1,3 @@
-
 #
 # `gpsup` pushes the current branch and creates a merge request with appropriate defaults
 # if the target remote is at gitlab.com

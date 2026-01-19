@@ -1,6 +1,9 @@
 #!/usr/bin/env zsh
 
-# Load git plugin immediately (needed for git_main_branch in custom functions)
+# Load git lib (provides git_current_branch, git_main_branch functions)
+zinit snippet OMZL::git.zsh
+
+# Load git plugin immediately (provides aliases)
 zinit ice lucid atload'unalias gf gfa gpsup gswm 2>/dev/null'
 zinit snippet OMZP::git
 

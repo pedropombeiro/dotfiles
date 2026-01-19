@@ -1,3 +1,7 @@
 #!/usr/bin/env zsh
 
 bindkey ' ' magic-space # Auto-expand commands on pressing space
+
+# Word navigation (from OMZ key-bindings.zsh)
+bindkey '^[[1;5C' forward-word  # Ctrl-Right
+bindkey '^[[1;5D' backward-word # Ctrl-Left

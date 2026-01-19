@@ -45,6 +45,12 @@
       "schedule": ["on the first day of the month"]
     },
     {
+      "description": "Delay Node.js updates by 7 days for stability",
+      "matchManagers": ["mise"],
+      "matchPackageNames": ["nodejs"],
+      "minimumReleaseAge": "7 days"
+    },
+    {
       "description": "Disable automerge for cargo packages in QTS mise config",
       "matchManagers": ["cargo"],
       "matchFileNames": [".config/mise/config.toml##distro.qts,extension.toml"],

@@ -3,7 +3,13 @@
   "plugin": ["@gitlab/opencode-gitlab-plugin"],
   "model": "duo-chat-opus-4-5",
   "keybinds": {
-    "scrollbar_toggle": "ctrl+alt+t"
+    "scrollbar_toggle": "ctrl+alt+t",
+    "messages_page_up": "pageup,ctrl+alt+b,home",
+    "messages_page_down": "pagedown,ctrl+alt+f,end",
+    "input_buffer_home": "none",
+    "input_buffer_end": "none",
+    "messages_first": "ctrl+g",
+    "messages_last": "ctrl+alt+g"
   },
   "tui": {
     "scroll_speed": 3,

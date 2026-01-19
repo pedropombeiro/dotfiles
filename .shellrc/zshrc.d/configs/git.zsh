@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
-# Load git plugins via zinit with turbo mode
-zinit ice wait'0b' lucid atload'unalias gf gfa gpsup gswm 2>/dev/null'
+# Load git plugin immediately (needed for git_main_branch in custom functions)
+zinit ice lucid atload'unalias gf gfa gpsup gswm 2>/dev/null'
 zinit snippet OMZP::git
 
 zinit ice wait'0c' lucid

@@ -66,6 +66,7 @@ MAIN_BRANCH="$(git_main_branch)"
   fi
 
   set -eo pipefail
+  trap 'printf "${RED}%s${NC}\n" "fgdku failed at line $LINENO: $BASH_COMMAND"' ERR
 
   ORIGINAL_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
   MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A master -- db/schema_migrations/)"

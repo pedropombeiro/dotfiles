@@ -90,4 +90,20 @@ git -C ${GDK_ROOT}/gitlab config --unset-all remote.origin.fetch
 git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/master:refs/remotes/origin/master'
 git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/pedropombeiro/*:refs/remotes/origin/pedropombeiro/*'
 
+# Populate opencode configuration
+if [[ -n ${GDK_ROOT} ]]; then
+  mkdir -p "${GDK_ROOT}/gitlab/.opencode"
+  cat << 'EOF' > "${GDK_ROOT}/gitlab/.opencode/opencode.json"
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [".gitlab/duo/chat-rules.md"]
+}
+EOF
+
+cat << 'EOF' > "${GDK_ROOT}/gitlab/.mise.local.toml"
+[env]
+OPENCODE_CONFIG="{{env.GDK_ROOT}}/gitlab/.opencode/opencode.json"
+EOF
+fi
+
 ${YADM_SCRIPTS}/run-checks.zsh

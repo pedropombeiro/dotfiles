@@ -90,6 +90,22 @@ return {
       -- YAML
       ["@field.yaml"] = { link = "GruvboxBlueBold" },
       ["@string.yaml"] = { link = "GruvboxGreen" },
+
+      -- Markdown headings (softer colors)
+      ["@markup.heading.1.markdown"] = { fg = "#fe8019", bold = true },
+      ["@markup.heading.2.markdown"] = { fg = "#fabd2f", bold = true },
+      ["@markup.heading.3.markdown"] = { fg = "#b8bb26", bold = true },
+      ["@markup.heading.4.markdown"] = { fg = "#8ec07c", bold = true },
+      ["@markup.heading.5.markdown"] = { fg = "#83a598", bold = true },
+      ["@markup.heading.6.markdown"] = { fg = "#d3869b", bold = true },
+
+      -- render-markdown heading backgrounds
+      RenderMarkdownH1Bg = { bg = "#3c2a1e" },
+      RenderMarkdownH2Bg = { bg = "#3a3424" },
+      RenderMarkdownH3Bg = { bg = "#333e24" },
+      RenderMarkdownH4Bg = { bg = "#2a3a32" },
+      RenderMarkdownH5Bg = { bg = "#2a3540" },
+      RenderMarkdownH6Bg = { bg = "#382e3a" },
     },
   },
 }

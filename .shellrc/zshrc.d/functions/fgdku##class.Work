@@ -121,7 +121,7 @@ MAIN_BRANCH="$(git_main_branch)"
   (
     cd $GDK_ROOT && mise x ruby -- bundle install && yes | gdk cleanup
     find gitlab/log -maxdepth 1 -size +10M -exec truncate -s 0 {} \;
-  )
+  ) || printf "${YELLOW}%s${NC}\n" "GDK cleanup subshell failed, continuing..."
 
   set +e
   yes | gdk kill # Use kill instead of stop so that services are killed if they can't be stopped (e.g. postgresql)

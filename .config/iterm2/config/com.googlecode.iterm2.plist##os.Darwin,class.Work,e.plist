@@ -1043,6 +1043,8 @@
 			<true/>
 			<key>ASCII Ligatures</key>
 			<false/>
+			<key>Allow Alternate Mouse Scroll</key>
+			<true/>
 			<key>Ambiguous Double Width</key>
 			<false/>
 			<key>Ansi 0 Color</key>
@@ -1447,6 +1449,10 @@
 				<real>0.7928692102432251</real>
 			</dict>
 			<key>Mouse Reporting</key>
+			<false/>
+			<key>Mouse Reporting allow clicks and drags</key>
+			<false/>
+			<key>Mouse Reporting allow mouse wheel</key>
 			<false/>
 			<key>Name</key>
 			<string>GitLab</string>
@@ -1963,7 +1969,7 @@
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Text</key>
-			<string>export PATH="$PWD/bin:$PATH"</string>
+			<string></string>
 			<key>Initial Use Transparency</key>
 			<false/>
 			<key>Jobs to Ignore</key>

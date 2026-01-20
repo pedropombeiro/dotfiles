@@ -72,9 +72,10 @@ MAIN_BRANCH="$(git_main_branch)"
   MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A master -- db/schema_migrations/)"
   BRANCH_MIGRATIONS=($(echo ${MIGRATIONS_DIFF} | xargs basename -a | sort -r))
 
-  gem uninstall json --all --ignore-dependencies && mise x ruby -- bundle install
+  mise x ruby -- gem uninstall json --all --ignore-dependencies
+  mise x ruby -- ruby -e "load Gem.bin_path('bundler', 'bundle')" -- install
 
-  bin/spring stop || echo 'Spring not running'
+  mise x ruby -- bin/spring stop || echo 'Spring not running'
   pkill spring || echo 'No remaining spring processes' # Ensure there are no leftover spring processes, this sometimes causes issues with the RubyMine debugger hanging trying to establish a connection
   git restore bin/rake bin/rspec bin/rails bin/spring
 
@@ -88,9 +89,10 @@ MAIN_BRANCH="$(git_main_branch)"
   git restore db/structure.sql
   sleep 5
 
-  gem uninstall json --all --ignore-dependencies && mise x ruby -- bundle install # Needed if Ruby version changed
+  mise x ruby -- gem uninstall json --all --ignore-dependencies
+  mise x ruby -- ruby -e "load Gem.bin_path('bundler', 'bundle')" -- install # Needed if Ruby version changed
 
-  bin/spring binstub --all
+  mise x ruby -- bin/spring binstub --all
 
   printf "${YELLOW}%s${NC}\n" 'Running simple test...'
   bundle exec rspec --failure-exit-code 0 --error-exit-code 1 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb ||

@@ -51,7 +51,7 @@ MAIN_BRANCH="$(git_main_branch)"
 
   rm -f .git/gc.log
 
-  git fetch --jobs=10
+  git fetch --jobs=10 || { printf "${RED}%s${NC}\n" 'git fetch failed, retrying...'; sleep 5; git fetch --jobs=10; }
 
   if [[ ! -S $GDK_ROOT/redis/redis.socket ]]; then
     # Work around issue with Redis socket disappearing by restarting the GDK
@@ -99,7 +99,7 @@ MAIN_BRANCH="$(git_main_branch)"
   gdk status clickhouse >/dev/null && bundle exec rake gitlab:clickhouse:migrate:main
 
   printf "${YELLOW}%s${NC}\n" 'Pruning local branches...'
-  git fetch --jobs=10
+  git fetch --jobs=10 || { printf "${RED}%s${NC}\n" 'git fetch failed, retrying...'; sleep 5; git fetch --jobs=10; }
   set +e
   git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | xargs git branch -D
   set -e

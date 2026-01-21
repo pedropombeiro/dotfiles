@@ -1,3 +1,15 @@
+#!/usr/bin/env zsh
+
+# Home/End keys - must be set after zsh-vi-mode loads since it overrides keymaps
+for keymap in viins vicmd emacs; do
+  bindkey -M $keymap '^[[H'  beginning-of-line  # xterm
+  bindkey -M $keymap '^[[F'  end-of-line        # xterm
+  bindkey -M $keymap '^[[1~' beginning-of-line  # linux/screen
+  bindkey -M $keymap '^[[4~' end-of-line        # linux/screen
+  bindkey -M $keymap '^[OH'  beginning-of-line  # application mode
+  bindkey -M $keymap '^[OF'  end-of-line        # application mode
+done
+
 # Keypad
 # 0 . Enter
 bindkey -s "^[Op" "0"

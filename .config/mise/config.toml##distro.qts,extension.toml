@@ -24,6 +24,7 @@ lazygit = "latest"
 nodejs = "23.7.0"
 pre-commit = "latest"
 ripgrep = "latest"
+rust = { version = "stable", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
 shellcheck = "latest"
 viddy = "latest"
 xh = "latest"

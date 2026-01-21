@@ -12,7 +12,6 @@ temp_dir="$(mktemp -d)"
 bandwhich_version=0.23.1 # imsnif/bandwhich
 btop_version=1.4.6 # aristocratos/btop
 croc_version=10.3.1 # schollz/croc
-fzf_version=0.67.0 # junegunn/fzf
 gping_version=1.19.0 # orf/gping
 lnav_version=0.13.2 # tstack/lnav
 nvim_version=0.11.5 # neovim/neovim # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
@@ -113,7 +112,6 @@ download_and_extract "https://github.com/imsnif/bandwhich/releases/download/v${b
 download_and_extract "https://github.com/aristocratos/btop/releases/download/v${btop_version}/btop-i686-unknown-linux-musl.tbz" ./btop/bin/btop $btop_version
 download_and_extract "https://github.com/schollz/croc/releases/download/v${croc_version}/croc_v${croc_version}_Linux-64bit.tar.gz" croc $croc_version
 download_and_extract "https://github.com/orf/gping/releases/download/gping-v${gping_version}/gping-Linux-musl-x86_64.tar.gz" gping $gping_version
-download_and_extract "https://github.com/junegunn/fzf/releases/download/v${fzf_version}/fzf-${fzf_version}-linux_amd64.tar.gz" fzf "$fzf_version"
 
 download_and_extract "https://github.com/tstack/lnav/releases/download/v${lnav_version}/lnav-${lnav_version}-linux-musl-x86_64.zip" "lnav-${lnav_version}/lnav" $lnav_version
 

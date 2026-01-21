@@ -103,9 +103,7 @@ MAIN_BRANCH="$(git_main_branch)"
 
   printf "${YELLOW}%s${NC}\n" 'Pruning local branches...'
   git fetch --jobs=10 || { printf "${RED}%s${NC}\n" 'git fetch failed, retrying...'; sleep 5; git fetch --jobs=10; }
-  set +e
-  git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | xargs git branch -D
-  set -e
+  git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | xargs git branch -D 2>/dev/null || true
   printf "${GREEN}%s${NC}\n" "Done."
 
   printf "${YELLOW}%s${NC}\n" "Rebasing local branches..."
@@ -125,13 +123,11 @@ MAIN_BRANCH="$(git_main_branch)"
     find gitlab/log -maxdepth 1 -size +10M -exec truncate -s 0 {} \;
   ) || printf "${YELLOW}%s${NC}\n" "GDK cleanup subshell failed, continuing..."
 
-  set +e
-  yes | gdk kill # Use kill instead of stop so that services are killed if they can't be stopped (e.g. postgresql)
-  set -e
+  yes | gdk kill || true # Use kill instead of stop so that services are killed if they can't be stopped (e.g. postgresql)
   # Ensure there are no orphaned sidekiq-cluster (https://gitlab.com/gitlab-org/gitlab-development-kit/-/issues/1455)
-  pkill -lf 'sidekiq-cluster' || echo 'No stray sidekiq-cluster found'
+  pkill -lf 'sidekiq-cluster' || true
   gdk start
-  gdk sandbox enable
+  gdk sandbox status | grep -q 'enabled' || gdk sandbox enable
 
   if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
     scripts/regenerate-schema # Ensure we have a clean test DB with any branch migrations done

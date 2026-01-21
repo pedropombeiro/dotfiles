@@ -1,3 +1,7 @@
+[settings]
+node.mirror_url = "https://unofficial-builds.nodejs.org/download/release/"
+node.flavor = "glibc-217"
+
 [tools]
 bat = "latest"
 bottom = "latest"
@@ -16,6 +20,7 @@ jq = "latest"
 just = "latest"
 lazydocker = "latest"
 lazygit = "latest"
+nodejs = "23.7.0"
 pre-commit = "latest"
 ripgrep = "latest"
 shellcheck = "latest"

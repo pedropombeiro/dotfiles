@@ -83,7 +83,7 @@ MAIN_BRANCH="$(git_main_branch)"
 
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
   cd $GDK_ROOT
-  mise x ruby -- gdk update
+  mise x ruby -- gdk update || { rc=$?; printf "${RED}%s${NC}\n" "gdk update failed with exit code $rc"; exit $rc; }
 
   cd gitlab
   git restore db/structure.sql

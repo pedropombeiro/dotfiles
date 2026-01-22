@@ -58,12 +58,6 @@
       "enabled": false
     },
     {
-      "description": "Disable automerge for cargo packages in QTS mise config",
-      "matchManagers": ["cargo"],
-      "matchFileNames": [".config/mise/config.toml##distro.qts,extension.toml"],
-      "automerge": false
-    },
-    {
       "description": "Group all bootstrap tool updates together",
       "matchManagers": ["custom.regex"],
       "matchFileNames": [

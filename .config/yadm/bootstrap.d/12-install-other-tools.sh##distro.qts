@@ -16,7 +16,7 @@ gping_version=1.19.0 # orf/gping
 lnav_version=0.13.2 # tstack/lnav
 nvim_version=0.11.5 # neovim/neovim # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
 procs_version=0.14.10 # dalance/procs
-yazi_version=26.1.4 # sxyazi/yazi
+yazi_version=26.1.22 # sxyazi/yazi
 
 function download() {
   filename="$(basename "$1")"

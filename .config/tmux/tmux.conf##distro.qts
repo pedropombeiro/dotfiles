@@ -53,8 +53,8 @@ set -g @mode_indicator_sync_mode_style 'bg=colour208,fg=colour237'
 set -g @mode_indicator_empty_mode_style 'bg=colour248,fg=colour237'
 
 set -g @plugin 'christoomey/vim-tmux-navigator' # Pairs with https://github.com/christoomey/vim-tmux-navigator
-set -g @vim_navigator_mapping_left "C-Left M-h"
-set -g @vim_navigator_mapping_right "C-Right M-l"
+set -g @vim_navigator_mapping_left "M-h"
+set -g @vim_navigator_mapping_right "M-l"
 set -g @vim_navigator_mapping_up "M-k"
 set -g @vim_navigator_mapping_down "M-j"
 set -g @vim_navigator_mapping_prev "M-\\"

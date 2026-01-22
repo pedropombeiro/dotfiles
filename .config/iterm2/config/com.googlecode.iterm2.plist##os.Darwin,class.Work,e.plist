@@ -399,7 +399,7 @@
 	<key>DoubleClickPerformsSmartSelection</key>
 	<true/>
 	<key>EnableAPIServer</key>
-	<true/>
+	<false/>
 	<key>EnableProxyIcon</key>
 	<false/>
 	<key>EnterCopyModeAutomatically</key>
@@ -10014,6 +10014,10 @@
 	<true/>
 	<key>SuppressRestartAnnouncement</key>
 	<true/>
+	<key>SwitchPaneModifier</key>
+	<integer>5</integer>
+	<key>SwitchWindowModifier</key>
+	<integer>9</integer>
 	<key>TabTransform</key>
 	<integer>1</integer>
 	<key>TmuxUnpauseAutomatically</key>

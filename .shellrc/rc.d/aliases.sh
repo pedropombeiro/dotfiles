@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# General aliases
+alias zinit-home="\$EDITOR \${XDG_DATA_HOME:-\$HOME/.local/share}/zinit"
+# shellcheck disable=SC2142  # This pattern works in bash/zsh
+alias mkcd='mkcd_impl() { mkdir -p "$1" && cd "$1" || return; }; mkcd_impl'
+alias myip="curl http://ipecho.net/plain; echo"
+alias vimdiff="vim -d"
+
+# Tool-specific aliases
 alias lzd='lazydocker'
 
 # Delete all remote tracking Git branches where the upstream branch has been deleted
@@ -13,3 +21,9 @@ alias ls='eza'
 alias la='eza --almost-all --long --group --classify=always --icons=always'
 
 alias docker_ip='docker inspect -f "{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}"'
+
+# Include custom aliases
+if [[ -f ~/.aliases.local ]]; then
+  # shellcheck source=/dev/null
+  source ~/.aliases.local
+fi

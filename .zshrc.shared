@@ -62,9 +62,6 @@ if [[ -d $HOME/.shellrc/rc.d ]]; then
   unset _rc_files
 fi
 
-# aliases
-source_file ~/.aliases.sh
-
 unfunction zcompare source_file source_files
 
 # autoload custom executable functions

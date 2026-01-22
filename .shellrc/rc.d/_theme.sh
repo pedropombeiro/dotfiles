@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # List themes supported by highlight, used by Ranger (http://www.andre-simon.de/doku/highlight/en/theme-samples.php):
 #   highlight --list-scripts themes

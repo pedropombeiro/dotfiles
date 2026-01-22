@@ -9,11 +9,11 @@ for keymap in viins vicmd emacs; do
   bindkey -M $keymap '^[[4~' end-of-line        # linux/screen
   bindkey -M $keymap '^[OH'  beginning-of-line  # application mode
   bindkey -M $keymap '^[OF'  end-of-line        # application mode
-  # Ctrl+Left/Right
-  bindkey -M $keymap '^[[1;5C' forward-word       # xterm
-  bindkey -M $keymap '^[[1;5D' backward-word      # xterm
-  # Ctrl+Backspace
-  bindkey -M $keymap '^H'      backward-kill-word
+  # Alt+Left/Right
+  bindkey -M $keymap '^[[1;3C' forward-word       # xterm
+  bindkey -M $keymap '^[[1;3D' backward-word      # xterm
+  # Alt+Backspace
+  bindkey -M $keymap '^[^?' backward-kill-word
 done
 
 # Keypad

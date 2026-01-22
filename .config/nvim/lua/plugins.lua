@@ -248,7 +248,7 @@ return {
     ft = "ruby",
     cmd = { "Bundle", "Bopen", "Bsplit", "Btabedit" },
   },
-  { "tpope/vim-projectionist", event = { "BufReadPost", "BufNewFile" } }, -- Commands created after opening a file in project
+  { "tpope/vim-projectionist" },
   { "tpope/vim-rails", ft = "ruby" }, -- rails.vim: Ruby on Rails power tools
   { "bfontaine/Brewfile.vim", ft = "ruby" }, -- Brewfile syntax for Vim
   { "wsdjeg/vim-fetch", lazy = false }, -- Must load at startup to parse file:line arguments

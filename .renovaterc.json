@@ -51,6 +51,13 @@
       "minimumReleaseAge": "7 days"
     },
     {
+      "description": "Pin Node.js version for QTS (limited runtime support)",
+      "matchManagers": ["mise"],
+      "matchPackageNames": ["nodejs"],
+      "matchFileNames": [".config/mise/config.toml##distro.qts,extension.toml"],
+      "enabled": false
+    },
+    {
       "description": "Disable automerge for cargo packages in QTS mise config",
       "matchManagers": ["cargo"],
       "matchFileNames": [".config/mise/config.toml##distro.qts,extension.toml"],

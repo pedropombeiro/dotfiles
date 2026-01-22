@@ -9,7 +9,14 @@ return {
     {
       "gra",
       function() require("actions-preview").code_actions() end,
+      mode = { "n", "v" },
       desc = "Open code action menu",
+    },
+    {
+      "<leader>ca",
+      function() require("actions-preview").code_actions() end,
+      mode = { "n", "v" },
+      desc = "Code actions",
     },
   },
   config = function()

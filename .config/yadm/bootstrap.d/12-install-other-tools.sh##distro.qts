@@ -16,6 +16,7 @@ gping_version=1.19.0 # orf/gping
 lnav_version=0.13.2 # tstack/lnav
 nvim_version=0.11.5 # neovim/neovim # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
 procs_version=0.14.10 # dalance/procs
+rustnet_version=0.18.0 # domcyrus/rustnet
 yazi_version=26.1.22 # sxyazi/yazi
 
 function download() {
@@ -117,6 +118,7 @@ download_and_extract "https://github.com/tstack/lnav/releases/download/v${lnav_v
 
 download_and_extract_package "https://github.com/neovim/neovim-releases/releases/download/v${nvim_version}/nvim-linux-x86_64.tar.gz" nvim $nvim_version
 download_and_extract "https://github.com/dalance/procs/releases/download/v${procs_version}/procs-v${procs_version}-x86_64-linux.zip" procs $procs_version
+download_and_extract "https://github.com/domcyrus/rustnet/releases/download/v${rustnet_version}/rustnet-v${rustnet_version}-x86_64-unknown-linux-musl.tar.gz" rustnet-v${rustnet_version}-x86_64-unknown-linux-musl/rustnet $rustnet_version
 for yazi_file in yazi ya; do
   download_and_extract "https://github.com/sxyazi/yazi/releases/download/v${yazi_version}/yazi-x86_64-unknown-linux-musl.zip" yazi-x86_64-unknown-linux-musl/${yazi_file} $yazi_version
 done

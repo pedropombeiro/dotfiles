@@ -25,9 +25,9 @@ lazygit = "latest"
 nodejs = "23.7.0"
 pre-commit = "latest"
 ripgrep = "latest"
-rust = { version = "stable", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
+rust = { version = "1.93.0", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
 shellcheck = "latest"
 stylua = "latest"
 viddy = "latest"
 xh = "latest"
-zoxide = "latest"
+zoxide = "0.9.8"

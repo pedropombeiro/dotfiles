@@ -58,15 +58,17 @@
       "enabled": false
     },
     {
-      "description": "Group all bootstrap tool updates together",
+      "description": "Pin nvim version for QTS (glibc compatibility)",
       "matchManagers": ["custom.regex"],
-      "matchFileNames": [
-        ".config/yadm/bootstrap.d/12-install-other-tools.sh##distro.qts"
-      ],
-      "groupName": "QTS bootstrap tools",
-      "commitMessagePrefix": "chore(qts):",
-      "commitMessageTopic": "bootstrap tools",
-      "commitMessageExtra": ""
+      "matchPackageNames": ["neovim/neovim-releases"],
+      "matchFileNames": [".config/mise/config.toml##distro.qts,extension.toml"],
+      "enabled": false
+    },
+    {
+      "description": "Group mise github backend tools",
+      "matchManagers": ["custom.regex"],
+      "matchFileNames": [".config/mise/config.toml**"],
+      "groupName": "mise github tools"
     }
   ],
   "mise": {
@@ -79,12 +81,15 @@
   },
   "customManagers": [
     {
+      "description": "mise github backend packages",
       "customType": "regex",
       "managerFilePatterns": [
-        "/^\\.config/yadm/bootstrap\\.d/12-install-other-tools\\.sh##distro\\.qts$/"
+        "/(^|/)\\.config/mise/config\\.toml##.*\\.toml$/",
+        "/(^|/)\\.config/mise/config\\.toml$/",
+        "/(^|/)\\.config/mise/config\\.local\\.toml$/"
       ],
       "matchStrings": [
-        "\\w+_version=(?<currentValue>[^\\s#]+)\\s*#\\s*(?<depName>\\S+/\\S+)"
+        "\"github:(?<depName>[^\"\\[]+)(\\[[^\\]]*\\])?\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""
       ],
       "datasourceTemplate": "github-releases"
     }

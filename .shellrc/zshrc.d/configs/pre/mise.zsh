@@ -16,5 +16,6 @@ zinit ice wait'0a' lucid atload'
   fi
   # Load gh completion after mise makes it available
   command -v gh >/dev/null && eval "$(gh completion -s zsh)"
+
 '
 zinit light zdharma-continuum/null

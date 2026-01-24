@@ -1,0 +1,20 @@
+[settings]
+idiomatic_version_file_enable_tools = []
+
+[settings.pipx]
+uvx = true
+
+[tools]
+cargo-binstall = "latest"
+just = "latest"
+pre-commit = "latest"
+
+"gem:neovim" = "0.10.0"
+"gem:ruby-lsp" = "0.26.5"
+
+"go:github.com/zmwangx/ets" = "0.2.2"
+
+"npm:neovim" = "5.4.0"
+"npm:renovate" = "42.92.3"
+
+"pipx:neovim-remote" = "2.5.1"

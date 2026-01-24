@@ -1,13 +1,10 @@
 [tools]
 bat = "latest"
-cargo-binstall = "latest"
 ctop = "latest"
 delta = "latest"
 duf = "latest"
 dust = "latest"
 fd = "latest"
-golang = "1.25.6"
-golangci-lint = "latest"
 jq = "latest"
 lazygit = "latest"
 nodejs = "latest"

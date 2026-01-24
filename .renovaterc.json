@@ -67,7 +67,10 @@
     {
       "description": "Group mise github backend tools",
       "matchManagers": ["custom.regex"],
-      "matchFileNames": [".config/mise/config.toml**"],
+      "matchFileNames": [
+        ".config/mise/config.toml**",
+        ".config/mise/conf.d/**"
+      ],
       "groupName": "mise github tools"
     }
   ],
@@ -75,8 +78,9 @@
     "managerFilePatterns": [
       "/(^|/)\\.?mise\\.toml$/",
       "/(^|/)\\.?mise/config\\.toml$/",
-      "/(^|/)\\.config/mise/config\\.toml##.*\\.toml$/",
-      "/(^|/)\\.config/mise/config\\.toml$/"
+      "/(^|/)\\.config/mise/config\\.toml##[^/]+$/",
+      "/(^|/)\\.config/mise/config\\.toml$/",
+      "/(^|/)\\.config/mise/conf\\.d/[^/]+\\.toml##[^/]+$/"
     ]
   },
   "customManagers": [
@@ -84,9 +88,10 @@
       "description": "mise github backend packages",
       "customType": "regex",
       "managerFilePatterns": [
-        "/(^|/)\\.config/mise/config\\.toml##.*\\.toml$/",
+        "/(^|/)\\.config/mise/config\\.toml##[^/]+$/",
         "/(^|/)\\.config/mise/config\\.toml$/",
-        "/(^|/)\\.config/mise/config\\.local\\.toml$/"
+        "/(^|/)\\.config/mise/config\\.local\\.toml$/",
+        "/(^|/)\\.config/mise/conf\\.d/[^/]+\\.toml##[^/]+$/"
       ],
       "matchStrings": [
         "\"github:(?<depName>[^\"\\[]+)(\\[[^\\]]*\\])?\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""

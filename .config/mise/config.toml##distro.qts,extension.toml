@@ -60,9 +60,13 @@ zoxide = "0.9.8"
 eza = "latest"
 "cargo:grc-rs" = "latest"
 
-# Python tools (migrated from .default-python-packages)
+# Python tools (migrated from .default-python-packages and bootstrap script)
 "pipx:homeassistant-cli" = "0.9.6"
 "pipx:neovim-remote" = "2.5.1"
 "pipx:black" = "26.1.0"
 "pipx:isort" = "7.0.0"
 "pipx:jedi-language-server" = "0.46.0"
+"pipx:mypy" = "latest"
+"pipx:tldr" = "latest"
+"pipx:visidata" = "latest"
+"pipx:yamllint" = "latest"

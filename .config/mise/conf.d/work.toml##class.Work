@@ -1,0 +1,9 @@
+[tools]
+glab = "latest"
+just = "latest"
+pre-commit = "latest"
+ruby = "3.4.8"
+rust = "stable"
+teleport-community = "17"
+
+"npm:@gitlab/duo-cli" = "latest"

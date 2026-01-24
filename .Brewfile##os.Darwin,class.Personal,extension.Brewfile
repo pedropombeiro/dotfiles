@@ -1,4 +1,5 @@
 tap "adembc/tap"
+tap "anomalyco/tap"
 tap "borgbackup/tap"
 tap "homebrew/bundle"
 tap "homebrew/services"
@@ -14,11 +15,6 @@ brew "xz"
 brew "arduino-cli"
 # Record and share terminal sessions
 brew "asciinema"
-# Command-line interface for SQLite
-brew "sqlite"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.12"
-
 # Bourne-Again SHell, a UNIX command interpreter
 brew "bash"
 # Clone of cat(1) with syntax highlighting and Git integration
@@ -41,6 +37,8 @@ brew "croc"
 brew "ctop"
 # Get a file from an HTTP, HTTPS or FTP server
 brew "curl"
+# Command-line interface for SQLite
+brew "sqlite"
 # Pack, ship and run any application as a lightweight container
 brew "docker"
 # Docker CLI plugin for extended build capabilities with BuildKit
@@ -79,6 +77,8 @@ brew "git-extras"
 brew "gnu-sed"
 # Ping, but with a graph
 brew "gping"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.12"
 # Colorize logfiles and command output
 brew "grc"
 # Convert source code to formatted text with syntax highlighting
@@ -89,7 +89,7 @@ brew "homeassistant-cli"
 brew "htop"
 # Command-line benchmarking tool
 brew "hyperfine"
-# Tools and libraries to manipulate images in many formats
+# Tools and libraries to manipulate images in select formats
 brew "imagemagick"
 # Update of iperf: measures TCP, UDP, and SCTP bandwidth
 brew "iperf3"
@@ -197,6 +197,8 @@ brew "yazi"
 brew "yq"
 # Feature-rich command-line audio/video downloader
 brew "yt-dlp"
+# The AI coding agent built for the terminal.
+brew "anomalyco/tap/opencode"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
 # Drop in replacement for ueberzug written in C++

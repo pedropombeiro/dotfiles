@@ -285,6 +285,8 @@ brew "ykpers"
 brew "yq"
 # Feature-rich command-line audio/video downloader
 brew "yt-dlp"
+# Shell extension to navigate your filesystem faster
+brew "zoxide"
 # The AI coding agent built for the terminal.
 brew "anomalyco/tap/opencode"
 # A Model Context Protocol (MCP) server for GitLab, enabling Claude to interact directly with your GitLab instance.

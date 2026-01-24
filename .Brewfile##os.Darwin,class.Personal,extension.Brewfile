@@ -59,8 +59,6 @@ brew "entr"
 brew "exiftool"
 # Modern, maintained replacement for ls
 brew "eza"
-# Simple, fast and user-friendly alternative to find
-brew "fd"
 # Scriptable ping program for checking if multiple hosts are up
 brew "fping"
 # Command-line fuzzy finder written in Go
@@ -155,8 +153,6 @@ brew "pygments"
 brew "python-setuptools"
 # QR Code generation
 brew "qrencode"
-# Automated dependency updates. Flexible so you don't need to be
-brew "renovate"
 # Search tool like grep and The Silver Searcher
 brew "ripgrep"
 # 7-Zip is a file archiver with a high compression ratio
@@ -169,6 +165,8 @@ brew "tealdeer"
 brew "tesseract-lang"
 # Code-search similar to ack
 brew "the_silver_searcher"
+# Extremely fast Python package installer and resolver, written in Rust
+brew "uv"
 # Syntax-aware linter for prose
 brew "vale"
 # Modern watch command
@@ -197,6 +195,8 @@ brew "yazi"
 brew "yq"
 # Feature-rich command-line audio/video downloader
 brew "yt-dlp"
+# Shell extension to navigate your filesystem faster
+brew "zoxide"
 # The AI coding agent built for the terminal.
 brew "anomalyco/tap/opencode"
 # git repo to local editor instantly

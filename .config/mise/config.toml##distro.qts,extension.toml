@@ -56,6 +56,10 @@ zoxide = "0.9.8"
 # nvim: pinned to 0.11.5 as newer versions require GLIBC 2.31+ (QTS has older glibc)
 "github:neovim/neovim-releases[exe=nvim]" = "0.11.5"
 
+# Cargo tools (migrated from bootstrap script)
+eza = "latest"
+"cargo:grc-rs" = "latest"
+
 # Python tools (migrated from .default-python-packages)
 "pipx:homeassistant-cli" = "0.9.6"
 "pipx:neovim-remote" = "2.5.1"

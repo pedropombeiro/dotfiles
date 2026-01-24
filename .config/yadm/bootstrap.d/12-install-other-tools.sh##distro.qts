@@ -9,15 +9,11 @@ printf "${YELLOW}%s${NC}\n" "Installing helper tools..."
 target_dir="${HOME}/opt/bin"
 temp_dir="$(mktemp -d)"
 
-bandwhich_version=0.23.1 # imsnif/bandwhich
+# Tools that can't be installed via mise due to specific build requirements:
+# - btop: needs i686 (32-bit) musl build
+# - nvim: needs specific old version from neovim-releases repo for glibc compatibility
 btop_version=1.4.6 # aristocratos/btop
-croc_version=10.3.1 # schollz/croc
-gping_version=1.19.0 # orf/gping
-lnav_version=0.13.2 # tstack/lnav
 nvim_version=0.11.5 # neovim/neovim # Required as mise latest version requires GLIBC 2.31, which is too recent for QTS
-procs_version=0.14.10 # dalance/procs
-rustnet_version=0.18.0 # domcyrus/rustnet
-yazi_version=26.1.22 # sxyazi/yazi
 
 function download() {
   filename="$(basename "$1")"
@@ -109,18 +105,7 @@ function extract_tarball() {
 }
 
 
-download_and_extract "https://github.com/imsnif/bandwhich/releases/download/v${bandwhich_version}/bandwhich-v${bandwhich_version}-x86_64-unknown-linux-musl.tar.gz" bandwhich $bandwhich_version
 download_and_extract "https://github.com/aristocratos/btop/releases/download/v${btop_version}/btop-i686-unknown-linux-musl.tbz" ./btop/bin/btop $btop_version
-download_and_extract "https://github.com/schollz/croc/releases/download/v${croc_version}/croc_v${croc_version}_Linux-64bit.tar.gz" croc $croc_version
-download_and_extract "https://github.com/orf/gping/releases/download/gping-v${gping_version}/gping-Linux-musl-x86_64.tar.gz" gping $gping_version
-
-download_and_extract "https://github.com/tstack/lnav/releases/download/v${lnav_version}/lnav-${lnav_version}-linux-musl-x86_64.zip" "lnav-${lnav_version}/lnav" $lnav_version
-
 download_and_extract_package "https://github.com/neovim/neovim-releases/releases/download/v${nvim_version}/nvim-linux-x86_64.tar.gz" nvim $nvim_version
-download_and_extract "https://github.com/dalance/procs/releases/download/v${procs_version}/procs-v${procs_version}-x86_64-linux.zip" procs $procs_version
-download_and_extract "https://github.com/domcyrus/rustnet/releases/download/v${rustnet_version}/rustnet-v${rustnet_version}-x86_64-unknown-linux-musl.tar.gz" rustnet-v${rustnet_version}-x86_64-unknown-linux-musl/rustnet $rustnet_version
-for yazi_file in yazi ya; do
-  download_and_extract "https://github.com/sxyazi/yazi/releases/download/v${yazi_version}/yazi-x86_64-unknown-linux-musl.zip" yazi-x86_64-unknown-linux-musl/${yazi_file} $yazi_version
-done
 
 rm -rf "${temp_dir}"

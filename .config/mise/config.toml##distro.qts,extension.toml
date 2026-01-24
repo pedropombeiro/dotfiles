@@ -44,6 +44,15 @@ zoxide = "0.9.8"
 "github:ipinfo/cli[exe=ipinfo]" = "latest"
 "go:github.com/zmwangx/ets" = "latest"
 
+# Tools migrated from bootstrap script (musl builds for QTS)
+"github:imsnif/bandwhich" = "latest"
+"github:schollz/croc" = "latest"
+"github:orf/gping" = "latest"
+"github:tstack/lnav" = "latest"
+"github:dalance/procs" = "latest"
+"github:domcyrus/rustnet" = "latest"
+"github:sxyazi/yazi" = "latest"
+
 # Python tools (migrated from .default-python-packages)
 "pipx:homeassistant-cli" = "0.9.6"
 "pipx:neovim-remote" = "2.5.1"

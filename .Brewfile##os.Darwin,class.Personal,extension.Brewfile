@@ -322,6 +322,8 @@ cask "slack"
 cask "spotify"
 # Windows manager
 cask "stay"
+# Dictation tool including LLM reformatting
+cask "superwhisper"
 # Real time file synchronisation software
 cask "syncthing-app"
 # Quicklook extension for source files

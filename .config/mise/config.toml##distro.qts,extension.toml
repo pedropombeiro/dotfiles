@@ -2,7 +2,12 @@
 node.mirror_url = "https://unofficial-builds.nodejs.org/download/release/"
 node.flavor = "glibc-217"
 
+[settings.pipx]
+uvx = true
+
 [tools]
+# uv is required for pipx backend
+uv = "latest"
 bat = "latest"
 bottom = "latest"
 cargo-binstall = "latest"
@@ -31,3 +36,17 @@ stylua = "latest"
 viddy = "latest"
 xh = "latest"
 zoxide = "0.9.8"
+
+"npm:doctoc" = "2.2.1"
+"npm:neovim" = "5.4.0"
+"npm:@ocular-d/vale-bin" = "2.29.6"
+
+"github:ipinfo/cli[exe=ipinfo]" = "latest"
+"go:github.com/zmwangx/ets" = "latest"
+
+# Python tools (migrated from .default-python-packages)
+"pipx:homeassistant-cli" = "0.9.6"
+"pipx:neovim-remote" = "2.5.1"
+"pipx:black" = "26.1.0"
+"pipx:isort" = "7.0.0"
+"pipx:jedi-language-server" = "0.46.0"

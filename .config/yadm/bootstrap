@@ -6,6 +6,7 @@
 
 set -eu
 
+# shellcheck source=./scripts/colors.sh
 source "${HOME}/.config/yadm/scripts/colors.sh"
 
 # Directory to look for bootstrap executables in

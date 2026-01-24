@@ -46,12 +46,15 @@ zoxide = "0.9.8"
 
 # Tools migrated from bootstrap script (musl builds for QTS)
 "github:imsnif/bandwhich" = "latest"
+"github:aristocratos/btop" = "latest"
 "github:schollz/croc" = "latest"
 "github:orf/gping" = "latest"
 "github:tstack/lnav" = "latest"
 "github:dalance/procs" = "latest"
 "github:domcyrus/rustnet" = "latest"
 "github:sxyazi/yazi" = "latest"
+# nvim: pinned to 0.11.5 as newer versions require GLIBC 2.31+ (QTS has older glibc)
+"github:neovim/neovim-releases[exe=nvim]" = "0.11.5"
 
 # Python tools (migrated from .default-python-packages)
 "pipx:homeassistant-cli" = "0.9.6"

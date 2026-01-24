@@ -34,7 +34,6 @@ if [[ ! -x "${HOME}/.local/share/mise/bin/mise" ]]; then
   export MISE_INSTALL_ARCH=x64-musl # mise glibc's version is too recent for QTS, use musl version instead
   curl https://mise.jdx.dev/install.sh | sh
   ln -sf "/share/homes/${USER}/.local" /root/
-  mise use --global --yes cargo-binstall
 fi
 
 # Install musl version of delta to avoid dependency on newer GLIBC version

@@ -1,8 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "plugin": ["@gitlab/opencode-gitlab-plugin"],
-  "model": "duo-chat-opus-4-5",
-  "small_model": "duo-chat-haiku-4-5",
+  "model": "gitlab/duo-chat-opus-4-5",
+  "small_model": "gitlab/duo-chat-haiku-4-5",
   "keybinds": {
     "scrollbar_toggle": "ctrl+alt+t",
     "messages_page_up": "pageup,ctrl+alt+b,home",

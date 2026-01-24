@@ -66,24 +66,24 @@ return {
     specs = {
       {
         "folke/snacks.nvim",
-        opts = {
-          picker = {
-            win = {
-              input = {
-                keys = {
-                  ["<c-t>"] = {
-                    -- Lazy-load trouble only when this key is pressed
-                    function(picker)
-                      require("trouble.sources.snacks").actions.trouble_open.action(picker)
-                    end,
-                    mode = { "n", "i" },
-                    desc = "Open in Trouble",
+        opts = function(_, opts)
+          return vim.tbl_deep_extend("force", opts or {}, {
+            picker = {
+              actions = require("trouble.sources.snacks").actions,
+              win = {
+                input = {
+                  keys = {
+                    ["<c-t>"] = {
+                      "trouble_open",
+                      mode = { "n", "i" },
+                      desc = "Open in Trouble",
+                    },
                   },
                 },
               },
             },
-          },
-        },
+          })
+        end,
       },
       {
         "folke/which-key.nvim",

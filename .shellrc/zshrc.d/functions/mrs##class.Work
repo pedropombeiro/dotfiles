@@ -1,5 +1,0 @@
-
-SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
-GITLAB_USERNAME="${USER}"
-
-(cd "$SCRIPT_DIR" && mise x ruby -- ruby -r ./gitlab-helpers.rb -e 'retrieve_mrs' -- "${1:-${GITLAB_USERNAME}}")

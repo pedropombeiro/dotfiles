@@ -13,7 +13,7 @@ cargo-binstall = "latest"
 "go:github.com/zmwangx/ets" = "0.2.2"
 
 "npm:neovim" = "5.4.0"
-"npm:renovate" = "42.92.3"
+"npm:renovate" = "42.92.4"
 
 "pipx:neovim-remote" = "2.5.1"
 

@@ -591,7 +591,7 @@ customCommands:
         echo -n > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT
     loadingText: "Creating conventional commit..."
   - key: "<c-g>"
-    description: Generate commit message with Claude
+    description: Generate commit message with opencode
     prompts:
       - type: "menu"
         key: "Type"
@@ -634,13 +634,13 @@ customCommands:
             description: "Adding missing tests or correcting existing tests"
             value: "test"
     command: |
-      system_prompt="You are a git commit message generator. Output ONLY the raw commit message text. Never include introductions like 'Here is the commit message:' or 'Based on the changes:'. Never use markdown fences or formatting. Just output the commit message directly."
-      prompt="Write a commit message for the staged changes: a subject line (max 72 chars), blank line, then a body explaining what and why (wrap at 72 chars).{{ if .Form.Type }} Use conventional commit format with type: {{ .Form.Type }}, and try to include the subject of the change in parenthesis.{{ end }}"
-      msg=$(claude --model haiku --output-format json --system-prompt "$system_prompt" -p "$prompt" \
-        --tools "Bash,Read" | jq -r '.result')
+      model="${OPENCODE_COMMIT_MODEL:-anthropic/claude-3-5-haiku-latest}"
+      diff=$(git diff --cached)
+      prompt="Based on this diff, write a commit message with a subject line (max 72 chars), blank line, then a body explaining what and why (wrap at 72 chars).{{ if .Form.Type }} Use conventional commit format with type: {{ .Form.Type }}, and try to include the subject of the change in parenthesis.{{ end }} CRITICAL: Your response must contain ONLY the commit message itself. No explanations, no preamble, no thinking, no markdown. Start directly with the subject line. Diff: $diff"
+      msg=$(opencode run -m "$model" "$prompt")
       echo "$msg"
       echo "$msg" > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT
-    loadingText: "Claude is analyzing changes..."
+    loadingText: "opencode is analyzing changes..."
     context: files
     output: log
-    outputTitle: "Generated commit message with Claude"
+    outputTitle: "Generated commit message with opencode"

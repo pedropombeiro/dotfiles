@@ -49,10 +49,10 @@ zoxide = "0.9.8"
 "github:aristocratos/btop" = "latest"
 "github:schollz/croc" = "latest"
 "github:orf/gping" = "latest"
-"github:tstack/lnav" = "latest"
+"github:tstack/lnav" = "0.13.2"
 "github:dalance/procs" = "latest"
 "github:domcyrus/rustnet" = "latest"
-"github:sxyazi/yazi" = "latest"
+"github:sxyazi/yazi" = "26.1.22"
 # nvim: pinned to 0.11.5 as newer versions require GLIBC 2.31+ (QTS has older glibc)
 "github:neovim/neovim-releases[exe=nvim]" = "0.11.5"
 

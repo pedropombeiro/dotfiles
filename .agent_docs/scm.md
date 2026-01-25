@@ -25,7 +25,18 @@ Git commands on the `~` directory are managed through `yadm` instead of `git`.
   - `##class.Work` - Work machines
   - Combined: `##os.Darwin,class.Work`
 - **Agent docs**: `~/.agent_docs/` - Documentation for agents
-- **Bootstrap**: `~/.config/yadm/bootstrap.d/` - Setup scripts
+- **Bootstrap**: `~/.config/yadm/bootstrap.d/` - Setup scripts (000-999 numbering)
+
+### Important: Symlinks
+
+YADM automatically creates symlinks for alternate files (e.g., `foo.sh` -> `foo.sh##os.Darwin`).
+**Never commit these symlinks** - only commit the actual files with `##` suffixes.
+
+When renaming or adding files:
+
+1. Only use `yadm mv` or `yadm add` on files with `##` suffixes (the actual tracked files)
+2. Verify with `yadm status` that only `##` files are staged, not bare symlinks
+3. If symlinks appear in staging, use `yadm reset HEAD <symlink>` to unstage them
 
 ### Workflow
 

@@ -62,3 +62,4 @@ Create files in `~/.shellrc/zshrc.d/functions/`:
 - Prefer zinit ice modifiers for plugin configuration
 - Document environment variables in comments
 - Source `~/.zshrc` to test changes
+- New files in `~/.shellrc/zshrc.d/configs/` must be marked executable (`chmod +x`)

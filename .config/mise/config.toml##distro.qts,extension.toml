@@ -1,55 +1,20 @@
 [settings]
+# QTS has old glibc, requires unofficial nodejs builds
 node.mirror_url = "https://unofficial-builds.nodejs.org/download/release/"
 node.flavor = "glibc-217"
 
-[settings.pipx]
-uvx = true
-
 [tools]
-# uv is required for pipx backend
-uv = "latest"
-bat = "latest"
-bottom = "latest"
-btop = "latest"
-cargo-binstall = "latest"
-ctop = "latest"
-delta = "latest"
-dive = "latest"
-duf = "latest"
-dust = "latest"
-fd = "latest"
-fzf = "latest"
-github-cli = "latest"
-gitleaks = "latest"
-golang = "1.25.6"
-hyperfine = "latest"
-jless = "0.7.2"
-jq = "latest"
-just = "latest"
-lazydocker = "0.24.4"
-lazygit = "0.56.0"
+# Packages pinned due to QTS glibc constraints (older than 2.31)
 nodejs = "23.7.0"
-pre-commit = "latest"
-ripgrep = "latest"
 rust = { version = "1.93.0", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
-shellcheck = "latest"
-stylua = "latest"
-viddy = "latest"
-xh = "latest"
-zoxide = "0.9.8"
-
-"npm:doctoc" = "2.2.1"
-"npm:neovim" = "5.4.0"
-"npm:@ocular-d/vale-bin" = "2.29.6"
 
 "github:ipinfo/cli[exe=ipinfo]" = "latest"
-"go:github.com/zmwangx/ets" = "latest"
 
-# Tools migrated from bootstrap script (musl builds for QTS)
+# GitHub releases (musl builds for QTS)
 "github:imsnif/bandwhich" = "latest"
 "github:schollz/croc" = "latest"
 "github:orf/gping" = "latest"
-"github:tstack/lnav" = "0.13.2"
+"github:tstack/lnav" = "latest"
 "github:pedropombeiro/opencode" = "v1.1.35-legacy-glibc"
 "github:dalance/procs" = "latest"
 "github:domcyrus/rustnet" = "0.18.0"
@@ -57,21 +22,9 @@ zoxide = "0.9.8"
 # nvim: pinned to 0.11.5 as newer versions require GLIBC 2.31+ (QTS has older glibc)
 "github:neovim/neovim-releases[exe=nvim]" = "0.11.5"
 
-# Cargo tools (migrated from bootstrap script)
-eza = "latest"
-"cargo:grc-rs" = "latest"
-
-# Python tools (migrated from .default-python-packages and bootstrap script)
-"pipx:asciinema" = "latest"
-"pipx:black" = "26.1.0"
-"pipx:garth" = "0.6.3"
-"pipx:homeassistant-cli" = "0.9.6"
-"pipx:isort" = "7.0.0"
-"pipx:jedi-language-server" = "0.46.0"
-"pipx:mypy" = "1.19.1"
-"pipx:neovim-remote" = "2.5.1"
-"pipx:tldr" = "latest"
-"pipx:virtualenv" = "latest"
-"pipx:visidata" = "3.3"
-"pipx:yamllint" = "1.38.0"
-"pipx:yt-dlp" = "latest"
+# QTS-specific pipx tools
+"pipx:black" = "latest"
+"pipx:garth" = "latest"
+"pipx:isort" = "latest"
+"pipx:jedi-language-server" = "latest"
+"pipx:yamllint" = "latest"

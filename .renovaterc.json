@@ -96,7 +96,8 @@
       "matchStrings": [
         "\"github:(?<depName>[^\"\\[]+)(\\[[^\\]]*\\])?\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""
       ],
-      "datasourceTemplate": "github-releases"
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "loose"
     }
   ]
 }

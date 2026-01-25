@@ -91,3 +91,12 @@ When editing a file:
 2. If YADM-tracked, sets `vim.b.yadm_tracked = true`
 3. Lualine checks this variable to show the YADM indicator
 4. Snacks picker operations check `is_yadm_repo(cwd)` to determine which git args to use
+
+## Guidelines
+
+- Follow existing code style and patterns in `lua/plugins/`
+- Keep plugin configs modular (one file per plugin or feature)
+- Prefer `opts = {}` over `config = function()` when possible
+- Use lazy loading where appropriate
+- Document keybindings in which-key
+- Validate Lua syntax before committing

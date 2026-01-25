@@ -7,6 +7,10 @@ This file contains core instructions applicable to most tasks. For specialized t
 - [SCM](~/.agent_docs/scm.md) - YADM, git, and commit/push behavior
 - [Justfile](~/.agent_docs/justfile.md) - Task automation for dotfiles
 - [Neovim](~/.agent_docs/neovim.md) - Configuration structure and plugin management
+- [Shell](~/.agent_docs/shell.md) - Zsh configuration, zinit plugins, functions
+- [Mise](~/.agent_docs/mise.md) - Runtime versions and CLI tools
+- [Pre-commit](~/.agent_docs/pre-commit.md) - Hooks and code quality checks
+- [Bootstrap](~/.agent_docs/bootstrap.md) - YADM bootstrap scripts for system setup
 - [Renovate Bot](~/.agent_docs/renovate.md) - Dependency update configuration and troubleshooting
 - [Tmux](~/.agent_docs/tmux.md) - Configuration structure, plugins, and shell integration
 

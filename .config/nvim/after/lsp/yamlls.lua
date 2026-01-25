@@ -1,6 +1,6 @@
 return {
   cmd = { "yaml-language-server", "--stdio" },
-  filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab" },
+  filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab", "yaml.homeassistant" },
   root_markers = { ".git" },
   -- Have to add this for yamlls to understand that we support line folding
   capabilities = {

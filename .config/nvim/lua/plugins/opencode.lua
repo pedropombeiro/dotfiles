@@ -31,7 +31,15 @@ return {
   },
   config = function()
     ---@type opencode.Opts
-    vim.g.opencode_opts = {}
+    vim.g.opencode_opts = {
+      provider = {
+        snacks = {
+          win = {
+            enter = true, -- Enter after opening the terminal
+          },
+        },
+      },
+    }
     vim.o.autoread = true
 
     vim.api.nvim_create_autocmd("TermOpen", {

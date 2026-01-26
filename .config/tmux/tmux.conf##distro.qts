@@ -23,7 +23,8 @@ bind-key -n Home send Escape "OH"
 bind-key -n End send Escape "OF"
 
 # Enable italics in tmux (as per https://weibeld.net/terminals-and-shells/italics.html)
-set -g default-terminal "xterm-256color"
+set -g default-terminal "tmux-256color"
+set-environment -g TERM "tmux-256color"  # Force TERM in tmux environment
 set -as terminal-overrides ',xterm*:sitm=\E[3m'
 set -as terminal-features ",*:RGB"
 

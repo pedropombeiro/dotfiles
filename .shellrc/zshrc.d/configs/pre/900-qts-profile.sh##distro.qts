@@ -8,4 +8,8 @@ if [[ ${SHLVL} -le 1 ]]; then
   cd "${CONFIG_HOME}"
 fi
 
+# Save TERM before sourcing Entware profile (which sets TERM=xterm)
+_saved_term="$TERM"
 source /opt/etc/profile
+[[ -n "$_saved_term" ]] && export TERM="$_saved_term"
+unset _saved_term

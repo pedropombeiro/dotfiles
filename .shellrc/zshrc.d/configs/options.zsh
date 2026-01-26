@@ -1,6 +1,9 @@
 #!/usr/bin/env zsh
 
-export TERM="xterm-256color"
+# Set TERM only if not already set by terminal emulator or tmux
+if [[ -z "$TERM" || "$TERM" == "dumb" ]]; then
+  export TERM="xterm-256color"
+fi
 
 # Make Ctrl-W stop at path separators, dashes, etc. (but not underscores)
 WORDCHARS='_'

@@ -6,6 +6,7 @@ uvx = true
 
 [tools]
 cargo-binstall = "latest"
+fd = "latest"
 just = "latest"
 pre-commit = "latest"
 

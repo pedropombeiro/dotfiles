@@ -56,6 +56,9 @@ require("lazy").setup({
   change_detection = {
     notify = false,
   },
+  rocks = {
+    enabled = vim.g.distro ~= "qts", -- Disable luarocks on QTS (QNAP) due to missing hererocks
+  },
   performance = {
     cache = {
       enabled = true,

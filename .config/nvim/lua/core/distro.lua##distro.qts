@@ -1,0 +1,2 @@
+-- QTS (QNAP) specific settings
+vim.g.distro = "qts"

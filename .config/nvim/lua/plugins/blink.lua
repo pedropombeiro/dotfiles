@@ -2,12 +2,7 @@
 --  Performant, batteries-included completion plugin for Neovim.
 
 local function is_qnap()
-  if vim.fn.has("unix") == 1 then -- Check if it's a Unix-like system (Linux, macOS, etc.)
-    local uname_output = vim.fn.system("uname -a")
-    return uname_output and string.find(string.lower(uname_output), "qnap") ~= nil
-  end
-
-  return false
+  return vim.g.distro == "qts"
 end
 
 local function fuzzy_implementation()

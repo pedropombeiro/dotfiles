@@ -19,7 +19,6 @@ rust = { version = "1.93.0", profile = "minimal", targets = "x86_64-unknown-linu
 "github:dalance/procs" = "latest"
 "github:domcyrus/rustnet" = "0.18.0"
 "github:sxyazi/yazi" = "26.1.22"
-# nvim: pinned to 0.11.5 as newer versions require GLIBC 2.31+ (QTS has older glibc)
 "github:neovim/neovim-releases[exe=nvim]" = "0.11.5"
 
 "go:github.com/zmwangx/ets" = "0.2.2"

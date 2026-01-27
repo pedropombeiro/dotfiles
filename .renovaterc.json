@@ -58,13 +58,6 @@
       "enabled": false
     },
     {
-      "description": "Pin nvim version for QTS (glibc compatibility)",
-      "matchManagers": ["custom.regex"],
-      "matchPackageNames": ["neovim/neovim-releases"],
-      "matchFileNames": [".config/mise/config.toml##distro.qts,extension.toml"],
-      "enabled": false
-    },
-    {
       "description": "Group mise github backend tools",
       "matchManagers": ["custom.regex"],
       "matchFileNames": [

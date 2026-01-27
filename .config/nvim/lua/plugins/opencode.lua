@@ -11,6 +11,24 @@ return {
   keys = {
     { "<leader>ac", function() require("opencode").toggle() end, desc = "Toggle opencode terminal" },
     {
+      "<leader>ar",
+      function()
+        -- Resume the last opencode session
+        local opencode = require("opencode")
+        local config = require("opencode.config")
+        local provider = config.provider
+        if provider and provider.cmd then
+          local original_cmd = provider.cmd
+          provider.cmd = original_cmd .. " --continue"
+          opencode.toggle()
+          provider.cmd = original_cmd
+        else
+          vim.notify("No opencode provider configured", vim.log.levels.ERROR)
+        end
+      end,
+      desc = "Resume last opencode session",
+    },
+    {
       "<leader>aa",
       function() require("opencode").ask("@this: ", { submit = false }) end,
       mode = { "n", "x" },

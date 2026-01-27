@@ -17,7 +17,7 @@ fi
 
 if uhubctl >/dev/null 2>&1; then
   # Restart Stream Deck on hub, since half of the times it only shows wallpaper after resuming
-  if ! uhubctl --action cycle --location 2-1.1.1 --port 2 --wait 4000 | grep 'Elgato Stream Deck'; then
+  if ! uhubctl --action cycle --location 1.1.2 --port 2 --wait 4000 | grep 'Elgato Stream Deck'; then
     terminal-notifier -title 'uhubctl' -message 'Failed to cycle power to Elgato Stream Deck' -sound boop -ignoreDnD
 
     sleep 5

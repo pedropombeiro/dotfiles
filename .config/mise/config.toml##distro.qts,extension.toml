@@ -22,6 +22,8 @@ rust = { version = "1.93.0", profile = "minimal", targets = "x86_64-unknown-linu
 # nvim: pinned to 0.11.5 as newer versions require GLIBC 2.31+ (QTS has older glibc)
 "github:neovim/neovim-releases[exe=nvim]" = "0.11.5"
 
+"go:github.com/zmwangx/ets" = "0.2.2"
+
 # QTS-specific pipx tools
 "pipx:black" = "latest"
 "pipx:garth" = "latest"

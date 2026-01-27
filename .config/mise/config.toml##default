@@ -8,6 +8,7 @@ uvx = true
 cargo-binstall = "latest"
 fd = "latest"
 just = "latest"
+node = "latest"
 pre-commit = "latest"
 
 "gem:neovim" = "0.10.0"

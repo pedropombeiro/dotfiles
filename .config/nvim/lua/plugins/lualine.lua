@@ -72,9 +72,10 @@ return {
         options = {
           icons_enabled = true,
           ignore_focus = {
-            "Outline",
             "lazygit",
             "neotest-summary",
+            "opencode_terminal",
+            "Outline",
             "snacks_picker_input",
             "snacks_picker_list",
           },

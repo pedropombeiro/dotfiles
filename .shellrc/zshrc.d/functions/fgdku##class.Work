@@ -51,7 +51,7 @@ MAIN_BRANCH="$(git_main_branch)"
 
   rm -f .git/gc.log
 
-  git fetch --jobs=10 || { printf "${RED}%s${NC}\n" 'git fetch failed, retrying...'; sleep 5; git fetch --jobs=10; }
+  git fetch --all --jobs=10 || { printf "${RED}%s${NC}\n" 'git fetch failed, retrying...'; sleep 5; git fetch --jobs=10; }
 
   if [[ ! -S $GDK_ROOT/redis/redis.socket ]]; then
     # Work around issue with Redis socket disappearing by restarting the GDK

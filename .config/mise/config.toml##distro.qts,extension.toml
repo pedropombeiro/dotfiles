@@ -15,7 +15,7 @@ rust = { version = "1.93.0", profile = "minimal", targets = "x86_64-unknown-linu
 "github:schollz/croc" = "latest"
 "github:orf/gping" = "latest"
 "github:tstack/lnav" = "latest"
-"github:pedropombeiro/opencode" = "v1.1.36-legacy-glibc"
+"github:pedropombeiro/opencode-legacy-glibc" = "latest"
 "github:dalance/procs" = "latest"
 "github:domcyrus/rustnet" = "0.18.0"
 "github:sxyazi/yazi" = "26.1.22"

@@ -5,6 +5,9 @@
   "keybinds": {
     "scrollbar_toggle": "ctrl+alt+t"
   },
+  "plugin": [
+    "opencode-anthropic-auth@latest"
+  ],
   "tui": {
     "scroll_speed": 3,
     "scroll_acceleration": {

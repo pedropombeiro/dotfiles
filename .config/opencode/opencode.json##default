@@ -6,15 +6,17 @@
   "default_agent": "plan",
   "model": "claude-opus-4-5",
   "small_model": "claude-haiku-4-5",
-  "keybinds": {
-    "scrollbar_toggle": "ctrl+alt+t"
-  },
   "provider": {
     "anthropic": {
       "options": {
         "setCacheKey": true
       }
     }
+  },
+  "snapshot": false,
+
+  "keybinds": {
+    "scrollbar_toggle": "ctrl+alt+t"
   },
   "tui": {
     "scroll_speed": 3,

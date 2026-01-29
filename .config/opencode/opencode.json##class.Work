@@ -5,6 +5,8 @@
   "enabled_providers": ["gitlab"],
   "model": "gitlab/duo-chat-opus-4-5",
   "small_model": "gitlab/duo-chat-haiku-4-5",
+  "snapshot": false,
+
   "keybinds": {
     "scrollbar_toggle": "ctrl+alt+t",
     "messages_page_up": "pageup,ctrl+alt+b,home",

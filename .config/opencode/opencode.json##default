@@ -1,13 +1,21 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    "opencode-anthropic-auth@latest"
+  ],
+  "default_agent": "plan",
   "model": "claude-opus-4-5",
   "small_model": "claude-haiku-4-5",
   "keybinds": {
     "scrollbar_toggle": "ctrl+alt+t"
   },
-  "plugin": [
-    "opencode-anthropic-auth@latest"
-  ],
+  "provider": {
+    "anthropic": {
+      "options": {
+        "setCacheKey": true
+      }
+    }
+  },
   "tui": {
     "scroll_speed": 3,
     "scroll_acceleration": {

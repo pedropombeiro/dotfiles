@@ -3,6 +3,10 @@
 node.mirror_url = "https://unofficial-builds.nodejs.org/download/release/"
 node.flavor = "glibc-217"
 
+[plugins]
+# Install musl version of delta to avoid dependency on newer GLIBC version
+delta = "https://github.com/pedropombeiro/asdf-delta#patch-1"
+
 [tools]
 # Packages pinned due to QTS glibc constraints (older than 2.31)
 nodejs = "23.7.0"

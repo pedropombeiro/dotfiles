@@ -36,6 +36,3 @@ if [[ ! -x "${HOME}/.local/share/mise/bin/mise" ]]; then
   curl https://mise.jdx.dev/install.sh | sh
   ln -sf "/share/homes/${USER}/.local" /root/
 fi
-
-# Install musl version of delta to avoid dependency on newer GLIBC version
-mise plugin add delta https://github.com/pedropombeiro/asdf-delta\#patch-1

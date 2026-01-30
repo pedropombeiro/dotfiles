@@ -1,0 +1,8 @@
+
+#
+# `pbcopy` copies stdin to system clipboard via OSC 52 escape sequence
+#
+
+local data
+data=$(cat | base64 | tr -d '\n')
+printf '\033]52;c;%s\007' "$data"

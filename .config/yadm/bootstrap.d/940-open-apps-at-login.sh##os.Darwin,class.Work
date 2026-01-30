@@ -8,7 +8,7 @@ apps=(
   /Applications/Parcel.app
   /Applications/Raycast.app
   /Applications/Shottr.app
-  /Applications/Stay.app
+  /Applications/Rectangle\ Pro.app
 )
 
 for app in ${apps[@]}; do

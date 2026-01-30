@@ -236,7 +236,7 @@ _System Tools & Utilities:_
 - [iStat Menus](https://bjango.com/mac/istatmenus/) - System monitoring
 - [Lunar](https://lunar.fyi/) - Adaptive brightness for external displays
 - [AppCleaner](https://freemacsoft.net/appcleaner/) - Application uninstaller
-- [Stay](https://cordlessdog.com/stay/) - Window manager
+- [Rectangle Pro](https://rectangleapp.com/pro) - Window snapping tool
 - [Contexts](https://contexts.co/) - Window switcher
 - [Input Source Pro](https://inputsource.pro/) - Multi-language input tool
 

@@ -320,8 +320,8 @@ cask "shottr"
 cask "slack"
 # Music streaming service
 cask "spotify"
-# Windows manager
-cask "stay"
+# Window snapping tool
+cask "rectangle-pro"
 # Dictation tool including LLM reformatting
 cask "superwhisper"
 # Real time file synchronisation software

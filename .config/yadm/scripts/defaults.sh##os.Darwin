@@ -282,10 +282,6 @@ defaults write cc.ffitch.shottr "KeyboardShortcuts_scrolling" '"{\"carbonModifie
 defaults write cc.ffitch.shottr "KeyboardShortcuts_window" '"{\"carbonModifiers\":768,\"carbonKeyCode\":22}"'
 defaults write cc.ffitch.shottr primaryOCRLang -string "en-US"
 
-# Add Stay defaults
-defaults write com.cordlessdog.Stay RegistrationEmail -string "fastspring@pedro.pombei.ro"
-defaults write com.cordlessdog.Stay RegistrationName -string "Pedro Pombeiro"
-
 # Disable Apple Music so that the Play button isn't hijacked by it
 launchctl unload /System/Library/LaunchAgents/com.apple.rcd.plist 2>/dev/null || echo
 

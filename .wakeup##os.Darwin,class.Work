@@ -2,9 +2,6 @@
 
 #osascript -e 'tell application id "com.runningwithcrayons.Alfred" to run trigger "resume" in workflow "com.pedropombeiro.resumetimeout"'
 
-echo -n "Restoring all windows... "
-osascript -e 'tell application "Stay.app" to restore all windows'
-
 open -a BusylightHTTP # Reopen Busylight_HTTP_Mac at wake
 
 brew services restart nginx

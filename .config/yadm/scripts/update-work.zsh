@@ -93,16 +93,19 @@ git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/pedropom
 # Populate opencode configuration
 if [[ -n ${GDK_ROOT} ]]; then
   mkdir -p "${GDK_ROOT}/gitlab/.opencode"
-  cat << 'EOF' > "${GDK_ROOT}/gitlab/.opencode/opencode.json"
+  rm -f "${GDK_ROOT}/gitlab/.opencode/opencode.json" && echo "Removed opencode.json file"
+  cat << EOF > "${GDK_ROOT}/gitlab/.opencode/opencode.jsonc"
+// NOTE: Do not edit directly - Auto generated from ${0:A}
 {
-  "$schema": "https://opencode.ai/config.json",
+  "\$schema": "https://opencode.ai/config.json",
   "instructions": [".gitlab/duo/chat-rules.md"]
 }
 EOF
 
-cat << 'EOF' > "${GDK_ROOT}/gitlab/.mise.local.toml"
+cat << EOF > "${GDK_ROOT}/gitlab/.mise.local.toml"
+## NOTE: Do not edit directly - Auto generated from ${0:A}
 [env]
-OPENCODE_CONFIG="{{env.GDK_ROOT}}/gitlab/.opencode/opencode.json"
+OPENCODE_CONFIG="{{env.GDK_ROOT}}/gitlab/.opencode/opencode.jsonc"
 EOF
 fi
 

@@ -7,8 +7,8 @@ source "${YADM_SCRIPTS}/colors.sh"
 # Create mise shims for RubyMine debugger
 mise reshim
 
-# Populate gdk.yml
 if [[ -n ${GDK_ROOT} ]]; then
+  # Populate gdk.yml
   # From https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/howto/registry.md#set-up-pushing-and-pulling-of-images-over-http
   cat << EOF > ${GDK_ROOT}/gdk.tmp.yml
 ---
@@ -69,29 +69,55 @@ vite:
 webpack:
   enabled: false
 EOF
-fi
 
-if ! delta "${GDK_ROOT}/gdk.yml" "${GDK_ROOT}/gdk.tmp.yml"; then
-  printf "${YELLOW}%s${NC}\n" "Overwriting gdk.yml. Please rerun 'gdk reconfigure'..."
-  cp -f "${GDK_ROOT}/gdk.yml" "${GDK_ROOT}/gdk.prev.yml"
-  cp -f "${GDK_ROOT}/gdk.tmp.yml" "${GDK_ROOT}/gdk.yml"
-fi
-rm -f "${GDK_ROOT}/gdk.tmp.yml"
+  if ! delta "${GDK_ROOT}/gdk.yml" "${GDK_ROOT}/gdk.tmp.yml"; then
+    printf "${YELLOW}%s${NC}\n" "Overwriting gdk.yml. Please rerun 'gdk reconfigure'..."
+    cp -f "${GDK_ROOT}/gdk.yml" "${GDK_ROOT}/gdk.prev.yml"
+    cp -f "${GDK_ROOT}/gdk.tmp.yml" "${GDK_ROOT}/gdk.yml"
+  fi
+  rm -f "${GDK_ROOT}/gdk.tmp.yml"
 
-# Populate lefthook-local.yml
-if [[ -n ${GDK_ROOT} ]]; then
+  # Populate lefthook-local.yml
   cat << EOF > ${GDK_ROOT}/lefthook-local.yml
 EOF
 
   (cd ${GDK_ROOT} && mise x -- lefthook install)
-fi
 
-git -C ${GDK_ROOT}/gitlab config --unset-all remote.origin.fetch
-git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/master:refs/remotes/origin/master'
-git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/pedropombeiro/*:refs/remotes/origin/pedropombeiro/*'
+  # Clean up stale files from old configuration
+  rm -f "${GDK_ROOT}/gitlab/opencode.jsonc"
+  local gitlab_exclude_file="${GDK_ROOT}/gitlab/.git/info/exclude"
+  if [[ -f ${gitlab_exclude_file} ]]; then
+    sed -i '' '/^opencode\.jsonc$/d' "${gitlab_exclude_file}"
+  fi
 
-# Populate opencode configuration
-if [[ -n ${GDK_ROOT} ]]; then
+  # Populate .mise.toml (GDK root level) - tokens go in .mise.local.toml
+  cat << EOF > "${GDK_ROOT}/.mise.toml"
+## NOTE: Do not edit directly - Auto generated from ${0:A}
+[env]
+BUNDLER_CHECKSUM_VERIFICATION_OPT_IN = "1"
+COREPACK_ENABLE_AUTO_PIN = "0"
+ENABLE_FDOC = "1"
+ENABLE_SPRING = "1"
+GITLAB_USE_MODEL_LOAD_BALANCING = "1"
+GITLAB_VIM_URL = "https://gitlab.com"
+OP_BIOMETRIC_UNLOCK_ENABLED = "true"
+PUMA_WORKER_TIMEOUT = "9999999"
+QA_GITLAB_URL = "http://gdk.test:3000"
+QA_LOG_LEVEL = "DEBUG"
+RAILS_HOSTS = "127.0.0.1,localhost,host.docker.internal,gdk.test,gdk.localhost"
+TELEPORT_USE_LOCAL_SSH_AGENT = "false"
+WRANGLER_LOG_PATH = "{{env.HOME}}/gitlab-development-kit/log/wrangler"
+_.path = ["{{env.HOME}}/Developer/gitlab.com/gitlab-org/gitlab-runner/out/binaries"]
+EOF
+
+  # Populate .mise.toml (gitlab repo level) - tokens go in .mise.local.toml
+  cat << EOF > "${GDK_ROOT}/gitlab/.mise.toml"
+## NOTE: Do not edit directly - Auto generated from ${0:A}
+[env]
+OPENCODE_CONFIG="{{env.GDK_ROOT}}/gitlab/.opencode/opencode.jsonc"
+EOF
+
+  # Populate opencode configuration
   mkdir -p "${GDK_ROOT}/gitlab/.opencode"
   rm -f "${GDK_ROOT}/gitlab/.opencode/opencode.json" && echo "Removed opencode.json file"
   cat << EOF > "${GDK_ROOT}/gitlab/.opencode/opencode.jsonc"
@@ -102,11 +128,17 @@ if [[ -n ${GDK_ROOT} ]]; then
 }
 EOF
 
-cat << EOF > "${GDK_ROOT}/gitlab/.mise.local.toml"
-## NOTE: Do not edit directly - Auto generated from ${0:A}
-[env]
-OPENCODE_CONFIG="{{env.GDK_ROOT}}/gitlab/.opencode/opencode.jsonc"
-EOF
+  mise trust "${GDK_ROOT}"
+
+  # Add .mise.local.toml to local git exclude if not already present
+  local exclude_file="${GDK_ROOT}/.git/info/exclude"
+  if [[ -f ${exclude_file} ]] && ! grep -q '^\.mise\.local\.toml$' "${exclude_file}"; then
+    echo '.mise.local.toml' >> "${exclude_file}"
+  fi
+
+  git -C ${GDK_ROOT}/gitlab config --unset-all remote.origin.fetch
+  git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/master:refs/remotes/origin/master'
+  git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/pedropombeiro/*:refs/remotes/origin/pedropombeiro/*'
 fi
 
 ${YADM_SCRIPTS}/run-checks.zsh

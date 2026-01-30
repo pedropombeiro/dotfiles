@@ -1,7 +1,10 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "default_agent": "plan",
-  "plugin": ["@gitlab/opencode-gitlab-plugin"],
+  "plugin": [
+    "@gitlab/opencode-gitlab-plugin",
+    "@tarquinen/opencode-dcp@latest"
+  ],
   "enabled_providers": ["gitlab"],
   "model": "gitlab/duo-chat-opus-4-5",
   "small_model": "gitlab/duo-chat-haiku-4-5",

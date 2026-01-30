@@ -7,6 +7,33 @@
   "small_model": "gitlab/duo-chat-haiku-4-5",
   "share": "disabled",
   "snapshot": false,
+  "permission": {
+    "*": "ask",
+    "bash": {
+      "*": "ask",
+      "bundle exec *": "allow",
+      "find *": "allow",
+      "git add *": "allow",
+      "git blame *": "allow",
+      "git branch *": "allow",
+      "git diff *": "allow",
+      "git log *": "allow",
+      "git ls-files *": "allow",
+      "git show *": "allow",
+      "git status *": "allow",
+      "go build *": "allow",
+      "go test *": "allow",
+      "go vet *": "allow",
+      "golangci-lint run *": "allow",
+      "grep *": "allow",
+      "ls *": "allow",
+      "which *": "allow"
+    },
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "todowrite": "allow"
+  },
 
   "keybinds": {
     "scrollbar_toggle": "ctrl+alt+t",

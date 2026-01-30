@@ -5,6 +5,7 @@
   "enabled_providers": ["gitlab"],
   "model": "gitlab/duo-chat-opus-4-5",
   "small_model": "gitlab/duo-chat-haiku-4-5",
+  "share": "disabled",
   "snapshot": false,
 
   "keybinds": {

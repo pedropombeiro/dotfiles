@@ -13,6 +13,7 @@
       }
     }
   },
+  "share": "disabled",
   "snapshot": false,
 
   "keybinds": {

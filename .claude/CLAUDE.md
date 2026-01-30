@@ -14,7 +14,15 @@ This file contains core instructions applicable to most tasks. For specialized t
 - [Renovate Bot](~/.agent_docs/renovate.md) - Dependency update configuration and troubleshooting
 - [Tmux](~/.agent_docs/tmux.md) - Configuration structure, plugins, and shell integration
 
-## Searching Dotfiles
+## Dotfiles (YADM)
+
+**Always use `yadm` instead of `git`** when working with files in:
+
+- `~/.config/`
+- `~/.shellrc/`
+- `~/.agent_docs/`
+- `~/.claude/`
+- Any dotfiles in `~` (the home directory is not a git repo)
 
 When searching for configuration files or code in the home directory, use YADM commands for much faster results:
 

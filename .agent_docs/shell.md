@@ -62,4 +62,8 @@ Create files in `~/.shellrc/zshrc.d/functions/`:
 - Prefer zinit ice modifiers for plugin configuration
 - Document environment variables in comments
 - Source `~/.zshrc` to test changes
-- New files in `~/.shellrc/zshrc.d/configs/` must be marked executable (`chmod +x`)
+
+## File Permissions
+
+- **Config files** (`configs/`, `configs/pre/`, `configs/post/`): Must be executable (`chmod +x`)
+- **Function files** (`functions/`): Should NOT be executable (autoloaded by zsh)

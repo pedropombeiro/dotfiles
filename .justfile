@@ -1,8 +1,9 @@
 default: pull update
 
+[script('bash')]
 @pull:
-    yadm fetch && \
-        yadm reset --hard origin/master
+    yadm fetch
+    yadm reset --hard origin/master
 
 @install:
     yadm bootstrap
@@ -22,18 +23,18 @@ default: pull update
 @wifi-traffic:
     ssh ap-u6pro.infra.pombei.ro "tcpdump -np"
 
+[script('bash')]
 @fix *FILES='':
-    #!/usr/bin/env bash
-    if [ -n "{{FILES}}" ]; then \
-        yadm enter pre-commit run --files {{FILES}} --hook-stage manual; \
-    else \
-        yadm enter pre-commit run --all-files --hook-stage manual; \
+    if [ -n "{{FILES}}" ]; then
+        yadm enter pre-commit run --files {{FILES}} --hook-stage manual
+    else
+        yadm enter pre-commit run --all-files --hook-stage manual
     fi
 
+[script('bash')]
 @lint *FILES='':
-    #!/usr/bin/env bash
-    if [ -n "{{FILES}}" ]; then \
-        yadm enter pre-commit run --files {{FILES}}; \
-    else \
-        yadm enter pre-commit run --all-files; \
+    if [ -n "{{FILES}}" ]; then
+        yadm enter pre-commit run --files {{FILES}}
+    else
+        yadm enter pre-commit run --all-files
     fi

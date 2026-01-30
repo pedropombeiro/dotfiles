@@ -103,7 +103,6 @@ EOF
 cat << 'EOF' > "${GDK_ROOT}/gitlab/.mise.local.toml"
 [env]
 OPENCODE_CONFIG="{{env.GDK_ROOT}}/gitlab/.opencode/opencode.json"
-_.path = { value = ["{{env.GDK_ROOT}}/gitlab/bin"], after = true }
 EOF
 fi
 

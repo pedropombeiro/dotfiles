@@ -11,6 +11,7 @@ uvx = true
 
 [tools]
 cargo-binstall = "latest"
+dua = "latest"
 fd = "latest"
 just = "latest"
 node = "latest"

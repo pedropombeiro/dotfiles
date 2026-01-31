@@ -8,7 +8,7 @@ run = "quit --no-cwd-file"
 
 [[mgr.prepend_keymap]]
 on = ["<Space>", "d", "u"]
-run = "shell --block -- ncdu --color dark-bg %h"
+run = "shell --block -- dua i %h"
 
 [[mgr.prepend_keymap]]
 on   = ["<Space>", "<Space>"]

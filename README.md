@@ -318,7 +318,7 @@ Key tools included in this setup:
     [highlight](http://www.andre-simon.de/doku/highlight/en/highlight.php), [vimpager](https://github.com/rkitover/vimpager)
   - **File Management:** [yazi](https://github.com/sxyazi/yazi)
   - **System Monitoring:** [btop](https://github.com/aristocratos/btop), [htop](https://htop.dev/), [viddy](https://github.com/sachaos/viddy)
-  - **Disk Usage:** [ncdu](https://dev.yorhel.nl/ncdu), [dust](https://github.com/bootandy/dust), [duf](https://github.com/muesli/duf)
+  - **Disk Usage:** [dua](https://github.com/Byron/dua-cli), [dust](https://github.com/bootandy/dust), [duf](https://github.com/muesli/duf)
   - **Network Tools:** [gping](https://github.com/orf/gping), [dog](https://dns.lookup.dog/), [nmap](https://nmap.org/),
     [wireshark](https://www.wireshark.org/), [fping](https://fping.org/)
   - **Data Processing:** [jq](https://stedolan.github.io/jq/), [yq](https://github.com/mikefarah/yq),

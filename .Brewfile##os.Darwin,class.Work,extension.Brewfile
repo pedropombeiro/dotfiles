@@ -183,8 +183,6 @@ brew "mise"
 brew "mkcert"
 # Collection of tools that nobody wrote when UNIX was young
 brew "moreutils"
-# NCurses Disk Usage
-brew "ncdu"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # Control nvim processes using `nvr` command-line tool

@@ -14,6 +14,8 @@ node.flavor = "glibc-217"
 delta = "https://github.com/pedropombeiro/asdf-delta#patch-1"
 
 [tools]
+dua = "latest"
+
 "github:ipinfo/cli[exe=ipinfo]" = "latest"
 
 # GitHub releases (musl builds for QTS)

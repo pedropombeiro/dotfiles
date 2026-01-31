@@ -1,12 +1,13 @@
-# Handoff Command
+---
+description: Create handoff document for context transfer
+model: anthropic/claude-sonnet-4-5
+---
 
 Create a HANDOFF.md file in the current working directory to transfer context to a new agent session.
 
-## Instructions
-
 Generate a comprehensive handoff document that allows a fresh agent to continue this task with zero additional context.
 
-### Structure the HANDOFF.md file as follows
+Structure the HANDOFF.md file as follows:
 
 ```markdown
 # Task Handoff
@@ -44,16 +45,14 @@ Generate a comprehensive handoff document that allows a fresh agent to continue 
 [Any other critical information: gotchas, dependencies, environment requirements, relevant documentation]
 ```
 
-### Guidelines
+Guidelines:
 
 1. **Be specific**: Include file paths, function names, error messages
 2. **Be actionable**: Remaining tasks should be concrete steps, not vague goals
 3. **Prevent repetition**: Clearly document what failed so the next agent doesn't retry it
 4. **Minimize ramp-up**: The next agent should be able to start working immediately after reading only HANDOFF.md
 
-### After creating the file
-
-Tell the user:
+After creating the file, tell the user:
 
 - The handoff file has been created at `./HANDOFF.md`
-- The next agent can be started with: `claude "Read HANDOFF.md and continue the task"`
+- The next agent can be started with: `opencode "Read HANDOFF.md and continue the task"`

@@ -46,6 +46,43 @@ When renaming or adding files:
 4. Validate with `yadm enter pre-commit run --all-files` before committing
 5. Commit with clear, descriptive messages
 
+## Conventional Commits
+
+Use **scoped conventional commits** to organize changes logically.
+This improves clarity and makes history easier to navigate.
+
+### Format
+
+```
+<type>(<scope>): <subject>
+
+<body>
+```
+
+### Rules
+
+- **Type**: One of `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `style`, `perf`
+- **Scope**: The area affected (e.g., `llm`, `mise`, `nvim`, `shell`, `pre-commit`)
+- **Subject**: Concise description of the change
+- **Grouped commits**: Separate logical changes into distinct commits rather than combining unrelated changes
+
+### Examples
+
+- `docs(claude): add path resolution edge case documentation`
+- `chore(mise): add API key and token redactions`
+- `feat(shell): add new zinit plugin configuration`
+- `fix(nvim): resolve treesitter syntax highlighting issue`
+
+### Grouping Strategy
+
+When making multiple changes:
+
+1. Group related files by scope and type
+2. Create separate commits for different concerns (docs vs config vs features)
+3. Use descriptive bodies for complex changes
+4. Keep each commit focused and reviewable
+
 ## Commit/Push Behavior
 
-When committing/pushing code, first attempt without output (e.g., `git push > /dev/null 2>&1`) to minimize token usage. Only display output if the operation fails and diagnostics are needed.
+When committing/pushing code, first attempt without output (e.g., `git push > /dev/null 2>&1`) to minimize token usage.
+Only display output if the operation fails and diagnostics are needed.

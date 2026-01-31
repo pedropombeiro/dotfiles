@@ -16,6 +16,7 @@
   },
   "share": "disabled",
   "snapshot": false,
+  "instructions": ["~/.claude/CLAUDE.md"],
   "permission": {
     "*": "ask",
     "bash": {

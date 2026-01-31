@@ -24,6 +24,8 @@ This file contains core instructions applicable to most tasks. For specialized t
 - `~/.claude/`
 - Any dotfiles in `~` (the home directory is not a git repo)
 
+NOTE: By `~/` we take it to mean the home directory (`$HOME`).
+
 When searching for configuration files or code in the home directory, use YADM commands for much faster results:
 
 - `yadm ls-files` - List all tracked dotfiles

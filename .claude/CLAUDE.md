@@ -32,3 +32,11 @@ When searching for configuration files or code in the home directory, use YADM c
 - `yadm grep <pattern>` - Search content within tracked dotfiles
 
 These commands only search files tracked by YADM, avoiding the slow traversal of the entire home directory.
+
+## Path Resolution Edge Case
+
+**Important:** When checking if the current working directory is a git repository, be aware that paths
+may look different but resolve to the same location via symlinks.
+Always resolve paths to their canonical form (e.g., using `readlink -f`) before assuming two different-looking paths
+are actually different locations.
+This prevents incorrectly treating the home directory as a regular git repository when it's actually managed by YADM.

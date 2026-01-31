@@ -634,7 +634,7 @@ customCommands:
             description: "Adding missing tests or correcting existing tests"
             value: "test"
     command: |
-      model="${OPENCODE_COMMIT_MODEL:-anthropic/claude-3-5-haiku-latest}"
+      model="${OPENCODE_COMMIT_MODEL:-anthropic/claude-3-5-haiku-20241022}"
       diff=$(git diff --cached)
       prompt="Based on this diff, write a commit message with a subject line (max 72 chars), blank line, then a body explaining what and why (wrap at 72 chars).{{ if .Form.Type }} Use conventional commit format with type: {{ .Form.Type }}, and try to include the subject of the change in parenthesis.{{ end }} CRITICAL: Your response must contain ONLY the commit message itself. No explanations, no preamble, no thinking, no markdown. Start directly with the subject line. Diff: $diff"
       msg=$(opencode run -m "$model" --agent plan "$prompt")

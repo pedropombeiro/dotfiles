@@ -51,7 +51,8 @@ return {
 
 ## YADM Integration
 
-The configuration includes special handling for YADM (dotfile manager) tracked files. Three plugins coordinate to provide seamless YADM support:
+The configuration includes special handling for YADM (dotfile manager) tracked files.
+Three plugins coordinate to provide seamless YADM support:
 
 ### Components
 

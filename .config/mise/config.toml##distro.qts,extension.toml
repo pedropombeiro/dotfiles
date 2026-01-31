@@ -1,3 +1,7 @@
+[env]
+TMP = "{{ env.TMPDIR }}"
+TEMP = "{{ env.TMPDIR }}"
+
 [settings]
 # QTS has old glibc, requires unofficial nodejs builds
 node.mirror_url = "https://unofficial-builds.nodejs.org/download/release/"

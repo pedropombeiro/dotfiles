@@ -18,15 +18,18 @@ extract = [
 visidata = [
 	{ run = 'vd "$@"', block = true, desc = "Open in VisiData" },
 ]
+sqlite = [
+	{ run = 'sqlite3 "$@"', block = true, desc = "Open in sqlite3 CLI" },
+]
 
 [open]
 prepend_rules = [
 	{ url = "*.csv", use = ["edit", "visidata"] },
 	{ url = "*.tsv", use = ["edit", "visidata"] },
-  { url = "*.db", use = "visidata" },
+	{ url = "*.db", use = ["sqlite", "visidata"] },
 	{ url = "*.json", use = ["edit", "visidata"] },
-	{ url = "*.sql", use = "visidata" },
-	{ url = "*.sqlite3", use = "visidata" },
+	{ url = "*.sql", use = ["edit", "sqlite", "visidata"] },
+	{ url = "*.sqlite3", use = ["sqlite", "visidata"] },
 ]
 
 [plugin]

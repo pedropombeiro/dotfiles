@@ -33,3 +33,6 @@ rust = { version = "1.93.0", profile = "minimal", targets = "x86_64-unknown-linu
 "pipx:isort" = "latest"
 "pipx:jedi-language-server" = "latest"
 "pipx:yamllint" = "latest"
+
+# npm tools for pre-commit hooks
+"npm:renovate" = "43.0.6"

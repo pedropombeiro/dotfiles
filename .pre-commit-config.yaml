@@ -23,12 +23,13 @@ repos:
       - id: shellcheck
         exclude: '^\.config/.*|^\.local/.*|^\.shellrc/zshrc\.d/.*|\.zsh(##.*)?$|^\.zlogin$|\.sh##default$'
 
-  - repo: https://github.com/renovatebot/pre-commit-hooks
-    rev: 42.84.0
+  - repo: local
     hooks:
       - id: renovate-config-validator
-        args: [--strict]
-        language_version: system
+        name: Renovate Config Validator
+        entry: mise x npm:renovate -- renovate-config-validator --strict
+        language: system
+        files: (^|/)\.?renovate(rc)?\.json5?$|^renovate\.json5?$
 
   - repo: https://github.com/adrienverge/yamllint
     rev: v1.38.0

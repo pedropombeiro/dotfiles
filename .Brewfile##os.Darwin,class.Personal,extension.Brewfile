@@ -197,8 +197,6 @@ brew "yq"
 brew "yt-dlp"
 # Shell extension to navigate your filesystem faster
 brew "zoxide"
-# The AI coding agent built for the terminal.
-brew "anomalyco/tap/opencode"
 # git repo to local editor instantly
 brew "jarred-sumner/git-peek/git-peek"
 # Drop in replacement for ueberzug written in C++

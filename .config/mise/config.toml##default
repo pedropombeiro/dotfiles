@@ -1,3 +1,6 @@
+[env]
+OPENCODE_CONFIG_CONTENT = '{"plugin":["@tarquinen/opencode-dcp@latest"]}'
+
 [settings]
 idiomatic_version_file_enable_tools = []
 

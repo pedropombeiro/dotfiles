@@ -2,7 +2,9 @@
 
 # Ctrl-O: Launch opencode (replaces current line and executes)
 # Requires unsetting terminal's discard character which normally uses ^O
-[[ -t 0 ]] && stty discard undef
+if [[ -t 0 ]]; then
+  command -T stty 2>/dev/null && stty discard undef
+fi
 
 opencode-widget() {
   zle kill-whole-line

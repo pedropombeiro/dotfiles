@@ -8,10 +8,6 @@ node.flavor = "glibc-217"
 delta = "https://github.com/pedropombeiro/asdf-delta#patch-1"
 
 [tools]
-# Packages pinned due to QTS glibc constraints (older than 2.31)
-nodejs = "23.7.0"
-rust = { version = "1.93.0", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
-
 "github:ipinfo/cli[exe=ipinfo]" = "latest"
 
 # GitHub releases (musl builds for QTS)

@@ -32,7 +32,6 @@ xh = "latest"
 zoxide = "latest"
 
 "npm:doctoc" = "latest"
-"npm:neovim" = "latest"
 "npm:@ocular-d/vale-bin" = "latest"
 
 "go:github.com/zmwangx/ets" = "latest"

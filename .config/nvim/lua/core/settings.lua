@@ -18,8 +18,10 @@ opt.tabpagemax  = 40    -- Max number of tab pages that can be opened from the c
 opt.errorbells  = false
 opt.confirm     = true  -- Display a confirmation dialog when closing a dirty buffer (Mastering Vim Quickly)
 
+vim.g.loaded_node_provider    = 0     -- disable Node.js provider
 vim.g.loaded_perl_provider    = 0     -- disable Perl support
 vim.g.loaded_python3_provider = 0     -- disable python3 provider, we don't need python plugins
+vim.g.loaded_ruby_provider    = 0     -- disable Ruby provider
 
 -- This makes vim act like all other editors, buffers can
 -- exist in the background without being in a window.

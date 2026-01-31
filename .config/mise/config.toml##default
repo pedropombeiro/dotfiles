@@ -1,3 +1,5 @@
+redactions = ["*_API_KEY", "*_TOKEN"]
+
 [env]
 OPENCODE_CONFIG_CONTENT = '{"plugin":["@tarquinen/opencode-dcp@latest"]}'
 

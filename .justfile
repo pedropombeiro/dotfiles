@@ -25,16 +25,16 @@ pull:
 
 [script]
 fix *FILES='':
-    if [ -n "{{FILES}}" ]; then
-        yadm enter pre-commit run --files {{FILES}} --hook-stage manual
+    if [ -n "{{ FILES }}" ]; then
+        yadm enter pre-commit run --files {{ FILES }} --hook-stage manual
     else
         yadm enter pre-commit run --all-files --hook-stage manual
     fi
 
 [script]
 lint *FILES='':
-    if [ -n "{{FILES}}" ]; then
-        yadm enter pre-commit run --files {{FILES}}
+    if [ -n "{{ FILES }}" ]; then
+        yadm enter pre-commit run --files {{ FILES }}
     else
         yadm enter pre-commit run --all-files
     fi

@@ -95,6 +95,17 @@ repos:
         entry: zsh -n
         language: system
         files: '\.zsh(##.*)?$|^\.zlogin$|^\.shellrc/zshrc\.d/functions/[^/]+$'
+      - id: just-fmt
+        name: just fmt (check)
+        entry: just --fmt --check --unstable --justfile
+        language: system
+        files: '(^\.?[Jj]ustfile$|\.just$)'
+      - id: just-fmt-fix
+        name: just fmt (fix)
+        entry: just --fmt --unstable --justfile
+        language: system
+        files: '(^\.?[Jj]ustfile$|\.just$)'
+        stages: [manual]
 
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
     rev: 3.6.0

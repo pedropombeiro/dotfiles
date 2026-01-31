@@ -32,6 +32,7 @@ yadm enter pre-commit run --all-files --hook-stage manual
 | markdownlint-cli2         | Markdown linting                                    |
 | editorconfig-checker      | EditorConfig validation                             |
 | zsh-syntax-check          | Zsh syntax validation                               |
+| just-fmt                  | Justfile formatting                                 |
 | renovate-config-validator | Renovate config validation                          |
 
 ## Justfile Integration

@@ -44,6 +44,12 @@
       "schedule": ["on the first day of the month"]
     },
     {
+      "description": "Limit Renovate updates to monthly",
+      "matchManagers": ["mise"],
+      "matchPackageNames": ["npm:renovate"],
+      "schedule": ["on the first day of the month"]
+    },
+    {
       "description": "Delay Node.js updates by 7 days for stability",
       "matchManagers": ["mise"],
       "matchPackageNames": ["nodejs"],

@@ -1,1 +1,0 @@
-/Users/pedropombeiro/.opencode/instructions.md

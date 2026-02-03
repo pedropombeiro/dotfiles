@@ -7,6 +7,7 @@
       ".shellrc/": "allow"
     },
     "bash": {
+      "pwd": "allow",
       "yadm add *": "allow",
       "yadm alt": "allow",
       "yadm blame *": "allow",

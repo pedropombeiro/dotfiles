@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "instructions": ["~/.claude/CLAUDE.md", "~/CLAUDE.md"],
+  "instructions": ["~/.opencode/instructions.md"],
   "permission": {
     "task": "allow",
     "edit": {

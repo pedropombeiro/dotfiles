@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "instructions": ["~/.config/opencode/instructions.md"],
   "plugin": ["opencode-anthropic-auth@latest"],
   "default_agent": "plan",
   "model": "claude-opus-4-5",

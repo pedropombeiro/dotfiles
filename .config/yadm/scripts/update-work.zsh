@@ -131,7 +131,9 @@ EOF
       "url": "http://localhost:27495/mcp/sse",
       "enabled": true
     }
-  }
+  },
+  // Disable formatter to preserve project's existing code style
+  "formatter": false
 }
 EOF
 

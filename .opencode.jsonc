@@ -7,7 +7,42 @@
       ".shellrc/": "allow"
     },
     "bash": {
-      "pwd": "allow",
+      // Basic navigation and info
+      "pwd *": "allow",
+      "ls *": "allow",
+      "stat *": "allow",
+      "file *": "allow",
+      "which *": "allow",
+      "type *": "allow",
+      "whereis *": "allow",
+      // File reading (read-only)
+      "cat *": "allow",
+      "head *": "allow",
+      "tail *": "allow",
+      "less *": "allow",
+      "more *": "allow",
+      "bat *": "allow",
+      // Searching
+      "find *": "allow",
+      "fd *": "allow",
+      "grep *": "allow",
+      "rg *": "allow",
+      "ag *": "allow",
+      "fzf *": "allow",
+      // Text processing (read-only)
+      "wc *": "allow",
+      "sort *": "allow",
+      "uniq *": "allow",
+      "diff *": "allow",
+      "comm *": "allow",
+      // System info
+      "uname *": "allow",
+      "hostname *": "allow",
+      "date *": "allow",
+      "env *": "allow",
+      "printenv *": "allow",
+      "echo *": "allow",
+      // YADM commands
       "yadm add *": "allow",
       "yadm alt": "allow",
       "yadm blame *": "allow",

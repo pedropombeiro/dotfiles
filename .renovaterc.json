@@ -63,13 +63,20 @@
       "enabled": false
     },
     {
-      "description": "Group mise github backend tools",
+      "description": "Group mise github/aqua backend tools (except opencode)",
       "matchManagers": ["custom.regex"],
       "matchFileNames": [
         ".config/mise/config.toml**",
         ".config/mise/conf.d/**"
       ],
-      "groupName": "mise github tools"
+      "matchPackageNames": ["!sst/opencode"],
+      "groupName": "mise backend tools"
+    },
+    {
+      "description": "Group opencode updates",
+      "matchManagers": ["custom.regex"],
+      "matchPackageNames": ["sst/opencode"],
+      "groupName": "opencode"
     }
   ],
   "mise": {
@@ -83,7 +90,7 @@
   },
   "customManagers": [
     {
-      "description": "mise github backend packages",
+      "description": "mise github/aqua backend packages",
       "customType": "regex",
       "managerFilePatterns": [
         "/(^|/)\\.config/mise/config\\.toml##[^/]+$/",
@@ -92,7 +99,8 @@
         "/(^|/)\\.config/mise/conf\\.d/[^/]+\\.toml##[^/]+$/"
       ],
       "matchStrings": [
-        "\"github:(?<depName>[^\"\\[]+)(\\[[^\\]]*\\])?\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""
+        "\"github:(?<depName>[^\"\\[]+)(\\[[^\\]]*\\])?\"\\s*=\\s*\"(?<currentValue>[^\"]+)\"",
+        "\"aqua:(?<depName>[^\"\\[]+)(\\[[^\\]]*\\])?\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""
       ],
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "loose"

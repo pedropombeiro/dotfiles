@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["~/.claude/CLAUDE.md"],
+  "permission": {
+    "edit": {
+      ".shellrc/": "allow"
+    },
+    "bash": {
+      "yadm add *": "allow",
+      "yadm alt": "allow",
+      "yadm blame *": "allow",
+      "yadm branch *": "allow",
+      "yadm grep *": "allow",
+      "yadm config --get-all *": "allow",
+      "yadm diff *": "allow",
+      "yadm log *": "allow",
+      "yadm ls-files *": "allow",
+      "yadm show *": "allow",
+      "yadm status *": "allow"
+    }
+  }
+}

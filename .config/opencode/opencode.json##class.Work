@@ -9,7 +9,6 @@
   "small_model": "gitlab/duo-chat-haiku-4-5",
   "share": "disabled",
   "snapshot": false,
-  "instructions": ["~/.claude/CLAUDE.md"],
   "permission": {
     "*": "ask",
     "bash": {
@@ -35,17 +34,7 @@
       "ls*": "allow",
       "tail *": "allow",
       "which *": "allow",
-      "yadm add *": "allow",
-      "yadm alt": "allow",
-      "yadm blame *": "allow",
-      "yadm branch *": "allow",
-      "yadm grep *": "allow",
-      "yadm config --get-all *": "allow",
-      "yadm diff *": "allow",
-      "yadm log *": "allow",
-      "yadm ls-files *": "allow",
-      "yadm show *": "allow",
-      "yadm status *": "allow"
+
     },
     "read": "allow",
     "glob": "allow",

@@ -13,7 +13,6 @@
   },
   "share": "disabled",
   "snapshot": false,
-  "instructions": ["~/.claude/CLAUDE.md"],
   "permission": {
     "*": "ask",
     "bash": {
@@ -39,22 +38,9 @@
       "ls*": "allow",
       "tail *": "allow",
       "which *": "allow",
-      "yadm add *": "allow",
-      "yadm alt": "allow",
-      "yadm blame *": "allow",
-      "yadm branch *": "allow",
-      "yadm grep *": "allow",
-      "yadm config --get-all *": "allow",
-      "yadm diff *": "allow",
-      "yadm log *": "allow",
-      "yadm ls-files *": "allow",
-      "yadm show *": "allow",
-      "yadm status *": "allow"
+
     },
     "read": "allow",
-    "edit": {
-      ".shellrc/": "allow"
-    },
     "glob": "allow",
     "grep": "allow",
     "todowrite": "allow"

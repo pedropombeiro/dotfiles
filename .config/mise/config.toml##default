@@ -13,6 +13,7 @@ uvx = true
 cargo-binstall = "latest"
 dua = "latest"
 fd = "latest"
+grpcurl = "latest"
 just = "latest"
 node = "latest"
 "aqua:sst/opencode" = "1.1.51"

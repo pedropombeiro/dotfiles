@@ -79,8 +79,11 @@
       "description": "Pin Node.js version for QTS (limited runtime support)",
       "matchManagers": ["mise"],
       "matchPackageNames": ["nodejs"],
-      "matchFileNames": [".config/mise/config.toml##distro.qts,extension.toml"],
-      "enabled": false
+      "matchFileNames": [
+        ".config/mise/config.toml##distro.qts,extension.toml",
+        ".config/mise/conf.d/distro-specific.toml##os.Linux,distro.qts"
+      ],
+      "allowedVersions": "23.7.x"
     },
     {
       "description": "Group mise github/aqua backend tools (except opencode and QTS-pinned packages)",

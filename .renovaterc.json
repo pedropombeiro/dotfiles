@@ -64,24 +64,18 @@
     },
     {
       "description": "Group mise github/aqua backend tools (except opencode)",
-      "matchManagers": ["custom.regex"],
+      "matchManagers": ["custom.regex", "mise"],
       "matchFileNames": [
         ".config/mise/config.toml**",
         ".config/mise/conf.d/**"
       ],
-      "matchPackageNames": [
-        "!sst/opencode",
-        "!pedropombeiro/opencode-legacy-glibc"
-      ],
+      "matchPackageNames": ["!/opencode/"],
       "groupName": "mise backend tools"
     },
     {
       "description": "Group opencode updates",
-      "matchManagers": ["custom.regex"],
-      "matchPackageNames": [
-        "sst/opencode",
-        "pedropombeiro/opencode-legacy-glibc"
-      ],
+      "matchManagers": ["custom.regex", "mise"],
+      "matchPackageNames": ["/opencode/"],
       "groupName": "opencode"
     }
   ],

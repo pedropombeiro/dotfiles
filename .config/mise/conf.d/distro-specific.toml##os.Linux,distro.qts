@@ -1,5 +1,5 @@
 [tools]
 # Packages pinned due to QTS glibc constraints (older than 2.31)
-nodejs = "23.7.0"
+nodejs = "23.11.1"
 jless = "0.7.2"
 rust = { version = "1.93.0", profile = "minimal", targets = "x86_64-unknown-linux-musl" }

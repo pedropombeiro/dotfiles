@@ -97,6 +97,16 @@
       "groupName": "mise backend tools"
     },
     {
+      "description": "Group shared npm:renovate updates across default and QTS mise configs",
+      "matchManagers": ["mise"],
+      "matchFileNames": [
+        ".config/mise/config.toml",
+        ".config/mise/config.toml##distro.qts,extension.toml"
+      ],
+      "matchPackageNames": ["npm:renovate"],
+      "groupName": "mise shared npm:renovate"
+    },
+    {
       "description": "Group opencode updates",
       "matchManagers": ["custom.regex", "mise"],
       "matchPackageNames": ["/opencode/"],

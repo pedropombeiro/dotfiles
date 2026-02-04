@@ -60,16 +60,6 @@
       "groupName": "mise shared npm:renovate"
     },
     {
-      "description": "Group shared dua updates across default and QTS mise configs",
-      "matchManagers": ["mise"],
-      "matchFileNames": [
-        ".config/mise/config.toml",
-        ".config/mise/config.toml##distro.qts,extension.toml"
-      ],
-      "matchPackageNames": ["dua"],
-      "groupName": "mise shared dua"
-    },
-    {
       "description": "Delay Node.js updates by 7 days for stability",
       "matchManagers": ["mise"],
       "matchPackageNames": ["nodejs"],
@@ -95,6 +85,16 @@
       ],
       "matchPackageNames": ["!/opencode/"],
       "groupName": "mise backend tools"
+    },
+    {
+      "description": "Group shared dua updates across default and QTS mise configs",
+      "matchManagers": ["mise"],
+      "matchFileNames": [
+        ".config/mise/config.toml",
+        ".config/mise/config.toml##distro.qts,extension.toml"
+      ],
+      "matchPackageNames": ["dua"],
+      "groupName": "mise shared dua"
     },
     {
       "description": "Group shared npm:renovate updates across default and QTS mise configs",

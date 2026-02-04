@@ -62,13 +62,13 @@
     {
       "description": "Delay Node.js updates by 7 days for stability",
       "matchManagers": ["mise"],
-      "matchPackageNames": ["nodejs"],
+      "matchPackageNames": ["node", "nodejs"],
       "minimumReleaseAge": "7 days"
     },
     {
       "description": "Pin Node.js version for QTS (limited runtime support)",
       "matchManagers": ["mise"],
-      "matchPackageNames": ["nodejs"],
+      "matchPackageNames": ["node", "nodejs"],
       "matchFileNames": [
         ".config/mise/config.toml##distro.qts,extension.toml",
         ".config/mise/conf.d/distro-specific.toml##os.Linux,distro.qts"

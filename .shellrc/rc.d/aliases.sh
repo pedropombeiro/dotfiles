@@ -22,6 +22,15 @@ alias la='eza --almost-all --long --group --classify=always --icons=always'
 
 alias docker_ip='docker inspect -f "{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}"'
 
+# opencode with optional per-project model via mise env
+oc() {
+  if [[ -n "$OPENCODE_MODEL" ]]; then
+    opencode --model="$OPENCODE_MODEL" "$@"
+  else
+    opencode "$@"
+  fi
+}
+
 # Include custom aliases
 if [[ -f ~/.aliases.local ]]; then
   # shellcheck source=/dev/null

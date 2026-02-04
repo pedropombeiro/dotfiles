@@ -15,7 +15,7 @@ dua = "latest"
 fd = "latest"
 just = "latest"
 node = "latest"
-"aqua:sst/opencode" = "1.1.50"
+"aqua:sst/opencode" = "1.1.51"
 pre-commit = "latest"
 
 "gem:neovim" = "0.10.0"

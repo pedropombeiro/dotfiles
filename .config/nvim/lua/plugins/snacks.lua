@@ -83,6 +83,7 @@ local keys = {
   { "<leader><Tab>", function() Snacks.picker.keymaps() end, desc = "Keymaps", icon = "" },
   { "<leader>fb", function() Snacks.picker.buffers() end, desc = "Buffers" },
   { "<leader>fc", function() Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')}) end, desc = "Neovim Config" },
+  { "<leader>fi", function() Snacks.picker.icons() end, desc = "Icons" },
   { "<leader>fH", function() Snacks.picker.highlights() end, desc = "Highlight groups" },
   { "<leader>fK", function() Snacks.picker.man() end, desc = "Man pages", icon = "" },
   { "<leader>fl", function() Snacks.picker.loclist() end, desc = "Location list", icon = "" },

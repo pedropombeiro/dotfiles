@@ -50,6 +50,26 @@
       "schedule": ["on the first day of the month"]
     },
     {
+      "description": "Group shared npm:renovate updates across default and QTS mise configs",
+      "matchManagers": ["mise"],
+      "matchFileNames": [
+        ".config/mise/config.toml",
+        ".config/mise/config.toml##distro.qts,extension.toml"
+      ],
+      "matchPackageNames": ["npm:renovate"],
+      "groupName": "mise shared npm:renovate"
+    },
+    {
+      "description": "Group shared dua updates across default and QTS mise configs",
+      "matchManagers": ["mise"],
+      "matchFileNames": [
+        ".config/mise/config.toml",
+        ".config/mise/config.toml##distro.qts,extension.toml"
+      ],
+      "matchPackageNames": ["dua"],
+      "groupName": "mise shared dua"
+    },
+    {
       "description": "Delay Node.js updates by 7 days for stability",
       "matchManagers": ["mise"],
       "matchPackageNames": ["nodejs"],

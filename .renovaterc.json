@@ -69,13 +69,19 @@
         ".config/mise/config.toml**",
         ".config/mise/conf.d/**"
       ],
-      "matchPackageNames": ["!sst/opencode"],
+      "matchPackageNames": [
+        "!sst/opencode",
+        "!pedropombeiro/opencode-legacy-glibc"
+      ],
       "groupName": "mise backend tools"
     },
     {
       "description": "Group opencode updates",
       "matchManagers": ["custom.regex"],
-      "matchPackageNames": ["sst/opencode"],
+      "matchPackageNames": [
+        "sst/opencode",
+        "pedropombeiro/opencode-legacy-glibc"
+      ],
       "groupName": "opencode"
     }
   ],

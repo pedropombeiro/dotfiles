@@ -46,6 +46,7 @@
       "yadm alt": "allow",
       "yadm blame *": "allow",
       "yadm branch *": "allow",
+      "yadm enter *": "allow",
       "yadm grep *": "allow",
       "yadm config --get-all *": "allow",
       "yadm diff *": "allow",

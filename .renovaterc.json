@@ -63,11 +63,12 @@
       "enabled": false
     },
     {
-      "description": "Group mise github/aqua backend tools (except opencode)",
+      "description": "Group mise github/aqua backend tools (except opencode and QTS-pinned packages)",
       "matchManagers": ["custom.regex", "mise"],
       "matchFileNames": [
         ".config/mise/config.toml**",
-        ".config/mise/conf.d/**"
+        ".config/mise/conf.d/**",
+        "!.config/mise/config.toml##distro.qts,extension.toml"
       ],
       "matchPackageNames": ["!/opencode/"],
       "groupName": "mise backend tools"

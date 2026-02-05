@@ -1,25 +1,62 @@
 
 #
 # `fgdku` takes care of updating the GDK taking certain precautions:
-# - removes .git/gc.log
-# - restores bin/rake bin/rspec bin/rails bin/spring
-# - restores db/structure.sql in case it is out of sync
-# - restarts the GDK if the Redis socket disappeared
-# - if the Redis socket is still missing, brings GDK back to pristine state
-# - precompiles static assets to ensure graphiql-rails changes are picked up
-# - prunes and rebases local branches, taking care to preserve branch dependencies
-# - ensures there is no orphaned Sidekiq cluster
-# - resets db sandbox
-# - reapplies migrations from active branch
-# - reapplies spring stubs
-# - runs a simple test in order to bring up Gitaly
-# - activates RubyMine if it is running so it can update its indices in the background
-# - performs a web request in order to warm up web server
+#
+# Pre-update setup:
+# - restores bin/rake, bin/rspec, bin/rails, bin/spring, db/structure.sql, package.json
+# - prompts to reset if there are uncommitted changes in the local repository
+# - resets network adapter if network is unreachable
+# - removes .git/gc.log to prevent git gc issues
+# - restarts GDK if the Redis socket disappeared
+# - installs mise tools and ensures the gdk gem is available
+#
+# Gem conflict resolution:
+# - uninstalls json gem to prevent version conflicts during bundle install
+# - GDK and GitLab may require different gem versions (e.g., openssl 4.x vs 3.x);
+#   the fix_gem_conflicts helper detects and uninstalls conflicting versions:
+#   - if gdk update fails at lefthook step, runs lefthook directly after fixing
+#   - called again after GDK cleanup and before loading Rails environment
+#
+# GDK update:
+# - stops spring processes before update
+# - restarts postgresql to release any locked test database sessions
+# - runs gdk update
+#
+# Post-update tasks:
+# - reinstalls bundle and regenerates spring binstubs
+# - runs a simple rspec test to bring up Gitaly
+# - runs pending ClickHouse migrations
+# - prunes local branches that no longer exist on remote
+# - rebases all local branches, preserving branch dependencies
+# - switches back to the original branch if it still exists
+# - runs gdk cleanup and truncates large log files
+# - kills and restarts GDK, ensuring no orphaned sidekiq-cluster processes
+# - enables db sandbox if not already enabled
+# - regenerates schema if there are branch-specific migrations
+# - loads Rails environment to warm up the app
 #
 
 source ~/.config/yadm/scripts/colors.sh
 
 MAIN_BRANCH="$(git_main_branch)"
+
+# Helper function to fix gem activation conflicts between GDK and GitLab.
+# GDK and GitLab may require different gem versions (e.g., openssl 4.x vs 3.x).
+# This function detects and uninstalls conflicting gem versions.
+fix_gem_conflicts() {
+  local preflight_output
+  preflight_output=$(cd "${GDK_ROOT}/gitlab" && mise x ruby -- ruby -e 'require "rubygems/remote_fetcher"; require "bundler/setup"' 2>&1) || {
+    if echo "$preflight_output" | grep -q 'You have already activated'; then
+      local conflict_gem conflict_version
+      conflict_gem=$(echo "$preflight_output" | grep -oE 'activated [^ ]+ [0-9][^ ,]+' | head -1 | awk '{print $2}')
+      conflict_version=$(echo "$preflight_output" | grep -oE 'activated [^ ]+ [0-9][^ ,]+' | head -1 | awk '{print $3}')
+      if [[ -n "$conflict_gem" && -n "$conflict_version" ]]; then
+        printf "${YELLOW}%s${NC}\n" "Fixing gem conflict: ${conflict_gem} ${conflict_version}..."
+        mise x ruby -- gem uninstall "$conflict_gem" --version "$conflict_version" --ignore-dependencies 2>/dev/null || true
+      fi
+    fi
+  }
+}
 
 (
   cd "${GDK_ROOT}/gitlab" || exit 0
@@ -83,7 +120,37 @@ MAIN_BRANCH="$(git_main_branch)"
 
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
   cd $GDK_ROOT
-  mise x ruby -- gdk update || { rc=$?; printf "${RED}%s${NC}\n" "gdk update failed with exit code $rc"; exit $rc; }
+
+  # GDK and GitLab may require different versions of certain gems (e.g., openssl).
+  # GDK's bundle install runs first and may install a version that conflicts with GitLab's Gemfile.lock.
+  # We detect this from the gdk update logs and fix by uninstalling the conflicting version,
+  # then directly running the failed lefthook step (since re-running gdk update would reinstall the conflict).
+  if mise x ruby -- gdk update; then
+    : # Success
+  else
+    # Check latest log for gem activation conflicts (rake-latest symlink points to most recent run)
+    latest_log="${GDK_ROOT}/log/gdk/rake-latest/update-make-gitlab-lefthook.log"
+    if [[ -f "$latest_log" ]] && grep -q 'You have already activated' "$latest_log"; then
+      conflict_gem=$(grep -oE 'activated [^ ]+ [0-9][^ ,]+' "$latest_log" | head -1 | awk '{print $2}')
+      conflict_version=$(grep -oE 'activated [^ ]+ [0-9][^ ,]+' "$latest_log" | head -1 | awk '{print $3}')
+      if [[ -n "$conflict_gem" && -n "$conflict_version" ]]; then
+        printf "${YELLOW}%s${NC}\n" "Detected gem conflict: ${conflict_gem} ${conflict_version}. Uninstalling and running lefthook directly..."
+        mise x ruby -- gem uninstall "$conflict_gem" --version "$conflict_version" --ignore-dependencies || true
+        # Run lefthook directly instead of full gdk update (which would reinstall the conflicting gem)
+        (cd "${GDK_ROOT}/gitlab" && mise x ruby -- bundle exec lefthook install) || {
+          printf "${RED}%s${NC}\n" "lefthook install failed after gem conflict fix"
+          exit 1
+        }
+        touch "${GDK_ROOT}/gitlab/.gitlab-lefthook"
+      else
+        printf "${RED}%s${NC}\n" "gdk update failed"
+        exit 1
+      fi
+    else
+      printf "${RED}%s${NC}\n" "gdk update failed"
+      exit 1
+    fi
+  fi
 
   cd gitlab
   git restore db/structure.sql
@@ -123,6 +190,9 @@ MAIN_BRANCH="$(git_main_branch)"
     find gitlab/log -maxdepth 1 -size +10M -exec truncate -s 0 {} \;
   ) || printf "${YELLOW}%s${NC}\n" "GDK cleanup subshell failed, continuing..."
 
+  # Fix gem conflicts that may have been reintroduced by GDK bundle install
+  fix_gem_conflicts
+
   yes | gdk kill || true # Use kill instead of stop so that services are killed if they can't be stopped (e.g. postgresql)
   # Ensure there are no orphaned sidekiq-cluster (https://gitlab.com/gitlab-org/gitlab-development-kit/-/issues/1455)
   pkill -lf 'sidekiq-cluster' || true
@@ -134,7 +204,8 @@ MAIN_BRANCH="$(git_main_branch)"
     git restore db/structure.sql
   fi
 
-  # Load the app to memory
+  # Load the app to memory (fix gem conflicts first since GDK may have reinstalled conflicting versions)
+  fix_gem_conflicts
   bundle exec rails environment
 
   cd - >/dev/null

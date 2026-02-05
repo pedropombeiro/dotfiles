@@ -46,6 +46,8 @@ mise:
 port: 3000
 postgresql:
   host: localhost
+redis:
+  backend: valkey
 registry:
   auth_enabled: true
   enabled: false

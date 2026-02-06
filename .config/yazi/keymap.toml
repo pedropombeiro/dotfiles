@@ -47,6 +47,11 @@ run = 'shell -- pasty'
 desc = "Paste from clipboard"
 
 [[mgr.prepend_keymap]]
+on = ["c", "s"]
+run = "shell --block -- croc send %s"
+desc = "Share selected files via croc"
+
+[[mgr.prepend_keymap]]
 on = "<Enter>"
 run = "plugin smart-enter"
 desc = "Enter the child directory, or open the file"

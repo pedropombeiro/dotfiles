@@ -50,13 +50,6 @@
       "schedule": ["on the first day of the month"]
     },
     {
-      "description": "Group shared npm:renovate updates across all mise configs",
-      "matchManagers": ["mise"],
-      "matchPackageNames": ["npm:renovate"],
-      "groupName": "mise shared npm:renovate",
-      "groupSlug": "mise-shared-npm-renovate"
-    },
-    {
       "description": "Delay Node.js updates by 7 days for stability",
       "matchManagers": ["mise"],
       "matchPackageNames": ["node", "nodejs"],
@@ -98,6 +91,13 @@
       "matchManagers": ["custom.regex", "mise"],
       "matchPackageNames": ["/opencode/"],
       "groupName": "opencode"
+    },
+    {
+      "description": "Group shared npm:renovate updates across all mise configs (last to ensure it overrides other groups)",
+      "matchManagers": ["mise"],
+      "matchPackageNames": ["npm:renovate"],
+      "groupName": "mise shared npm:renovate",
+      "groupSlug": "mise-shared-npm-renovate"
     }
   ],
   "mise": {

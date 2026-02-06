@@ -16,7 +16,7 @@ fd = "latest"
 grpcurl = "latest"
 just = "latest"
 node = "latest"
-"aqua:sst/opencode" = "1.1.52"
+"aqua:sst/opencode" = "1.1.53"
 pre-commit = "latest"
 
 "gem:neovim" = "0.10.0"

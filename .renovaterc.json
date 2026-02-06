@@ -52,7 +52,10 @@
     {
       "description": "Group shared npm:renovate updates across default and QTS mise configs",
       "matchManagers": ["mise"],
-      "matchFileNames": [".config/mise/config.toml**"],
+      "matchFileNames": [
+        ".config/mise/config.toml##default",
+        ".config/mise/config.toml##distro.qts,extension.toml"
+      ],
       "matchPackageNames": ["npm:renovate"],
       "groupName": "mise shared npm:renovate",
       "groupSlug": "mise-shared-npm-renovate"

@@ -66,36 +66,30 @@
       "allowedVersions": "23.7.x"
     },
     {
-      "description": "Group mise github/aqua backend tools (except opencode and QTS-pinned packages)",
+      "description": "Group mise github/aqua backend tools",
       "matchManagers": ["custom.regex", "mise"],
       "matchFileNames": [
         ".config/mise/config.toml**",
-        ".config/mise/conf.d/**",
-        "!.config/mise/config.toml##distro.qts,extension.toml"
+        ".config/mise/conf.d/**"
       ],
-      "matchPackageNames": ["!/opencode/", "!npm:renovate"],
       "groupName": "mise backend tools"
     },
     {
-      "description": "Group shared dua updates across default and QTS mise configs",
+      "description": "Group shared dua updates",
       "matchManagers": ["mise"],
-      "matchFileNames": [
-        ".config/mise/config.toml",
-        ".config/mise/config.toml##distro.qts,extension.toml"
-      ],
-      "matchPackageNames": ["dua"],
+      "matchPackageNames": ["/dua/"],
       "groupName": "mise shared dua"
     },
     {
       "description": "Group opencode updates",
       "matchManagers": ["custom.regex", "mise"],
       "matchPackageNames": ["/opencode/"],
-      "groupName": "opencode"
+      "groupName": "mise shared opencode"
     },
     {
       "description": "Group shared npm:renovate updates across all mise configs (last to ensure it overrides other groups)",
       "matchManagers": ["mise"],
-      "matchPackageNames": ["npm:renovate"],
+      "matchPackageNames": ["/npm:renovate/"],
       "groupName": "mise shared npm:renovate",
       "groupSlug": "mise-shared-npm-renovate"
     }

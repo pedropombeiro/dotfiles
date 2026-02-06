@@ -50,12 +50,8 @@
       "schedule": ["on the first day of the month"]
     },
     {
-      "description": "Group shared npm:renovate updates across default and QTS mise configs",
+      "description": "Group shared npm:renovate updates across all mise configs",
       "matchManagers": ["mise"],
-      "matchFileNames": [
-        ".config/mise/config.toml##default",
-        ".config/mise/config.toml##distro.qts,extension.toml"
-      ],
       "matchPackageNames": ["npm:renovate"],
       "groupName": "mise shared npm:renovate",
       "groupSlug": "mise-shared-npm-renovate"

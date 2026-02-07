@@ -1687,16 +1687,18 @@ The script should do this: \(ai.prompt)</string>
 					<key>Version</key>
 					<integer>0</integer>
 				</dict>
-				<key>0xf702-0x280000-0x0</key>
+				<key>0xf702-0x280000-0x7b</key>
 				<dict>
 					<key>Action</key>
-					<integer>11</integer>
-					<key>Label</key>
-					<string></string>
-					<key>Text</key>
-					<string>0x1b 0x1b 0x5b 0x44</string>
-					<key>Version</key>
+					<integer>10</integer>
+					<key>Apply Mode</key>
 					<integer>0</integer>
+					<key>Escaping</key>
+					<integer>2</integer>
+					<key>Text</key>
+					<string>[1;3D</string>
+					<key>Version</key>
+					<integer>2</integer>
 				</dict>
 				<key>0xf703-0x220000-0x0</key>
 				<dict>
@@ -1731,16 +1733,18 @@ The script should do this: \(ai.prompt)</string>
 					<key>Version</key>
 					<integer>0</integer>
 				</dict>
-				<key>0xf703-0x280000-0x0</key>
+				<key>0xf703-0x280000-0x7c</key>
 				<dict>
 					<key>Action</key>
-					<integer>11</integer>
-					<key>Label</key>
-					<string></string>
-					<key>Text</key>
-					<string>0x1b 0x1b 0x5b 0x43</string>
-					<key>Version</key>
+					<integer>10</integer>
+					<key>Apply Mode</key>
 					<integer>0</integer>
+					<key>Escaping</key>
+					<integer>2</integer>
+					<key>Text</key>
+					<string>[1;3C</string>
+					<key>Version</key>
+					<integer>2</integer>
 				</dict>
 				<key>0xf704-0x20000-0x0</key>
 				<dict>
@@ -1919,6 +1923,8 @@ The script should do this: \(ai.prompt)</string>
 					<integer>0</integer>
 				</dict>
 			</dict>
+			<key>Left Option Key Changeable</key>
+			<true/>
 			<key>Link Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -2033,6 +2039,8 @@ The script should do this: \(ai.prompt)</string>
 			<integer>2</integer>
 			<key>Transparency</key>
 			<real>0.0</real>
+			<key>Treat Option as Alt</key>
+			<true/>
 			<key>Unlimited Scrollback</key>
 			<true/>
 			<key>Use Bold Font</key>
@@ -4833,8 +4841,14 @@ The script should do this: \(ai.prompt)</string>
 				<dict>
 					<key>Action</key>
 					<integer>11</integer>
+					<key>Apply Mode</key>
+					<integer>0</integer>
+					<key>Escaping</key>
+					<integer>1</integer>
 					<key>Text</key>
 					<string>0x1b 0x1b 0x5b 0x43</string>
+					<key>Version</key>
+					<integer>2</integer>
 				</dict>
 				<key>0xf704-0x20000</key>
 				<dict>

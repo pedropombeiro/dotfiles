@@ -39,4 +39,4 @@ dua = "latest"
 "pipx:yamllint" = "latest"
 
 # npm tools for pre-commit hooks
-"npm:renovate" = "43.2.6"
+"npm:renovate" = "43.2.7"

@@ -9,6 +9,7 @@ alias vimdiff="vim -d"
 
 # Tool-specific aliases
 alias lzd='lazydocker'
+alias lnav='TERM=xterm-256color lnav'  # notcurses doesn't recognize TERM=wezterm
 
 # Delete all remote tracking Git branches where the upstream branch has been deleted
 # shellcheck disable=SC2142  # This pattern works in bash/zsh

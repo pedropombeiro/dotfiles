@@ -42,7 +42,8 @@
     "read": "allow",
     "glob": "allow",
     "grep": "allow",
-    "todowrite": "allow"
+    "todowrite": "allow",
+    "task": { "explore": "allow" }
   },
 
   "keybinds": {

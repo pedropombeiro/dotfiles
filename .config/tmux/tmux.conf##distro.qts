@@ -63,14 +63,12 @@ set -g @vim_navigator_mapping_prev "M-\\"
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
 run '~/.tmux/plugins/tpm/tpm'
 
-# Use logical PWD (preserves symlinks) for new windows and panes
-# The @logical_pwd pane option is set by the shell's chpwd hook in:
-#   ~/.shellrc/zshrc.d/configs/tmux.zsh
+# Use pane_current_path for new windows and panes
 # These bindings must come AFTER TPM to override tmux-pain-control
-bind c new-window -c "#{@logical_pwd}"
-bind '"' split-window -v -c "#{@logical_pwd}"
-bind '%' split-window -h -c "#{@logical_pwd}"
-bind '|' split-window -h -c "#{@logical_pwd}"
-bind '\' split-window -fh -c "#{@logical_pwd}"
-bind '-' split-window -v -c "#{@logical_pwd}"
-bind '_' split-window -fv -c "#{@logical_pwd}"
+bind c new-window -c "#{pane_current_path}"
+bind '"' split-window -v -c "#{pane_current_path}"
+bind '%' split-window -h -c "#{pane_current_path}"
+bind '|' split-window -h -c "#{pane_current_path}"
+bind '\' split-window -fh -c "#{pane_current_path}"
+bind '-' split-window -v -c "#{pane_current_path}"
+bind '_' split-window -fv -c "#{pane_current_path}"

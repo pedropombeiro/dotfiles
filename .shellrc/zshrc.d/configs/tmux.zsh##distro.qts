@@ -16,16 +16,6 @@ if command -v tmux >/dev/null; then
     export LINES=$(tmux display-message -p '#{pane_height}')
   fi
 
-  # Store logical PWD in tmux pane option for new window/pane creation (preserves symlinks)
-  # Used by key bindings in ~/.config/tmux/tmux.conf
-  if [[ -n "$TMUX" ]]; then
-    function _tmux_set_pwd() {
-      tmux set-option -p @logical_pwd "$PWD"
-    }
-    add-zsh-hook chpwd _tmux_set_pwd
-    _tmux_set_pwd
-  fi
-
   # Load tmux plugin via zinit
   # Download extra.conf to the same directory as the plugin, then load the plugin
   zinit ice atclone'curl -sLo tmux.extra.conf https://github.com/ohmyzsh/ohmyzsh/raw/master/plugins/tmux/tmux.extra.conf' \

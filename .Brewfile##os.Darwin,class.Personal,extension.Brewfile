@@ -25,8 +25,6 @@ brew "btop"
 brew "checkmake"
 # Copy files from your terminal that actually paste into GUI apps
 brew "clippy"
-# Container runtimes on MacOS (and Linux) with minimal setup
-brew "colima"
 # Create and run Linux containers using lightweight virtual machines
 brew "container", link: false
 # GNU File, Shell, and Text utilities
@@ -127,7 +125,6 @@ brew "miller"
 brew "mise"
 # Collection of tools that nobody wrote when UNIX was young
 brew "moreutils"
-
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # Control nvim processes using `nvr` command-line tool
@@ -297,6 +294,8 @@ cask "neovide-app"
 cask "netspot"
 # App to write, plan, collaborate, and get organised
 cask "notion"
+# Replacement for Docker Desktop
+cask "orbstack"
 # Visual client for Helix Core
 cask "p4v"
 # Home media player

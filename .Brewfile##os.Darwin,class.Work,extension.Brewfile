@@ -393,6 +393,8 @@ cask "neovide-app"
 cask "netspot"
 # App to write, plan, collaborate, and get organised
 cask "notion"
+# Replacement for Docker Desktop
+cask "orbstack"
 # Visual client for Helix Core
 cask "p4v"
 # Home media player

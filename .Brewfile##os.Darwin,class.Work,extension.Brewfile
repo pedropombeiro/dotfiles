@@ -45,8 +45,6 @@ brew "pango"
 brew "checkmake"
 # Cross-platform make
 brew "cmake"
-# Container runtimes on MacOS (and Linux) with minimal setup
-brew "colima", restart_service: :changed
 # Create and run Linux containers using lightweight virtual machines
 brew "container", link: false
 # Diff your Docker containers
@@ -393,6 +391,8 @@ cask "neovide-app"
 cask "netspot"
 # App to write, plan, collaborate, and get organised
 cask "notion"
+# Replacement for Docker Desktop
+cask "orbstack"
 # Visual client for Helix Core
 cask "p4v"
 # Home media player

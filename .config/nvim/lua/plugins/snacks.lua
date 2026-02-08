@@ -255,21 +255,7 @@ return {
       explorer = {
         enabled = function() return not vim.g.started_by_firenvim end,
       },
-      image = {
-        -- Enable for terminals with Kitty graphics protocol support
-        -- WezTerm: partial support (image viewer/hover works, inline doesn't)
-        -- Ghostty/Kitty: full support
-        enabled = function()
-          if vim.g.started_by_firenvim then return false end
-          local term = vim.env.TERM_PROGRAM
-          return term == "WezTerm" or term == "ghostty" or term == "kitty"
-        end,
-        backend = "kitty",
-        -- Disable inline rendering for WezTerm (not supported)
-        doc = {
-          inline = vim.env.TERM_PROGRAM ~= "WezTerm",
-        },
-      },
+      image = { enabled = false },
       indent = {
         animate = {
           duration = {

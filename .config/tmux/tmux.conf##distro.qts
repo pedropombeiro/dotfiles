@@ -26,9 +26,7 @@ bind-key -n End send Escape "OF"
 set -g default-terminal "tmux-256color"
 set-environment -g TERM "tmux-256color"  # Force TERM in tmux environment
 set -as terminal-overrides ',xterm*:sitm=\E[3m'
-set -as terminal-overrides ',wezterm:sitm=\E[3m'
 set -as terminal-features ",*:RGB"
-set -as terminal-features ',wezterm:RGB'
 
 set -g @tmux-gruvbox 'dark256' # or 'light256'
 set -g @tmux-gruvbox-statusbar-alpha 'true'

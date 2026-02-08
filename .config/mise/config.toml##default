@@ -23,6 +23,6 @@ pre-commit = "latest"
 "gem:neovim" = "0.10.0"
 "gem:ruby-lsp" = "0.26.5"
 
-"npm:renovate" = "43.2.8"
+"npm:renovate" = "43.3.4"
 
 "pipx:neovim-remote" = "2.5.1"

@@ -16,6 +16,7 @@ fd = "latest"
 grpcurl = "latest"
 just = "latest"
 node = "latest"
+yamllint = "latest"
 "aqua:sst/opencode" = "1.1.53"
 pre-commit = "latest"
 

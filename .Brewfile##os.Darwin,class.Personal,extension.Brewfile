@@ -308,6 +308,8 @@ cask "qlimagesize"
 cask "raspberry-pi-imager"
 # Control your tools with a few keystrokes
 cask "raycast"
+# Window snapping tool
+cask "rectangle-pro"
 # Tool for sending personal documents to Kindles from Macs
 cask "send-to-kindle"
 # Screenshot measurement and annotation tool

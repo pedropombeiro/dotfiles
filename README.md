@@ -16,7 +16,7 @@ featuring a carefully curated development environment with powerful CLI tools an
   - [Fresh Installation - Linux](#fresh-installation---linux)
 - [Configuration](#configuration)
   - [macOS Settings](#macos-settings)
-  - [Apps to Install](#apps-to-install)
+  - [Package Sources](#package-sources)
 - [Development Tools](#development-tools)
 - [Maintenance](#maintenance)
   - [Profiling ZSH](#profiling-zsh)
@@ -50,7 +50,8 @@ This dotfiles setup includes:
 
 - **🐚 Shell Configuration**
 
-  - [zinit](https://github.com/zdharma-continuum/zinit) plugin manager with [Oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) plugins
+  - [zinit](https://github.com/zdharma-continuum/zinit) plugin manager with
+    [Oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) plugins
   - Custom aliases and functions for productivity
   - [fzf](https://github.com/junegunn/fzf) integration - fuzzy file finder (use `**<TAB>` for fuzzy completion,
     e.g., `vim **<TAB>`)
@@ -63,6 +64,12 @@ This dotfiles setup includes:
   - [Neovide](https://neovide.dev/) - Neovim GUI client
   - Vim configuration with fzf integration
   - VS Code settings sync
+
+- **🤖 Automation & Quality**
+
+  - Pre-commit hooks for shell, markdown, Ruby, Lua, and formatting checks
+  - CI validations (pre-commit, Neovim config load, luacheck, bootstrap lint, gitleaks)
+  - Update scripts for brew, mise, zinit, and Neovim plugin health
 
 - **🔧 Development Tools**
 
@@ -141,7 +148,7 @@ source ~/.zshrc.shared
 
 ## Post-Installation
 
-After installing the dotfiles, symlink the configuration files in Syncthing:
+After installing the dotfiles, ensure the Syncthing-managed config files are linked:
 
 ```shell
 ~/.config/yadm/scripts/relink-dotfiles.sh
@@ -189,153 +196,26 @@ Manual configuration steps:
 - Configure keyboard shortcuts:
   - Set input source switching shortcuts
 
-### Apps to Install
+### Package Sources
 
-**Installed via Homebrew:**
+The definitive list of packages lives in the Homebrew bundle file and App Store list:
 
-_Productivity & Utilities:_
+- Homebrew brews and casks: `.Brewfile`
+- Mac App Store apps: `.Brewfile` (`mas` entries)
 
-- [1Password](https://1password.com/) - Password manager with CLI support
-- [Alfred](https://www.alfredapp.com/) - Productivity launcher
-- [Raycast](https://raycast.com/) - Launcher and productivity tool
-- [Bartender](https://www.macbartender.com/) - Menu bar organizer
-- [Mackup](https://github.com/lra/mackup) - Application settings backup
-- [Muzzle](https://muzzleapp.com/) - Notification manager for screen sharing
-- [Notion](https://notion.so) - Note-taking and collaboration
-- [AirBuddy](https://airbuddy.app/) - AirPods companion app
-
-_Development Tools:_
-
-- [Visual Studio Code](https://code.visualstudio.com/) - Code editor
-- [iTerm2](https://iterm2.com/) - Terminal emulator
-- [Fork](https://git-fork.com/) - Git client
-- [TablePlus](https://tableplus.com/) - Database client
-- [Docker](https://www.docker.com/products/docker-desktop) - Container platform
-- [Dash](https://kapeli.com/dash) - API documentation browser
-- [Neovide](https://neovide.dev/) - Neovim GUI client
-
-_File Management & Comparison:_
-
-- [Beyond Compare](https://scootersoftware.com/) - File/folder comparison
-- [P4V](https://www.perforce.com/products/helix-core-apps/merge-diff-tool-p4merge) - Perforce visual client
-- [The Unarchiver](https://theunarchiver.com/) - Archive extraction
-- [Syncthing](https://syncthing.net/) - File synchronization
-- [DaisyDisk](https://daisydiskapp.com/) - Disk space visualizer
-
-_Media & Entertainment:_
-
-- [Spotify](https://www.spotify.com/) - Music streaming
-- [Plex](https://www.plex.tv/) - Media server
-- [VLC](https://www.videolan.org/vlc/) - Multimedia player
-- [Calibre](https://calibre-ebook.com/) - E-book management
-- [GIMP](https://www.gimp.org/) - Image editor
-- [MuseScore](https://musescore.org/) - Music notation software
-
-_System Tools & Utilities:_
-
-- [iStat Menus](https://bjango.com/mac/istatmenus/) - System monitoring
-- [Lunar](https://lunar.fyi/) - Adaptive brightness for external displays
-- [AppCleaner](https://freemacsoft.net/appcleaner/) - Application uninstaller
-- [Rectangle Pro](https://rectangleapp.com/pro) - Window snapping tool
-- [Contexts](https://contexts.co/) - Window switcher
-- [Input Source Pro](https://inputsource.pro/) - Multi-language input tool
-
-_Web Browsers:_
-
-- [Microsoft Edge](https://www.microsoft.com/edge) - Chromium-based browser
-- [Firefox](https://www.firefox.com/) - Privacy-focused browser
-
-_Communication:_
-
-- [Slack](https://slack.com/) - Team communication
-- [WhatsApp](https://www.whatsapp.com/) - Messaging
-- [Zoom](https://zoom.us/) - Video conferencing
-
-_Hardware & Specialty Tools:_
-
-- [Elgato Stream Deck](https://www.elgato.com/stream-deck) - Customizable control pad
-- [Garmin Express](https://www.garmin.com/express) - Garmin device management
-- [Raspberry Pi Imager](https://www.raspberrypi.com/software/) - OS imaging tool
-- [balenaEtcher](https://www.balena.io/etcher/) - USB/SD card flasher
-- [ApplePi-Baker](https://www.tweaking4all.com/software/macosx-software/applepi-baker-v2/) - SD card backup/restore
-- [YubiKey Manager](https://www.yubico.com/support/download/yubikey-manager/) - YubiKey configuration
-
-_Networking & Security:_
-
-- [ProtonVPN](https://protonvpn.com/) - VPN client
-- [BlueSnooze](https://github.com/odlp/bluesnooze) - Bluetooth sleep blocker
-- [Bluetility](https://github.com/jnross/Bluetility) - BLE browser
-
-_Misc:_
-
-- [Kap](https://getkap.co/) - Screen recorder
-- [Shottr](https://shottr.cc/) - Screenshot annotation tool
-- [UTM](https://mac.getutm.app/) - Virtual machines
-- [EQMac](https://eqmac.app/) - System-wide equalizer
-- [NetSpot](https://www.netspotapp.com/) - WiFi analyzer
-- [Google Earth Pro](https://www.google.com/earth/about/versions/)
-- [MediaInfo](https://mediaarea.net/en/MediaInfo)
-
-**Installed via mas-cli (Mac App Store):**
-
-- [1Password for Safari](https://apps.apple.com/app/id1569813296) - Safari extension
-- [Amphetamine](https://apps.apple.com/app/id937984704) - Keep Mac awake
-- [Kindle](https://apps.apple.com/app/id302584613) - E-book reader
-- [WireGuard](https://apps.apple.com/app/id1451685025) - VPN client
-- [Parcel](https://apps.apple.com/app/id375589283) - Package tracking
-- [Mactracker](https://apps.apple.com/app/id430255202) - Apple hardware database
-- [Discovery](https://apps.apple.com/app/id1381004916) - Bonjour browser
-
-**Post-Installation Setup:**
-
-Configure the following applications:
-
-- **Beyond Compare** - Import settings backup and install command line tools
-- **Password Manager** - Set up 1Password
-- **Syncthing** - Configure synchronization
-- **Time Machine** - Set up backups
-- **Microsoft Edge** - Configure browser settings
-- **Visual Studio Code** - Enable settings sync
-- **Printers** - Add network/local printers
+The README highlights key tooling, but the Brewfile is the source of truth.
 
 ## Development Tools
 
 Key tools included in this setup:
 
-- **Version Managers:** [mise](https://mise.jdx.dev/) (formerly rtx/asdf alternative)
-- **Languages:** Ruby, Go, Python, Node.js, Rust
-- **Databases:**
-  - PostgreSQL ([pgcli](https://www.pgcli.com/), [pspg](https://github.com/okbob/pspg), [libpq](https://www.postgresql.org/docs/current/libpq.html))
-- **Containerization:**
-  - [Docker](https://www.docker.com/)
-  - [Colima](https://github.com/abiosoft/colima) - container runtime for macOS
-  - [lazydocker](https://github.com/jesseduffield/lazydocker) - terminal UI for Docker
-  - [ctop](https://github.com/bcicen/ctop) - top-like interface for containers
-- **CLI Tools:**
-  - **Search & Find:** [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd),
-    [the_silver_searcher](https://github.com/ggreer/the_silver_searcher)
-  - **File Viewers:** [bat](https://github.com/sharkdp/bat),
-    [highlight](http://www.andre-simon.de/doku/highlight/en/highlight.php), [vimpager](https://github.com/rkitover/vimpager)
-  - **File Management:** [yazi](https://github.com/sxyazi/yazi)
-  - **System Monitoring:** [btop](https://github.com/aristocratos/btop), [htop](https://htop.dev/), [viddy](https://github.com/sachaos/viddy)
-  - **Disk Usage:** [dua](https://github.com/Byron/dua-cli), [dust](https://github.com/bootandy/dust), [duf](https://github.com/muesli/duf)
-  - **Network Tools:** [gping](https://github.com/orf/gping), [dog](https://dns.lookup.dog/), [nmap](https://nmap.org/),
-    [wireshark](https://www.wireshark.org/), [fping](https://fping.org/)
-  - **Data Processing:** [jq](https://stedolan.github.io/jq/), [yq](https://github.com/mikefarah/yq),
-    [miller](https://miller.readthedocs.io/), [visidata](https://www.visidata.org/), [jless](https://jless.io/)
-  - **Benchmarking:** [hyperfine](https://github.com/sharkdp/hyperfine)
-  - **Documentation:** [tealdeer](https://github.com/dbrgn/tealdeer) (tldr client)
-- **Git Tools:**
-  - [lazygit](https://github.com/jesseduffield/lazygit) - terminal UI for git
-  - [gh](https://cli.github.com/) - GitHub CLI
-  - [git-delta](https://github.com/dandavison/delta) - syntax-highlighting pager
-  - [git-extras](https://github.com/tj/git-extras) - additional git utilities
-  - [git-peek](https://github.com/Jarred-Sumner/git-peek) - instantly open remote repos
-  - [Fork](https://git-fork.com/) - GUI Git client
-- **Productivity:**
-  - [croc](https://github.com/schollz/croc) - secure file transfer
-  - [asciinema](https://asciinema.org/) - terminal session recorder
-  - [entr](https://eradman.com/entrproject/) - run commands when files change
+- **Version Manager:** [mise](https://mise.jdx.dev/) for runtime installs and CLI tooling
+  (`node`, `ruby`, `go`, `redis`, plus linters and helpers)
+- **Languages:** Ruby, Go, Node.js (plus tooling like `ruby-lsp`, `neovim-remote`, `renovate`, `markdownlint`)
+- **Databases:** PostgreSQL (via `pgcli`, `pspg`, and `libpq`)
+- **Containerization:** Docker, plus lightweight tooling for container ops
+- **CLI Essentials:** ripgrep, fd, bat, eza, yazi, jq/yq, hyperfine, tealdeer
+- **Git Tooling:** gh, git-delta, git-extras, git-peek, lazygit
 
 ## Maintenance
 
@@ -385,6 +265,12 @@ yadm enter vim
 
 ```shell
 brew update && brew upgrade && brew cleanup
+```
+
+**Update dotfiles tooling:**
+
+```shell
+~/.config/yadm/scripts/update.sh
 ```
 
 **Check YADM status:**

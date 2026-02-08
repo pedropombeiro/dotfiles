@@ -1,0 +1,107 @@
+-- wezterm.lua##class.Work
+-- Work profile with triggers and GDK workspace
+
+local wezterm = require 'wezterm'
+local common = require 'common'
+local config = wezterm.config_builder()
+
+-- Apply shared settings
+common.apply(config)
+
+-- Work-specific settings
+config.font_size = 15.0
+config.initial_cols = 180
+config.default_workspace = 'GDK'
+
+-- Add GDK workspace keybinding - switch to existing or create new
+table.insert(config.keys, {
+  key = 'g',
+  mods = 'CMD',
+  action = wezterm.action_callback(function(window, pane)
+    local mux = wezterm.mux
+
+    -- Check if GDK workspace already exists
+    for _, w in ipairs(mux.all_windows()) do
+      if w:get_workspace() == 'GDK' then
+        -- Switch to existing GDK workspace
+        mux.set_active_workspace 'GDK'
+        return
+      end
+    end
+
+    -- Create new GDK workspace
+    local gdk = require 'workspaces.gdk'
+    gdk.setup()
+    mux.set_active_workspace 'GDK'
+  end),
+})
+
+-- Launch menu
+config.launch_menu = {
+  { label = 'Default Shell' },
+  { label = 'GitLab (mise ruby)', args = { 'mise', 'x', 'ruby', '--', 'zsh' } },
+}
+
+-- Launch GDK workspace on startup
+wezterm.on('gui-startup', function(cmd)
+  local gdk = require 'workspaces.gdk'
+  gdk.setup()
+end)
+
+-- Hyperlink rules (default + screenshot paths)
+config.hyperlink_rules = wezterm.default_hyperlink_rules()
+table.insert(config.hyperlink_rules, {
+  regex = [[Image screenshot: (.+\.png)]],
+  format = 'file://$1',
+})
+
+-- Triggers: Watch for patterns and take actions
+local last_check = {}
+local displayed_screenshots = {}
+
+wezterm.on('update-status', function(window, pane)
+  local pane_id = pane:pane_id()
+  local now = os.time()
+
+  -- Rate limit: check at most once every 2 seconds per pane
+  if last_check[pane_id] and (now - last_check[pane_id]) < 2 then
+    return
+  end
+  last_check[pane_id] = now
+
+  -- Get recent text (last few lines)
+  local success, text = pcall(function()
+    return pane:get_lines_as_text(10)
+  end)
+
+  if not success or not text then
+    return
+  end
+
+  -- Trigger 1: FAIL: pattern - bounce dock
+  if text:match 'FAIL:' then
+    wezterm.background_child_process {
+      'osascript',
+      '-e',
+      'tell application "System Events" to tell process "WezTerm" to set frontmost to true',
+    }
+    wezterm.background_child_process {
+      'osascript',
+      '-e',
+      'display notification "Test failure detected" with title "WezTerm" sound name "Basso"',
+    }
+  end
+
+  -- Trigger 2: Image screenshot: *.png - auto display with imgcat
+  for path in text:gmatch('Image screenshot: ([^\n]+%.png)') do
+    -- Only display each screenshot once per pane
+    local key = pane_id .. ':' .. path
+    if not displayed_screenshots[key] then
+      displayed_screenshots[key] = true
+      -- Send imgcat command to display the image
+      pane:send_text('wezterm imgcat ' .. wezterm.shell_quote_arg(path) .. '\n')
+    end
+  end
+end)
+
+return config

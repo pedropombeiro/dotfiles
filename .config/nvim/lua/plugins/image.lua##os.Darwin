@@ -2,10 +2,15 @@
 
 --  🖼️ Bringing images to Neovim.
 
+-- Only enabled for iTerm2 (uses sixel backend).
+-- For WezTerm, we use Snacks.image with Kitty graphics protocol instead.
+
 return {
   "3rd/image.nvim",
   ft = { "markdown" },
-  cond = function() return not vim.g.started_by_firenvim end,
+  cond = function()
+    return not vim.g.started_by_firenvim and vim.env.TERM_PROGRAM == "iTerm.app"
+  end,
   opts = {
     backend = "sixel",
     processor = "magick_rock",

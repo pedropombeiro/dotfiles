@@ -135,7 +135,11 @@ EOF
     }
   },
   // Disable formatter to preserve project's existing code style
-  "formatter": false
+  "formatter": {
+    "standardrb": {
+      "disabled": true
+    }
+  }
 }
 EOF
 

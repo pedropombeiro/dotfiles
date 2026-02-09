@@ -45,9 +45,9 @@
       "grep*": "allow",
       "head*": "allow",
       "ls*": "allow",
+      "pre-commit *": "allow",
       "tail*": "allow",
       "which*": "allow",
-
     },
     "read": "allow",
     "glob": "allow",

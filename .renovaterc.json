@@ -119,6 +119,22 @@
       ],
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "loose"
+    },
+    {
+      "description": "mise opencode inline-table package",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)\\.config/mise/config\\.toml##[^/]+$/",
+        "/(^|/)\\.config/mise/config\\.toml$/",
+        "/(^|/)\\.config/mise/config\\.local\\.toml$/",
+        "/(^|/)\\.config/mise/conf\\.d/[^/]+\\.toml##[^/]+$/"
+      ],
+      "matchStrings": [
+        "\"opencode\"\\s*=\\s*\\{[^}]*version\\s*=\\s*\"(?<currentValue>[^\"]+)\"[^}]*\\}"
+      ],
+      "depNameTemplate": "opencode-ai/opencode",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "loose"
     }
   ]
 }

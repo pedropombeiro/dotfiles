@@ -16,18 +16,17 @@ delta = "https://github.com/pedropombeiro/asdf-delta#patch-1"
 [tools]
 dua = "latest"
 
-"github:ipinfo/cli[exe=ipinfo]" = "latest"
-
 # GitHub releases (musl builds for QTS)
-"github:imsnif/bandwhich" = "latest"
-"github:schollz/croc" = "latest"
-"github:orf/gping" = "latest"
-"github:tstack/lnav" = "latest"
-"github:pedropombeiro/opencode-legacy-glibc" = "1.1.53"
 "github:dalance/procs" = "latest"
 "github:domcyrus/rustnet" = "0.18.0"
-"github:sxyazi/yazi" = "26.1.22"
+"github:imsnif/bandwhich" = "latest"
+"github:ipinfo/cli[exe=ipinfo]" = "latest"
 "github:neovim/neovim-releases[exe=nvim]" = "0.11.5"
+"github:orf/gping" = "latest"
+"github:pedropombeiro/opencode-legacy-glibc" = "1.1.53"
+"github:schollz/croc" = "latest"
+"github:sxyazi/yazi" = "26.1.22"
+"github:tstack/lnav" = "latest"
 
 "go:github.com/zmwangx/ets" = "0.2.2"
 

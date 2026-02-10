@@ -24,10 +24,13 @@ alias docker_ip='docker inspect -f "{{range.NetworkSettings.Networks}}{{.IPAddre
 
 # opencode with optional per-project model via mise env
 oc() {
+  OPENCODE=opencode-cli
+  command -v $OPENCODE >/dev/null 2>&1 || OPENCODE=opencode
+
   if [[ -n "$OPENCODE_MODEL" ]]; then
-    opencode --model="$OPENCODE_MODEL" "$@"
+    $OPENCODE --model="$OPENCODE_MODEL" "$@"
   else
-    opencode "$@"
+    $OPENCODE "$@"
   fi
 }
 

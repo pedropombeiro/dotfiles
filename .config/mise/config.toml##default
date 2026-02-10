@@ -16,12 +16,13 @@ fd = "latest"
 grpcurl = "latest"
 just = "latest"
 node = "latest"
-yamllint = "latest"
-"aqua:sst/opencode" = "1.1.53"
 pre-commit = "latest"
+yamllint = "latest"
 
 "gem:neovim" = "0.10.0"
 "gem:ruby-lsp" = "0.26.5"
+
+"github:anomalyco/opencode" = "1.1.55"
 
 "npm:renovate" = "43.3.6"
 

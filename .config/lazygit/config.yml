@@ -637,9 +637,7 @@ customCommands:
       model="${OPENCODE_COMMIT_MODEL:-${OPENCODE_SMALL_MODEL:-${OPENCODE_MODEL:-openai/gpt-4.1-nano}}}"
       diff=$(git diff --cached)
       prompt="Based on this diff, write a commit message with a subject line (max 72 chars), blank line, then a body explaining what and why (wrap at 72 chars).{{ if .Form.Type }} Use conventional commit format with type: {{ .Form.Type }}, and try to include the subject of the change in parenthesis.{{ end }} CRITICAL: Your response must contain ONLY the commit message itself. No explanations, no preamble, no thinking, no markdown. Start directly with the subject line. Diff: $diff"
-      OPENCODE=opencode-cli
-      command -v $OPENCODE >/dev/null 2>&1 || OPENCODE=opencode
-      msg=$($OPENCODE run -m "$model" --agent plan "$prompt")
+      msg=$(opencode run -m "$model" --agent plan "$prompt")
       echo "$msg"
       echo "$msg" > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT
     loadingText: "opencode is analyzing changes..."

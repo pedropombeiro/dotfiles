@@ -50,14 +50,6 @@ return {
   config = function()
     ---@type opencode.Opts
     vim.g.opencode_opts = {}
-    if vim.g.distro ~= "qts" then
-      vim.g.opencode_opts = vim.tbl_deep_extend("force", vim.g.opencode_opts or {}, {
-        provider = {
-          cmd = "opencode-cli --port",
-        },
-      })
-    end
-
     vim.o.autoread = true
 
     vim.api.nvim_create_autocmd("TermOpen", {

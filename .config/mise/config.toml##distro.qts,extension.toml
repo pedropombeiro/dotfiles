@@ -18,7 +18,7 @@ dua = "latest"
 
 # GitHub releases (musl builds for QTS)
 "github:dalance/procs" = "latest"
-"github:domcyrus/rustnet" = "0.18.0"
+"github:domcyrus/rustnet" = "1.0.0"
 "github:imsnif/bandwhich" = "latest"
 "github:ipinfo/cli[exe=ipinfo]" = "latest"
 "github:neovim/neovim-releases[exe=nvim]" = "0.11.5"

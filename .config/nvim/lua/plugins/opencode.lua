@@ -2,10 +2,7 @@
 --  Integrate opencode AI assistant with Neovim
 
 return {
-  "pedropombeiro/opencode.nvim",
-  -- TODO: switch back to upstream when PR is merged
-  -- https://github.com/nickjvandyke/opencode.nvim/pull/168
-  branch = "fix/terminate-job-on-stop",
+  "NickvanDyke/opencode.nvim",
   dependencies = {
     "folke/snacks.nvim",
   },

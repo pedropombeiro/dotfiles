@@ -37,6 +37,7 @@
       "knowledge-graph_search_codebase_definitions": "allow",
       "ls*": "allow",
       "markdownlint *": "allow",
+      "npx markdownlint-cli2 *": "allow",
       "pre-commit *": "allow",
       "sleep *": "allow",
       "tail*": "allow",

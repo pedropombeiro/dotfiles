@@ -112,10 +112,10 @@ def gitlab_mr_rate(*author)
       merge_requests["nodes"]
         .select { |mr| mr["mergedAt"] }
         .map do |mr|
-        {merged_at: DateTime.iso8601(mr["mergedAt"])}
-      rescue
-        $stderr.print "\n#{mr}\n"
-        raise
+          {merged_at: DateTime.iso8601(mr["mergedAt"])}
+        rescue
+          $stderr.print "\n#{mr}\n"
+          raise
       end
 
     total_time_to_merge = merge_requests["totalTimeToMerge"]

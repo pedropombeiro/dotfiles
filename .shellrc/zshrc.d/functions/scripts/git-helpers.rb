@@ -143,41 +143,41 @@ def rebase_mappings
       .map { |line| line[2..].rstrip }
       .select { |branch| branch.start_with?("#{user_name}/", "security-#{user_name}/", "security/#{user_name}/") }
       .sort_by do |branch|
-      seq_mr_match_data = seq_mr_pattern.match(branch)
-      backport_match_data = backport_pattern.match(branch)
-      mr_match_data = mr_pattern.match(branch)
+        seq_mr_match_data = seq_mr_pattern.match(branch)
+        backport_match_data = backport_pattern.match(branch)
+        mr_match_data = mr_pattern.match(branch)
 
-      if seq_mr_match_data
-        # Sort by: [branch_distance, mr_id, seq_nr, branch_name]
-        # This ensures branches are grouped by MR and ordered by sequence within each MR
-        [
-          branch_distance(branch, default_branch),
-          seq_mr_match_data[:mr_id].to_i,
-          seq_mr_match_data[:mr_seq_nr].to_i,
-          branch
-        ]
-      elsif backport_match_data
-        [
-          branch_distance(branch, default_branch),
-          backport_match_data[:mr_id].to_i,
-          999, # Put backport branches after sequenced branches
-          backport_match_data[:milestone].tr(".", "-").to_f
-        ]
-      elsif mr_match_data
-        [
-          branch_distance(branch, default_branch),
-          mr_match_data[:mr_id].to_i,
-          999, # Put non-sequenced branches after sequenced branches
-          branch
-        ]
-      else
-        [
-          branch_distance(branch, default_branch),
-          999_999, # Put non-MR branches last
-          999,
-          branch
-        ]
-      end
+        if seq_mr_match_data
+          # Sort by: [branch_distance, mr_id, seq_nr, branch_name]
+          # This ensures branches are grouped by MR and ordered by sequence within each MR
+          [
+            branch_distance(branch, default_branch),
+            seq_mr_match_data[:mr_id].to_i,
+            seq_mr_match_data[:mr_seq_nr].to_i,
+            branch
+          ]
+        elsif backport_match_data
+          [
+            branch_distance(branch, default_branch),
+            backport_match_data[:mr_id].to_i,
+            999, # Put backport branches after sequenced branches
+            backport_match_data[:milestone].tr(".", "-").to_f
+          ]
+        elsif mr_match_data
+          [
+            branch_distance(branch, default_branch),
+            mr_match_data[:mr_id].to_i,
+            999, # Put non-sequenced branches after sequenced branches
+            branch
+          ]
+        else
+          [
+            branch_distance(branch, default_branch),
+            999_999, # Put non-MR branches last
+            999,
+            branch
+          ]
+        end
     end
 
   # Track branches per MR ID

@@ -8,6 +8,9 @@
     ":enablePreCommit",
     ":prImmediately"
   ],
+  "separateMajorMinor": true,
+  "separateMinorPatch": true,
+  "separateMultipleMajor": true,
   "packageRules": [
     {
       "description": "Group GitHub Actions updates weekly",

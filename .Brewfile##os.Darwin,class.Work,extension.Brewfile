@@ -45,10 +45,6 @@ brew "pango"
 brew "checkmake"
 # Cross-platform make
 brew "cmake"
-# Create and run Linux containers using lightweight virtual machines
-brew "container", link: false
-# Diff your Docker containers
-brew "container-diff"
 # GNU File, Shell, and Text utilities
 brew "coreutils"
 # Securely send things from one computer to another
@@ -245,8 +241,6 @@ brew "switchaudio-osx"
 brew "tealdeer"
 # Send macOS User Notifications from the command-line
 brew "terminal-notifier"
-# Tool to build, change, and version infrastructure
-brew "terraform"
 # Code-search similar to ack
 brew "the_silver_searcher"
 # Program that allows you to count code, quickly
@@ -279,8 +273,8 @@ brew "yadm"
 brew "yamllint"
 # Blazing fast terminal file manager written in Rust, based on async I/O
 brew "yazi"
-# YubiKey personalization library and tool
-brew "ykpers"
+# Tool for managing your YubiKey configuration
+brew "ykman"
 # Process YAML, JSON, XML, CSV and properties documents from the CLI
 brew "yq"
 # Feature-rich command-line audio/video downloader
@@ -323,8 +317,6 @@ cask "choosy"
 cask "chrysalis"
 # Anthropic's official Claude AI desktop app
 cask "claude"
-# Column-oriented database management system
-cask "clickhouse"
 # Create and run Linux containers using lightweight virtual machines
 cask "container"
 # Allows switching between application windows
@@ -413,8 +405,6 @@ cask "slack"
 cask "spotify"
 # Dictation tool including LLM reformatting
 cask "superwhisper"
-# Quicklook extension for source files
-cask "syntax-highlight"
 # Open-source code editor
 cask "visual-studio-code"
 # Native desktop client for WhatsApp

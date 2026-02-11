@@ -43,7 +43,7 @@ git-cmd:
 
 # just commit feat               # conventional commit with type
 @commit TYPE='':
-    git-ai-commit-msg {{ if TYPE != '' { "--type " + TYPE } else { "" } }}
+    ~/.local/bin/git-ai-commit-msg {{ if TYPE != '' { "--type " + TYPE } else { "" } }}
 
 fix *FILES='':
     #!/usr/bin/env sh

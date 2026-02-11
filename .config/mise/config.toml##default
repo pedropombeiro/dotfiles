@@ -16,7 +16,7 @@ fd = "latest"
 grpcurl = "latest"
 just = "latest"
 node = "latest"
-"opencode" = { version = "1.1.55", no_app = true }
+"opencode" = { version = "1.1.59", no_app = true }
 pre-commit = "latest"
 yamllint = "latest"
 

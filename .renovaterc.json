@@ -141,7 +141,7 @@
       "matchStrings": [
         "\"opencode\"\\s*=\\s*\\{[^}]*version\\s*=\\s*\"(?<currentValue>[^\"]+)\"[^}]*\\}"
       ],
-      "depNameTemplate": "sst/opencode",
+      "depNameTemplate": "anomalyco/opencode",
       "datasourceTemplate": "aqua",
       "versioningTemplate": "loose"
     }

@@ -33,6 +33,8 @@
       "golangci-lint run*": "allow",
       "grep*": "allow",
       "head*": "allow",
+      "knowledge-graph_list_projects": "allow",
+      "knowledge-graph_search_codebase_definitions": "allow",
       "ls*": "allow",
       "pre-commit *": "allow",
       "sleep *": "allow",

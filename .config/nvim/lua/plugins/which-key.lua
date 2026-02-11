@@ -154,6 +154,9 @@ return {
       { "<leader>ps", function() require("lazy").home() end, desc = "Status", icon = "󱖫" },
       { "<leader>pu", function() require("lazy").sync() end, desc = "Sync", icon = "" },
 
+      -- zeybek/camouflage.nvim
+      { "<leader>uc", group = "Camouflage", icon = { icon = "", color = "red" } },
+
       -- wsdjeg/vim-fetch
       { "gF", mode = { "n", "x" }, desc = "Go to file:line under cursor" },
     },

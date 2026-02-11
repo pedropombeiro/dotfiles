@@ -43,9 +43,8 @@ if [ -d "$opencode_data_dir" ]; then
     if [ -f "$opencode_data_dir/auth.json" ]; then
         cp "$opencode_data_dir/auth.json" "$tmp_opencode_data/opencode/"
     fi
-    if [ -d "$opencode_data_dir/storage" ]; then
-        ln -s "$opencode_data_dir/storage" "$tmp_opencode_data/opencode/storage"
-    fi
+    # Note: do NOT symlink storage/ — that would leak temp sessions into
+    # the regular opencode session list.
 fi
 
 if [ ! -t 0 ]; then
@@ -62,11 +61,10 @@ fi
 prompt="Based on the attached diff, write a commit message with a subject line (max 72 chars), blank line, then a body explaining what and why (wrap at 72 chars)."
 if [ "$type" != "none" ]; then
     if [ -n "$type" ]; then
-        prompt="$prompt Use conventional commit format. The subject line must be '$type(<scope>): <subject>' or '$type: <subject>' if no scope fits."
+        prompt="$prompt Use conventional commit format. The subject line must be '$type(<scope>): <subject>'. Derive the scope from the primary area of the codebase affected (e.g. file, module, or component name). Only omit the scope if the change is truly global."
     else
-        prompt="$prompt Use conventional commit format. The subject line must be '<type>(<scope>): <subject>' or '<type>: <subject>' if no scope fits. Choose the most appropriate type (feat, fix, chore, refactor, docs, style, test, ci, build, perf)."
+        prompt="$prompt Use conventional commit format. The subject line must be '<type>(<scope>): <subject>'. Derive the scope from the primary area of the codebase affected (e.g. file, module, or component name). Only omit the scope if the change is truly global. Choose the most appropriate type (feat, fix, chore, refactor, docs, style, test, ci, build, perf)."
     fi
-    prompt="$prompt Only include parentheses when a scope is present."
 fi
 prompt="$prompt CRITICAL: Your response must contain ONLY the commit message itself. No explanations, no preamble, no thinking, no markdown. Start directly with the subject line."
 
@@ -82,6 +80,9 @@ if [ "$do_commit" -eq 1 ]; then
     # shellcheck disable=SC2064
     trap "rm -f \"$tmpfile\" \"$msgfile\"; rm -rf \"$tmp_opencode_state\" \"$tmp_opencode_data\"" EXIT
     printf "%s\n" "$msg" > "$msgfile"
+    printf "\n── commit message ──────────────────────────────────────────────────────\n" >&2
+    printf "%s\n" "$msg" >&2
+    printf "────────────────────────────────────────────────────────────────────────\n\n" >&2
     $git_cmd commit -F "$msgfile"
 else
     echo "$msg"

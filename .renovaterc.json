@@ -130,7 +130,7 @@
       "versioningTemplate": "loose"
     },
     {
-      "description": "mise opencode inline-table package",
+      "description": "mise opencode inline-table package (aqua backend)",
       "customType": "regex",
       "managerFilePatterns": [
         "/(^|/)\\.config/mise/config\\.toml##[^/]+$/",
@@ -141,8 +141,8 @@
       "matchStrings": [
         "\"opencode\"\\s*=\\s*\\{[^}]*version\\s*=\\s*\"(?<currentValue>[^\"]+)\"[^}]*\\}"
       ],
-      "depNameTemplate": "opencode-ai/opencode",
-      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "sst/opencode",
+      "datasourceTemplate": "aqua",
       "versioningTemplate": "loose"
     }
   ]

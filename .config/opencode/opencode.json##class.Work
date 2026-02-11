@@ -24,6 +24,7 @@
       "git grep*": "allow",
       "git log*": "allow",
       "git ls-files*": "allow",
+      "git remote -v": "allow",
       "git rev-parse*": "allow",
       "git show*": "allow",
       "git status*": "allow",

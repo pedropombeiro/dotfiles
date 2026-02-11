@@ -1,5 +1,12 @@
 #!/usr/bin/env zsh
 
+# OMZ libs: clipboard, compfix, completion settings, directory helpers
+zinit lucid for \
+  OMZL::clipboard.zsh \
+  OMZL::compfix.zsh \
+  OMZL::completion.zsh \
+  OMZL::directories.zsh
+
 # Avoid slow rebind in autosuggestions
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 

@@ -142,7 +142,7 @@
         "\"opencode\"\\s*=\\s*\\{[^}]*version\\s*=\\s*\"(?<currentValue>[^\"]+)\"[^}]*\\}"
       ],
       "depNameTemplate": "anomalyco/opencode",
-      "datasourceTemplate": "aqua",
+      "datasourceTemplate": "github-releases",
       "versioningTemplate": "loose"
     }
   ]

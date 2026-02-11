@@ -1,0 +1,88 @@
+#!/usr/bin/env sh
+# Generate a commit message from a diff using opencode, then commit.
+# Reads the diff from stdin or falls back to staged changes.
+# Automatically uses yadm instead of git when in the home directory.
+#
+# Usage:
+#   git-ai-commit-msg                    # generate + commit (conventional)
+#   git-ai-commit-msg --type feat        # force conventional type
+#   git-ai-commit-msg --type none        # plain (non-conventional) commit
+#   git-ai-commit-msg --no-commit        # only print the message
+#   git diff --cached | git-ai-commit-msg --no-commit
+
+set -e
+
+type=""
+do_commit=1
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --type) type="$2"; shift 2 ;;
+        --no-commit) do_commit=0; shift ;;
+        *) echo "error: unknown argument: $1" >&2; exit 1 ;;
+    esac
+done
+
+model="${OPENCODE_COMMIT_MODEL:-${OPENCODE_SMALL_MODEL:-${OPENCODE_MODEL:-openai/gpt-4.1-nano}}}"
+
+# Use yadm when running from the home directory (dotfiles repo)
+if [ "$(pwd)" = "$HOME" ] || yadm status > /dev/null 2>&1; then
+    git_cmd="yadm"
+else
+    git_cmd="git"
+fi
+
+tmpfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-msg.XXXXXX")
+tmp_opencode_state=$(mktemp -d "${TMPDIR:-/tmp}/opencode-state.XXXXXX")
+tmp_opencode_data=$(mktemp -d "${TMPDIR:-/tmp}/opencode-data.XXXXXX")
+trap 'rm -f "$tmpfile"; rm -rf "$tmp_opencode_state" "$tmp_opencode_data"' EXIT
+
+opencode_data_root="${XDG_DATA_HOME:-$HOME/.local/share}"
+opencode_data_dir="$opencode_data_root/opencode"
+if [ -d "$opencode_data_dir" ]; then
+    mkdir -p "$tmp_opencode_data/opencode"
+    if [ -f "$opencode_data_dir/auth.json" ]; then
+        cp "$opencode_data_dir/auth.json" "$tmp_opencode_data/opencode/"
+    fi
+    if [ -d "$opencode_data_dir/storage" ]; then
+        ln -s "$opencode_data_dir/storage" "$tmp_opencode_data/opencode/storage"
+    fi
+fi
+
+if [ ! -t 0 ]; then
+    cat > "$tmpfile"
+fi
+if [ ! -s "$tmpfile" ]; then
+    $git_cmd diff --cached > "$tmpfile"
+fi
+if [ ! -s "$tmpfile" ]; then
+    echo "error: no diff provided on stdin and no staged changes" >&2
+    exit 1
+fi
+
+prompt="Based on the attached diff, write a commit message with a subject line (max 72 chars), blank line, then a body explaining what and why (wrap at 72 chars)."
+if [ "$type" != "none" ]; then
+    if [ -n "$type" ]; then
+        prompt="$prompt Use conventional commit format. The subject line must be '$type(<scope>): <subject>' or '$type: <subject>' if no scope fits."
+    else
+        prompt="$prompt Use conventional commit format. The subject line must be '<type>(<scope>): <subject>' or '<type>: <subject>' if no scope fits. Choose the most appropriate type (feat, fix, chore, refactor, docs, style, test, ci, build, perf)."
+    fi
+    prompt="$prompt Only include parentheses when a scope is present."
+fi
+prompt="$prompt CRITICAL: Your response must contain ONLY the commit message itself. No explanations, no preamble, no thinking, no markdown. Start directly with the subject line."
+
+msg=$(XDG_DATA_HOME="$tmp_opencode_data" XDG_STATE_HOME="$tmp_opencode_state" opencode run -m "$model" --agent build "$prompt" -f "$tmpfile")
+
+if [ -z "$msg" ]; then
+    echo "error: opencode returned an empty response" >&2
+    exit 1
+fi
+
+if [ "$do_commit" -eq 1 ]; then
+    msgfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-msg.XXXXXX")
+    # shellcheck disable=SC2064
+    trap "rm -f \"$tmpfile\" \"$msgfile\"; rm -rf \"$tmp_opencode_state\" \"$tmp_opencode_data\"" EXIT
+    printf "%s\n" "$msg" > "$msgfile"
+    $git_cmd commit -F "$msgfile"
+else
+    echo "$msg"
+fi

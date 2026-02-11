@@ -23,16 +23,24 @@ pull:
 @wifi-traffic:
     ssh ap-u6pro.infra.pombei.ro "tcpdump -np"
 
-[script]
+# Generate a commit message and commit staged changes using opencode.
+# Usage:
+#   just commit                    # generate + commit staged changes
+
+# just commit feat               # conventional commit with type
+@commit TYPE='':
+    git-ai-commit-msg {{ if TYPE != '' { "--type " + TYPE } else { "" } }}
+
 fix *FILES='':
+    #!/usr/bin/env sh
     if [ -n "{{ FILES }}" ]; then
         yadm enter pre-commit run --files {{ FILES }} --hook-stage manual
     else
         yadm enter pre-commit run --all-files --hook-stage manual
     fi
 
-[script]
 lint *FILES='':
+    #!/usr/bin/env sh
     if [ -n "{{ FILES }}" ]; then
         yadm enter pre-commit run --files {{ FILES }}
     else

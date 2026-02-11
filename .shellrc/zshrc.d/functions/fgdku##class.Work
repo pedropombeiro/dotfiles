@@ -41,6 +41,11 @@ source ~/.config/yadm/scripts/colors.sh
 
 MAIN_BRANCH="$(git_main_branch)"
 
+ha_webhook() {
+  curl -sX PUT -d "state=$1" 'https://ha.pombei.ro/api/webhook/gdk_update' >/dev/null 2>&1 ||
+    printf "${YELLOW}%s${NC}\n" 'Home Assistant webhook unavailable, continuing...'
+}
+
 # Helper function to fix gem activation conflicts between GDK and GitLab.
 # GDK and GitLab may require different gem versions (e.g., openssl 4.x vs 3.x).
 # This function detects and uninstalls conflicting gem versions.
@@ -117,7 +122,7 @@ stop_gem_conflict_watcher() {
     sudo ifconfig en7 up
   fi
 
-  curl -sX PUT -d 'state=on' 'https://ha.pombei.ro/api/webhook/gdk_update'
+  ha_webhook on
 
   rm -f .git/gc.log
 
@@ -217,4 +222,4 @@ stop_gem_conflict_watcher() {
   cd - >/dev/null
 )
 
-curl -sX PUT -d 'state=off' 'https://ha.pombei.ro/api/webhook/gdk_update'
+ha_webhook off

@@ -3832,7 +3832,7 @@
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Text</key>
-			<string>export PATH="$HOME/.shellrc/zshrc.d/functions/scripts:$PATH" &amp;&amp; pgai connect main; pgai destroy main</string>
+			<string>export PATH="$HOME/.shellrc/zshrc.d/functions/scripts:$PATH" &amp;&amp; mise x ruby -- pgai connect main; mise x ruby -- pgai destroy main</string>
 			<key>Jobs to Ignore</key>
 			<array>
 				<string>rlogin</string>
@@ -4241,7 +4241,7 @@
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Text</key>
-			<string>export PATH="$HOME/.shellrc/zshrc.d/functions/scripts:$PATH" &amp;&amp; pgai connect ci; pgai destroy ci</string>
+			<string>export PATH="$HOME/.shellrc/zshrc.d/functions/scripts:$PATH" &amp;&amp; mise x ruby -- pgai connect ci; mise x ruby -- pgai destroy ci</string>
 			<key>Jobs to Ignore</key>
 			<array>
 				<string>rlogin</string>

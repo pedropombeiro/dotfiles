@@ -32,9 +32,10 @@ else
 fi
 
 tmpfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-msg.XXXXXX")
+statusfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-status.XXXXXX")
 tmp_opencode_state=$(mktemp -d "${TMPDIR:-/tmp}/opencode-state.XXXXXX")
 tmp_opencode_data=$(mktemp -d "${TMPDIR:-/tmp}/opencode-data.XXXXXX")
-trap 'rm -f "$tmpfile"; rm -rf "$tmp_opencode_state" "$tmp_opencode_data"' EXIT
+trap 'rm -f "$tmpfile" "$statusfile"; rm -rf "$tmp_opencode_state" "$tmp_opencode_data"' EXIT
 
 opencode_data_root="${XDG_DATA_HOME:-$HOME/.local/share}"
 opencode_data_dir="$opencode_data_root/opencode"
@@ -58,7 +59,10 @@ if [ ! -s "$tmpfile" ]; then
     exit 1
 fi
 
-prompt="Based on the attached diff, write a commit message with a subject line (max 72 chars), blank line, then a body explaining what and why (wrap at 72 chars)."
+# Capture git status so the agent can see renames, additions, deletions, etc.
+$git_cmd status > "$statusfile"
+
+prompt="Based on the attached git status output and diff, write a commit message with a subject line (max 72 chars), blank line, then a body explaining what and why (wrap at 72 chars)."
 if [ "$type" != "none" ]; then
     if [ -n "$type" ]; then
         prompt="$prompt Use conventional commit format. The subject line must be '$type(<scope>): <subject>'. Derive the scope from the primary area of the codebase affected (e.g. file, module, or component name). Only omit the scope if the change is truly global."
@@ -68,7 +72,7 @@ if [ "$type" != "none" ]; then
 fi
 prompt="$prompt CRITICAL: Your response must contain ONLY the commit message itself. No explanations, no preamble, no thinking, no markdown. Start directly with the subject line."
 
-msg=$(XDG_DATA_HOME="$tmp_opencode_data" XDG_STATE_HOME="$tmp_opencode_state" opencode run -m "$model" --agent build "$prompt" -f "$tmpfile")
+msg=$(XDG_DATA_HOME="$tmp_opencode_data" XDG_STATE_HOME="$tmp_opencode_state" opencode run -m "$model" --agent build "$prompt" -f "$statusfile" -f "$tmpfile")
 
 if [ -z "$msg" ]; then
     echo "error: opencode returned an empty response" >&2
@@ -78,7 +82,7 @@ fi
 if [ "$do_commit" -eq 1 ]; then
     msgfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-msg.XXXXXX")
     # shellcheck disable=SC2064
-    trap "rm -f \"$tmpfile\" \"$msgfile\"; rm -rf \"$tmp_opencode_state\" \"$tmp_opencode_data\"" EXIT
+    trap "rm -f \"$tmpfile\" \"$statusfile\" \"$msgfile\"; rm -rf \"$tmp_opencode_state\" \"$tmp_opencode_data\"" EXIT
     printf "%s\n" "$msg" > "$msgfile"
     printf "\n── commit message ──────────────────────────────────────────────────────\n" >&2
     printf "%s\n" "$msg" >&2

@@ -50,9 +50,49 @@ glab issue create --title "Bug: issue title" --description "$(cat /tmp/issue-des
 **Templates:** Check `.gitlab/issue_templates/` for project-specific templates and follow their structure.
 **References:** Link related issues using `#123` syntax and use appropriate labels/milestones.
 
+## Pipeline Monitoring
+
+```bash
+# Check current branch pipeline status
+glab ci status
+
+# View pipeline interactively (requires TTY)
+glab ci view
+
+# List recent pipelines
+glab ci list
+
+# View a specific pipeline's jobs
+glab ci get <pipeline-id>
+
+# View job logs
+glab ci trace <job-id>
+```
+
+**In non-interactive environments (e.g. AI agents):** Use the `gitlab_get_pipeline` MCP tool to poll pipeline status, since `glab ci view` requires a TTY.
+
+## Epic Management
+
+`glab` has no built-in epic commands. Use the REST API via `glab api`:
+
+```bash
+# View epic details
+glab api "groups/<group-id>/epics/<epic-iid>"
+
+# Read epic description
+glab api "groups/<group-id>/epics/<epic-iid>" | python3 -c "import sys,json; print(json.load(sys.stdin).get('description',''))"
+
+# Update epic description - write to file first, then use $(cat)
+glab api -X PUT "groups/<group-id>/epics/<epic-iid>" -f "description=$(cat /tmp/epic-description.md)"
+
+# Update epic title
+glab api -X PUT "groups/<group-id>/epics/<epic-iid>" -f "title=New Title"
+```
+
 ## Git Best Practices
 
 **Branch naming:**
+
 ```bash
 git checkout -b feat/description
 git checkout -b fix/description
@@ -60,6 +100,7 @@ git checkout -b refactor/description
 ```
 
 **Commit messages:**
+
 - Format: `type: description` (conventional commits)
 - Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
 - Explain the "why" not just the "what"

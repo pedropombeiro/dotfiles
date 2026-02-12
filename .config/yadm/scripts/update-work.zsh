@@ -4,10 +4,30 @@ YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pw
 
 source "${YADM_SCRIPTS}/colors.sh"
 
+ensure_clickhouse_binary() {
+  local clickhouse_bin
+
+  clickhouse_bin=${1}
+  [[ -n ${clickhouse_bin} && -x ${clickhouse_bin} ]] || return 0
+
+  if xattr -p com.apple.quarantine ${clickhouse_bin} >/dev/null 2>&1; then
+    printf "${YELLOW}%s${NC}\n" 'ClickHouse is quarantined, clearing macOS quarantine...'
+    xattr -d com.apple.quarantine ${clickhouse_bin} >/dev/null 2>&1 ||
+      printf "${YELLOW}%s${NC}\n" 'Failed to clear ClickHouse quarantine; migrations may fail.'
+  fi
+}
+
 # Create mise shims for RubyMine debugger
 mise reshim
 
 if [[ -n ${GDK_ROOT} ]]; then
+  local clickhouse_bin_path
+
+  clickhouse_bin_path=$(mise which clickhouse 2>/dev/null || true)
+  [[ -n ${clickhouse_bin_path} ]] || clickhouse_bin_path=/opt/homebrew/bin/clickhouse
+
+  ensure_clickhouse_binary ${clickhouse_bin_path}
+
   # Populate gdk.yml
   # From https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/howto/registry.md#set-up-pushing-and-pulling-of-images-over-http
   cat << EOF > ${GDK_ROOT}/gdk.tmp.yml
@@ -15,7 +35,7 @@ if [[ -n ${GDK_ROOT} ]]; then
 asdf:
   opt_out: true  # Required to use mise instead
 clickhouse:
-  bin: "/opt/homebrew/bin/clickhouse"
+  bin: "${clickhouse_bin_path}"
   enabled: true
   max_memory_usage: 8589934592
   max_server_memory_usage: 16589934592

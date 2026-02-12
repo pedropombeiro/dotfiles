@@ -34,8 +34,6 @@
       "golangci-lint run*": "allow",
       "grep*": "allow",
       "head*": "allow",
-      "knowledge-graph_list_projects": "allow",
-      "knowledge-graph_search_codebase_definitions": "allow",
       "ls*": "allow",
       "markdownlint *": "allow",
       "npx markdownlint-cli2 *": "allow",
@@ -46,9 +44,12 @@
       "wc *": "allow",
       "which*": "allow",
     },
-    "read": "allow",
     "glob": "allow",
     "grep": "allow",
+    "knowledge-graph_list_projects": "allow",
+    "knowledge-graph_read_definitions": "allow",
+    "knowledge-graph_search_codebase_definitions": "allow",
+    "read": "allow",
     "todowrite": "allow"
   },
 

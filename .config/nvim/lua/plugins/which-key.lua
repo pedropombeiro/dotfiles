@@ -80,8 +80,6 @@ return {
       { "<C-j>", ":m '>+1<CR>gv=gv", desc = "Move line up", mode = "v", remap = false, silent = true },
       { "<C-k>", ":m '<-2<CR>gv=gv", desc = "Move line down", mode = "v", remap = false, silent = true },
 
-      { "<leader>~", ":<C-U>setlocal lcs=tab:>-,trail:-,eol:$ list! list? <CR>", desc = "Toggle special characters" },
-
       -- Map gp to select recently pasted text
       -- (https://vim.fandom.com/wiki/Selecting_your_pasted_text)
       { "gp", "'`[' . strpart(getregtype(), 0, 1) . '`]'", expr = true, desc = "Select last pasted text" },

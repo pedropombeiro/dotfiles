@@ -22,28 +22,11 @@ return {
     },
     ---@module "csvview"
     ---@type CsvView.Options
+    keys = {
+      { "[oC", function() require("csvview").enable({ display_mode = "border", header_lnum = 1 }) end, desc = "Enable CsvView" },
+      { "]oC", function() require("csvview").disable() end, desc = "Disable CsvView" },
+    },
     opts = function()
-      Snacks.toggle
-        .new({
-          id = "csv",
-          name = "CsvView",
-          get = function() return require("csvview").is_enabled() end,
-          set = function(_state) vim.cmd(string.format("CsvViewToggle display_mode=border header_lnum=1")) end,
-          icon = {
-            enabled = " ",
-            disabled = " ",
-          },
-          color = {
-            enabled = "green",
-            disabled = "yellow",
-          },
-          wk_desc = {
-            enabled = "Disable ",
-            disabled = "Enable ",
-          },
-        })
-        :map("<leader>ux")
-
       return {
         parser = { comments = { "#", "//" } },
         keymaps = {
@@ -81,14 +64,10 @@ return {
         enabled = false,
       },
     },
-    config = function(_, opts)
-      require("render-markdown").setup(opts)
-      Snacks.toggle({
-        name = "Render Markdown",
-        get = require("render-markdown").get,
-        set = require("render-markdown").set,
-      }):map("<leader>um")
-    end,
+    keys = {
+      { "[oM", function() require("render-markdown").enable() end, desc = "Enable Render Markdown" },
+      { "]oM", function() require("render-markdown").disable() end, desc = "Disable Render Markdown" },
+    },
   },
 
   {

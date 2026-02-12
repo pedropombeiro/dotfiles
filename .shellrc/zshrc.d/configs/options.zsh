@@ -26,9 +26,5 @@ DISABLE_UNTRACKED_FILES_DIRTY="true"
 # History timestamp format
 HIST_STAMPS="yyyy-mm-dd"
 
-if [[ -n $HOMEBREW_PREFIX ]]; then
-  export MANPATH="${HOMEBREW_PREFIX}/man:$MANPATH"
-fi
-
 # zsh-autosuggestions config
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20

@@ -21,5 +21,8 @@ if [ -n "$HOMEBREW_PREFIX" ]; then
     PATH="$HOMEBREW_PREFIX/opt/python/libexec/bin:$PATH"
   fi
 
+  MANPATH="${HOMEBREW_PREFIX}/man:$MANPATH"
+
   export PATH
+  export MANPATH
 fi

@@ -1,62 +1,80 @@
+set quiet := true
+set script-interpreter := ['sh', '-eu']
+
 default: pull update
 
+# ── Dotfiles ──────────────────────────────────────────────────────────
+
+[confirm('This will discard local dotfile changes. Continue?')]
+[doc('Fetch and hard-reset dotfiles to origin/master')]
+[group('dotfiles')]
 [script]
 pull:
     yadm fetch
     yadm reset --hard origin/master
 
-@install:
+[doc('Bootstrap the dotfile environment')]
+[group('dotfiles')]
+install:
     yadm bootstrap
 
-@update:
+[doc('Run dotfile update scripts')]
+[group('dotfiles')]
+update:
     ~/.config/yadm/scripts/update.sh
 
-@checkhealth:
+[doc('Run dotfile health checks')]
+[group('dotfiles')]
+checkhealth:
     ~/.config/yadm/scripts/run-checks.zsh
 
-@brew-dump:
-    brew bundle dump --global --describe --force
+# ── Git ───────────────────────────────────────────────────────────────
 
-@brew-cleanup:
-    brew bundle cleanup ~/.Brewfile --force --file
+git_cmd := if path_exists(home_directory() / ".local/share/yadm/repo.git") == "true" { "yadm" } else { "git" }
 
-@wifi-traffic:
-    ssh ap-u6pro.infra.pombei.ro "tcpdump -np"
+[doc('Push to remote (auto-detects yadm vs git)')]
+[group('git')]
+push *ARGS='':
+    {{ git_cmd }} push {{ ARGS }}
 
-# Detect whether to use yadm or git.
-[private]
-git-cmd:
-    #!/usr/bin/env sh
-    if [ "$(pwd)" = "$HOME" ] || yadm status > /dev/null 2>&1; then
-        echo yadm
-    else
-        echo git
-    fi
-
-# Push to the remote, using yadm or git as appropriate.
-@push *ARGS='':
-    {{ `just git-cmd` }} push {{ ARGS }}
-
-# Generate a commit message and commit staged changes using opencode.
-# Usage:
-#   just commit                    # generate + commit staged changes
-
-# just commit feat               # conventional commit with type
-@commit TYPE='':
+[doc('Generate an AI commit message and commit staged changes')]
+[group('git')]
+commit TYPE='':
     ~/.local/bin/git-ai-commit-msg {{ if TYPE != '' { "--type " + TYPE } else { "" } }}
 
+[doc('Run pre-commit fixers (manual stage)')]
+[group('git')]
+[script]
 fix *FILES='':
-    #!/usr/bin/env sh
     if [ -n "{{ FILES }}" ]; then
         yadm enter pre-commit run --files {{ FILES }} --hook-stage manual
     else
         yadm enter pre-commit run --all-files --hook-stage manual
     fi
 
+[doc('Run pre-commit linters')]
+[group('git')]
+[script]
 lint *FILES='':
-    #!/usr/bin/env sh
     if [ -n "{{ FILES }}" ]; then
         yadm enter pre-commit run --files {{ FILES }}
     else
         yadm enter pre-commit run --all-files
     fi
+
+# ── Misc ──────────────────────────────────────────────────────────────
+
+[doc('Dump current Homebrew packages to Brewfile')]
+[group('brew')]
+brew-dump:
+    brew bundle dump --global --describe --force
+
+[doc('Remove packages not in Brewfile')]
+[group('brew')]
+brew-cleanup:
+    brew bundle cleanup ~/.Brewfile --force --file
+
+[doc('Sniff Wi-Fi traffic from the AP')]
+[group('network')]
+wifi-traffic:
+    ssh ap-u6pro.infra.pombei.ro "tcpdump -np"

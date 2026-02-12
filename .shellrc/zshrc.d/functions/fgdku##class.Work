@@ -177,7 +177,11 @@ stop_gem_conflict_watcher() {
     bundle exec rake db:test:prepare
 
   printf "${YELLOW}%s${NC}\n" "Run any pending ClickHouse migrations..."
-  gdk status clickhouse >/dev/null && bundle exec rake gitlab:clickhouse:migrate:main
+  if gdk status clickhouse >/dev/null 2>&1 && curl -sf http://localhost:8123/ping >/dev/null 2>&1; then
+    bundle exec rake gitlab:clickhouse:migrate:main
+  else
+    printf "${YELLOW}%s${NC}\n" 'ClickHouse not available, skipping migrations...'
+  fi
 
   printf "${YELLOW}%s${NC}\n" 'Pruning local branches...'
   git fetch --jobs=10 || { printf "${RED}%s${NC}\n" 'git fetch failed, retrying...'; sleep 5; git fetch --jobs=10; }

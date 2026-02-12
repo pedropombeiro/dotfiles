@@ -5391,7 +5391,7 @@
 			<key>Columns</key>
 			<integer>160</integer>
 			<key>Command</key>
-			<string>/opt/homebrew/bin/clickhouse client --port 9001 -d gitlab_clickhouse_development -u gitlab --password PASSWORD_HERE</string>
+			<string></string>
 			<key>Cursor Color</key>
 			<dict>
 				<key>Blue Component</key>
@@ -5411,9 +5411,9 @@
 				<real>1</real>
 			</dict>
 			<key>Custom Command</key>
-			<string>Yes</string>
-			<key>Custom Directory</key>
 			<string>No</string>
+			<key>Custom Directory</key>
+			<string>Yes</string>
 			<key>Custom Icon Path</key>
 			<string>/Users/pedropombeiro/src/gitlab.com/gitlab-org/gitlab/ee/app/assets/images/favicon-green.png</string>
 			<key>Default Bookmark</key>
@@ -5470,7 +5470,7 @@
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Text</key>
-			<string></string>
+			<string>mise x clickhouse -- clickhouse client --port 9001 -d gitlab_clickhouse_development -u gitlab --password PASSWORD_HERE</string>
 			<key>Jobs to Ignore</key>
 			<array>
 				<string>rlogin</string>
@@ -5578,7 +5578,7 @@
 			<key>Window Type</key>
 			<integer>0</integer>
 			<key>Working Directory</key>
-			<string>~/clickhouse</string>
+			<string>/Users/pedropombeiro/gitlab-development-kit/gitlab/</string>
 		</dict>
 		<dict>
 			<key>ASCII Anti Aliased</key>

@@ -1,4 +1,5 @@
 [tools]
+clickhouse = "23"
 glab = "latest"
 just = "latest"
 pre-commit = "latest"

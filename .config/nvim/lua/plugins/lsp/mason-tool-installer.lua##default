@@ -3,6 +3,15 @@
 --  Replaces mason-null-ls.nvim's ensure_installed functionality with a dedicated
 --  tool installer that runs on startup and handles concurrent installs correctly.
 
+local function has_go()
+  return vim.fn.executable("go") == 1
+end
+
+local function has_ruby()
+  local p = vim.fn.exepath("ruby")
+  return p ~= "" and not p:find("/usr/bin/ruby")
+end
+
 return {
   "WhoIsSethDaniel/mason-tool-installer.nvim",
   dependencies = {
@@ -13,17 +22,17 @@ return {
       "actionlint",
       "checkmake",
       "docker-compose-language-service",
-      "erb-formatter",
-      "erb-lint",
+      { "erb-formatter", condition = has_ruby },
+      { "erb-lint", condition = has_ruby },
       "fixjson",
       "gitlint",
       "hadolint",
       "gitlab-ci-ls",
-      "golangci-lint",
-      "golangci-lint-langserver",
-      "goimports",
-      "gofumpt",
-      "gopls",
+      { "golangci-lint", condition = has_go },
+      { "golangci-lint-langserver", condition = has_go },
+      { "goimports", condition = has_go },
+      { "gofumpt", condition = has_go },
+      { "gopls", condition = has_go },
       "jsonlint",
       "just-lsp",
       "lua_ls",
@@ -31,7 +40,7 @@ return {
       "mypy",
       "prettier",
       "pyrefly",
-      "ruby-lsp",
+      { "ruby-lsp", condition = has_ruby },
       "shfmt",
       "shellcheck",
       "stylua",

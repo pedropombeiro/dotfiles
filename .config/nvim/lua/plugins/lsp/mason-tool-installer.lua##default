@@ -3,6 +3,10 @@
 --  Replaces mason-null-ls.nvim's ensure_installed functionality with a dedicated
 --  tool installer that runs on startup and handles concurrent installs correctly.
 
+local function has_cargo()
+  return vim.fn.executable("cargo") == 1
+end
+
 local function has_go()
   return vim.fn.executable("go") == 1
 end
@@ -27,7 +31,7 @@ return {
       "fixjson",
       "gitlint",
       "hadolint",
-      "gitlab-ci-ls",
+      { "gitlab-ci-ls", condition = has_cargo },
       { "golangci-lint", condition = has_go },
       { "golangci-lint-langserver", condition = has_go },
       { "goimports", condition = has_go },

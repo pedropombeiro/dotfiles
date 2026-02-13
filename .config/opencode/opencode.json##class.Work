@@ -4,6 +4,18 @@
   "plugin": [
     "@gitlab/opencode-gitlab-plugin"
   ],
+  "mcp": {
+    "lazy-mcp": {
+      "type": "local",
+      "command": [
+        "npx",
+        "lazy-mcp@latest",
+        "--config",
+        "~/.config/lazy-mcp/servers.json"
+      ],
+      "enabled": true
+    }
+  },
   "enabled_providers": ["gitlab"],
   "small_model": "gitlab/duo-chat-haiku-4-5",
   "share": "disabled",

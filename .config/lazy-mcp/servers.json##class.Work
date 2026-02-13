@@ -1,0 +1,34 @@
+{
+  "mode": "multi-server",
+  "servers": [
+    {
+      "name": "gitlab",
+      "description": "GitLab API: issues, MRs, pipelines, repositories",
+      "type": "local",
+      "command": [
+        "npx",
+        "mcp-remote@latest",
+        "https://gitlab.com/api/v4/mcp",
+        "--static-oauth-client-metadata",
+        "{\"scope\": \"mcp\"}"
+      ]
+    },
+    {
+      "name": "gitlab-knowledge-graph",
+      "description": "GitLab repository knowledge graph and code analysis",
+      "type": "remote",
+      "url": "http://localhost:27495/mcp"
+    },
+    {
+      "name": "context7",
+      "description": "Library documentation and code examples",
+      "type": "local",
+      "command": ["npx", "-y", "@upstash/context7-mcp"]
+    }
+  ],
+  "discovery": {
+    "cache_strategy": "session",
+    "cache_ttl": 3600
+  }
+}
+

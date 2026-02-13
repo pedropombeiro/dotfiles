@@ -10050,7 +10050,7 @@
 				<key>Has Toolbelt</key>
 				<false/>
 				<key>Height</key>
-				<real>1415</real>
+				<real>1085</real>
 				<key>Hide After Opening</key>
 				<false/>
 				<key>Hiding Toolbelt Should Resize Window</key>
@@ -10062,9 +10062,9 @@
 				<key>Saved Window Type</key>
 				<integer>0</integer>
 				<key>Screen</key>
-				<integer>0</integer>
-				<key>Selected Tab Index</key>
 				<integer>1</integer>
+				<key>Selected Tab Index</key>
+				<integer>4</integer>
 				<key>Tabs</key>
 				<array>
 					<dict>
@@ -10349,7 +10349,7 @@
 											<key>Close Sessions On End</key>
 											<integer>0</integer>
 											<key>Columns</key>
-											<integer>180</integer>
+											<integer>132</integer>
 											<key>Command</key>
 											<string></string>
 											<key>Cursor Color</key>
@@ -10357,13 +10357,13 @@
 												<key>Alpha Component</key>
 												<real>1</real>
 												<key>Blue Component</key>
-												<real>0.63873869180679321</real>
+												<real>0.93333333333333335</real>
 												<key>Color Space</key>
-												<string>Calibrated</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.82989895343780518</real>
+												<real>0.93333333333333335</real>
 												<key>Red Component</key>
-												<real>0.90061241388320923</real>
+												<real>0.93333333333333335</real>
 											</dict>
 											<key>Cursor Guide Color</key>
 											<dict>
@@ -10403,6 +10403,8 @@
 											<true/>
 											<key>Draw Powerline Glyphs</key>
 											<true/>
+											<key>Enable Triggers in Interactive Apps</key>
+											<false/>
 											<key>Flashing Bell</key>
 											<false/>
 											<key>Foreground Color</key>
@@ -10419,7 +10421,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>97EC99CD-0476-4599-AB47-8F69637644D6</string>
+											<string>B9C7A145-806F-45CC-B640-0FA55C225628</string>
 											<key>Has Hotkey</key>
 											<true/>
 											<key>Horizontal Spacing</key>
@@ -10450,6 +10452,8 @@
 											<false/>
 											<key>Idle Code</key>
 											<integer>0</integer>
+											<key>Initial Text</key>
+											<string></string>
 											<key>Initial Use Transparency</key>
 											<false/>
 											<key>Jobs to Ignore</key>
@@ -10586,11 +10590,15 @@
 											<string>/Users/pedropombeiro</string>
 										</dict>
 										<key>Columns</key>
-										<integer>281</integer>
+										<integer>189</integer>
 										<key>Commands</key>
 										<array/>
 										<key>Directories</key>
 										<array>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
 											<string>/Users/pedropombeiro</string>
 											<string>/Users/pedropombeiro</string>
 											<string>/Users/pedropombeiro</string>
@@ -10639,6 +10647,7 @@
 										</dict>
 										<key>Overridden Fields</key>
 										<array>
+											<string>Cursor Color</string>
 											<string>Original Guid</string>
 											<string>Guid</string>
 											<string>Title Components</string>
@@ -10649,15 +10658,15 @@
 											<string>Shell Launcher</string>
 										</dict>
 										<key>Rows</key>
-										<integer>71</integer>
+										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>489B5071-564F-444E-8642-B6B6E149F7E8</string>
+										<string>4160A5F2-EF0F-4561-A0D7-28D6470E71B2</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
-										<true/>
+										<false/>
 										<key>Should Expect Prompt Marks</key>
-										<true/>
+										<false/>
 										<key>Substitutions</key>
 										<dict>
 											<key>$$$$</key>
@@ -10673,9 +10682,9 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1363</real>
+										<real>1017</real>
 										<key>width</key>
-										<real>2560</real>
+										<real>1728</real>
 										<key>x</key>
 										<real>0.0</real>
 										<key>y</key>
@@ -10688,9 +10697,9 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1363</real>
+								<real>1017</real>
 								<key>width</key>
-								<real>2560</real>
+								<real>1728</real>
 								<key>x</key>
 								<real>0.0</real>
 								<key>y</key>
@@ -10990,19 +10999,19 @@
 											<key>Columns</key>
 											<integer>180</integer>
 											<key>Command</key>
-											<string></string>
+											<string>mise x ruby -- zsh</string>
 											<key>Cursor Color</key>
 											<dict>
 												<key>Alpha Component</key>
 												<real>1</real>
 												<key>Blue Component</key>
-												<real>0.63873869180679321</real>
+												<real>0.93333333333333335</real>
 												<key>Color Space</key>
-												<string>Calibrated</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.82989895343780518</real>
+												<real>0.93333333333333335</real>
 												<key>Red Component</key>
-												<real>0.90061241388320923</real>
+												<real>0.93333333333333335</real>
 											</dict>
 											<key>Cursor Guide Color</key>
 											<dict>
@@ -11044,6 +11053,8 @@
 											<true/>
 											<key>Draw Powerline Glyphs</key>
 											<true/>
+											<key>Enable Triggers in Interactive Apps</key>
+											<false/>
 											<key>Flashing Bell</key>
 											<false/>
 											<key>Foreground Color</key>
@@ -11060,7 +11071,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>9F937375-576B-4209-B6A6-6AB599CCAC85</string>
+											<string>927EFDB8-FA25-47E4-AFA6-157242EF3FA1</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -11094,7 +11105,7 @@
 											<key>Idle Code</key>
 											<integer>0</integer>
 											<key>Initial Text</key>
-											<string>export PATH="$PWD/bin:$PATH"</string>
+											<string></string>
 											<key>Initial Use Transparency</key>
 											<false/>
 											<key>Jobs to Ignore</key>
@@ -11134,7 +11145,7 @@
 											<key>Open Toolbelt</key>
 											<false/>
 											<key>Option Key Sends</key>
-											<integer>0</integer>
+											<integer>2</integer>
 											<key>Original Guid</key>
 											<string>BFFD6BF3-475A-4EF5-89D1-6EE93780400B</string>
 											<key>Prompt Before Closing 2</key>
@@ -11239,9 +11250,9 @@
 													<key>action</key>
 													<string>SendTextTrigger</string>
 													<key>disabled</key>
-													<false/>
+													<true/>
 													<key>parameter</key>
-													<string>imgcat "\1"\n</string>
+													<string> imgcat "\1"\n</string>
 													<key>partial</key>
 													<false/>
 													<key>regex</key>
@@ -11274,7 +11285,7 @@
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab/</string>
 										</dict>
 										<key>Columns</key>
-										<integer>281</integer>
+										<integer>189</integer>
 										<key>Commands</key>
 										<array>
 											<string>export PATH="$PWD/bin:$PATH"</string>
@@ -11286,11 +11297,21 @@
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 										</array>
 										<key>Environment</key>
 										<dict>
 											<key>PWD</key>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab/</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 										</dict>
 										<key>Hostname to Shell</key>
 										<dict>
@@ -11343,6 +11364,7 @@
 										</dict>
 										<key>Overridden Fields</key>
 										<array>
+											<string>Cursor Color</string>
 											<string>Use Tab Color</string>
 											<string>Tab Color</string>
 											<string>Original Guid</string>
@@ -11355,15 +11377,15 @@
 											<string>Shell Launcher</string>
 										</dict>
 										<key>Rows</key>
-										<integer>71</integer>
+										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>67B67B62-4782-4CFB-B6D9-88D7855F45CA</string>
+										<string>BA02DB72-2BC7-4812-A71F-38F6FCB8ABAF</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
-										<true/>
+										<false/>
 										<key>Should Expect Prompt Marks</key>
-										<true/>
+										<false/>
 										<key>Substitutions</key>
 										<dict>
 											<key>$$$$</key>
@@ -11379,9 +11401,9 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1363</real>
+										<real>1017</real>
 										<key>width</key>
-										<real>2560</real>
+										<real>1728</real>
 										<key>x</key>
 										<real>0.0</real>
 										<key>y</key>
@@ -11394,9 +11416,9 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1363</real>
+								<real>1017</real>
 								<key>width</key>
-								<real>2560</real>
+								<real>1728</real>
 								<key>x</key>
 								<real>0.0</real>
 								<key>y</key>
@@ -11702,6 +11724,8 @@
 											<string>Default</string>
 											<key>Disable Window Resizing</key>
 											<true/>
+											<key>Enable Triggers in Interactive Apps</key>
+											<false/>
 											<key>Flashing Bell</key>
 											<false/>
 											<key>Foreground Color</key>
@@ -11714,7 +11738,7 @@
 												<real>0.73333334922790527</real>
 											</dict>
 											<key>Guid</key>
-											<string>89D3CF0F-0FD5-4489-A71A-A08859386D6E</string>
+											<string>51501F35-4316-416A-B0FD-0A6D80F7F6C5</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -11788,7 +11812,7 @@
 											<key>Open Toolbelt</key>
 											<false/>
 											<key>Option Key Sends</key>
-											<integer>0</integer>
+											<integer>2</integer>
 											<key>Original Guid</key>
 											<string>3E3EC3C1-EDA5-496A-BEFB-66C8DC9C12C4</string>
 											<key>Prompt Before Closing 2</key>
@@ -11824,7 +11848,7 @@
 											<key>Session Close Undo Timeout</key>
 											<integer>20</integer>
 											<key>Shortcut</key>
-											<string>R</string>
+											<string></string>
 											<key>Show Status Bar</key>
 											<false/>
 											<key>Show Timestamps</key>
@@ -11896,7 +11920,7 @@
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 										</dict>
 										<key>Columns</key>
-										<integer>281</integer>
+										<integer>189</integer>
 										<key>Commands</key>
 										<array>
 											<string>mise x ruby -- bin/spring rails console</string>
@@ -11962,15 +11986,15 @@
 											<string>Shell Launcher</string>
 										</dict>
 										<key>Rows</key>
-										<integer>34</integer>
+										<integer>25</integer>
 										<key>Session GUID</key>
-										<string>810C29D8-2A64-41D3-958F-92B0FCD59628</string>
+										<string>56F0BA75-EE36-4636-BFB3-663AB6C8840C</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
-										<true/>
+										<false/>
 										<key>Should Expect Prompt Marks</key>
-										<true/>
+										<false/>
 										<key>Substitutions</key>
 										<dict>
 											<key>$$$$</key>
@@ -11986,9 +12010,9 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>681</real>
+										<real>507</real>
 										<key>width</key>
-										<real>2560</real>
+										<real>1728</real>
 										<key>x</key>
 										<real>0.0</real>
 										<key>y</key>
@@ -12338,6 +12362,8 @@
 											<string>Default</string>
 											<key>Disable Window Resizing</key>
 											<true/>
+											<key>Enable Triggers in Interactive Apps</key>
+											<false/>
 											<key>Flashing Bell</key>
 											<false/>
 											<key>Foreground Color</key>
@@ -12354,7 +12380,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>442B72C3-8306-45D3-AA98-D3EAA54AEE89</string>
+											<string>8EC1DBA1-05FA-47F7-821D-8C4DE7F3B948</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -12537,11 +12563,13 @@
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 										</dict>
 										<key>Columns</key>
-										<integer>281</integer>
+										<integer>189</integer>
 										<key>Commands</key>
 										<array/>
 										<key>Directories</key>
 										<array>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 										</array>
@@ -12581,9 +12609,9 @@
 											<string>Command</string>
 										</dict>
 										<key>Rows</key>
-										<integer>34</integer>
+										<integer>25</integer>
 										<key>Session GUID</key>
-										<string>077DBCE3-C80F-42C4-AA29-D55BD17F741D</string>
+										<string>1FFC7F4B-452C-422E-9006-E71470A9C06B</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -12605,13 +12633,13 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>681</real>
+										<real>509</real>
 										<key>width</key>
-										<real>2560</real>
+										<real>1728</real>
 										<key>x</key>
 										<real>0.0</real>
 										<key>y</key>
-										<real>682</real>
+										<real>508</real>
 									</dict>
 								</dict>
 							</array>
@@ -12620,9 +12648,9 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1363</real>
+								<real>1017</real>
 								<key>width</key>
-								<real>2560</real>
+								<real>1728</real>
 								<key>x</key>
 								<real>0.0</real>
 								<key>y</key>
@@ -12889,7 +12917,7 @@
 												<real>1</real>
 											</dict>
 											<key>Custom Command</key>
-											<string>Yes</string>
+											<string>No</string>
 											<key>Custom Directory</key>
 											<string>Yes</string>
 											<key>Custom Icon Path</key>
@@ -12900,6 +12928,8 @@
 											<string>Default</string>
 											<key>Disable Window Resizing</key>
 											<true/>
+											<key>Enable Triggers in Interactive Apps</key>
+											<false/>
 											<key>Flashing Bell</key>
 											<false/>
 											<key>Foreground Color</key>
@@ -12912,7 +12942,7 @@
 												<real>0.73333334922790527</real>
 											</dict>
 											<key>Guid</key>
-											<string>500C2DE1-7692-4461-B6E9-826FFF294300</string>
+											<string>611BAD3D-7C5C-41E6-80CD-42C9F7639DE1</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -12946,7 +12976,7 @@
 											<key>Idle Code</key>
 											<integer>0</integer>
 											<key>Initial Text</key>
-											<string></string>
+											<string>/opt/homebrew/bin/pgcli -U pedropombeiro -d gitlabhq_development_ci -h /Users/pedropombeiro/gitlab-development-kit/postgresql</string>
 											<key>Jobs to Ignore</key>
 											<array>
 												<string>rlogin</string>
@@ -13086,7 +13116,7 @@
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 										</dict>
 										<key>Columns</key>
-										<integer>281</integer>
+										<integer>189</integer>
 										<key>Commands</key>
 										<array/>
 										<key>Directories</key>
@@ -13126,9 +13156,9 @@
 											<string>Command</string>
 										</dict>
 										<key>Rows</key>
-										<integer>71</integer>
+										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>B443A980-B8C3-4A03-BAF3-DFD9F2241C83</string>
+										<string>1E9575A5-FEB9-434F-953A-83126683037D</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -13150,9 +13180,9 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1363</real>
+										<real>1017</real>
 										<key>width</key>
-										<real>2560</real>
+										<real>1728</real>
 										<key>x</key>
 										<real>0.0</real>
 										<key>y</key>
@@ -13165,9 +13195,9 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1363</real>
+								<real>1017</real>
 								<key>width</key>
-								<real>2560</real>
+								<real>1728</real>
 								<key>x</key>
 								<real>0.0</real>
 								<key>y</key>
@@ -13183,7 +13213,7 @@
 						<key>Root</key>
 						<dict>
 							<key>Splitter ID</key>
-							<string>772DDAE0-E716-45AF-B7E8-5767DDE789AE</string>
+							<string>55F0CC11-B583-4141-949B-948AA1003322</string>
 							<key>Subviews</key>
 							<array>
 								<dict>
@@ -13414,7 +13444,7 @@
 											<key>Columns</key>
 											<integer>160</integer>
 											<key>Command</key>
-											<string>/opt/homebrew/bin/clickhouse client --port 9001 -d gitlab_clickhouse_development</string>
+											<string></string>
 											<key>Cursor Color</key>
 											<dict>
 												<key>Blue Component</key>
@@ -13434,9 +13464,9 @@
 												<real>1</real>
 											</dict>
 											<key>Custom Command</key>
-											<string>Yes</string>
-											<key>Custom Directory</key>
 											<string>No</string>
+											<key>Custom Directory</key>
+											<string>Yes</string>
 											<key>Custom Icon Path</key>
 											<string>/Users/pedropombeiro/src/gitlab.com/gitlab-org/gitlab/ee/app/assets/images/favicon-green.png</string>
 											<key>Default Bookmark</key>
@@ -13445,6 +13475,8 @@
 											<string>Default</string>
 											<key>Disable Window Resizing</key>
 											<true/>
+											<key>Enable Triggers in Interactive Apps</key>
+											<false/>
 											<key>Flashing Bell</key>
 											<false/>
 											<key>Foreground Color</key>
@@ -13491,7 +13523,7 @@
 											<key>Idle Code</key>
 											<integer>0</integer>
 											<key>Initial Text</key>
-											<string></string>
+											<string>mise x clickhouse -- clickhouse client --port 9001 -d gitlab_clickhouse_development -u gitlab --password PASSWORD_HERE</string>
 											<key>Jobs to Ignore</key>
 											<array>
 												<string>rlogin</string>
@@ -13599,10 +13631,615 @@
 											<key>Window Type</key>
 											<integer>0</integer>
 											<key>Working Directory</key>
-											<string>~/clickhouse</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab/</string>
 										</dict>
 										<key>Columns</key>
-										<integer>281</integer>
+										<integer>189</integer>
+										<key>Commands</key>
+										<array/>
+										<key>Directories</key>
+										<array/>
+										<key>Environment</key>
+										<dict>
+											<key>PWD</key>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab/</string>
+										</dict>
+										<key>Hostname to Shell</key>
+										<dict/>
+										<key>Hosts</key>
+										<array/>
+										<key>Is UTF-8</key>
+										<true/>
+										<key>Key Labels</key>
+										<dict/>
+										<key>Name Controller State</key>
+										<dict>
+											<key>icon title stack</key>
+											<array/>
+											<key>window title stack</key>
+											<array/>
+										</dict>
+										<key>Program</key>
+										<dict>
+											<key>Type</key>
+											<string>Shell Launcher</string>
+										</dict>
+										<key>Rows</key>
+										<integer>53</integer>
+										<key>Session GUID</key>
+										<string>542C46CD-EABA-431C-A400-A1396F674EFC</string>
+										<key>Short Lived Single Use</key>
+										<false/>
+										<key>Should Expect Current Dir Updates</key>
+										<false/>
+										<key>Should Expect Prompt Marks</key>
+										<false/>
+										<key>Substitutions</key>
+										<dict>
+											<key>$$$$</key>
+											<string>$$</string>
+										</dict>
+										<key>Working Directory</key>
+										<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+										<key>Working Directory Poller Disabled</key>
+										<false/>
+									</dict>
+									<key>View Type</key>
+									<string>SessionView</string>
+									<key>frame</key>
+									<dict>
+										<key>height</key>
+										<real>1017</real>
+										<key>width</key>
+										<real>1728</real>
+										<key>x</key>
+										<real>0.0</real>
+										<key>y</key>
+										<real>0.0</real>
+									</dict>
+								</dict>
+							</array>
+							<key>View Type</key>
+							<string>Splitter</string>
+							<key>frame</key>
+							<dict>
+								<key>height</key>
+								<real>1017</real>
+								<key>width</key>
+								<real>1728</real>
+								<key>x</key>
+								<real>0.0</real>
+								<key>y</key>
+								<real>0.0</real>
+							</dict>
+							<key>isVertical</key>
+							<false/>
+						</dict>
+						<key>Tab GUID</key>
+						<string>D091EF36-425A-47FC-94A0-E671C3865221</string>
+					</dict>
+					<dict>
+						<key>Root</key>
+						<dict>
+							<key>Splitter ID</key>
+							<string>CB5E0E61-F153-4C6B-8F63-B1D08FD19D8D</string>
+							<key>Subviews</key>
+							<array>
+								<dict>
+									<key>Is Active</key>
+									<integer>1</integer>
+									<key>Session</key>
+									<dict>
+										<key>Bookmark</key>
+										<dict>
+											<key>ASCII Anti Aliased</key>
+											<true/>
+											<key>ASCII Ligatures</key>
+											<false/>
+											<key>Ambiguous Double Width</key>
+											<false/>
+											<key>Ansi 0 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.11759774386882782</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.11759573966264725</real>
+												<key>Red Component</key>
+												<real>0.11759927868843079</real>
+											</dict>
+											<key>Ansi 1 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.090684391558170319</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.05879192054271698</real>
+												<key>Red Component</key>
+												<real>0.74529051780700684</real>
+											</dict>
+											<key>Ansi 10 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.11661489307880402</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.69061970710754395</real>
+												<key>Red Component</key>
+												<real>0.66574931144714355</real>
+											</dict>
+											<key>Ansi 11 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.1444794088602066</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.6926688551902771</real>
+												<key>Red Component</key>
+												<real>0.96949708461761475</real>
+											</dict>
+											<key>Ansi 12 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.52537077665328979</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.58534377813339233</real>
+												<key>Red Component</key>
+												<real>0.44289660453796387</real>
+											</dict>
+											<key>Ansi 13 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.53848373889923096</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.43883562088012695</real>
+												<key>Red Component</key>
+												<real>0.78096956014633179</real>
+											</dict>
+											<key>Ansi 14 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.41142863035202026</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.71257460117340088</real>
+												<key>Red Component</key>
+												<real>0.49072420597076416</real>
+											</dict>
+											<key>Ansi 15 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.63873869180679321</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.82989895343780518</real>
+												<key>Red Component</key>
+												<real>0.90061241388320923</real>
+											</dict>
+											<key>Ansi 2 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.082894742488861084</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.53061914443969727</real>
+												<key>Red Component</key>
+												<real>0.52591603994369507</real>
+											</dict>
+											<key>Ansi 3 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.10328958928585052</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.53254079818725586</real>
+												<key>Red Component</key>
+												<real>0.80126690864562988</real>
+											</dict>
+											<key>Ansi 4 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.4586675763130188</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.45008346438407898</real>
+												<key>Red Component</key>
+												<real>0.21694663166999817</real>
+											</dict>
+											<key>Ansi 5 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.45103743672370911</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.29604318737983704</real>
+												<key>Red Component</key>
+												<real>0.62685638666152954</real>
+											</dict>
+											<key>Ansi 6 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.34128850698471069</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.55607825517654419</real>
+												<key>Red Component</key>
+												<real>0.34054014086723328</real>
+											</dict>
+											<key>Ansi 7 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.44320183992385864</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.5310559868812561</real>
+												<key>Red Component</key>
+												<real>0.5926094651222229</real>
+											</dict>
+											<key>Ansi 8 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.37962067127227783</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.43934443593025208</real>
+												<key>Red Component</key>
+												<real>0.49889594316482544</real>
+											</dict>
+											<key>Ansi 9 Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.15763583779335022</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.18880486488342285</real>
+												<key>Red Component</key>
+												<real>0.96744710206985474</real>
+											</dict>
+											<key>BM Growl</key>
+											<true/>
+											<key>Background Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.11759774386882782</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.11759573966264725</real>
+												<key>Red Component</key>
+												<real>0.11759927868843079</real>
+											</dict>
+											<key>Background Image Location</key>
+											<string></string>
+											<key>Badge Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>0.5</real>
+												<key>Blue Component</key>
+												<real>0.056549370288848877</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.28100395202636719</real>
+												<key>Red Component</key>
+												<real>0.7928692102432251</real>
+											</dict>
+											<key>Blinking Cursor</key>
+											<false/>
+											<key>Blur</key>
+											<true/>
+											<key>Blur Radius</key>
+											<real>6.3226701300761414</real>
+											<key>Bold Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>1</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>1</real>
+												<key>Red Component</key>
+												<real>1</real>
+											</dict>
+											<key>Character Encoding</key>
+											<integer>4</integer>
+											<key>Close Sessions On End</key>
+											<integer>0</integer>
+											<key>Columns</key>
+											<integer>132</integer>
+											<key>Command</key>
+											<string></string>
+											<key>Cursor Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.63873869180679321</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.82989895343780518</real>
+												<key>Red Component</key>
+												<real>0.90061241388320923</real>
+											</dict>
+											<key>Cursor Guide Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.15993706881999969</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.16613791882991791</real>
+												<key>Red Component</key>
+												<real>0.17867125570774078</real>
+											</dict>
+											<key>Cursor Text Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.11759774386882782</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.11759573966264725</real>
+												<key>Red Component</key>
+												<real>0.11759927868843079</real>
+											</dict>
+											<key>Custom Command</key>
+											<string>No</string>
+											<key>Custom Directory</key>
+											<string>Recycle</string>
+											<key>Default Bookmark</key>
+											<string>No</string>
+											<key>Description</key>
+											<string>Default</string>
+											<key>Disable Window Resizing</key>
+											<true/>
+											<key>Draw Powerline Glyphs</key>
+											<true/>
+											<key>Enable Triggers in Interactive Apps</key>
+											<false/>
+											<key>Flashing Bell</key>
+											<false/>
+											<key>Foreground Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.63873869180679321</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.82989895343780518</real>
+												<key>Red Component</key>
+												<real>0.90061241388320923</real>
+											</dict>
+											<key>Guid</key>
+											<string>ED550DC4-B39C-47D8-ADF5-44B1189E2B98</string>
+											<key>Has Hotkey</key>
+											<true/>
+											<key>Horizontal Spacing</key>
+											<real>1</real>
+											<key>HotKey Activated By Modifier</key>
+											<false/>
+											<key>HotKey Alternate Shortcuts</key>
+											<array/>
+											<key>HotKey Characters</key>
+											<string></string>
+											<key>HotKey Characters Ignoring Modifiers</key>
+											<string>t</string>
+											<key>HotKey Key Code</key>
+											<integer>17</integer>
+											<key>HotKey Modifier Activation</key>
+											<integer>0</integer>
+											<key>HotKey Modifier Flags</key>
+											<integer>1310720</integer>
+											<key>HotKey Window Animates</key>
+											<true/>
+											<key>HotKey Window AutoHides</key>
+											<true/>
+											<key>HotKey Window Dock Click Action</key>
+											<integer>0</integer>
+											<key>HotKey Window Floats</key>
+											<true/>
+											<key>HotKey Window Reopens On Activation</key>
+											<false/>
+											<key>Idle Code</key>
+											<integer>0</integer>
+											<key>Initial Text</key>
+											<string></string>
+											<key>Initial Use Transparency</key>
+											<false/>
+											<key>Jobs to Ignore</key>
+											<array>
+												<string>rlogin</string>
+												<string>ssh</string>
+												<string>slogin</string>
+												<string>telnet</string>
+											</array>
+											<key>Keyboard Map</key>
+											<dict/>
+											<key>Link Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.056549370288848877</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.28100395202636719</real>
+												<key>Red Component</key>
+												<real>0.7928692102432251</real>
+											</dict>
+											<key>Load Shell Integration Automatically</key>
+											<false/>
+											<key>Mouse Reporting</key>
+											<false/>
+											<key>Name</key>
+											<string>Default</string>
+											<key>Non Ascii Font</key>
+											<string>Menlo-Regular 11</string>
+											<key>Non-ASCII Anti Aliased</key>
+											<true/>
+											<key>Normal Font</key>
+											<string>MesloLGSNF-Regular 15</string>
+											<key>Only The Default BG Color Uses Transparency</key>
+											<true/>
+											<key>Open Password Manager Automatically</key>
+											<false/>
+											<key>Open Toolbelt</key>
+											<false/>
+											<key>Option Key Sends</key>
+											<integer>2</integer>
+											<key>Original Guid</key>
+											<string>63FE164B-7C44-45BD-8FB4-0224E056F4B5</string>
+											<key>Prompt Before Closing 2</key>
+											<false/>
+											<key>Right Option Key Sends</key>
+											<integer>0</integer>
+											<key>Rows</key>
+											<integer>40</integer>
+											<key>Screen</key>
+											<integer>-1</integer>
+											<key>Scrollback Lines</key>
+											<integer>0</integer>
+											<key>Selected Text Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.26041668653488159</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.2891082763671875</real>
+												<key>Red Component</key>
+												<real>0.32501408457756042</real>
+											</dict>
+											<key>Selection Color</key>
+											<dict>
+												<key>Alpha Component</key>
+												<real>1</real>
+												<key>Blue Component</key>
+												<real>0.63873869180679321</real>
+												<key>Color Space</key>
+												<string>Calibrated</string>
+												<key>Green Component</key>
+												<real>0.82989895343780518</real>
+												<key>Red Component</key>
+												<real>0.90061241388320923</real>
+											</dict>
+											<key>Send Code When Idle</key>
+											<false/>
+											<key>Session Close Undo Timeout</key>
+											<integer>20</integer>
+											<key>Shortcut</key>
+											<string>T</string>
+											<key>Show Mark Indicators</key>
+											<true/>
+											<key>Show Status Bar</key>
+											<false/>
+											<key>Silence Bell</key>
+											<false/>
+											<key>Status Bar Layout</key>
+											<dict>
+												<key>advanced configuration</key>
+												<dict>
+													<key>algorithm</key>
+													<integer>0</integer>
+													<key>font</key>
+													<string>.AppleSystemUIFont 12</string>
+												</dict>
+												<key>components</key>
+												<array/>
+											</dict>
+											<key>Sync Title</key>
+											<true/>
+											<key>Tags</key>
+											<array/>
+											<key>Terminal Type</key>
+											<string>xterm-256color</string>
+											<key>Transparency</key>
+											<real>0.0</real>
+											<key>Unlimited Scrollback</key>
+											<true/>
+											<key>Use Bold Font</key>
+											<true/>
+											<key>Use Bright Bold</key>
+											<true/>
+											<key>Use Italic Font</key>
+											<true/>
+											<key>Use Non-ASCII Font</key>
+											<false/>
+											<key>Vertical Spacing</key>
+											<real>1</real>
+											<key>Visual Bell</key>
+											<true/>
+											<key>Window Type</key>
+											<integer>0</integer>
+											<key>Working Directory</key>
+											<string>/Users/pedropombeiro</string>
+										</dict>
+										<key>Columns</key>
+										<integer>189</integer>
 										<key>Commands</key>
 										<array/>
 										<key>Directories</key>
@@ -13627,17 +14264,20 @@
 											<key>window title stack</key>
 											<array/>
 										</dict>
+										<key>Overridden Fields</key>
+										<array>
+											<string>Original Guid</string>
+											<string>Guid</string>
+										</array>
 										<key>Program</key>
 										<dict>
-											<key>Command</key>
-											<string>/opt/homebrew/bin/clickhouse client --port 9001 -d gitlab_clickhouse_development</string>
 											<key>Type</key>
-											<string>Command</string>
+											<string>Shell Launcher</string>
 										</dict>
 										<key>Rows</key>
-										<integer>71</integer>
+										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>63E7C9B8-E830-4A64-ABF9-CC86D44D4448</string>
+										<string>8F047FA6-AF34-4AA0-A009-07A52AD23280</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -13650,7 +14290,7 @@
 											<string>$$</string>
 										</dict>
 										<key>Working Directory</key>
-										<string>/Users/pedropombeiro</string>
+										<string>/Users/pedropombeiro/Developer/gitlab.com/gitlab-com/content-sites/handbook</string>
 										<key>Working Directory Poller Disabled</key>
 										<false/>
 									</dict>
@@ -13659,9 +14299,9 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1363</real>
+										<real>1017</real>
 										<key>width</key>
-										<real>2560</real>
+										<real>1728</real>
 										<key>x</key>
 										<real>0.0</real>
 										<key>y</key>
@@ -13674,9 +14314,9 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1363</real>
+								<real>1017</real>
 								<key>width</key>
-								<real>2560</real>
+								<real>1728</real>
 								<key>x</key>
 								<real>0.0</real>
 								<key>y</key>
@@ -13686,7 +14326,7 @@
 							<false/>
 						</dict>
 						<key>Tab GUID</key>
-						<string>68CE76DA-7A3C-4F60-BCCF-56D28BBF45D7</string>
+						<string>2F710883-D22E-473E-A55B-5B3426FE6F89</string>
 					</dict>
 				</array>
 				<key>TerminalGuid</key>
@@ -13708,13 +14348,13 @@
 				<key>Use Transparency</key>
 				<false/>
 				<key>Width</key>
-				<real>2560</real>
+				<real>1728</real>
 				<key>Window Type</key>
 				<integer>0</integer>
 				<key>X Origin</key>
-				<real>0.0</real>
+				<real>-1728</real>
 				<key>Y Origin</key>
-				<real>0.0</real>
+				<real>323</real>
 			</dict>
 		</array>
 		<key>Vim TDD</key>

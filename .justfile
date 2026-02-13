@@ -5,11 +5,18 @@ default: pull update
 
 # ── Dotfiles ──────────────────────────────────────────────────────────
 
-[confirm('This will discard local dotfile changes. Continue?')]
 [doc('Fetch and hard-reset dotfiles to origin/master')]
 [group('dotfiles')]
 [script]
 pull:
+    if [ -n "$(yadm status -s)" ]; then
+        printf "This will discard local dotfile changes. Continue? [y/N] "
+        read -r reply
+        case "${reply}" in
+            [yY]|[yY][eE][sS]) ;;
+            *) exit 1 ;;
+        esac
+    fi
     yadm fetch
     yadm reset --hard origin/master
 

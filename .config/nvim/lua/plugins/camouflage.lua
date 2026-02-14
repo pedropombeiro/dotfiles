@@ -15,6 +15,12 @@ return {
           return false
         end
 
+        -- Disable for GitHub Actions workflow files (secret references, not real secrets)
+        local filepath = vim.api.nvim_buf_get_name(bufnr)
+        if filepath:find("%.github/workflows/") then
+          return false
+        end
+
         -- Disable for JSON files unless they likely contain secrets
         if vim.bo[bufnr].filetype == "json" then
           local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":t")

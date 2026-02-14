@@ -67,6 +67,7 @@
       "wc *": "allow",
       "which*": "allow",
     },
+    "gh run view": "allow",
     "glob": "allow",
     "grep": "allow",
     "lazy-mcp_describe_commands": "allow",

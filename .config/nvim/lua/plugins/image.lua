@@ -1,1 +1,0 @@
-image.lua##os.Darwin

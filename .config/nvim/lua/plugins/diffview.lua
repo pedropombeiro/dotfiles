@@ -1,25 +1,23 @@
--- diffview.nvim (https://github.com/sindrets/diffview.nvim)
---  Single tabpage interface for easily cycling through diffs for all modified files for any git rev.
+-- codediff.nvim (https://github.com/esmuellert/codediff.nvim)
+--   VSCode-style side-by-side diff rendering with two-tier highlighting.
 
 return {
-  "sindrets/diffview.nvim",
-  dependencies = "nvim-lua/plenary.nvim",
-  cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
+  "esmuellert/codediff.nvim",
+  dependencies = "MunifTanjim/nui.nvim",
+  cmd = "CodeDiff",
   ---@module "lazy"
   ---@type LazyKeysSpec[]
-  keys = { { "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "DiffView" } },
+  keys = { { "<leader>gd", "<cmd>CodeDiff<cr>", desc = "CodeDiff" } },
   opts = function()
     ---@type pmsp.neovim.Config
     local config = require("config")
 
     return {
-      icons = {
-        folder_closed = config.ui.icons.folder.collapsed,
-        folder_open = config.ui.icons.folder.expanded,
-      },
-      signs = {
-        fold_closed = config.ui.icons.expander.collapsed,
-        fold_open = config.ui.icons.expander.expanded,
+      explorer = {
+        icons = {
+          folder_closed = config.ui.icons.folder.collapsed,
+          folder_open = config.ui.icons.folder.expanded,
+        },
       },
     }
   end,

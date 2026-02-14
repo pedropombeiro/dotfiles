@@ -10,12 +10,6 @@ if command -v tmux >/dev/null; then
   export ZSH_TMUX_ITERM2=false
   export ZSH_TMUX_UNICODE=true
 
-  # Fix COLUMNS/LINES not being set properly in tmux (affects Claude Code statusline)
-  if [[ -n "$TMUX" && ( -z "$COLUMNS" || "$COLUMNS" -eq 0 ) ]]; then
-    export COLUMNS=$(tmux display-message -p '#{pane_width}')
-    export LINES=$(tmux display-message -p '#{pane_height}')
-  fi
-
   # Load tmux plugin via zinit
   # Download extra.conf to the same directory as the plugin, then load the plugin
   zinit ice atclone'curl -sLo tmux.extra.conf https://github.com/ohmyzsh/ohmyzsh/raw/master/plugins/tmux/tmux.extra.conf' \

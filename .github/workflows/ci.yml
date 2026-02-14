@@ -36,10 +36,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y zsh
 
       # Run pre-commit on all files
-      # Skip hooks that require tools not installed in CI (mise, just, ruby)
+      # Skip hooks that require tools not installed in CI (mise, ruby)
       - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
         env:
-          SKIP: standardrb,renovate-config-validator,just-fmt
+          SKIP: standardrb,renovate-config-validator
         with:
           extra_args: --all-files
 

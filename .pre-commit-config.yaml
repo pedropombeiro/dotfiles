@@ -96,16 +96,18 @@ repos:
         entry: zsh -n
         language: system
         files: '\.zsh(##.*)?$|^\.zlogin$|^\.shellrc/zshrc\.d/functions/[^/]+$'
-      - id: just-fmt
-        name: just fmt (check)
-        entry: just --fmt --check --unstable --justfile
+      - id: mise-fmt
+        name: mise fmt (check)
+        entry: mise fmt --check
         language: system
-        files: '(^\.?[Jj]ustfile$|\.just$)'
-      - id: just-fmt-fix
-        name: just fmt (fix)
-        entry: just --fmt --unstable --justfile
+        files: '(^|/)\.?mise(\.[\w-]+)*\.toml$|(^|/)\.?mise/config(\.local)?\.toml$|(^|/)\.config/mise(\.toml|/config(\.local)?\.toml|/conf\.d/.*\.toml)$'
+        pass_filenames: false
+      - id: mise-fmt-fix
+        name: mise fmt (fix)
+        entry: mise fmt
         language: system
-        files: '(^\.?[Jj]ustfile$|\.just$)'
+        files: '(^|/)\.?mise(\.[\w-]+)*\.toml$|(^|/)\.?mise/config(\.local)?\.toml$|(^|/)\.config/mise(\.toml|/config(\.local)?\.toml|/conf\.d/.*\.toml)$'
+        pass_filenames: false
         stages: [manual]
 
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python

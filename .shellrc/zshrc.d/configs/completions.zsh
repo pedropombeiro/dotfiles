@@ -11,7 +11,6 @@ _generate_completion() {
   fi
 }
 
-_generate_completion just 'mise exec just --command "just --completions zsh"'
 _generate_completion opencode 'opencode completion'
 
 unfunction _generate_completion

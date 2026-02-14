@@ -1,7 +1,6 @@
 [tools]
 clickhouse = "24"
 glab = "latest"
-just = "latest"
 pre-commit = "latest"
 ruby = "3.4.8"
 rust = "stable"

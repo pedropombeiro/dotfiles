@@ -16,7 +16,6 @@ local ensure_installed = {
   "graphql",
   "html",
   "json",
-  "just",
   "lua",
   "make",
   "markdown",
@@ -270,7 +269,7 @@ return {
 
           -- highlighting
           if vim.tbl_get(opts, "highlight", "enable") ~= false then
-            if ev.match ~= "just" and vim.api.nvim_buf_line_count(0) <= 5000 then
+            if vim.api.nvim_buf_line_count(0) <= 5000 then
               pcall(vim.treesitter.start)
             end
           end

@@ -61,6 +61,10 @@
     "knowledge-graph_list_projects": "allow",
     "knowledge-graph_read_definitions": "allow",
     "knowledge-graph_search_codebase_definitions": "allow",
+    "lazy-mcp_describe_commands": "allow",
+    "lazy-mcp_invoke_command": "allow",
+    "lazy-mcp_list_commands": "allow",
+    "lazy-mcp_list_servers": "allow",
     "read": "allow",
     "todowrite": "allow"
   },

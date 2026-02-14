@@ -67,11 +67,15 @@
       "wc *": "allow",
       "which*": "allow",
     },
-    "read": "allow",
     "glob": "allow",
     "grep": "allow",
+    "lazy-mcp_describe_commands": "allow",
+    "lazy-mcp_invoke_command": "allow",
+    "lazy-mcp_list_commands": "allow",
+    "lazy-mcp_list_servers": "allow",
+    "read": "allow",
+    "task": { "explore": "allow" },
     "todowrite": "allow",
-    "task": { "explore": "allow" }
   },
 
   "keybinds": {

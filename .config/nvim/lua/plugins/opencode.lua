@@ -1,5 +1,5 @@
 -- opencode.nvim (https://github.com/NickvanDyke/opencode.nvim)
---  Integrate opencode AI assistant with Neovim
+--  Integrate the opencode AI assistant with Neovim — streamline editor-aware research, reviews, and requests.
 
 return {
   "NickvanDyke/opencode.nvim",

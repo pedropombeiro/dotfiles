@@ -1,6 +1,5 @@
 -- vim-fugitive (https://github.com/tpope/vim-fugitive)
--- This means that your buffer listing can quickly become swamped with
--- fugitive buffers. This prevents this from becomming an issue:
+--  A Git wrapper so awesome, it should be illegal
 
 return {
   "tpope/vim-fugitive",

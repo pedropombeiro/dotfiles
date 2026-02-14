@@ -1,4 +1,4 @@
--- nvim-ufo.lua (https://github.com/kevinhwang91/nvim-ufo)
+-- nvim-ufo (https://github.com/kevinhwang91/nvim-ufo)
 --  Not UFO in the sky, but an ultra fold in Neovim.
 
 local function setFoldOptions()

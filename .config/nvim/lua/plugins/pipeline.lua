@@ -1,5 +1,5 @@
 -- pipeline.nvim (https://github.com/topaxi/pipeline.nvim)
---  See status of ci/cd pipeline runs directly in neovim.
+--  See status of ci/cd pipeline runs directly in neovim. Currently supports GitHub Actions and GitLab CI.
 
 return {
   "topaxi/pipeline.nvim",

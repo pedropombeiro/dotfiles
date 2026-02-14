@@ -1,5 +1,5 @@
--- catgoose/nvim-colorizer.lua (https://github.com/catgoose/nvim-colorizer.lua)
---  Maintained fork of the fastest Neovim colorizer
+-- nvim-colorizer.lua (https://github.com/catgoose/nvim-colorizer.lua)
+--  The fastest Neovim colorizer
 
 return {
   "catgoose/nvim-colorizer.lua",

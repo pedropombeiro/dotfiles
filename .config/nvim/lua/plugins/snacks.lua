@@ -1,5 +1,5 @@
 -- snacks.nvim (https://github.com/folke/snacks.nvim)
---  🍿 A collection of QoL plugins for Neovim
+--  A collection of QoL plugins for Neovim
 
 local function yadm_repo()
   return vim.fn.expand("~/.local/share/yadm/repo.git") -- hardcode value of vim.fn.systemlist("yadm introspect repo")[1] for startup speed

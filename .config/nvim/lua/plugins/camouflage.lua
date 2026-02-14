@@ -1,7 +1,5 @@
 -- camouflage.nvim (https://github.com/zeybek/camouflage.nvim)
--- Mask sensitive values in config files during screen sharing.
--- Supports .env, JSON, YAML, TOML, XML, Terraform/HCL, Dockerfile, and more.
--- Zero file modification - uses Neovim extmarks.
+--  Mask sensitive values in config files during screen sharing. Zero file modification - uses Neovim extmarks.
 
 return {
   "zeybek/camouflage.nvim",

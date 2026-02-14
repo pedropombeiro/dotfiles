@@ -1,7 +1,5 @@
 -- mason-tool-installer.nvim (https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim)
---  Install and upgrade third party tools automatically.
---  Replaces mason-null-ls.nvim's ensure_installed functionality with a dedicated
---  tool installer that runs on startup and handles concurrent installs correctly.
+--  Install and upgrade third party tools automatically
 
 local function has_cargo()
   return vim.fn.executable("cargo") == 1

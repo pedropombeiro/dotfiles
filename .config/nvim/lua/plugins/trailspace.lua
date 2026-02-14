@@ -1,4 +1,4 @@
--- mini.trailspace (https://github.com/nvim-mini/mini.trailspace)
+-- mini.trailspace (https://github.com/echasnovski/mini.trailspace)
 --  Neovim Lua plugin to manage trailspace (highlight and remove). Part of 'mini.nvim' library.
 
 return {

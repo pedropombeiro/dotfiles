@@ -1,5 +1,5 @@
 -- fidget.nvim (https://github.com/j-hui/fidget.nvim)
---   Standalone UI for nvim-lsp progress
+--  Extensible UI for Neovim notifications and LSP progress messages.
 
 return {
   "j-hui/fidget.nvim",

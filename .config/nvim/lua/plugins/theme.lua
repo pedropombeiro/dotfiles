@@ -1,4 +1,4 @@
--- gruvbox (https://github.com/ellisonleao/gruvbox.nvim)
+-- gruvbox.nvim (https://github.com/ellisonleao/gruvbox.nvim)
 --  Lua port of the most famous vim colorscheme
 
 ---@type pmsp.neovim.Config

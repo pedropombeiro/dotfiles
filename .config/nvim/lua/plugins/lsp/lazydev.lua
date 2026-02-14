@@ -1,5 +1,5 @@
 -- lazydev.nvim (https://github.com/folke/lazydev.nvim)
---   Faster LuaLS setup for Neovim
+--  Faster LuaLS setup for Neovim
 
 return {
   {

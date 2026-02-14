@@ -1,5 +1,5 @@
 -- outline.nvim (https://github.com/hedyhli/outline.nvim)
---  Code outline sidebar powered by LSP. Significantly enhanced & refactored fork of symbols-outline.nvim.
+--  Fancy code outline sidebar to visualize and navigate code symbols in a tree hierarchy
 
 return {
   "hedyhli/outline.nvim",

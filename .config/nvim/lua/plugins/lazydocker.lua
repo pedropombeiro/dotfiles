@@ -1,5 +1,5 @@
--- lazydocker.lua (https://github.com/crnvl96/lazydocker.nvim)
---  Plugin to open LazyDocker without quiting neovim.
+-- lazydocker.nvim (https://github.com/crnvl96/lazydocker.nvim)
+--  Plugin to open LazyDocker without quiting neovim
 
 return {
   "crnvl96/lazydocker.nvim",

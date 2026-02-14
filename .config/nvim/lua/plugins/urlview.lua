@@ -1,5 +1,5 @@
 -- urlview.nvim (https://github.com/axieax/urlview.nvim)
--- 🔎 Neovim plugin for viewing all the URLs in a buffer
+--  🔎 Neovim plugin for viewing all the URLs in a buffer
 
 local function open_buffer_urlview()
   if vim.fn.expand("%:p") == vim.fn.stdpath("config") .. "/lua/plugins.lua" then

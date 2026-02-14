@@ -1,5 +1,5 @@
--- neovim/nvim-lspconfig (https://github.com/neovim/nvim-lspconfig)
---   Quickstart configs for Nvim LSP
+-- nvim-lspconfig (https://github.com/neovim/nvim-lspconfig)
+--  Quickstart configs for Nvim LSP
 
 ---@format disable-next
 -- stylua: ignore

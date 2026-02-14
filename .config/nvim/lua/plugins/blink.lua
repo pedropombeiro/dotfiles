@@ -1,5 +1,5 @@
--- blink.nvim (https://github.com/saghen/blink.cmp)
---  Performant, batteries-included completion plugin for Neovim.
+-- blink.cmp (https://github.com/saghen/blink.cmp)
+--  Performant, batteries-included completion plugin for Neovim
 
 local function is_qnap()
   return vim.g.distro == "qts"

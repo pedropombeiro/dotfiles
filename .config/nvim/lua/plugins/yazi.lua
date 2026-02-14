@@ -1,5 +1,5 @@
 -- yazi.nvim (https://github.com/mikavilpas/yazi.nvim)
--- A Neovim Plugin for the yazi terminal file manager
+--  A Neovim Plugin for the yazi terminal file manager
 
 ---@module "lazy"
 ---@type LazySpec

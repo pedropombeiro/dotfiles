@@ -1,4 +1,4 @@
--- NeoVim Code Action Menu (https://github.com/aznhe21/actions-preview.nvim)
+-- actions-preview.nvim (https://github.com/aznhe21/actions-preview.nvim)
 --  Fully customizable previewer for LSP code actions.
 
 return {

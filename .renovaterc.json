@@ -32,14 +32,14 @@
     {
       "description": "Prefix automerge updates in MR titles",
       "matchUpdateTypes": ["patch", "pin", "digest"],
-      "commitMessagePrefix": "`AUTOMERGE`: "
+      "commitMessageSuffix": "- `AUTOMERGE`"
     },
     {
       "description": "Enable automerge for pre-commit package updates",
       "matchDepTypes": ["devDependencies"],
       "matchPackageNames": ["pre-commit"],
       "automerge": true,
-      "commitMessagePrefix": "`AUTOMERGE`: "
+      "commitMessageSuffix": "- `AUTOMERGE`"
     },
     {
       "description": "Group pre-commit hook updates",

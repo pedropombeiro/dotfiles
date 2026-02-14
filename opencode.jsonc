@@ -51,6 +51,7 @@
       "yadm config --get-all *": "allow",
       "yadm diff *": "allow",
       "yadm log *": "allow",
+      "yadm list *": "allow",
       "yadm ls-files *": "allow",
       "yadm show *": "allow",
       "yadm status *": "allow"

@@ -55,6 +55,10 @@ nvim --headless '+Lazy! sync' +qa && \
   nvim --headless "+Lazy! build firenvim" +qa && \
   printf "\n${GREEN}%s${NC}\n" "Done"
 
+printf "${YELLOW}%s${NC}\n" "Updating Mason tools..."
+nvim --headless -c "autocmd User MasonUpdateAllComplete MasonToolsUpdateSync" -c "MasonUpdate" -c "qa!" && \
+  printf "\n${GREEN}%s${NC}\n" "Done"
+
 printf "${YELLOW}%s${NC}\n" "Testing Neovim startup performance..."
 benchmark_filepath="${HOME}/.cache/nvim/.startup-time.txt"
 

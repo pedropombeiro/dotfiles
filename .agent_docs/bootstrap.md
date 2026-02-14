@@ -31,7 +31,7 @@ Scripts use YADM alternate files for platform targeting:
 
 ```bash
 yadm bootstrap    # Run all bootstrap scripts
-just install      # Via justfile
+mise run dotfiles:install  # Via mise tasks
 ```
 
 ## Script Template

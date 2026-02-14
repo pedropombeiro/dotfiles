@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+#MISE description="Run pre-commit linters"
+#USAGE arg "<files>..."
+set -eu
+
+if [ ${#} -gt 0 ]; then
+    yadm enter pre-commit run --files "$@"
+else
+    yadm enter pre-commit run --all-files
+fi

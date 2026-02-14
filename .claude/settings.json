@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "just fix $CLAUDE_FILE_PATHS || true"
+            "command": "mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true"
           }
         ]
       },
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "just fix $CLAUDE_FILE_PATHS || true"
+            "command": "mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true"
           }
         ]
       }

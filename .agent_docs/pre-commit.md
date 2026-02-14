@@ -35,11 +35,11 @@ yadm enter pre-commit run --all-files --hook-stage manual
 | just-fmt                  | Justfile formatting                                 |
 | renovate-config-validator | Renovate config validation                          |
 
-## Justfile Integration
+## Mise Task Integration
 
 ```bash
-just lint    # Run all hooks
-just fix     # Run with manual fixes
+mise run dotfiles:lint    # Run all hooks
+mise run dotfiles:fix     # Run with manual fixes
 ```
 
 ## Common Issues

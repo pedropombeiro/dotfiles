@@ -10,7 +10,7 @@ without me having to explicitly ask.
 ## Specialized Topics
 
 - [SCM](~/.agent_docs/scm.md) - YADM, git, and commit/push behavior
-- [Justfile](~/.agent_docs/justfile.md) - Task automation for dotfiles
+- [Mise Tasks](~/.agent_docs/mise-tasks.md) - Task automation for dotfiles
 - [Neovim](~/.agent_docs/neovim.md) - Configuration structure and plugin management
 - [Mise](~/.agent_docs/mise.md) - Runtime versions and CLI tools
 - [Pre-commit](~/.agent_docs/pre-commit.md) - Hooks and code quality checks

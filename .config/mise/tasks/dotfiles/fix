@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+#MISE description="Run pre-commit fixers (manual stage)"
+#USAGE arg "<files>..."
+set -eu
+
+if [ ${#} -gt 0 ]; then
+    yadm enter pre-commit run --files "$@" --hook-stage manual
+else
+    yadm enter pre-commit run --all-files --hook-stage manual
+fi

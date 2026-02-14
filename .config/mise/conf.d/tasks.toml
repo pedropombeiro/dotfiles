@@ -1,0 +1,46 @@
+# ── Dotfiles ──────────────────────────────────────────────────────────
+
+[tasks."dotfiles:install"]
+description = "Bootstrap the dotfile environment"
+run = "yadm bootstrap"
+
+[tasks."dotfiles:update"]
+description = "Run dotfile update scripts"
+run = "~/.config/yadm/scripts/update.sh"
+
+[tasks."dotfiles:checkhealth"]
+description = "Run dotfile health checks"
+run = "~/.config/yadm/scripts/run-checks.zsh"
+
+# ── Git ───────────────────────────────────────────────────────────────
+
+[tasks."git:push"]
+description = "Push to remote (auto-detects yadm vs git)"
+usage = 'arg "<args>..."'
+run = """
+if [ -d "$HOME/.local/share/yadm/repo.git" ]; then
+  yadm push ${usage_args?}
+else
+  git push ${usage_args?}
+fi
+"""
+
+[tasks."git:commit"]
+description = "Generate an AI commit message and commit staged changes"
+dir = "{{cwd}}"
+quiet = true
+usage = 'arg "<type>" default=""'
+run = """
+if [ -n "${usage_type?}" ]; then
+  ~/.local/bin/git-ai-commit-msg --type "${usage_type?}"
+else
+  ~/.local/bin/git-ai-commit-msg
+fi
+"""
+
+# ── Default ───────────────────────────────────────────────────────────
+
+[tasks.default]
+description = "Fetch dotfiles and run updates"
+depends = ["dotfiles:pull", "dotfiles:update"]
+hide = true

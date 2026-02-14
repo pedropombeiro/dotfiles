@@ -14,7 +14,6 @@ cargo-binstall = "latest"
 dua = "latest"
 fd = "latest"
 grpcurl = "latest"
-just = "latest"
 node = "latest"
 "opencode" = { version = "1.2.1", no_app = true }
 pre-commit = "latest"
@@ -27,3 +26,19 @@ yamllint = "latest"
 "npm:renovate" = "43.3.6"
 
 "pipx:neovim-remote" = "2.5.1"
+
+# ── Brew ──────────────────────────────────────────────────────────────
+
+[tasks."brew:dump"]
+description = "Dump current Homebrew packages to Brewfile"
+run = "brew bundle dump --global --describe --force"
+
+[tasks."brew:cleanup"]
+description = "Remove packages not in Brewfile"
+run = "brew bundle cleanup ~/.Brewfile --force --file"
+
+# ── Network ───────────────────────────────────────────────────────────
+
+[tasks."network:wifi-traffic"]
+description = "Sniff Wi-Fi traffic from the AP"
+run = 'ssh ap-u6pro.infra.pombei.ro "tcpdump -np"'

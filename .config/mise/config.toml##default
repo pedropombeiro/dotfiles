@@ -20,7 +20,7 @@ pre-commit = "latest"
 yamllint = "latest"
 
 "gem:neovim" = "0.10.0"
-"gem:ruby-lsp" = "0.26.5"
+"gem:ruby-lsp" = "0.26.6"
 "gem:standard" = "latest"
 
 "npm:renovate" = "43.3.6"

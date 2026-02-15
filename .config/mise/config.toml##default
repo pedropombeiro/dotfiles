@@ -4,6 +4,7 @@ redactions = ["*_API_KEY", "*_TOKEN"]
 OPENCODE_CONFIG_CONTENT = '{"plugin":["@tarquinen/opencode-dcp@latest"]}'
 
 [settings]
+jobs = 1
 idiomatic_version_file_enable_tools = []
 
 [settings.pipx]

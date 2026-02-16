@@ -26,6 +26,7 @@
       "*": "ask",
       "bundle exec rspec*": "allow",
       "bundle exec rubocop -A *": "allow",
+      "date*": "allow",
       "echo*": "allow",
       "find*": "allow",
       "git add*": "allow",

@@ -12,11 +12,6 @@
 #
 # Gem conflict resolution:
 # - uninstalls json gem to prevent version conflicts during bundle install
-# - GDK and GitLab may require different gem versions (e.g., openssl 4.x vs 3.x);
-#   a background watcher continuously uninstalls the conflicting version during
-#   gdk update so that GitLab tasks (lefthook, db:migrate, etc.) see the correct version
-# - fix_gem_conflicts helper handles any remaining conflicts after GDK cleanup
-#   and before loading Rails environment
 #
 # GDK update:
 # - stops spring processes before update
@@ -44,56 +39,6 @@ MAIN_BRANCH="$(git_main_branch)"
 ha_webhook() {
   curl -sX PUT -d "state=$1" 'https://ha.pombei.ro/api/webhook/gdk_update' >/dev/null 2>&1 ||
     printf "${YELLOW}%s${NC}\n" 'Home Assistant webhook unavailable, continuing...'
-}
-
-# Helper function to fix gem activation conflicts between GDK and GitLab.
-# GDK and GitLab may require different gem versions (e.g., openssl 4.x vs 3.x).
-# This function detects and uninstalls conflicting gem versions.
-fix_gem_conflicts() {
-  local preflight_output
-  preflight_output=$(cd "${GDK_ROOT}/gitlab" && mise x ruby -- ruby -e 'require "rubygems/remote_fetcher"; require "bundler/setup"' 2>&1) || {
-    if echo "$preflight_output" | grep -q 'You have already activated'; then
-      local conflict_gem conflict_version
-      conflict_gem=$(echo "$preflight_output" | grep -oE 'activated [^ ]+ [0-9][^ ,]+' | head -1 | awk '{print $2}')
-      conflict_version=$(echo "$preflight_output" | grep -oE 'activated [^ ]+ [0-9][^ ,]+' | head -1 | awk '{print $3}')
-      if [[ -n "$conflict_gem" && -n "$conflict_version" ]]; then
-        printf "${YELLOW}%s${NC}\n" "Fixing gem conflict: ${conflict_gem} ${conflict_version}..."
-        mise x ruby -- gem uninstall "$conflict_gem" --version "$conflict_version" --ignore-dependencies 2>/dev/null || true
-      fi
-    fi
-  }
-}
-
-# Start a background watcher that uninstalls a conflicting gem version whenever
-# GDK's bundle install puts it back. This prevents RubyGems from auto-activating
-# the wrong version in GitLab child processes (lefthook, db:migrate, etc.).
-# Sets gem_conflict_watcher_pid if started.
-start_gem_conflict_watcher() {
-  local gitlab_openssl_version gdk_openssl_version gem_dir conflict_spec
-  gem_conflict_watcher_pid=""
-
-  gitlab_openssl_version=$(sed -nE "s/^    openssl \(([^)]+)\)/\1/p" "${GDK_ROOT}/gitlab/Gemfile.lock" | head -1)
-  gdk_openssl_version=$(sed -nE "s/^    openssl \(([^)]+)\)/\1/p" "${GDK_ROOT}/Gemfile.lock" | head -1)
-
-  [[ -n "$gitlab_openssl_version" && -n "$gdk_openssl_version" && "$gitlab_openssl_version" != "$gdk_openssl_version" ]] || return 0
-
-  printf "${YELLOW}%s${NC}\n" "Detected openssl gem version mismatch (GDK: ${gdk_openssl_version}, GitLab: ${gitlab_openssl_version}). Starting conflict watcher..."
-  gem_dir=$(mise x ruby -- ruby -e 'puts Gem.dir')
-  conflict_spec="${gem_dir}/specifications/openssl-${gdk_openssl_version}.gemspec"
-  (
-    while true; do
-      if [[ -f "$conflict_spec" ]]; then
-        mise x ruby -- gem uninstall openssl --version "$gdk_openssl_version" --ignore-dependencies >/dev/null 2>&1 || true
-      fi
-      sleep 1
-    done
-  ) &
-  gem_conflict_watcher_pid=$!
-}
-
-stop_gem_conflict_watcher() {
-  [[ -n "${gem_conflict_watcher_pid:-}" ]] && kill "$gem_conflict_watcher_pid" 2>/dev/null
-  gem_conflict_watcher_pid=""
 }
 
 (
@@ -159,9 +104,7 @@ stop_gem_conflict_watcher() {
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
   cd $GDK_ROOT
 
-  start_gem_conflict_watcher
-  mise x ruby -- gdk update || { rc=$?; stop_gem_conflict_watcher; printf "${RED}%s${NC}\n" "gdk update failed with exit code $rc"; exit $rc; }
-  stop_gem_conflict_watcher
+  mise x ruby -- gdk update
 
   cd gitlab
   git restore db/structure.sql
@@ -205,9 +148,6 @@ stop_gem_conflict_watcher() {
     find gitlab/log -maxdepth 1 -size +10M -exec truncate -s 0 {} \;
   ) || printf "${YELLOW}%s${NC}\n" "GDK cleanup subshell failed, continuing..."
 
-  # Fix gem conflicts that may have been reintroduced by GDK bundle install
-  fix_gem_conflicts
-
   yes | gdk kill || true # Use kill instead of stop so that services are killed if they can't be stopped (e.g. postgresql)
   # Ensure there are no orphaned sidekiq-cluster (https://gitlab.com/gitlab-org/gitlab-development-kit/-/issues/1455)
   pkill -lf 'sidekiq-cluster' || true
@@ -219,8 +159,7 @@ stop_gem_conflict_watcher() {
     git restore db/structure.sql
   fi
 
-  # Load the app to memory (fix gem conflicts first since GDK may have reinstalled conflicting versions)
-  fix_gem_conflicts
+  # Load the app to memory
   bundle exec rails environment
 
   cd - >/dev/null

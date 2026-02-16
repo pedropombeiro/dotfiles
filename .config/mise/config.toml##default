@@ -25,7 +25,7 @@ yamllint = "latest"
 "gem:ruby-lsp" = "0.26.6"
 "gem:standard" = "latest"
 
-"npm:renovate" = "43.3.6"
+"npm:renovate" = "43.11.1"
 
 "pipx:neovim-remote" = "2.5.1"
 

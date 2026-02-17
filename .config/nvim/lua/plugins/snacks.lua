@@ -52,8 +52,6 @@ local function with_git_dir(fn, title)
   fn()
 end
 
-local function yadm_grep() Snacks.picker.git_grep({ title = "YADM Grep", cwd = vim.fn.expand("~"), args = yadm_opts() }) end
-
 ---@format disable-next
 -- stylua: ignore
 ---@type wk.Spec
@@ -109,7 +107,6 @@ local keys = {
   { "<leader>fgC", function() with_git_dir(Snacks.picker.git_log_file, "Git Log File") end, desc = "Git commits (buffer)", icon = "" },
   { "<leader>/", function() with_git_dir(Snacks.picker.git_grep, "Git Grep") end, desc = "Git grep", icon = "󰛔" },
   { "<leader>fgg", function() with_git_dir(Snacks.picker.git_grep, "Git Grep") end, desc = "Git grep", icon = "󰛔" },
-  { "<leader>fgy", function() yadm_grep() end, desc = "YADM grep", icon = "󰛔" },
   { "<leader>fgf", function() with_git_dir(Snacks.picker.git_files, "Git Files") end, desc = "Git files", icon = "" },
   { "<leader>fgS", function() with_git_dir(Snacks.picker.git_stash, "Git Stash") end, desc = "Git stash" },
   { "<leader>fgs", function() with_git_dir(Snacks.picker.git_status, "Git Status") end, desc = "Git status", icon = "󱖫" },

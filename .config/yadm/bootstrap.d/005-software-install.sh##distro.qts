@@ -16,7 +16,8 @@ opkg install bash sysstat     # required for qnapnodeexporter/grafana
 opkg install lua gzip         # required for neovim plugins
 opkg install patch            # required for conform.nvim neovim plugin
 
-opkg install python3 python3-pip
+opkg install python3 python3-pip \
+             perl-image-exiftool
 
 opkg install nut-upscmd
 

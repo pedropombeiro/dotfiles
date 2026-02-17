@@ -127,6 +127,7 @@ PUMA_WORKER_TIMEOUT = "9999999"
 QA_GITLAB_URL = "http://gdk.test:3000"
 QA_LOG_LEVEL = "DEBUG"
 RAILS_HOSTS = "127.0.0.1,localhost,host.docker.internal,gdk.test,gdk.localhost"
+SHARP_IGNORE_GLOBAL_LIBVIPS = 1 # Avoid conflict with libvips from Homebrew (installed by ueberzugpp) in gitlab-http-router
 TELEPORT_USE_LOCAL_SSH_AGENT = "false"
 WRANGLER_LOG_PATH = "{{env.HOME}}/gitlab-development-kit/log/wrangler"
 _.path = ["{{env.HOME}}/Developer/gitlab.com/gitlab-org/gitlab-runner/out/binaries"]

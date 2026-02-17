@@ -79,14 +79,14 @@ rev = "61d3a3a"
 hash = "37fe452b2406df3f24e33b429ef699c2"
 
 [[plugin.deps]]
-use = "TheronStein/yatline-githead"
-rev = "5cfe34d"
-hash = "6915e57a389a41b4d709f456cb3c1d6f"
-
-[[plugin.deps]]
 use = "yazi-rs/plugins:zoom"
 rev = "25918dc"
 hash = "6ce49cf5b4c7c0d9cce8a1062ed478d3"
+
+[[plugin.deps]]
+use = "imsi32/yatline-githead"
+rev = "929e52c"
+hash = "8282baf02fcd6aac00ccad2276775358"
 
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"

@@ -1,6 +1,7 @@
 redactions = ["*_API_KEY", "*_TOKEN"]
 
 [env]
+_.source = { path = ".github_token.sh", redact = true }
 TMP = "{{ env.TMPDIR }}"
 TEMP = "{{ env.TMPDIR }}"
 

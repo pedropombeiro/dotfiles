@@ -17,7 +17,7 @@ dua = "latest"
 fd = "latest"
 grpcurl = "latest"
 node = "latest"
-"opencode" = { version = "1.2.5", no_app = true }
+"opencode" = { version = "1.2.6", no_app = true }
 pre-commit = "latest"
 yamllint = "latest"
 

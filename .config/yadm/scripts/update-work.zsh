@@ -147,7 +147,12 @@ EOF
 // NOTE: Do not edit directly - Auto generated from ${0:A}
 {
   "\$schema": "https://opencode.ai/config.json",
-  "instructions": [".gitlab/duo/chat-rules.md"],
+  "instructions": [
+    "AGENTS.local.md",
+    ".ai/AGENTS.md",
+    ".ai/lessons-learned.local.md",
+    ".gitlab/duo/chat-rules.md"
+  ],
   "mcp": {
     "knowledge-graph": {
       "type": "remote",

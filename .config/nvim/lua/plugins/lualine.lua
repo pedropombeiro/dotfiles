@@ -153,10 +153,6 @@ return {
               cond = require("lazy.status").has_updates,
             },
             {
-              "pipeline", -- https://github.com/topaxi/pipeline.nvim
-              cond = firenvim_cond,
-            },
-            {
               "overseer",
               label = "", -- Prefix for task counts
               colored = true, -- Color the task icons and counts

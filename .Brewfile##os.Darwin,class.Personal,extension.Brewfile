@@ -161,6 +161,8 @@ brew "tealdeer"
 brew "tesseract-lang"
 # Code-search similar to ack
 brew "the_silver_searcher"
+# Terminal multiplexer
+brew "tmux"
 # Extremely fast Python package installer and resolver, written in Rust
 brew "uv"
 # Syntax-aware linter for prose

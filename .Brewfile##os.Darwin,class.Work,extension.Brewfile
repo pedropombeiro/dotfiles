@@ -243,6 +243,8 @@ brew "tealdeer"
 brew "terminal-notifier"
 # Code-search similar to ack
 brew "the_silver_searcher"
+# Terminal multiplexer
+brew "tmux"
 # Program that allows you to count code, quickly
 brew "tokei"
 # CLI tool that moves files or folder to the trash

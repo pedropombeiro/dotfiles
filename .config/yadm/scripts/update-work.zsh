@@ -123,6 +123,7 @@ ENABLE_SPRING = "1"
 GITLAB_USE_MODEL_LOAD_BALANCING = "1"
 GITLAB_VIM_URL = "https://gitlab.com"
 OP_BIOMETRIC_UNLOCK_ENABLED = "true"
+OPENCODE_MODEL = "gitlab/duo-chat-opus-4-6"
 PUMA_WORKER_TIMEOUT = "9999999"
 QA_GITLAB_URL = "http://gdk.test:3000"
 QA_LOG_LEVEL = "DEBUG"
@@ -137,13 +138,11 @@ EOF
   cat << EOF > "${GDK_ROOT}/gitlab/.mise.toml"
 ## NOTE: Do not edit directly - Auto generated from ${0:A}
 [env]
-OPENCODE_CONFIG="{{env.GDK_ROOT}}/gitlab/.opencode/opencode.jsonc"
 EOF
 
   # Populate opencode configuration
-  mkdir -p "${GDK_ROOT}/gitlab/.opencode"
-  rm -f "${GDK_ROOT}/gitlab/.opencode/opencode.json" && echo "Removed opencode.json file"
-  cat << EOF > "${GDK_ROOT}/gitlab/.opencode/opencode.jsonc"
+  rm -f "${GDK_ROOT}/gitlab/opencode.json" && echo "Removed opencode.json file"
+  cat << EOF > "${GDK_ROOT}/gitlab/opencode.jsonc"
 // NOTE: Do not edit directly - Auto generated from ${0:A}
 {
   "\$schema": "https://opencode.ai/config.json",
@@ -164,6 +163,17 @@ EOF
   "formatter": {
     "standardrb": {
       "disabled": true
+    }
+  },
+  "provider": {
+    "gitlab": {
+      "options": {
+        "instanceUrl": "https://gitlab.com",
+        "featureFlags": {
+          "duo_agent_platform_agentic_chat": true,
+          "duo_agent_platform": true
+        }
+      }
     }
   }
 }

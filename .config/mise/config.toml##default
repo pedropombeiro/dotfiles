@@ -12,7 +12,7 @@ idiomatic_version_file_enable_tools = []
 uvx = true
 
 [tools]
-ruby = "3.4.8"
+ruby = "4.0.1"
 cargo-binstall = "latest"
 dua = "latest"
 fd = "latest"

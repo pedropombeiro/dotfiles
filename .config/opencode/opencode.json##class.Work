@@ -68,6 +68,7 @@
     "lazy-mcp_list_commands": "allow",
     "lazy-mcp_list_servers": "allow",
     "read": "allow",
+    "task": { "explore": "allow" },
     "todowrite": "allow"
   },
 

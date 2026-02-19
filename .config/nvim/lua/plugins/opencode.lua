@@ -49,7 +49,11 @@ return {
   },
   config = function()
     ---@type opencode.Opts
-    vim.g.opencode_opts = {}
+    vim.g.opencode_opts = {
+      provider = {
+        enabled = vim.env.TMUX and "tmux" or nil, -- use tmux provider when inside tmux, default otherwise
+      },
+    }
     vim.o.autoread = true
 
     vim.api.nvim_create_autocmd("TermOpen", {

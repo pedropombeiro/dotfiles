@@ -5,6 +5,7 @@ sort_translit = true # Transliterate filenames for sorting, i.e. replaces Â as 
 [mgr]
 ratio = [2, 3, 5]
 linemode = "size"
+show_hidden = true
 
 [opener]
 edit = [

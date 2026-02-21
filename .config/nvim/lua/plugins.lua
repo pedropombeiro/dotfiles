@@ -46,6 +46,12 @@ return {
     end,
   },
   {
+    "pedropombeiro/uncloak.nvim",
+    ft = { "dotenv", "conf", "toml", "yaml" },
+    event = { "BufReadPost .env", "BufReadPost .env.*" },
+    opts = {},
+  },
+  {
     "meanderingprogrammer/render-markdown.nvim",
     cmd = { "RenderMarkdown" },
     ft = { "markdown", "norg", "rmd", "org", "codecompanion" },

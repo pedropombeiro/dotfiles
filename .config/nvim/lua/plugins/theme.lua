@@ -40,7 +40,7 @@ return {
 
       FoldColumn = { bg = "NONE" },
       SignColumn = { bg = "NONE" },
-      GitSignsCurrentLineBlame = { fg = "#504945" },
+      GitSignsCurrentLineBlame = { fg = "#7c6f64" },
 
       DiagnosticVirtualTextWarn = { fg = "#fabd2f", bg = "#473c29" },
       DiagnosticVirtualTextError = { fg = "#fb4934", bg = "#442e2d" },

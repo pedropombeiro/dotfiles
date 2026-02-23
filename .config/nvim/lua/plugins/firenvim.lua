@@ -11,26 +11,24 @@ return {
     vim.fn["firenvim#install"](0)
   end,
   init = function()
+    -- Config must always be set so that `firenvim#install(0)` can bake it into the browser manifest
+    vim.g.firenvim_config = {
+      localSettings = {
+        [".*"] = {
+          cmdline = "neovim",
+          content = "text",
+          priority = 0,
+          selector = "textarea",
+          takeover = "never",
+        },
+        ["https?://mail.google.com/"] = { takeover = "never", priority = 1 },
+        ["https?://discord.com/"] = { takeover = "never", priority = 1 },
+      },
+    }
+
     if not vim.g.started_by_firenvim then
       return
     end
-
-    -- Never takeover by default
-    local localSettings = {
-      [".*"] = {
-        cmdline = "neovim",
-        content = "text",
-        priority = 0,
-        selector = "textarea",
-        takeover = "never",
-      },
-      ["https?://mail.google.com/"] = { takeover = "never", priority = 1 },
-      ["https?://discord.com/"] = { takeover = "never", priority = 1 },
-    }
-
-    vim.g.firenvim_config = {
-      localSettings = localSettings,
-    }
 
     vim.opt.guifont = { "MesloLGS Nerd Font", "h22" }
 

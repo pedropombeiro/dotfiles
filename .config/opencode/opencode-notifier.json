@@ -3,43 +3,43 @@
   "notification": true,
   "timeout": 5,
   "showProjectName": true,
-  "showSessionTitle": false,
+  "showSessionTitle": true,
   "showIcon": true,
   "notificationSystem": "osascript",
   "linux": {
     "grouping": false
   },
   "command": {
-    "enabled": false,
-    "path": "/path/to/command",
+    "enabled": true,
+    "path": "/Users/pedropombeiro/.config/opencode/notify.sh",
     "args": ["--event", "{event}", "--message", "{message}"],
-    "minDuration": 0
+    "minDuration": 10
   },
   "events": {
     "permission": { "sound": true, "notification": true },
-    "complete": { "sound": true, "notification": true },
+    "complete": { "sound": false, "notification": false },
     "subagent_complete": { "sound": false, "notification": false },
     "error": { "sound": true, "notification": true },
     "question": { "sound": true, "notification": true }
   },
   "messages": {
-    "permission": "Session needs permission: {sessionTitle}",
-    "complete": "Session has finished: {sessionTitle}",
-    "subagent_complete": "Subagent task completed: {sessionTitle}",
-    "error": "Session encountered an error: {sessionTitle}",
-    "question": "Session has a question: {sessionTitle}"
+    "permission": "🔐 Needs permission: {sessionTitle}",
+    "complete": "✅ Done: {sessionTitle}",
+    "subagent_complete": "🤖 Subagent done: {sessionTitle}",
+    "error": "❌ Error: {sessionTitle}",
+    "question": "❓ Question: {sessionTitle}"
   },
   "sounds": {
-    "permission": null,
-    "complete": null,
-    "subagent_complete": null,
-    "error": null,
-    "question": null
+    "permission": "Ping",
+    "complete": "Glass",
+    "subagent_complete": "Pop",
+    "error": "Basso",
+    "question": "Purr"
   },
   "volumes": {
     "permission": 1,
     "complete": 1,
-    "subagent_complete": 1,
+    "subagent_complete": 0.7,
     "error": 1,
     "question": 1
   }

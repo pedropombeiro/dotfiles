@@ -1,6 +1,6 @@
 ---
 description: Create handoff document for context transfer
-model: anthropic/claude-sonnet-4-5
+model: gitlab/duo-chat-gpt-5-2-codex
 ---
 
 Create a HANDOFF.md file in the current working directory to transfer context to a new agent session.

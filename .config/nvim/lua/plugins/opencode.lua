@@ -7,9 +7,7 @@
 --- Negative PID sends SIGTERM to the entire process group (children included).
 --- SIGTERM is required because opencode respawns on SIGHUP (which jobstop/kill-pane send).
 local function kill_opencode(pid)
-  if pid and pid > 0 then
-    os.execute("kill -TERM -" .. pid .. " 2>/dev/null")
-  end
+  if pid and pid > 0 then os.execute("kill -TERM -" .. pid .. " 2>/dev/null") end
 end
 
 local function tmux_controller(cmd, opts)
@@ -20,28 +18,14 @@ local function tmux_controller(cmd, opts)
     allow_passthrough = false,
   }, opts or {})
 
-  local function tmux_available()
-    return vim.fn.executable("tmux") == 1 and vim.env.TMUX
-  end
-
   local function get_pane_id()
-    if not tmux_available() then
-      return nil
-    end
-
-    if pane_id then
-      if vim.fn.system("tmux list-panes -t " .. pane_id):match("can't find pane") then
-        pane_id = nil
-      end
-    end
-
+    if vim.fn.executable("tmux") ~= 1 or not vim.env.TMUX then return nil end
+    if pane_id and vim.fn.system("tmux list-panes -t " .. pane_id):match("can't find pane") then pane_id = nil end
     return pane_id
   end
 
   local function start(cmd_override)
-    if get_pane_id() then
-      return
-    end
+    if get_pane_id() then return end
 
     local detach_flag = opts.focus and "" or "-d"
     pane_id = vim.trim(
@@ -55,22 +39,25 @@ local function tmux_controller(cmd, opts)
       )
     )
 
-    if opts.allow_passthrough ~= true and pane_id and pane_id ~= "" then
+    if not opts.allow_passthrough and pane_id and pane_id ~= "" then
       vim.fn.system(string.format("tmux set-option -t %s -p allow-passthrough off", pane_id))
     end
   end
 
   local function stop()
     local active_pane = get_pane_id()
+    if not active_pane then return end
+
+    local pid = vim.trim(vim.fn.system(string.format("tmux display-message -p -t %s '#{pane_pid}'", active_pane)))
+    kill_opencode(tonumber(pid))
+    vim.fn.system(string.format("tmux kill-pane -t %s", active_pane))
+    pane_id = nil
+  end
+
+  local function focus()
+    local active_pane = get_pane_id()
     if active_pane then
-      -- Get the pane's PID and kill the process group with SIGTERM.
-      local pid = vim.trim(
-        vim.fn.system(string.format("tmux display-message -p -t %s '#{pane_pid}'", active_pane))
-      )
-      kill_opencode(tonumber(pid))
-      -- Kill the tmux pane itself — it stays open after the process exits.
-      vim.fn.system(string.format("tmux kill-pane -t %s", active_pane))
-      pane_id = nil
+      vim.fn.system(string.format("tmux select-pane -t %s", active_pane))
     end
   end
 
@@ -79,14 +66,11 @@ local function tmux_controller(cmd, opts)
       stop()
     else
       start(cmd_override)
+      focus()
     end
   end
 
-  return {
-    start = start,
-    stop = stop,
-    toggle = toggle,
-  }
+  return { start = start, stop = stop, toggle = toggle, focus = focus }
 end
 
 -- Derive a unique port per Neovim instance from its PID to avoid conflicts
@@ -100,13 +84,23 @@ local tmux_server = vim.env.TMUX and tmux_controller(opencode_cmd) or nil
 -- reliably during VimLeavePre (when terminal_job_id is no longer available).
 local opencode_pids = {} -- buffer number -> PID
 
---- Build snacks.terminal opts for a given command.
+--- Find the first snacks opencode terminal matching a predicate.
+--- When no predicate is given, returns any opencode terminal.
+local function find_opencode_term(predicate)
+  for _, term in ipairs(Snacks.terminal.list()) do
+    if type(term.cmd) == "string" and term.cmd:match("^opencode ") and (not predicate or predicate(term)) then
+      return term
+    end
+  end
+end
+
+--- Build snacks.terminal opts for the opencode TUI.
 --- Calls opencode.terminal.setup() for keymaps, then clears the
 --- plugin's TermRequest autocmd that would steal focus back.
 --- Eagerly caches the process PID in TermOpen for reliable cleanup.
-local function snacks_opts(cmd)
+local function snacks_opts()
   return {
-    cmd = cmd or opencode_cmd,
+    cmd = opencode_cmd,
     interactive = true,
     win = {
       position = "right",
@@ -115,9 +109,7 @@ local function snacks_opts(cmd)
         -- The plugin's setup() registers a TermRequest autocmd that steals focus
         -- back to the previous window (startinsert | feedkeys C-\C-n C-w p).
         -- Clear it so Snacks.terminal's own focus/insert handling works.
-        vim.schedule(function()
-          pcall(vim.api.nvim_clear_autocmds, { event = "TermRequest", buffer = win.buf })
-        end)
+        vim.schedule(function() pcall(vim.api.nvim_clear_autocmds, { event = "TermRequest", buffer = win.buf }) end)
 
         -- Eagerly cache the PID so we can kill it during VimLeavePre
         -- (by then terminal_job_id may no longer be available).
@@ -128,9 +120,7 @@ local function snacks_opts(cmd)
             local job_id = vim.b[win.buf].terminal_job_id
             if job_id then
               local ok, pid = pcall(vim.fn.jobpid, job_id)
-              if ok and pid then
-                opencode_pids[win.buf] = pid
-              end
+              if ok and pid then opencode_pids[win.buf] = pid end
             end
           end,
         })
@@ -142,25 +132,28 @@ end
 --- Kill and close any active snacks opencode terminal (regular or resume).
 --- Kills the process group FIRST (synchronous os.execute), THEN closes the window.
 local function close_snacks_opencode()
-  for _, term in ipairs(Snacks.terminal.list()) do
-    local term_cmd = term.cmd
-    if type(term_cmd) == "string" and term_cmd:match("^opencode ") then
-      -- Kill the process group first using the cached PID.
-      local pid = opencode_pids[term.buf]
-      kill_opencode(pid)
-      if term.buf then
-        opencode_pids[term.buf] = nil
-      end
-      term:close()
-    end
+  local term = find_opencode_term()
+  while term do
+    kill_opencode(opencode_pids[term.buf])
+    if term.buf then opencode_pids[term.buf] = nil end
+    term:close()
+    term = find_opencode_term()
+  end
+end
+
+--- Focus the opencode terminal panel (show it if hidden).
+local function focus_opencode_term()
+  if tmux_server then
+    tmux_server.focus()
+  else
+    local term = find_opencode_term(function(t) return t:buf_valid() end)
+    if term then term:show() end
   end
 end
 
 return {
   "NickvanDyke/opencode.nvim",
-  dependencies = {
-    "folke/snacks.nvim",
-  },
+  dependencies = { "folke/snacks.nvim" },
   lazy = true,
   cmd = "Opencode",
   keys = {
@@ -187,7 +180,9 @@ return {
     },
     {
       "<leader>aa",
-      function() require("opencode").ask("@this: ", { submit = false }) end,
+      function()
+        require("opencode").ask("@this: ", { submit = false }):next(function() vim.schedule(focus_opencode_term) end)
+      end,
       mode = { "n", "x" },
       desc = "Ask opencode…",
     },
@@ -216,55 +211,44 @@ return {
       server = {
         start = function()
           close_snacks_opencode()
-          Snacks.terminal.open(opencode_cmd, snacks_opts(opencode_cmd))
+          local prev_win = vim.api.nvim_get_current_win()
+          Snacks.terminal.open(opencode_cmd, snacks_opts())
+          -- Restore focus so that the plugin's retry of server.get()
+          -- (which fires after a 2s delay) can render the ask() popup
+          -- in the editor window rather than the terminal.
+          if vim.api.nvim_win_is_valid(prev_win) then vim.api.nvim_set_current_win(prev_win) end
         end,
-        stop = function() close_snacks_opencode() end,
+        stop = close_snacks_opencode,
         toggle = function()
-          -- Check if any opencode terminal (regular or resume) is visible.
-          -- If so, hide it (not close — close kills the process and triggers
-          -- "exited with code -1"). Otherwise show a hidden one or open a new one.
-          for _, term in ipairs(Snacks.terminal.list()) do
-            local term_cmd = term.cmd
-            if type(term_cmd) == "string" and term_cmd:match("^opencode ") and term:win_valid() then
-              term:hide()
-              return
-            end
+          -- If a visible opencode terminal exists, hide it (not close — close
+          -- kills the process and triggers "exited with code -1").
+          -- Otherwise show a hidden one, or open a new one.
+          local visible = find_opencode_term(function(t) return t:win_valid() end)
+          if visible then
+            visible:hide()
+            return
           end
-          -- No visible opencode terminal — try to re-show a hidden one.
-          for _, term in ipairs(Snacks.terminal.list()) do
-            local term_cmd = term.cmd
-            if type(term_cmd) == "string" and term_cmd:match("^opencode ") and term:buf_valid() then
-              term:show()
-              return
-            end
+          local hidden = find_opencode_term(function(t) return t:buf_valid() end)
+          if hidden then
+            hidden:show()
+          else
+            Snacks.terminal.open(opencode_cmd, snacks_opts())
           end
-          -- None exists at all — open a new one.
-          Snacks.terminal.open(opencode_cmd, snacks_opts(opencode_cmd))
         end,
       }
     end
 
     ---@type opencode.Opts
     vim.g.opencode_opts = vim.tbl_deep_extend("force", vim.g.opencode_opts or {}, {
-      server = vim.tbl_deep_extend("force", server, {
-        port = opencode_port,
-      }),
+      server = vim.tbl_deep_extend("force", server, { port = opencode_port }),
     })
 
     vim.o.autoread = true
 
     -- Ensure the opencode process is stopped when Neovim exits to avoid zombie processes.
-    -- Uses synchronous os.execute (via kill_opencode) to kill the process group,
-    -- which survives VimLeavePre (unlike vim.fn.system which spawns async jobs).
     vim.api.nvim_create_autocmd("VimLeavePre", {
       group = vim.api.nvim_create_augroup("opencode_terminal", { clear = true }),
-      callback = function()
-        if tmux_server then
-          tmux_server.stop()
-        else
-          server.stop()
-        end
-      end,
+      callback = function() server.stop() end,
     })
   end,
   specs = {

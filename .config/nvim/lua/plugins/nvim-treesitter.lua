@@ -246,6 +246,12 @@ return {
     },
     config = function(_, opts)
       local TS = require("nvim-treesitter")
+      local ts_query = require("vim.treesitter.query")
+
+      ts_query.add_predicate("is-mise?", function(_, _, bufnr, _)
+        local filepath = vim.api.nvim_buf_get_name(tonumber(bufnr) or 0)
+        return string.match(filepath, "/%.?mise[./].*%.toml$") ~= nil
+      end, { force = true, all = false })
 
       TS.setup(opts)
       M.get_installed(true) -- initialize the installed langs
@@ -288,6 +294,20 @@ return {
             end
           end
         end,
+      })
+    end,
+  },
+  {
+    "jmbuhr/otter.nvim",
+    event = "FileType toml",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    opts = {},
+    config = function(_, opts)
+      require("otter").setup(opts)
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("otter_mise", { clear = true }),
+        pattern = "toml",
+        callback = function() require("otter").activate() end,
       })
     end,
   },

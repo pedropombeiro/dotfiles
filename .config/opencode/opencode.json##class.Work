@@ -63,6 +63,7 @@
     "grep": "allow",
     "knowledge-graph_list_projects": "allow",
     "knowledge-graph_read_definitions": "allow",
+    "knowledge-graph_repo_map": "allow",
     "knowledge-graph_search_codebase_definitions": "allow",
     "lazy-mcp_describe_commands": "allow",
     "lazy-mcp_invoke_command": "allow",

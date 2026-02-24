@@ -1,0 +1,31 @@
+---
+description: Run a parallel multi-dimensional review on a GitLab MR
+model: gitlab/duo-chat-sonnet-4-6
+---
+
+## MR Review Command
+
+Load the `review-mr` skill and execute a full multi-dimensional review of a GitLab merge request.
+
+### Input
+
+The argument is an MR reference in one of these formats:
+- `12345` — MR IID, defaults to project `gitlab-org/gitlab`
+- `group/project!12345` — Full project path + MR IID
+- *(no argument)* — Infer from the current Git branch
+
+### Workflow
+
+1. Parse the argument to extract `project_id` and MR IID
+2. If no `project_id` given, default to `gitlab-org/gitlab`
+3. If no argument at all, detect the current branch via `git rev-parse --abbrev-ref HEAD` and look up its MR
+4. Load the `review-mr` skill for the full orchestration instructions
+5. Execute the review workflow: fetch MR data, classify files, dispatch specialized agents in parallel, collect results
+6. Present the structured summary to the user
+
+### Notes
+
+- This command dispatches up to 10 specialized review sub-agents in parallel (Security, Database, ClickHouse, Performance, QA, Frontend, Backend, Docs, Analytics, GraphQL)
+- Irrelevant dimensions are automatically skipped based on which files changed
+- Each agent uses `gitlab/duo-chat-opus-4-6` for deep analysis
+- The Security dimension always runs regardless of file types changed

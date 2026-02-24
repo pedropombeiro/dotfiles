@@ -56,7 +56,7 @@
       "tail*": "allow",
       "vale *": "allow",
       "wc *": "allow",
-      "which*": "allow",
+      "which*": "allow"
     },
     "gh run view": "allow",
     "glob": "allow",
@@ -70,7 +70,20 @@
     "lazy-mcp_list_commands": "allow",
     "lazy-mcp_list_servers": "allow",
     "read": "allow",
-    "task": { "explore": "allow" },
+    "skill": "allow",
+    "task": {
+      "explore": "allow",
+      "review-security": "allow",
+      "review-database": "allow",
+      "review-clickhouse": "allow",
+      "review-performance": "allow",
+      "review-qa": "allow",
+      "review-frontend": "allow",
+      "review-backend": "allow",
+      "review-docs": "allow",
+      "review-analytics": "allow",
+      "review-graphql": "allow"
+    },
     "todowrite": "allow"
   },
 

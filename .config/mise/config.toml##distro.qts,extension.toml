@@ -17,6 +17,7 @@ delta = "https://github.com/pedropombeiro/asdf-delta#patch-1"
 
 [tools]
 dua = "latest"
+usage = "latest"
 
 # GitHub releases (musl builds for QTS)
 "github:dalance/procs" = "latest"

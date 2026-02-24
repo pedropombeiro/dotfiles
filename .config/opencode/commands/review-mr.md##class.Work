@@ -1,0 +1,141 @@
+---
+description: Run a parallel multi-dimensional review on a GitLab MR
+agent: build
+---
+
+**CRITICAL: This is a multi-step workflow. You MUST complete ALL steps in sequence. Do NOT stop after fetching MR data. After every tool result, immediately proceed to the next step. Do NOT emit an empty response at any point.**
+
+Review a GitLab merge request using specialized parallel agents.
+
+## Step 1: Determine the MR
+
+Parse the user argument `$ARGUMENTS` using these rules:
+
+- A URL like `https://gitlab.com/group/project/-/merge_requests/12345` — extract project path and IID from the URL
+- `group/project!12345` is a full project path + MR IID
+- A bare number like `12345` is an MR IID; default the project to `gitlab-org/gitlab`
+- If no argument is given, infer from the current Git branch via `git rev-parse --abbrev-ref HEAD`
+
+## Step 2: Fetch MR data
+
+Use GitLab MCP tools to gather the full context (make both calls in parallel):
+
+1. **Metadata**: `gitlab_get_merge_request` with `include_changes: true` — get title, author, description, labels, changed file list with stats.
+2. **Full diff**: `gitlab_list_merge_request_diffs` with `per_page: 100` — paginate if needed to get the complete diff for all changed files.
+
+**After receiving the tool results, you MUST immediately proceed to Step 3 in the same response. Do NOT stop here.**
+
+## Step 3: Classify changed files
+
+Categorize every changed file path into one or more review dimensions:
+
+| File Pattern | Dimensions |
+|---|---|
+| `db/migrate/`, `db/post_migrate/`, `db/structure.sql`, `lib/gitlab/database/`, `lib/gitlab/background_migration/` | Database |
+| `ee/app/models/click_house/`, `ee/db/click_house/`, `lib/click_house/`, files with `ClickHouse` in name | ClickHouse |
+| `app/models/`, `app/services/`, `app/finders/`, `app/workers/`, `app/controllers/`, `lib/api/`, `lib/gitlab/` | Backend, Performance, Security |
+| `app/graphql/`, `ee/app/graphql/` | GraphQL, Backend |
+| `app/assets/javascripts/`, `ee/app/assets/javascripts/`, `*.vue`, `*.js`, `*.ts` | Frontend |
+| `app/views/`, `ee/app/views/`, `*.haml` | Frontend, Backend (if contains Ruby logic) |
+| `spec/`, `ee/spec/`, `qa/` | QA |
+| `doc/`, `locale/` | Docs |
+| `config/events/`, `config/metrics/`, `ee/config/metrics/`, `ee/config/events/` | Analytics |
+| `ee/` mirrors of any above | Same dimensions + EE/CE separation (Backend) |
+| **All files** | Security (always runs) |
+
+A dimension is **triggered** if at least one changed file matches its patterns.
+
+**After classifying files, you MUST immediately proceed to Step 4 in the same response. Do NOT stop here.**
+
+## Step 4: Dispatch agents in parallel
+
+For each triggered dimension, launch a `task()` call with:
+- `subagent_type`: the agent name from the table below
+- `description`: `"MR !{iid} — {dimension} review"`
+- `prompt`: A structured prompt containing the MR context, files in scope, and the actual diff content for files in scope
+
+| # | Dimension | Agent |
+|---|-----------|-------|
+| 1 | Security | `review-security` |
+| 2 | Database (PostgreSQL) | `review-database` |
+| 3 | ClickHouse | `review-clickhouse` |
+| 4 | Performance & Scalability | `review-performance` |
+| 5 | Quality Assurance | `review-qa` |
+| 6 | Frontend | `review-frontend` |
+| 7 | Backend Architecture | `review-backend` |
+| 8 | Documentation | `review-docs` |
+| 9 | Analytics Instrumentation | `review-analytics` |
+| 10 | GraphQL | `review-graphql` |
+
+The prompt for each agent should follow this template:
+
+```
+## MR Context
+- **MR**: !{iid} — {title}
+- **Project**: {project_path}
+- **Author**: {author}
+- **Description**: {description (first 500 chars)}
+- **Labels**: {labels}
+- **Changed files**: {count} files (+{insertions} −{deletions})
+
+## Files in your scope
+{list of files relevant to this dimension with their change stats}
+
+## Diffs to review
+{the actual diff content for files in scope — include the full diff, do not truncate}
+```
+
+**IMPORTANT**: Launch ALL agent tasks in the same message to maximize parallelism. Do NOT wait for one agent before dispatching the next.
+
+**IMPORTANT**: Only include diffs relevant to each agent's scope. Do not send the entire MR diff to every agent.
+
+## Step 5: Collect results and render summary
+
+Wait for all agents to return. Then render:
+
+```markdown
+# MR Review: !{iid} — {title}
+
+**Project:** {project}  |  **Author:** {author}  |  **Files changed:** {N} (+{ins} −{del})
+
+## Summary
+
+| Dimension | Verdict | Findings |
+|-----------|---------|----------|
+| Security | {verdict} | {count} |
+| Database | {verdict} | {count} |
+| ClickHouse | {verdict} | {count} |
+| Performance | {verdict} | {count} |
+| QA | {verdict} | {count} |
+| Frontend | {verdict} | {count} |
+| Backend | {verdict} | {count} |
+| Docs | {verdict} | {count} |
+| Analytics | {verdict} | {count} |
+| GraphQL | {verdict} | {count} |
+
+## Detailed Findings
+
+### {Dimension}
+{agent's findings, preserving severity/location/suggestion format}
+
+...repeat for each dimension with findings...
+
+## Dimensions Skipped
+- {Dimension} — {reason, e.g., "No JS/Vue/HAML files changed"}
+```
+
+**Verdict values:**
+- `Pass` — No issues found
+- `Warnings` — Low/Medium severity findings only
+- `Issues` — High/Critical severity findings present
+- `Skipped` — Dimension not triggered (no relevant files changed)
+
+## Rules
+
+1. **Always fetch the full diff** — Use `gitlab_list_merge_request_diffs` with pagination; never review just metadata or file names
+2. **Skip irrelevant dimensions** — If no files match a dimension's patterns, mark it "Skipped" rather than dispatching an agent
+3. **Maximize parallelism** — Dispatch ALL selected agents in a single message with multiple `task()` calls
+4. **Severity levels** — Agents use `[Critical]`, `[High]`, `[Medium]`, `[Low]`, `[Info]` consistently
+5. **Constructive feedback** — Every finding must include a concrete suggestion or fix
+6. **Cite line numbers** — Reference specific files and line numbers, not vague descriptions
+7. **Respect scope** — Each agent stays in its lane; don't duplicate findings across dimensions

@@ -1,0 +1,36 @@
+{
+  "version": 3,
+  "skills": {
+    "mise-expert": {
+      "source": "samhvw8/dotfiles",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/samhvw8/dotfiles.git",
+      "skillPath": "dot_ccp/hub/skills/mise-expert/SKILL.md",
+      "skillFolderHash": "cc2778e4ad1050c7c3d070aef9e2d6e09ea174dc",
+      "installedAt": "2026-02-25T21:38:19.273Z",
+      "updatedAt": "2026-02-25T21:42:33.010Z"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/skills.git",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "skillFolderHash": "c2f31172b6f256272305a5e6e7228b258446899f",
+      "installedAt": "2026-02-25T21:38:24.838Z",
+      "updatedAt": "2026-02-25T21:38:24.838Z"
+    },
+    "clickhouse-best-practices": {
+      "source": "clickhouse/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/clickhouse/agent-skills.git",
+      "skillPath": "skills/clickhouse-best-practices/SKILL.md",
+      "skillFolderHash": "32e9ccbc6eb9cb46e9822d8a327bc6e90f63d9a1",
+      "installedAt": "2026-02-25T21:56:34.833Z",
+      "updatedAt": "2026-02-25T21:56:34.833Z"
+    }
+  },
+  "dismissed": {
+    "findSkillsPrompt": true
+  },
+  "lastSelectedAgents": ["codex", "gemini-cli", "github-copilot", "opencode"]
+}

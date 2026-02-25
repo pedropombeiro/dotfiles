@@ -31,6 +31,9 @@ bat cache --build # Ensure any custom themes and syntax definition files are com
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."
 command -v npm >/dev/null && npm update -g
 
+printf "${YELLOW}%s${NC}\n" "Updating OpenCode skills..."
+command -v npx >/dev/null && npx skills update
+
 printf "${YELLOW}%s${NC}\n" "Testing shell instantiation performance..."
 hf_file="$(mktemp)"
 hyperfine --warmup=1 --max-runs 5 'zsh -i -c exit' --export-json "${hf_file}"

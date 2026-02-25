@@ -14,8 +14,11 @@
     "lazy-mcp": {
       "type": "local",
       "command": [
-        "npx",
-        "lazy-mcp@latest",
+        "mise",
+        "x",
+        "npm:lazy-mcp",
+        "--",
+        "lazy-mcp",
         "--config",
         "~/.config/lazy-mcp/servers.json"
       ],

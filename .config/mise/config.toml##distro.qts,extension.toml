@@ -42,3 +42,4 @@ usage = "latest"
 
 # npm tools for pre-commit hooks
 "npm:renovate" = "43.11.1"
+"npm:lazy-mcp" = "latest"

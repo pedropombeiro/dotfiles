@@ -41,6 +41,7 @@
       "git diff*": "allow",
       "git --no-pager diff*": "allow",
       "git grep*": "allow",
+      "git --no-pager log*": "allow",
       "git log*": "allow",
       "git ls-files*": "allow",
       "git remote -v": "allow",

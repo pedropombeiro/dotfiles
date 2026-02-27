@@ -3,3 +3,4 @@ dua = "latest"
 pre-commit = "latest"
 
 "npm:lazy-mcp" = "latest"
+"github:twaugh/patchutils" = "latest"

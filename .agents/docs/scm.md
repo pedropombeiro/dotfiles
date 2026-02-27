@@ -24,7 +24,7 @@ Git commands on the `~` directory are managed through `yadm` instead of `git`.
   - `##os.Linux` - Linux
   - `##class.Work` - Work machines
   - Combined: `##os.Darwin,class.Work`
-- **Agent docs**: `~/.agent_docs/` - Documentation for agents
+- **Agent docs**: `~/.agents/docs/` - Documentation for agents
 - **Bootstrap**: `~/.config/yadm/bootstrap.d/` - Setup scripts (000-999 numbering)
 
 ### Important: Symlinks

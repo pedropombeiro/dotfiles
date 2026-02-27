@@ -9,9 +9,9 @@ without me having to explicitly ask.
 
 ## Specialized Topics
 
-- [SCM](~/.agent_docs/scm.md) - YADM, git, and commit/push behavior
-- [Mise Tasks](~/.agent_docs/mise-tasks.md) - Task automation for dotfiles
-- [Neovim](~/.agent_docs/neovim.md) - Configuration structure and plugin management
-- [Mise](~/.agent_docs/mise.md) - Runtime versions and CLI tools
-- [Pre-commit](~/.agent_docs/pre-commit.md) - Hooks and code quality checks
-- [Renovate Bot](~/.agent_docs/renovate.md) - Dependency update configuration and troubleshooting
+- [SCM](~/.agents/docs/scm.md) - YADM, git, and commit/push behavior
+- [Mise Tasks](~/.agents/docs/mise-tasks.md) - Task automation for dotfiles
+- [Neovim](~/.agents/docs/neovim.md) - Configuration structure and plugin management
+- [Mise](~/.agents/docs/mise.md) - Runtime versions and CLI tools
+- [Pre-commit](~/.agents/docs/pre-commit.md) - Hooks and code quality checks
+- [Renovate Bot](~/.agents/docs/renovate.md) - Dependency update configuration and troubleshooting

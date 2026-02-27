@@ -4,10 +4,10 @@ This file contains core instructions applicable to most tasks. For specialized t
 
 ## Specialized Topics
 
-- [Shell](~/.agent_docs/shell.md) - Zsh configuration, zinit plugins, functions
-- [Bootstrap](~/.agent_docs/bootstrap.md) - YADM bootstrap scripts for system setup
-- [Tmux](~/.agent_docs/tmux.md) - Configuration structure, plugins, and shell integration
-- [OpenCode](~/.agent_docs/opencode.md) - Policy overrides and runtime behaviors
+- [Shell](~/.agents/docs/shell.md) - Zsh configuration, zinit plugins, functions
+- [Bootstrap](~/.agents/docs/bootstrap.md) - YADM bootstrap scripts for system setup
+- [Tmux](~/.agents/docs/tmux.md) - Configuration structure, plugins, and shell integration
+- [OpenCode](~/.agents/docs/opencode.md) - Policy overrides and runtime behaviors
 
 ## Dotfiles (YADM)
 
@@ -15,7 +15,7 @@ This file contains core instructions applicable to most tasks. For specialized t
 
 - `~/.config/`
 - `~/.shellrc/`
-- `~/.agent_docs/`
+- `~/.agents/docs/`
 - `~/.claude/`
 - Any dotfiles in `~` (the home directory is not a git repo)
 

@@ -24,6 +24,18 @@
       "description": "Library documentation and code examples",
       "type": "local",
       "command": ["npx", "-y", "@upstash/context7-mcp"]
+    },
+    {
+      "name": "websearch",
+      "description": "Web search via Exa AI",
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa"
+    },
+    {
+      "name": "grep_app",
+      "description": "GitHub code search via grep.app",
+      "type": "remote",
+      "url": "https://mcp.grep.app"
     }
   ],
   "discovery": {

@@ -3,7 +3,8 @@
   "default_agent": "plan",
   "plugin": [
     "@gitlab/opencode-gitlab-plugin",
-    "@mohak34/opencode-notifier@latest"
+    "@mohak34/opencode-notifier@latest",
+    "oh-my-opencode@latest"
   ],
   "mcp": {
     "lazy-mcp": {
@@ -97,7 +98,6 @@
     },
     "todowrite": "allow"
   },
-
   "keybinds": {
     "scrollbar_toggle": "ctrl+alt+t",
     "messages_page_up": "pageup,ctrl+alt+b,home",

@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true"
+            "command": "[ -n \"$(yadm ls-files $CLAUDE_FILE_PATHS 2>/dev/null)\" ] && mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true"
           }
         ]
       },
@@ -15,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true"
+            "command": "[ -n \"$(yadm ls-files $CLAUDE_FILE_PATHS 2>/dev/null)\" ] && mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true"
           }
         ]
       }

@@ -76,6 +76,7 @@ The prompt for each agent should follow this template:
 - **Author**: {author}
 - **Description**: {description (first 500 chars)}
 - **Labels**: {labels}
+- **Milestone**: {milestone title, e.g. "18.10"}
 - **Changed files**: {count} files (+{insertions} −{deletions})
 
 ## Files in your scope

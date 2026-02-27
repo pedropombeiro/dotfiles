@@ -69,6 +69,7 @@ Review the provided diff for each of these concerns:
 - Default value is the safe/current behavior
 - Cleanup issue linked in the feature flag YAML
 - Feature flag YAML has correct `group`, `milestone`, `type`
+- **Milestone consistency**: The `milestone` in the feature flag YAML must match the MR's target milestone (provided in the MR context). Flag any mismatch — e.g. a FF YAML saying `'18.9'` when the MR targets milestone `18.10` means the FF was not updated after a slip
 
 ### Code Organization
 - Code is in the right directory for its abstraction level (model vs. service vs. finder vs. presenter vs. worker)

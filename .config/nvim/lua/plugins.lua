@@ -233,6 +233,7 @@ return {
     "tpope/vim-sleuth", -- sleuth.vim: Heuristically set buffer options
     event = "BufReadPre",
   },
+  { "wakatime/vim-wakatime", lazy = false }, -- WakaTime time tracking for (Neo)Vim
   {
     "tpope/vim-bundler", -- bundler.vim: Lightweight support for Ruby's Bundler
     ft = "ruby",

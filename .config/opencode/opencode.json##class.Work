@@ -83,6 +83,7 @@
     "lazy-mcp_list_servers": "allow",
     "read": "allow",
     "task": {
+      "general": "allow",
       "explore": "allow",
       "review-security": "allow",
       "review-database": "allow",

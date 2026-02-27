@@ -12,21 +12,14 @@ uvx = true
 
 [tools]
 ruby = "3.4.8"
-cargo-binstall = "latest"
-dua = "latest"
-fd = "latest"
 grpcurl = "latest"
 node = "latest"
 "opencode" = { version = "1.2.15", no_app = true }
-pre-commit = "latest"
 yamllint = "latest"
 
 "gem:neovim" = "0.10.0"
 "gem:ruby-lsp" = "0.26.7"
 "gem:standard" = "latest"
-
-"npm:lazy-mcp" = "latest"
-"npm:renovate" = "43.11.1"
 
 "pipx:neovim-remote" = "2.5.1"
 
@@ -38,7 +31,7 @@ run = "brew bundle dump --global --describe --force"
 
 [tasks."brew:cleanup"]
 description = "Remove packages not in Brewfile"
-run = "brew bundle cleanup ~/.Brewfile --force --file"
+run = "brew bundle cleanup --file ~/.Brewfile --force"
 
 # ── Network ───────────────────────────────────────────────────────────
 

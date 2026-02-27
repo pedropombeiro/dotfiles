@@ -8,12 +8,12 @@
 
 ## Managers Configured
 
-| Manager          | Files                         | Purpose              |
-| ---------------- | ----------------------------- | -------------------- |
-| `github-actions` | `.github/workflows/*.yml`     | Action versions      |
-| `pre-commit`     | `.pre-commit-config.yaml`     | Hook versions        |
-| `mise`           | `.config/mise/config.toml##*` | Tool versions        |
-| `custom.regex`   | mise configs                  | GitHub backend tools |
+| Manager          | Files                                           | Purpose              |
+| ---------------- | ----------------------------------------------- | -------------------- |
+| `github-actions` | `.github/workflows/*.yml`                       | Action versions      |
+| `pre-commit`     | `.pre-commit-config.yaml`                       | Hook versions        |
+| `mise`           | `.config/mise/config.toml##*`, `conf.d/*.toml*` | Tool versions        |
+| `custom.regex`   | mise configs                                    | GitHub backend tools |
 
 ## Adding Package Rules
 

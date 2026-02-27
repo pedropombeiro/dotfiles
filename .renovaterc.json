@@ -109,7 +109,7 @@
       "/(^|/)\\.?mise/config\\.toml$/",
       "/(^|/)\\.config/mise/config\\.toml##[^/]+$/",
       "/(^|/)\\.config/mise/config\\.toml$/",
-      "/(^|/)\\.config/mise/conf\\.d/[^/]+\\.toml##[^/]+$/"
+      "/(^|/)\\.config/mise/conf\\.d/[^/]+\\.toml(##[^/]+)?$/"
     ]
   },
   "customManagers": [
@@ -120,7 +120,7 @@
         "/(^|/)\\.config/mise/config\\.toml##[^/]+$/",
         "/(^|/)\\.config/mise/config\\.toml$/",
         "/(^|/)\\.config/mise/config\\.local\\.toml$/",
-        "/(^|/)\\.config/mise/conf\\.d/[^/]+\\.toml##[^/]+$/"
+        "/(^|/)\\.config/mise/conf\\.d/[^/]+\\.toml(##[^/]+)?$/"
       ],
       "matchStrings": [
         "\"github:(?<depName>[^\"\\[]+)(\\[[^\\]]*\\])?\"\\s*=\\s*\"(?<currentValue>[^\"]+)\"",
@@ -136,7 +136,7 @@
         "/(^|/)\\.config/mise/config\\.toml##[^/]+$/",
         "/(^|/)\\.config/mise/config\\.toml$/",
         "/(^|/)\\.config/mise/config\\.local\\.toml$/",
-        "/(^|/)\\.config/mise/conf\\.d/[^/]+\\.toml##[^/]+$/"
+        "/(^|/)\\.config/mise/conf\\.d/[^/]+\\.toml(##[^/]+)?$/"
       ],
       "matchStrings": [
         "\"opencode\"\\s*=\\s*\\{[^}]*version\\s*=\\s*\"(?<currentValue>[^\"]+)\"[^}]*\\}"

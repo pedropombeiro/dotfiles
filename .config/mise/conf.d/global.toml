@@ -1,0 +1,5 @@
+[tools]
+dua = "latest"
+pre-commit = "latest"
+
+"npm:lazy-mcp" = "latest"

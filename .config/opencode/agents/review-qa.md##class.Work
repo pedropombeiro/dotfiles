@@ -55,6 +55,8 @@ Review the provided diff for each of these concerns:
 - No order-dependent tests (each test should be independently runnable)
 - No sleep/timing-dependent assertions (use `have_enqueued_job`, waiters, etc.)
 - Proper use of `subject` for the thing being tested
+- `subject` should be defined inside the `describe` block for the method it exercises, not at a higher scope where it becomes ambiguous or misleading. When a new `describe` block is added (e.g. for `#execute`), check that there is a corresponding `subject` defined within it or inherited from the correct parent context
+- Flag specs that test a public method but never define a `subject` — callers should not repeat the invocation inline in every `it` block
 
 ### Flaky Test Prevention
 - No race conditions in tests (shared mutable state, parallel execution issues)

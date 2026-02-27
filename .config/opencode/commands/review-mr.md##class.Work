@@ -89,6 +89,8 @@ The prompt for each agent should follow this template:
 
 **IMPORTANT**: Only include diffs relevant to each agent's scope. Do not send the entire MR diff to every agent.
 
+**IMPORTANT**: For the **QA agent**, when spec files are in scope, also include the production files they test in the prompt (both diff and file paths). This enables the agent to assess coverage completeness and verify that test setups correctly reference shared fixtures (e.g., factories that should pass an existing `project` instead of creating implicit duplicates).
+
 ## Step 5: Collect results and render summary
 
 Wait for all agents to return. Then render:

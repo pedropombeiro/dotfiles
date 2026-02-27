@@ -44,6 +44,9 @@ Review the provided diff for each of these concerns:
 - Avoid creating unnecessary associated records
 - Use `create_list` / `build_list` for collection tests
 - Factories don't have excessive trait chains that obscure intent
+- **Implicit record creation**: Many GitLab factories create associated records implicitly. For example, `create(:ci_pipeline)` creates an implicit `project`. When a test already has a project in scope (e.g. via `let_it_be(:project)`), bare factory calls that create duplicate implicit records waste DB resources and slow down specs. Flag cases where an explicit parent should be passed (e.g. `create(:ci_pipeline, project: project)`)
+- Watch for `let_it_be` / `create` calls that spawn implicit projects, groups, namespaces, or users when an existing one is available in the test context
+- Prefer `let_it_be` over `let` for records that don't change between examples to avoid repeated creation
 
 ### Test Patterns
 - `let` vs `let!` used correctly (`let!` only when eager evaluation is needed)

@@ -38,5 +38,5 @@ usage = "latest"
 "pipx:garth" = "latest"
 "pipx:isort" = "latest"
 "pipx:jedi-language-server" = "latest"
-"pipx:pgcli" = { version = "latest", uvx_args = "--with psycopg2-binary" }
+"pipx:pgcli" = { version = "latest", uvx_args = "--with psycopg2-binary --with psycopg-binary" }
 "pipx:yamllint" = "latest"

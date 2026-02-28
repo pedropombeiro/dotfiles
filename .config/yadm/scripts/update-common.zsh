@@ -78,3 +78,5 @@ else
 fi
 
 rm -f "${hf_file}"
+
+"${YADM_SCRIPTS}/check-configs.zsh"

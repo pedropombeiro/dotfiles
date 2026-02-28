@@ -19,7 +19,7 @@ function print_failure() {
 }
 
 expected_files=(
-  ~/.wakatime.local.cfg
+  ~/.wakatime.cfg
 )
 
 any_missing=0

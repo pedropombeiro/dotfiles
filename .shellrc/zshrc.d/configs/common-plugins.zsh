@@ -15,7 +15,7 @@ ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 zinit wait'0' lucid light-mode for \
   atload'_zsh_autosuggest_start' zsh-users/zsh-autosuggestions \
   zdharma-continuum/fast-syntax-highlighting \
-  atinit'ZSH_WAKATIME_BIN="$HOME/.wakatime/wakatime-cli"' sobolevn/wakatime-zsh-plugin
+  atinit'ZSH_WAKATIME_BIN="$HOME/.wakatime/wakatime-cli"' pedropombeiro/wakatime-zsh-plugin
 
 # fzf-tab: replace zsh completion menu with fzf popup
 zinit wait'0a' lucid light-mode for \

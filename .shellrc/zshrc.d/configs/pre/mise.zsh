@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-zinit ice wait'0a' lucid atload'
+zinit ice wait'0a' lucid nocd atload'
   if command -v zoxide &>/dev/null; then
     eval "$(zoxide init zsh --no-cmd)"
     alias j="__zoxide_z"   # autojump compatibility

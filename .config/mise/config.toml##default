@@ -11,10 +11,10 @@ idiomatic_version_file_enable_tools = []
 uvx = true
 
 [tools]
-ruby = "3.4.8"
 grpcurl = "latest"
 node = "latest"
 "opencode" = { version = "1.2.15", no_app = true }
+ruby = "3.4.8"
 yamllint = "latest"
 
 "gem:neovim" = "0.10.0"

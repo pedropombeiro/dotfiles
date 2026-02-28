@@ -1,6 +1,6 @@
 ---
 description: Commit changes in logical commits and push
-model: anthropic/claude-haiku-4-5
+model: gitlab/duo-chat-haiku-4-5
 ---
 
 Commit all changes in discrete, logical commits and push to the remote.

@@ -73,6 +73,8 @@ PLOT_COLORS = {
     "c26": 224,
 }
 
+_plot_colors_str = " ".join(map(str, PLOT_COLORS.values()))
+
 vd.themes["gruvbox-dark"] = dict(
     # Base colors
     color_default=f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0"]}',
@@ -103,9 +105,7 @@ vd.themes["gruvbox-dark"] = dict(
     color_note_row=f'{GRUVBOX["bright_blue"]} on {GRUVBOX["bg0"]}',
     # Graph colors
     color_graph_hidden=f'{GRUVBOX["blue"]}',
-    plot_colors=" ".join(
-        [f"{PLOT_COLORS[f'c{i}']}" for i in range(1, len(PLOT_COLORS) + 1)]
-    ),
+    plot_colors=_plot_colors_str,
     # Bottom sheet colors
     color_bottom_hdr=f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_h"]}',
     # Command palette and menus

@@ -26,5 +26,6 @@ return {
       "!snacks_dashboard",
       "!snacks_picker_list",
     },
+    options = {},
   },
 }

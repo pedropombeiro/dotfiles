@@ -583,11 +583,8 @@ customCommands:
         title: "Commit"
         body: "Are you sure you want to commit?"
     command: >-
-      message=$'{{.Form.Type}}{{ if .Form.Scope }}({{ .Form.Scope }}){{ end }}{{.Form.Breaking}}: {{.Form.Message}}';
-      description=$'{{.Form.Description}}';
-      echo $message > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT;
-      echo $description >> {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT;
-      git commit --message $message {{ if .Form.Description }} --message $description {{ end }} &&
+      message=$'{{.Form.Type}}{{ if .Form.Scope }}({{ .Form.Scope }}){{ end }}{{.Form.Breaking}}: {{.Form.Message}}'; description=$'{{.Form.Description}}'; echo $message > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT; echo $description >> {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT; git commit --message $message {{ if .Form.Description }} --message $description {{ end }} &&
+
         echo -n > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT
     loadingText: "Creating conventional commit..."
   - key: "<c-g>"
@@ -641,3 +638,13 @@ customCommands:
     context: files
     output: log
     outputTitle: "Generated commit message with opencode"
+  - key: "B"
+    description: "Open diff in Beyond Compare"
+    context: "files"
+    command: "git difftool --no-prompt --tool=bc -- {{.SelectedFile.Name}}"
+    output: terminal
+  - key: "B"
+    description: "Open diff in Beyond Compare"
+    context: "commitFiles"
+    command: "git difftool --no-prompt --tool=bc {{.SelectedCommit.Hash}}~1..{{.SelectedCommit.Hash}} -- {{.SelectedCommitFile.Name}}"
+    output: terminal

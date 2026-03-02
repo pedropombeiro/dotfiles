@@ -4,7 +4,6 @@
   "plugin": [
     "@gitlab/opencode-gitlab-plugin",
     "@mohak34/opencode-notifier@latest",
-    "oh-my-opencode@latest",
     "opencode-wakatime"
   ],
   "mcp": {

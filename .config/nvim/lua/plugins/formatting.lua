@@ -95,6 +95,9 @@ return {
         stdin = false,
         require_cwd = false,
       },
+      shfmt = {
+        prepend_args = { "-i", "2", "-ci" },
+      },
     },
   },
 }

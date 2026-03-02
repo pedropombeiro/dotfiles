@@ -1,0 +1,14 @@
+#!/usr/bin/env zsh
+
+set -o pipefail
+
+YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
+
+source "${YADM_SCRIPTS}/run-checks-common.zsh"
+
+if [[ $any_failed -eq 1 ]]; then
+  printf "${YELLOW}%s${NC}\n" "⚠️  Checks finished with errors/warnings!"
+  (exit 1)
+else
+  printf "${GREEN}%s${NC}\n" "✅ Checks finished!"
+fi

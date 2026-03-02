@@ -4,25 +4,7 @@ set -o pipefail
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 
-source "${YADM_SCRIPTS}/colors.sh"
-
-function print_op() {
-  printf "${CYAN}%s${NC}\n" "- $1"
-}
-
-function print_op_stay() {
-  printf "${CYAN}%-63s${NC} " "- $1..."
-}
-
-function print_ok() {
-  printf "${GREEN}%s${NC} %s\n" '✅ OK' $1
-}
-
-function print_failure() {
-  printf "${RED}%s${NC}\n" "$1"
-}
-
-any_failed=0
+source "${YADM_SCRIPTS}/run-checks-common.zsh"
 
 print_op_stay "Checking if Elgato Stream Deck is running"
 if pgrep 'Stream Deck' >/dev/null; then

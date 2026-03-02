@@ -10064,7 +10064,7 @@
 				<key>Screen</key>
 				<integer>1</integer>
 				<key>Selected Tab Index</key>
-				<integer>4</integer>
+				<integer>1</integer>
 				<key>Tabs</key>
 				<array>
 					<dict>
@@ -10357,13 +10357,13 @@
 												<key>Alpha Component</key>
 												<real>1</real>
 												<key>Blue Component</key>
-												<real>0.93333333333333335</real>
+												<real>0.71580320596694946</real>
 												<key>Color Space</key>
 												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.93333333333333335</real>
+												<real>0.8609917163848877</real>
 												<key>Red Component</key>
-												<real>0.93333333333333335</real>
+												<real>0.91083794832229614</real>
 											</dict>
 											<key>Cursor Guide Color</key>
 											<dict>
@@ -10421,7 +10421,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>B9C7A145-806F-45CC-B640-0FA55C225628</string>
+											<string>020D5802-EDF0-43C4-AC49-9418BC3C1BEA</string>
 											<key>Has Hotkey</key>
 											<true/>
 											<key>Horizontal Spacing</key>
@@ -10602,6 +10602,65 @@
 											<string>/Users/pedropombeiro</string>
 											<string>/Users/pedropombeiro</string>
 											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro/.config/opencode/agents</string>
 										</array>
 										<key>Environment</key>
 										<dict>
@@ -10660,7 +10719,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>4160A5F2-EF0F-4561-A0D7-28D6470E71B2</string>
+										<string>75B65FCA-7F74-4D50-A10E-80D0A6BDCD9A</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -10673,7 +10732,7 @@
 											<string>$$</string>
 										</dict>
 										<key>Working Directory</key>
-										<string>/Users/pedropombeiro</string>
+										<string>/Users/pedropombeiro/.config/opencode/agents</string>
 										<key>Working Directory Poller Disabled</key>
 										<true/>
 									</dict>
@@ -10999,7 +11058,7 @@
 											<key>Columns</key>
 											<integer>180</integer>
 											<key>Command</key>
-											<string>mise x ruby -- zsh</string>
+											<string>/opt/homebrew/bin/tmux new -s gdk</string>
 											<key>Cursor Color</key>
 											<dict>
 												<key>Alpha Component</key>
@@ -11040,7 +11099,7 @@
 												<real>0.11759927868843079</real>
 											</dict>
 											<key>Custom Command</key>
-											<string>No</string>
+											<string>Yes</string>
 											<key>Custom Directory</key>
 											<string>Yes</string>
 											<key>Custom Icon Path</key>
@@ -11071,7 +11130,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>927EFDB8-FA25-47E4-AFA6-157242EF3FA1</string>
+											<string>7C7ADB1D-2492-4EA8-B5FC-69E88699FD87</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -11287,70 +11346,18 @@
 										<key>Columns</key>
 										<integer>189</integer>
 										<key>Commands</key>
-										<array>
-											<string>export PATH="$PWD/bin:$PATH"</string>
-										</array>
+										<array/>
 										<key>Directories</key>
-										<array>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
-										</array>
+										<array/>
 										<key>Environment</key>
 										<dict>
 											<key>PWD</key>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab/</string>
 										</dict>
 										<key>Hostname to Shell</key>
-										<dict>
-											<key>pedropombeiro@gitlab-macbookpro.work.pombei.ro</key>
-											<string>zsh</string>
-										</dict>
+										<dict/>
 										<key>Hosts</key>
-										<array>
-											<dict>
-												<key>Host name</key>
-												<string>gitlab-macbookpro.work.pombei.ro</string>
-												<key>User name</key>
-												<string>pedropombeiro</string>
-											</dict>
-											<dict>
-												<key>Host name</key>
-												<string>gitlab-macbookpro.work.pombei.ro</string>
-												<key>User name</key>
-												<string>pedropombeiro</string>
-											</dict>
-											<dict>
-												<key>Host name</key>
-												<string>gitlab-macbookpro.work.pombei.ro</string>
-												<key>User name</key>
-												<string>pedropombeiro</string>
-											</dict>
-											<dict>
-												<key>Host name</key>
-												<string>gitlab-macbookpro.work.pombei.ro</string>
-												<key>User name</key>
-												<string>pedropombeiro</string>
-											</dict>
-											<dict>
-												<key>Host name</key>
-												<string>gitlab-macbookpro.work.pombei.ro</string>
-												<key>User name</key>
-												<string>pedropombeiro</string>
-											</dict>
-										</array>
+										<array/>
 										<key>Is UTF-8</key>
 										<true/>
 										<key>Key Labels</key>
@@ -11364,12 +11371,12 @@
 										</dict>
 										<key>Overridden Fields</key>
 										<array>
-											<string>Cursor Color</string>
+											<string>Title Components</string>
 											<string>Use Tab Color</string>
 											<string>Tab Color</string>
 											<string>Original Guid</string>
+											<string>Cursor Color</string>
 											<string>Guid</string>
-											<string>Title Components</string>
 										</array>
 										<key>Program</key>
 										<dict>
@@ -11379,7 +11386,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>BA02DB72-2BC7-4812-A71F-38F6FCB8ABAF</string>
+										<string>A75482D4-FDA4-4F73-8562-897A861DAAAB</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -11394,7 +11401,7 @@
 										<key>Working Directory</key>
 										<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 										<key>Working Directory Poller Disabled</key>
-										<true/>
+										<false/>
 									</dict>
 									<key>View Type</key>
 									<string>SessionView</string>
@@ -11738,7 +11745,7 @@
 												<real>0.73333334922790527</real>
 											</dict>
 											<key>Guid</key>
-											<string>51501F35-4316-416A-B0FD-0A6D80F7F6C5</string>
+											<string>441FA333-1942-41C6-AFB9-41AD167003DC</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -11986,9 +11993,9 @@
 											<string>Shell Launcher</string>
 										</dict>
 										<key>Rows</key>
-										<integer>25</integer>
+										<integer>24</integer>
 										<key>Session GUID</key>
-										<string>56F0BA75-EE36-4636-BFB3-663AB6C8840C</string>
+										<string>6F11821B-3F7B-4FF6-A4E8-C5186A934D91</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -12010,7 +12017,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>507</real>
+										<real>497</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -12380,7 +12387,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>8EC1DBA1-05FA-47F7-821D-8C4DE7F3B948</string>
+											<string>621886D8-1640-48B6-89B4-EBE4D8C10B51</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -12572,6 +12579,8 @@
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 										</array>
 										<key>Environment</key>
 										<dict>
@@ -12611,7 +12620,7 @@
 										<key>Rows</key>
 										<integer>25</integer>
 										<key>Session GUID</key>
-										<string>1FFC7F4B-452C-422E-9006-E71470A9C06B</string>
+										<string>8E4B51A9-61C2-4ADA-9D4B-00A5F199452C</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -12633,13 +12642,13 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>509</real>
+										<real>519</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
 										<real>0.0</real>
 										<key>y</key>
-										<real>508</real>
+										<real>498</real>
 									</dict>
 								</dict>
 							</array>
@@ -12942,7 +12951,7 @@
 												<real>0.73333334922790527</real>
 											</dict>
 											<key>Guid</key>
-											<string>611BAD3D-7C5C-41E6-80CD-42C9F7639DE1</string>
+											<string>E1BEBB86-F3E4-47A7-9136-8A1031E061F7</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -13158,7 +13167,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>1E9575A5-FEB9-434F-953A-83126683037D</string>
+										<string>308670B6-37AB-467F-A3DA-6281685C7FDA</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -13642,7 +13651,7 @@
 										<key>Environment</key>
 										<dict>
 											<key>PWD</key>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab/</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 										</dict>
 										<key>Hostname to Shell</key>
 										<dict/>
@@ -13667,7 +13676,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>542C46CD-EABA-431C-A400-A1396F674EFC</string>
+										<string>7FAD2252-4633-4840-889D-6E9FFC55C228</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -14008,13 +14017,13 @@
 												<key>Alpha Component</key>
 												<real>1</real>
 												<key>Blue Component</key>
-												<real>0.63873869180679321</real>
+												<real>0.93333333333333335</real>
 												<key>Color Space</key>
-												<string>Calibrated</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.82989895343780518</real>
+												<real>0.93333333333333335</real>
 												<key>Red Component</key>
-												<real>0.90061241388320923</real>
+												<real>0.93333333333333335</real>
 											</dict>
 											<key>Cursor Guide Color</key>
 											<dict>
@@ -14072,7 +14081,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>ED550DC4-B39C-47D8-ADF5-44B1189E2B98</string>
+											<string>0F2741D1-2E9A-47C0-BBC9-D3BFD79810A1</string>
 											<key>Has Hotkey</key>
 											<true/>
 											<key>Horizontal Spacing</key>
@@ -14247,7 +14256,7 @@
 										<key>Environment</key>
 										<dict>
 											<key>PWD</key>
-											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro/Developer/gitlab.com/gitlab-com/content-sites/handbook</string>
 										</dict>
 										<key>Hostname to Shell</key>
 										<dict/>
@@ -14268,6 +14277,7 @@
 										<array>
 											<string>Original Guid</string>
 											<string>Guid</string>
+											<string>Cursor Color</string>
 										</array>
 										<key>Program</key>
 										<dict>
@@ -14277,7 +14287,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>8F047FA6-AF34-4AA0-A009-07A52AD23280</string>
+										<string>7CD3E3C7-1325-4C02-954C-01DDF4D43FCF</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>

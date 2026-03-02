@@ -19,7 +19,7 @@
 	<key>AiMaxTokens</key>
 	<integer>400000</integer>
 	<key>AiModel</key>
-	<string>gpt-5.1</string>
+	<string>gpt-5.2</string>
 	<key>AiResponseMaxTokens</key>
 	<integer>128000</integer>
 	<key>AitermURL</key>
@@ -1865,7 +1865,7 @@
 			<key>Columns</key>
 			<integer>180</integer>
 			<key>Command</key>
-			<string>mise x ruby -- zsh</string>
+			<string>/opt/homebrew/bin/tmux new -s gdk</string>
 			<key>Cursor Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -1906,7 +1906,7 @@
 				<real>0.11759927868843079</real>
 			</dict>
 			<key>Custom Command</key>
-			<string>No</string>
+			<string>Yes</string>
 			<key>Custom Directory</key>
 			<string>Yes</string>
 			<key>Custom Icon Path</key>

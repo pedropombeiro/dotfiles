@@ -10050,7 +10050,7 @@
 				<key>Has Toolbelt</key>
 				<false/>
 				<key>Height</key>
-				<real>1085</real>
+				<real>1084</real>
 				<key>Hide After Opening</key>
 				<false/>
 				<key>Hiding Toolbelt Should Resize Window</key>
@@ -10062,7 +10062,7 @@
 				<key>Saved Window Type</key>
 				<integer>0</integer>
 				<key>Screen</key>
-				<integer>1</integer>
+				<integer>0</integer>
 				<key>Selected Tab Index</key>
 				<integer>1</integer>
 				<key>Tabs</key>
@@ -10421,7 +10421,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>020D5802-EDF0-43C4-AC49-9418BC3C1BEA</string>
+											<string>2071B931-801D-4B0F-A9A7-A7C008A1D5E0</string>
 											<key>Has Hotkey</key>
 											<true/>
 											<key>Horizontal Spacing</key>
@@ -10665,7 +10665,7 @@
 										<key>Environment</key>
 										<dict>
 											<key>PWD</key>
-											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro/.config/opencode/agents</string>
 										</dict>
 										<key>Hostname to Shell</key>
 										<dict>
@@ -10719,7 +10719,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>75B65FCA-7F74-4D50-A10E-80D0A6BDCD9A</string>
+										<string>6B5E3050-531B-4E4B-AD1F-BD665C7A2BDD</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -10732,7 +10732,7 @@
 											<string>$$</string>
 										</dict>
 										<key>Working Directory</key>
-										<string>/Users/pedropombeiro/.config/opencode/agents</string>
+										<string>/Users/pedropombeiro</string>
 										<key>Working Directory Poller Disabled</key>
 										<true/>
 									</dict>
@@ -10741,7 +10741,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1017</real>
+										<real>1016</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -10756,7 +10756,7 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1017</real>
+								<real>1016</real>
 								<key>width</key>
 								<real>1728</real>
 								<key>x</key>
@@ -10768,7 +10768,7 @@
 							<false/>
 						</dict>
 						<key>Tab GUID</key>
-						<string>2EDB7C5A-5AFB-4BAF-A8C3-E0D83BAF2042</string>
+						<string>E10AD934-F01B-41FD-A057-326247CEE9CC</string>
 					</dict>
 					<dict>
 						<key>Root</key>
@@ -11130,7 +11130,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>7C7ADB1D-2492-4EA8-B5FC-69E88699FD87</string>
+											<string>02CB89DB-A1F6-4C6A-8C68-ED277A4FE9FC</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -11352,7 +11352,7 @@
 										<key>Environment</key>
 										<dict>
 											<key>PWD</key>
-											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab/</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 										</dict>
 										<key>Hostname to Shell</key>
 										<dict/>
@@ -11371,12 +11371,12 @@
 										</dict>
 										<key>Overridden Fields</key>
 										<array>
-											<string>Title Components</string>
+											<string>Cursor Color</string>
 											<string>Use Tab Color</string>
 											<string>Tab Color</string>
 											<string>Original Guid</string>
-											<string>Cursor Color</string>
 											<string>Guid</string>
+											<string>Title Components</string>
 										</array>
 										<key>Program</key>
 										<dict>
@@ -11386,7 +11386,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>A75482D4-FDA4-4F73-8562-897A861DAAAB</string>
+										<string>334D815F-9CA6-4A04-A715-FD3EB3C73140</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -11408,7 +11408,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1017</real>
+										<real>1016</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -11423,7 +11423,7 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1017</real>
+								<real>1016</real>
 								<key>width</key>
 								<real>1728</real>
 								<key>x</key>
@@ -11435,7 +11435,7 @@
 							<false/>
 						</dict>
 						<key>Tab GUID</key>
-						<string>D7580CBA-85B1-4C20-85E4-4533803E360D</string>
+						<string>D6F3C5E8-7ACD-4E8E-84A5-B3AC4F5417D1</string>
 					</dict>
 					<dict>
 						<key>Root</key>
@@ -11745,7 +11745,7 @@
 												<real>0.73333334922790527</real>
 											</dict>
 											<key>Guid</key>
-											<string>441FA333-1942-41C6-AFB9-41AD167003DC</string>
+											<string>1FE0499E-495D-4550-80A3-299D89AD5DBC</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -11995,7 +11995,7 @@
 										<key>Rows</key>
 										<integer>24</integer>
 										<key>Session GUID</key>
-										<string>6F11821B-3F7B-4FF6-A4E8-C5186A934D91</string>
+										<string>B8DBD9BC-AE14-484C-8C37-987803254F69</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -12017,7 +12017,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>497</real>
+										<real>498</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -12387,7 +12387,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>621886D8-1640-48B6-89B4-EBE4D8C10B51</string>
+											<string>CC59A128-6D4F-45AD-9AA4-0066C7B67DC9</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -12581,6 +12581,8 @@
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 										</array>
 										<key>Environment</key>
 										<dict>
@@ -12620,7 +12622,7 @@
 										<key>Rows</key>
 										<integer>25</integer>
 										<key>Session GUID</key>
-										<string>8E4B51A9-61C2-4ADA-9D4B-00A5F199452C</string>
+										<string>ABD6D2BB-DA3A-4283-A02D-21E98390C335</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -12642,13 +12644,13 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>519</real>
+										<real>517</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
 										<real>0.0</real>
 										<key>y</key>
-										<real>498</real>
+										<real>499</real>
 									</dict>
 								</dict>
 							</array>
@@ -12657,7 +12659,7 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1017</real>
+								<real>1016</real>
 								<key>width</key>
 								<real>1728</real>
 								<key>x</key>
@@ -12669,7 +12671,7 @@
 							<false/>
 						</dict>
 						<key>Tab GUID</key>
-						<string>5CC08015-02F3-4C0C-B606-CC9E8ADC066B</string>
+						<string>35F80930-4D9C-4334-A89A-1D58E5B6B40A</string>
 					</dict>
 					<dict>
 						<key>Root</key>
@@ -12951,7 +12953,7 @@
 												<real>0.73333334922790527</real>
 											</dict>
 											<key>Guid</key>
-											<string>E1BEBB86-F3E4-47A7-9136-8A1031E061F7</string>
+											<string>E6170ADA-7F8F-401E-BC7D-0F4365B06101</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -13167,7 +13169,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>308670B6-37AB-467F-A3DA-6281685C7FDA</string>
+										<string>4FDE6381-CBAA-4E7F-8416-08875C37D1F4</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -13189,7 +13191,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1017</real>
+										<real>1016</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -13204,7 +13206,7 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1017</real>
+								<real>1016</real>
 								<key>width</key>
 								<real>1728</real>
 								<key>x</key>
@@ -13216,7 +13218,7 @@
 							<false/>
 						</dict>
 						<key>Tab GUID</key>
-						<string>B338E564-C791-4A10-B614-996228C7900F</string>
+						<string>5E874D35-DD94-4380-AAA0-21921816A464</string>
 					</dict>
 					<dict>
 						<key>Root</key>
@@ -13676,7 +13678,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>7FAD2252-4633-4840-889D-6E9FFC55C228</string>
+										<string>550A9ABE-0FE1-4013-9903-7F21AF64C2BA</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -13698,7 +13700,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1017</real>
+										<real>1016</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -13713,7 +13715,7 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1017</real>
+								<real>1016</real>
 								<key>width</key>
 								<real>1728</real>
 								<key>x</key>
@@ -13725,7 +13727,7 @@
 							<false/>
 						</dict>
 						<key>Tab GUID</key>
-						<string>D091EF36-425A-47FC-94A0-E671C3865221</string>
+						<string>D04A1CAA-7450-4C2C-A32C-CF65B15A46C9</string>
 					</dict>
 					<dict>
 						<key>Root</key>
@@ -14081,7 +14083,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>0F2741D1-2E9A-47C0-BBC9-D3BFD79810A1</string>
+											<string>75F5BAA5-044B-4FC0-B045-AD012AB9577E</string>
 											<key>Has Hotkey</key>
 											<true/>
 											<key>Horizontal Spacing</key>
@@ -14287,7 +14289,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>7CD3E3C7-1325-4C02-954C-01DDF4D43FCF</string>
+										<string>08638787-1C9C-47B2-8634-92CEC6A14B22</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -14309,7 +14311,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1017</real>
+										<real>1016</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -14324,7 +14326,7 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1017</real>
+								<real>1016</real>
 								<key>width</key>
 								<real>1728</real>
 								<key>x</key>
@@ -14336,11 +14338,11 @@
 							<false/>
 						</dict>
 						<key>Tab GUID</key>
-						<string>2F710883-D22E-473E-A55B-5B3426FE6F89</string>
+						<string>80BB426F-FD29-41EE-9A15-EEE01018CB1D</string>
 					</dict>
 				</array>
 				<key>TerminalGuid</key>
-				<string>pty-A25CD945-12A4-45A6-A125-B7780EFB07E0</string>
+				<string>pty-506AFA27-15B4-4001-A797-125840998F0C</string>
 				<key>Toolbelt</key>
 				<dict/>
 				<key>Toolbelt Proportions</key>
@@ -14362,9 +14364,9 @@
 				<key>Window Type</key>
 				<integer>0</integer>
 				<key>X Origin</key>
-				<real>-1728</real>
+				<real>0.0</real>
 				<key>Y Origin</key>
-				<real>323</real>
+				<real>0.0</real>
 			</dict>
 		</array>
 		<key>Vim TDD</key>

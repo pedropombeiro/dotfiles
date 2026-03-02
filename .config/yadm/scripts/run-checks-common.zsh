@@ -24,11 +24,16 @@ any_failed=0
 
 WAKATIME_CLI="$HOME/.wakatime/wakatime-cli"
 if [[ -x "$WAKATIME_CLI" ]]; then
-  print_op_stay "Checking wakatime-cli import_cfg is set"
-  if grep -q '^import_cfg' "$HOME/.wakatime.cfg" 2>/dev/null; then
+  print_op_stay "Checking wakatime-cli import_cfg points to base cfg"
+  import_cfg=$(grep '^import_cfg' "$HOME/.wakatime.cfg" 2>/dev/null | sed 's/^import_cfg[[:space:]]*=[[:space:]]*//')
+  import_cfg="${import_cfg/#\~/$HOME}"
+  if [[ "$import_cfg" == "$HOME/.wakatime.base.cfg" ]]; then
     print_ok
-  else
+  elif [[ -z "$import_cfg" ]]; then
     print_failure "import_cfg not found in ~/.wakatime.cfg"
+    any_failed=1
+  else
+    print_failure "import_cfg points to '$import_cfg', expected ~/.wakatime.base.cfg"
     any_failed=1
   fi
 

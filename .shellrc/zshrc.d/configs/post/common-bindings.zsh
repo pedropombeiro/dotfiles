@@ -14,6 +14,12 @@ if [[ -t 0 ]]; then
 fi
 
 opencode-widget() {
+  if [[ -n ${TMUX:-} ]] && command -v tmux >/dev/null; then
+    tmux split-window -h -p 40 -c "#{pane_current_path}" "zsh -ilc 'oc -c'"
+    zle reset-prompt
+    return
+  fi
+
   zle kill-whole-line
   BUFFER="oc -c"
   zle accept-line

@@ -1954,6 +1954,8 @@ The script should do this: \(ai.prompt)</string>
 				<real>0.99697142839431763</real>
 			</dict>
 			<key>Mouse Reporting</key>
+			<true/>
+			<key>Mouse Reporting allow clicks and drags</key>
 			<false/>
 			<key>Name</key>
 			<string>Default</string>

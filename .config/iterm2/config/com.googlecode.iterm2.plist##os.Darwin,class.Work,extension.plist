@@ -940,6 +940,8 @@
 			<key>Load Shell Integration Automatically</key>
 			<false/>
 			<key>Mouse Reporting</key>
+			<true/>
+			<key>Mouse Reporting allow clicks and drags</key>
 			<false/>
 			<key>Name</key>
 			<string>Default</string>
@@ -1455,11 +1457,11 @@
 				<real>0.7928692102432251</real>
 			</dict>
 			<key>Mouse Reporting</key>
-			<false/>
+			<true/>
 			<key>Mouse Reporting allow clicks and drags</key>
-			<false/>
+			<true/>
 			<key>Mouse Reporting allow mouse wheel</key>
-			<false/>
+			<true/>
 			<key>Name</key>
 			<string>GitLab</string>
 			<key>Non Ascii Font</key>
@@ -2001,6 +2003,8 @@
 				<real>0.7928692102432251</real>
 			</dict>
 			<key>Mouse Reporting</key>
+			<true/>
+			<key>Mouse Reporting allow clicks and drags</key>
 			<false/>
 			<key>Name</key>
 			<string>GDK</string>

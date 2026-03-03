@@ -12,3 +12,7 @@ set -g default-terminal "tmux-256color"
 set-environment -g TERM "tmux-256color"  # Force TERM in tmux environment
 set -as terminal-overrides ',xterm*:sitm=\E[3m'
 set -as terminal-features ",*:RGB"
+
+# Red session indicator to distinguish NAS from other hosts
+set -g @tmux-gruvbox-left-status-a "#[bg=colour124,fg=colour223] #S "
+set -g status-left "#[bg=colour124,fg=colour223] #S #[bg=colour237,fg=colour124,nobold,noitalics,nounderscore]"

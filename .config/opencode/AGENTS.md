@@ -18,6 +18,19 @@ more structured, and doesn't trigger permission prompts. Use this proactively wi
 - [Pre-commit](~/.agents/docs/pre-commit.md) - Hooks and code quality checks
 - [Renovate Bot](~/.agents/docs/renovate.md) - Dependency update configuration and troubleshooting
 
+## Continuous Learning
+
+When the user corrects you about how something works, how a tool should be used, or how this environment is
+configured, **always ask whether the correction should be documented** in `~/.agents/docs/`.
+
+- Review the existing docs to find the best fit for the new information.
+- If an existing document covers the topic, propose integrating the learning there.
+- If no existing document is a good fit, propose creating a new themed document and linking it from the
+  Specialized Topics section of the relevant AGENTS.md file(s).
+- Keep documentation lean: capture the principle or rule, not a transcript of the conversation.
+
+The goal is that future sessions benefit from every correction made in past sessions.
+
 ### Avoiding Permission Prompts
 
 **IMPORTANT:** Do NOT use `-f` with `docker compose` or `-C` with `git`. These flags

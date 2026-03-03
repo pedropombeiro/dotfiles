@@ -33,6 +33,19 @@ These commands only search files tracked by YADM, avoiding the slow traversal of
 Always favor searching using `yadm ls-files` and `yadm grep` over `glob`/`find` and `grep` tools, given the large
 amount of unrelated files present under a home directory.
 
+## Continuous Learning
+
+When the user corrects you about how something works, how a tool should be used, or how this environment is
+configured, **always ask whether the correction should be documented** in `~/.agents/docs/`.
+
+- Review the existing docs to find the best fit for the new information.
+- If an existing document covers the topic, propose integrating the learning there.
+- If no existing document is a good fit, propose creating a new themed document and linking it from the
+  Specialized Topics section of the relevant AGENTS.md file(s).
+- Keep documentation lean: capture the principle or rule, not a transcript of the conversation.
+
+The goal is that future sessions benefit from every correction made in past sessions.
+
 ## Path Resolution Edge Case
 
 **Important:** When checking if the current working directory is a git repository, be aware that paths

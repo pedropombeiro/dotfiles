@@ -12,6 +12,7 @@ tap "mike-engel/jwt-cli"
 tap "minio/stable"
 tap "moul/moul"
 tap "mvp/uhubctl", "https://github.com/mvp/uhubctl"
+tap "yqrashawn/goku"
 tap "zaquestion/tap"
 # Asciicast to GIF converter
 brew "agg"
@@ -295,6 +296,8 @@ brew "leipert-projects/git-recon/git-recon"
 brew "mike-engel/jwt-cli/jwt-cli"
 # Compare Docker images
 brew "moul/moul/docker-diff"
+# karabiner configurator
+brew "yqrashawn/goku/goku"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
 # Command-line interface for 1Password

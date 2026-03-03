@@ -1370,7 +1370,7 @@
 			<key>Custom Directory</key>
 			<string>Yes</string>
 			<key>Custom Icon Path</key>
-			<string>/Users/pedropombeiro/Downloads/144_Gitlab_logo_logos-512.png</string>
+			<string>/Users/pedropombeiro/.config/iterm2/icons/gitlab.ico</string>
 			<key>Default Bookmark</key>
 			<string>No</string>
 			<key>Description</key>
@@ -1916,7 +1916,7 @@
 			<key>Custom Directory</key>
 			<string>Yes</string>
 			<key>Custom Icon Path</key>
-			<string>/Users/pedropombeiro/Downloads/144_Gitlab_logo_logos-512.png</string>
+			<string>/Users/pedropombeiro/.config/iterm2/icons/gitlab.ico</string>
 			<key>Default Bookmark</key>
 			<string>No</string>
 			<key>Description</key>

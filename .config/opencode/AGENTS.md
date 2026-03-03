@@ -4,8 +4,10 @@ This file contains core instructions applicable to most tasks. For specialized t
 
 ## Documentation
 
-Always use Context7 MCP when I need library/API documentation, code generation, setup or configuration steps
-without me having to explicitly ask.
+When you need library/API documentation, code examples, setup instructions, or configuration syntax for
+any tool or framework, **always use the Context7 MCP first** (`resolve-library-id` → `query-docs`).
+Do NOT fall back to `webfetch` or raw GitHub URLs for documentation lookups — Context7 is faster,
+more structured, and doesn't trigger permission prompts. Use this proactively without being asked.
 
 ## Specialized Topics
 

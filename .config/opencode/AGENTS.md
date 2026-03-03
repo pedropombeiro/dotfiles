@@ -24,13 +24,23 @@ change the command pattern and trigger unnecessary permission prompts. Instead:
 - For `docker compose`: use the Bash tool's `workdir` parameter to run from the service
   directory, then use `docker compose config` without `-f`
 - For `git`: use the Bash tool's `workdir` parameter instead of `git -C`
+- For `git`/`yadm`: do NOT use `--no-pager`. The pager does not activate in
+  non-interactive shells, so it is unnecessary and breaks yadm commands.
 
 ```bash
 # Correct — use workdir parameter on the Bash tool call
 # workdir: compose/foo
 docker compose config
 
+# Correct — no --no-pager needed (pager is inactive in non-interactive shells)
+git log --oneline -5
+yadm diff -- ~/.config/opencode/
+
 # Incorrect — triggers permission prompts
 docker compose -f compose/foo/docker-compose.yml config
 git -C /path/to/repo status
+
+# Incorrect — unnecessary and breaks yadm
+git --no-pager diff -- ~/.config/opencode/
+yadm --no-pager diff -- ~/.config/opencode/
 ```

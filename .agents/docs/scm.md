@@ -16,6 +16,9 @@ Git commands on the `~` directory are managed through `yadm` instead of `git`.
 | `yadm status` / `yadm diff` | Check changes                           |
 | `yadm enter <cmd>`          | Run commands needing git context        |
 
+Do NOT use `--no-pager` with `git` or `yadm`. The pager does not activate in
+non-interactive shells, so the flag is unnecessary and breaks yadm commands.
+
 ### File Organization
 
 - **Alternate files**: Use suffixes for platform-specific configs

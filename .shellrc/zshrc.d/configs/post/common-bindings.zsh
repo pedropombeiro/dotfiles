@@ -13,6 +13,7 @@ if [[ -t 0 ]]; then
   command -T stty 2>/dev/null && stty discard undef
 fi
 
+# Ctrl-O: Launch opencode (resume session)
 opencode-widget() {
   if [[ -n ${TMUX:-} ]] && command -v tmux >/dev/null; then
     tmux split-window -h -p 40 -c "#{pane_current_path}" "zsh -ilc 'oc -c'"
@@ -27,6 +28,23 @@ opencode-widget() {
 zle -N opencode-widget
 for keymap in viins vicmd; do
   bindkey -M $keymap '^O' opencode-widget
+done
+
+# Ctrl-Alt-O: Launch opencode (new session)
+opencode-new-widget() {
+  if [[ -n ${TMUX:-} ]] && command -v tmux >/dev/null; then
+    tmux split-window -h -p 40 -c "#{pane_current_path}" "zsh -ilc 'oc'"
+    zle reset-prompt
+    return
+  fi
+
+  zle kill-whole-line
+  BUFFER="oc"
+  zle accept-line
+}
+zle -N opencode-new-widget
+for keymap in viins vicmd; do
+  bindkey -M $keymap '^[^O' opencode-new-widget
 done
 
 # Ctrl-L: Launch lazygit in a new tmux window (falls back to replacing current line)

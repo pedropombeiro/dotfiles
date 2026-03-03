@@ -31,6 +31,8 @@
       "*": "ask",
       "bundle exec rspec*": "allow",
       "bundle exec rubocop*": "allow",
+      "RAILS_ENV=test bundle exec rspec*": "allow",
+      "RAILS_ENV=test bundle exec rubocop*": "allow",
       "date*": "allow",
       "echo*": "allow",
       "find*": "allow",

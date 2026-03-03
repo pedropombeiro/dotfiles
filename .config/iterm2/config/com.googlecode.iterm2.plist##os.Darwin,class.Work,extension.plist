@@ -2005,7 +2005,7 @@
 			<key>Mouse Reporting</key>
 			<true/>
 			<key>Mouse Reporting allow clicks and drags</key>
-			<false/>
+			<true/>
 			<key>Name</key>
 			<string>GDK</string>
 			<key>Non Ascii Font</key>

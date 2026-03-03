@@ -89,7 +89,7 @@
     "lazy-mcp_list_commands": "allow",
     "lazy-mcp_list_servers": "allow",
     "read": "allow",
-    "skill": { "clickhouse": "allow", "glab": "allow" },
+    "skill": { "clickhouse": "allow", "glab": "allow", "psql": "allow" },
     "task": {
       "general": "allow",
       "explore": "allow",

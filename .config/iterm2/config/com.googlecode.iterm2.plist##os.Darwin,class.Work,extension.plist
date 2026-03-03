@@ -13637,7 +13637,7 @@
 				<key>Has Toolbelt</key>
 				<false/>
 				<key>Height</key>
-				<real>1084</real>
+				<real>1085</real>
 				<key>Hide After Opening</key>
 				<false/>
 				<key>Hiding Toolbelt Should Resize Window</key>
@@ -13649,7 +13649,7 @@
 				<key>Saved Window Type</key>
 				<integer>0</integer>
 				<key>Screen</key>
-				<integer>0</integer>
+				<integer>1</integer>
 				<key>Selected Tab Index</key>
 				<integer>1</integer>
 				<key>Tabs</key>
@@ -13938,7 +13938,7 @@
 											<key>Columns</key>
 											<integer>132</integer>
 											<key>Command</key>
-											<string></string>
+											<string>/opt/homebrew/bin/tmux new-session -A -s default</string>
 											<key>Cursor Color</key>
 											<dict>
 												<key>Alpha Component</key>
@@ -13979,7 +13979,7 @@
 												<real>0.11759927868843079</real>
 											</dict>
 											<key>Custom Command</key>
-											<string>No</string>
+											<string>Yes</string>
 											<key>Custom Directory</key>
 											<string>Recycle</string>
 											<key>Default Bookmark</key>
@@ -13989,7 +13989,7 @@
 											<key>Disable Window Resizing</key>
 											<true/>
 											<key>Draw Powerline Glyphs</key>
-											<true/>
+											<false/>
 											<key>Enable Triggers in Interactive Apps</key>
 											<false/>
 											<key>Flashing Bell</key>
@@ -14008,7 +14008,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>2071B931-801D-4B0F-A9A7-A7C008A1D5E0</string>
+											<string>47B8F083-BB92-4F8C-9EDA-2C809D087801</string>
 											<key>Has Hotkey</key>
 											<true/>
 											<key>Horizontal Spacing</key>
@@ -14068,6 +14068,8 @@
 											<key>Load Shell Integration Automatically</key>
 											<false/>
 											<key>Mouse Reporting</key>
+											<true/>
+											<key>Mouse Reporting allow clicks and drags</key>
 											<false/>
 											<key>Name</key>
 											<string>Default</string>
@@ -14248,11 +14250,15 @@
 											<string>/Users/pedropombeiro</string>
 											<string>/Users/pedropombeiro</string>
 											<string>/Users/pedropombeiro/.config/opencode/agents</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
+											<string>/Users/pedropombeiro</string>
 										</array>
 										<key>Environment</key>
 										<dict>
 											<key>PWD</key>
-											<string>/Users/pedropombeiro/.config/opencode/agents</string>
+											<string>/Users/pedropombeiro</string>
 										</dict>
 										<key>Hostname to Shell</key>
 										<dict>
@@ -14306,7 +14312,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>6B5E3050-531B-4E4B-AD1F-BD665C7A2BDD</string>
+										<string>2ED241A1-E5A3-490E-82A8-0A97912F3FDB</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -14328,7 +14334,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1016</real>
+										<real>1017</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -14343,7 +14349,7 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1016</real>
+								<real>1017</real>
 								<key>width</key>
 								<real>1728</real>
 								<key>x</key>
@@ -14645,7 +14651,7 @@
 											<key>Columns</key>
 											<integer>180</integer>
 											<key>Command</key>
-											<string>/opt/homebrew/bin/tmux new -s gdk</string>
+											<string>/opt/homebrew/bin/tmux new-session -A -s gdk</string>
 											<key>Cursor Color</key>
 											<dict>
 												<key>Alpha Component</key>
@@ -14690,7 +14696,7 @@
 											<key>Custom Directory</key>
 											<string>Yes</string>
 											<key>Custom Icon Path</key>
-											<string>/Users/pedropombeiro/Downloads/144_Gitlab_logo_logos-512.png</string>
+											<string>/Users/pedropombeiro/.config/iterm2/icons/gitlab.ico</string>
 											<key>Default Bookmark</key>
 											<string>No</string>
 											<key>Description</key>
@@ -14698,7 +14704,7 @@
 											<key>Disable Window Resizing</key>
 											<true/>
 											<key>Draw Powerline Glyphs</key>
-											<true/>
+											<false/>
 											<key>Enable Triggers in Interactive Apps</key>
 											<false/>
 											<key>Flashing Bell</key>
@@ -14717,7 +14723,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>02CB89DB-A1F6-4C6A-8C68-ED277A4FE9FC</string>
+											<string>D7128E22-7886-4930-BC52-7276FD7C0A0D</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -14777,6 +14783,8 @@
 												<real>0.7928692102432251</real>
 											</dict>
 											<key>Mouse Reporting</key>
+											<true/>
+											<key>Mouse Reporting allow clicks and drags</key>
 											<false/>
 											<key>Name</key>
 											<string>GDK</string>
@@ -14973,7 +14981,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>334D815F-9CA6-4A04-A715-FD3EB3C73140</string>
+										<string>2B486F4F-085B-4391-9048-6E83A30C277C</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -14995,7 +15003,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1016</real>
+										<real>1017</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -15010,7 +15018,7 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1016</real>
+								<real>1017</real>
 								<key>width</key>
 								<real>1728</real>
 								<key>x</key>
@@ -15332,7 +15340,7 @@
 												<real>0.73333334922790527</real>
 											</dict>
 											<key>Guid</key>
-											<string>1FE0499E-495D-4550-80A3-299D89AD5DBC</string>
+											<string>5C5618B9-5AD5-421E-B0D9-B9116775A2D1</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -15582,7 +15590,7 @@
 										<key>Rows</key>
 										<integer>24</integer>
 										<key>Session GUID</key>
-										<string>B8DBD9BC-AE14-484C-8C37-987803254F69</string>
+										<string>5866D04F-6827-4484-8708-DEB145CE831E</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -15974,7 +15982,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>CC59A128-6D4F-45AD-9AA4-0066C7B67DC9</string>
+											<string>D678FC75-B9EF-401C-853D-6D126319C41C</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -16170,6 +16178,8 @@
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
+											<string>/Users/pedropombeiro/gitlab-development-kit/gitlab</string>
 										</array>
 										<key>Environment</key>
 										<dict>
@@ -16209,7 +16219,7 @@
 										<key>Rows</key>
 										<integer>25</integer>
 										<key>Session GUID</key>
-										<string>ABD6D2BB-DA3A-4283-A02D-21E98390C335</string>
+										<string>FEF575BE-FB67-450A-8044-DD8490229422</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -16231,7 +16241,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>517</real>
+										<real>518</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -16246,7 +16256,7 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1016</real>
+								<real>1017</real>
 								<key>width</key>
 								<real>1728</real>
 								<key>x</key>
@@ -16540,7 +16550,7 @@
 												<real>0.73333334922790527</real>
 											</dict>
 											<key>Guid</key>
-											<string>E6170ADA-7F8F-401E-BC7D-0F4365B06101</string>
+											<string>125F258D-E843-4725-8003-F757FB8024C6</string>
 											<key>Has Hotkey</key>
 											<false/>
 											<key>Horizontal Spacing</key>
@@ -16756,7 +16766,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>4FDE6381-CBAA-4E7F-8416-08875C37D1F4</string>
+										<string>F116A106-26B3-4129-A7F5-6BFB55B4018D</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -16778,7 +16788,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1016</real>
+										<real>1017</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -16793,7 +16803,7 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1016</real>
+								<real>1017</real>
 								<key>width</key>
 								<real>1728</real>
 								<key>x</key>
@@ -17265,7 +17275,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>550A9ABE-0FE1-4013-9903-7F21AF64C2BA</string>
+										<string>60BB7805-2AE6-41BF-800A-E8A7A30811BD</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -17287,7 +17297,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1016</real>
+										<real>1017</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -17302,7 +17312,7 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1016</real>
+								<real>1017</real>
 								<key>width</key>
 								<real>1728</real>
 								<key>x</key>
@@ -17600,7 +17610,7 @@
 											<key>Columns</key>
 											<integer>132</integer>
 											<key>Command</key>
-											<string></string>
+											<string>/opt/homebrew/bin/tmux new-session -A -s default</string>
 											<key>Cursor Color</key>
 											<dict>
 												<key>Alpha Component</key>
@@ -17641,7 +17651,7 @@
 												<real>0.11759927868843079</real>
 											</dict>
 											<key>Custom Command</key>
-											<string>No</string>
+											<string>Yes</string>
 											<key>Custom Directory</key>
 											<string>Recycle</string>
 											<key>Default Bookmark</key>
@@ -17651,7 +17661,7 @@
 											<key>Disable Window Resizing</key>
 											<true/>
 											<key>Draw Powerline Glyphs</key>
-											<true/>
+											<false/>
 											<key>Enable Triggers in Interactive Apps</key>
 											<false/>
 											<key>Flashing Bell</key>
@@ -17670,7 +17680,7 @@
 												<real>0.90061241388320923</real>
 											</dict>
 											<key>Guid</key>
-											<string>75F5BAA5-044B-4FC0-B045-AD012AB9577E</string>
+											<string>8B083D02-5C5E-43AB-927A-2BEB1268BC82</string>
 											<key>Has Hotkey</key>
 											<true/>
 											<key>Horizontal Spacing</key>
@@ -17730,6 +17740,8 @@
 											<key>Load Shell Integration Automatically</key>
 											<false/>
 											<key>Mouse Reporting</key>
+											<true/>
+											<key>Mouse Reporting allow clicks and drags</key>
 											<false/>
 											<key>Name</key>
 											<string>Default</string>
@@ -17815,6 +17827,8 @@
 											<array/>
 											<key>Terminal Type</key>
 											<string>xterm-256color</string>
+											<key>Title Components</key>
+											<integer>2050</integer>
 											<key>Transparency</key>
 											<real>0.0</real>
 											<key>Unlimited Scrollback</key>
@@ -17841,7 +17855,9 @@
 										<key>Commands</key>
 										<array/>
 										<key>Directories</key>
-										<array/>
+										<array>
+											<string>/Users/pedropombeiro/Developer/gitlab.com/gitlab-com/content-sites/handbook</string>
+										</array>
 										<key>Environment</key>
 										<dict>
 											<key>PWD</key>
@@ -17864,6 +17880,7 @@
 										</dict>
 										<key>Overridden Fields</key>
 										<array>
+											<string>Title Components</string>
 											<string>Original Guid</string>
 											<string>Guid</string>
 											<string>Cursor Color</string>
@@ -17876,7 +17893,7 @@
 										<key>Rows</key>
 										<integer>53</integer>
 										<key>Session GUID</key>
-										<string>08638787-1C9C-47B2-8634-92CEC6A14B22</string>
+										<string>99C718D4-64C5-4967-83F9-F77BFF2FEE3C</string>
 										<key>Short Lived Single Use</key>
 										<false/>
 										<key>Should Expect Current Dir Updates</key>
@@ -17898,7 +17915,7 @@
 									<key>frame</key>
 									<dict>
 										<key>height</key>
-										<real>1016</real>
+										<real>1017</real>
 										<key>width</key>
 										<real>1728</real>
 										<key>x</key>
@@ -17913,7 +17930,7 @@
 							<key>frame</key>
 							<dict>
 								<key>height</key>
-								<real>1016</real>
+								<real>1017</real>
 								<key>width</key>
 								<real>1728</real>
 								<key>x</key>
@@ -17951,9 +17968,9 @@
 				<key>Window Type</key>
 				<integer>0</integer>
 				<key>X Origin</key>
-				<real>0.0</real>
+				<real>-1728</real>
 				<key>Y Origin</key>
-				<real>0.0</real>
+				<real>323</real>
 			</dict>
 		</array>
 		<key>Vim TDD</key>

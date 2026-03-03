@@ -361,6 +361,8 @@ cask "iterm2"
 cask "jetbrains-toolbox"
 # Open-source screen recorder built with web technology
 cask "kap"
+# Keyboard customiser
+cask "karabiner-elements"
 # Open-source keystroke visualiser
 cask "keycastr"
 # Find shortcuts for any installed application

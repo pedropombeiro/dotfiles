@@ -267,6 +267,8 @@ cask "istat-menus"
 cask "iterm2"
 # Open-source screen recorder built with web technology
 cask "kap"
+# Keyboard customiser
+cask "karabiner-elements"
 # Utility that shows the latest app updates
 cask "latest"
 # Wallet desktop application to maintain multiple cryptocurrencies

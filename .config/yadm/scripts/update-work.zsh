@@ -17,20 +17,14 @@ ensure_clickhouse_binary() {
   fi
 }
 
-# Create mise shims for RubyMine debugger
-mise reshim
-
-if [[ -n ${GDK_ROOT} ]]; then
+populate_gdk_yaml() {
+  local gdk_root
   local clickhouse_bin_path
 
-  clickhouse_bin_path=$(mise which clickhouse 2>/dev/null || true)
-  [[ -n ${clickhouse_bin_path} ]] || clickhouse_bin_path=/opt/homebrew/bin/clickhouse
+  gdk_root=${1}
+  clickhouse_bin_path=${2}
 
-  ensure_clickhouse_binary ${clickhouse_bin_path}
-
-  # Populate gdk.yml
-  # From https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/howto/registry.md#set-up-pushing-and-pulling-of-images-over-http
-  cat << EOF > ${GDK_ROOT}/gdk.tmp.yml
+  cat << EOF > ${gdk_root}/gdk.tmp.yml
 ---
 asdf:
   opt_out: true  # Required to use mise instead
@@ -47,14 +41,14 @@ gdk:
     before:
       - support/exec-cd gitlab bin/spring stop || true
     after:
-      - git -C "${GDK_ROOT}/gitlab" restore db/structure.sql
+      - git -C "${gdk_root}/gitlab" restore db/structure.sql
 # https:
 #   enabled: true
 # nginx:
 #   enabled: true
 #   ssl:
-#     certificate: "${GDK_ROOT}/gdk.localhost+2.pem"
-#     key: "${GDK_ROOT}/gdk.localhost+2-key.pem"
+#     certificate: "${gdk_root}/gdk.localhost+2.pem"
+#     key: "${gdk_root}/gdk.localhost+2-key.pem"
 gitlab:
   rails:
 #     address: 'http://gdk.test:3000'
@@ -85,35 +79,51 @@ telemetry:
   enabled: true
   username: 526355293c854a36885c7a8d6b61a336
 trusted_directories:
-  - "${GDK_ROOT}"
+  - "${gdk_root}"
 vite:
   enabled: true
 webpack:
   enabled: false
 EOF
 
-  if ! delta "${GDK_ROOT}/gdk.yml" "${GDK_ROOT}/gdk.tmp.yml"; then
+  if ! delta "${gdk_root}/gdk.yml" "${gdk_root}/gdk.tmp.yml"; then
     printf "${YELLOW}%s${NC}\n" "Overwriting gdk.yml. Please rerun 'gdk reconfigure'..."
-    cp -f "${GDK_ROOT}/gdk.yml" "${GDK_ROOT}/gdk.prev.yml"
-    cp -f "${GDK_ROOT}/gdk.tmp.yml" "${GDK_ROOT}/gdk.yml"
+    cp -f "${gdk_root}/gdk.yml" "${gdk_root}/gdk.prev.yml"
+    cp -f "${gdk_root}/gdk.tmp.yml" "${gdk_root}/gdk.yml"
   fi
-  rm -f "${GDK_ROOT}/gdk.tmp.yml"
+  rm -f "${gdk_root}/gdk.tmp.yml"
+}
 
-  # Populate lefthook-local.yml
-  cat << EOF > ${GDK_ROOT}/lefthook-local.yml
+setup_lefthook() {
+  local gdk_root
+
+  gdk_root=${1}
+
+  cat << EOF > ${gdk_root}/lefthook-local.yml
 EOF
 
-  (cd ${GDK_ROOT} && mise x -- lefthook install)
+  (cd ${gdk_root} && mise x -- lefthook install)
+}
 
-  # Clean up stale files from old configuration
-  rm -f "${GDK_ROOT}/gitlab/opencode.jsonc"
-  local gitlab_exclude_file="${GDK_ROOT}/gitlab/.git/info/exclude"
+cleanup_gitlab_excludes() {
+  local gdk_root
+  local gitlab_exclude_file
+
+  gdk_root=${1}
+  gitlab_exclude_file="${gdk_root}/gitlab/.git/info/exclude"
+
+  rm -f "${gdk_root}/gitlab/opencode.jsonc"
   if [[ -f ${gitlab_exclude_file} ]]; then
     sed -i '' '/^opencode\.jsonc$/d' "${gitlab_exclude_file}"
   fi
+}
 
-  # Populate .mise.toml (GDK root level) - tokens go in .mise.local.toml
-  cat << EOF > "${GDK_ROOT}/.mise.toml"
+write_mise_root_config() {
+  local gdk_root
+
+  gdk_root=${1}
+
+  cat << EOF > "${gdk_root}/.mise.toml"
 ## NOTE: Do not edit directly - Auto generated from ${0:A}
 [env]
 BUNDLER_CHECKSUM_VERIFICATION_OPT_IN = "1"
@@ -133,16 +143,59 @@ TELEPORT_USE_LOCAL_SSH_AGENT = "false"
 WRANGLER_LOG_PATH = "{{env.HOME}}/gitlab-development-kit/log/wrangler"
 _.path = ["{{env.HOME}}/Developer/gitlab.com/gitlab-org/gitlab-runner/out/binaries"]
 EOF
+}
 
-  # Populate .mise.toml (gitlab repo level) - tokens go in .mise.local.toml
-  cat << EOF > "${GDK_ROOT}/gitlab/.mise.toml"
+write_mise_gitlab_config() {
+  local gdk_root
+
+  gdk_root=${1}
+
+  cat << EOF > "${gdk_root}/gitlab/.mise.toml"
 ## NOTE: Do not edit directly - Auto generated from ${0:A}
 [env]
 EOF
+}
 
-  # Populate opencode configuration
-  rm -f "${GDK_ROOT}/gitlab/opencode.json" && echo "Removed opencode.json file"
-  cat << EOF > "${GDK_ROOT}/gitlab/opencode.jsonc"
+sync_dotfiles_ai_file() {
+  local gdk_root
+  local dotfiles_ai_dir
+  local dotfiles_ai_file
+  local gdk_ai_file
+
+  gdk_root=${1}
+  dotfiles_ai_dir="${HOME}/.config/dotfiles/gitlab/.ai"
+  dotfiles_ai_file="${dotfiles_ai_dir}/lessons-learned.local.md"
+  gdk_ai_file="${gdk_root}/gitlab/.ai/lessons-learned.local.md"
+
+  mkdir -p "${dotfiles_ai_dir}"
+
+  if [[ -f "${gdk_ai_file}" && ! -L "${gdk_ai_file}" ]]; then
+    cp -a "${gdk_ai_file}" "${dotfiles_ai_file}"
+  fi
+
+  if [[ -L "${gdk_ai_file}" ]]; then
+    local current_ai_target
+    current_ai_target=$(readlink "${gdk_ai_file}")
+    if [[ "${current_ai_target}" != "${dotfiles_ai_file}" ]]; then
+      rm -f "${gdk_ai_file}"
+    fi
+  elif [[ -e "${gdk_ai_file}" ]]; then
+    rm -f "${gdk_ai_file}"
+  fi
+
+  if [[ ! -L "${gdk_ai_file}" ]]; then
+    ln -s "${dotfiles_ai_file}" "${gdk_ai_file}"
+  fi
+}
+
+write_opencode_config() {
+  local gdk_root
+
+  gdk_root=${1}
+
+  sync_dotfiles_ai_file "${gdk_root}"
+  rm -f "${gdk_root}/gitlab/opencode.json" && echo "Removed opencode.json file"
+  cat << EOF > "${gdk_root}/gitlab/opencode.jsonc"
 // NOTE: Do not edit directly - Auto generated from ${0:A}
 {
   "\$schema": "https://opencode.ai/config.json",
@@ -178,6 +231,37 @@ EOF
   }
 }
 EOF
+}
+
+# Create mise shims for RubyMine debugger
+mise reshim
+
+if [[ -n ${GDK_ROOT} ]]; then
+  local clickhouse_bin_path
+
+  clickhouse_bin_path=$(mise which clickhouse 2>/dev/null || true)
+  [[ -n ${clickhouse_bin_path} ]] || clickhouse_bin_path=/opt/homebrew/bin/clickhouse
+
+  ensure_clickhouse_binary ${clickhouse_bin_path}
+
+  # Populate gdk.yml
+  # From https://gitlab.com/gitlab-org/gitlab-development-kit/-/blob/main/doc/howto/registry.md#set-up-pushing-and-pulling-of-images-over-http
+  populate_gdk_yaml "${GDK_ROOT}" "${clickhouse_bin_path}"
+
+  # Populate lefthook-local.yml
+  setup_lefthook "${GDK_ROOT}"
+
+  # Clean up stale files from old configuration
+  cleanup_gitlab_excludes "${GDK_ROOT}"
+
+  # Populate .mise.toml (GDK root level) - tokens go in .mise.local.toml
+  write_mise_root_config "${GDK_ROOT}"
+
+  # Populate .mise.toml (gitlab repo level) - tokens go in .mise.local.toml
+  write_mise_gitlab_config "${GDK_ROOT}"
+
+  # Populate opencode configuration
+  write_opencode_config "${GDK_ROOT}"
 
   mise trust "${GDK_ROOT}"
 

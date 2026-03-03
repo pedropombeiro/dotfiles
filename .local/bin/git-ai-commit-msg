@@ -15,20 +15,29 @@ set -e
 type=""
 do_commit=1
 while [ $# -gt 0 ]; do
-    case "$1" in
-        --type) type="$2"; shift 2 ;;
-        --no-commit) do_commit=0; shift ;;
-        *) echo "error: unknown argument: $1" >&2; exit 1 ;;
-    esac
+  case "$1" in
+    --type)
+      type="$2"
+      shift 2
+      ;;
+    --no-commit)
+      do_commit=0
+      shift
+      ;;
+    *)
+      echo "error: unknown argument: $1" >&2
+      exit 1
+      ;;
+  esac
 done
 
 model="${OPENCODE_COMMIT_MODEL:-${OPENCODE_SMALL_MODEL:-${OPENCODE_MODEL:-openai/gpt-4.1-nano}}}"
 
 # Use yadm when running from the home directory (dotfiles repo)
-if [ "$(pwd)" = "$HOME" ] || { ! git rev-parse --git-dir > /dev/null 2>&1 && yadm status > /dev/null 2>&1; }; then
-    git_cmd="yadm"
+if [ "$(pwd)" = "$HOME" ] || { ! git rev-parse --git-dir >/dev/null 2>&1 && yadm status >/dev/null 2>&1; }; then
+  git_cmd="yadm"
 else
-    git_cmd="git"
+  git_cmd="git"
 fi
 
 tmpfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-msg.XXXXXX")
@@ -39,15 +48,15 @@ opencode_commit_data_root="${XDG_DATA_HOME:-$HOME/.local/share}"
 opencode_commit_data="$opencode_commit_data_root/opencode-commit"
 tmp_opencode_state_ttl_seconds=$((7 * 24 * 60 * 60))
 if [ -d "$tmp_opencode_state" ]; then
-    if mtime=$(stat -f %m "$tmp_opencode_state" 2>/dev/null); then
-        :
-    else
-        mtime=$(stat -c %Y "$tmp_opencode_state")
-    fi
-    now=$(date +%s)
-    if [ $((now - mtime)) -gt "$tmp_opencode_state_ttl_seconds" ]; then
-        rm -rf "$tmp_opencode_state"
-    fi
+  if mtime=$(stat -f %m "$tmp_opencode_state" 2>/dev/null); then
+    :
+  else
+    mtime=$(stat -c %Y "$tmp_opencode_state")
+  fi
+  now=$(date +%s)
+  if [ $((now - mtime)) -gt "$tmp_opencode_state_ttl_seconds" ]; then
+    rm -rf "$tmp_opencode_state"
+  fi
 fi
 mkdir -p "$tmp_opencode_state"
 trap 'rm -f "$tmpfile" "$statusfile"' EXIT
@@ -56,49 +65,49 @@ opencode_data_dir="$opencode_commit_data/opencode"
 mkdir -p "$opencode_data_dir"
 opencode_auth_src="${XDG_DATA_HOME:-$HOME/.local/share}/opencode/auth.json"
 if [ -f "$opencode_auth_src" ] && [ ! -e "$opencode_data_dir/auth.json" ]; then
-    ln -s "$opencode_auth_src" "$opencode_data_dir/auth.json"
+  ln -s "$opencode_auth_src" "$opencode_data_dir/auth.json"
 fi
 
 if [ ! -t 0 ]; then
-    cat > "$tmpfile"
+  cat >"$tmpfile"
 fi
 if [ ! -s "$tmpfile" ]; then
-    $git_cmd diff --cached > "$tmpfile"
+  $git_cmd diff --cached >"$tmpfile"
 fi
 if [ ! -s "$tmpfile" ]; then
-    echo "error: no diff provided on stdin and no staged changes" >&2
-    exit 1
+  echo "error: no diff provided on stdin and no staged changes" >&2
+  exit 1
 fi
 
 # Capture git status so the agent can see renames, additions, deletions, etc.
-$git_cmd status > "$statusfile"
+$git_cmd status >"$statusfile"
 
 prompt="Based on the attached git status output and diff, write a commit message with a subject line (max 72 chars), blank line, then a body explaining what and why (wrap at 72 chars)."
 if [ "$type" != "none" ]; then
-    if [ -n "$type" ]; then
-        prompt="$prompt Use conventional commit format. The subject line must be '$type(<scope>): <subject>'. Derive the scope from the primary area of the codebase affected (e.g. file, module, or component name). Only omit the scope if the change is truly global."
-    else
-        prompt="$prompt Use conventional commit format. The subject line must be '<type>(<scope>): <subject>'. Derive the scope from the primary area of the codebase affected (e.g. file, module, or component name). Only omit the scope if the change is truly global. Choose the most appropriate type (feat, fix, chore, refactor, docs, style, test, ci, build, perf)."
-    fi
+  if [ -n "$type" ]; then
+    prompt="$prompt Use conventional commit format. The subject line must be '$type(<scope>): <subject>'. Derive the scope from the primary area of the codebase affected (e.g. file, module, or component name). Only omit the scope if the change is truly global."
+  else
+    prompt="$prompt Use conventional commit format. The subject line must be '<type>(<scope>): <subject>'. Derive the scope from the primary area of the codebase affected (e.g. file, module, or component name). Only omit the scope if the change is truly global. Choose the most appropriate type (feat, fix, chore, refactor, docs, style, test, ci, build, perf)."
+  fi
 fi
 prompt="$prompt CRITICAL: Your response must contain ONLY the commit message itself. No explanations, no preamble, no thinking, no markdown. Start directly with the subject line."
 
 msg=$(XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" opencode run -m "$model" --agent build "$prompt" -f "$statusfile" -f "$tmpfile")
 
 if [ -z "$msg" ]; then
-    echo "error: opencode returned an empty response" >&2
-    exit 1
+  echo "error: opencode returned an empty response" >&2
+  exit 1
 fi
 
 if [ "$do_commit" -eq 1 ]; then
-    msgfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-msg.XXXXXX")
-    # shellcheck disable=SC2064
-    trap "rm -f \"$tmpfile\" \"$statusfile\" \"$msgfile\"" EXIT
-    printf "%s\n" "$msg" > "$msgfile"
-    printf "\n── commit message ──────────────────────────────────────────────────────\n" >&2
-    printf "%s\n" "$msg" >&2
-    printf "────────────────────────────────────────────────────────────────────────\n\n" >&2
-    $git_cmd commit -F "$msgfile"
+  msgfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-msg.XXXXXX")
+  # shellcheck disable=SC2064
+  trap "rm -f \"$tmpfile\" \"$statusfile\" \"$msgfile\"" EXIT
+  printf "%s\n" "$msg" >"$msgfile"
+  printf "\n── commit message ──────────────────────────────────────────────────────\n" >&2
+  printf "%s\n" "$msg" >&2
+  printf "────────────────────────────────────────────────────────────────────────\n\n" >&2
+  $git_cmd commit -F "$msgfile"
 else
-    echo "$msg"
+  echo "$msg"
 fi

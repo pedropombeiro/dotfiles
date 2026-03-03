@@ -91,6 +91,11 @@
       "gh run list *": "allow",
       "gh run view *": "allow",
     },
+    "external_directory": {
+      "/private/tmp/**/*": "allow",
+      "/private/tmp/*": "allow",
+      "/private/tmp": "allow"
+    },
     "glob": "allow",
     "grep": "allow",
     "lazy-mcp_describe_commands": "allow",

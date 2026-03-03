@@ -73,6 +73,11 @@
       "wc *": "allow",
       "which*": "allow"
     },
+    "external_directory": {
+      "/private/tmp/**/*": "allow",
+      "/private/tmp/*": "allow",
+      "/private/tmp": "allow"
+    },
     "glob": "allow",
     "grep": "allow",
     "knowledge-graph_list_projects": "allow",

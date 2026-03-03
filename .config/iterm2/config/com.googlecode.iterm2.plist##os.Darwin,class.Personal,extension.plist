@@ -1364,7 +1364,7 @@ The script should do this: \(ai.prompt)</string>
 			<key>Columns</key>
 			<integer>132</integer>
 			<key>Command</key>
-			<string></string>
+			<string>/opt/homebrew/bin/tmux new</string>
 			<key>Cursor Boost</key>
 			<real>0.0</real>
 			<key>Cursor Color</key>
@@ -1409,7 +1409,7 @@ The script should do this: \(ai.prompt)</string>
 			<key>Cursor Type</key>
 			<integer>2</integer>
 			<key>Custom Command</key>
-			<string>No</string>
+			<string>Yes</string>
 			<key>Custom Directory</key>
 			<string>Recycle</string>
 			<key>Default Bookmark</key>

@@ -1364,7 +1364,7 @@ The script should do this: \(ai.prompt)</string>
 			<key>Columns</key>
 			<integer>132</integer>
 			<key>Command</key>
-			<string>/opt/homebrew/bin/tmux new</string>
+			<string>/opt/homebrew/bin/tmux new -A -s default</string>
 			<key>Cursor Boost</key>
 			<real>0.0</real>
 			<key>Cursor Color</key>
@@ -2891,6 +2891,8 @@ The script should do this: \(ai.prompt)</string>
 			<true/>
 			<key>ASCII Ligatures</key>
 			<false/>
+			<key>Allow Title Reporting</key>
+			<true/>
 			<key>Ambiguous Double Width</key>
 			<false/>
 			<key>Ansi 0 Color</key>
@@ -4375,7 +4377,7 @@ The script should do this: \(ai.prompt)</string>
 			<key>Terminal Type</key>
 			<string>xterm-256color</string>
 			<key>Title Components</key>
-			<integer>2</integer>
+			<integer>34</integer>
 			<key>Transparency</key>
 			<real>0.0</real>
 			<key>Unlimited Scrollback</key>

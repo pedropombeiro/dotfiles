@@ -94,7 +94,8 @@ check_gdk_wakatime_projects() {
 
   local wakatime_dirs=("$GDK_ROOT")
   for subdir in "$GDK_ROOT"/*/; do
-    [[ -d "${subdir}.git" ]] && wakatime_dirs+=("${subdir%/}")
+    local d="${subdir%/}"
+    [[ "$(git -C "$d" rev-parse --show-toplevel 2>/dev/null)" == "$d" ]] && wakatime_dirs+=("$d")
   done
 
   for wd in "${wakatime_dirs[@]}"; do
@@ -103,8 +104,8 @@ check_gdk_wakatime_projects() {
     [[ "$wd" == "$GDK_ROOT" ]] && label="(root)"
 
     print_op_stay "Checking .wakatime-project in GDK $label"
-    if [[ ! -d "$wd/.git" ]]; then
-      print_ok "(not a git repo, skipped)"
+    if ! git -C "$wd" remote get-url origin &>/dev/null; then
+      print_ok "(no remote, skipped)"
     elif [[ -f "$wp_file" ]] && [[ -n "$(head -1 "$wp_file")" ]]; then
       print_ok "$(head -1 "$wp_file")"
     else

@@ -277,9 +277,9 @@ write_wakatime_project() {
   local git_dir remote_url project_name
 
   git_dir=${1}
-  [[ -d "${git_dir}/.git" ]] || return 0
+  [[ "$(git -C "${git_dir}" rev-parse --show-toplevel 2>/dev/null)" == "${git_dir}" ]] || return 0
 
-  remote_url=$(git -C "${git_dir}" remote get-url origin 2>/dev/null) || return 0
+  remote_url=$(git -C "${git_dir}" remote get-url origin 2>/dev/null) || { rm -f "${git_dir}/.wakatime-project"; return 0; }
   project_name=${remote_url#*gitlab.com/}
   project_name=${project_name#*gitlab.com:}
   project_name=${project_name%.git}

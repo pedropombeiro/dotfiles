@@ -102,6 +102,15 @@ setup_lefthook() {
   cat << EOF > ${gdk_root}/lefthook-local.yml
 EOF
 
+  cat << 'EOF' > ${gdk_root}/gitlab/lefthook-local.yml
+pre-push:
+  commands:
+    danger:
+      env:
+        LANG: en_US.UTF-8
+        RUBYOPT: "-EUTF-8"
+EOF
+
   (cd ${gdk_root} && mise x -- lefthook install)
 }
 

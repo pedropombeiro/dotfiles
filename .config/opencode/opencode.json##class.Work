@@ -81,6 +81,7 @@
     },
     "glob": "allow",
     "grep": "allow",
+    "knowledge-graph_get_references": "allow",
     "knowledge-graph_list_projects": "allow",
     "knowledge-graph_read_definitions": "allow",
     "knowledge-graph_repo_map": "allow",

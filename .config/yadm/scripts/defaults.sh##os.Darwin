@@ -282,6 +282,17 @@ defaults write cc.ffitch.shottr "KeyboardShortcuts_scrolling" '"{\"carbonModifie
 defaults write cc.ffitch.shottr "KeyboardShortcuts_window" '"{\"carbonModifiers\":768,\"carbonKeyCode\":22}"'
 defaults write cc.ffitch.shottr primaryOCRLang -string "en-US"
 
+# WakaTime for macOS: launch on login, show status bar text, monitor specific apps
+defaults write macos-wakatime.WakaTime launch_on_login -bool true
+defaults write macos-wakatime.WakaTime status_bar_text -bool true
+defaults write macos-wakatime.WakaTime wakatime_monitored_apps -array \
+  "com.apple.Notes" \
+  "com.tinyspeck.slackmacgap" \
+  "net.whatsapp.WhatsApp" \
+  "notion.id" \
+  "org.mozilla.firefox" \
+  "us.zoom.xos"
+
 # Disable Apple Music so that the Play button isn't hijacked by it
 launchctl unload /System/Library/LaunchAgents/com.apple.rcd.plist 2>/dev/null || echo
 

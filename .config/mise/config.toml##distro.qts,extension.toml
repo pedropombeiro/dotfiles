@@ -12,12 +12,9 @@ jobs = 1
 node.mirror_url = "https://unofficial-builds.nodejs.org/download/release/"
 node.flavor = "glibc-217"
 
-[plugins]
-# Install musl version of delta to avoid dependency on newer GLIBC version
-delta = "https://github.com/pedropombeiro/asdf-delta#patch-1"
-
 [tools]
 usage = "latest"
+delta = "latest"
 
 # GitHub releases (musl builds for QTS)
 "github:dalance/procs" = "latest"

@@ -283,6 +283,7 @@ write_wakatime_project() {
   project_name=${remote_url#*gitlab.com/}
   project_name=${project_name#*gitlab.com:}
   project_name=${project_name%.git}
+  project_name=${project_name##*/}
 
   [[ -n "${project_name}" ]] || return 0
 

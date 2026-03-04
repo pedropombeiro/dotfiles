@@ -188,12 +188,43 @@ sync_dotfiles_ai_file() {
   fi
 }
 
+sync_dotfiles_agents_local() {
+  local gdk_root
+  local dotfiles_agents_file
+  local gdk_agents_file
+
+  gdk_root=${1}
+  dotfiles_agents_file="${HOME}/.config/dotfiles/gitlab/AGENTS.local.md"
+  gdk_agents_file="${gdk_root}/gitlab/AGENTS.local.md"
+
+  mkdir -p "${HOME}/.config/dotfiles/gitlab"
+
+  if [[ -f "${gdk_agents_file}" && ! -L "${gdk_agents_file}" ]]; then
+    cp -a "${gdk_agents_file}" "${dotfiles_agents_file}"
+  fi
+
+  if [[ -L "${gdk_agents_file}" ]]; then
+    local current_agents_target
+    current_agents_target=$(readlink "${gdk_agents_file}")
+    if [[ "${current_agents_target}" != "${dotfiles_agents_file}" ]]; then
+      rm -f "${gdk_agents_file}"
+    fi
+  elif [[ -e "${gdk_agents_file}" ]]; then
+    rm -f "${gdk_agents_file}"
+  fi
+
+  if [[ ! -L "${gdk_agents_file}" ]]; then
+    ln -s "${dotfiles_agents_file}" "${gdk_agents_file}"
+  fi
+}
+
 write_opencode_config() {
   local gdk_root
 
   gdk_root=${1}
 
   sync_dotfiles_ai_file "${gdk_root}"
+  sync_dotfiles_agents_local "${gdk_root}"
   rm -f "${gdk_root}/gitlab/opencode.json" && echo "Removed opencode.json file"
   cat << EOF > "${gdk_root}/gitlab/opencode.jsonc"
 // NOTE: Do not edit directly - Auto generated from ${0:A}

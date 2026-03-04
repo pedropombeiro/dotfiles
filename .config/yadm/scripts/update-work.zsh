@@ -273,6 +273,27 @@ write_opencode_config() {
 EOF
 }
 
+write_wakatime_project() {
+  local git_dir remote_url project_name
+
+  git_dir=${1}
+  [[ -d "${git_dir}/.git" ]] || return 0
+
+  remote_url=$(git -C "${git_dir}" remote get-url origin 2>/dev/null) || return 0
+  project_name=${remote_url#*gitlab.com/}
+  project_name=${project_name#*gitlab.com:}
+  project_name=${project_name%.git}
+
+  [[ -n "${project_name}" ]] || return 0
+
+  echo "${project_name}" > "${git_dir}/.wakatime-project"
+
+  local exclude_file="${git_dir}/.git/info/exclude"
+  if [[ -f "${exclude_file}" ]] && ! grep -q '^\.wakatime-project$' "${exclude_file}"; then
+    echo '.wakatime-project' >> "${exclude_file}"
+  fi
+}
+
 # Create mise shims for RubyMine debugger
 mise reshim
 
@@ -302,6 +323,12 @@ if [[ -n ${GDK_ROOT} ]]; then
 
   # Populate opencode configuration
   write_opencode_config "${GDK_ROOT}"
+
+  # Populate wakatime project files for GDK root and all subprojects
+  write_wakatime_project "${GDK_ROOT}"
+  for subdir in "${GDK_ROOT}"/*/; do
+    write_wakatime_project "${subdir%/}"
+  done
 
   mise trust "${GDK_ROOT}"
 

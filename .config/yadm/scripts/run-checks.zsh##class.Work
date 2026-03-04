@@ -87,6 +87,29 @@ else
   fi
 fi
 
+if [[ -n "$GDK_ROOT" ]]; then
+  local wakatime_dirs=("$GDK_ROOT")
+  for subdir in "$GDK_ROOT"/*/; do
+    [[ -d "${subdir}.git" ]] && wakatime_dirs+=("${subdir%/}")
+  done
+
+  for wd in "${wakatime_dirs[@]}"; do
+    local wp_file="$wd/.wakatime-project"
+    local label="${wd#$GDK_ROOT/}"
+    [[ "$wd" == "$GDK_ROOT" ]] && label="(root)"
+
+    print_op_stay "Checking .wakatime-project in GDK $label"
+    if [[ ! -d "$wd/.git" ]]; then
+      print_ok "(not a git repo, skipped)"
+    elif [[ -f "$wp_file" ]] && [[ -n "$(head -1 "$wp_file")" ]]; then
+      print_ok "$(head -1 "$wp_file")"
+    else
+      print_failure ".wakatime-project missing or empty in $wd"
+      any_failed=1
+    fi
+  done
+fi
+
 if [[ $any_failed -eq 1 ]]; then
   printf "${YELLOW}%s${NC}\n" "⚠️  Checks finished with errors/warnings!"
   (exit 1)

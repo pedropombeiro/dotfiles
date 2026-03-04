@@ -127,6 +127,20 @@ local keys = {
   {
     "<leader>tg",
     function()
+      if vim.env.TMUX and vim.env.TMUX ~= "" then
+        local cwd = vim.fn.getcwd()
+        if is_yadm_repo(cwd) then cwd = vim.fn.expand("~") end
+        vim.fn.jobstart({
+          "tmux",
+          "split-window",
+          "-Z",
+          "-c",
+          cwd,
+          "zsh -ilc \"lg\"",
+        }, { detach = true })
+        return
+      end
+
       Snacks.lazygit.open(lazygit_opts())
 
       local plugins = require("lazy.core.config").plugins

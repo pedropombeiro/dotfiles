@@ -16,4 +16,5 @@ When the user corrects you or points out a mistake:
 
 ## Context Loading (Personal)
 
-When loading a module from `.ai/` (for example, `.ai/testing.md`), also check for and load its `.local.md` counterpart if it exists (for example, `.ai/testing.local.md`). Always load `.ai/lessons-learned.local.md` if it exists.
+When loading a module from `.ai/` (for example, `.ai/testing.md`), also check for and load its `.local.md` counterpart
+if it exists (for example, `.ai/testing.local.md`). Always load `.ai/lessons-learned.local.md` if it exists.

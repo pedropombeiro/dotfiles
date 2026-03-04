@@ -287,7 +287,12 @@ defaults write macos-wakatime.WakaTime launch_on_login -bool true
 defaults write macos-wakatime.WakaTime status_bar_text -bool true
 defaults write macos-wakatime.WakaTime wakatime_monitored_apps -array \
   "com.apple.Notes" \
+  "com.DanPristupov.Fork" \
+  "com.ScooterSoftware.BeyondCompare" \
+  "com.spotify.client" \
+  "com.superduper.superwhisper" \
   "com.tinyspeck.slackmacgap" \
+  "io.robbie.HomeAssistant" \
   "net.whatsapp.WhatsApp" \
   "notion.id" \
   "org.mozilla.firefox" \

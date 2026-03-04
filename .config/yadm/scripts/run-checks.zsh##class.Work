@@ -6,21 +6,26 @@ YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pw
 
 source "${YADM_SCRIPTS}/run-checks-common.zsh"
 
-print_op_stay "Checking if Elgato Stream Deck is running"
-if pgrep 'Stream Deck' >/dev/null; then
-  print_ok
-else
-  open -a 'Elgato Stream Deck'
+check_app_running() {
+  local app_name=${1}
+
+  print_op_stay "Checking if ${app_name} is running"
+  if pgrep "${app_name}" >/dev/null; then
+    print_ok
+    return
+  fi
+
+  open -a "${app_name}"
   sleep 1
-  if pgrep 'Stream Deck' >/dev/null; then
-    print_failure "Elgato Stream Deck is not running (fixed)"
+  if pgrep "${app_name}" >/dev/null; then
+    print_failure "${app_name} is not running (fixed)"
   else
-    print_failure "Elgato Stream Deck is not running"
+    print_failure "${app_name} is not running"
     any_failed=1
   fi
-fi
+}
 
-if uhubctl >/dev/null 2>&1; then
+check_stream_deck_usb() {
   print_op_stay "Checking Stream Deck USB port location"
   if uhubctl --location 2-1.1.2 --port 2 | grep "Elgato Stream Deck XL" >/dev/null; then
     print_ok
@@ -28,66 +33,65 @@ if uhubctl >/dev/null 2>&1; then
     print_failure "uhubctl port location for Stream Deck is out of date, please update .wakeup, .displaysleep, and .displaywakeup"
     any_failed=1
   fi
+}
 
+check_nginx() {
   print_op_stay "Checking nginx (for Busylight)"
   if pgrep nginx >/dev/null; then
     print_ok
-  else
-    echo
-    brew services restart nginx
-    sleep 2
-    if pgrep 'nginx' >/dev/null; then
-      print_failure "nginx is not running (fixed)"
-    else
-      print_failure "nginx is not running"
-      any_failed=1
-    fi
+    return
   fi
 
+  echo
+  brew services restart nginx
+  sleep 2
+  if pgrep nginx >/dev/null; then
+    print_failure "nginx is not running (fixed)"
+  else
+    print_failure "nginx is not running"
+    any_failed=1
+  fi
+}
+
+check_busylight_local() {
   print_op_stay "Checking Busylight HTTP server"
+  local current_presence
   current_presence=$(curl --silent --fail --max-time 0.2 "http://127.0.0.1:18989?action=currentpresence" | jq -r '.runningcommand.parameter')
   if [[ $? -eq 0 ]]; then
     print_ok $current_presence
-  else
-    echo
-    if pgrep Busylight_HTTP_Mac >/dev/null; then
-      print_failure "Busylight HTTP server is running, but API endpoint can't be reached"
-    else
-      print_failure "Busylight HTTP server is not running"
-    fi
-    any_failed=1
+    return
   fi
 
+  echo
+  if pgrep Busylight_HTTP_Mac >/dev/null; then
+    print_failure "Busylight HTTP server is running, but API endpoint can't be reached"
+  else
+    print_failure "Busylight HTTP server is not running"
+  fi
+  any_failed=1
+}
+
+check_busylight_nginx() {
   print_op_stay "Checking if Busylight HTTP server is exposed through nginx"
+  local current_presence
   current_presence=$(curl --silent --fail --max-time 0.2 "http://gitlab-macbookpro:18989?action=currentpresence" | jq -r '.runningcommand.parameter')
   if [[ $? -eq 0 ]]; then
     print_ok $current_presence
-  else
-    echo
-    print_failure "Busylight HTTP server is not correctly being exposed through nginx"
-    lsof -i :18989
-    sudo pkill nginx
-    brew reinstall nginx
-    brew services restart nginx
-    any_failed=1
+    return
   fi
-fi
 
-print_op_stay "Checking if Home Assistant Companion is running"
-if pgrep 'Home Assistant' >/dev/null; then
-  print_ok
-else
-  open -a 'Home Assistant'
-  sleep 1
-  if pgrep 'Home Assistant' >/dev/null; then
-    print_failure "Home Assistant Companion is not running (fixed)"
-  else
-    print_failure "Home Assistant Companion is not running"
-    any_failed=1
-  fi
-fi
+  echo
+  print_failure "Busylight HTTP server is not correctly being exposed through nginx"
+  lsof -i :18989
+  sudo pkill nginx
+  brew reinstall nginx
+  brew services restart nginx
+  any_failed=1
+}
 
-if [[ -n "$GDK_ROOT" ]]; then
+check_gdk_wakatime_projects() {
+  [[ -n "$GDK_ROOT" ]] || return 0
+
   local wakatime_dirs=("$GDK_ROOT")
   for subdir in "$GDK_ROOT"/*/; do
     [[ -d "${subdir}.git" ]] && wakatime_dirs+=("${subdir%/}")
@@ -108,7 +112,19 @@ if [[ -n "$GDK_ROOT" ]]; then
       any_failed=1
     fi
   done
+}
+
+check_app_running 'Stream Deck'
+
+if uhubctl >/dev/null 2>&1; then
+  check_stream_deck_usb
+  check_nginx
+  check_busylight_local
+  check_busylight_nginx
 fi
+
+check_app_running 'Home Assistant'
+check_gdk_wakatime_projects
 
 if [[ $any_failed -eq 1 ]]; then
   printf "${YELLOW}%s${NC}\n" "⚠️  Checks finished with errors/warnings!"

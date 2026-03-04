@@ -73,6 +73,8 @@
       "which*": "allow"
     },
     "external_directory": {
+      "/tmp": "allow",
+      "/tmp/*": "allow",
       "/private/tmp/**/*": "allow",
       "/private/tmp/*": "allow",
       "/private/tmp": "allow"

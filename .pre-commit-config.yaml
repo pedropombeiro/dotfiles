@@ -17,6 +17,14 @@ repos:
       - id: trailing-whitespace
         exclude: '^\.local/share/.*'
 
+  - repo: local
+    hooks:
+      - id: no-yadm-alt-symlinks
+        name: reject yadm alt symlinks
+        entry: .config/yadm/scripts/check-no-alt-symlinks.sh
+        language: script
+        types: [symlink]
+
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.10.0.1
     hooks:

@@ -17,6 +17,7 @@ more structured, and doesn't trigger permission prompts. Use this proactively wi
 - [Mise](~/.agents/docs/mise.md) - Runtime versions and CLI tools
 - [Pre-commit](~/.agents/docs/pre-commit.md) - Hooks and code quality checks
 - [Renovate Bot](~/.agents/docs/renovate.md) - Dependency update configuration and troubleshooting
+- [Writing Style](~/.agents/docs/writing-style.md) - Pedro's tone, formatting, and MR conventions
 
 ## Continuous Learning
 

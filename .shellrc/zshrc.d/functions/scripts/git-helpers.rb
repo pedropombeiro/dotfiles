@@ -75,6 +75,7 @@ def rebase_all_per_capture_info(local_branch_info_hash)
     puts "Rebasing ".brown + branch.cyan + " onto ".brown + parent_branch.green + "...".brown
 
     system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
+
     unless Process.last_status.success?
       puts "  Skipping since ".red + parent_branch.green + " does not exist.".red
       next
@@ -125,6 +126,7 @@ end
 
 def rebase_mappings
   system(*%w[git diff-index --quiet HEAD -- . ':!bin/'])
+
   unless Process.last_status.success?
     system(%(terminal-notifier -title 'rebase_all failed' -message 'Please stash the changes in the current branch before calling rebase_all!' -sound boop -ignoreDnD))
     abort "Please stash the changes in the current branch before calling rebase_all!".red
@@ -180,15 +182,23 @@ def rebase_mappings
         end
     end
 
-  # Track branches per MR ID
-  mr_chains = {}
+  mr_seq_branches = {}
+
+  local_branches.each do |branch|
+    seq_mr_match_data = seq_mr_pattern.match(branch)
+    next unless seq_mr_match_data
+
+    mr_id = seq_mr_match_data[:mr_id]
+    seq_nr = seq_mr_match_data[:mr_seq_nr].to_i
+    mr_seq_branches[mr_id] ||= {}
+    (mr_seq_branches[mr_id][seq_nr] ||= []) << branch
+  end
 
   local_branches.map do |branch|
     seq_mr_match_data = seq_mr_pattern.match(branch)
     mr_match_data = mr_pattern.match(branch)
     backport_match_data = backport_pattern.match(branch)
 
-    # Determine current MR info
     current_mr_id = nil
     current_mr_seq_nr = nil
 
@@ -199,25 +209,17 @@ def rebase_mappings
       current_mr_id = mr_match_data[:mr_id]
     end
 
-    # Get or initialize the chain for this MR
-    if current_mr_id
-      mr_chains[current_mr_id] ||= [default_branch]
-      current_chain = mr_chains[current_mr_id]
-    else
-      current_chain = [default_branch]
-    end
-
     rebase_onto = nil
     if current_mr_seq_nr
-      if current_mr_seq_nr == 1
-        parent_branch = current_chain.last
-        rebase_onto = parent_branch # Always set for sequence 1 (which is default_branch)
-        current_chain << branch
+      seq_map = mr_seq_branches[current_mr_id]
+      prev_seq_nr = seq_map.keys.sort.reverse.find { |s| s < current_mr_seq_nr }
+      rebase_onto = if prev_seq_nr
+        seq_map[prev_seq_nr].first
       else
-        seq_1_branch = current_chain.find { |b| b != default_branch }
-        parent_branch = seq_1_branch || current_chain.last
-        rebase_onto = parent_branch
+        default_branch
       end
+
+      parent_branch = rebase_onto
     elsif backport_match_data
       remote = "security"
 
@@ -250,10 +252,7 @@ def rebase_all
   default_branch = compute_default_branch
   mappings = rebase_mappings
     .sort { |b1, b2| branch_sort_key(b1) <=> branch_sort_key(b2) }
-    .sort do |b1, b2|
-      branch_distance(b1[:branch],
-        default_branch) <=> branch_distance(b2[:branch], default_branch)
-    end
+    .sort { |b1, b2| branch_distance(b1[:branch], default_branch) <=> branch_distance(b2[:branch], default_branch) }
     .to_h { |b| [b[:branch], b[:rebase_onto]] }
   rebase_all_per_capture_info(mappings)
 end
@@ -280,6 +279,7 @@ def git_push_issue(*args)
     parent_branch = b[:parent_branch]
 
     system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
+
     unless Process.last_status.success?
       puts "  Skipping since ".red + parent_branch.green + " does not exist.".red
       next

@@ -8,6 +8,7 @@ This file contains core instructions applicable to most tasks. For specialized t
 - [Bootstrap](~/.agents/docs/bootstrap.md) - YADM bootstrap scripts for system setup
 - [Tmux](~/.agents/docs/tmux.md) - Configuration structure, plugins, and shell integration
 - [OpenCode](~/.agents/docs/opencode.md) - Policy overrides and runtime behaviors
+- [Architecture Decisions](~/.agents/docs/adr/) - ADRs for key tool choices
 
 ## Dotfiles (YADM)
 

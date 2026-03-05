@@ -114,7 +114,7 @@ repos:
         stages: [manual]
 
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: 3.6.0
+    rev: 3.6.1
     hooks:
       - id: editorconfig-checker
         exclude: '^\.config/.*|^\.local/.*|^\.shellrc/zshrc\.d/functions/scripts/.*\.rb$|\.md$'

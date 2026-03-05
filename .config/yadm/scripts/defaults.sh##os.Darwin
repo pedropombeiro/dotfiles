@@ -24,8 +24,37 @@ if [[ $(yadm config local.class) == 'Work' ]]; then
   sudo pmset -a lidwake 0
 fi
 
-# Set Login Window Text
-sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText 'If you found this computer, please call +41 78 713 16 29 or email pedro@pombei.ro'
+# Set Login Window Text (prompt for contact details)
+loginwindow_phone=${LOGINWINDOW_PHONE:-}
+loginwindow_email=${LOGINWINDOW_EMAIL:-}
+
+if [[ -t 0 ]]; then
+  if [[ -z ${loginwindow_phone} ]]; then
+    read -r -p "Login window phone number (optional): " loginwindow_phone
+  fi
+
+  if [[ -z ${loginwindow_email} ]]; then
+    read -r -p "Login window email address (optional): " loginwindow_email
+  fi
+fi
+
+if [[ -n ${loginwindow_phone} || -n ${loginwindow_email} ]]; then
+  loginwindow_contact=""
+
+  if [[ -n ${loginwindow_phone} ]]; then
+    loginwindow_contact="please call ${loginwindow_phone}"
+  fi
+
+  if [[ -n ${loginwindow_email} ]]; then
+    if [[ -n ${loginwindow_contact} ]]; then
+      loginwindow_contact+=" or email ${loginwindow_email}"
+    else
+      loginwindow_contact="please email ${loginwindow_email}"
+    fi
+  fi
+
+  sudo defaults write /Library/Preferences/com.apple.loginwindow LoginwindowText "If you found this computer, ${loginwindow_contact}"
+fi
 
 # Set Timezone and Set Clock Using Network Time
 # See `sudo systemsetup -listtimezones` for other values

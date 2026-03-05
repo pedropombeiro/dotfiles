@@ -1,0 +1,4 @@
+# macOS-specific overrides
+
+# Ensure Homebrew binaries are in PATH for run-shell commands
+set-environment -g PATH "/opt/homebrew/bin:/opt/homebrew/sbin:/usr/bin:/bin:/usr/sbin:/sbin"

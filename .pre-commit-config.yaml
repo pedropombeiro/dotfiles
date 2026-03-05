@@ -118,3 +118,11 @@ repos:
     hooks:
       - id: editorconfig-checker
         exclude: '^\.config/.*|^\.local/.*|^\.shellrc/zshrc\.d/functions/scripts/.*\.rb$|\.md$'
+
+  - repo: local
+    hooks:
+      - id: commitlint
+        name: commitlint
+        entry: sh -c 'cat "$1" | npx --yes --package @commitlint/cli -- commitlint' --
+        language: system
+        stages: [commit-msg]

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/commitlintrc.json",
+  "rules": {
+    "type-enum": [
+      2,
+      "always",
+      ["feat", "fix", "docs", "chore", "refactor", "test", "style", "perf"]
+    ],
+    "type-empty": [2, "never"],
+    "subject-empty": [2, "never"],
+    "scope-enum": [
+      1,
+      "always",
+      [
+        "agents",
+        "bootstrap",
+        "brew",
+        "defaults",
+        "git",
+        "hammerspoon",
+        "llm",
+        "mise",
+        "nvim",
+        "opencode",
+        "pre-commit",
+        "renovate",
+        "shell",
+        "tmux",
+        "yazi",
+        "yadm"
+      ]
+    ],
+    "scope-empty": [1, "never"],
+    "header-max-length": [2, "always", 72]
+  }
+}

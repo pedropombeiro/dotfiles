@@ -34,6 +34,7 @@ yadm enter pre-commit run --all-files --hook-stage manual
 | zsh-syntax-check          | Zsh syntax validation                               |
 | mise-fmt                  | Mise configuration formatting                       |
 | renovate-config-validator | Renovate config validation                          |
+| commitlint                | Conventional commit message validation (commit-msg) |
 
 ## Mise Task Integration
 

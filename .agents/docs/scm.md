@@ -69,6 +69,12 @@ This improves clarity and makes history easier to navigate.
 - **Subject**: Concise description of the change
 - **Grouped commits**: Separate logical changes into distinct commits rather than combining unrelated changes
 
+### Enforcement
+
+Commit messages are validated by **commitlint** via a `commit-msg` pre-commit
+hook (see `.commitlintrc.json` for the allowed types and scopes). The hook runs
+automatically on `yadm commit`; to bypass in rare cases use `--no-verify`.
+
 ### Examples
 
 - `docs(claude): add path resolution edge case documentation`

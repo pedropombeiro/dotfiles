@@ -1,0 +1,44 @@
+
+#
+# `iterm2_progress` controls the iTerm2 tab progress bar via OSC 9;4
+#
+# Usage:
+#   iterm2_progress <percent>        Set progress to 0-100 (success/green)
+#   iterm2_progress -i               Indeterminate (animated)
+#   iterm2_progress -e [percent]     Error state (red), optionally at percent
+#   iterm2_progress -w <percent>     Warning state (yellow) at percent
+#   iterm2_progress -c               Clear the progress bar
+#
+
+[[ "${TERM_PROGRAM}" == "iTerm.app" || "${LC_TERMINAL}" == "iTerm2" || -n "${ITERM_SESSION_ID}" ]] || return 0
+
+local _iterm2_osc _iterm2_st
+if [[ -n "${TMUX}" ]]; then
+  _iterm2_osc="\ePtmux;\e\e]"
+  _iterm2_st="\a\e\\"
+else
+  _iterm2_osc="\e]"
+  _iterm2_st="\a"
+fi
+
+case "${1}" in
+  -i)
+    printf "${_iterm2_osc}9;4;3${_iterm2_st}"
+    ;;
+  -e)
+    if [[ -n "${2}" ]]; then
+      printf "${_iterm2_osc}9;4;2;%d${_iterm2_st}" "${2}"
+    else
+      printf "${_iterm2_osc}9;4;2${_iterm2_st}"
+    fi
+    ;;
+  -w)
+    printf "${_iterm2_osc}9;4;4;%d${_iterm2_st}" "${2}"
+    ;;
+  -c)
+    printf "${_iterm2_osc}9;4;0${_iterm2_st}"
+    ;;
+  *)
+    printf "${_iterm2_osc}9;4;1;%d${_iterm2_st}" "${1}"
+    ;;
+esac

@@ -3,12 +3,14 @@
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 
 source "${YADM_SCRIPTS}/colors.sh"
+(( $+functions[_update_step] )) || _update_step() { : }
 
+_update_step "tldr"
 printf "${YELLOW}%s${NC}" "Updating tldr... "
 tldr --update
 echo
 
-# Update zinit and its plugins
+_update_step "zinit"
 printf "${YELLOW}%s${NC}\n" "Updating zinit and plugins..."
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [[ -f "${ZINIT_HOME}/zinit.zsh" ]]; then
@@ -27,13 +29,15 @@ zsh -i -c 'sleep 5' # Allow time for .zlogin to asynchronously regenerate the .z
 
 bat cache --build # Ensure any custom themes and syntax definition files are compiled
 
-# Update npm packages
+_update_step "npm"
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."
 command -v npm >/dev/null && npm update -g
 
+_update_step "opencode skills"
 printf "${YELLOW}%s${NC}\n" "Updating OpenCode skills..."
 command -v npx >/dev/null && npx skills update
 
+_update_step "shell benchmark"
 printf "${YELLOW}%s${NC}\n" "Testing shell instantiation performance..."
 hf_file="$(mktemp)"
 hyperfine --warmup=1 --max-runs 5 'zsh -i -c exit' --export-json "${hf_file}"
@@ -42,6 +46,7 @@ if awk "BEGIN {exit !($mean_time >= 0.6)}"; then
   printf "${RED}%s${NC}\n" "Zsh performance is too slow!"
 fi
 
+_update_step "yazi plugins"
 printf "${YELLOW}%s${NC}\n" "Updating yazi plugins..."
 # Ensure that there are no local modifications in the Yazi configuration, which would prevent ya pkg from operating
 rm -rf ~/.config/yazi/plugins/* ~/.config/yazi/flavors/*
@@ -50,14 +55,17 @@ yadm checkout -- ~/.config/yazi/
 ya pkg upgrade && \
   printf "\n${GREEN}%s${NC}\n" "Done"
 
+_update_step "pre-commit"
 printf "${YELLOW}%s${NC}\n" "Installing pre-commit hooks..."
 yadm enter pre-commit install --install-hooks 2>/dev/null || true
 
+_update_step "neovim plugins"
 printf "${YELLOW}%s${NC}\n" "Updating neovim plugins..."
 nvim --headless '+Lazy! sync' +qa && \
   nvim --headless "+Lazy! build firenvim" +qa && \
   printf "\n${GREEN}%s${NC}\n" "Done"
 
+_update_step "neovim benchmark"
 printf "${YELLOW}%s${NC}\n" "Testing Neovim startup performance..."
 benchmark_filepath="${HOME}/.cache/nvim/.startup-time.txt"
 

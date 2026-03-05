@@ -6,7 +6,7 @@ run = "yadm bootstrap"
 
 [tasks."dotfiles:update"]
 description = "Run dotfile update scripts"
-run = "~/.config/yadm/scripts/update.sh"
+run = "~/.config/yadm/scripts/update.zsh"
 
 [tasks."dotfiles:checkhealth"]
 description = "Run dotfile health checks"

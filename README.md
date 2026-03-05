@@ -270,7 +270,7 @@ brew update && brew upgrade && brew cleanup
 **Update dotfiles tooling:**
 
 ```shell
-~/.config/yadm/scripts/update.sh
+~/.config/yadm/scripts/update.zsh
 ```
 
 **Check YADM status:**

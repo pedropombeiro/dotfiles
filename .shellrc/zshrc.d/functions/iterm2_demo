@@ -1,0 +1,46 @@
+
+#
+# `iterm2_demo` demonstrates iTerm2 progress bar, badge, and notification helpers
+#
+
+echo "=== iTerm2 Escape Sequence Demo ==="
+echo ""
+
+echo "1. Badge: setting to 'Demo Running'"
+iterm2_badge "Demo Running"
+sleep 1
+
+echo "2. Progress: indeterminate (animated spinner)"
+iterm2_progress -i
+sleep 2
+
+echo "3. Progress: stepping 0% → 100%"
+for pct in {0..100..5}; do
+  iterm2_progress "${pct}"
+  printf "\r   %3d%%" "${pct}"
+  sleep 0.15
+done
+echo ""
+sleep 0.5
+
+echo "4. Progress: warning at 60%"
+iterm2_progress -w 60
+sleep 2
+
+echo "5. Progress: error at 80%"
+iterm2_progress -e 80
+sleep 2
+
+echo "6. Progress: indeterminate error"
+iterm2_progress -e
+sleep 2
+
+echo "7. Notification: sending 'Demo complete!'"
+iterm2_notify "Demo complete!"
+
+echo "8. Clearing progress bar and badge"
+iterm2_progress -c
+iterm2_badge -c
+
+echo ""
+echo "Done! Check your tab for the progress bar and top-right corner for the badge."

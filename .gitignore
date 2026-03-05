@@ -80,7 +80,7 @@ Thumbs.db
 .config/yadm/scripts/run-checks.zsh
 .config/yadm/scripts/staging-db-ro.sh
 .config/yadm/scripts/staging-rails-ro.sh
-.config/yadm/scripts/update.sh
+.config/yadm/scripts/update.zsh
 .default-gems
 .displaysleep
 .displaywakeup

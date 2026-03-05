@@ -3,6 +3,7 @@
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 
 source "${YADM_SCRIPTS}/colors.sh"
+(( $+functions[_update_step] )) || _update_step() { : }
 
 ensure_clickhouse_binary() {
   local clickhouse_bin
@@ -295,7 +296,6 @@ write_wakatime_project() {
   fi
 }
 
-# Create mise shims for RubyMine debugger
 mise reshim
 
 if [[ -n ${GDK_ROOT} ]]; then
@@ -344,4 +344,5 @@ if [[ -n ${GDK_ROOT} ]]; then
   git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/pedropombeiro/*:refs/remotes/origin/pedropombeiro/*'
 fi
 
+_update_step "run checks"
 ${YADM_SCRIPTS}/run-checks.zsh

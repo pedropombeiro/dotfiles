@@ -1,0 +1,20 @@
+
+#
+# `iterm2_notify` posts a macOS notification via iTerm2's OSC 9
+#
+# Usage:
+#   iterm2_notify <message>
+#
+
+[[ "${TERM_PROGRAM}" == "iTerm.app" || "${LC_TERMINAL}" == "iTerm2" || -n "${ITERM_SESSION_ID}" ]] || return 0
+
+local _iterm2_osc _iterm2_st
+if [[ -n "${TMUX}" ]]; then
+  _iterm2_osc="\ePtmux;\e\e]"
+  _iterm2_st="\a\e\\"
+else
+  _iterm2_osc="\e]"
+  _iterm2_st="\a"
+fi
+
+printf "${_iterm2_osc}9;%s${_iterm2_st}" "${*}"

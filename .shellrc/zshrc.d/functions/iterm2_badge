@@ -1,0 +1,26 @@
+
+#
+# `iterm2_badge` sets or clears the iTerm2 badge (watermark text in top-right)
+#
+# Usage:
+#   iterm2_badge <text>    Set badge to <text> (supports iTerm2 interpolated strings)
+#   iterm2_badge -c        Clear the badge
+#
+
+[[ "${TERM_PROGRAM}" == "iTerm.app" || "${LC_TERMINAL}" == "iTerm2" || -n "${ITERM_SESSION_ID}" ]] || return 0
+
+local _iterm2_osc _iterm2_st
+if [[ -n "${TMUX}" ]]; then
+  _iterm2_osc="\ePtmux;\e\e]"
+  _iterm2_st="\a\e\\"
+else
+  _iterm2_osc="\e]"
+  _iterm2_st="\a"
+fi
+
+local badge_text=""
+if [[ "${1}" != "-c" ]]; then
+  badge_text="${*}"
+fi
+
+printf "${_iterm2_osc}1337;SetBadgeFormat=%s${_iterm2_st}" "$(printf '%s' "${badge_text}" | base64)"

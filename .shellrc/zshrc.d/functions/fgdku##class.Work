@@ -41,6 +41,17 @@ ha_webhook() {
     printf "${YELLOW}%s${NC}\n" 'Home Assistant webhook unavailable, continuing...'
 }
 
+_fgdku_total=$(( $(grep -c '^[[:space:]]*_fgdku_step "' "${(%):-%x}" 2>/dev/null || echo 17) ))
+_fgdku_current=0
+_fgdku_step() {
+  (( _fgdku_current++ ))
+  iterm2_progress $(( _fgdku_current * 100 / _fgdku_total ))
+  iterm2_badge "fgdku: $1"
+}
+
+iterm2_badge "fgdku: starting"
+iterm2_progress -i
+
 (
   cd "${GDK_ROOT}/gitlab" || exit 0
 
@@ -71,6 +82,7 @@ ha_webhook() {
 
   rm -f .git/gc.log
 
+  _fgdku_step "git fetch"
   git fetch --all --jobs=10 || { printf "${RED}%s${NC}\n" 'git fetch failed, retrying...'; sleep 5; git fetch --jobs=10; }
 
   if [[ ! -S $GDK_ROOT/redis/redis.socket ]]; then
@@ -79,6 +91,7 @@ ha_webhook() {
     (cd $GDK_ROOT && gdk restart)
   fi
 
+  _fgdku_step "mise install"
   mise install
   if ! command -v gdk >/dev/null; then
     # When ruby is upgraded, we don't have the gdk gem, so we need to reinstall it
@@ -92,6 +105,7 @@ ha_webhook() {
   MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A master -- db/schema_migrations/)"
   BRANCH_MIGRATIONS=($(echo ${MIGRATIONS_DIFF} | xargs basename -a | sort -r))
 
+  _fgdku_step "bundle install"
   mise x ruby -- gem uninstall json --all --ignore-dependencies
   mise x ruby -- ruby -e "load Gem.bin_path('bundler', 'bundle')" -- install
 
@@ -101,6 +115,7 @@ ha_webhook() {
 
   gdk restart postgresql # Ensure that the test database isn't locked by any session, which would cause gdk update to fail. This will ensure all sessions are terminated
 
+  _fgdku_step "gdk update"
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
   cd $GDK_ROOT
 
@@ -110,15 +125,18 @@ ha_webhook() {
   git restore db/structure.sql
   sleep 5
 
+  _fgdku_step "post-update bundle"
   mise x ruby -- gem uninstall json --all --ignore-dependencies
   mise x ruby -- ruby -e "load Gem.bin_path('bundler', 'bundle')" -- install # Needed if Ruby version changed
 
   mise x ruby -- bin/spring binstub --all
 
+  _fgdku_step "running test"
   printf "${YELLOW}%s${NC}\n" 'Running simple test...'
   bundle exec rspec --failure-exit-code 0 --error-exit-code 1 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb ||
     bundle exec rake db:test:prepare
 
+  _fgdku_step "ClickHouse migrations"
   printf "${YELLOW}%s${NC}\n" "Run any pending ClickHouse migrations..."
   if gdk status clickhouse >/dev/null 2>&1 && curl -sf http://localhost:8123/ping >/dev/null 2>&1; then
     bundle exec rake gitlab:clickhouse:migrate:main
@@ -126,11 +144,13 @@ ha_webhook() {
     printf "${YELLOW}%s${NC}\n" 'ClickHouse not available, skipping migrations...'
   fi
 
+  _fgdku_step "pruning branches"
   printf "${YELLOW}%s${NC}\n" 'Pruning local branches...'
   git fetch --jobs=10 || { printf "${RED}%s${NC}\n" 'git fetch failed, retrying...'; sleep 5; git fetch --jobs=10; }
   git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | xargs git branch -D 2>/dev/null || true
   printf "${GREEN}%s${NC}\n" "Done."
 
+  _fgdku_step "rebasing branches"
   printf "${YELLOW}%s${NC}\n" "Rebasing local branches..."
   git restore :/
   rebase_all
@@ -143,17 +163,20 @@ ha_webhook() {
     fi
   fi
 
+  _fgdku_step "gdk cleanup"
   (
     cd $GDK_ROOT && mise x ruby -- bundle install && yes | gdk cleanup
     find gitlab/log -maxdepth 1 -size +10M -exec truncate -s 0 {} \;
   ) || printf "${YELLOW}%s${NC}\n" "GDK cleanup subshell failed, continuing..."
 
+  _fgdku_step "gdk restart"
   yes | gdk kill || true # Use kill instead of stop so that services are killed if they can't be stopped (e.g. postgresql)
   # Ensure there are no orphaned sidekiq-cluster (https://gitlab.com/gitlab-org/gitlab-development-kit/-/issues/1455)
   pkill -lf 'sidekiq-cluster' || true
   gdk start
   gdk sandbox status | grep -q 'enabled' || gdk sandbox enable
 
+  _fgdku_step "schema & warmup"
   if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then
     scripts/regenerate-schema # Ensure we have a clean test DB with any branch migrations done
     git restore db/structure.sql
@@ -165,4 +188,17 @@ ha_webhook() {
   cd - >/dev/null
 )
 
+local _fgdku_rc=$?
+if [[ $_fgdku_rc -eq 0 ]]; then
+  iterm2_progress 100
+  iterm2_badge -c
+  iterm2_progress -c
+  iterm2_notify "fgdku complete"
+else
+  iterm2_progress -e
+  iterm2_badge "fgdku: FAILED"
+  iterm2_notify "fgdku failed"
+fi
+
 ha_webhook off
+return $_fgdku_rc

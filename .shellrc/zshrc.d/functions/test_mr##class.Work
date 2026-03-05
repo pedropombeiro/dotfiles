@@ -6,12 +6,13 @@
 test_files=(
   $(git diff --name-only "$(git merge-base master "$(git rev-parse --abbrev-ref HEAD)")" |
     awk '/.rb$/ && !/spec\/factories/' |
-    sed -E 's/^(ee\/)?app\/controllers/\1spec\/requests/' |
-    sed -E 's/^(ee\/)?app/\1spec/' |
-    sed -e '/_spec.rb$/!s/.rb$/_spec.rb/' |
-    sed -E 's/^(ee\/)?lib/\1spec\/lib/' |
-    sort |
-    uniq)
+    awk '/_spec\.rb$/ { print; next }
+          /^ee\/lib\// { sub(/^ee\/lib\//, "ee/spec/lib/"); s=".rb$"; sub(s, "_spec.rb"); print; next }
+          /^lib\// { sub(/^lib\//, "spec/lib/"); s=".rb$"; sub(s, "_spec.rb"); print; next }
+          /^(ee\/)?app\/controllers\// { sub(/app\/controllers/, "spec/requests"); s=".rb$"; sub(s, "_spec.rb"); print; next }
+          /^(ee\/)?app\// { sub(/app/, "spec"); s=".rb$"; sub(s, "_spec.rb"); print; next }
+          { s=".rb$"; sub(s, "_spec.rb"); print }' |
+    sort -u)
 )
 valid_test_files=()
 for ((i = 1; i <= ${#test_files[@]}; i++)); do

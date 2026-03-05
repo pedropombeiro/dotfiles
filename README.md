@@ -95,7 +95,7 @@ This dotfiles setup includes:
   - [mise](https://mise.jdx.dev/) - polyglot runtime manager (modern alternative to asdf)
   - Language-specific package managers
 
-- **🔐 Security & Privacy**
+- **🔐 Security & Privacy** (see [SECURITY.md](SECURITY.md))
   - [1Password](https://1password.com/) with CLI integration
   - SSH configuration
   - GPG setup

@@ -71,8 +71,16 @@ def rebase_all_per_capture_info(local_branch_info_hash)
 
   current_branch = `git branch --show-current`.strip
 
-  local_branch_info_hash.each do |branch, parent_branch|
-    puts "Rebasing ".brown + branch.cyan + " onto ".brown + parent_branch.green + "...".brown
+  local_branch_info_hash.each do |branch, info|
+    parent_branch = info.is_a?(Hash) ? info[:rebase_onto] : info
+    fork_point = info.is_a?(Hash) ? info[:fork_point] : nil
+
+    if fork_point
+      puts "Rebasing ".brown + branch.cyan + " onto ".brown + parent_branch.green +
+        " (skipping already-merged commits)...".brown
+    else
+      puts "Rebasing ".brown + branch.cyan + " onto ".brown + parent_branch.green + "...".brown
+    end
 
     system(*%W[git rev-parse --abbrev-ref --symbolic-full-name #{parent_branch}], out: File::NULL, err: File::NULL)
 
@@ -81,7 +89,13 @@ def rebase_all_per_capture_info(local_branch_info_hash)
       next
     end
 
-    system({"LEFTHOOK" => "0"}, *%W[git rebase --update-refs --autostash #{parent_branch} #{branch}])
+    rebase_cmd = if fork_point
+      %W[git rebase --update-refs --autostash --onto #{parent_branch} #{fork_point} #{branch}]
+    else
+      %W[git rebase --update-refs --autostash #{parent_branch} #{branch}]
+    end
+
+    system({"LEFTHOOK" => "0"}, *rebase_cmd)
     next if Process.last_status.success?
 
     auto_generated_files_hash = {
@@ -210,13 +224,27 @@ def rebase_mappings
     end
 
     rebase_onto = nil
+    fork_point = nil
     if current_mr_seq_nr
       seq_map = mr_seq_branches[current_mr_id]
       prev_seq_nr = seq_map.keys.sort.reverse.find { |s| s < current_mr_seq_nr }
-      rebase_onto = if prev_seq_nr
-        seq_map[prev_seq_nr].first
+      if prev_seq_nr
+        prev_branch = seq_map[prev_seq_nr].first
+        if branch_exists?(prev_branch)
+          if branch_merged_into?(prev_branch, default_branch)
+            fork_point = prev_branch
+            rebase_onto = default_branch
+          else
+            rebase_onto = prev_branch
+          end
+        else
+          rebase_onto = default_branch
+        end
       else
-        default_branch
+        prev_seq_pattern = "#{user_name}/#{current_mr_id}/#{current_mr_seq_nr - 1}-"
+        old_tip = deleted_branch_tip_from_reflog(prev_seq_pattern, branch)
+        fork_point = old_tip if old_tip
+        rebase_onto = default_branch
       end
 
       parent_branch = rebase_onto
@@ -234,13 +262,41 @@ def rebase_mappings
       chain_mr_seq_nr: current_mr_seq_nr,
       branch: branch,
       parent_branch: parent_branch,
-      rebase_onto: rebase_onto || parent_branch
+      rebase_onto: rebase_onto || parent_branch,
+      fork_point: fork_point
     }
   end
 end
 
 def branch_sort_key(branch_info)
   [branch_info[:chain_mr_id] || "", branch_info[:chain_mr_seq_nr].nil? ? 0 : -branch_info[:chain_mr_seq_nr]]
+end
+
+def branch_exists?(branch)
+  system(*%W[git rev-parse --verify #{branch}], out: File::NULL, err: File::NULL)
+end
+
+def branch_merged_into?(branch, target)
+  system(*%W[git merge-base --is-ancestor #{branch} #{target}])
+end
+
+def deleted_branch_tip_from_reflog(branch_name_prefix, descendant_branch = nil)
+  escaped = Regexp.escape(branch_name_prefix)
+  patterns = [
+    /\brebase.*: checkout #{escaped}/,
+    /\bcheckout: moving from .+ to #{escaped}/
+  ]
+
+  `git reflog --format=%H\\ %gs`.lines.each do |line|
+    sha, description = line.strip.split(" ", 2)
+    next unless description
+    next unless patterns.any? { |p| description.match?(p) }
+    next if descendant_branch && !system(*%W[git merge-base --is-ancestor #{sha} #{descendant_branch}], out: File::NULL, err: File::NULL)
+
+    return sha
+  end
+
+  nil
 end
 
 def branch_distance(branch, parent_branch)
@@ -253,7 +309,7 @@ def rebase_all
   mappings = rebase_mappings
     .sort { |b1, b2| branch_sort_key(b1) <=> branch_sort_key(b2) }
     .sort { |b1, b2| branch_distance(b1[:branch], default_branch) <=> branch_distance(b2[:branch], default_branch) }
-    .to_h { |b| [b[:branch], b[:rebase_onto]] }
+    .to_h { |b| [b[:branch], {rebase_onto: b[:rebase_onto], fork_point: b[:fork_point]}] }
   rebase_all_per_capture_info(mappings)
 end
 

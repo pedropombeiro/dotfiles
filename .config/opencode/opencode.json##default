@@ -66,6 +66,7 @@
       "git grep*": "allow",
       "git log*": "allow",
       "git ls-files*": "allow",
+      "git merge-base *": "allow",
       "git remote -v": "allow",
       "git rev-parse*": "allow",
       "git show*": "allow",

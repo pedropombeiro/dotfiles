@@ -53,6 +53,7 @@ Thumbs.db
 .config/opencode/commands/review-mr.md
 .config/opencode/opencode.json
 .config/opencode/plugins/deny-rm-rf.js
+.config/opencode/plugins/ha-webhook.js
 .config/opencode/tui.json
 .config/pgcli/config
 .config/tmux/tmux.platform.conf

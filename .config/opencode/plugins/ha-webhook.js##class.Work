@@ -1,0 +1,34 @@
+const HA_WEBHOOK_URL = "https://ha.pombei.ro/api/webhook/opencode_agent";
+
+function haWebhook(state) {
+  fetch(HA_WEBHOOK_URL, {
+    method: "PUT",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `state=${state}`,
+    signal: AbortSignal.timeout(2000),
+  }).catch(() => {});
+}
+
+export const HaWebhook = async () => {
+  return {
+    event: async ({ event }) => {
+      if (event.type === "session.status") {
+        const { status } = event.properties;
+        if (status.type === "busy") {
+          haWebhook("busy");
+        } else if (status.type === "idle") {
+          haWebhook("idle");
+        }
+      } else if (event.type === "session.error") {
+        haWebhook("error");
+      } else if (event.type === "permission.asked") {
+        haWebhook("waiting");
+      }
+    },
+    "tool.execute.before": async (input) => {
+      if (input.tool === "question") {
+        haWebhook("waiting");
+      }
+    },
+  };
+};

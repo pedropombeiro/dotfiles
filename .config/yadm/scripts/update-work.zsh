@@ -166,66 +166,44 @@ write_mise_gitlab_config() {
 EOF
 }
 
-sync_dotfiles_ai_file() {
-  local gdk_root
-  local dotfiles_ai_dir
-  local dotfiles_ai_file
-  local gdk_ai_file
+sync_dotfiles_to_gitlab() {
+  local gdk_root dotfiles_dir gitlab_dir exclude_file
+  local dotfiles_file rel_path gdk_file current_target
 
   gdk_root=${1}
-  dotfiles_ai_dir="${HOME}/.config/dotfiles/gitlab/.ai"
-  dotfiles_ai_file="${dotfiles_ai_dir}/lessons-learned.local.md"
-  gdk_ai_file="${gdk_root}/gitlab/.ai/lessons-learned.local.md"
+  dotfiles_dir="${HOME}/.config/dotfiles/gitlab"
+  gitlab_dir="${gdk_root}/gitlab"
+  exclude_file="${gitlab_dir}/.git/info/exclude"
 
-  mkdir -p "${dotfiles_ai_dir}"
+  [[ -d "${dotfiles_dir}" ]] || return 0
 
-  if [[ -f "${gdk_ai_file}" && ! -L "${gdk_ai_file}" ]]; then
-    cp -a "${gdk_ai_file}" "${dotfiles_ai_file}"
-  fi
+  find "${dotfiles_dir}" -type f | while read -r dotfiles_file; do
+    rel_path="${dotfiles_file#${dotfiles_dir}/}"
+    gdk_file="${gitlab_dir}/${rel_path}"
 
-  if [[ -L "${gdk_ai_file}" ]]; then
-    local current_ai_target
-    current_ai_target=$(readlink "${gdk_ai_file}")
-    if [[ "${current_ai_target}" != "${dotfiles_ai_file}" ]]; then
-      rm -f "${gdk_ai_file}"
+    mkdir -p "${gdk_file:h}"
+
+    if [[ -f "${gdk_file}" && ! -L "${gdk_file}" ]]; then
+      cp -a "${gdk_file}" "${dotfiles_file}"
     fi
-  elif [[ -e "${gdk_ai_file}" ]]; then
-    rm -f "${gdk_ai_file}"
-  fi
 
-  if [[ ! -L "${gdk_ai_file}" ]]; then
-    ln -s "${dotfiles_ai_file}" "${gdk_ai_file}"
-  fi
-}
-
-sync_dotfiles_agents_local() {
-  local gdk_root
-  local dotfiles_agents_file
-  local gdk_agents_file
-
-  gdk_root=${1}
-  dotfiles_agents_file="${HOME}/.config/dotfiles/gitlab/AGENTS.local.md"
-  gdk_agents_file="${gdk_root}/gitlab/AGENTS.local.md"
-
-  mkdir -p "${HOME}/.config/dotfiles/gitlab"
-
-  if [[ -f "${gdk_agents_file}" && ! -L "${gdk_agents_file}" ]]; then
-    cp -a "${gdk_agents_file}" "${dotfiles_agents_file}"
-  fi
-
-  if [[ -L "${gdk_agents_file}" ]]; then
-    local current_agents_target
-    current_agents_target=$(readlink "${gdk_agents_file}")
-    if [[ "${current_agents_target}" != "${dotfiles_agents_file}" ]]; then
-      rm -f "${gdk_agents_file}"
+    if [[ -L "${gdk_file}" ]]; then
+      current_target=$(readlink "${gdk_file}")
+      if [[ "${current_target}" != "${dotfiles_file}" ]]; then
+        rm -f "${gdk_file}"
+      fi
+    elif [[ -e "${gdk_file}" ]]; then
+      rm -f "${gdk_file}"
     fi
-  elif [[ -e "${gdk_agents_file}" ]]; then
-    rm -f "${gdk_agents_file}"
-  fi
 
-  if [[ ! -L "${gdk_agents_file}" ]]; then
-    ln -s "${dotfiles_agents_file}" "${gdk_agents_file}"
-  fi
+    if [[ ! -L "${gdk_file}" ]]; then
+      ln -s "${dotfiles_file}" "${gdk_file}"
+    fi
+
+    if [[ -f "${exclude_file}" ]] && ! grep -qF "/${rel_path}" "${exclude_file}"; then
+      echo "/${rel_path}" >> "${exclude_file}"
+    fi
+  done
 }
 
 write_opencode_config() {
@@ -233,8 +211,6 @@ write_opencode_config() {
 
   gdk_root=${1}
 
-  sync_dotfiles_ai_file "${gdk_root}"
-  sync_dotfiles_agents_local "${gdk_root}"
   rm -f "${gdk_root}/gitlab/opencode.json" && echo "Removed opencode.json file"
   cat << EOF > "${gdk_root}/gitlab/opencode.jsonc"
 // NOTE: Do not edit directly - Auto generated from ${0:A}
@@ -321,6 +297,9 @@ if [[ -n ${GDK_ROOT} ]]; then
 
   # Populate .mise.toml (gitlab repo level) - tokens go in .mise.local.toml
   write_mise_gitlab_config "${GDK_ROOT}"
+
+  # Symlink personal dotfiles into gitlab repo
+  sync_dotfiles_to_gitlab "${GDK_ROOT}"
 
   # Populate opencode configuration
   write_opencode_config "${GDK_ROOT}"

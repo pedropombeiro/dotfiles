@@ -18,6 +18,7 @@ more structured, and doesn't trigger permission prompts. Use this proactively wi
 - [Pre-commit](~/.agents/docs/pre-commit.md) - Hooks and code quality checks
 - [Renovate Bot](~/.agents/docs/renovate.md) - Dependency update configuration and troubleshooting
 - [Writing Style](~/.agents/docs/writing-style.md) - Pedro's tone, formatting, and MR conventions
+- [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`
 
 ## Continuous Learning
 

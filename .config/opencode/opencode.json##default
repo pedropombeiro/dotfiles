@@ -2,7 +2,6 @@
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
     "opencode-anthropic-auth@latest",
-    "opencode-forge-session-title",
     "opencode-homeassistant",
     "opencode-terminal-progress",
     "opencode-wakatime"

@@ -1,7 +1,26 @@
-#!/usr/bin/env sh
+#!/usr/bin/env zsh
 #MISE description="Run pre-commit fixers (manual stage)"
 #USAGE arg "<files>..."
 set -eu
+
+fpath=(~/.shellrc/zshrc.d/functions $fpath)
+autoload -Uz iterm2_progress iterm2_badge iterm2_notify
+
+iterm2_badge "fix"
+iterm2_progress -i
+
+_fix_cleanup() {
+  local rc=$?
+  if [[ $rc -ne 0 ]]; then
+    iterm2_progress -e
+    iterm2_notify "fix failed"
+  else
+    iterm2_progress -c
+    iterm2_notify "fix complete"
+  fi
+  iterm2_badge -c
+}
+trap _fix_cleanup EXIT
 
 if [ ${#} -gt 0 ]; then
     yadm enter pre-commit run --files "$@" --hook-stage manual

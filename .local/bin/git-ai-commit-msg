@@ -40,6 +40,15 @@ else
   git_cmd="git"
 fi
 
+_iterm2_progress() {
+  [ "${TERM_PROGRAM}" = "iTerm.app" ] || [ "${LC_TERMINAL}" = "iTerm2" ] || [ -n "${ITERM_SESSION_ID}" ] || return 0
+  if [ -n "${TMUX}" ]; then
+    printf "\033Ptmux;\033\033]9;4;%s\a\033\\" "$1"
+  else
+    printf "\033]9;4;%s\a" "$1"
+  fi
+}
+
 tmpfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-msg.XXXXXX")
 statusfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-status.XXXXXX")
 tmp_opencode_state_root="${TMPDIR:-/tmp}/opencode-state"
@@ -92,7 +101,9 @@ if [ "$type" != "none" ]; then
 fi
 prompt="$prompt CRITICAL: Your response must contain ONLY the commit message itself. No explanations, no preamble, no thinking, no markdown. Start directly with the subject line."
 
+_iterm2_progress 3
 msg=$(XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" opencode run -m "$model" --agent build "$prompt" -f "$statusfile" -f "$tmpfile")
+_iterm2_progress 0
 
 if [ -z "$msg" ]; then
   echo "error: opencode returned an empty response" >&2

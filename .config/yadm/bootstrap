@@ -9,6 +9,17 @@ set -eu
 # shellcheck source=./scripts/colors.sh
 source "${HOME}/.config/yadm/scripts/colors.sh"
 
+_iterm2_osc() {
+  [[ "${TERM_PROGRAM}" == "iTerm.app" || "${LC_TERMINAL}" == "iTerm2" || -n "${ITERM_SESSION_ID}" ]] || return 0
+  if [[ -n "${TMUX}" ]]; then
+    printf "\033Ptmux;\033\033]%s\a\033\\" "$1"
+  else
+    printf "\033]%s\a" "$1"
+  fi
+}
+_iterm2_progress() { _iterm2_osc "9;4;$1"; }
+_iterm2_badge()    { _iterm2_osc "1337;SetBadgeFormat=$(printf '%s' "${1:-}" | base64)"; }
+
 # Directory to look for bootstrap executables in
 BOOTSTRAP_D="${BASH_SOURCE[0]}.d"
 
@@ -22,8 +33,33 @@ while IFS= read -r bootstrap; do
   bootstraps+=("$bootstrap")
 done < <(find -L "${BOOTSTRAP_D}" \( -type f -or -type l \) -not -name '*##*' -not -name '*~$*' | sort -n)
 
+_bootstrap_total=0
+for bootstrap in "${bootstraps[@]}"; do
+  [[ -x "${bootstrap}" ]] && (( _bootstrap_total++ ))
+done
+_bootstrap_current=0
+
+_bootstrap_cleanup() {
+  local rc=$?
+  if [[ $rc -ne 0 ]]; then
+    _iterm2_progress "2"
+    _iterm2_badge "bootstrap: FAILED"
+  else
+    _iterm2_progress "1;100"
+    _iterm2_badge ""
+    _iterm2_progress "0"
+  fi
+}
+trap _bootstrap_cleanup EXIT
+
+_iterm2_badge "bootstrap: starting"
+_iterm2_progress "3"
+
 for bootstrap in "${bootstraps[@]}"; do
   if [[ -x "${bootstrap}" ]]; then
+    (( _bootstrap_current++ ))
+    _iterm2_progress "1;$(( _bootstrap_current * 100 / _bootstrap_total ))"
+    _iterm2_badge "bootstrap: $(basename "${bootstrap}")"
     printf "${YELLOW}%s${NC}\n" "Executing ${bootstrap} ..."
     if ! "${bootstrap}"; then
       echo "Error: bootstrap '${bootstrap}' failed" >&2

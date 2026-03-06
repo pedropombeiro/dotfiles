@@ -3,6 +3,7 @@
   "plugin": [
     "opencode-anthropic-auth@latest",
     "opencode-homeassistant",
+    "opencode-terminal-progress",
     "opencode-wakatime"
   ],
   "default_agent": "plan",

@@ -2,10 +2,14 @@
 
 [tasks."dotfiles:install"]
 description = "Bootstrap the dotfile environment"
+# Disable mise's OSC progress sequences to avoid conflicting with the script's own iTerm2 badge/progress
+env = { MISE_TERMINAL_PROGRESS = "false" }
 run = "yadm bootstrap"
 
 [tasks."dotfiles:update"]
 description = "Run dotfile update scripts"
+# Disable mise's OSC progress sequences to avoid conflicting with the script's own iTerm2 badge/progress
+env = { MISE_TERMINAL_PROGRESS = "false" }
 run = "~/.config/yadm/scripts/update.zsh"
 
 [tasks."dotfiles:checkhealth"]

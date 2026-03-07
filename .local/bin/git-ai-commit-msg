@@ -43,9 +43,9 @@ fi
 _iterm2_progress() {
   [ "${TERM_PROGRAM}" = "iTerm.app" ] || [ "${LC_TERMINAL}" = "iTerm2" ] || [ -n "${ITERM_SESSION_ID}" ] || return 0
   if [ -n "${TMUX}" ]; then
-    printf "\033Ptmux;\033\033]9;4;%s\a\033\\" "$1"
+    printf "\033Ptmux;\033\033]9;4;%s\a\033\\" "$1" >&2
   else
-    printf "\033]9;4;%s\a" "$1"
+    printf "\033]9;4;%s\a" "$1" >&2
   fi
 }
 

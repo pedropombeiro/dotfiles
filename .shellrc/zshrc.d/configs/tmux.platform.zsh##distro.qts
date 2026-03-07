@@ -1,0 +1,5 @@
+#!/usr/bin/env zsh
+
+export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
+export ZSH_TMUX_AUTOCONNECT=true
+export ZSH_TMUX_AUTOSTART=true

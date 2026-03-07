@@ -1,14 +1,14 @@
 #!/usr/bin/env zsh
 
 if command -v tmux >/dev/null; then
-  export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
-  export ZSH_TMUX_AUTOCONNECT=true
-  export ZSH_TMUX_AUTOSTART=true
   export ZSH_TMUX_CONFIG="$HOME/.config/tmux/tmux.conf"
   export ZSH_TMUX_DEFAULT_SESSION_NAME="$(hostname)"
   export ZSH_TMUX_FIXTERM_WITH_256COLOR="tmux-256color"
   export ZSH_TMUX_ITERM2=false
   export ZSH_TMUX_UNICODE=true
+
+  local _platform_conf="${0:A:h}/tmux.platform.zsh"
+  [[ -f "$_platform_conf" ]] && source "$_platform_conf"
 
   # Load tmux plugin via zinit
   # Download extra.conf to the same directory as the plugin, then load the plugin

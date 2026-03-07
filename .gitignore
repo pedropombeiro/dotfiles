@@ -111,7 +111,7 @@ Thumbs.db
 .shellrc/zshrc.d/configs/pre/yadm.sh
 .shellrc/zshrc.d/configs/rails.zsh
 .shellrc/zshrc.d/configs/rust.zsh
-.shellrc/zshrc.d/configs/tmux.zsh
+.shellrc/zshrc.d/configs/tmux.platform.zsh
 .shellrc/zshrc.d/functions/diff_structure
 .shellrc/zshrc.d/functions/docker_whois
 .shellrc/zshrc.d/functions/fgdku

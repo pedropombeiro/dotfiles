@@ -1328,13 +1328,13 @@ The script should do this: \(ai.prompt)</string>
 				<key>Alpha Component</key>
 				<real>0.5</real>
 				<key>Blue Component</key>
-				<real>0.34111068010330203</real>
+				<real>0.34111067652702332</real>
 				<key>Color Space</key>
 				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.3131814965955485</real>
+				<real>0.31318148970603943</real>
 				<key>Red Component</key>
-				<real>0.30281969623574873</real>
+				<real>0.30281969904899597</real>
 			</dict>
 			<key>Blink Allowed</key>
 			<false/>
@@ -2297,15 +2297,15 @@ The script should do this: \(ai.prompt)</string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.45260233274647887</real>
 				<key>Blue Component</key>
-				<real>0.056549370288848877</real>
+				<real>0.62805425310867702</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.28100395202636719</real>
+				<real>0.53604027796328624</real>
 				<key>Red Component</key>
-				<real>0.7928692102432251</real>
+				<real>0.781208336353302</real>
 			</dict>
 			<key>Badge Font</key>
 			<string>Helvetica-Bold</string>

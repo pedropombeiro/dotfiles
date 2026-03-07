@@ -33,6 +33,7 @@ fi
 description = "Generate an AI commit message and commit staged changes"
 dir = "{{cwd}}"
 quiet = true
+env = { MISE_TERMINAL_PROGRESS = "false" }
 usage = 'arg "<type>" default=""'
 run = """
 if [ -n "${usage_type?}" ]; then

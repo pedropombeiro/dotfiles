@@ -82,6 +82,13 @@ Installation command (within tmux): `prefix + I` (capital i)
 3. Use `yadm` commands (not `git`) for version control
 4. The opencode.nvim Neovim plugin auto-detects tmux and uses the tmux provider when `$TMUX` is set
 
+## Passthrough and iTerm2 OSC Sequences
+
+The config uses `allow-passthrough all` (not just `on`) so that iTerm2 proprietary escape sequences
+(badge, progress bar, notifications) are forwarded from **all** panes, not just the active one.
+This is required for scripts like `mise run dotfiles:update` to show progress when running in a
+background pane. The `on` setting only forwards passthrough from the currently focused pane.
+
 ## Editing Configuration
 
 To modify tmux settings:

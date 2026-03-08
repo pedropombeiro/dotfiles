@@ -9,7 +9,10 @@ autoload -Uz iterm2_progress iterm2_badge iterm2_notify
 iterm2_badge "fix"
 iterm2_progress -i
 
+_cleanup_done=0
 _fix_cleanup() {
+  (( _cleanup_done )) && return
+  _cleanup_done=1
   local rc=$?
   if [[ $rc -ne 0 ]]; then
     iterm2_progress -e
@@ -20,7 +23,7 @@ _fix_cleanup() {
   fi
   iterm2_badge -c
 }
-trap _fix_cleanup EXIT
+trap _fix_cleanup EXIT INT TERM HUP
 
 if [ ${#} -gt 0 ]; then
     yadm enter pre-commit run --files "$@" --hook-stage manual

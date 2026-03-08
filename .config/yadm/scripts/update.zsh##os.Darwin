@@ -18,7 +18,10 @@ autoload -Uz iterm2_progress iterm2_badge iterm2_notify
 iterm2_badge "update: starting"
 iterm2_progress -i
 
+_cleanup_done=0
 _update_cleanup() {
+  (( _cleanup_done )) && return
+  _cleanup_done=1
   local rc=$?
   if [[ $rc -ne 0 ]]; then
     iterm2_progress -e
@@ -32,7 +35,7 @@ _update_cleanup() {
   fi
   echo
 }
-trap _update_cleanup EXIT
+trap _update_cleanup EXIT INT TERM HUP
 
 "${YADM_SCRIPTS}/relink-dotfiles.sh"
 
@@ -50,5 +53,4 @@ source "${YADM_SCRIPTS}/update-common.zsh"
 if [[ $(yadm config local.class) == 'Work' ]]; then
   source "${YADM_SCRIPTS}/update-work.zsh"
 fi
-
 

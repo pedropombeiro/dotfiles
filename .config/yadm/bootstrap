@@ -39,7 +39,10 @@ for bootstrap in "${bootstraps[@]}"; do
 done
 _bootstrap_current=0
 
+_cleanup_done=0
 _bootstrap_cleanup() {
+  (( _cleanup_done )) && return
+  _cleanup_done=1
   local rc=$?
   if [[ $rc -ne 0 ]]; then
     _iterm2_progress "2"
@@ -51,7 +54,7 @@ _bootstrap_cleanup() {
   fi
   echo
 }
-trap _bootstrap_cleanup EXIT
+trap _bootstrap_cleanup EXIT INT TERM HUP
 
 _iterm2_badge "bootstrap: starting"
 _iterm2_progress "3"

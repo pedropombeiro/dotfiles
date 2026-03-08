@@ -52,6 +52,28 @@ _fgdku_step() {
 iterm2_badge "fgdku: starting"
 iterm2_progress -i
 
+_fgdku_rc=1
+_fgdku_cleanup_done=0
+_fgdku_cleanup() {
+  (( _fgdku_cleanup_done )) && return
+  _fgdku_cleanup_done=1
+  if [[ $_fgdku_rc -eq 0 ]]; then
+    iterm2_progress 100
+    iterm2_badge -c
+    iterm2_progress -c
+    iterm2_notify "fgdku complete"
+  else
+    iterm2_progress -e
+    iterm2_badge "fgdku: FAILED"
+    iterm2_notify "fgdku failed"
+  fi
+
+  ha_webhook off
+}
+trap '_fgdku_rc=130; _fgdku_cleanup; return $_fgdku_rc' INT
+trap '_fgdku_rc=143; _fgdku_cleanup; return $_fgdku_rc' TERM
+trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
+
 (
   cd "${GDK_ROOT}/gitlab" || exit 0
 
@@ -188,17 +210,6 @@ iterm2_progress -i
   cd - >/dev/null
 )
 
-local _fgdku_rc=$?
-if [[ $_fgdku_rc -eq 0 ]]; then
-  iterm2_progress 100
-  iterm2_badge -c
-  iterm2_progress -c
-  iterm2_notify "fgdku complete"
-else
-  iterm2_progress -e
-  iterm2_badge "fgdku: FAILED"
-  iterm2_notify "fgdku failed"
-fi
-
-ha_webhook off
+_fgdku_rc=$?
+_fgdku_cleanup
 return $_fgdku_rc

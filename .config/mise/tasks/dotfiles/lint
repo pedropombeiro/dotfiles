@@ -9,7 +9,10 @@ autoload -Uz iterm2_progress iterm2_badge iterm2_notify
 iterm2_badge "lint"
 iterm2_progress -i
 
+_cleanup_done=0
 _lint_cleanup() {
+  (( _cleanup_done )) && return
+  _cleanup_done=1
   local rc=$?
   if [[ $rc -ne 0 ]]; then
     iterm2_progress -e
@@ -20,7 +23,7 @@ _lint_cleanup() {
   fi
   iterm2_badge -c
 }
-trap _lint_cleanup EXIT
+trap _lint_cleanup EXIT INT TERM HUP
 
 if [ ${#} -gt 0 ]; then
     yadm enter pre-commit run --files "$@"

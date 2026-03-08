@@ -24,7 +24,10 @@ else
   iterm2_progress "$_progress_offset"
 fi
 
+_cleanup_done=0
 _update_cleanup() {
+  (( _cleanup_done )) && return
+  _cleanup_done=1
   local rc=$?
   if [[ $rc -ne 0 ]]; then
     iterm2_progress -e
@@ -38,7 +41,7 @@ _update_cleanup() {
   fi
   echo
 }
-trap _update_cleanup EXIT
+trap _update_cleanup EXIT INT TERM HUP
 
 _update_step "entware"
 printf "${YELLOW}%s${NC}\n" "Updating Entware packages..."
@@ -70,5 +73,4 @@ printf "${YELLOW}%s${NC}\n" "Installing /share/Container pre-commit hooks..."
 (cd /share/Container && pre-commit install --install-hooks)
 
 source "${YADM_SCRIPTS}/update-common.zsh"
-
 

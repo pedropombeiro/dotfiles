@@ -43,9 +43,9 @@ fi
 _iterm2_progress() {
   [ "${TERM_PROGRAM}" = "iTerm.app" ] || [ "${LC_TERMINAL}" = "iTerm2" ] || [ -n "${ITERM_SESSION_ID}" ] || return 0
   if [ -n "${TMUX}" ]; then
-    printf "\033Ptmux;\033\033]9;4;%s\a\033\\" "$1" >&2
+    printf "\033Ptmux;\033\033]9;4;%s\a\033\\" "$1" >/dev/tty 2>/dev/null || true
   else
-    printf "\033]9;4;%s\a" "$1" >&2
+    printf "\033]9;4;%s\a" "$1" >/dev/tty 2>/dev/null || true
   fi
 }
 
@@ -102,7 +102,7 @@ fi
 prompt="$prompt CRITICAL: Your response must contain ONLY the commit message itself. No explanations, no preamble, no thinking, no markdown. Start directly with the subject line."
 
 _iterm2_progress 3
-msg=$(XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" OPENCODE_TERMINAL_PROGRESS=false opencode run -m "$model" --agent build "$prompt" -f "$statusfile" -f "$tmpfile")
+msg=$(XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" opencode run -m "$model" --agent build "$prompt" -f "$statusfile" -f "$tmpfile")
 _iterm2_progress 0
 
 if [ -z "$msg" ]; then

@@ -3,9 +3,9 @@
   "plugin": [
     "@mohak34/opencode-notifier@latest",
     "opencode-anthropic-auth@latest",
-    "opencode-homeassistant",
-    "opencode-terminal-progress",
-    "opencode-wakatime"
+    "opencode-homeassistant@latest",
+    "opencode-terminal-progress@latest",
+    "opencode-wakatime@latest"
   ],
   "default_agent": "plan",
   "small_model": "gitlab/duo-chat-haiku-4-5",

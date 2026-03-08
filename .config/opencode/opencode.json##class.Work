@@ -4,10 +4,10 @@
   "plugin": [
     "@gitlab/opencode-gitlab-plugin",
     "@mohak34/opencode-notifier@latest",
-    "opencode-forge-session-title",
-    "opencode-homeassistant",
-    "opencode-terminal-progress",
-    "opencode-wakatime"
+    "opencode-forge-session-title@latest",
+    "opencode-homeassistant@latest",
+    "opencode-terminal-progress@latest",
+    "opencode-wakatime@latest"
   ],
   "mcp": {
     "lazy-mcp": {

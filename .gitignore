@@ -22,8 +22,6 @@ Thumbs.db
 .config/yazi/flavors/gruvbox-dark.yazi
 
 # BEGIN yadm-alt (auto-generated, do not edit)
-.agents/skills/clickhouse/SKILL.md
-.agents/skills/glab/SKILL.md
 .Brewfile
 .config/1Password/ssh/agent.toml
 .config/dotfiles/git/gitconfig-specific
@@ -50,11 +48,9 @@ Thumbs.db
 .config/opencode/agents/review-performance.md
 .config/opencode/agents/review-qa.md
 .config/opencode/agents/review-security.md
-.config/opencode/commands/review-mr.md
+.config/opencode/opencode-homeassistant.json
 .config/opencode/opencode.json
 .config/opencode/plugins/deny-rm-rf.js
-.config/opencode/opencode-homeassistant.json
-.config/opencode/plugins/ha-webhook.js
 .config/opencode/tui.json
 .config/pgcli/config
 .config/tmux/tmux.platform.conf
@@ -138,3 +134,4 @@ Thumbs.db
 .vale.ini
 .wakeup
 # END yadm-alt
+

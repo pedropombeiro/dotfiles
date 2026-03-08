@@ -102,6 +102,7 @@
       "vale *": "allow",
       "wc *": "allow",
       "which *": "allow",
+      "xxd *": "allow",
       "yamllint *": "allow"
     },
     "external_directory": {

@@ -50,14 +50,13 @@ You are a read-only exploration agent for navigating and searching yadm-managed 
 │   ├── dotfiles/git/     # Dotfiles-specific git config
 │   ├── lazygit/          # Lazygit TUI config
 │   ├── lazy-mcp/         # Lazy MCP server config
-│   ├── mise/             # Mise (tool version manager) config
+│   ├── mise/             # Mise config (tool versions, tasks: dotfiles/fix, dotfiles/lint, dotfiles/pull)
 │   ├── nvim/             # Neovim config (init.lua, lua/config, lua/core, lua/plugins)
 │   ├── opencode/         # OpenCode config (agents, commands, skills, plugins)
 │   ├── pgcli/            # pgcli config
 │   ├── tmux/             # Tmux config
 │   └── yadm/             # YADM config (bootstrap, bootstrap.d/)
 ├── .editorconfig         # EditorConfig
-├── .justfile             # Just task runner
 ├── .pre-commit-config.yaml
 ├── .shellrc/
 │   └── zshrc.d/

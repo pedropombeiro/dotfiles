@@ -6,9 +6,11 @@ source "${YADM_SCRIPTS}/colors.sh"
 
 _update_total=0; for _f in ${(%):-%x} "${YADM_SCRIPTS}/update-common.zsh"; do (( _update_total += $(grep -c '^[[:space:]]*_update_step ' "$_f" 2>/dev/null || echo 0) )); done
 _update_current=0
+_progress_offset=${PROGRESS_OFFSET:-0}
+_progress_range=${PROGRESS_RANGE:-100}
 _update_step() {
   (( _update_current++ ))
-  iterm2_progress $(( _update_current * 100 / _update_total ))
+  iterm2_progress $(( _progress_offset + (_update_current * _progress_range / _update_total) ))
   iterm2_badge "update: $1"
 }
 
@@ -16,7 +18,11 @@ fpath=(~/.shellrc/zshrc.d/functions $fpath)
 autoload -Uz iterm2_progress iterm2_badge iterm2_notify
 
 iterm2_badge "update: starting"
-iterm2_progress -i
+if [[ -z "${PROGRESS_OFFSET+x}" ]]; then
+  iterm2_progress -i
+else
+  iterm2_progress "$_progress_offset"
+fi
 
 _update_cleanup() {
   local rc=$?
@@ -24,7 +30,7 @@ _update_cleanup() {
     iterm2_progress -e
     iterm2_badge "update: FAILED"
     iterm2_notify "update failed"
-  else
+  elif [[ -z "${PROGRESS_OFFSET+x}" ]]; then
     iterm2_progress 100
     iterm2_badge -c
     iterm2_progress -c

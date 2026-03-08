@@ -30,6 +30,7 @@ _update_cleanup() {
     iterm2_progress -c
     iterm2_notify "update complete"
   fi
+  echo
 }
 trap _update_cleanup EXIT
 

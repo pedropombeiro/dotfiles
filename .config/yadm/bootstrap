@@ -49,6 +49,7 @@ _bootstrap_cleanup() {
     _iterm2_badge ""
     _iterm2_progress "0"
   fi
+  echo
 }
 trap _bootstrap_cleanup EXIT
 

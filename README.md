@@ -168,12 +168,6 @@ After installing the dotfiles, ensure the Syncthing-managed config files are lin
    ssh -T git@gitlab.com
    ```
 
-5. After first Syncthing sync, restore Mackup backup:
-
-   ```shell
-   mackup restore
-   ```
-
 ### Fresh Installation - Linux
 
 Verify SSH connectivity to Git services:

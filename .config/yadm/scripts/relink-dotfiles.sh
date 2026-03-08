@@ -15,7 +15,6 @@ if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then
     printf "${RED}%s${NC}\n" "${src_path} not found. Please configure Syncthing and perform a sync run first."
   fi
 
-  # Relink ~/.config/pgcli until Mackup starts supporting pgcli
   if [[ -d ${HOME}/.config/pgcli ]]; then
     if [[ ! -d "${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}/.config/pgcli" ]]; then
       printf "${YELLOW}%s${NC}\n" "Copying pgcli config to Syncthing..."

@@ -13,7 +13,7 @@ YADM bootstrap scripts for automated system setup.
     ├── 200-499            # (reserved for future use)
     ├── 500-699            # (reserved for future use)
     ├── 700-899            # (reserved for future use)
-    └── 900-999            # Late/optional setup (nginx, tmux, mackup, apps, gdk, yadm remote)
+    └── 900-999            # Late/optional setup (nginx, tmux, apps, gdk, yadm remote)
 ```
 
 ## Alternate File Syntax

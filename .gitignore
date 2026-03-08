@@ -65,7 +65,6 @@ Thumbs.db
 .config/yadm/bootstrap.d/035-add-gdk-to-etc-hosts.sh
 .config/yadm/bootstrap.d/900-install-nginx.sh
 .config/yadm/bootstrap.d/915-install-tmux-terminfo.sh
-.config/yadm/bootstrap.d/920-restore-mackup.sh
 .config/yadm/bootstrap.d/930-regular-install.sh
 .config/yadm/bootstrap.d/940-open-apps-at-login.sh
 .config/yadm/bootstrap.d/945-open-apps-for-first-time.sh
@@ -83,7 +82,6 @@ Thumbs.db
 .displaysleep
 .displaywakeup
 .local/share/grc-rs
-.mackup.cfg
 .pgsql_profile
 .profile
 .shellrc/login.d/brew.sh

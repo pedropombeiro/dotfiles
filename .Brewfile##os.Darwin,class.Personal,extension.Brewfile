@@ -117,8 +117,6 @@ brew "luacheck"
 brew "luajit"
 # Package manager for the Lua programming language
 brew "luarocks"
-# Keep your Mac's application settings in sync
-brew "mackup"
 # Mac App Store command-line interface
 brew "mas"
 # Like sed, awk, cut, join & sort for name-indexed data such as CSV

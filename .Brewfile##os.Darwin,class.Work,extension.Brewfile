@@ -158,8 +158,6 @@ brew "lnav"
 brew "luarocks"
 # Fast, async, resource-friendly link checker
 brew "lychee"
-# Keep your Mac's application settings in sync
-brew "mackup"
 # CLI for Node.js style checker and lint tool for Markdown files
 brew "markdownlint-cli"
 # Mac App Store command-line interface

@@ -484,15 +484,15 @@ The script should do this: \(ai.prompt)</string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.056549370288848877</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.28100395202636719</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.7928692102432251</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Bold Color</key>
 			<dict>
@@ -825,15 +825,15 @@ The script should do this: \(ai.prompt)</string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.0</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.1491314172744751</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>1</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Bold Color</key>
 			<dict>
@@ -1326,15 +1326,15 @@ The script should do this: \(ai.prompt)</string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.34111067652702332</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
 				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.31318148970603943</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.30281969904899597</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Blink Allowed</key>
 			<false/>
@@ -2297,15 +2297,15 @@ The script should do this: \(ai.prompt)</string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.45260233274647887</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.62805425310867702</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
 				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.53604027796328624</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.781208336353302</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Badge Font</key>
 			<string>Helvetica-Bold</string>
@@ -3580,15 +3580,15 @@ The script should do this: \(ai.prompt)</string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.056549370288848877</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.28100395202636719</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.7928692102432251</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Badge Color (Dark)</key>
 			<dict>
@@ -4655,15 +4655,15 @@ The script should do this: \(ai.prompt)</string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.056549370288848877</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.28100395202636719</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.7928692102432251</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Blinking Cursor</key>
 			<true/>

@@ -270,15 +270,15 @@
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.056549370288848877</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.28100395202636719</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.7928692102432251</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Bold Color</key>
 			<dict>
@@ -774,15 +774,15 @@
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.056549370288848877</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.28100395202636719</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.7928692102432251</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Blinking Cursor</key>
 			<false/>
@@ -1283,15 +1283,15 @@
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.056549370288848877</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.28100395202636719</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.7928692102432251</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Badge Text</key>
 			<string></string>
@@ -1831,15 +1831,15 @@
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.056549370288848877</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.28100395202636719</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.7928692102432251</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Badge Text</key>
 			<string></string>
@@ -2332,15 +2332,15 @@
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.0</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.14910027384757996</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>1</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Badge Font</key>
 			<string>Monaco</string>
@@ -3258,15 +3258,15 @@
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.056549370288848877</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.28100395202636719</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.7928692102432251</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Badge Font</key>
 			<string>Monaco</string>
@@ -6981,15 +6981,15 @@
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.056549370288848877</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.28100395202636719</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.7928692102432251</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Badge Text</key>
 			<string></string>
@@ -7507,15 +7507,15 @@
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.056549370288848877</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.28100395202636719</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.7928692102432251</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Badge Font</key>
 			<string>Monaco</string>
@@ -7983,15 +7983,15 @@
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.0</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>sRGB</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.14910027384757996</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>1</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Badge Font</key>
 			<string>Monaco</string>
@@ -8896,15 +8896,15 @@
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
-				<real>0.5</real>
+				<real>0.30457746478873238</real>
 				<key>Blue Component</key>
-				<real>0.056549370288848877</real>
+				<real>0.54239745790373028</real>
 				<key>Color Space</key>
-				<string>Calibrated</string>
+				<string>P3</string>
 				<key>Green Component</key>
-				<real>0.28100395202636719</real>
+				<real>0.66099707975783373</real>
 				<key>Red Component</key>
-				<real>0.7928692102432251</real>
+				<real>0.7255859375</real>
 			</dict>
 			<key>Badge Text</key>
 			<string></string>
@@ -9575,15 +9575,15 @@
 											<key>Badge Color</key>
 											<dict>
 												<key>Alpha Component</key>
-												<real>0.5</real>
+												<real>0.30457746478873238</real>
 												<key>Blue Component</key>
-												<real>0.056549370288848877</real>
+												<real>0.54239745790373028</real>
 												<key>Color Space</key>
-												<string>Calibrated</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.28100395202636719</real>
+												<real>0.66099707975783373</real>
 												<key>Red Component</key>
-												<real>0.7928692102432251</real>
+												<real>0.7255859375</real>
 											</dict>
 											<key>Blinking Cursor</key>
 											<false/>
@@ -10278,15 +10278,15 @@
 											<key>Badge Color</key>
 											<dict>
 												<key>Alpha Component</key>
-												<real>0.5</real>
+												<real>0.30457746478873238</real>
 												<key>Blue Component</key>
-												<real>0.056549370288848877</real>
+												<real>0.54239745790373028</real>
 												<key>Color Space</key>
-												<string>Calibrated</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.28100395202636719</real>
+												<real>0.66099707975783373</real>
 												<key>Red Component</key>
-												<real>0.7928692102432251</real>
+												<real>0.7255859375</real>
 											</dict>
 											<key>Badge Text</key>
 											<string></string>
@@ -10901,15 +10901,15 @@
 											<key>Badge Color</key>
 											<dict>
 												<key>Alpha Component</key>
-												<real>0.5</real>
+												<real>0.30457746478873238</real>
 												<key>Blue Component</key>
-												<real>0.0</real>
+												<real>0.54239745790373028</real>
 												<key>Color Space</key>
-												<string>sRGB</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.14910027384757996</real>
+												<real>0.66099707975783373</real>
 												<key>Red Component</key>
-												<real>1</real>
+												<real>0.7255859375</real>
 											</dict>
 											<key>Badge Font</key>
 											<string>Monaco</string>
@@ -11527,15 +11527,15 @@
 											<key>Badge Color</key>
 											<dict>
 												<key>Alpha Component</key>
-												<real>0.5</real>
+												<real>0.30457746478873238</real>
 												<key>Blue Component</key>
-												<real>0.056549370288848877</real>
+												<real>0.54239745790373028</real>
 												<key>Color Space</key>
-												<string>Calibrated</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.28100395202636719</real>
+												<real>0.66099707975783373</real>
 												<key>Red Component</key>
-												<real>0.7928692102432251</real>
+												<real>0.7255859375</real>
 											</dict>
 											<key>Badge Font</key>
 											<string>Monaco</string>
@@ -13235,15 +13235,15 @@
 											<key>Badge Color</key>
 											<dict>
 												<key>Alpha Component</key>
-												<real>0.5</real>
+												<real>0.30457746478873238</real>
 												<key>Blue Component</key>
-												<real>0.056549370288848877</real>
+												<real>0.54239745790373028</real>
 												<key>Color Space</key>
-												<string>Calibrated</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.28100395202636719</real>
+												<real>0.66099707975783373</real>
 												<key>Red Component</key>
-												<real>0.7928692102432251</real>
+												<real>0.7255859375</real>
 											</dict>
 											<key>Blinking Cursor</key>
 											<false/>
@@ -13902,15 +13902,15 @@
 											<key>Badge Color</key>
 											<dict>
 												<key>Alpha Component</key>
-												<real>0.5</real>
+												<real>0.30457746478873238</real>
 												<key>Blue Component</key>
-												<real>0.056549370288848877</real>
+												<real>0.54239745790373028</real>
 												<key>Color Space</key>
-												<string>Calibrated</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.28100395202636719</real>
+												<real>0.66099707975783373</real>
 												<key>Red Component</key>
-												<real>0.7928692102432251</real>
+												<real>0.7255859375</real>
 											</dict>
 											<key>Blinking Cursor</key>
 											<false/>
@@ -14611,15 +14611,15 @@
 											<key>Badge Color</key>
 											<dict>
 												<key>Alpha Component</key>
-												<real>0.5</real>
+												<real>0.30457746478873238</real>
 												<key>Blue Component</key>
-												<real>0.056549370288848877</real>
+												<real>0.54239745790373028</real>
 												<key>Color Space</key>
-												<string>Calibrated</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.28100395202636719</real>
+												<real>0.66099707975783373</real>
 												<key>Red Component</key>
-												<real>0.7928692102432251</real>
+												<real>0.7255859375</real>
 											</dict>
 											<key>Badge Text</key>
 											<string></string>
@@ -15236,15 +15236,15 @@
 											<key>Badge Color</key>
 											<dict>
 												<key>Alpha Component</key>
-												<real>0.5</real>
+												<real>0.30457746478873238</real>
 												<key>Blue Component</key>
-												<real>0.0</real>
+												<real>0.54239745790373028</real>
 												<key>Color Space</key>
-												<string>sRGB</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.14910027384757996</real>
+												<real>0.66099707975783373</real>
 												<key>Red Component</key>
-												<real>1</real>
+												<real>0.7255859375</real>
 											</dict>
 											<key>Badge Font</key>
 											<string>Monaco</string>
@@ -15862,15 +15862,15 @@
 											<key>Badge Color</key>
 											<dict>
 												<key>Alpha Component</key>
-												<real>0.5</real>
+												<real>0.30457746478873238</real>
 												<key>Blue Component</key>
-												<real>0.056549370288848877</real>
+												<real>0.54239745790373028</real>
 												<key>Color Space</key>
-												<string>Calibrated</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.28100395202636719</real>
+												<real>0.66099707975783373</real>
 												<key>Red Component</key>
-												<real>0.7928692102432251</real>
+												<real>0.7255859375</real>
 											</dict>
 											<key>Badge Font</key>
 											<string>Monaco</string>
@@ -17574,15 +17574,15 @@
 											<key>Badge Color</key>
 											<dict>
 												<key>Alpha Component</key>
-												<real>0.5</real>
+												<real>0.30457746478873238</real>
 												<key>Blue Component</key>
-												<real>0.056549370288848877</real>
+												<real>0.54239745790373028</real>
 												<key>Color Space</key>
-												<string>Calibrated</string>
+												<string>P3</string>
 												<key>Green Component</key>
-												<real>0.28100395202636719</real>
+												<real>0.66099707975783373</real>
 												<key>Red Component</key>
-												<real>0.7928692102432251</real>
+												<real>0.7255859375</real>
 											</dict>
 											<key>Blinking Cursor</key>
 											<false/>

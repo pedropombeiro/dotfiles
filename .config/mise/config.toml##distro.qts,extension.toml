@@ -33,6 +33,7 @@ delta = "latest"
 # QTS-specific pipx tools
 "pipx:black" = "latest"
 "pipx:garth" = "latest"
+"pipx:homeassistant-cli" = "latest"
 "pipx:isort" = "latest"
 "pipx:jedi-language-server" = "latest"
 "pipx:pgcli" = { version = "latest", uvx_args = "--with psycopg2-binary --with psycopg-binary" }

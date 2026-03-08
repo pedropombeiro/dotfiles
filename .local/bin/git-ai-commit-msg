@@ -104,6 +104,7 @@ prompt="$prompt CRITICAL: Your response must contain ONLY the commit message its
 _iterm2_progress 3
 msg=$(OPENCODE_TERMINAL_PROGRESS=0 XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" opencode run -m "$model" --agent build "$prompt" -f "$statusfile" -f "$tmpfile")
 _iterm2_progress 0
+rm -rf "$opencode_commit_data/opencode/log"
 
 if [ -z "$msg" ]; then
   echo "error: opencode returned an empty response" >&2

@@ -21,6 +21,7 @@ else
   _iterm2_st="\a"
 fi
 
+{
 case "${1}" in
   -i)
     printf "${_iterm2_osc}9;4;3${_iterm2_st}"
@@ -42,3 +43,4 @@ case "${1}" in
     printf "${_iterm2_osc}9;4;1;%d${_iterm2_st}" "${1}"
     ;;
 esac
+} >/dev/tty 2>/dev/null || true

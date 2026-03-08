@@ -2,6 +2,8 @@
 
 # shellcheck disable=SC2059
 
+_iterm2_tty="${ITERM2_TTY:-/dev/tty}"
+
 _iterm2_active() {
   [[ "${TERM_PROGRAM}" == "iTerm.app" || "${LC_TERMINAL}" == "iTerm2" || -n "${ITERM_SESSION_ID}" ]]
 }
@@ -28,7 +30,7 @@ iterm2_progress() {
       -c) printf "${_osc}9;4;0${_st}" ;;
       *)  printf "${_osc}9;4;1;%d${_st}" "${1}" ;;
     esac
-  } >/dev/tty 2>/dev/null || true
+  } >"${_iterm2_tty}" 2>/dev/null || true
 }
 
 iterm2_badge() {
@@ -37,12 +39,12 @@ iterm2_badge() {
   _iterm2_osc
   local text=""
   [[ "${1}" != "-c" ]] && text="${*}"
-  printf "${_osc}1337;SetBadgeFormat=%s${_st}" "$(printf '%s' "${text}" | base64)" >/dev/tty 2>/dev/null || true
+  printf "${_osc}1337;SetBadgeFormat=%s${_st}" "$(printf '%s' "${text}" | base64)" >"${_iterm2_tty}" 2>/dev/null || true
 }
 
 iterm2_notify() {
   _iterm2_active || return 0
   local _osc _st
   _iterm2_osc
-  printf "${_osc}9;%s${_st}" "${*}" >/dev/tty 2>/dev/null || true
+  printf "${_osc}9;%s${_st}" "${*}" >"${_iterm2_tty}" 2>/dev/null || true
 }

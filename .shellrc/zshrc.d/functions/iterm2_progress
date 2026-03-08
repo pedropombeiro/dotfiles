@@ -43,4 +43,4 @@ case "${1}" in
     printf "${_iterm2_osc}9;4;1;%d${_iterm2_st}" "${1}"
     ;;
 esac
-} >/dev/tty 2>/dev/null || true
+} >"${ITERM2_TTY:-/dev/tty}" 2>/dev/null || true

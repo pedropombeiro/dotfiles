@@ -23,4 +23,4 @@ if [[ "${1}" != "-c" ]]; then
   badge_text="${*}"
 fi
 
-printf "${_iterm2_osc}1337;SetBadgeFormat=%s${_iterm2_st}\n" "$(printf '%s' "${badge_text}" | base64)"
+printf "${_iterm2_osc}1337;SetBadgeFormat=%s${_iterm2_st}" "$(printf '%s' "${badge_text}" | base64)"

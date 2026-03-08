@@ -2,12 +2,16 @@
 
 [tasks."dotfiles:install"]
 description = "Bootstrap the dotfile environment"
-env = { MISE_TERMINAL_PROGRESS = "false" }
+# MISE_TASK_OUTPUT=interleave: bypass line-buffered prefix mode so iTerm2 OSC sequences pass through
+# MISE_TERMINAL_PROGRESS=false: disable mise's own progress to avoid conflicting with the script's
+env = { MISE_TASK_OUTPUT = "interleave", MISE_TERMINAL_PROGRESS = "false" }
 run = "yadm bootstrap"
 
 [tasks."dotfiles:update"]
 description = "Run dotfile update scripts"
-env = { MISE_TERMINAL_PROGRESS = "false" }
+# MISE_TASK_OUTPUT=interleave: bypass line-buffered prefix mode so iTerm2 OSC sequences pass through
+# MISE_TERMINAL_PROGRESS=false: disable mise's own progress to avoid conflicting with the script's
+env = { MISE_TASK_OUTPUT = "interleave", MISE_TERMINAL_PROGRESS = "false" }
 run = "~/.config/yadm/scripts/update.zsh"
 
 [tasks."dotfiles:checkhealth"]

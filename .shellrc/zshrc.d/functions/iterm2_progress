@@ -23,22 +23,22 @@ fi
 
 case "${1}" in
   -i)
-    printf "${_iterm2_osc}9;4;3${_iterm2_st}"
+    printf "${_iterm2_osc}9;4;3${_iterm2_st}\n"
     ;;
   -e)
     if [[ -n "${2}" ]]; then
-      printf "${_iterm2_osc}9;4;2;%d${_iterm2_st}" "${2}"
+      printf "${_iterm2_osc}9;4;2;%d${_iterm2_st}\n" "${2}"
     else
-      printf "${_iterm2_osc}9;4;2${_iterm2_st}"
+      printf "${_iterm2_osc}9;4;2${_iterm2_st}\n"
     fi
     ;;
   -w)
-    printf "${_iterm2_osc}9;4;4;%d${_iterm2_st}" "${2}"
+    printf "${_iterm2_osc}9;4;4;%d${_iterm2_st}\n" "${2}"
     ;;
   -c)
-    printf "${_iterm2_osc}9;4;0${_iterm2_st}"
+    printf "${_iterm2_osc}9;4;0${_iterm2_st}\n"
     ;;
   *)
-    printf "${_iterm2_osc}9;4;1;%d${_iterm2_st}" "${1}"
+    printf "${_iterm2_osc}9;4;1;%d${_iterm2_st}\n" "${1}"
     ;;
 esac

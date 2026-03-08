@@ -2,15 +2,11 @@
 
 [tasks."dotfiles:install"]
 description = "Bootstrap the dotfile environment"
-# Use raw output so iTerm2 OSC escape sequences pass through to the terminal
-raw = true
 env = { MISE_TERMINAL_PROGRESS = "false" }
 run = "yadm bootstrap"
 
 [tasks."dotfiles:update"]
 description = "Run dotfile update scripts"
-# Use raw output so iTerm2 OSC escape sequences pass through to the terminal
-raw = true
 env = { MISE_TERMINAL_PROGRESS = "false" }
 run = "~/.config/yadm/scripts/update.zsh"
 

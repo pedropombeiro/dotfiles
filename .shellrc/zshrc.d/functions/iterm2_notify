@@ -17,4 +17,4 @@ else
   _iterm2_st="\a"
 fi
 
-printf "${_iterm2_osc}9;%s${_iterm2_st}" "${*}" >/dev/tty 2>/dev/null || true
+printf "${_iterm2_osc}9;%s${_iterm2_st}" "${*}"

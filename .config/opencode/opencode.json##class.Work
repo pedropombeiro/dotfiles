@@ -81,6 +81,7 @@
       "head *": "allow",
       "ls *": "allow",
       "markdownlint *": "allow",
+      "md5 *": "allow",
       "mise ls *": "allow",
       "mise ls-remote *": "allow",
       "mise tasks": "allow",

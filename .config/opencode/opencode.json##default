@@ -86,6 +86,7 @@
       "hostname *": "allow",
       "less *": "allow",
       "ls *": "allow",
+      "md5 *": "allow",
       "mise ls *": "allow",
       "mise ls-remote *": "allow",
       "mise tasks": "allow",

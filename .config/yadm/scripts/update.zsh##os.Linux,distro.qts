@@ -41,7 +41,10 @@ _update_cleanup() {
   fi
   echo
 }
-trap _update_cleanup EXIT INT TERM HUP
+trap _update_cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
 
 _update_step "entware"
 printf "${YELLOW}%s${NC}\n" "Updating Entware packages..."

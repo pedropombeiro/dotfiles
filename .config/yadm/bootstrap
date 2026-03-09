@@ -54,7 +54,10 @@ _bootstrap_cleanup() {
   fi
   echo
 }
-trap _bootstrap_cleanup EXIT INT TERM HUP
+trap _bootstrap_cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
 
 _iterm2_badge "bootstrap: starting"
 _iterm2_progress "3"

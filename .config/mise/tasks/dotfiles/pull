@@ -3,8 +3,8 @@
 set -eu
 
 if [ -n "$(yadm status -s)" ]; then
-    printf "This will discard local dotfile changes. Continue? [y/N] "
-    read -r reply
+    printf "This will discard local dotfile changes. Continue? [y/N] " >/dev/tty
+    read -r reply </dev/tty
     case "${reply}" in
         [yY]|[yY][eE][sS]) ;;
         *) exit 1 ;;

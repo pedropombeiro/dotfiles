@@ -35,7 +35,10 @@ _update_cleanup() {
   fi
   echo
 }
-trap _update_cleanup EXIT INT TERM HUP
+trap _update_cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
 
 "${YADM_SCRIPTS}/relink-dotfiles.sh"
 

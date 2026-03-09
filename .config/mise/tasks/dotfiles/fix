@@ -23,7 +23,10 @@ _fix_cleanup() {
   fi
   iterm2_badge -c
 }
-trap _fix_cleanup EXIT INT TERM HUP
+trap _fix_cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
 
 if [ ${#} -gt 0 ]; then
     yadm enter pre-commit run --files "$@" --hook-stage manual

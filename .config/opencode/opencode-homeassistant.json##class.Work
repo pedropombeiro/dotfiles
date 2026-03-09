@@ -1,3 +1,7 @@
 {
-  "webhookUrl": "https://ha.pombei.ro/api/webhook/opencode_work_agent"
+  "webhookUrl": "https://ha.pombei.ro/api/webhook/opencode_work_agent",
+  "haApiUrl": "https://ha.pombei.ro/api",
+  "haToken": "${HA_OPENCODE_TOKEN}",
+  "permissionResponseEntity": "input_text.opencode_permission_response",
+  "permissionTimeout": 120
 }

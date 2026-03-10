@@ -40,13 +40,14 @@ ripgrep = "latest"
 The QTS environment has glibc 2.21 limitations. Distro-specific pins live in
 `~/.config/mise/conf.d/distro-specific.toml##os.Linux,distro.qts`.
 
-- **Python**: QTS has no musl loader, so precompiled binaries must use the gnu variant
-  (`precompiled_os = "unknown-linux-gnu"`). Python and all Python CLI tools are fully
-  mise-managed — opkg python3/python3-pip are **not** installed.
+- **Python**: QTS has no musl loader, so precompiled binaries must use the gnu variant.
+  The CPU (Celeron J4125) supports x86_64_v2 but not v3. Python and all Python CLI
+  tools are fully mise-managed — opkg python3/python3-pip are **not** installed.
 - **Node**: Uses unofficial builds with glibc-217 flavor.
 
 ```toml
 [settings.python]
+precompiled_arch = "x86_64_v2"
 precompiled_os = "unknown-linux-gnu"
 
 [settings.node]

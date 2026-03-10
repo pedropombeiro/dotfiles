@@ -41,13 +41,15 @@ The QTS environment has glibc 2.21 limitations. Distro-specific pins live in
 `~/.config/mise/conf.d/distro-specific.toml##os.Linux,distro.qts`.
 
 - **Python**: QTS has no musl loader, so precompiled binaries must use the gnu variant.
-  The CPU (Celeron J4125) supports x86_64_v2 but not v3. Python and all Python CLI
+  Use `x86_64` (not `x86_64_v2`) for `precompiled_arch` — the v2 build embeds
+  `-march=x86-64-v2` in Python's sysconfig CFLAGS, which breaks C extension compilation
+  with the system GCC 8.4 (only GCC 11+ supports that flag). Python and all Python CLI
   tools are fully mise-managed — opkg python3/python3-pip are **not** installed.
 - **Node**: Uses unofficial builds with glibc-217 flavor.
 
 ```toml
 [settings.python]
-precompiled_arch = "x86_64_v2"
+precompiled_arch = "x86_64"
 precompiled_os = "unknown-linux-gnu"
 
 [settings.node]

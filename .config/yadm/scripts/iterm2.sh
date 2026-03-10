@@ -5,7 +5,7 @@
 _iterm2_tty="${ITERM2_TTY:-/dev/tty}"
 
 _iterm2_active() {
-  [[ "${TERM_PROGRAM}" == "iTerm.app" || "${LC_TERMINAL}" == "iTerm2" || -n "${ITERM_SESSION_ID}" ]]
+  [[ "${TERM_PROGRAM:-}" == "iTerm.app" || "${LC_TERMINAL:-}" == "iTerm2" || -n "${ITERM_SESSION_ID:-}" ]]
 }
 
 _iterm2_osc() {

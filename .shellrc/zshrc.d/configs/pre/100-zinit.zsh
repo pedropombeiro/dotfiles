@@ -12,4 +12,10 @@ fi
 source "${ZINIT_HOME}/zinit.zsh"
 
 # Initialize compdef early so turbo-loaded plugins can use it
-autoload -Uz compinit && compinit -C
+# Use -C (cached) only when the dump exists; 020-site-functions.zsh removes stale dumps
+autoload -Uz compinit
+if [[ -f $HOME/.zcompdump ]]; then
+  compinit -C
+else
+  compinit
+fi

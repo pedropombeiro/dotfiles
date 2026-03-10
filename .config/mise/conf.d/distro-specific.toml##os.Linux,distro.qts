@@ -1,5 +1,9 @@
+[settings.python]
+precompiled_os = "unknown-linux-gnu"
+
 [tools]
 # Packages pinned due to QTS glibc constraints (older than 2.31)
+python = "3.14"
 node = "23.7.0"
 jless = "0.7.2"
 rust = { version = "1.93.1", profile = "minimal", targets = "x86_64-unknown-linux-musl" }

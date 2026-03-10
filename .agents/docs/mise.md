@@ -12,6 +12,7 @@ Runtime versions and CLI tools management.
 
 ```toml
 [tools]
+python = "3.14"
 go = "1.25.6"
 rust = "1.93.0"
 node = "23.7.0"
@@ -36,14 +37,25 @@ ripgrep = "latest"
 
 ## QNAP/QTS Compatibility
 
-The QTS environment has glibc 2.17 limitations:
+The QTS environment has glibc 2.21 limitations. Distro-specific pins live in
+`~/.config/mise/conf.d/distro-specific.toml##os.Linux,distro.qts`.
+
+- **Python**: QTS has no musl loader, so precompiled binaries must use the gnu variant
+  (`precompiled_os = "unknown-linux-gnu"`). Python and all Python CLI tools are fully
+  mise-managed — opkg python3/python3-pip are **not** installed.
+- **Node**: Uses unofficial builds with glibc-217 flavor.
 
 ```toml
-[tools.node]
-version = "23.7.0"
-postinstall = "corepack enable"
-[tools.node.options]
+[settings.python]
+precompiled_os = "unknown-linux-gnu"
+
+[settings.node]
+mirror_url = "https://unofficial-builds.nodejs.org/download/release/"
 flavor = "glibc-217"
+
+[tools]
+python = "3.14"
+node = "23.7.0"
 ```
 
 ## Common Operations

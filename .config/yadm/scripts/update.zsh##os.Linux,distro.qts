@@ -56,11 +56,6 @@ export MISE_INSTALL_ARCH=x64-musl
 yes | mise self-update
 (cd ~ && mise plugin update && mise install --yes && mise upgrade)
 
-_update_step "git-jump"
-printf "${YELLOW}%s${NC}\n" "Updating git-jump..."
-wget -q https://raw.githubusercontent.com/git/git/master/contrib/git-jump/git-jump -O "$HOME/opt/bin/git-jump"
-chmod +x "$HOME/opt/bin/git-jump"
-
 _update_step "tmux plugins"
 printf "${YELLOW}%s${NC}\n" "Updating tmux plugins..."
 ~/.tmux/plugins/tpm/bin/update_plugins all

@@ -15,7 +15,8 @@ fi
 # Regenerates when the atuin binary is newer (i.e. after upgrades).
 _atuin_init="${XDG_DATA_HOME:-$HOME/.local/share}/atuin/init.zsh"
 
-if [[ ! -f "$_atuin_init" || "$_atuin_init" -ot "$(command -v atuin)" ]]; then
+# Regenerate when: missing, binary was upgraded, or this script was updated (e.g. yadm pull).
+if [[ ! -f "$_atuin_init" || "$_atuin_init" -ot "$(command -v atuin)" || "$_atuin_init" -ot "${(%):-%x}" ]]; then
   mkdir -p "${_atuin_init:h}"
   # --disable-up-arrow so we can bind up-arrow to native prefix search below,
   # while Ctrl-R still opens the Atuin TUI.

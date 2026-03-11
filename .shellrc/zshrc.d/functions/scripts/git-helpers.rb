@@ -263,6 +263,14 @@ def rebase_mappings
       parent_branch = compute_parent_branch(branch)
     end
 
+    if fork_point.nil? && (rebase_onto || parent_branch) == default_branch
+      fp = `git merge-base --fork-point #{default_branch} #{branch} 2>/dev/null`.strip
+      if Process.last_status.success? && !fp.empty? && fp != `git rev-parse #{default_branch}`.strip
+        fork_point = fp
+        rebase_onto = default_branch
+      end
+    end
+
     {
       chain_mr_id: current_mr_id,
       chain_mr_seq_nr: current_mr_seq_nr,

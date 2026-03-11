@@ -28,15 +28,20 @@ Track it with YADM: `yadm add ~/.config/dotfiles/gitlab/<path>`.
 
 ## Current contents
 
-| Dotfiles path                          | Purpose                                |
-| -------------------------------------- | -------------------------------------- |
-| `AGENTS.local.md`                      | Personal AI agent instructions         |
-| `.ai/lessons-learned.local.md`         | Accumulated AI corrections             |
-| `.opencode/commands/review-mr.md`      | Multi-agent MR review command          |
-| `.opencode/commands/weekly-update.md`  | Weekly milestone status update command |
-| `.opencode/skills/clickhouse/SKILL.md` | ClickHouse dev database skill          |
-| `.opencode/skills/glab/SKILL.md`       | GitLab CLI workflow skill              |
-| `.opencode/skills/psql/SKILL.md`       | PostgreSQL dev database skill          |
+| Dotfiles path                             | Purpose                                |
+| ----------------------------------------- | -------------------------------------- |
+| `AGENTS.local.md`                         | Personal AI agent instructions         |
+| `.ai/lessons-learned.local.md`            | Accumulated AI corrections             |
+| `.opencode/commands/review-mr.md`         | Multi-agent MR review command          |
+| `.opencode/commands/weekly-update.md`     | Weekly milestone status update command |
+| `.opencode/skills/clickhouse/SKILL.md`    | ClickHouse dev database skill          |
+| `.opencode/skills/db-migrations/SKILL.md` | Branch migration list/undo skill       |
+| `.opencode/skills/gdk/SKILL.md`           | GDK update & secrets skill             |
+| `.opencode/skills/git-helpers/SKILL.md`   | Git branch management helpers skill    |
+| `.opencode/skills/glab/SKILL.md`          | GitLab CLI workflow skill              |
+| `.opencode/skills/mr-pipeline/SKILL.md`   | MR pipeline coordination tools skill   |
+| `.opencode/skills/mr-workflow/SKILL.md`   | MR lifecycle helpers skill             |
+| `.opencode/skills/psql/SKILL.md`          | PostgreSQL dev database skill          |
 
 ## Why not `##class.Work` alternates?
 

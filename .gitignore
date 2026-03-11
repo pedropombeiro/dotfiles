@@ -38,16 +38,6 @@ Thumbs.db
 .config/nvim/lua/core/gdk.lua
 .config/nvim/lua/plugins/image.lua
 .config/nvim/lua/plugins/lsp/mason-tool-installer.lua
-.config/opencode/agents/review-analytics.md
-.config/opencode/agents/review-backend.md
-.config/opencode/agents/review-clickhouse.md
-.config/opencode/agents/review-database.md
-.config/opencode/agents/review-docs.md
-.config/opencode/agents/review-frontend.md
-.config/opencode/agents/review-graphql.md
-.config/opencode/agents/review-performance.md
-.config/opencode/agents/review-qa.md
-.config/opencode/agents/review-security.md
 .config/opencode/opencode-homeassistant.json
 .config/opencode/opencode.json
 .config/opencode/plugins/deny-rm-rf.js
@@ -81,6 +71,8 @@ Thumbs.db
 .default-gems
 .displaysleep
 .displaywakeup
+.local/bin/run_mr_pipeline
+.local/bin/wait_for_mr_merge
 .local/share/grc-rs
 .pgsql_profile
 .profile
@@ -90,7 +82,6 @@ Thumbs.db
 .shellrc/rc.d/go-qts.sh
 .shellrc/rc.d/home.pombei.ro/busylight.sh
 .shellrc/rc.d/locale.sh
-.shellrc/rc.d/python-qts.sh
 .shellrc/rc.d/yadm.sh
 .shellrc/zshrc.d/configs/gh.zsh
 .shellrc/zshrc.d/configs/os.zsh

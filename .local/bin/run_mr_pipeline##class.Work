@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<EOF
+Usage: $(basename "$0") <MR_IID|MR_URL> [-R <repo>]
+
+Trigger a new pipeline for a GitLab merge request.
+
+Arguments:
+  MR_IID|MR_URL   MR IID (e.g. 226128) or full URL
+                  (e.g. https://gitlab.com/gitlab-org/gitlab/-/merge_requests/226128)
+
+Options:
+  -R <repo>       Repository in OWNER/REPO format (inferred from URL or current repo)
+  -h              Show this help
+EOF
+  exit 1
+}
+
+parse_mr_url() {
+  local input="$1"
+  if [[ "$input" =~ ^https?://[^/]+/(.+)/-/merge_requests/([0-9]+) ]]; then
+    REPO="${BASH_REMATCH[1]}"
+    MR_IID="${BASH_REMATCH[2]}"
+  elif [[ "$input" =~ ^[0-9]+$ ]]; then
+    MR_IID="$input"
+  else
+    echo "Error: invalid MR reference: $input" >&2
+    exit 1
+  fi
+}
+
+REPO=""
+MR_IID=""
+
+[[ $# -eq 0 ]] && usage
+
+parse_mr_url "$1"
+shift
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -R) REPO="$2"; shift 2 ;;
+    -h) usage ;;
+    *) echo "Unknown option: $1" >&2; usage ;;
+  esac
+done
+
+[[ -z "$MR_IID" ]] && usage
+
+repo_flag=()
+[[ -n "$REPO" ]] && repo_flag=(-R "$REPO")
+
+echo "Triggering pipeline for MR !${MR_IID}..." >&2
+glab ci run --mr "$MR_IID" "${repo_flag[@]}"

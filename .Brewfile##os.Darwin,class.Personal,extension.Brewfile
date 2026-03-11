@@ -9,7 +9,6 @@ tap "jdxcode/tap"
 tap "jstkdng/programs"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
-tap "yqrashawn/goku"
 tap "zaquestion/tap"
 # General-purpose data compression with high compression ratio
 brew "xz"
@@ -201,8 +200,6 @@ brew "jarred-sumner/git-peek/git-peek"
 brew "jstkdng/programs/ueberzugpp"
 # Reconcile your local git repositories
 brew "leipert-projects/git-recon/git-recon"
-# karabiner configurator
-brew "yqrashawn/goku/goku"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
 # Command-line interface for 1Password
@@ -269,8 +266,6 @@ cask "istat-menus"
 cask "iterm2"
 # Open-source screen recorder built with web technology
 cask "kap"
-# Keyboard customiser
-cask "karabiner-elements"
 # Utility that shows the latest app updates
 cask "latest"
 # Wallet desktop application to maintain multiple cryptocurrencies

@@ -5,9 +5,15 @@ osascript <<'APPLESCRIPT'
 tell application "iTerm2"
   activate
 
-  set newWindow to (create window with profile "Default")
+  if (count of windows) = 0 then
+    create window with profile "Default"
+  else
+    tell current window
+      create tab with profile "Default"
+    end tell
+  end if
 
-  tell newWindow
+  tell current window
     create tab with profile "GDK"
 
     create tab with profile "GDK rails console"
@@ -17,8 +23,6 @@ tell application "iTerm2"
 
     create tab with profile "GDK Postgres console"
     create tab with profile "Clickhouse client"
-
-    select tab 1
   end tell
 end tell
 APPLESCRIPT

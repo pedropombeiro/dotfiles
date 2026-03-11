@@ -33,6 +33,7 @@
 #
 
 source ~/.config/yadm/scripts/colors.sh
+source ~/.shellrc/zshrc.d/functions/scripts/spring-binstubs.zsh
 
 MAIN_BRANCH="$(git_main_branch)"
 
@@ -77,7 +78,8 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
 (
   cd "${GDK_ROOT}/gitlab" || exit 0
 
-  git restore db/structure.sql bin/rake bin/rspec bin/rails bin/spring package.json
+  spring_binstubs restore "${GDK_ROOT}/gitlab"
+  git restore db/structure.sql package.json
 
   if [[ $(git diff --shortstat 2>/dev/null | tail -n1) != "" || $(git diff --shortstat --cached 2>/dev/null | tail -n1) != "" ]]; then
     git status
@@ -133,7 +135,7 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
 
   mise x ruby -- bin/spring stop || echo 'Spring not running'
   pkill spring || echo 'No remaining spring processes' # Ensure there are no leftover spring processes, this sometimes causes issues with the RubyMine debugger hanging trying to establish a connection
-  git restore bin/rake bin/rspec bin/rails bin/spring
+  spring_binstubs restore "${GDK_ROOT}/gitlab"
 
   gdk restart postgresql # Ensure that the test database isn't locked by any session, which would cause gdk update to fail. This will ensure all sessions are terminated
 
@@ -151,7 +153,7 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
   mise x ruby -- gem uninstall json --all --ignore-dependencies
   mise x ruby -- ruby -e "load Gem.bin_path('bundler', 'bundle')" -- install # Needed if Ruby version changed
 
-  mise x ruby -- bin/spring binstub --all
+  spring_binstubs generate "${GDK_ROOT}/gitlab"
 
   _fgdku_step "running test"
   printf "${YELLOW}%s${NC}\n" 'Running simple test...'

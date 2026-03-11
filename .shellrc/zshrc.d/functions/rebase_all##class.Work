@@ -5,9 +5,11 @@
 #
 
 SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
+source "${SCRIPT_DIR}/spring-binstubs.zsh"
 
-test -f db/structure.sql && git restore db/ bin/rake bin/rspec bin/rails bin/spring package.json
+spring_binstubs restore
+test -f db/structure.sql && git restore db/ package.json
 
 mise x ruby -- ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e rebase_all
 
-test -x bin/spring && mise x ruby -- bin/spring binstub --all
+spring_binstubs generate

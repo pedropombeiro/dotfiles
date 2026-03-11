@@ -206,6 +206,18 @@ sync_dotfiles_to_gitlab() {
   done
 }
 
+ensure_spring_binstubs_skip_worktree() {
+  local gdk_root gitlab_dir
+
+  gdk_root=${1}
+  gitlab_dir="${gdk_root}/gitlab"
+
+  [[ -d "${gitlab_dir}" ]] || return 0
+
+  source "${HOME}/.shellrc/zshrc.d/functions/scripts/spring-binstubs.zsh"
+  spring_binstubs ensure "${gitlab_dir}"
+}
+
 write_opencode_config() {
   local gdk_root
 
@@ -300,6 +312,9 @@ if [[ -n ${GDK_ROOT} ]]; then
 
   # Symlink personal dotfiles into gitlab repo
   sync_dotfiles_to_gitlab "${GDK_ROOT}"
+
+  # Ensure spring binstubs are hidden from status by default
+  ensure_spring_binstubs_skip_worktree "${GDK_ROOT}"
 
   # Populate opencode configuration
   write_opencode_config "${GDK_ROOT}"

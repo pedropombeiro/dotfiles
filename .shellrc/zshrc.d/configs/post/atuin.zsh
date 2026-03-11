@@ -17,12 +17,31 @@ _atuin_init="${XDG_DATA_HOME:-$HOME/.local/share}/atuin/init.zsh"
 
 if [[ ! -f "$_atuin_init" || "$_atuin_init" -ot "$(command -v atuin)" ]]; then
   mkdir -p "${_atuin_init:h}"
-  atuin init zsh >"$_atuin_init"
+  # --disable-up-arrow so we can bind up-arrow to native prefix search below,
+  # while Ctrl-R still opens the Atuin TUI.
+  atuin init zsh --disable-up-arrow >"$_atuin_init"
 fi
+
+# Up-arrow / k: inline prefix search with cursor at end of line.
+# Ctrl-R: Atuin TUI (bound by atuin init).
+_atuin_setup_keybindings() {
+  source "$1"
+
+  autoload -U history-search-end
+  zle -N history-beginning-search-backward-end history-search-end
+  zle -N history-beginning-search-forward-end history-search-end
+
+  bindkey '^[[A' history-beginning-search-backward-end
+  bindkey '^[OA' history-beginning-search-backward-end
+  bindkey '^[[B' history-beginning-search-forward-end
+  bindkey '^[OB' history-beginning-search-forward-end
+  bindkey -M vicmd 'k' history-beginning-search-backward-end
+  bindkey -M vicmd 'j' history-beginning-search-forward-end
+}
 
 # Deferred load (wait'0c') so atuin binds after fzf (wait'0b') and zsh-vi-mode
 zinit wait'0c' lucid nocd light-mode for \
-  atload"source $_atuin_init" \
+  atload"_atuin_setup_keybindings $_atuin_init" \
   zdharma-continuum/null
 
 unset _atuin_init

@@ -1,4 +1,5 @@
 [tools]
+atuin = "latest"
 dua = "latest"
 pre-commit = "latest"
 

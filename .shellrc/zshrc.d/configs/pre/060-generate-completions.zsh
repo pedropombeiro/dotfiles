@@ -20,6 +20,7 @@ if command -v mise &>/dev/null; then
   fi
 fi
 
+_generate_completion atuin 'atuin gen-completions --shell zsh'
 _generate_completion opencode 'opencode completion'
 
 unfunction _generate_completion

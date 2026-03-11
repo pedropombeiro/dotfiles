@@ -10,4 +10,4 @@ test -f db/structure.sql && git restore db/ bin/rake bin/rspec bin/rails bin/spr
 
 mise x ruby -- ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e rebase_all
 
-test -x bin/spring && bin/spring binstub --all
+test -x bin/spring && mise x ruby -- bin/spring binstub --all

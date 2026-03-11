@@ -106,26 +106,32 @@ def rebase_all_per_capture_info(local_branch_info_hash)
       "doc/user/compliance/audit_event_types.md" => %w[bundle exec rake gitlab:audit_event_types:compile_docs],
       "doc/update/breaking_windows.md" => %w[bundle exec rake gitlab:docs:compile_windows],
       "doc/update/deprecations.md" => %w[bundle exec rake gitlab:docs:compile_deprecations],
-      "doc/update/removals.md" => %w[bundle exec rake gitlab:docs:compile_removals]
+      "doc/update/removals.md" => %w[bundle exec rake gitlab:docs:compile_removals],
+      "doc/api/openapi/openapi_v2.yaml" => %w[bundle exec rake gitlab:openapi:v2:generate],
+      "doc/api/openapi/openapi_v3.yaml" => %w[bundle exec rake gitlab:openapi:v3:generate]
     }
 
     loop do
       status = `git status --short`
-      break unless auto_generated_files_hash.select { |file, _| status.include?("UU #{file}") }.any?
+      conflicting_files = status.lines.select { |line| line.start_with?("UU ") }.map { |line| line[3..].strip }
+      auto_conflicting = conflicting_files.select { |file| auto_generated_files_hash.key?(file) }
+      manual_conflicting = conflicting_files - auto_conflicting
+
+      break if auto_conflicting.empty?
+      break if manual_conflicting.any?
 
       err = false
-      auto_generated_files_hash
-        .select { |file, _| status.include?("UU #{file}") }
-        .each do |file, cmd|
-          puts "  Merge conflict in #{file.red}, regenerating...".brown
-          system(*cmd)
-          err = true
+      auto_conflicting.each do |file|
+        cmd = auto_generated_files_hash[file]
+        puts "  Merge conflict in #{file.red}, regenerating...".brown
+        system(*(%w[mise x ruby --] + cmd))
+        err = true
 
-          system(*%W[git add #{file}])
-          break unless Process.last_status.success?
+        system(*%W[git add #{file}])
+        break unless Process.last_status.success?
 
-          err = false
-        end
+        err = false
+      end
 
       break unless err || system({"GIT_EDITOR" => "true", "LEFTHOOK" => "0"}, *%w[git rebase --continue])
     end

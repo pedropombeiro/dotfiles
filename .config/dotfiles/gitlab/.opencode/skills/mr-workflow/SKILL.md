@@ -31,6 +31,9 @@ gpsup --force-with-lease
 Extracts the issue IID from the branch name (`user/<issue>/<name>`) and delegates to a
 Ruby helper (`scripts/gitlab-helpers.rb`) for MR creation.
 
+Automatically applies project defaults (milestone, issue labels, and team labels) using
+GitLab push options.
+
 ### `test_mr`
 
 Derives the corresponding spec files for all `.rb` files changed in the current branch
@@ -83,5 +86,6 @@ Applies with `git apply` and stages all changes (excluding `bin/`).
 1. **Use `test_mr`** to quickly validate branch changes without manually listing spec files
 2. **Run `todo_tidy`** when the user wants to clean up stale review to-dos
 3. **Use `tryout`** to apply an MR's changes locally for testing without checking out the branch
-4. **`gpsup` is interactive** — it may prompt; prefer `glab mr create` for fully non-interactive MR creation
-5. **All functions require zsh** — invoke via the Bash tool with `zsh -c 'source ~/.zshrc && <function>'` if needed
+4. **Use `gpsup` for MR creation** — it is non-interactive and applies milestone/labels automatically; do not use `glab mr create` for the standard workflow
+5. **Run `gpsup` via the Ruby script directly** — see `scm.md` § "How to run `gpsup`" for the exact command; do not check for its existence with `type`/`which`
+6. **Update the MR description after creation** — open the newly created MR and write a reviewer-friendly description based on the default template in `.gitlab/merge_request_templates/`

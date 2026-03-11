@@ -91,6 +91,34 @@ When making multiple changes:
 3. Use descriptive bodies for complex changes
 4. Keep each commit focused and reviewable
 
+## Creating Merge Requests (GitLab.com remotes)
+
+When the remote points to `gitlab.com`, **always use `gpsup`** to push the branch and
+create the MR. It automatically applies the current milestone, issue labels, and team
+labels via GitLab push options — do not use `glab mr create` or manual push options.
+
+### How to run `gpsup`
+
+`gpsup` is implemented as a Ruby script invoked via `mise`. Run it directly:
+
+```bash
+SCRIPT_DIR="$HOME/.shellrc/zshrc.d/functions/scripts"
+remote=origin
+branch="$(git rev-parse --abbrev-ref HEAD)"
+issue_iid="$(echo "$branch" | sed -E 's|[^0-9]+([0-9]+).*|\1|')"
+
+mise x ruby -- ruby -r "$SCRIPT_DIR/gitlab-helpers.rb" -e "gpsup('$remote', '$issue_iid')"
+```
+
+To pass extra `git push` arguments (e.g., `--force-with-lease`), append them after `--`:
+
+```bash
+mise x ruby -- ruby -r "$SCRIPT_DIR/gitlab-helpers.rb" -e "gpsup('$remote', '$issue_iid')" -- --force-with-lease
+```
+
+After `gpsup` creates the MR, open it and **fill in the MR description** using the
+project's default template (`.gitlab/merge_request_templates/`).
+
 ## Commit/Push Behavior
 
 When committing/pushing code, first attempt without output (e.g., `git push > /dev/null 2>&1`) to minimize token usage.

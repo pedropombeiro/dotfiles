@@ -12,9 +12,15 @@ metadata:
 
 GitLab workflow management using `glab` CLI for merge requests, issues, and Git best practices.
 
+For standard GitLab.com MR creation, prefer `gpsup` from the `mr-workflow` skill — it
+applies project defaults like milestone and labels automatically.
+
 ## Creating Merge Requests
 
 ```bash
+# Preferred (GitLab.com remotes):
+gpsup
+
 # Simple MR
 glab mr create --title "feat: add feature" --description "Brief description"
 
@@ -23,6 +29,8 @@ glab mr create --title "feat: add feature" --description "$(cat /tmp/mr-descript
 ```
 
 **Templates:** Check `.gitlab/merge_request_templates/` for project-specific templates and follow their structure.
+
+Use `glab mr create` only when `gpsup` is unavailable or the remote is not GitLab.com.
 
 ## Updating Merge Requests
 
@@ -94,9 +102,7 @@ glab api -X PUT "groups/<group-id>/epics/<epic-iid>" -f "title=New Title"
 **Branch naming:**
 
 ```bash
-git checkout -b feat/description
-git checkout -b fix/description
-git checkout -b refactor/description
+git checkout -b "$USER/<issue-iid>/<description>"
 ```
 
 **Commit messages:**
@@ -130,3 +136,5 @@ glab mr update 456 --description "$(cat /tmp/new-description.md)"
 4. **Reference properly** - Link issues/MRs in commits: `Closes #123`, `Related to !456`
 5. **Descriptive commits** - Focus on the "why" behind changes
 6. **Quote special characters** - Use single quotes: `git commit -m 'fix: from MR !123'`
+7. **Prefer `gpsup` for MR creation** - See `scm.md` § "How to run `gpsup`" for the exact command; applies milestone/labels automatically
+8. **Fill in the MR description after creation** - Open the new MR and update it using the default template in `.gitlab/merge_request_templates/`

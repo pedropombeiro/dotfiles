@@ -14,6 +14,8 @@ tell application "iTerm2"
   end if
 
   tell current window
+    set firstTab to current tab
+
     create tab with profile "GDK"
 
     create tab with profile "GDK rails console"
@@ -23,6 +25,8 @@ tell application "iTerm2"
 
     create tab with profile "GDK Postgres console"
     create tab with profile "Clickhouse client"
+
+    select firstTab
   end tell
 end tell
 APPLESCRIPT

@@ -14,7 +14,7 @@ uvx = true
 grpcurl = "latest"
 node = "latest"
 "opencode" = { version = "latest", no_app = true }
-ruby = "3.4.9"
+ruby = "3.4.8"
 yamllint = "latest"
 
 "gem:neovim" = "0.10.0"

@@ -52,5 +52,21 @@ done
 repo_flag=()
 [[ -n "$REPO" ]] && repo_flag=(-R "$REPO")
 
-echo "Triggering pipeline for MR !${MR_IID}..." >&2
-glab ci run --mr "$MR_IID" "${repo_flag[@]}"
+echo "Looking up source branch for MR !${MR_IID}..." >&2
+mr_json=$(glab mr view "$MR_IID" -F json "${repo_flag[@]}")
+source_branch=$(echo "$mr_json" | jq -r '.source_branch')
+
+if [[ -z "$source_branch" || "$source_branch" == "null" ]]; then
+  echo "Error: could not determine source branch for MR !${MR_IID}" >&2
+  exit 1
+fi
+
+project_path=${REPO:-$(echo "$mr_json" | jq -r '.references.full' | sed 's/![0-9]*$//' | sed 's/\/$//')}
+encoded_path=$(printf '%s' "$project_path" | jq -sRr '@uri')
+
+echo "Triggering MR pipeline for MR !${MR_IID} (branch: ${source_branch})..." >&2
+result=$(glab api "projects/${encoded_path}/merge_requests/${MR_IID}/pipelines" -X POST "${repo_flag[@]}")
+
+pipeline_url=$(echo "$result" | jq -r '.web_url')
+pipeline_id=$(echo "$result" | jq -r '.id')
+echo "Pipeline #${pipeline_id} created: ${pipeline_url}" >&2

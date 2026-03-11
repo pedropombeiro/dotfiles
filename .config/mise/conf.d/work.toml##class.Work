@@ -39,3 +39,7 @@ fi
 
 ~/.config/yadm/scripts/run-checks.zsh
 """
+
+[tasks."iterm:setup"]
+description = "Set up iTerm2 window with standard Work tabs and start GDK"
+run = "$HOME/.config/yadm/scripts/iterm2-setup.sh"

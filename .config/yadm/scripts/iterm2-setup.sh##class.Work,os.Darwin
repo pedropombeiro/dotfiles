@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+osascript <<'APPLESCRIPT'
+tell application "iTerm2"
+  activate
+
+  set newWindow to (create window with profile "Default")
+
+  tell newWindow
+    create tab with profile "GDK"
+
+    create tab with profile "GDK rails console"
+    tell current session of current tab
+      split vertically with profile "GDK development logs"
+    end tell
+
+    create tab with profile "GDK Postgres console"
+    create tab with profile "Clickhouse client"
+
+    select tab 1
+  end tell
+end tell
+APPLESCRIPT
+
+(cd "$HOME/gitlab-development-kit" && "$HOME/.local/share/mise/shims/gdk" start &)
+"$HOME/.local/bin/gkg" server start --register-mcp "$HOME/.gitlab/duo/mcp.json" --detached

@@ -63,6 +63,7 @@ Thumbs.db
 .config/yadm/config_templates/LaunchDaemons/org.gitlab1.ifconfig.plist
 .config/yadm/config_templates/nginx/bin/trigger-alfred.sh
 .config/yadm/scripts/defaults.sh
+.config/yadm/scripts/iterm2-setup.sh
 .config/yadm/scripts/remap-mac-keys.sh
 .config/yadm/scripts/run-checks.zsh
 .config/yadm/scripts/staging-db-ro.sh

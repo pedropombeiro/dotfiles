@@ -35,7 +35,7 @@
 update_check = false
 
 ## address of the sync server
-# sync_address = "https://api.atuin.sh"
+sync_address = "https://atuin.pombei.ro"
 
 ## how often to sync history. note that this is only triggered when a command
 ## is ran, so sync intervals may well be longer
@@ -247,8 +247,7 @@ ignored_commands = [
 # accept_with_backspace = false
 
 [sync]
-## Disable sync (managed via mise across machines, no server needed)
-records = false
+records = true
 
 [preview]
 ## which preview strategy to use to calculate the preview height (respects max_preview_height).

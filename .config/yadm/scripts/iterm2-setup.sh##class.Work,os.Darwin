@@ -18,7 +18,7 @@ tell application "iTerm2"
 
     create tab with profile "GDK rails console"
     tell current session of current tab
-      split vertically with profile "GDK development logs"
+      split horizontally with profile "GDK development logs"
     end tell
 
     create tab with profile "GDK Postgres console"

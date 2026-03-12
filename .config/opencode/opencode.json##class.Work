@@ -142,6 +142,7 @@
       "npx markdownlint-cli2 *": "allow",
       "pre-commit *": "allow",
       "printenv *": "allow",
+      "printf *": "allow",
       "RAILS_ENV=test bundle exec rspec*": "allow",
       "RAILS_ENV=test bundle exec rubocop*": "allow",
       "readlink *": "allow",

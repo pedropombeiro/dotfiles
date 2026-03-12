@@ -71,6 +71,19 @@ mise list             # List installed tools
 mise outdated         # Check for outdated tools
 ```
 
+## Task Usage Headers
+
+For file-based tasks (e.g. `.mise/tasks/*`), define arguments using `#USAGE` directives.
+`#MISE usage=...` is not supported and will cause `mise` to reject the task file.
+
+Example:
+
+```bash
+#!/usr/bin/env bash
+#MISE description="Build with sourcemaps"
+#USAGE arg "<package>" help="Package to build"
+```
+
 ## Renovate Integration
 
 Tools are auto-updated by Renovate bot via `~/.renovaterc.json`. Check PRs for pending updates before manual upgrades.

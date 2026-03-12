@@ -204,6 +204,7 @@ common_subcommands = [
   "cscli",
   "docker",
   "docker compose",
+  "gdk",
   "gh",
   "git",
   "glab",

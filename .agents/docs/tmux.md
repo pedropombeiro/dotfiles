@@ -106,6 +106,28 @@ to the system clipboard via `pbcopy`. Requires iTerm2 shell integration to be ac
 **Note:** Only works in panes opened _after_ the shell integration is sourced. Pre-existing panes
 won't have OSC 133 markers in their scrollback.
 
+## Yank Current Command Text (`prefix + Y`)
+
+Copies the text currently being typed on the zsh command line (`$BUFFER`) to the system clipboard.
+Unlike `prefix + y` (which uses tmux copy-mode and OSC 133 markers), this operates at the shell
+level via a zle widget and works regardless of scrollback state.
+
+**How it works:**
+
+1. `prefix + Y` in tmux sends the custom escape sequence `\e[Y` to the pane
+2. zsh has a `yank-buffer-to-clipboard` zle widget bound to `\e[Y` in both `viins` and `vicmd` keymaps
+3. The widget pipes `$BUFFER` to `pbcopy` and displays a confirmation message
+
+**Files:**
+
+- `~/.config/tmux/tmux.conf` — the `prefix + Y` binding (`send-keys Escape '[Y'`)
+- `~/.shellrc/zshrc.d/configs/post/common-bindings.zsh` — the zle widget and keybinding
+
+**Notes:**
+
+- Shows "Nothing to copy" if the command line is empty
+- Uses `clipcopy` (OMZ clipboard lib) for cross-platform support (`pbcopy` on macOS, OSC 52 on QNAP)
+
 ## OpenCode Tmux Tab Indicator
 
 The opencode plugin `~/.config/opencode/plugins/tmux-indicator.js` sets a per-window user option

@@ -153,6 +153,7 @@
       "yamllint *": "allow"
     },
     "external_directory": {
+      "~/.agents/docs/*": "allow",
       "/tmp": "allow",
       "/tmp/*": "allow",
       "/private/tmp/**/*": "allow",
@@ -171,7 +172,7 @@
     "lazy-mcp_list_commands": "allow",
     "lazy-mcp_list_servers": "allow",
     "read": "allow",
-    "skill": { "clickhouse": "allow", "glab": "allow", "psql": "allow" },
+    "skill": { "clickhouse": "allow", "glab": "allow", "mr-workflow": "allow", "psql": "allow" },
     "task": {
       "general": "allow",
       "explore": "allow",

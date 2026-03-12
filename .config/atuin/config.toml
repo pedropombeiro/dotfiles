@@ -353,7 +353,7 @@ filters = [ "workspace", "host", "global", "session-preload", "session", "direct
 ## column fill remaining space. Only one column should have expand = true.
 ##
 ## Default:
-columns = ["duration", "time", "exit", "command"]
+columns = ["duration", "time", "exit", "host", "command"]
 ##
 ## Examples:
 ##

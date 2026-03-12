@@ -35,8 +35,8 @@ hash = "e02a788e5b8ae0fb47fd0193dda589cc"
 
 [[plugin.deps]]
 use = "Lil-Dank/lazygit"
-rev = "0e56060"
-hash = "ab2e66065a94cca4886b303518e44bd8"
+rev = "8c4086c"
+hash = "85316b5e9abeae2531d3e5d02a094381"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:vcs-files"

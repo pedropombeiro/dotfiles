@@ -89,6 +89,13 @@ The config uses `allow-passthrough all` (not just `on`) so that iTerm2 proprieta
 This is required for scripts like `mise run dotfiles:update` to show progress when running in a
 background pane. The `on` setting only forwards passthrough from the currently focused pane.
 
+## OpenCode Tmux Tab Indicator
+
+The opencode plugin `~/.config/opencode/plugins/tmux-indicator.js` sets a per-window user option
+`@opencode-waiting` when an opencode instance is waiting for user input (permission or question).
+The presentation is handled in `tmux.conf` via `#{?@opencode-waiting,...}` conditionals in
+`window-status-format`, which turns inactive tabs gruvbox green with a `● ` prefix.
+
 ## Editing Configuration
 
 To modify tmux settings:

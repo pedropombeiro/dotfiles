@@ -17,12 +17,10 @@ fi
 
 # Up-arrow / k: inline prefix search with cursor at end of line.
 # Ctrl-R: Atuin TUI (bound by atuin init).
+# Widgets are created in common-plugins.zsh (before autosuggestions) so they
+# get wrapped for autosuggest clear. Here we just source atuin and bind keys.
 _atuin_setup_keybindings() {
   source "$1"
-
-  autoload -U history-search-end
-  zle -N history-beginning-search-backward-end history-search-end
-  zle -N history-beginning-search-forward-end history-search-end
 
   bindkey '^[[A' history-beginning-search-backward-end
   bindkey '^[OA' history-beginning-search-backward-end

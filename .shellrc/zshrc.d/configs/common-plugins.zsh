@@ -10,6 +10,16 @@ zinit lucid for \
 # Avoid slow rebind in autosuggestions
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 
+# Register history prefix search widgets early so zsh-autosuggestions can wrap
+# them during its initial bind. The actual keybindings happen later in atuin.zsh.
+autoload -U history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(
+  history-beginning-search-backward-end
+  history-beginning-search-forward-end
+)
+
 # Load autosuggestions and syntax highlighting via zinit turbo mode
 # wait'0' = load immediately after prompt, lucid = silent
 zinit wait'0' lucid light-mode for \

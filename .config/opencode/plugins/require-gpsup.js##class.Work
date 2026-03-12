@@ -1,0 +1,24 @@
+const GIT_PUSH_PATTERN = /(^|[;&|]\s*)\s*git\s+push\b/
+
+export const RequireGpsup = async () => {
+  return {
+    "tool.execute.before": async (input, output) => {
+      if (input.tool !== "bash") {
+        return
+      }
+
+      const command = output?.args?.command ?? ""
+
+      if (!GIT_PUSH_PATTERN.test(command)) {
+        return
+      }
+
+      throw new Error(
+        "Do not use `git push` directly for GitLab.com remotes. " +
+        "Use `gpsup` instead — load the `mr-workflow` skill and " +
+        "follow the instructions in `~/.agents/docs/scm.md` § " +
+        "'How to run gpsup'."
+      )
+    }
+  }
+}

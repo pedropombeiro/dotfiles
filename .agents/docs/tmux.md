@@ -89,6 +89,23 @@ The config uses `allow-passthrough all` (not just `on`) so that iTerm2 proprieta
 This is required for scripts like `mise run dotfiles:update` to show progress when running in a
 background pane. The `on` setting only forwards passthrough from the currently focused pane.
 
+## Yank Last Command Output (`prefix + y`)
+
+Uses OSC 133 semantic prompt markers to select the output of the previous command and copy it
+to the system clipboard via `pbcopy`. Requires iTerm2 shell integration to be active inside tmux.
+
+**Dependencies:**
+
+- `ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES` — set in `~/.shellrc/zshrc.d/configs/iterm2.zsh`
+  so the iTerm2 shell integration script emits OSC 133 markers (`A`=prompt start, `B`=prompt end,
+  `C`=command output start, `D`=command end) even under tmux
+- `~/.iterm2_shell_integration.zsh` — sourced explicitly from the same file (iTerm2 only
+  auto-injects it outside tmux)
+- The binding uses `previous-prompt -o` / `next-prompt` copy-mode commands (tmux 3.4+)
+
+**Note:** Only works in panes opened _after_ the shell integration is sourced. Pre-existing panes
+won't have OSC 133 markers in their scrollback.
+
 ## OpenCode Tmux Tab Indicator
 
 The opencode plugin `~/.config/opencode/plugins/tmux-indicator.js` sets a per-window user option

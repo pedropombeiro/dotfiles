@@ -31,7 +31,9 @@ Track it with YADM: `yadm add ~/.config/dotfiles/gitlab/<path>`.
 | Dotfiles path                             | Purpose                                |
 | ----------------------------------------- | -------------------------------------- |
 | `AGENTS.local.md`                         | Personal AI agent instructions         |
-| `.ai/lessons-learned.local.md`            | Accumulated AI corrections             |
+| `.ai/code-style.local.md`                 | Ruby code style lessons                |
+| `.ai/lessons-learned.local.md`            | General AI corrections                 |
+| `.ai/testing.local.md`                    | RSpec testing conventions              |
 | `.opencode/commands/review-mr.md`         | Multi-agent MR review command          |
 | `.opencode/commands/weekly-update.md`     | Weekly milestone status update command |
 | `.opencode/skills/clickhouse/SKILL.md`    | ClickHouse dev database skill          |

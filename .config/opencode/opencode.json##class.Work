@@ -4,9 +4,11 @@
   "plugin": [
     "@gitlab/opencode-gitlab-plugin",
     "@mohak34/opencode-notifier@latest",
+    "opencode-atuin-history@latest",
     "opencode-forge-session-title@latest",
     "opencode-homeassistant@latest",
     "opencode-terminal-progress@latest",
+    "opencode-tmux-indicator@latest",
     "opencode-wakatime@latest"
   ],
   "mcp": {

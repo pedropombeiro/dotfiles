@@ -14,11 +14,11 @@ uvx = true
 grpcurl = "latest"
 node = "latest"
 "opencode" = { version = "latest", no_app = true }
-ruby = "3.4.8"
+ruby = "3.4.9"
 yamllint = "latest"
 
 "gem:neovim" = "0.10.0"
-"gem:ruby-lsp" = "0.26.7"
+"gem:ruby-lsp" = "0.26.8"
 "gem:standard" = "latest"
 
 "pipx:neovim-remote" = "2.5.1"

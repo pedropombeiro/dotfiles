@@ -74,8 +74,6 @@ brew "git-extras"
 brew "gnu-sed"
 # Ping, but with a graph
 brew "gping"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.12"
 # Colorize logfiles and command output
 brew "grc"
 # Convert source code to formatted text with syntax highlighting
@@ -146,6 +144,8 @@ brew "pspg"
 brew "pygments"
 # Easily download, build, install, upgrade, and uninstall Python packages
 brew "python-setuptools"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.12"
 # QR Code generation
 brew "qrencode"
 # Search tool like grep and The Silver Searcher
@@ -341,6 +341,8 @@ cask "visual-studio-code"
 cask "vlc"
 # Live terminal dashboard for WakaTime coding stats
 cask "b00y0h/wakadash/wakadash"
+# System tray app for automatic time tracking
+cask "wakatime"
 # Native desktop client for WhatsApp
 cask "whatsapp"
 # Application for configuring any YubiKey

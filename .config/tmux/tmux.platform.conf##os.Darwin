@@ -1,4 +1,4 @@
 # macOS-specific overrides
 
 # Ensure Homebrew and mise binaries are in PATH for run-shell commands
-run-shell 'tmux set-environment -g PATH "/opt/homebrew/bin:/opt/homebrew/sbin:$HOME/.local/share/mise/shims:/usr/bin:/bin:/usr/sbin:/sbin"'
+run-shell '/opt/homebrew/bin/tmux set-environment -g PATH "/opt/homebrew/bin:/opt/homebrew/sbin:$HOME/.local/share/mise/shims:/usr/bin:/bin:/usr/sbin:/sbin"'

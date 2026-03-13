@@ -234,13 +234,6 @@ write_opencode_config() {
     ".ai/lessons-learned.local.md",
     ".gitlab/duo/chat-rules.md"
   ],
-  "mcp": {
-    "knowledge-graph": {
-      "type": "remote",
-      "url": "http://localhost:27495/mcp/sse",
-      "enabled": true
-    }
-  },
   // Disable formatter to preserve project's existing code style
   "formatter": {
     "standardrb": {

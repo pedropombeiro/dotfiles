@@ -1,7 +1,7 @@
 [tools]
 clickhouse = "24"
 glab = "latest"
-ruby = "3.4.8"
+ruby = "4.0.1"
 rust = "stable"
 teleport-community = "17"
 

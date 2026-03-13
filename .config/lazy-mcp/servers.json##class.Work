@@ -36,6 +36,12 @@
       "description": "GitHub code search via grep.app",
       "type": "remote",
       "url": "https://mcp.grep.app"
+    },
+    {
+      "name": "glean",
+      "description": "GitLab enterprise search and knowledge discovery via Glean",
+      "type": "local",
+      "command": ["npx", "mcp-remote@latest", "https://gitlab-be.glean.com/mcp/default"]
     }
   ],
   "discovery": {

@@ -24,10 +24,6 @@
         "~/.config/lazy-mcp/servers.json"
       ],
       "enabled": true
-    },
-    "glean": {
-      "type": "remote",
-      "url": "https://gitlab-be.glean.com/mcp/default"
     }
   },
   "enabled_providers": ["gitlab"],

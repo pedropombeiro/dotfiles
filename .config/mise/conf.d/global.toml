@@ -1,6 +1,7 @@
 [tools]
 atuin = "latest"
 dua = "latest"
+"aqua:sharkdp/fd" = "latest"
 pre-commit = "latest"
 "aqua:joshmedeski/sesh" = "latest"
 

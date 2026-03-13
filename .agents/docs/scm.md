@@ -19,6 +19,10 @@ Git commands on the `~` directory are managed through `yadm` instead of `git`.
 Do NOT use `--no-pager` with `git` or `yadm`. The pager does not activate in
 non-interactive shells, so the flag is unnecessary and breaks yadm commands.
 
+When running `git rebase --continue` or any git/yadm command that opens an
+editor, prefix with `GIT_EDITOR=true` to prevent the editor from blocking
+(the non-interactive shell will SIGTERM nvim, causing a timeout).
+
 ### File Organization
 
 - **Alternate files**: Use suffixes for platform-specific configs

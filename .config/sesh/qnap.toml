@@ -3,7 +3,13 @@
 [[session]]
 name = "Home Assistant config"
 path = "/share/Container/config/home-assistant/config"
-startup_command = "nvim"
+startup_command = "nvim -c ':lua Snacks.picker.files()'"
+preview_command = "eza --all --git --icons --color=always --oneline {}"
+
+[[session]]
+name = "Docker Compose config"
+path = "/share/Container/compose"
+startup_command = "nvim -c ':lua Snacks.picker.files({ args = { \"-g\", \"docker-compose.yml\" } })'"
 preview_command = "eza --all --git --icons --color=always --oneline {}"
 
 [[wildcard]]

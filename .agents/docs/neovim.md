@@ -93,6 +93,26 @@ When editing a file:
 3. Lualine checks this variable to show the YADM indicator
 4. Snacks picker operations check `is_yadm_repo(cwd)` to determine which git args to use
 
+## LSP Schema Associations
+
+Neovim's taplo LSP does **not** support the inline `#:schema` directive. Schema associations
+must be configured explicitly in `after/lsp/taplo.lua` using the `settings.taplo.schema.associations`
+map, where keys are regex patterns matched against file paths:
+
+```lua
+return {
+  settings = {
+    taplo = {
+      schema = {
+        associations = {
+          [".*/sesh/.*\\.toml$"] = "https://github.com/joshmedeski/sesh/raw/main/sesh.schema.json",
+        },
+      },
+    },
+  },
+}
+```
+
 ## Guidelines
 
 - Follow existing code style and patterns in `lua/plugins/`

@@ -41,8 +41,10 @@ Thumbs.db
 .config/opencode/opencode-homeassistant.json
 .config/opencode/opencode.json
 .config/opencode/plugins/deny-rm-rf.js
+.config/opencode/plugins/require-gpsup.js
 .config/opencode/tui.json
 .config/pgcli/config
+.config/sesh/sesh.toml
 .config/tmux/tmux.platform.conf
 .config/yadm/bootstrap.d/000-ensure-machine-class.sh
 .config/yadm/bootstrap.d/001-enable-touchid-on-terminal.sh

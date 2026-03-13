@@ -2,4 +2,4 @@
 cargo-binstall = "latest"
 fd = "latest"
 
-"npm:renovate" = "43.11.1"
+"npm:renovate" = "43.60.5"

@@ -7,4 +7,4 @@ precompiled_os = "unknown-linux-gnu"
 python = "3.14"
 node = "23.7.0"
 jless = "0.7.2"
-rust = { version = "1.93.1", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
+rust = { version = "1.94.0", profile = "minimal", targets = "x86_64-unknown-linux-musl" }

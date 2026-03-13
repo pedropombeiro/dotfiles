@@ -9275,7 +9275,7 @@
 	<key>SuppressRestartAnnouncement</key>
 	<true/>
 	<key>SwitchPaneModifier</key>
-	<integer>5</integer>
+	<integer>9</integer>
 	<key>SwitchWindowModifier</key>
 	<integer>9</integer>
 	<key>TabTransform</key>

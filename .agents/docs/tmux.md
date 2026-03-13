@@ -135,6 +135,17 @@ The opencode plugin `~/.config/opencode/plugins/tmux-indicator.js` sets a per-wi
 The presentation is handled in `tmux.conf` via `#{?@opencode-waiting,...}` conditionals in
 `window-status-format`, which turns inactive tabs gruvbox green with a `● ` prefix.
 
+## Alt+Number Window Switching
+
+`Alt+0` through `Alt+9` are bound in the root key table (`bind-key -n`) to jump directly to
+window `:0`–`:9` without the prefix key. These bindings are placed **after** the TPM `run` line
+to prevent plugins from overwriting them.
+
+**iTerm2 caveat:** By default, iTerm2 maps `Alt+number` to its own split-pane navigation
+(Settings → Keys → Navigation Shortcuts → "Shortcut to choose a split pane"). This intercepts
+the keys before tmux sees them. Set that option to **"No Shortcut"** so the Alt+number keys
+pass through to tmux.
+
 ## Editing Configuration
 
 To modify tmux settings:

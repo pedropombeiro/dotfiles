@@ -4,7 +4,7 @@
 #
 
 if [[ "$PWD" == "$HOME" || "$PWD" == "$HOME/.config"* ]]; then
-  yadm enter lazygit --use-config-dir ~/.config/lazygit
+  yadm enter lazygit
 else
-  lazygit --use-config-dir ~/.config/lazygit
+  lazygit
 fi

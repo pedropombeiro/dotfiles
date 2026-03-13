@@ -32,10 +32,7 @@ local function lazygit_opts()
   local opts = {
     enabled = not vim.g.started_by_firenvim,
     configure = false,
-    args = {
-      "--use-config-dir",
-      vim.fn.expand("~/.config/lazygit"),
-    },
+    args = {},
   }
 
   if opts.enabled then vim.list_extend(opts.args, git_opts()) end

@@ -11,6 +11,7 @@
       "yadm alt": "allow",
       "yadm blame *": "allow",
       "yadm branch *": "allow",
+      "yadm cat-file *": "allow",
       "yadm check-ignore *": "allow",
       "yadm config --get-all *": "allow",
       "yadm diff*": "allow",

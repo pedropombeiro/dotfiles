@@ -22,6 +22,12 @@ startup_command = "nvim -c ':lua Snacks.picker.files()'"
 preview_command = "eza --all --git --icons --color=always --oneline {}"
 
 [[session]]
+name = "mise config"
+path = "~/.config/mise"
+startup_command = "nvim -c ':lua Snacks.picker.files()'"
+preview_command = "eza --all --git --icons --color=always {}"
+
+[[session]]
 name = "OpenCode config"
 path = "~/.config/opencode"
 startup_command = "nvim"

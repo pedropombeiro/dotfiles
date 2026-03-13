@@ -12,7 +12,7 @@ btop = "latest"
 "aqua:muesli/duf" = "latest"
 "aqua:bootandy/dust" = "latest"
 "aqua:eza-community/eza" = "latest"
-"aqua:junegunn/fzf" = "latest"
+"aqua:junegunn/fzf" = "latest" # fzf-tmux (used by sesh) is added via postinstall hook below
 "aqua:cli/cli" = "latest"
 "aqua:gitleaks/gitleaks" = "latest"
 go = "latest"
@@ -42,3 +42,18 @@ zoxide = "latest"
 "pipx:virtualenv" = "latest"
 "pipx:visidata" = "latest"
 "pipx:yt-dlp" = "latest"
+
+[hooks]
+# The aqua backend only ships the fzf binary, not fzf-tmux (needed by sesh's tmux popup picker).
+# This hook downloads fzf-tmux from the fzf repo after each fzf install/upgrade.
+postinstall = '''
+echo "$MISE_INSTALLED_TOOLS" | jq -r '.[] | select(.name | contains("fzf")) | .version' | while read -r version; do
+  install_dir="$(mise where aqua:junegunn/fzf 2>/dev/null)"
+  if [ -n "$install_dir" ] && [ ! -f "$install_dir/fzf-tmux" ]; then
+    echo "Downloading fzf-tmux v${version}..."
+    curl -fsSL "https://raw.githubusercontent.com/junegunn/fzf/v${version}/bin/fzf-tmux" -o "$install_dir/fzf-tmux"
+    chmod +x "$install_dir/fzf-tmux"
+    mise reshim
+  fi
+done
+'''

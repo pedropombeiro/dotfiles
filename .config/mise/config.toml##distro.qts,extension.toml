@@ -11,6 +11,7 @@ jobs = 1
 # QTS has old glibc, requires unofficial nodejs builds
 node.mirror_url = "https://unofficial-builds.nodejs.org/download/release/"
 node.flavor = "glibc-217"
+experimental = true
 
 [tools]
 usage = "latest"

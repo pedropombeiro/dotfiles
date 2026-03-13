@@ -3,6 +3,5 @@ atuin = "latest"
 dua = "latest"
 pre-commit = "latest"
 
-"github:rtk-ai/rtk" = "latest"
-"github:twaugh/patchutils" = "latest"
 "npm:lazy-mcp" = "latest"
+"github:twaugh/patchutils" = "latest"

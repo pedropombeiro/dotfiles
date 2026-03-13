@@ -15,9 +15,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/vercel-labs/skills.git",
       "skillPath": "skills/find-skills/SKILL.md",
-      "skillFolderHash": "c2f31172b6f256272305a5e6e7228b258446899f",
+      "skillFolderHash": "3013fdeb8a11b10b1eb795ec3ae8bfca38f7c26d",
       "installedAt": "2026-02-25T21:38:24.838Z",
-      "updatedAt": "2026-02-25T21:38:24.838Z"
+      "updatedAt": "2026-03-13T22:30:17.503Z"
     },
     "clickhouse-best-practices": {
       "source": "clickhouse/agent-skills",

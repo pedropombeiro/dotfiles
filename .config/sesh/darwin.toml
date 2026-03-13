@@ -1,0 +1,12 @@
+#:schema https://github.com/joshmedeski/sesh/raw/main/sesh.schema.json
+
+[[session]]
+name = "Downloads"
+path = "~/Downloads"
+startup_command = "yazi"
+preview_command = "eza --all --icons --color=always --sort=modified --reverse {}"
+
+[[wildcard]]
+pattern = "~/Developer/github.com/pedropombeiro/*"
+startup_command = "nvim"
+preview_command = "eza --all --git --icons --color=always {}"

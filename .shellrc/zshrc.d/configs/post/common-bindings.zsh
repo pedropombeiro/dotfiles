@@ -13,6 +13,24 @@ for keymap in viins vicmd emacs; do
   bindkey -M $keymap '^[[1;5D' backward-word
 done
 
+# Alt+S: Sesh session picker
+sesh-sessions() {
+  {
+    exec </dev/tty
+    exec <&1
+    local session
+    session=$(sesh list -t -c | fzf --height 40% --reverse --border-label ' sesh ' --border --prompt 'sesh> ')
+    zle reset-prompt >/dev/null 2>&1 || true
+    [[ -z "$session" ]] && return
+    sesh connect "$session"
+  }
+}
+
+zle -N sesh-sessions
+for keymap in emacs vicmd viins; do
+  bindkey -M $keymap '\es' sesh-sessions
+done
+
 # Yank current command line to system clipboard (triggered by tmux prefix+Y)
 # Uses \e[Y as a custom escape sequence sent by tmux send-keys
 # Uses clipcopy from OMZ clipboard lib (pbcopy on macOS, OSC 52 on Linux/QNAP)

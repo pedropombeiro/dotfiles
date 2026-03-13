@@ -154,3 +154,17 @@ To modify tmux settings:
 2. Edit `~/.config/tmux/tmux.platform.conf##distro.qts` for QNAP-specific overrides
 3. Reload tmux: `tmux source-file ~/.config/tmux/tmux.conf` or `prefix + r` (if configured)
 4. Commit changes with `yadm` (not `git`)
+
+## Sesh Session Manager
+
+Tmux integrates with `sesh` for session discovery and switching.
+
+### Keybindings
+
+- `prefix + T` opens the sesh picker in a tmux popup (fzf-tmux).
+- `prefix + L` switches to the last active session using `sesh last`.
+
+### Shell Integration
+
+- `Alt + s` opens the sesh picker from the shell when not in tmux.
+- Completion is generated via `sesh completion zsh` into `~/.config/zsh/site-functions/`.

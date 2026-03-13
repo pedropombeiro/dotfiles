@@ -2,6 +2,7 @@
 atuin = "latest"
 dua = "latest"
 pre-commit = "latest"
+"aqua:joshmedeski/sesh" = "latest"
 
 "npm:lazy-mcp" = "latest"
 "github:twaugh/patchutils" = "latest"

@@ -3,3 +3,7 @@
 import = [
     "~/.config/sesh/dotfiles.toml",
 ]
+
+[default_session]
+startup_command = "yazi"
+preview_command = "eza --all --git --icons --color=always {}"

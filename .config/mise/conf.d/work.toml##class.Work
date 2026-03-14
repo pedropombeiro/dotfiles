@@ -1,11 +1,18 @@
 [tools]
+# OLAP database
 clickhouse = "24"
+# GitLab CLI
 glab = "latest"
+# Ruby runtime
 ruby = "3.4.8"
+# Rust toolchain
 rust = "stable"
+# Zero-trust infrastructure access (SSH/k8s/DB)
 teleport-community = "17"
 
+# Random GitLab reviewer assignment
 "go:gitlab.com/ck3g/gitlab-roulette-cli" = "latest"
+# GitLab Duo AI CLI
 "npm:@gitlab/duo-cli" = "latest"
 
 [tasks."system:fix"]

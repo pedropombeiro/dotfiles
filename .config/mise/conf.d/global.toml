@@ -1,9 +1,16 @@
 [tools]
+# Shell history with sync and search
 atuin = "latest"
+# Interactive disk usage analyzer
 dua = "latest"
+# Fast alternative to find
 "aqua:sharkdp/fd" = "latest"
+# Git hook manager
 pre-commit = "latest"
+# Tmux session manager
 "aqua:joshmedeski/sesh" = "latest"
 
+# Lazy-loading MCP server proxy for AI tools
 "npm:lazy-mcp" = "latest"
+# Utilities for working with patches (filterdiff, etc.)
 "github:twaugh/patchutils" = "latest"

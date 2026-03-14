@@ -2,45 +2,81 @@
 uvx = true
 
 [tools]
+# Fast Python package and project manager
 uv = "latest"
+# cat with syntax highlighting
 "aqua:sharkdp/bat" = "latest"
+# TUI system resource monitor
 "aqua:ClementTsang/bottom" = "latest"
+# TUI system resource monitor (C++ version)
 btop = "latest"
+# top-like interface for Docker containers
 "aqua:bcicen/ctop" = "latest"
+# Syntax-highlighting pager for git/diff
 "aqua:dandavison/delta" = "latest"
+# Docker image layer explorer
 "aqua:wagoodman/dive" = "latest"
+# Better df alternative
 "aqua:muesli/duf" = "latest"
+# Better du alternative
 "aqua:bootandy/dust" = "latest"
+# Modern ls replacement
 "aqua:eza-community/eza" = "latest"
-"aqua:junegunn/fzf" = "latest" # fzf-tmux (used by sesh) is added via postinstall hook below
+# fzf-tmux (used by sesh) is added via postinstall hook below
+"aqua:junegunn/fzf" = "latest"
+# GitHub CLI (gh)
 "aqua:cli/cli" = "latest"
+# Secrets scanner for git repos
 "aqua:gitleaks/gitleaks" = "latest"
+# Go toolchain
 go = "latest"
+# Command-line benchmarking tool
 "aqua:sharkdp/hyperfine" = "latest"
+# JSON processor
 "aqua:jqlang/jq" = "latest"
+# TUI for Docker management
 "aqua:jesseduffield/lazydocker" = "latest"
+# TUI for git
 "aqua:jesseduffield/lazygit" = "latest"
+# Fast grep alternative (rg)
 "aqua:BurntSushi/ripgrep" = "latest"
+# Shell script linter
 shellcheck = "latest"
+# Lua code formatter
 stylua = "latest"
+# Modern watch replacement with diff highlighting
 viddy = "latest"
+# Friendly HTTP client (like httpie)
 xh = "latest"
+# Smarter cd with frecency tracking
 zoxide = "latest"
 
+# Auto-generates table of contents in Markdown
 "npm:doctoc" = "latest"
+# Prose and documentation linter
 "npm:@ocular-d/vale-bin" = "latest"
 
+# Timestamps each line of command output
 "go:github.com/zmwangx/ets" = "latest"
 
+# Generic colourizer for terminal output
 "cargo:grc-rs" = "latest"
 
+# Record and share terminal sessions
 "pipx:asciinema" = "latest"
+# CLI for Home Assistant
 "pipx:homeassistant-cli" = "latest"
+# Python static type checker
 "pipx:mypy" = "latest"
+# Open files in an existing Neovim instance
 "pipx:neovim-remote" = "latest"
+# Simplified community man pages
 "pipx:tldr" = "latest"
+# Python virtual environment creator
 "pipx:virtualenv" = "latest"
+# TUI spreadsheet and data explorer
 "pipx:visidata" = "latest"
+# Video downloader (YouTube and more)
 "pipx:yt-dlp" = "latest"
 
 [hooks]

@@ -39,6 +39,7 @@ Thumbs.db
 .config/nvim/lua/plugins/image.lua
 .config/nvim/lua/plugins/lsp/mason-tool-installer.lua
 .config/opencode/opencode-homeassistant.json
+.config/opencode/opencode-notifier.json
 .config/opencode/opencode.json
 .config/opencode/plugins/deny-rm-rf.js
 .config/opencode/plugins/require-gpsup.js

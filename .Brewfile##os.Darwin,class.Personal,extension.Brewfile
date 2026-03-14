@@ -9,6 +9,7 @@ tap "jdxcode/tap"
 tap "jstkdng/programs"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
+tap "vjeantet/tap"
 tap "zaquestion/tap"
 # General-purpose data compression with high compression ratio
 brew "xz"
@@ -200,6 +201,8 @@ brew "jarred-sumner/git-peek/git-peek"
 brew "jstkdng/programs/ueberzugpp"
 # Reconcile your local git repositories
 brew "leipert-projects/git-recon/git-recon"
+# macOS notification CLI — send native notifications and capture user interactions
+brew "vjeantet/tap/alerter"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
 # Command-line interface for 1Password

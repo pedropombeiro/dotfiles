@@ -10,10 +10,12 @@ alias vimdiff="vim -d"
 # Tool-specific aliases
 alias lzd='lazydocker'
 
-# Delete all remote tracking Git branches where the upstream branch has been deleted
+# Delete all remote tracking Git branches where the upstream branch has been deleted.
+# Uses an inner function so alias can reference $1. Excludes branches prefixed with _.
 # shellcheck disable=SC2142  # This pattern works in bash/zsh
 alias git_prune='git_prune_impl() { git fetch --prune && git branch -vv | grep -E "(origin|security)/.*: gone]" | awk "{print \$1}" | grep -v "^_.*\$" | xargs git branch -D; }; git_prune_impl'
 
+# Format SQL from stdin via pg_format, wrap in a markdown code block, and copy to clipboard
 alias sqlformat='pg_format --nocomment - | xargs -0 printf "\`\`\`sql\n%s\`\`\`" | pbcopy'
 alias vim=nvim
 alias xh='xh --style $XH_STYLE' # defined in ~/.shellrc/rc.d/_theme.sh

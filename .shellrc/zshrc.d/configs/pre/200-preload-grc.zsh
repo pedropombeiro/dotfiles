@@ -8,5 +8,6 @@ elif [[ -s /etc/grc.zsh ]]; then
   source /etc/grc.zsh
 fi
 
-# Unset make, as the grc implementation gets confused when invoking the yadm update.zsh script through it
+# grc wraps `make` as a shell function that mangles env/stdin when used as a
+# script runner (e.g. yadm bootstrap calling update.zsh via make). Remove it.
 unset -f make 2>/dev/null

@@ -3,6 +3,7 @@
 HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
 HISTSIZE=50000
 SAVEHIST=10000
+# Exclude 1Password secret references (op:// URIs start with /1PE after encoding) from history
 HISTORY_IGNORE='(\/1PE)'
 
 setopt EXTENDED_HISTORY       # Record timestamp of command in HISTFILE

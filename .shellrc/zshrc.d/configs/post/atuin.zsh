@@ -8,6 +8,7 @@ command -v atuin &>/dev/null || return
 _atuin_init="${XDG_DATA_HOME:-$HOME/.local/share}/atuin/init.zsh"
 
 # Regenerate when: missing, binary was upgraded, or this script was updated (e.g. yadm pull).
+# ${(%):-%x} is a zsh prompt expansion that resolves to the current script's file path.
 if [[ ! -f "$_atuin_init" || "$_atuin_init" -ot "$(command -v atuin)" || "$_atuin_init" -ot "${(%):-%x}" ]]; then
   mkdir -p "${_atuin_init:h}"
   # --disable-up-arrow so we can bind up-arrow to native prefix search below,
@@ -22,10 +23,10 @@ fi
 _atuin_setup_keybindings() {
   source "$1"
 
-  bindkey '^[[A' history-beginning-search-backward-end
-  bindkey '^[OA' history-beginning-search-backward-end
-  bindkey '^[[B' history-beginning-search-forward-end
-  bindkey '^[OB' history-beginning-search-forward-end
+  bindkey '^[[A' history-beginning-search-backward-end  # Up arrow (normal/xterm mode)
+  bindkey '^[OA' history-beginning-search-backward-end  # Up arrow (application/keypad mode)
+  bindkey '^[[B' history-beginning-search-forward-end   # Down arrow (normal/xterm mode)
+  bindkey '^[OB' history-beginning-search-forward-end   # Down arrow (application/keypad mode)
   bindkey -M vicmd 'k' history-beginning-search-backward-end
   bindkey -M vicmd 'j' history-beginning-search-forward-end
 }

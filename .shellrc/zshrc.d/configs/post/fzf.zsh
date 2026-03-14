@@ -28,7 +28,7 @@ fzf-branch-widget() {
   zle reset-prompt
   return $ret
 }
-zle     -N            fzf-branch-widget
+zle     -N            fzf-branch-widget  # Register as a ZLE widget so bindkey can use it
 bindkey -M emacs '^G' fzf-branch-widget
 bindkey -M vicmd '^G' fzf-branch-widget
 bindkey -M viins '^G' fzf-branch-widget

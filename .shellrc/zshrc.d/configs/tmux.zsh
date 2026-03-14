@@ -10,8 +10,9 @@ if command -v tmux >/dev/null; then
   local _platform_conf="${0:A:h}/tmux.platform.zsh"
   [[ -f "$_platform_conf" ]] && source "$_platform_conf"
 
-  # Load tmux plugin via zinit
-  # Download extra.conf to the same directory as the plugin, then load the plugin
+  # Load tmux plugin via zinit.
+  # zinit's snippet mode only fetches the main file; the plugin also sources tmux.extra.conf
+  # at runtime, so we manually download it into the snippet directory on clone/update.
   zinit ice atclone'curl -sLo tmux.extra.conf https://github.com/ohmyzsh/ohmyzsh/raw/master/plugins/tmux/tmux.extra.conf' \
             atpull'%atclone'
   zinit snippet OMZP::tmux

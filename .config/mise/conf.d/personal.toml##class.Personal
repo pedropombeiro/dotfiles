@@ -1,8 +1,10 @@
 [tools]
+# ── Rust tooling ──────────────────────────────────────────────────────
 # Install Rust binaries without compiling from source
 cargo-binstall = "latest"
 # Fast alternative to find
 fd = "latest"
 
+# ── Automation ────────────────────────────────────────────────────────
 # Automated dependency update bot
 "npm:renovate" = "43.11.1"

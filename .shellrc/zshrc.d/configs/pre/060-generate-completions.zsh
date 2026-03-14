@@ -20,6 +20,15 @@ if command -v mise &>/dev/null; then
   fi
 fi
 
+if command -v gh &>/dev/null; then
+  gh_bin=$(command -v gh)
+  gh_completion=~/.config/zsh/site-functions/_gh
+  if [[ ! -f $gh_completion || $gh_completion -ot $gh_bin ]]; then
+    gh completion -s zsh >$gh_completion
+    rm -f ~/.zcompdump* >/dev/null 2>&1
+  fi
+fi
+
 _generate_completion atuin 'atuin gen-completions --shell zsh'
 _generate_completion opencode 'opencode completion'
 _generate_completion sesh 'sesh completion zsh'

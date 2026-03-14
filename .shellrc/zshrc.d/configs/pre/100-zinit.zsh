@@ -15,7 +15,7 @@ source "${ZINIT_HOME}/zinit.zsh"
 # Use -C (cached) only when the dump exists; 020-site-functions.zsh removes stale dumps
 autoload -Uz compinit
 if [[ -f $HOME/.zcompdump ]]; then
-  compinit -C
+  compinit -C -u
 else
-  compinit
+  compinit -u
 fi

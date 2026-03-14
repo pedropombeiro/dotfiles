@@ -190,7 +190,7 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
   _fgdku_step "gdk cleanup"
   (
     cd $GDK_ROOT && mise x ruby -- bundle install && yes | gdk cleanup
-    find gitlab/log -maxdepth 1 -size +10M -exec truncate -s 0 {} \;
+    fd -tf --max-depth 1 --size +10M . gitlab/log -x truncate -s 0 {}
   ) || printf "${YELLOW}%s${NC}\n" "GDK cleanup subshell failed, continuing..."
 
   _fgdku_step "gdk restart"

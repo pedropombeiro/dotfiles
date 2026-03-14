@@ -22,9 +22,9 @@ fi
 # Delete dead symlinks in ~/.shellrc
 find -L ~/.shellrc -type l -exec rm -f {} \;
 # Delete all zsh word code files, and regenerate them again
-find ~/. -maxdepth 1 -name '*.zwc' -delete
-find ~/.shellrc -name '*.zwc' -delete
-find "${XDG_DATA_HOME:-${HOME}/.local/share}/zinit" -name '*.zwc' -delete
+fd -tf '\.zwc$' --max-depth 1 ~/. -x rm -f {}
+fd -tf '\.zwc$' ~/.shellrc -x rm -f {}
+fd -tf '\.zwc$' "${XDG_DATA_HOME:-${HOME}/.local/share}/zinit" -x rm -f {}
 zsh -i -c 'sleep 5' # Allow time for .zlogin to asynchronously regenerate the .zwc files
 
 bat cache --build # Ensure any custom themes and syntax definition files are compiled

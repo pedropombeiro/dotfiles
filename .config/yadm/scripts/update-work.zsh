@@ -177,7 +177,7 @@ sync_dotfiles_to_gitlab() {
 
   [[ -d "${dotfiles_dir}" ]] || return 0
 
-  find "${dotfiles_dir}" -type f | while read -r dotfiles_file; do
+  fd -tf . "${dotfiles_dir}" | while read -r dotfiles_file; do
     rel_path="${dotfiles_file#${dotfiles_dir}/}"
     gdk_file="${gitlab_dir}/${rel_path}"
 

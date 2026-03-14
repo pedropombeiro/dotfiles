@@ -69,7 +69,7 @@ if [[ -x "$WAKATIME_CLI" ]]; then
   if [[ -n "$GDK_ROOT" && -d "$GDK_ROOT/gitlab/.git" ]]; then
     test_repo="$GDK_ROOT/gitlab"
   elif [[ -z "$test_repo" ]]; then
-    test_repo=$(find "$HOME/Developer" -maxdepth 5 -name .git -type d 2>/dev/null | head -1 | sed 's|/\.git$||')
+    test_repo=$(fd -td --hidden --no-ignore --max-depth 5 '^\.git$' "$HOME/Developer" -1 2>/dev/null | sed 's|/\.git/$||')
   fi
   if [[ -n "$test_repo" ]]; then
     wakatime_project=$(wakatime_project_from_heartbeat "$test_repo/README.md" "$test_repo")

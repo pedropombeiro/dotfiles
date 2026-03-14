@@ -9,8 +9,8 @@ if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then
   src_path="${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}"
   if [[ -d ${src_path} ]]; then
     printf "${YELLOW}%s${NC}\n" "Linking .dotfiles in ${src_path} to ${HOME}..."
-    find ~ -type f -name '.*history' -maxdepth 1 -print0 | xargs -r -0 -n 1 -I {} cp {} "${src_path}/"
-    find "${src_path}" -type f -not -name '.sync-conflict*' -maxdepth 1 -print0 | xargs -r -0 -n 1 -I file bash -c "echo '> file' && ln -sf file ~/"
+    fd -tf --max-depth 1 --hidden '^\.' --glob '*history' ~ -0 | xargs -r -0 -n 1 -I {} cp {} "${src_path}/"
+    fd -tf --max-depth 1 --hidden --exclude '.sync-conflict*' . "${src_path}" -0 | xargs -r -0 -n 1 -I file bash -c "echo '> file' && ln -sf file ~/"
   else
     printf "${RED}%s${NC}\n" "${src_path} not found. Please configure Syncthing and perform a sync run first."
   fi

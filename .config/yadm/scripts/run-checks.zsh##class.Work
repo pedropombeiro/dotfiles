@@ -98,12 +98,12 @@ check_gdk_wakatime_projects() {
     [[ "$(git -C "$d" rev-parse --show-toplevel 2>/dev/null)" == "$d" ]] && wakatime_dirs+=("$d")
   done
 
+  local _line
   for wd in "${wakatime_dirs[@]}"; do
     local wp_file="$wd/.wakatime-project"
     local label="${wd#$GDK_ROOT/}"
     [[ "$wd" == "$GDK_ROOT" ]] && label="(root)"
 
-    local _line
     print_op_stay "Checking .wakatime-project in GDK $label"
     if ! git -C "$wd" remote get-url origin &>/dev/null; then
       print_ok "(no remote, skipped)"

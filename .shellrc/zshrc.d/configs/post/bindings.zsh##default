@@ -8,5 +8,5 @@ for keymap in viins vicmd; do
   bindkey -M $keymap '^[[1;3D' backward-word      # Alt-Left (xterm)
   bindkey -M $keymap '^[^[[C' forward-word        # Alt-Right (ABC keyboard)
   bindkey -M $keymap '^[^[[D' backward-word       # Alt-Left (ABC keyboard)
-  bindkey -M $keymap '^[^?' backward-kill-word    # Alt-Backspace
+  bindkey -M $keymap '^[^?' backward-kill-word    # Alt-Backspace (^? = DEL char)
 done

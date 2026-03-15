@@ -7,26 +7,35 @@ fpath=(
   $fpath
 )
 
-# Invalidate compdump when site-functions are missing from it or files are newer
+# Invalidate compdump when valid site-functions are missing from it or files are newer.
+# Only check files with a #compdef header — compinit ignores files without one,
+# so including them here would cause a rebuild loop every startup.
 if [[ -f $HOME/.zcompdump ]]; then
   local _invalidate=0
+  local _dump_content="$(<$HOME/.zcompdump)"
 
+  local _reason="" _first_line
   for f in $HOME/.config/zsh/site-functions/_*(N.); do
+    _first_line=
+    IFS= read -r _first_line < "$f" 2>/dev/null
+    [[ "$_first_line" == "#compdef "* || "$_first_line" == "#autoload"* ]] || continue
     if [[ $f -nt $HOME/.zcompdump ]]; then
       _invalidate=1
+      _reason="${f:t} is newer than .zcompdump"
       break
     fi
-    local _fname=${f:t}
-    if ! grep -q "$_fname" $HOME/.zcompdump 2>/dev/null; then
+    if [[ "$_dump_content" != *"${f:t}"* ]]; then
       _invalidate=1
+      _reason="${f:t} is missing from .zcompdump"
       break
     fi
   done
 
   if (( _invalidate )); then
+    print -P "%F{yellow}[zsh] Rebuilding .zcompdump: ${_reason}%f"
     rm -f $HOME/.zcompdump*(N) 2>/dev/null
   fi
-  unset f _fname _invalidate
+  unset f _dump_content _invalidate _reason _first_line
 fi
 
 # Also recreate any compdump older than a day (using zsh glob instead of slow find)

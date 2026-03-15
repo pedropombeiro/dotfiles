@@ -11,16 +11,27 @@ idiomatic_version_file_enable_tools = []
 uvx = true
 
 [tools]
-grpcurl = "latest"
+# JavaScript runtime
 node = "latest"
-"opencode" = { version = "latest", no_app = true }
+# Ruby runtime
 ruby = "3.4.8"
+# cURL-like tool for gRPC servers
+grpcurl = "latest"
+# YAML linter
 yamllint = "latest"
+# AI coding assistant CLI
+"opencode" = { version = "latest", no_app = true }
 
+# ── Ruby gems ─────────────────────────────────────────────────────────
+# Ruby provider for Neovim plugins
 "gem:neovim" = "0.10.0"
+# Ruby LSP language server
 "gem:ruby-lsp" = "0.26.7"
+# Ruby linter/formatter (StandardRB)
 "gem:standard" = "latest"
 
+# ── Neovim integration ────────────────────────────────────────────────
+# Open files in an existing Neovim instance
 "pipx:neovim-remote" = "2.5.1"
 
 # ── Brew ──────────────────────────────────────────────────────────────

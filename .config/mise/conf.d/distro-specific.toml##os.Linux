@@ -1,3 +1,5 @@
 [tools]
+# JavaScript runtime
 node = "latest"
+# JSON viewer with less-like navigation
 jless = "latest"

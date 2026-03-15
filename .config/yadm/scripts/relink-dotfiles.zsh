@@ -1,6 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
-YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
+setopt LOCAL_OPTIONS EXTENDED_GLOB
+
+# ${(%):-%x} = zsh equivalent of bash's ${BASH_SOURCE[0]}
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${(%):-%x}")/../scripts" &>/dev/null && pwd)
 
 source "${YADM_SCRIPTS}/colors.sh"
 
@@ -9,8 +12,16 @@ if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then
   src_path="${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}"
   if [[ -d ${src_path} ]]; then
     printf "${YELLOW}%s${NC}\n" "Linking .dotfiles in ${src_path} to ${HOME}..."
-    find ~ -type f -name '.*history' -maxdepth 1 -print0 | xargs -r -0 -n 1 -I {} cp {} "${src_path}/"
-    find "${src_path}" -type f -not -name '.sync-conflict*' -maxdepth 1 -print0 | xargs -r -0 -n 1 -I file bash -c "echo '> file' && ln -sf file ~/"
+    # N = nullglob (no error if no matches), -. = regular files following symlinks
+    # @ = symlinks only; skip files already symlinked into src_path
+    for file in ~/.*history(N-.); do
+      [[ -L ${file} && $(readlink "${file}") == "${src_path}"/* ]] && continue
+      cp -Lf "${file}" "${src_path}/"
+    done
+    # ^ = negation (requires EXTENDED_GLOB), N = nullglob, . = regular files only
+    for file in "${src_path}"/.^sync-conflict*(N.); do
+      echo "> ${file}" && ln -sf "${file}" ~/
+    done
   else
     printf "${RED}%s${NC}\n" "${src_path} not found. Please configure Syncthing and perform a sync run first."
   fi

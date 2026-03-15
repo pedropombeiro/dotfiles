@@ -14,35 +14,39 @@ _update_step "zinit"
 printf "${YELLOW}%s${NC}\n" "Updating zinit and plugins..."
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [[ -f "${ZINIT_HOME}/zinit.zsh" ]]; then
+  # Prepend site-functions to fpath before zinit so that when zinit update
+  # internally calls compinit, the resulting .zcompdump includes our custom
+  # completions (_atuin, _sesh, etc.) and not just zinit-managed ones.
+  fpath=($HOME/.config/zsh/site-functions $fpath)
   source "${ZINIT_HOME}/zinit.zsh"
   zinit self-update
   zinit update --parallel
 fi
 
-# Delete dead symlinks in ~/.shellrc
-find -L ~/.shellrc -type l -exec rm -f {} \;
+# Delete dead symlinks in ~/.shellrc — (-@) = broken symlinks (symlinks whose target doesn't exist)
+rm -f ~/.shellrc/**/*(-@N)
 # Delete all zsh word code files, and regenerate them again
-find ~/. -maxdepth 1 -name '*.zwc' -delete
-find ~/.shellrc -name '*.zwc' -delete
-find "${XDG_DATA_HOME:-${HOME}/.local/share}/zinit" -name '*.zwc' -delete
+local _zinit_data="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit"
+rm -f ~/*.zwc(N) ~/.shellrc/**/*.zwc(N) ${_zinit_data}/**/*.zwc(N)
 zsh -i -c 'sleep 5' # Allow time for .zlogin to asynchronously regenerate the .zwc files
 
 bat cache --build # Ensure any custom themes and syntax definition files are compiled
 
 _update_step "npm"
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."
-command -v npm >/dev/null && npm update -g
+(( $+commands[npm] )) && npm update -g
 
 _update_step "opencode skills"
 printf "${YELLOW}%s${NC}\n" "Updating OpenCode skills..."
-command -v npx >/dev/null && npx skills update
+(( $+commands[npx] )) && npx skills update
 
 _update_step "shell benchmark"
 printf "${YELLOW}%s${NC}\n" "Testing shell instantiation performance..."
 hf_file="$(mktemp)"
 hyperfine --warmup=1 --max-runs 5 'zsh -i -c exit' --export-json "${hf_file}"
 mean_time=$(jq -r '.results[].median' "${hf_file}")
-if awk "BEGIN {exit !($mean_time >= 0.6)}"; then
+# zsh (( )) supports float arithmetic natively
+if (( mean_time >= 0.6 )); then
   printf "${RED}%s${NC}\n" "Zsh performance is too slow!"
 fi
 
@@ -73,14 +77,15 @@ hyperfine --warmup 5 --export-json "${hf_file}" 'nvim --headless +qa'
 nvim_benchmark="$(jq -r '.results[].median' "${hf_file}")"
 
 if [[ -f ${benchmark_filepath} ]]; then
-  prev_benchmark="$(cat "${benchmark_filepath}")"
+  prev_benchmark=$(<"${benchmark_filepath}")
 
-  if awk "BEGIN {exit !($nvim_benchmark >= $prev_benchmark * 1.1)}"; then
+  if (( nvim_benchmark >= prev_benchmark * 1.1 )); then
     printf "${RED}%s${NC}\n" "Neovim startup time increased over 10% compared to previous run..."
   else
     echo "${nvim_benchmark}" > "${benchmark_filepath}"
   fi
-  echo "Previous median startup time: $(awk "BEGIN { print $prev_benchmark * 1000 }")ms"
+  # zsh printf handles float arithmetic directly
+  printf "Previous median startup time: %.0fms\n" $(( prev_benchmark * 1000 ))
 else
   echo "${nvim_benchmark}" > "${benchmark_filepath}"
 fi

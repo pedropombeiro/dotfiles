@@ -15,10 +15,11 @@ for keymap in viins vicmd emacs; do
   bindkey -M $keymap '^[^[[C' forward-word        # ABC keyboard
   bindkey -M $keymap '^[^[[D' backward-word       # ABC keyboard
   # Alt+Backspace
-  bindkey -M $keymap '^[^?' backward-kill-word
+  bindkey -M $keymap '^[^?' backward-kill-word  # Alt+Backspace (^? = DEL char)
 done
 
-# Keypad
+# Numpad keys in application mode (SS3 sequences: ESC O + letter).
+# QNAP's terminal sends these instead of literal digits.
 # 0 . Enter
 bindkey -s "^[Op" "0"
 bindkey -s "^[Ol" "+"

@@ -1,0 +1,26 @@
+{
+  "sound": false,
+  "notification": false,
+  "showProjectName": true,
+  "showSessionTitle": true,
+  "command": {
+    "enabled": true,
+    "path": "{{ env.HOME }}/.config/opencode/notifier/notify.sh",
+    "args": ["--event", "{event}", "--message", "{message}", "--title", "OpenCode ({projectName})"],
+    "minDuration": 10
+  },
+  "events": {
+    "permission": { "sound": false, "notification": false },
+    "complete": { "sound": false, "notification": false },
+    "subagent_complete": { "sound": false, "notification": false },
+    "error": { "sound": false, "notification": false },
+    "question": { "sound": false, "notification": false }
+  },
+  "messages": {
+    "permission": "🔐 Needs permission: {sessionTitle}",
+    "complete": "✅ Done: {sessionTitle}",
+    "subagent_complete": "🤖 Subagent done: {sessionTitle}",
+    "error": "❌ Error: {sessionTitle}",
+    "question": "❓ Question: {sessionTitle}"
+  }
+}

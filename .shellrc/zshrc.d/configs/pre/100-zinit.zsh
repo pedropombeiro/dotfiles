@@ -5,7 +5,7 @@ ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
 if [[ ! -d "$ZINIT_HOME" ]]; then
   print -P "%F{33}Installing zinit...%f"
-  mkdir -p "$(dirname $ZINIT_HOME)"
+  mkdir -p "${ZINIT_HOME:h}" # :h = head (dirname)
   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 
@@ -15,7 +15,7 @@ source "${ZINIT_HOME}/zinit.zsh"
 # Use -C (cached) only when the dump exists; 020-site-functions.zsh removes stale dumps
 autoload -Uz compinit
 if [[ -f $HOME/.zcompdump ]]; then
-  compinit -C
+  compinit -C -u
 else
-  compinit
+  compinit -u
 fi

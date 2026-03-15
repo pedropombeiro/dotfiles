@@ -19,6 +19,10 @@ Git commands on the `~` directory are managed through `yadm` instead of `git`.
 Do NOT use `--no-pager` with `git` or `yadm`. The pager does not activate in
 non-interactive shells, so the flag is unnecessary and breaks yadm commands.
 
+When running `git rebase --continue` or any git/yadm command that opens an
+editor, prefix with `GIT_EDITOR=true` to prevent the editor from blocking
+(the non-interactive shell will SIGTERM nvim, causing a timeout).
+
 ### File Organization
 
 - **Alternate files**: Use suffixes for platform-specific configs
@@ -34,6 +38,22 @@ non-interactive shells, so the flag is unnecessary and breaks yadm commands.
 
 YADM automatically creates symlinks for alternate files (e.g., `foo.sh` -> `foo.sh##os.Darwin`).
 **Never commit these symlinks** - only commit the actual files with `##` suffixes.
+
+**Alternate files are not additive.** Only the best-matching file is symlinked. For example, if
+both `foo.sh##os.Darwin` and `foo.sh##class.Work` exist, YADM will link only the best match for
+the current system. Each alternate file must be self-contained and not depend on other alternates
+being present. Do not split shared content across alternates expecting a merge or fallback; copy
+the full shared content into each alternate that needs it.
+
+Example:
+
+```text
+~/.config/sesh/sesh.toml##default
+~/.config/sesh/sesh.toml##distro.qts
+```
+
+On QTS, only `sesh.toml##distro.qts` is linked to `~/.config/sesh/sesh.toml`. The default file is
+ignored, so the QTS variant must include all shared config plus any QTS-specific overrides.
 
 When renaming or adding files:
 

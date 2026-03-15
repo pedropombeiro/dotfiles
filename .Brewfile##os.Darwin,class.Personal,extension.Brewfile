@@ -9,6 +9,7 @@ tap "jdxcode/tap"
 tap "jstkdng/programs"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
+tap "vjeantet/tap"
 tap "zaquestion/tap"
 # General-purpose data compression with high compression ratio
 brew "xz"
@@ -74,8 +75,6 @@ brew "git-extras"
 brew "gnu-sed"
 # Ping, but with a graph
 brew "gping"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.12"
 # Colorize logfiles and command output
 brew "grc"
 # Convert source code to formatted text with syntax highlighting
@@ -146,6 +145,8 @@ brew "pspg"
 brew "pygments"
 # Easily download, build, install, upgrade, and uninstall Python packages
 brew "python-setuptools"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.12"
 # QR Code generation
 brew "qrencode"
 # Search tool like grep and The Silver Searcher
@@ -200,6 +201,8 @@ brew "jarred-sumner/git-peek/git-peek"
 brew "jstkdng/programs/ueberzugpp"
 # Reconcile your local git repositories
 brew "leipert-projects/git-recon/git-recon"
+# macOS notification CLI — send native notifications and capture user interactions
+brew "vjeantet/tap/alerter"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
 # Command-line interface for 1Password
@@ -341,6 +344,8 @@ cask "visual-studio-code"
 cask "vlc"
 # Live terminal dashboard for WakaTime coding stats
 cask "b00y0h/wakadash/wakadash"
+# System tray app for automatic time tracking
+cask "wakatime"
 # Native desktop client for WhatsApp
 cask "whatsapp"
 # Application for configuring any YubiKey

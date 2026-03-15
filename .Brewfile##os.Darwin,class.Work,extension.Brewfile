@@ -12,6 +12,7 @@ tap "mike-engel/jwt-cli"
 tap "minio/stable"
 tap "moul/moul"
 tap "mvp/uhubctl", "https://github.com/mvp/uhubctl"
+tap "vjeantet/tap"
 tap "zaquestion/tap"
 # Asciicast to GIF converter
 brew "agg"
@@ -237,8 +238,6 @@ brew "spawn-fcgi"
 brew "switchaudio-osx"
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
-# Send macOS User Notifications from the command-line
-brew "terminal-notifier"
 # Code-search similar to ack
 brew "the_silver_searcher"
 # Terminal multiplexer
@@ -293,6 +292,8 @@ brew "leipert-projects/git-recon/git-recon"
 brew "mike-engel/jwt-cli/jwt-cli"
 # Compare Docker images
 brew "moul/moul/docker-diff"
+# Send macOS User Alert Notifications from the command-line
+brew "vjeantet/tap/alerter"
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
 # Command-line interface for 1Password

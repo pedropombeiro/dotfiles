@@ -24,7 +24,7 @@ expected_files=(
 
 any_missing=0
 
-for expected_file in "${expected_files[@]}"; do
+for expected_file in $expected_files; do
   print_op_stay "Checking for ${expected_file}"
   if [[ -f "${expected_file}" ]]; then
     print_ok
@@ -34,7 +34,7 @@ for expected_file in "${expected_files[@]}"; do
   fi
 done
 
-if [[ ${any_missing} -eq 1 ]]; then
+if (( any_missing )); then
   printf "${YELLOW}%s${NC}\n" "⚠️  Missing expected config files."
 else
   printf "${GREEN}%s${NC}\n" "✅ Config file checks passed!"

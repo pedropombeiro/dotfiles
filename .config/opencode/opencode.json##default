@@ -150,6 +150,7 @@
       "pwd *": "allow",
       "readlink *": "allow",
       "rg *": "allow",
+      "sed *": "allow",
       "shellcheck *": "allow",
       "sleep *": "allow",
       "sort *": "allow",

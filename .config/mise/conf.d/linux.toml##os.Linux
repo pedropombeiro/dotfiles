@@ -2,43 +2,109 @@
 uvx = true
 
 [tools]
+# ── Runtimes ──────────────────────────────────────────────────────────
+# Fast Python package and project manager
 uv = "latest"
-bat = "latest"
-bottom = "latest"
-btop = "latest"
-ctop = "latest"
-delta = "latest"
-dive = "latest"
-duf = "latest"
-dust = "latest"
-eza = "latest"
-fzf = "latest"
-github-cli = "latest"
-gitleaks = "latest"
+# Go toolchain
 go = "latest"
-hyperfine = "latest"
-jq = "latest"
-lazydocker = "latest"
-lazygit = "latest"
-ripgrep = "latest"
-shellcheck = "latest"
-stylua = "latest"
-viddy = "latest"
-xh = "latest"
-zoxide = "latest"
 
+# ── Shell & CLI UX ────────────────────────────────────────────────────
+# cat with syntax highlighting
+"aqua:sharkdp/bat" = "latest"
+# Modern ls replacement
+"aqua:eza-community/eza" = "latest"
+# fzf-tmux (used by sesh) is added via postinstall hook below
+"aqua:junegunn/fzf" = "latest"
+# Smarter cd with frecency tracking
+zoxide = "latest"
+# Modern watch replacement with diff highlighting
+viddy = "latest"
+# Friendly HTTP client (like httpie)
+xh = "latest"
+
+# ── System monitoring ─────────────────────────────────────────────────
+# TUI system resource monitor
+"aqua:ClementTsang/bottom" = "latest"
+# TUI system resource monitor (C++ version)
+btop = "latest"
+# top-like interface for Docker containers
+"aqua:bcicen/ctop" = "latest"
+# Better df alternative
+"aqua:muesli/duf" = "latest"
+# Better du alternative
+"aqua:bootandy/dust" = "latest"
+
+# ── Git & Docker ──────────────────────────────────────────────────────
+# Syntax-highlighting pager for git/diff
+"aqua:dandavison/delta" = "latest"
+# TUI for git
+"aqua:jesseduffield/lazygit" = "latest"
+# TUI for Docker management
+"aqua:jesseduffield/lazydocker" = "latest"
+# Docker image layer explorer
+"aqua:wagoodman/dive" = "latest"
+# GitHub CLI (gh)
+"aqua:cli/cli" = "latest"
+
+# ── Search & text ─────────────────────────────────────────────────────
+# Fast grep alternative (rg)
+"aqua:BurntSushi/ripgrep" = "latest"
+# JSON processor
+"aqua:jqlang/jq" = "latest"
+# Command-line benchmarking tool
+"aqua:sharkdp/hyperfine" = "latest"
+
+# ── Linting & formatting ──────────────────────────────────────────────
+# Secrets scanner for git repos
+"aqua:gitleaks/gitleaks" = "latest"
+# Shell script linter
+shellcheck = "latest"
+# Lua code formatter
+stylua = "latest"
+
+# ── npm ───────────────────────────────────────────────────────────────
+# Auto-generates table of contents in Markdown
 "npm:doctoc" = "latest"
+# Prose and documentation linter
 "npm:@ocular-d/vale-bin" = "latest"
 
+# ── go ────────────────────────────────────────────────────────────────
+# Timestamps each line of command output
 "go:github.com/zmwangx/ets" = "latest"
 
+# ── cargo ─────────────────────────────────────────────────────────────
+# Generic colourizer for terminal output
 "cargo:grc-rs" = "latest"
 
+# ── pipx ──────────────────────────────────────────────────────────────
+# Record and share terminal sessions
 "pipx:asciinema" = "latest"
-"pipx:homeassistant-cli" = "latest"
-"pipx:mypy" = "latest"
-"pipx:neovim-remote" = "latest"
-"pipx:tldr" = "latest"
-"pipx:virtualenv" = "latest"
-"pipx:visidata" = "latest"
+# Video downloader (YouTube and more)
 "pipx:yt-dlp" = "latest"
+# TUI spreadsheet and data explorer
+"pipx:visidata" = "latest"
+# CLI for Home Assistant
+"pipx:homeassistant-cli" = "latest"
+# Simplified community man pages
+"pipx:tldr" = "latest"
+# Open files in an existing Neovim instance
+"pipx:neovim-remote" = "latest"
+# Python static type checker
+"pipx:mypy" = "latest"
+# Python virtual environment creator
+"pipx:virtualenv" = "latest"
+
+[hooks]
+# The aqua backend only ships the fzf binary, not fzf-tmux (needed by sesh's tmux popup picker).
+# This hook downloads fzf-tmux from the fzf repo after each fzf install/upgrade.
+postinstall = '''
+echo "$MISE_INSTALLED_TOOLS" | jq -r '.[] | select(.name | contains("fzf")) | .version' | while read -r version; do
+  install_dir="$(mise where aqua:junegunn/fzf 2>/dev/null)"
+  if [ -n "$install_dir" ] && [ ! -f "$install_dir/fzf-tmux" ]; then
+    echo "Downloading fzf-tmux v${version}..."
+    curl -fsSL "https://raw.githubusercontent.com/junegunn/fzf/v${version}/bin/fzf-tmux" -o "$install_dir/fzf-tmux"
+    chmod +x "$install_dir/fzf-tmux"
+    mise reshim
+  fi
+done
+'''

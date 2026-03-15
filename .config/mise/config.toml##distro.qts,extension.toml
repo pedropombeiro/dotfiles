@@ -11,30 +11,55 @@ jobs = 1
 # QTS has old glibc, requires unofficial nodejs builds
 node.mirror_url = "https://unofficial-builds.nodejs.org/download/release/"
 node.flavor = "glibc-217"
+experimental = true
 
 [tools]
+# ── Core ──────────────────────────────────────────────────────────────
+# CLI usage/help generation framework (used by mise)
 usage = "latest"
+# Syntax-highlighting pager for git/diff
 delta = "latest"
 
-# GitHub releases (musl builds for QTS)
-"github:dalance/procs" = "latest"
-"github:domcyrus/rustnet" = "1.0.0"
-"github:imsnif/bandwhich" = "latest"
-"github:ipinfo/cli[exe=ipinfo]" = "ipinfo-3.3.1"
+# ── GitHub releases (musl builds for QTS) ────────────────────────────
+# Pre-built Neovim release (bypasses compile-from-source)
 "github:neovim/neovim-releases[exe=nvim]" = "0.11.6"
-"github:orf/gping" = "gping-v1.20.1"
+# opencode build for old glibc (QTS)
 "github:pedropombeiro/opencode-legacy-glibc" = "latest"
-"github:schollz/croc" = "latest"
+# Terminal file manager
 "github:sxyazi/yazi" = "26.1.22"
+# Log file viewer and navigator
 "github:tstack/lnav" = "latest"
+# Secure peer-to-peer file transfer
+"github:schollz/croc" = "latest"
 
+# ── Networking (musl builds for QTS) ─────────────────────────────────
+# Modern ps replacement
+"github:dalance/procs" = "latest"
+# Network diagnostics (ping/traceroute/scan)
+"github:domcyrus/rustnet" = "1.0.0"
+# Network bandwidth monitor by process
+"github:imsnif/bandwhich" = "latest"
+# IP address info lookup
+"github:ipinfo/cli[exe=ipinfo]" = "ipinfo-3.3.1"
+# Ping with a real-time graph
+"github:orf/gping" = "gping-v1.20.1"
+
+# ── go ────────────────────────────────────────────────────────────────
+# Timestamps each line of command output
 "go:github.com/zmwangx/ets" = "0.2.2"
 
-# QTS-specific pipx tools
+# ── pipx ──────────────────────────────────────────────────────────────
+# Python code formatter
 "pipx:black" = "latest"
-"pipx:garth" = "latest"
-"pipx:homeassistant-cli" = "latest"
+# Python import sorter
 "pipx:isort" = "latest"
+# Python LSP language server
 "pipx:jedi-language-server" = "latest"
-"pipx:pgcli" = { version = "latest", uvx_args = "--with psycopg2-binary --with psycopg-binary" }
+# YAML linter
 "pipx:yamllint" = "latest"
+# Garmin Connect API client
+"pipx:garth" = "latest"
+# CLI for Home Assistant
+"pipx:homeassistant-cli" = "latest"
+# Postgres CLI with autocompletion
+"pipx:pgcli" = { version = "latest", uvx_args = "--with psycopg2-binary --with psycopg-binary" }

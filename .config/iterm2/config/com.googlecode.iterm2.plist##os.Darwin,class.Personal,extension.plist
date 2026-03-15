@@ -1412,6 +1412,8 @@ The script should do this: \(ai.prompt)</string>
 			<string>Yes</string>
 			<key>Custom Directory</key>
 			<string>Recycle</string>
+			<key>Custom Icon Path</key>
+			<string>/Users/pedro/.config/iterm2/icons/iterm2.png</string>
 			<key>Default Bookmark</key>
 			<string>No</string>
 			<key>Description</key>
@@ -1466,7 +1468,7 @@ The script should do this: \(ai.prompt)</string>
 			<key>HotKey Window Reopens On Activation</key>
 			<false/>
 			<key>Icon</key>
-			<integer>1</integer>
+			<integer>2</integer>
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Jobs to Ignore</key>
@@ -2393,6 +2395,8 @@ The script should do this: \(ai.prompt)</string>
 			<string>Yes</string>
 			<key>Custom Directory</key>
 			<string>No</string>
+			<key>Custom Icon Path</key>
+			<string>/Users/pedro/.config/iterm2/icons/ssh.png</string>
 			<key>Default Bookmark</key>
 			<string>No</string>
 			<key>Description</key>
@@ -2447,7 +2451,7 @@ The script should do this: \(ai.prompt)</string>
 			<key>HotKey Window Reopens On Activation</key>
 			<false/>
 			<key>Icon</key>
-			<integer>1</integer>
+			<integer>2</integer>
 			<key>Idle Code</key>
 			<integer>0</integer>
 			<key>Initial Text</key>

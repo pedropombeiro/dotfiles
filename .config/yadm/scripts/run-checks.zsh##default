@@ -6,7 +6,7 @@ YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pw
 
 source "${YADM_SCRIPTS}/run-checks-common.zsh"
 
-if [[ $any_failed -eq 1 ]]; then
+if (( any_failed )); then
   printf "${YELLOW}%s${NC}\n" "⚠️  Checks finished with errors/warnings!"
   (exit 1)
 else

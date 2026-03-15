@@ -1,10 +1,20 @@
 # ── Dotfiles ──────────────────────────────────────────────────────────
 
 [tasks."dotfiles:install"]
+description = "Install mise tools (with GitHub token)"
+run = """
+if command -v brew >/dev/null 2>&1; then
+  brew bundle --global
+fi
+
+GITHUB_TOKEN=$(gh auth token 2>/dev/null) mise install
+"""
+
+[tasks."dotfiles:bootstrap"]
 description = "Bootstrap the dotfile environment"
 # Disable mise's own progress — the script manages its own iTerm2 badge/progress
 env = { MISE_TERMINAL_PROGRESS = "false" }
-run = "yadm bootstrap"
+run = "GITHUB_TOKEN=$(gh auth token 2>/dev/null) yadm bootstrap"
 
 [tasks."dotfiles:update"]
 description = "Run dotfile update scripts"

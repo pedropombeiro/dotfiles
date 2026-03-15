@@ -4,7 +4,7 @@
 #
 
 if [[ "$PWD" == "$HOME" || "$PWD" == "$HOME/.config"* ]]; then
-  yadm enter lazygit --use-config-dir ~/.config/lazygit
+  GIT_DIR="$HOME/.local/share/yadm/repo.git" GIT_WORK_TREE="$HOME" lazygit "$@"
 else
-  lazygit --use-config-dir ~/.config/lazygit
+  lazygit "$@"
 fi

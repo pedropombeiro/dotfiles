@@ -31,7 +31,7 @@ fi
 declare -a bootstraps
 while IFS= read -r bootstrap; do
   bootstraps+=("$bootstrap")
-done < <(find -L "${BOOTSTRAP_D}" \( -type f -or -type l \) -not -name '*##*' -not -name '*~$*' | sort -n)
+done < <(fd -L -tf -tl --exclude '*##*' --exclude '*~$*' . "${BOOTSTRAP_D}" | sort -n)
 
 _bootstrap_total=0
 for bootstrap in "${bootstraps[@]}"; do

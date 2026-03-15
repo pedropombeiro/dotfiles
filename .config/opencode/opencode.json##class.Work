@@ -145,6 +145,7 @@
       "RAILS_ENV=test bundle exec rubocop*": "allow",
       "readlink *": "allow",
       "rg *": "allow",
+      "sed *": "allow",
       "shellcheck *": "allow",
       "sleep *": "allow",
       "stat *": "allow",

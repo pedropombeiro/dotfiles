@@ -17,15 +17,25 @@ Zsh configuration with modular structure and zinit plugins.
 
 ## Key Files
 
+- `~/.zshenv` - Environment variables for all zsh sessions (loads earliest)
 - `~/.zshrc.shared` - Main zsh entry point
 - `~/.shellrc/zshrc.d/configs/zinit.zsh` - Plugin manager setup
 - `~/.shellrc/zshrc.d/configs/post/keybindings.zsh` - Key mappings
 
 ## Loading Order
 
-1. `pre/` configs load first (zinit, runtime managers)
-2. Main configs in `configs/` directory
-3. `post/` configs load last (keybindings, fzf integration)
+1. `~/.zshenv` loads first (env vars, before any interactive config)
+2. `pre/` configs load next (zinit, mise, brew)
+3. Main configs in `configs/` directory
+4. `post/` configs load last (keybindings, fzf integration)
+
+## XDG Base Directories
+
+`~/.zshenv` exports `XDG_CONFIG_HOME=~/.config` so that macOS CLI tools using
+Go XDG libraries (`adrg/xdg`, `OpenPeeDeeP/xdg`) resolve config to `~/.config/`
+instead of `~/Library/Application Support/`. This allows dotfile tracking via yadm.
+
+Tools unaffected (use Rust `dirs` crate, ignores XDG on macOS): rtk, zoxide, neovide (settings).
 
 ## Alternate Files
 

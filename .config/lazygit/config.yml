@@ -219,7 +219,7 @@ git:
   # won't do either of these things.
   autoStageResolvedConflicts: true
   # Command used when displaying the current branch git log in the main window
-  branchLogCmd: "git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=medium {{branchName}} --"
+  branchLogCmd: "sh -c \"git log --graph --color=always --abbrev-commit --decorate --date=relative --pretty=format:'%C(auto)%h SIG%G?SIG%C(auto)%d %s %C(dim)(%ar)%C(reset)' {{branchName}} -- | sed -e 's/SIGGSIG/✅/' -e 's/SIGNSIG/❌/' -e 's/SIGBSIG/⛔/' -e 's/SIGUSIG/⚠️ /' -e 's/SIGESIG/❓/' -e 's/SIG\\\\(.\\\\)SIG/[\\\\1]/' \""
   # Commands used to display git log of all branches in the main window.
   allBranchesLogCmds:
     - "git graph --local --style=round --color=always --max-count 100 --no-pager -f '%h %as:%d %s (%an)'"

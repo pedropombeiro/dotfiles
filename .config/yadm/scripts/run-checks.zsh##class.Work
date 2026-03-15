@@ -98,6 +98,7 @@ check_gdk_wakatime_projects() {
     [[ "$(git -C "$d" rev-parse --show-toplevel 2>/dev/null)" == "$d" ]] && wakatime_dirs+=("$d")
   done
 
+  local _line
   for wd in "${wakatime_dirs[@]}"; do
     local wp_file="$wd/.wakatime-project"
     local label="${wd#$GDK_ROOT/}"
@@ -106,8 +107,8 @@ check_gdk_wakatime_projects() {
     print_op_stay "Checking .wakatime-project in GDK $label"
     if ! git -C "$wd" remote get-url origin &>/dev/null; then
       print_ok "(no remote, skipped)"
-    elif [[ -f "$wp_file" ]] && [[ -n "$(head -1 "$wp_file")" ]]; then
-      print_ok "$(head -1 "$wp_file")"
+    elif [[ -f "$wp_file" ]] && { read -r _line < "$wp_file" && [[ -n "$_line" ]]; }; then
+      print_ok "$_line"
     else
       print_failure ".wakatime-project missing or empty in $wd"
       any_failed=1
@@ -127,7 +128,7 @@ fi
 check_app_running 'Home Assistant'
 check_gdk_wakatime_projects
 
-if [[ $any_failed -eq 1 ]]; then
+if (( any_failed )); then
   printf "${YELLOW}%s${NC}\n" "⚠️  Checks finished with errors/warnings!"
   (exit 1)
 else

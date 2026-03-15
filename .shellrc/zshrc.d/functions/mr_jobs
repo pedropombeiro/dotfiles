@@ -44,7 +44,8 @@ while read JOB_ID JOB_STATUS JOB_BUILD_PATH JOB_NAME; do
   fi
 
   # Wait for a single job before starting new one
-  [[ $(jobs | wc -l) -ge $MAX_JOBS ]] && wait -n
+  # $jobstates is a zsh special associative array of active background jobs
+  (( ${#jobstates} >= MAX_JOBS )) && wait -n
 
   stderr "$JOB_NAME/$JOB_STATUS: downloading trace..."
   mkdir -p "$OUTPUT_DIR/$PIPELINE_ID"

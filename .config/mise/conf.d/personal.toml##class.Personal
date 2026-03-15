@@ -7,4 +7,4 @@ fd = "latest"
 
 # ── Automation ────────────────────────────────────────────────────────
 # Automated dependency update bot
-"npm:renovate" = "43.11.1"
+"npm:renovate" = "43.60.5"

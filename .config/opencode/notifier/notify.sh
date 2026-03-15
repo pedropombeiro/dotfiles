@@ -49,6 +49,14 @@ GROUP_ID="opencode-${TMUX_PANE:-$PPID}"
 SOUND_FILE="/System/Library/Sounds/${SOUND}.aiff"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ICON="$SCRIPT_DIR/icon.png"
+GRACE_PERIOD=2
+
+sleep "$GRACE_PERIOD"
+
+if [[ -n "$TMUX_PANE" ]]; then
+  STILL_WAITING=$(tmux show-option -wqv -t "$TMUX_PANE" @opencode-waiting 2>/dev/null)
+  [[ "$STILL_WAITING" != "1" ]] && exit 0
+fi
 
 if command -v alerter >/dev/null 2>&1; then
   ALERTER_ARGS=(

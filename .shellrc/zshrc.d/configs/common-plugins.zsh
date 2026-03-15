@@ -3,14 +3,17 @@
 # OMZ libs: clipboard (needed by widgets), compfix (calls compaudit), completion
 # settings (zstyles), directory helpers (aliases). All safe to defer since nothing
 # in the synchronous startup path depends on them.
+# OMZL::completion.zsh reads COMPLETION_WAITING_DOTS and clobbers WORDCHARS.
 zinit wait'0' lucid for \
   OMZL::clipboard.zsh \
   OMZL::compfix.zsh \
-  OMZL::completion.zsh \
+  atinit'COMPLETION_WAITING_DOTS="true"; DISABLE_UNTRACKED_FILES_DIRTY="true"' \
+  atload"WORDCHARS='_'" OMZL::completion.zsh \
   OMZL::directories.zsh
 
 # Skip autosuggestions' automatic widget re-binding on every precmd (O(n) in widget count).
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 
 # Register history prefix search widgets early so zsh-autosuggestions can wrap
 # them during its initial bind. The actual keybindings happen later in atuin.zsh.
@@ -30,25 +33,6 @@ zinit wait'0' lucid light-mode for \
   zdharma-continuum/fast-syntax-highlighting \
   atinit'ZSH_WAKATIME_BIN="$HOME/.wakatime/wakatime-cli"' sobolevn/wakatime-zsh-plugin \
   atload'!_zsh_autosuggest_start' zsh-users/zsh-autosuggestions
-
-# Fix autosuggestion ghost text on accept-line. The autosuggestions clear
-# widget sets POSTDISPLAY= but the terminal redraw (zle -R) runs after the
-# inner accept-line has already committed the line, leaving suggestion text
-# painted in default foreground. This outermost wrapper clears POSTDISPLAY
-# and forces a redraw before calling the builtin accept-line.
-_fix_autosuggest_accept_line() {
-  _accept_line_and_clear_suggestion() {
-    POSTDISPLAY=
-    region_highlight=()
-    zle -R
-    zle .accept-line
-  }
-  zle -N accept-line _accept_line_and_clear_suggestion
-}
-
-zinit wait'0d' lucid nocd light-mode for \
-  atload'_fix_autosuggest_accept_line' \
-  zdharma-continuum/null
 
 # fzf-tab: replace zsh completion menu with fzf popup
 zinit wait'0a' lucid light-mode for \
@@ -77,3 +61,22 @@ zinit wait lucid nocd for \
 zinit wait lucid as"completion" for \
   OMZP::yarn/_yarn \
   OMZP::redis-cli/_redis-cli
+
+# Fix autosuggestion ghost text on accept-line. The autosuggestions clear
+# widget sets POSTDISPLAY= but the terminal redraw (zle -R) runs after the
+# inner accept-line has already committed the line, leaving suggestion text
+# painted in default foreground. This outermost wrapper clears POSTDISPLAY
+# and forces a redraw before calling the builtin accept-line.
+_fix_autosuggest_accept_line() {
+  _accept_line_and_clear_suggestion() {
+    POSTDISPLAY=
+    region_highlight=()
+    zle -R
+    zle .accept-line
+  }
+  zle -N accept-line _accept_line_and_clear_suggestion
+}
+
+zinit wait'0d' lucid nocd light-mode for \
+  atload'_fix_autosuggest_accept_line' \
+  zdharma-continuum/null

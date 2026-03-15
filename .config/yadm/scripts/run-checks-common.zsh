@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+setopt LOCAL_OPTIONS EXTENDED_GLOB
+
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 
 source "${YADM_SCRIPTS}/colors.sh"

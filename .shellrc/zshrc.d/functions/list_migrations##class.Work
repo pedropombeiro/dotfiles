@@ -4,4 +4,5 @@
 #
 
 MIGRATIONS_DIFF="$(git diff --name-only --diff-filter=A "$(git_main_branch)" -- db/schema_migrations/)"
-echo "${MIGRATIONS_DIFF}" | xargs basename -a | sort -r
+# (f) splits on newlines, :t = tail (basename), (On) reverse numeric sort
+print -l ${(On)${(f)MIGRATIONS_DIFF}:t}

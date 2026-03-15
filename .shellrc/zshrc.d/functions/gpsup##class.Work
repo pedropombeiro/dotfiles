@@ -8,8 +8,9 @@ SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
 remote=origin
 branch="$(git_current_branch)"
 
-if git remote get-url "${remote}" | grep gitlab.com >/dev/null; then
-  issue_iid="$(echo $branch | sed -E 's|[^0-9]+([0-9]+).*|\1|')"
+if [[ "$(git remote get-url "${remote}")" == *gitlab.com* ]]; then
+  # $match is populated by zsh's =~ regex operator
+  [[ "$branch" =~ '([0-9]+)' ]] && issue_iid=$match[1] || issue_iid=
 
   mise x ruby -- ruby -r $SCRIPT_DIR/gitlab-helpers.rb -e "gpsup('$remote', '$issue_iid')" -- $@
 else

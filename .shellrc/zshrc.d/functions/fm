@@ -1,12 +1,12 @@
 
 # Add a `fm` function to zsh that opens yazi either at the given directory or
 # at the one zoxide suggests
-if [ "$2" != "" ]; then
+if [[ -n "$2" ]]; then
   yazi "$@"
-elif [ "$1" != "" ]; then
-  if [ -d "$1" ]; then
+elif [[ -n "$1" ]]; then
+  if [[ -d "$1" ]]; then
     yazi "$1"
-  elif [ -f "$1" ]; then
+  elif [[ -f "$1" ]]; then
     yazi "$1"
   else
     out="$(zoxide query $1)"
@@ -15,7 +15,7 @@ elif [ "$1" != "" ]; then
 else
   local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
   yazi "$@" --cwd-file="$tmp"
-  if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+  if cwd="$(<"$tmp")" && [[ -n "$cwd" ]] && [[ "$cwd" != "$PWD" ]]; then # $(<file) reads file without cat
     builtin cd -- "$cwd"
   fi
   rm -f -- "$tmp"

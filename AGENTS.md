@@ -9,6 +9,7 @@ This file contains core instructions applicable to most tasks. For specialized t
 - [Tmux](~/.agents/docs/tmux.md) - Configuration structure, plugins, and shell integration
 - [OpenCode](~/.agents/docs/opencode.md) - Policy overrides and runtime behaviors
 - [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`
+- [Developer Directory](~/.agents/docs/developer-directory.md) - Repo clone path convention (`~/Developer/<forge>/<owner>/<repo>`)
 - [Architecture Decisions](~/.agents/docs/adr/) - ADRs for key tool choices
 
 ## Dotfiles (YADM)

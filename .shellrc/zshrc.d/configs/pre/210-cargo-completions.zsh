@@ -12,7 +12,7 @@ if [[ ! -f "$_cargo_dst" ]]; then
   _cargo_src=(${(On)_cargo_src})
   if [[ -n "$_cargo_src[1]" && -f "$_cargo_src[1]" ]]; then
     cp "$_cargo_src[1]" "$_cargo_dst"
-    rm -f ~/.zcompdump* 2>/dev/null
+    rm -f ~/.zcompdump*(N) 2>/dev/null
   fi
   unset _cargo_src
 fi

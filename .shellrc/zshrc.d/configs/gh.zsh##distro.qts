@@ -1,6 +1,0 @@
-#!/usr/bin/env zsh
-
-# Export GitHub token for mise and other tools to avoid rate limiting
-if (( $+commands[gh] )) && gh auth status &>/dev/null; then
-  export GITHUB_TOKEN=$(gh auth token)
-fi

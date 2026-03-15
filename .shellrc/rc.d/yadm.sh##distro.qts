@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-if ! echo "$PATH" | grep "${HOME}/opt/bin" >/dev/null; then
-  PATH="${HOME}/opt/bin:${PATH}"
-  export PATH
+if [[ ":${PATH}:" != *":${HOME}/opt/bin:"* ]]; then
+  export PATH="${HOME}/opt/bin:${PATH}"
 fi

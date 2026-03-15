@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
-YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )" &>/dev/null && pwd )
 
 source "${YADM_SCRIPTS}/colors.sh"
 
@@ -14,12 +14,13 @@ if [[ -z ${prunable_paths} ]]; then
 fi
 
 prunable_kb=0
-while IFS= read -r path; do
+for path in ${(f)prunable_paths}; do
   if [[ -d ${path} ]]; then
-    size_kb=$(du -sk "${path}" 2>/dev/null | awk '{print $1}')
+    # (z) splits on whitespace; [1] picks the first field (replaces awk '{print $1}')
+    size_kb=${${(z)$(du -sk "${path}" 2>/dev/null)}[1]}
     prunable_kb=$((prunable_kb + size_kb))
   fi
-done <<< "${prunable_paths}"
+done
 
 if (( prunable_kb < threshold_kb )); then
   exit 0

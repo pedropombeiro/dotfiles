@@ -49,7 +49,7 @@ brew upgrade
 _update_step "mise plugins"
 (cd ~ && mise plugins update && mise install --yes && mise upgrade)
 
-"${YADM_SCRIPTS}/mise-prune-if-needed.sh"
+"${YADM_SCRIPTS}/mise-prune-if-needed.zsh"
 
 source "${YADM_SCRIPTS}/update-common.zsh"
 

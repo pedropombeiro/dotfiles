@@ -25,7 +25,9 @@ any_failed=0
 WAKATIME_CLI="$HOME/.wakatime/wakatime-cli"
 if [[ -x "$WAKATIME_CLI" ]]; then
   print_op_stay "Checking wakatime-cli import_cfg points to base cfg"
-  import_cfg=$(grep '^import_cfg' "$HOME/.wakatime.cfg" 2>/dev/null | sed 's/^import_cfg[[:space:]]*=[[:space:]]*//')
+  # (f) splits on newlines, (M) keeps only matching elements, ## strips leading pattern
+  import_cfg=${(M)${(f)"$(<$HOME/.wakatime.cfg)"}:#import_cfg*}
+  import_cfg=${import_cfg##import_cfg[[:space:]]#=[[:space:]]#}
   import_cfg="${import_cfg/#\~/$HOME}"
   if [[ "$import_cfg" == "$HOME/.wakatime.base.cfg" ]]; then
     print_ok
@@ -69,7 +71,7 @@ if [[ -x "$WAKATIME_CLI" ]]; then
   if [[ -n "$GDK_ROOT" && -d "$GDK_ROOT/gitlab/.git" ]]; then
     test_repo="$GDK_ROOT/gitlab"
   elif [[ -z "$test_repo" ]]; then
-    test_repo=$(fd -td --hidden --no-ignore --max-depth 5 '^\.git$' "$HOME/Developer" -1 2>/dev/null | sed 's|/\.git/$||')
+    test_repo=${$(fd -td --hidden --no-ignore --max-depth 5 '^\.git$' "$HOME/Developer" -1 2>/dev/null)%/.git/}
   fi
   if [[ -n "$test_repo" ]]; then
     wakatime_project=$(wakatime_project_from_heartbeat "$test_repo/README.md" "$test_repo")

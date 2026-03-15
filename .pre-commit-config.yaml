@@ -21,7 +21,7 @@ repos:
     hooks:
       - id: no-yadm-alt-symlinks
         name: reject yadm alt symlinks
-        entry: .config/yadm/scripts/check-no-alt-symlinks.sh
+        entry: .config/yadm/scripts/check-no-alt-symlinks.zsh
         language: script
         types: [symlink]
 

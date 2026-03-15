@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
+# shellcheck disable=SC2296  # Support being sourced from both bash and zsh
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-${(%):-%x}}")/../scripts" &>/dev/null && pwd)
 
 source "${YADM_SCRIPTS}/colors.sh"
 
@@ -10,7 +11,9 @@ if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then
   if [[ -d ${src_path} ]]; then
     printf "${YELLOW}%s${NC}\n" "Linking .dotfiles in ${src_path} to ${HOME}..."
     fd -tf --max-depth 1 --hidden '^\.' --glob '*history' ~ -0 | xargs -r -0 -n 1 -I {} cp {} "${src_path}/"
-    fd -tf --max-depth 1 --hidden --exclude '.sync-conflict*' . "${src_path}" -0 | xargs -r -0 -n 1 -I file bash -c "echo '> file' && ln -sf file ~/"
+    while IFS= read -r -d '' file; do
+      echo "> ${file}" && ln -sf "${file}" ~/
+    done < <(fd -tf --max-depth 1 --hidden --exclude '.sync-conflict*' . "${src_path}" -0)
   else
     printf "${RED}%s${NC}\n" "${src_path} not found. Please configure Syncthing and perform a sync run first."
   fi

@@ -205,7 +205,7 @@ return {
       },
     },
   },
-  { "pedropombeiro/unimpaired.nvim", event = { "BufReadPre", "BufNewFile" }, opts = {} }, -- LUA port of tpope's famous vim-unimpaired plugin
+  { "tummetott/unimpaired.nvim", event = { "BufReadPre", "BufNewFile" }, opts = {} }, -- LUA port of tpope's famous vim-unimpaired plugin
   { "RaafatTurki/hex.nvim", event = { "BufReadPre", "BufNewFile" }, opts = {} }, -- hex editing done right
   { "guns/xterm-color-table.vim", config = true, cmd = "XtermColorTable" }, -- All 256 xterm colors with their RGB equivalents, right in Vim!
 

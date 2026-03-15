@@ -14,6 +14,10 @@ _update_step "zinit"
 printf "${YELLOW}%s${NC}\n" "Updating zinit and plugins..."
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 if [[ -f "${ZINIT_HOME}/zinit.zsh" ]]; then
+  # Prepend site-functions to fpath before zinit so that when zinit update
+  # internally calls compinit, the resulting .zcompdump includes our custom
+  # completions (_atuin, _sesh, etc.) and not just zinit-managed ones.
+  fpath=($HOME/.config/zsh/site-functions $fpath)
   source "${ZINIT_HOME}/zinit.zsh"
   zinit self-update
   zinit update --parallel

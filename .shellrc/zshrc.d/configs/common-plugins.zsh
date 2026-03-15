@@ -10,16 +10,11 @@ zinit wait'0' lucid for \
   OMZL::directories.zsh
 
 # Skip autosuggestions' automatic widget re-binding on every precmd (O(n) in widget count).
-# We manually register the widgets we need wrapped below instead.
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 
 # Register history prefix search widgets early so zsh-autosuggestions can wrap
-# them during its initial bind (autosuggestions only wraps widgets that exist at
-# bind time). The actual keybindings happen later in atuin.zsh.
-# Lazy-load the history-search-end function from $fpath (places cursor at end of match).
-# -U prevents alias expansion while loading, so commands are parsed literally.
+# them during its initial bind. The actual keybindings happen later in atuin.zsh.
 autoload -U history-search-end
-# zle -N registers a shell function as a ZLE widget (usable by bindkey)
 zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(
@@ -27,12 +22,33 @@ ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(
   history-beginning-search-forward-end
 )
 
-# Load autosuggestions and syntax highlighting via zinit turbo mode
-# wait'0' = load immediately after prompt, lucid = silent
+# Load syntax highlighting, wakatime, then autosuggestions via zinit turbo.
+# Order matters: autosuggestions must load last so it wraps accept-line
+# outermost (per FSH README). The ! prefix on atload ensures the function
+# is tracked by zinit for proper replay.
 zinit wait'0' lucid light-mode for \
-  atload'_zsh_autosuggest_start' zsh-users/zsh-autosuggestions \
   zdharma-continuum/fast-syntax-highlighting \
-  atinit'ZSH_WAKATIME_BIN="$HOME/.wakatime/wakatime-cli"' sobolevn/wakatime-zsh-plugin
+  atinit'ZSH_WAKATIME_BIN="$HOME/.wakatime/wakatime-cli"' sobolevn/wakatime-zsh-plugin \
+  atload'!_zsh_autosuggest_start' zsh-users/zsh-autosuggestions
+
+# Fix autosuggestion ghost text on accept-line. The autosuggestions clear
+# widget sets POSTDISPLAY= but the terminal redraw (zle -R) runs after the
+# inner accept-line has already committed the line, leaving suggestion text
+# painted in default foreground. This outermost wrapper clears POSTDISPLAY
+# and forces a redraw before calling the builtin accept-line.
+_fix_autosuggest_accept_line() {
+  _accept_line_and_clear_suggestion() {
+    POSTDISPLAY=
+    region_highlight=()
+    zle -R
+    zle .accept-line
+  }
+  zle -N accept-line _accept_line_and_clear_suggestion
+}
+
+zinit wait'0d' lucid nocd light-mode for \
+  atload'_fix_autosuggest_accept_line' \
+  zdharma-continuum/null
 
 # fzf-tab: replace zsh completion menu with fzf popup
 zinit wait'0a' lucid light-mode for \

@@ -55,6 +55,38 @@ Create files in `~/.shellrc/zshrc.d/functions/`:
 - No file extension needed
 - Functions are autoloaded on first use
 
+## Plugin Load Order (zinit turbo)
+
+Plugins load in turbo priority order after the first prompt:
+
+| Priority   | Plugins                                     | File               |
+| ---------- | ------------------------------------------- | ------------------ |
+| `wait'0'`  | OMZ libs, zsh-vi-mode, FSH, autosuggestions | common-plugins.zsh |
+| `wait'0a'` | fzf-tab, mise completions                   | common-plugins.zsh |
+| `wait'0b'` | fzf, common-aliases                         | fzf.zsh, aliases   |
+| `wait'0c'` | atuin, git-extras                           | atuin.zsh, git.zsh |
+| `wait'0d'` | accept-line ghost text fix                  | common-plugins.zsh |
+
+### FSH + autosuggestions ordering
+
+FSH must load **before** autosuggestions (per FSH README) so autosuggestions wraps
+`accept-line` outermost. Use `atload'!_zsh_autosuggest_start'` (with `!` prefix
+for zinit replay tracking).
+
+### Autosuggestion ghost text fix
+
+Even with correct load order, `_zsh_autosuggest_clear` sets `POSTDISPLAY=` but
+its `zle -R` runs **after** the inner `accept-line` commits the line, leaving
+ghost text painted in default foreground. The `wait'0d'` block in
+`common-plugins.zsh` installs an outermost `accept-line` wrapper that clears
+`POSTDISPLAY` + `region_highlight` and calls `zle -R` **before** `zle .accept-line`.
+
+### `ZSH_AUTOSUGGEST_MANUAL_REBIND=1`
+
+Set in `common-plugins.zsh` to skip O(n) widget re-wrapping on every precmd.
+Requires that all widgets needing wrapping exist before `_zsh_autosuggest_start`
+runs. History search widgets are registered early in the same file for this reason.
+
 ## Key Integrations
 
 | Tool          | Purpose                        |

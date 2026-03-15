@@ -2,4 +2,4 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &>/dev/null && pwd )
 
-source "${YADM_SCRIPTS}/relink-dotfiles.sh"
+source "${YADM_SCRIPTS}/relink-dotfiles.zsh"

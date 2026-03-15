@@ -2,5 +2,5 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &>/dev/null && pwd )
 
-source "${YADM_SCRIPTS}/relink-dotfiles.sh"
+source "${YADM_SCRIPTS}/relink-dotfiles.zsh"
 source "${YADM_SCRIPTS}/update-gitignore-alt.zsh"

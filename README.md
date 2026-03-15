@@ -151,7 +151,7 @@ source ~/.zshrc.shared
 After installing the dotfiles, ensure the Syncthing-managed config files are linked:
 
 ```shell
-~/.config/yadm/scripts/relink-dotfiles.sh
+~/.config/yadm/scripts/relink-dotfiles.zsh
 ```
 
 ### Fresh Installation - macOS

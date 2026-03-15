@@ -40,7 +40,7 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 trap 'exit 129' HUP
 
-"${YADM_SCRIPTS}/relink-dotfiles.sh"
+"${YADM_SCRIPTS}/relink-dotfiles.zsh"
 
 _update_step "brew update"
 brew update

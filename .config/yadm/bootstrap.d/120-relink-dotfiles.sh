@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
-YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
+# ${(%):-%x} = zsh equivalent of bash's ${BASH_SOURCE[0]}
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${(%):-%x}")/../scripts" &>/dev/null && pwd)
 
-# shellcheck source=../scripts/relink-dotfiles.sh
-source "${YADM_SCRIPTS}/relink-dotfiles.sh"
+source "${YADM_SCRIPTS}/relink-dotfiles.zsh"

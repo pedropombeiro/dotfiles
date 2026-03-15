@@ -70,8 +70,8 @@ hash = "8b1af6b5a69797ee951f2a80ce570818"
 
 [[plugin.deps]]
 use = "KKV9/compress"
-rev = "cb6e8ec"
-hash = "424ada4807b20ccd4fc85d1d7c26d1e4"
+rev = "16164c6"
+hash = "f5460906bce68161867326253e5e3301"
 
 [[plugin.deps]]
 use = "carlosedp/yatline"

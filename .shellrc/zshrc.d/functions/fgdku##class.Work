@@ -117,7 +117,7 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
 
   _fgdku_step "mise install"
   mise install
-  if ! command -v gdk >/dev/null; then
+  if ! (( $+commands[gdk] )); then
     # When ruby is upgraded, we don't have the gdk gem, so we need to reinstall it
     gem install gitlab-development-kit
   fi

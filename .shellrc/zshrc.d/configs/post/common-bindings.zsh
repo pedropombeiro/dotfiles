@@ -2,7 +2,7 @@
 
 # Unset terminal special characters that conflict with app keybindings
 # C-\: SIGQUIT (conflicts with Neovim file explorer toggle)
-if [[ -t 0 ]] && command -v stty &>/dev/null; then
+if [[ -t 0 ]] && (( $+commands[stty] )); then
   stty quit undef
 fi
 

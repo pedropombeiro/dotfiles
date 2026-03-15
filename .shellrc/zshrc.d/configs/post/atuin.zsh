@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # Graceful no-op when atuin is not yet installed (e.g. fresh system before `mise install`)
-command -v atuin &>/dev/null || return
+(( $+commands[atuin] )) || return
 
 # Cache `atuin init zsh` output to avoid ~30ms eval overhead on every shell startup.
 # Regenerates when the atuin binary is newer (i.e. after upgrades).
@@ -9,7 +9,7 @@ _atuin_init="${XDG_DATA_HOME:-$HOME/.local/share}/atuin/init.zsh"
 
 # Regenerate when: missing, binary was upgraded, or this script was updated (e.g. yadm pull).
 # ${(%):-%x} is a zsh prompt expansion that resolves to the current script's file path.
-if [[ ! -f "$_atuin_init" || "$_atuin_init" -ot "$(command -v atuin)" || "$_atuin_init" -ot "${(%):-%x}" ]]; then
+if [[ ! -f "$_atuin_init" || "$_atuin_init" -ot "$commands[atuin]" || "$_atuin_init" -ot "${(%):-%x}" ]]; then
   mkdir -p "${_atuin_init:h}"
   # --disable-up-arrow so we can bind up-arrow to native prefix search below,
   # while Ctrl-R still opens the Atuin TUI.

@@ -1,3 +1,3 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
-command -v grc-rs >/dev/null && eval "$(grc-rs --aliases)"
+(( $+commands[grc-rs] )) && eval "$(grc-rs --aliases)"

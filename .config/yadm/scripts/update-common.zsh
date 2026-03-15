@@ -30,11 +30,11 @@ bat cache --build # Ensure any custom themes and syntax definition files are com
 
 _update_step "npm"
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."
-command -v npm >/dev/null && npm update -g
+(( $+commands[npm] )) && npm update -g
 
 _update_step "opencode skills"
 printf "${YELLOW}%s${NC}\n" "Updating OpenCode skills..."
-command -v npx >/dev/null && npx skills update
+(( $+commands[npx] )) && npx skills update
 
 _update_step "shell benchmark"
 printf "${YELLOW}%s${NC}\n" "Testing shell instantiation performance..."

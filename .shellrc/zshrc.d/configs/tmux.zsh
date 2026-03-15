@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-if command -v tmux >/dev/null; then
+if (( $+commands[tmux] )); then
   export ZSH_TMUX_CONFIG="$HOME/.config/tmux/tmux.conf"
   export ZSH_TMUX_DEFAULT_SESSION_NAME="$(hostname)"
   export ZSH_TMUX_FIXTERM_WITH_256COLOR="tmux-256color"

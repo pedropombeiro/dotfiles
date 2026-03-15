@@ -23,8 +23,6 @@ viddy = "latest"
 xh = "latest"
 
 # ── System monitoring ─────────────────────────────────────────────────
-# TUI system resource monitor
-"aqua:ClementTsang/bottom" = "latest"
 # TUI system resource monitor (C++ version)
 btop = "latest"
 # top-like interface for Docker containers

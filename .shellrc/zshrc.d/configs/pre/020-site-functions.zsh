@@ -10,14 +10,14 @@ fpath=(
 # Invalidate compdump when site-functions are missing from it or files are newer
 if [[ -f $HOME/.zcompdump ]]; then
   local _invalidate=0
+  local _dump_content="$(<$HOME/.zcompdump)"
 
   for f in $HOME/.config/zsh/site-functions/_*(N.); do
     if [[ $f -nt $HOME/.zcompdump ]]; then
       _invalidate=1
       break
     fi
-    local _fname=${f:t}
-    if ! grep -q "$_fname" $HOME/.zcompdump 2>/dev/null; then
+    if [[ "$_dump_content" != *"${f:t}"* ]]; then
       _invalidate=1
       break
     fi
@@ -26,7 +26,7 @@ if [[ -f $HOME/.zcompdump ]]; then
   if (( _invalidate )); then
     rm -f $HOME/.zcompdump*(N) 2>/dev/null
   fi
-  unset f _fname _invalidate
+  unset f _dump_content _invalidate
 fi
 
 # Also recreate any compdump older than a day (using zsh glob instead of slow find)

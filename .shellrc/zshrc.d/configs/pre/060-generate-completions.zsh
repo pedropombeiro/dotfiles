@@ -32,5 +32,6 @@ fi
 _generate_completion atuin 'atuin gen-completions --shell zsh'
 _generate_completion opencode 'opencode completion'
 _generate_completion sesh 'sesh completion zsh'
+_generate_completion op 'op completion zsh'
 
 unfunction _generate_completion

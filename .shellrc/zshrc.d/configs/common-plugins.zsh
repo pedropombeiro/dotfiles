@@ -1,7 +1,9 @@
 #!/usr/bin/env zsh
 
-# OMZ libs: clipboard, compfix, completion settings, directory helpers
-zinit lucid for \
+# OMZ libs: clipboard (needed by widgets), compfix (calls compaudit), completion
+# settings (zstyles), directory helpers (aliases). All safe to defer since nothing
+# in the synchronous startup path depends on them.
+zinit wait'0' lucid for \
   OMZL::clipboard.zsh \
   OMZL::compfix.zsh \
   OMZL::completion.zsh \

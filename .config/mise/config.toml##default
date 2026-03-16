@@ -1,7 +1,7 @@
 redactions = ["*_API_KEY", "*_TOKEN"]
 
 [env]
-_.source = { path = ".github_token.sh", redact = true }
+_.source = { path = ".config/mise/.github_token.sh", redact = true }
 
 [settings]
 jobs = 1

@@ -3,15 +3,8 @@
   "servers": [
     {
       "name": "gitlab",
-      "description": "GitLab API: issues, MRs, pipelines, repositories",
-      "type": "local",
-      "command": [
-        "npx",
-        "mcp-remote@latest",
-        "https://gitlab.com/api/v4/mcp",
-        "--static-oauth-client-metadata",
-        "{\"scope\": \"mcp\"}"
-      ]
+      "description": "GitLab MCP server",
+      "url": "https://gitlab.com/api/v4/mcp"
     },
     {
       "name": "gitlab-knowledge-graph",
@@ -40,8 +33,7 @@
     {
       "name": "glean",
       "description": "GitLab enterprise search and knowledge discovery via Glean",
-      "type": "local",
-      "command": ["npx", "mcp-remote@latest", "https://gitlab-be.glean.com/mcp/default"]
+      "url": "https://gitlab-be.glean.com/mcp/default"
     }
   ],
   "discovery": {

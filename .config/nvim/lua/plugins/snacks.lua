@@ -133,7 +133,8 @@ local keys = {
           "-Z",
           "-c",
           cwd,
-          "zsh -ilc \"lg\"",
+          -- Trigger chpwd hooks so tools like mise/direnv export project env vars
+          "zsh -ilc \"for f in \\$chpwd_functions; do \\$f 2>/dev/null; done; lg\"",
         }, { detach = true })
         return
       end

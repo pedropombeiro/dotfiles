@@ -1,0 +1,13 @@
+#:schema https://github.com/joshmedeski/sesh/raw/main/sesh.schema.json
+
+[[session]]
+name = "Handbook"
+path = "~/Developer/gitlab.com/gitlab-com/content-sites/handbook"
+startup_command = "nvim"
+preview_command = "eza --all --git --icons --color=always {}"
+
+[[session]]
+name = "www-gitlab-com"
+path = "~/Developer/gitlab.com/gitlab-com/www-gitlab-com"
+startup_command = "nvim -c ':lua Snacks.picker.git_files()'"
+preview_command = "eza --all --git --icons --color=always {}"

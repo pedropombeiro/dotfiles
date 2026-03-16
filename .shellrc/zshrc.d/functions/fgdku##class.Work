@@ -158,13 +158,13 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
 
   _fgdku_step "running test"
   printf "${YELLOW}%s${NC}\n" 'Running simple test...'
-  bundle exec rspec --failure-exit-code 0 --error-exit-code 1 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb ||
-    bundle exec rake db:test:prepare
+  mise x ruby -- bundle exec rspec --failure-exit-code 0 --error-exit-code 1 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb ||
+    mise x ruby -- bundle exec rake db:test:prepare
 
   _fgdku_step "ClickHouse migrations"
   printf "${YELLOW}%s${NC}\n" "Run any pending ClickHouse migrations..."
   if gdk status clickhouse >/dev/null 2>&1 && curl -sf http://localhost:8123/ping >/dev/null 2>&1; then
-    bundle exec rake gitlab:clickhouse:migrate:main
+    mise x ruby -- bundle exec rake gitlab:clickhouse:migrate:main
   else
     printf "${YELLOW}%s${NC}\n" 'ClickHouse not available, skipping migrations...'
   fi
@@ -208,7 +208,7 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
   fi
 
   # Load the app to memory
-  bundle exec rails environment
+  mise x ruby -- bundle exec rails environment
 
   cd - >/dev/null
 )

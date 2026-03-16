@@ -3,6 +3,7 @@
   "plugin": [
     "@mohak34/opencode-notifier@latest",
     "opencode-anthropic-auth@latest",
+    "opencode-atuin-history@latest",
     "opencode-homeassistant@latest",
     "opencode-terminal-progress@latest",
     "opencode-tmux-indicator@latest",

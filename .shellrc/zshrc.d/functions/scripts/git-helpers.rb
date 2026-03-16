@@ -238,7 +238,8 @@ def rebase_mappings
         prev_branch = seq_map[prev_seq_nr].first
         if branch_exists?(prev_branch)
           if branch_merged_into?(prev_branch, default_branch)
-            fork_point = prev_branch
+            mb = `git merge-base #{default_branch} #{branch} 2>/dev/null`.strip
+            fork_point = prev_branch unless branch_merged_into?(prev_branch, mb)
             rebase_onto = default_branch
           else
             rebase_onto = prev_branch
@@ -249,7 +250,11 @@ def rebase_mappings
       else
         prev_seq_pattern = "#{user_name}/#{current_mr_id}/#{current_mr_seq_nr - 1}-"
         old_tip = deleted_branch_tip_from_reflog(prev_seq_pattern, branch)
-        fork_point = old_tip if old_tip
+        if old_tip
+          mb = `git merge-base #{default_branch} #{branch} 2>/dev/null`.strip
+          fork_point = old_tip unless branch_merged_into?(old_tip, mb)
+        end
+
         rebase_onto = default_branch
       end
 
@@ -265,7 +270,8 @@ def rebase_mappings
 
     if fork_point.nil? && (rebase_onto || parent_branch) == default_branch
       fp = `git merge-base --fork-point #{default_branch} #{branch} 2>/dev/null`.strip
-      if Process.last_status.success? && !fp.empty? && fp != `git rev-parse #{default_branch}`.strip
+      mb = `git merge-base #{default_branch} #{branch} 2>/dev/null`.strip
+      if Process.last_status.success? && !fp.empty? && fp != `git rev-parse #{default_branch}`.strip && fp != mb
         fork_point = fp
         rebase_onto = default_branch
       end

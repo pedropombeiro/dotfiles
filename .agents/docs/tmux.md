@@ -146,6 +146,47 @@ to prevent plugins from overwriting them.
 the keys before tmux sees them. Set that option to **"No Shortcut"** so the Alt+number keys
 pass through to tmux.
 
+## Running Commands in a Temporary Tmux Pane
+
+Use `run-in-tmux-pane` to run interactive or long-running commands in a
+temporary tmux pane. The pane opens, runs the command with full interactive
+zsh environment (autoloaded functions, aliases, completions), captures
+output to a temp file, and returns it along with the exit code.
+
+```bash
+run-in-tmux-pane <command> [args...]
+```
+
+> **Prerequisite:** `$TMUX` must be set (the agent session must be running
+> inside tmux).
+
+### When to use
+
+**Rule of thumb:** if a command is a zsh autoloaded function (lives in
+`~/.shellrc/zshrc.d/functions/`) or needs the interactive shell environment,
+use `run-in-tmux-pane`.
+
+### Commands that require `run-in-tmux-pane`
+
+| Command             | Why                                                | Timeout         | Docs                                                                                     |
+| ------------------- | -------------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------- |
+| `gpsup`             | Autoloaded zsh function, needs interactive shell   | 120 s           | [SCM](scm.md#how-to-run-gpsup)                                                           |
+| `fgdku`             | Autoloaded zsh function, long-running, interactive | 1800 s (30 min) | [GDK skill](../../.config/dotfiles/gitlab/.opencode/skills/gdk/SKILL.md)                 |
+| `test_mr`           | Autoloaded zsh function, runs rspec for branch     | 600 s (10 min)  | [MR workflow skill](../../.config/dotfiles/gitlab/.opencode/skills/mr-workflow/SKILL.md) |
+| `bundle exec rspec` | Long-running test suite                            | 600 s (10 min)  | —                                                                                        |
+
+> **Important:** The script blocks until the tmux pane exits. Set the Bash
+> tool's `timeout` parameter to at least the value in the Timeout column above,
+> or the tool will kill the script prematurely.
+
+### How it works
+
+1. Opens a vertical split pane (30% height, detached)
+2. Runs the command via `zsh -ic` so the full shell environment is loaded
+3. Tees stdout to a temp file
+4. Polls until the pane exits, then prints the captured output
+5. Exits with the command's exit code
+
 ## Editing Configuration
 
 To modify tmux settings:

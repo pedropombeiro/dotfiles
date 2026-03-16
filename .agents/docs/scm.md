@@ -119,21 +119,17 @@ labels via GitLab push options — do not use `glab mr create` or manual push op
 
 ### How to run `gpsup`
 
-`gpsup` is implemented as a Ruby script invoked via `mise`. Run it directly:
+`gpsup` is a zsh autoloaded function that relies on the interactive shell
+environment. Run it via [`run-in-tmux-pane`](tmux.md#running-commands-in-a-temporary-tmux-pane):
 
 ```bash
-SCRIPT_DIR="$HOME/.shellrc/zshrc.d/functions/scripts"
-remote=origin
-branch="$(git rev-parse --abbrev-ref HEAD)"
-issue_iid="$(echo "$branch" | sed -E 's|[^0-9]+([0-9]+).*|\1|')"
-
-mise x ruby -- ruby -r "$SCRIPT_DIR/gitlab-helpers.rb" -e "gpsup('$remote', '$issue_iid')"
+run-in-tmux-pane gpsup
 ```
 
-To pass extra `git push` arguments (e.g., `--force-with-lease`), append them after `--`:
+To pass extra `git push` arguments (e.g., `--force-with-lease`):
 
 ```bash
-mise x ruby -- ruby -r "$SCRIPT_DIR/gitlab-helpers.rb" -e "gpsup('$remote', '$issue_iid')" -- --force-with-lease
+run-in-tmux-pane gpsup --force-with-lease
 ```
 
 After `gpsup` creates the MR, open it and **fill in the MR description** using the

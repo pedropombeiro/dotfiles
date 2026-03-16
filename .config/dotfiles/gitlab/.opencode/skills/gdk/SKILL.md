@@ -36,10 +36,13 @@ Comprehensive GDK update orchestrator. Performs the full update cycle:
 13. Warms up Rails environment
 
 ```bash
-fgdku
+run-in-tmux-pane fgdku
 ```
 
 Reports progress via iTerm2 badges and Home Assistant webhooks.
+Must be run via [`run-in-tmux-pane`](../../../../../.agents/docs/tmux.md#running-commands-in-a-temporary-tmux-pane)
+since it is an autoloaded zsh function and is long-running/interactive.
+Set the Bash tool timeout to at least 1800000 ms (30 min).
 
 ### `gswm`
 
@@ -63,7 +66,8 @@ Requires 1Password CLI (`op`) and a `gitlab` account configured.
 
 ## Agent Guidelines
 
-1. **`fgdku` is interactive and long-running** — it prompts on uncommitted changes; do not run from an agent without user confirmation
-2. **Use `gswm`** when the user wants to return to main branch cleanly (safer than plain `git switch`)
-3. **`setup_gitlab_secrets` requires biometric auth** — cannot be run non-interactively
-4. **GDK_ROOT must be set** — `gswm` and `fgdku` check `$GDK_ROOT` to determine if they're in a GDK directory
+1. **Never update from remote manually** — do not run `git pull`, `git fetch` + `git rebase`, or `gdk update` directly in a GDK repo. Always use `run-in-tmux-pane fgdku` instead; it handles fetching, rebasing all branches, bundle install, migrations, GDK restart, and post-update cleanup in the correct order
+2. **`fgdku` is interactive and long-running** — always run via `run-in-tmux-pane fgdku`; it prompts on uncommitted changes so do not run without user confirmation
+3. **Use `gswm`** when the user wants to return to main branch cleanly (safer than plain `git switch`)
+4. **`setup_gitlab_secrets` requires biometric auth** — cannot be run non-interactively
+5. **GDK_ROOT must be set** — `gswm` and `fgdku` check `$GDK_ROOT` to determine if they're in a GDK directory

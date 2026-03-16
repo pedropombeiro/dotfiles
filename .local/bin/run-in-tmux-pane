@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat >&2 <<EOF
+Usage: $(basename "$0") <command> [args...]
+
+Run a command in a temporary tmux pane with full interactive zsh environment.
+Output is captured and printed to stdout; exits with the command's exit code.
+
+Requires \$TMUX to be set (must be running inside tmux).
+EOF
+  exit 1
+}
+
+[[ $# -eq 0 ]] && usage
+[[ "$1" == "-h" || "$1" == "--help" ]] && usage
+
+if [[ -z "${TMUX:-}" ]]; then
+  echo "Error: not running inside tmux" >&2
+  exit 1
+fi
+
+tmpfile=$(mktemp)
+trap 'rm -f "$tmpfile"' EXIT
+
+cmd="$*"
+escaped_cmd="${cmd//\'/\'\\\'\'}"
+
+pane_id=$(tmux split-window -v -l 30% -d -P -F '#{pane_id}' \
+  "zsh -ic '${escaped_cmd}; echo \"EXIT_CODE:\$?\"' | tee '${tmpfile}'")
+
+while tmux list-panes -F '#{pane_id}' 2>/dev/null | grep -q "^${pane_id}$"; do
+  sleep 0.5
+done
+
+strip_escape_sequences() {
+  sed $'s/\x1b][^\x07]*\x07//g; s/\x1b\\[[0-9;? ]*[a-zA-Z]//g'
+}
+
+exit_code=0
+if [[ -s "$tmpfile" ]] && tail -1 "$tmpfile" | grep -q '^EXIT_CODE:'; then
+  exit_code=$(tail -1 "$tmpfile" | sed 's/EXIT_CODE://')
+  sed '$d' "$tmpfile" | strip_escape_sequences
+else
+  cat "$tmpfile" | strip_escape_sequences
+fi
+
+exit "${exit_code}"

@@ -143,6 +143,7 @@
       "printf *": "allow",
       "pwd *": "allow",
       "readlink *": "allow",
+      "run-in-tmux-pane gpsup*": "allow",
       "rg *": "allow",
       "sed *": "allow",
       "shellcheck *": "allow",

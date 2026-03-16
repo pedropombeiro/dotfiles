@@ -40,8 +40,12 @@ Derives the corresponding spec files for all `.rb` files changed in the current 
 vs `master`, then runs them with `bundle exec rspec`.
 
 ```bash
-test_mr
+run-in-tmux-pane test_mr
 ```
+
+Must be run via [`run-in-tmux-pane`](../../../../../.agents/docs/tmux.md#running-commands-in-a-temporary-tmux-pane)
+since it is an autoloaded zsh function and can be long-running.
+Set the Bash tool timeout to at least 600000 ms (10 min).
 
 Mapping rules:
 - `app/` → `spec/`
@@ -83,9 +87,9 @@ Applies with `git apply` and stages all changes (excluding `bin/`).
 
 ## Agent Guidelines
 
-1. **Use `test_mr`** to quickly validate branch changes without manually listing spec files
+1. **Use `test_mr`** to quickly validate branch changes — always run via `run-in-tmux-pane test_mr`; also use `run-in-tmux-pane bundle exec rspec <files>` when running specific spec files
 2. **Run `todo_tidy`** when the user wants to clean up stale review to-dos
 3. **Use `tryout`** to apply an MR's changes locally for testing without checking out the branch
 4. **Use `gpsup` for MR creation** — it is non-interactive and applies milestone/labels automatically; do not use `glab mr create` for the standard workflow
-5. **Run `gpsup` via the Ruby script directly** — see `scm.md` § "How to run `gpsup`" for the exact command; do not check for its existence with `type`/`which`
+5. **Run `gpsup` via `run-in-tmux-pane`** — see `scm.md` § "How to run `gpsup`" for details; do not check for its existence with `type`/`which`
 6. **Update the MR description after creation** — open the newly created MR and write a reviewer-friendly description based on the default template in `.gitlab/merge_request_templates/`

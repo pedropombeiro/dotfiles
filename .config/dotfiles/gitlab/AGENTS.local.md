@@ -2,6 +2,13 @@
 
 Read and follow all instructions in the `.ai/` directory.
 
+## GDK Update Rule
+
+**Never update from remote manually** — do not run `git pull`, `git fetch` + `git rebase`,
+or `gdk update` directly. Always use `fgdku` instead; it handles fetching, rebasing all
+branches, bundle install, migrations, GDK restart, and post-update cleanup in the correct
+order. See the [GDK skill](.opencode/skills/gdk/SKILL.md) for how to run it.
+
 ## Learning Protocol
 
 When the user corrects you or points out a mistake:

@@ -7,7 +7,7 @@ SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
 
 branch="$1"
 if [[ -z $branch ]]; then
-  branch="$(git_current_branch)"
+  branch="$(git rev-parse --abbrev-ref HEAD)"
 fi
 
 mise x ruby -- ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e "puts compute_parent_branch('$branch')"

@@ -6,7 +6,7 @@
 SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
 
 remote=origin
-branch="$(git_current_branch)"
+branch="$(git rev-parse --abbrev-ref HEAD)"
 
 if [[ "$(git remote get-url "${remote}")" == *gitlab.com* ]]; then
   # $match is populated by zsh's =~ regex operator

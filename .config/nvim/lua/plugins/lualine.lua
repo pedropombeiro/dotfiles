@@ -22,7 +22,21 @@ return {
         opt.shortmess:append({ S = true }) -- do not show search count message when searching
       end
 
+      local WIDTH_COMPACT = 60
+      local WIDTH_MEDIUM = 80
+      local WIDTH_WIDE = 100
+
       local function firenvim_cond() return not vim.g.started_by_firenvim end
+      local function min_width(w) return function() return vim.o.columns > w end end
+      local function all_of(...)
+        local fns = { ... }
+        return function()
+          for _, fn in ipairs(fns) do
+            if not fn() then return false end
+          end
+          return true
+        end
+      end
       local function diff_source()
         local gitsigns = vim.b.gitsigns_status_dict
         if gitsigns then
@@ -105,10 +119,11 @@ return {
                 if gstatus.ahead > 0 then table.insert(parts, gstatus.ahead .. "↑") end
                 return table.concat(parts, " ")
               end,
+              cond = min_width(WIDTH_MEDIUM),
             },
             {
               "diff",
-              cond = firenvim_cond,
+              cond = all_of(firenvim_cond, min_width(WIDTH_COMPACT)),
               symbols = {
                 added = symbol_icons.added .. " ",
                 modified = symbol_icons.modified .. " ",
@@ -137,23 +152,33 @@ return {
             },
             {
               "filename",
-              cond = firenvim_cond,
+              cond = all_of(firenvim_cond, min_width(WIDTH_COMPACT)),
               show_filename_only = false,
               path = 1,
-              shorting_target = 80,
+              shorting_target = WIDTH_COMPACT,
               symbols = {
                 modified = symbol_icons.modified,
-                readonly = symbol_icons.readonly, -- Text to show when the file is non-modifiable or readonly.
+                readonly = symbol_icons.readonly,
+              },
+            },
+            {
+              "filename",
+              cond = all_of(firenvim_cond, function() return vim.o.columns <= WIDTH_COMPACT end),
+              path = 0,
+              symbols = {
+                modified = symbol_icons.modified,
+                readonly = symbol_icons.readonly,
               },
             },
           },
           lualine_x = {
             {
               require("lazy.status").updates,
-              cond = require("lazy.status").has_updates,
+              cond = all_of(require("lazy.status").has_updates, min_width(WIDTH_MEDIUM)),
             },
             {
               "overseer",
+              cond = min_width(WIDTH_MEDIUM),
               label = "", -- Prefix for task counts
               colored = true, -- Color the task icons and counts
               symbols = {
@@ -168,13 +193,13 @@ return {
               status = nil, -- List of task statuses to display
               status_not = false, -- When true, invert the status search
             },
-            "encoding",
-            "fileformat",
-            "filetype",
+            { "encoding", cond = min_width(WIDTH_WIDE) },
+            { "fileformat", cond = min_width(WIDTH_WIDE) },
+            { "filetype", cond = min_width(WIDTH_COMPACT) },
           },
           lualine_y = {
             "selectioncount",
-            { "searchcount", maxcount = 999, timeout = 500 },
+            { "searchcount", maxcount = 999, timeout = 500, cond = min_width(WIDTH_WIDE) },
           },
           lualine_z = {
             "progress",

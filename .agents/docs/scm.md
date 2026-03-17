@@ -125,6 +125,15 @@ as trailing args (e.g., `run-in-tmux-pane gpsup --force-with-lease`).
 After `gpsup` creates the MR, open it and **fill in the MR description** using the
 project's default template (`.gitlab/merge_request_templates/`).
 
+## Push Shortcuts
+
+| Command | Equivalent                                | When to use                          |
+| ------- | ----------------------------------------- | ------------------------------------ |
+| `gpsup` | `git push --set-upstream origin <branch>` | First push / creating MR (see above) |
+| `gpf`   | `git push --force-with-lease`             | Subsequent pushes to existing branch |
+
+Use `gpf` (not `gpsup`) when the branch already tracks a remote and you just need to update it.
+
 ## Commit/Push Behavior
 
 When committing/pushing code, first attempt without output (e.g., `git push > /dev/null 2>&1`) to minimize token usage.

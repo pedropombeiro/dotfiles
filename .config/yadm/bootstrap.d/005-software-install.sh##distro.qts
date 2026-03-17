@@ -11,7 +11,8 @@ opkg install bind-dig column coreutils entr \
   file findutils-locate flock git git-http grep iftop htop \
   mount-utils nmap nethogs make tar terminfo tmux whois whereis zsh
 opkg install procps-ng-ps     # installs a more modern version of ps, supporting command line switches
-opkg install coreutils-mkfifo # required for powerlevel10k ZSH theme
+opkg install coreutils-mkfifo  # required for powerlevel10k ZSH theme
+opkg install coreutils-timeout # required for run-renovate cron job
 opkg install bash sysstat     # required for qnapnodeexporter/grafana
 opkg install lua gzip         # required for neovim plugins
 opkg install patch            # required for conform.nvim neovim plugin

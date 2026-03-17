@@ -1,7 +1,7 @@
 [tools]
 # ── Runtimes & infra ──────────────────────────────────────────────────
 # Ruby runtime
-ruby = "3.4.8"
+ruby = "3.4.9"
 # Rust toolchain
 rust = "stable"
 # OLAP database

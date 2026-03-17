@@ -7,6 +7,7 @@ config:
 icons:
   bun: ""
   claude: "🤖"
+  container-station/docker: "🐳"
   mise: ""
   ollama: "󰳆"
   opencode: "🤖"

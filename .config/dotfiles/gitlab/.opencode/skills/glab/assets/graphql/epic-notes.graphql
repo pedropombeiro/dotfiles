@@ -1,0 +1,49 @@
+# Fetch all notes (comments) on a group-level epic.
+#
+# Variables (substitute before use):
+#   $GROUP_PATH  — group fullPath, plain slashes, e.g. "gitlab-org" or "gitlab-org/foundations"
+#   $EPIC_IID    — epic IID as a quoted string, e.g. "16428"
+#   $PAGE_SIZE   — discussions per page, default 100
+#   $CURSOR      — omit for first page; set to pageInfo.endCursor for subsequent pages
+#
+# Usage (first page):
+#   glab api graphql -f query="$(
+#     sed -e 's/$GROUP_PATH/gitlab-org/' \
+#         -e 's/$EPIC_IID/16428/' \
+#         -e 's/$PAGE_SIZE/100/' \
+#         -e '/\$CURSOR/d' \
+#         epic-notes.graphql)"
+#
+# See scripts/epic-notes.sh for a ready-to-run wrapper.
+
+{
+  group(fullPath: "$GROUP_PATH") {
+    workItem(iid: "$EPIC_IID") {
+      id
+      title
+      widgets {
+        type
+        ... on WorkItemWidgetNotes {
+          discussions(first: $PAGE_SIZE) {
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+            nodes {
+              notes {
+                nodes {
+                  id
+                  body
+                  author {
+                    username
+                  }
+                  createdAt
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

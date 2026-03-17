@@ -13,13 +13,14 @@ metadata:
 GitLab workflow management using `glab` CLI for merge requests, issues, and Git best practices.
 
 For standard GitLab.com MR creation, prefer `gpsup` from the `mr-workflow` skill — it
-applies project defaults like milestone and labels automatically.
+applies project defaults like milestone and labels automatically. Run it via
+[`run-in-tmux-pane`](~/.agents/docs/tmux.md#running-commands-in-a-temporary-tmux-pane).
 
 ## Creating Merge Requests
 
 ```bash
 # Preferred (GitLab.com remotes):
-gpsup
+run-in-tmux-pane gpsup
 
 # Simple MR
 glab mr create --title "feat: add feature" --description "Brief description"
@@ -28,35 +29,151 @@ glab mr create --title "feat: add feature" --description "Brief description"
 glab mr create --title "feat: add feature" --description "$(cat /tmp/mr-description.md)"
 ```
 
-**Templates:** Check `.gitlab/merge_request_templates/` for project-specific templates and follow their structure.
+**Templates:** Check `.gitlab/merge_request_templates/` for project-specific templates.
 
 Use `glab mr create` only when `gpsup` is unavailable or the remote is not GitLab.com.
 
 ## Updating Merge Requests
 
 ```bash
-# Update description from file
 glab mr update <number> --description "$(cat /tmp/description.md)"
-
-# View MR details
 glab mr view <number> -R <owner>/<repo>
 ```
 
 ## Issue Management
 
 ```bash
-# View issue details
+# View / comment
 glab issue view <number>
+glab issue view <number> --comments -R <owner>/<repo>
+glab issue note <number> -m "comment" -R <owner>/<repo>
+glab issue note <number> -m "$(cat /tmp/comment.md)" -R <owner>/<repo>
 
-# List issues with filters
-glab issue list --label "priority::P1,status::doing"
+# List (open by default — no --state flag)
+glab issue list --label "priority::P1,status::doing" -R <owner>/<repo>
+glab issue list --closed -R <owner>/<repo>
+glab issue list --all   -R <owner>/<repo>
 
-# Create issue - write description to file first
-glab issue create --title "Bug: issue title" --description "$(cat /tmp/issue-description.md)"
+# Create
+glab issue create --title "Bug: title" --description "$(cat /tmp/issue-description.md)"
+
+# Labels — use --label / --unlabel, NEVER +label or -label syntax
+glab issue update 123 --label "new-label"
+glab issue update 123 --unlabel "old-label"
+# Scoped labels auto-replace within their scope — no --unlabel needed:
+glab issue update 123 --label "status::doing"   # removes any existing status:: label
 ```
 
-**Templates:** Check `.gitlab/issue_templates/` for project-specific templates and follow their structure.
-**References:** Link related issues using `#123` syntax and use appropriate labels/milestones.
+### Issue State Transitions and Notes
+
+```bash
+# Close / reopen
+glab api --method PUT "projects/<project_id>/issues/<iid>" -f state_event=close
+glab api --method PUT "projects/<project_id>/issues/<iid>" -f state_event=reopen
+
+# Post a comment (note: the body field on PUT is silently ignored — always use POST)
+glab api --method POST "projects/<project_id>/issues/<iid>/notes" -f "body=Your comment"
+glab api --method POST "projects/<project_id>/issues/<iid>/notes" \
+  -f "body=$(cat /tmp/comment.md)"
+```
+
+## Work Items
+
+GitLab is migrating issues to work items. The URL shows `/work_items/<iid>` but the REST API is the same.
+
+```bash
+# ✅ Use the issues API — same IID, same endpoints
+glab api "projects/org%2Fproject/issues/<iid>"
+glab api "projects/<project_id>/issues/<iid>/notes"
+
+# ❌ /work_items/ REST endpoint does not exist
+glab api "projects/org%2Fproject/work_items/<iid>"   # → 404
+```
+
+URL parsing: `https://gitlab.com/org/project/-/work_items/539076`
+→ `glab api "projects/org%2Fproject/issues/539076"`
+
+Full details, GraphQL alternative, and group-level work items: **[references/work-items.md](references/work-items.md)**
+
+## Issue Links and Epics
+
+- **Issue links** (`blocked_by`, `relates_to`): [references/issue-links.md](references/issue-links.md)
+- **Epics CRUD** (create, list, update, close): [references/epics.md](references/epics.md)
+- **Epic comments** (GraphQL read/write, pagination): [references/epic-comments.md](references/epic-comments.md)
+- **Nested groups** (`%2F` encoding): [references/nested-groups.md](references/nested-groups.md)
+
+## Epics — Critical Notes
+
+**⚠️ Epic comments require GraphQL** — the REST `/notes` endpoint returns 404.
+
+**Quickest path — use the wrapper scripts:**
+
+```bash
+# Read all comments (handles pagination)
+epic-notes.sh <group-path> <epic-iid>
+epic-notes.sh gitlab-org 16428
+
+# Post a comment
+create-epic-note.sh <group-id> <epic-iid> "body"
+create-epic-note.sh 9970 16428 "My comment"
+```
+
+Scripts are in `scripts/`; GraphQL templates in `assets/graphql/`.
+
+**Manual GraphQL (when you need more control):**
+
+```bash
+# iid must be a quoted string: "16428" not 16428 (integer → type error)
+glab api graphql -f query='
+{
+  group(fullPath: "gitlab-org") {
+    workItem(iid: "16428") {
+      widgets {
+        type
+        ... on WorkItemWidgetNotes {
+          discussions(first: 100) {
+            pageInfo { hasNextPage endCursor }
+            nodes {
+              notes {
+                nodes { id body author { username } createdAt }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}'
+# If hasNextPage: true → re-run with discussions(first: 100, after: "<endCursor>")
+```
+
+**Epic close/reopen** — REST works fine, no GraphQL needed:
+
+```bash
+glab api --method PUT "groups/<group_id>/epics/<iid>" -f state_event=close
+glab api --method PUT "groups/<group_id>/epics/<iid>" -f state_event=reopen
+```
+
+**Nested groups** — REST requires `%2F`; GraphQL uses plain `/`:
+
+```bash
+glab api "groups/gitlab-org%2Ffoundations/epics"                    # ✅ REST
+glab api "groups/gitlab-org/foundations/epics"                      # ❌ 404
+glab api graphql -f query='{ group(fullPath: "gitlab-org/foundations") { ... } }'  # ✅
+```
+
+## MR Listing and Filtering
+
+```bash
+glab mr list -R <owner>/<repo>                   # open (default)
+glab mr list -R <owner>/<repo> --assignee <user>
+glab mr list -R <owner>/<repo> --all             # all states
+glab mr list -R <owner>/<repo> --merged
+glab mr list -R <owner>/<repo> --closed
+glab mr list -R <owner>/<repo> --author <user>
+```
+
+**Note:** `glab mr list` has no `--state` or `--status` flag. Use `--all`, `--merged`, `--closed`.
 
 ## Pipeline Monitoring
 
@@ -79,62 +196,40 @@ glab ci trace <job-id>
 
 **In non-interactive environments (e.g. AI agents):** Use the `gitlab_get_pipeline` MCP tool to poll pipeline status, since `glab ci view` requires a TTY.
 
-## Epic Management
+## GLQL Queries
 
-`glab` has no built-in epic commands. Use the REST API via `glab api`:
-
-```bash
-# View epic details
-glab api "groups/<group-id>/epics/<epic-iid>"
-
-# Read epic description
-glab api "groups/<group-id>/epics/<epic-iid>" | python3 -c "import sys,json; print(json.load(sys.stdin).get('description',''))"
-
-# Update epic description - write to file first, then use $(cat)
-glab api -X PUT "groups/<group-id>/epics/<epic-iid>" -f "description=$(cat /tmp/epic-description.md)"
-
-# Update epic title
-glab api -X PUT "groups/<group-id>/epics/<epic-iid>" -f "title=New Title"
-```
+To query issues, MRs, or epics across projects/groups, load the **`glab-glql`** skill.
 
 ## Git Best Practices
 
-**Branch naming:**
-
 ```bash
-git checkout -b "$USER/<issue-iid>/<description>"
-```
+git checkout -b feat/description    # branch naming
+git checkout -b fix/description
 
-**Commit messages:**
-
-- Format: `type: description` (conventional commits)
-- Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
-- Explain the "why" not just the "what"
-- Reference: `Closes #123`, `Related to !456`
-- Use single quotes for special characters: `git commit -m 'fix: resolve MR !123'`
-
-## Quick Reference
-
-```bash
-# List issues/MRs
-glab issue list --label "bug,P1"
-glab mr list --author @me
-
-# View details
-glab issue view 123
-glab mr view 456
-
-# Update MR
-glab mr update 456 --description "$(cat /tmp/new-description.md)"
+# Commit format: type: description (conventional commits)
+# Reference issues with full URLs: Closes https://gitlab.com/org/project/-/issues/123
+# Use single quotes for special characters: git commit -m 'fix: from MR !123'
 ```
 
 ## Agent Guidelines
 
-1. **Read context first** - Use `glab issue view` or `glab mr view` before implementing
-2. **Use project templates** - Check `.gitlab/issue_templates/` and `.gitlab/merge_request_templates/` for project-specific formats
-3. **Write descriptions to files** - Create markdown in `/tmp/` then use `$(cat /tmp/description.md)`
-4. **Reference properly** - Link issues/MRs in commits: `Closes #123`, `Related to !456`
-5. **Descriptive commits** - Focus on the "why" behind changes
-6. **Quote special characters** - Use single quotes: `git commit -m 'fix: from MR !123'`
-7. **Prefer `gpsup` for MR creation** - See `scm.md` § "How to run `gpsup`" for the exact command; applies milestone/labels automatically
-8. **Fill in the MR description after creation** - Open the new MR and update it using the default template in `.gitlab/merge_request_templates/`
+1. **Read context first** — `glab issue view` / `glab mr view` before implementing
+2. **Use project templates** — check `.gitlab/issue_templates/` and `.gitlab/merge_request_templates/`
+3. **Write descriptions to files** — use `$(cat /tmp/description.md)` not inline strings
+4. **Reference with full URLs** — `Closes https://gitlab.com/org/project/-/issues/123`
+5. **Descriptive commits** — focus on the "why"
+6. **Single quotes for special chars** — `git commit -m 'fix: from MR !123'`
+7. **Label syntax** — `--label` to add, `--unlabel` to remove; never `+label`/`-label`
+8. **Scoped labels** — `--label "status::doing"` auto-removes old `status::*`; no `--unlabel` needed
+9. **No `--jq` flag** — glab has no `--jq`; use `| jq '...'` pipe
+10. **No `--state`/`--status` on `mr list`** — use `--all`, `--merged`, `--closed`
+11. **Work items use the issues API** — `/work_items/<iid>` URLs → `projects/.../issues/<iid>`
+12. **Epic comments need GraphQL** — REST `/notes` → 404; use `epic-notes.sh` or manual GraphQL with `first: 100` + pagination
+13. **No `-R` for group-level API** — `-R` expects `OWNER/REPO`; group endpoints use `glab api "groups/..."` directly
+14. **Nested groups REST: `%2F`** — `groups/org%2Fsubgroup/epics`; unencoded slashes → 404
+15. **GraphQL iid is a String** — `workItem(iid: "16428")` not `workItem(iid: 16428)`
+16. **`groups/<id>/work_items` is 404** — use `groups/<id>/epics` (REST) or GraphQL
+17. **`project.workItems` not `project.workItem`** — singular doesn't exist; use `workItems(first: 1, iid: "IID")`; no `filter:` argument
+18. **Epic close/reopen via REST** — `state_event=close`/`reopen` on `PUT groups/<id>/epics/<iid>` works; no GraphQL needed
+19. **Prefer `gpsup` for MR creation** — see `scm.md` for details; applies milestone/labels automatically
+20. **Fill in the MR description after creation** — open the new MR and update it using the default template in `.gitlab/merge_request_templates/`

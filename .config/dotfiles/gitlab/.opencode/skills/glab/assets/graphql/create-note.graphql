@@ -1,0 +1,28 @@
+# Post a comment on any noteable GitLab resource (epic, issue, MR, etc.).
+#
+# Variables (substitute before use):
+#   $NOTEABLE_ID — global ID of the resource, e.g. "gid://gitlab/Epic/3436066"
+#   $BODY        — comment body text (must be shell-escaped before substitution)
+#
+# Get an epic's global ID:
+#   EPIC_ID=$(glab api "groups/<group_id>/epics/<epic_iid>" | jq '.id')
+#   NOTEABLE_ID="gid://gitlab/Epic/${EPIC_ID}"
+#
+# See scripts/create-epic-note.sh for a ready-to-run wrapper.
+
+mutation {
+  createNote(input: {
+    noteableId: "$NOTEABLE_ID"
+    body: "$BODY"
+  }) {
+    note {
+      id
+      body
+      author {
+        username
+      }
+      createdAt
+    }
+    errors
+  }
+}

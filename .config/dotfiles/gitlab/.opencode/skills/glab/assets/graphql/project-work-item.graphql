@@ -1,0 +1,53 @@
+# Fetch a project-level work item with its notes.
+#
+# Variables (substitute before use):
+#   $PROJECT_PATH — project fullPath, e.g. "gitlab-org/gitlab"
+#   $WORK_ITEM_IID — work item IID as a quoted string, e.g. "539076"
+#   $PAGE_SIZE    — discussions per page, default 50
+#
+# Note: project.workItem (singular) does NOT exist.
+#       Use workItems(first: 1, iid: "...") (plural).
+#       Do NOT use a filter: {} argument — pass iid directly.
+#       WorkItem has no 'type' field — use workItemType { name }.
+#
+# For most use cases the REST issues API is simpler:
+#   glab api "projects/org%2Fproject/issues/<iid>"
+#   glab api "projects/org%2Fproject/issues/<iid>/notes"
+
+{
+  project(fullPath: "$PROJECT_PATH") {
+    workItems(first: 1, iid: "$WORK_ITEM_IID") {
+      nodes {
+        id
+        iid
+        title
+        workItemType {
+          name
+        }
+        widgets {
+          type
+          ... on WorkItemWidgetNotes {
+            discussions(first: $PAGE_SIZE) {
+              pageInfo {
+                hasNextPage
+                endCursor
+              }
+              nodes {
+                notes {
+                  nodes {
+                    id
+                    body
+                    author {
+                      username
+                    }
+                    createdAt
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

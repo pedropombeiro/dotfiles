@@ -168,12 +168,12 @@ use `run-in-tmux-pane`.
 
 ### Commands that require `run-in-tmux-pane`
 
-| Command             | Why                                                | Timeout         | Docs                                                                                     |
-| ------------------- | -------------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------- |
-| `gpsup`             | Autoloaded zsh function, needs interactive shell   | 120 s           | [SCM](scm.md#how-to-run-gpsup)                                                           |
-| `fgdku`             | Autoloaded zsh function, long-running, interactive | 1800 s (30 min) | [GDK skill](../../.config/dotfiles/gitlab/.opencode/skills/gdk/SKILL.md)                 |
-| `test_mr`           | Autoloaded zsh function, runs rspec for branch     | 600 s (10 min)  | [MR workflow skill](../../.config/dotfiles/gitlab/.opencode/skills/mr-workflow/SKILL.md) |
-| `bundle exec rspec` | Long-running test suite                            | 600 s (10 min)  | —                                                                                        |
+| Command             | Why                                                | Timeout         | Docs                                                                                 |
+| ------------------- | -------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------ |
+| `gpsup`             | Autoloaded zsh function, needs interactive shell   | 120 s           | [SCM](scm.md#how-to-run-gpsup)                                                       |
+| `fgdku`             | Autoloaded zsh function, long-running, interactive | 1800 s (30 min) | [GDK skill](~/.config/dotfiles/gitlab/.opencode/skills/gdk/SKILL.md)                 |
+| `test_mr`           | Autoloaded zsh function, runs rspec for branch     | 600 s (10 min)  | [MR workflow skill](~/.config/dotfiles/gitlab/.opencode/skills/mr-workflow/SKILL.md) |
+| `bundle exec rspec` | Long-running test suite                            | 600 s (10 min)  | —                                                                                    |
 
 > **Important:** The script blocks until the tmux pane exits. Set the Bash
 > tool's `timeout` parameter to at least the value in the Timeout column above,

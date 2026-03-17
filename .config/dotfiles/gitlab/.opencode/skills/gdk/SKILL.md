@@ -40,7 +40,7 @@ run-in-tmux-pane fgdku
 ```
 
 Reports progress via iTerm2 badges and Home Assistant webhooks.
-Must be run via [`run-in-tmux-pane`](../../../../../.agents/docs/tmux.md#running-commands-in-a-temporary-tmux-pane)
+Must be run via [`run-in-tmux-pane`](~/.agents/docs/tmux.md#running-commands-in-a-temporary-tmux-pane)
 since it is an autoloaded zsh function and is long-running/interactive.
 Set the Bash tool timeout to at least 1800000 ms (30 min).
 

@@ -43,7 +43,7 @@ vs `master`, then runs them with `bundle exec rspec`.
 run-in-tmux-pane test_mr
 ```
 
-Must be run via [`run-in-tmux-pane`](../../../../../.agents/docs/tmux.md#running-commands-in-a-temporary-tmux-pane)
+Must be run via [`run-in-tmux-pane`](~/.agents/docs/tmux.md#running-commands-in-a-temporary-tmux-pane)
 since it is an autoloaded zsh function and can be long-running.
 Set the Bash tool timeout to at least 600000 ms (10 min).
 

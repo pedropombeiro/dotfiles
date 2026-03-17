@@ -9,8 +9,7 @@
     {
       "name": "gitlab-knowledge-graph",
       "description": "GitLab repository knowledge graph and code analysis",
-      "type": "remote",
-      "url": "http://localhost:27495/mcp"
+      "command": ["npx", "-y", "mcp-remote@latest", "http://localhost:27495/mcp"]
     },
     {
       "name": "context7",

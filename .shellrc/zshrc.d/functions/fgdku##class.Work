@@ -119,7 +119,13 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
   mise install
   if ! (( $+commands[gdk] )); then
     # When ruby is upgraded, we don't have the gdk gem, so we need to reinstall it
-    gem install gitlab-development-kit
+    mise x ruby -- gem install gitlab-development-kit
+  fi
+  # Ensure the bundler version required by Gemfile.lock is installed (fresh Ruby may not have it)
+  local _bundler_ver
+  _bundler_ver="$(sed -n '/^BUNDLED WITH/{n;s/^ *//;p;}' Gemfile.lock)"
+  if [[ -n "$_bundler_ver" ]]; then
+    mise x ruby -- gem install bundler -v "$_bundler_ver" --conservative
   fi
 
   set -eo pipefail

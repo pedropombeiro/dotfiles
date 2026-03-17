@@ -317,6 +317,8 @@ cask "choosy"
 cask "chrysalis"
 # Anthropic's official Claude AI desktop app
 cask "claude"
+# Terminal-based AI coding assistant
+cask "claude-code"
 # Create and run Linux containers using lightweight virtual machines
 cask "container"
 # Allows switching between application windows

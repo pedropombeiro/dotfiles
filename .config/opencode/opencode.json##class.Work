@@ -175,7 +175,14 @@
     "lazy-mcp_list_commands": "allow",
     "lazy-mcp_list_servers": "allow",
     "read": "allow",
-    "skill": { "clickhouse": "allow", "gdk": "allow", "glab": "allow", "mr-workflow": "allow", "psql": "allow" },
+    "skill": {
+      "clickhouse": "allow",
+      "gdk": "allow",
+      "gitlab-review": "allow",
+      "glab": "allow",
+      "mr-workflow": "allow",
+      "psql": "allow"
+    },
     "task": {
       "general": "allow",
       "explore": "allow",

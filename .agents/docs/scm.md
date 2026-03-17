@@ -117,20 +117,10 @@ When the remote points to `gitlab.com`, **always use `gpsup`** to push the branc
 create the MR. It automatically applies the current milestone, issue labels, and team
 labels via GitLab push options — do not use `glab mr create` or manual push options.
 
-### How to run `gpsup`
-
-`gpsup` is a zsh autoloaded function that relies on the interactive shell
-environment. Run it via [`run-in-tmux-pane`](tmux.md#running-commands-in-a-temporary-tmux-pane):
-
-```bash
-run-in-tmux-pane gpsup
-```
-
-To pass extra `git push` arguments (e.g., `--force-with-lease`):
-
-```bash
-run-in-tmux-pane gpsup --force-with-lease
-```
+`gpsup` is a zsh autoloaded function — run it via
+[`run-in-tmux-pane`](tmux.md#running-commands-in-a-temporary-tmux-pane) (see the
+commands table there for the required timeout). Pass extra `git push` arguments
+as trailing args (e.g., `run-in-tmux-pane gpsup --force-with-lease`).
 
 After `gpsup` creates the MR, open it and **fill in the MR description** using the
 project's default template (`.gitlab/merge_request_templates/`).

@@ -39,23 +39,23 @@ strip_escape_sequences() {
 }
 
 TAIL_LINES=20
-
 exit_code=0
-if [[ -s "$tmpfile" ]] && tail -1 "$tmpfile" | grep -q '^EXIT_CODE:'; then
-  exit_code=$(tail -1 "$tmpfile" | sed 's/EXIT_CODE://')
-  if [[ "$exit_code" -eq 0 ]]; then
-    total=$(( $(wc -l < "$tmpfile") - 1 ))
-    if [[ "$total" -gt "$TAIL_LINES" ]]; then
-      echo "[$(( total - TAIL_LINES )) lines truncated]"
-      sed '$d' "$tmpfile" | tail -n "$TAIL_LINES" | strip_escape_sequences
-    else
-      sed '$d' "$tmpfile" | strip_escape_sequences
-    fi
-  else
-    sed '$d' "$tmpfile" | strip_escape_sequences
-  fi
+last_line=$(tail -1 "$tmpfile")
+
+if [[ "$last_line" == EXIT_CODE:* ]]; then
+  exit_code="${last_line#EXIT_CODE:}"
+  sed '$d' "$tmpfile" > "${tmpfile}.out"
 else
-  cat "$tmpfile" | strip_escape_sequences
+  cp "$tmpfile" "${tmpfile}.out"
 fi
 
+total=$(wc -l < "${tmpfile}.out")
+if [[ "$exit_code" -eq 0 && "$total" -gt "$TAIL_LINES" ]]; then
+  echo "[$(( total - TAIL_LINES )) lines truncated]"
+  tail -n "$TAIL_LINES" "${tmpfile}.out" | strip_escape_sequences
+else
+  strip_escape_sequences < "${tmpfile}.out"
+fi
+
+rm -f "${tmpfile}.out"
 exit "${exit_code}"

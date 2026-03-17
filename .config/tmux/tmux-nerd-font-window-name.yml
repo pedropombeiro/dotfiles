@@ -6,7 +6,8 @@ config:
 
 icons:
   bun: ""
+  claude: "🤖"
   mise: ""
   ollama: "󰳆"
-  opencode: "󰚩"
+  opencode: "🤖"
   sesh: ""

@@ -17,6 +17,11 @@
         }
       },
       {
+        "id": "session-cost",
+        "type": "session-cost",
+        "color": "green"
+      },
+      {
         "id": "3",
         "type": "context-percentage-usable",
         "color": "brightBlack",

@@ -70,6 +70,29 @@ documentation.
 |---|---|---|
 | `TMUX_PANE_LINGER` | `3` | Seconds to keep the tmux pane visible after the command finishes. Set to `0` to close immediately. |
 
+## Security considerations
+
+This skill runs commands inside `zsh -ic`, which loads the user's full
+interactive shell environment (aliases, ssh-agent, GPG keys, etc.). This is
+by design — it solves the problem of agent tools running in a minimal
+non-interactive shell.
+
+The agent framework's permission model controls which commands the agent may
+run. Grant access only to specific commands rather than a blanket allow:
+
+```json
+{
+  "bash": {
+    "run-in-tmux-pane gpsup": "allow",
+    "run-in-tmux-pane fgdku": "allow",
+    "run-in-tmux-pane *": "deny"
+  }
+}
+```
+
+This ensures the agent can only invoke the exact commands you approve, even
+though each command runs in a fully interactive shell.
+
 ## License
 
 MIT

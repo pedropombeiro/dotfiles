@@ -22,11 +22,18 @@ if [[ -z "${TMUX:-}" ]]; then
 fi
 
 linger=${TMUX_PANE_LINGER:-3}
+if [[ ! "$linger" =~ ^[0-9]+$ ]]; then
+  linger=3
+fi
 
 tmpfile=$(mktemp)
 trap 'rm -f "$tmpfile"' EXIT
 
-cmd="$*"
+if [[ $# -eq 1 ]]; then
+  cmd="$1"
+else
+  cmd=$(printf "%q " "$@")
+fi
 escaped_cmd="${cmd//\'/\'\\\'\'}"
 
 pane_id=$(tmux split-window -v -l 30% -d -P -F '#{pane_id}' \
@@ -37,12 +44,12 @@ while tmux list-panes -F '#{pane_id}' 2>/dev/null | grep -q "^${pane_id}$"; do
 done
 
 strip_escape_sequences() {
-  sed $'s/\x1b][^\x07]*\x07//g; s/\x1b\\[[0-9;? ]*[a-zA-Z]//g'
+  perl -pe 's/\e][^\a]*\a//g; s/\e\[[0-9;? ]*[a-zA-Z]//g'
 }
 
 TAIL_LINES=20
 exit_code=0
-last_line=$(tail -1 "$tmpfile")
+last_line=$(tail -n 1 "$tmpfile" || true)
 
 if [[ "$last_line" == EXIT_CODE:* ]]; then
   exit_code="${last_line#EXIT_CODE:}"
@@ -51,7 +58,7 @@ else
   cp "$tmpfile" "${tmpfile}.out"
 fi
 
-total=$(wc -l < "${tmpfile}.out")
+total=$(wc -l < "${tmpfile}.out" | tr -d ' ')
 if [[ "$exit_code" -eq 0 && "$total" -gt "$TAIL_LINES" ]]; then
   echo "[$(( total - TAIL_LINES )) lines truncated]"
   tail -n "$TAIL_LINES" "${tmpfile}.out" | strip_escape_sequences

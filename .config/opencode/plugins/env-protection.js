@@ -1,4 +1,10 @@
 export const EnvProtection = async ({ project, client, $, directory, worktree }) => {
+  delete process.env.MANPAGER;
+  delete process.env.VIMPAGER_VIM;
+  process.env.EDITOR = "cat";
+  process.env.VISUAL = "cat";
+  process.env.GIT_EDITOR = "cat";
+
   /**
    * Matches .env files and all variants:
    * .env, .env.local, .env.production, .env.development, .env.test, etc.

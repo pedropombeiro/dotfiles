@@ -21,6 +21,8 @@ if [[ -z "${TMUX:-}" ]]; then
   exit 1
 fi
 
+linger=${TMUX_PANE_LINGER:-3}
+
 tmpfile=$(mktemp)
 trap 'rm -f "$tmpfile"' EXIT
 
@@ -28,7 +30,7 @@ cmd="$*"
 escaped_cmd="${cmd//\'/\'\\\'\'}"
 
 pane_id=$(tmux split-window -v -l 30% -d -P -F '#{pane_id}' \
-  "zsh -ic '${escaped_cmd}; echo \"EXIT_CODE:\$?\"' | tee '${tmpfile}'")
+  "zsh -ic '${escaped_cmd}; echo \"EXIT_CODE:\$?\"' | tee '${tmpfile}'; sleep ${linger}")
 
 while tmux list-panes -F '#{pane_id}' 2>/dev/null | grep -q "^${pane_id}$"; do
   sleep 0.5

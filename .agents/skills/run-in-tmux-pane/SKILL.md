@@ -60,6 +60,8 @@ run-in-tmux-pane 'claude -p "Hello, how are you?"'
   (with a truncation notice)
 - If the command fails, the full output is returned
 - ANSI escape sequences are stripped from the output
+- `TMUX_PANE_LINGER` controls how many seconds the tmux pane stays visible after the
+  command finishes (default: 3). Set to 0 to close immediately.
 
 ## Examples
 

@@ -130,10 +130,15 @@ level via a zle widget and works regardless of scrollback state.
 
 ## OpenCode Tmux Tab Indicator
 
-The opencode plugin `~/.config/opencode/plugins/tmux-indicator.js` sets a per-window user option
+The opencode plugin `opencode-tmux-indicator` sets a per-window user option
 `@opencode-waiting` when an opencode instance is waiting for user input (permission or question).
 The presentation is handled in `tmux.conf` via `#{?@opencode-waiting,...}` conditionals in
 `window-status-format`, which turns inactive tabs gruvbox green with a `● ` prefix.
+
+The plugin also writes a BEL to the pane TTY so tmux sets `window_bell_flag`, enabling
+`Prefix + M-n` (`next-window -a`) to jump to windows waiting for input. To prevent the bell
+from forwarding to iTerm2 or overriding tab styling, `tmux.conf` sets `bell-action none` and
+`window-status-bell-style default`.
 
 ## Alt+Number Window Switching
 

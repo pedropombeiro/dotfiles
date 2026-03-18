@@ -7,6 +7,10 @@ YADM_SCRIPTS=$(cd -- "$(dirname -- "${(%):-%x}")/../scripts" &>/dev/null && pwd)
 
 source "${YADM_SCRIPTS}/colors.sh"
 
+printf "${YELLOW}%s${NC}\n" "Linking run-in-tmux-pane..."
+mkdir -p "${HOME}/.local/bin"
+ln -sfn "${HOME}/.agents/skills/run-in-tmux-pane/scripts/run-in-tmux-pane" "${HOME}/.local/bin/run-in-tmux-pane"
+
 class="$(yadm config local.class)"
 if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then
   src_path="${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}"

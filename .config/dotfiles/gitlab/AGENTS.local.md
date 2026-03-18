@@ -25,3 +25,17 @@ When the user corrects you or points out a mistake:
 
 When loading a module from `.ai/` (for example, `.ai/testing.md`), also check for and load its `.local.md` counterpart
 if it exists (for example, `.ai/testing.local.md`). Always load `.ai/lessons-learned.local.md` if it exists.
+
+## Glean MCP
+
+The Glean MCP server is the preferred way to look up company knowledge. Use it instead of
+`webfetch` or `gitlab_documentation_search` in most situations.
+
+- **Prefer `chat`** for questions that need synthesis or reasoning across multiple sources
+  (e.g. "how does feature X work?", "what's the process for Y?"). A single `chat` call is
+  often more efficient than multiple parallel `search` calls.
+- **Prefer `search`** for simple document retrieval or when you need exact, unprocessed
+  results. It supports filtering by app (e.g. `gitlab`, `slack`, `gdrive`), date, author,
+  and channel.
+- Glean indexes GitLab documentation (docs.gitlab.com), the handbook, runbooks, Slack,
+  Google Docs, email, and more — use it to gather context that local tools cannot reach.

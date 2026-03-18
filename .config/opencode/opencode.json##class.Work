@@ -163,6 +163,8 @@
       "/private/tmp/*": "allow",
       "/private/tmp": "allow"
     },
+    // Denied: use Glean MCP instead (faster, more comprehensive, indexes more sources)
+    "gitlab_documentation_search": "deny",
     "glob": "allow",
     "grep": "allow",
     "knowledge-graph_get_references": "allow",

@@ -2,6 +2,25 @@
 
 Read and follow all instructions in the `.ai/` directory.
 
+## Glean MCP
+
+**IMPORTANT:** When searching for GitLab documentation (docs.gitlab.com), runbooks, handbook
+content, or any company knowledge, **always use the Glean MCP first** — do NOT fall back to
+`webfetch`, `gitlab_documentation_search`, or local `grep`/`Grep`/`Glob`/`git grep` for
+documentation lookups. These local tools are a last resort for this purpose; Glean is faster,
+more comprehensive, and indexes sources that local tools cannot reach.
+
+- **Prefer `chat`** for questions that need synthesis or reasoning across multiple sources
+  (e.g. "how does feature X work?", "what's the process for Y?"). A single `chat` call is
+  often more efficient than multiple parallel `search` calls.
+- **IMPORTANT:** `search` returns very large results that consume significant context. Always
+  try `chat` first — it returns summarized results that are much more efficient. Only fall
+  back to `search` when you specifically need raw, unprocessed document results.
+- `search` supports filtering by app (e.g. `gitlab`, `slack`, `gdrive`), date, author,
+  and channel.
+- Glean also indexes Slack, Google Docs, email, and more — use it to gather additional
+  context when information is missing from documentation.
+
 ## GDK Update Rule
 
 **Never update from remote manually** — do not run `git pull`, `git fetch` + `git rebase`,
@@ -25,17 +44,3 @@ When the user corrects you or points out a mistake:
 
 When loading a module from `.ai/` (for example, `.ai/testing.md`), also check for and load its `.local.md` counterpart
 if it exists (for example, `.ai/testing.local.md`). Always load `.ai/lessons-learned.local.md` if it exists.
-
-## Glean MCP
-
-The Glean MCP server is the preferred way to look up company knowledge. Use it instead of
-`webfetch` or `gitlab_documentation_search` in most situations.
-
-- **Prefer `chat`** for questions that need synthesis or reasoning across multiple sources
-  (e.g. "how does feature X work?", "what's the process for Y?"). A single `chat` call is
-  often more efficient than multiple parallel `search` calls.
-- **Prefer `search`** for simple document retrieval or when you need exact, unprocessed
-  results. It supports filtering by app (e.g. `gitlab`, `slack`, `gdrive`), date, author,
-  and channel.
-- Glean indexes GitLab documentation (docs.gitlab.com), the handbook, runbooks, Slack,
-  Google Docs, email, and more — use it to gather context that local tools cannot reach.

@@ -9,6 +9,11 @@ any tool or framework, **always use the Context7 MCP first** (`resolve-library-i
 Do NOT fall back to `webfetch` or raw GitHub URLs for documentation lookups — Context7 is faster,
 more structured, and doesn't trigger permission prompts. Use this proactively without being asked.
 
+## MCP Tool Usage
+
+Before calling any MCP tool for the first time in a session, use `lazy-mcp_describe_commands`
+to check its parameter schema. Do not guess parameter names.
+
 ## Specialized Topics
 
 - [SCM](~/.agents/docs/scm.md) - YADM, git, and commit/push behavior
@@ -23,7 +28,13 @@ more structured, and doesn't trigger permission prompts. Use this proactively wi
 
 ## Searching Files in Git Repositories
 
-When working inside a git repo, **prefer `git ls-files` and `git grep`**
+**IMPORTANT:** Do NOT use `git grep`, `Grep`, `Glob`, `webfetch`, or `gitlab_documentation_search`
+to look up **documentation, runbooks, or company knowledge**. Use the Glean MCP instead
+(if available) — see `AGENTS.local.md` for details. These local tools are a last resort for
+this purpose; Glean is faster, more comprehensive, and indexes sources that local tools
+cannot reach.
+
+When searching **code or configuration** inside a git repo, **prefer `git ls-files` and `git grep`**
 over the Glob and Grep tools. These are faster because they only traverse
 tracked files and respect `.gitignore`. Use the Glob/Grep tools only when
 you need to find untracked or ignored files.

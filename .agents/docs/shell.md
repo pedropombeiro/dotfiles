@@ -81,12 +81,17 @@ ghost text painted in default foreground. The `wait'0d'` block in
 `common-plugins.zsh` installs an outermost `accept-line` wrapper that clears
 `POSTDISPLAY` + `region_highlight` and calls `zle -R` **before** `zle .accept-line`.
 
-### fzf Ctrl-R suppression
+### Ctrl-R ownership (atuin)
 
-`fzf --zsh` unconditionally binds `^R` to `fzf-history-widget` on all keymaps.
-Since atuin owns `^R`, `fzf.zsh` caches the fzf init output and strips those
-`bindkey ... '^R'` lines during cache generation. This prevents fzf from ever
-claiming Ctrl-R, even if zinit replays the turbo load mid-session.
+Two plugins try to claim `^R`:
+
+1. **fzf** — `fzf --zsh` binds `^R` to `fzf-history-widget`. Fix: `fzf.zsh`
+   caches the fzf init output and strips `bindkey ... '^R'` lines during
+   cache generation.
+2. **zsh-vi-mode** — binds `^R` to `history-incremental-search-backward`
+   when it (re)initialises keymaps (both eager and lazy). Fix: `atuin.zsh`
+   hooks `zvm_after_init_commands` and `zvm_after_lazy_keybindings_commands`
+   to rebind `^R` to atuin's widgets after every zvm keymap reset.
 
 ### `ZSH_AUTOSUGGEST_MANUAL_REBIND=1`
 

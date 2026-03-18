@@ -23,6 +23,7 @@ fi
 _atuin_setup_keybindings() {
   source "$1"
 
+  _atuin_rebind_ctrl_r
   bindkey '^[[A' history-beginning-search-backward-end  # Up arrow (normal/xterm mode)
   bindkey '^[OA' history-beginning-search-backward-end  # Up arrow (application/keypad mode)
   bindkey '^[[B' history-beginning-search-forward-end   # Down arrow (normal/xterm mode)
@@ -30,6 +31,17 @@ _atuin_setup_keybindings() {
   bindkey -M vicmd 'k' history-beginning-search-backward-end
   bindkey -M vicmd 'j' history-beginning-search-forward-end
 }
+
+# zsh-vi-mode clobbers ^R with history-incremental-search-backward when it
+# (re)initialises keymaps. Hook into both zvm_after_init (eager) and
+# zvm_after_lazy_keybindings (deferred first keymap switch) to reclaim ^R.
+_atuin_rebind_ctrl_r() {
+  bindkey -M emacs '^r' atuin-search
+  bindkey -M viins '^r' atuin-search-viins
+  bindkey -M vicmd '/' atuin-search
+}
+zvm_after_init_commands+=(_atuin_rebind_ctrl_r)
+zvm_after_lazy_keybindings_commands+=(_atuin_rebind_ctrl_r)
 
 # Deferred load (wait'0c') so atuin binds after fzf (wait'0b') and zsh-vi-mode
 zinit wait'0c' lucid nocd light-mode for \

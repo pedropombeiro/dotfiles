@@ -21,6 +21,13 @@ more structured, and doesn't trigger permission prompts. Use this proactively wi
 - [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`
 - [Developer Directory](~/.agents/docs/developer-directory.md) - Repo clone path convention (`~/Developer/<forge>/<owner>/<repo>`)
 
+## Searching Files in Git Repositories
+
+When working inside a git repo, **prefer `git ls-files` and `git grep`**
+over the Glob and Grep tools. These are faster because they only traverse
+tracked files and respect `.gitignore`. Use the Glob/Grep tools only when
+you need to find untracked or ignored files.
+
 ## Continuous Learning
 
 When the user corrects you about how something works, how a tool should be used, or how this environment is

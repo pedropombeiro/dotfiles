@@ -767,8 +767,6 @@
 				<key>Red Component</key>
 				<real>0.11759927868843079</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -1278,8 +1276,6 @@
 				<key>Red Component</key>
 				<real>0.11759927868843079</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -1777,8 +1773,6 @@
 				<key>Red Component</key>
 				<real>0.024939171969890594</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Font</key>
 			<string>Monaco</string>
 			<key>Badge Max Height</key>
@@ -2246,8 +2240,6 @@
 				<key>Red Component</key>
 				<real>0.11759927868843079</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -2789,8 +2781,6 @@
 				<key>Red Component</key>
 				<real>0.11759927868843079</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -3263,8 +3253,6 @@
 				<key>Red Component</key>
 				<real>0.024939171969890594</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -3722,8 +3710,6 @@
 				<key>Red Component</key>
 				<real>0.024939171969890594</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -4225,8 +4211,6 @@
 				<key>Red Component</key>
 				<real>0.11759927868843079</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -4751,8 +4735,6 @@
 				<key>Red Component</key>
 				<real>0.1779085099697113</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -5225,8 +5207,6 @@
 				<key>Red Component</key>
 				<real>0.024939171969890594</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Font</key>
 			<string>Monaco</string>
 			<key>Badge Max Height</key>
@@ -5683,8 +5663,6 @@
 				<key>Red Component</key>
 				<real>0.11759927868843079</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -6185,8 +6163,6 @@
 				<key>Red Component</key>
 				<real>0.024939171969890594</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Font</key>
 			<string>Monaco</string>
 			<key>Badge Max Height</key>
@@ -6582,8 +6558,6 @@
 				<key>Red Component</key>
 				<real>0.024939171969890594</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Font</key>
 			<string>Monaco</string>
 			<key>Badge Max Height</key>
@@ -6975,8 +6949,6 @@
 				<key>Red Component</key>
 				<real>0.024939171969890594</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Font</key>
 			<string>Monaco</string>
 			<key>Badge Max Height</key>
@@ -7382,8 +7354,6 @@
 				<key>Red Component</key>
 				<real>0.024939171969890594</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Font</key>
 			<string>Monaco</string>
 			<key>Badge Max Height</key>
@@ -7791,8 +7761,6 @@
 				<key>Red Component</key>
 				<real>0.024939171969890594</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Font</key>
 			<string>Monaco</string>
 			<key>Badge Max Height</key>
@@ -8200,8 +8168,6 @@
 				<key>Red Component</key>
 				<real>0.024939171969890594</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Font</key>
 			<string>Monaco</string>
 			<key>Badge Max Height</key>
@@ -8609,8 +8575,6 @@
 				<key>Red Component</key>
 				<real>0.024939171969890594</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Badge Font</key>
 			<string>Monaco</string>
 			<key>Badge Max Height</key>
@@ -8998,8 +8962,6 @@
 				<key>Red Component</key>
 				<real>0.0</real>
 			</dict>
-			<key>Background Image Location</key>
-			<string></string>
 			<key>Blinking Cursor</key>
 			<false/>
 			<key>Blur</key>
@@ -9160,7 +9122,7 @@
 			<key>Shortcut</key>
 			<string>T</string>
 			<key>Show Status Bar</key>
-			<true/>
+			<false/>
 			<key>Silence Bell</key>
 			<false/>
 			<key>Status Bar Layout</key>

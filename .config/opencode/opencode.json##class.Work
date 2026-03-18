@@ -181,7 +181,8 @@
       "gitlab-review": "allow",
       "glab": "allow",
       "mr-workflow": "allow",
-      "psql": "allow"
+      "psql": "allow",
+      "run-in-tmux-pane": "allow"
     },
     "task": {
       "general": "allow",

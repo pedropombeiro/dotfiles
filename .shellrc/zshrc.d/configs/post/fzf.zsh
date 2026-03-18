@@ -1,8 +1,21 @@
 #!/usr/bin/env zsh
 
+(( $+commands[fzf] )) || return
+
+# Cache `fzf --zsh` output, stripping Ctrl-R bindings (atuin owns ^R).
+# Regenerates when the fzf binary is newer or this script is updated.
+_fzf_init="${XDG_DATA_HOME:-$HOME/.local/share}/fzf/init.zsh"
+
+if [[ ! -f "$_fzf_init" || "$_fzf_init" -ot "$commands[fzf]" || "$_fzf_init" -ot "${(%):-%x}" ]]; then
+  mkdir -p "${_fzf_init:h}"
+  fzf --zsh | grep -v "bindkey.*'\^R'" >"$_fzf_init"
+fi
+
 # Load fzf after turbo plugins to prevent keybinding conflicts
-zinit wait'0b' lucid nocd atload'source <(fzf --zsh)' light-mode for \
+zinit wait'0b' lucid nocd atload"source $_fzf_init" light-mode for \
   zdharma-continuum/null
+
+unset _fzf_init
 
 # CTRL-G - Paste the selected git branch into the command line
 __fzf_bsel() {

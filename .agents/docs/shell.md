@@ -81,6 +81,13 @@ ghost text painted in default foreground. The `wait'0d'` block in
 `common-plugins.zsh` installs an outermost `accept-line` wrapper that clears
 `POSTDISPLAY` + `region_highlight` and calls `zle -R` **before** `zle .accept-line`.
 
+### fzf Ctrl-R suppression
+
+`fzf --zsh` unconditionally binds `^R` to `fzf-history-widget` on all keymaps.
+Since atuin owns `^R`, `fzf.zsh` caches the fzf init output and strips those
+`bindkey ... '^R'` lines during cache generation. This prevents fzf from ever
+claiming Ctrl-R, even if zinit replays the turbo load mid-session.
+
 ### `ZSH_AUTOSUGGEST_MANUAL_REBIND=1`
 
 Set in `common-plugins.zsh` to skip O(n) widget re-wrapping on every precmd.

@@ -149,6 +149,7 @@
       "stat *": "allow",
       "strings *": "allow",
       "tail *": "allow",
+      "type *": "allow",
       "vale *": "allow",
       "wc *": "allow",
       "which *": "allow",

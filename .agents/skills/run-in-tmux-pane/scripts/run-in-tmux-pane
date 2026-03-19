@@ -31,36 +31,51 @@ if [[ -n "${TMUX_PANE_TAIL_LINES:-}" && ! "${TMUX_PANE_TAIL_LINES}" =~ ^[1-9][0-
 fi
 TAIL_LINES=${TMUX_PANE_TAIL_LINES:-20}
 
+if [[ -n "${TMUX_PANE_TIMEOUT:-}" && ! "${TMUX_PANE_TIMEOUT}" =~ ^[1-9][0-9]*$ ]]; then
+  unset TMUX_PANE_TIMEOUT
+fi
+_timeout=${TMUX_PANE_TIMEOUT:-120}
+
 tmpfile=$(mktemp)
-trap 'rm -f "$tmpfile"' EXIT
+trap 'rm -f "$tmpfile" "${tmpfile}.out"' EXIT
+
+_sentinel="SKILL_EXIT_${RANDOM}_${RANDOM}"
 
 if [[ $# -eq 1 ]]; then
   cmd="$1"
 else
   cmd=$(printf "%q " "$@")
+  cmd="${cmd% }"
 fi
 escaped_cmd="${cmd//\'/\'\\\'\'}"
 
-pane_id=$(tmux split-window -v -l 30% -d -P -F '#{pane_id}' \
-  "zsh -ilc '${escaped_cmd}; echo \"EXIT_CODE:\$?\"' 2>&1 | tee '${tmpfile}'; sleep ${linger}")
+pane_id=$(tmux split-window -v -l 30% -d -P -F '#{pane_id}' -t "${TMUX_PANE}" \
+  "zsh -ilc '${escaped_cmd}; echo \"${_sentinel}:\$?\"' 2>&1 | tee '${tmpfile}'; sleep ${linger}")
 
+_deadline=$(( $(date +%s) + _timeout ))
 while tmux list-panes -F '#{pane_id}' 2>/dev/null | grep -q "^${pane_id}$"; do
   sleep 0.5
+  if [[ $(date +%s) -ge $_deadline ]]; then
+    tmux kill-pane -t "$pane_id" 2>/dev/null || true
+    echo "Error: command timed out after ${_timeout}s" >&2
+    exit 124
+  fi
 done
 
 strip_escape_sequences() {
-  perl -pe 's/\e][^\a]*\a//g; s/\e\[[0-9;? ]*[a-zA-Z]//g'
+  perl -pe 's/\e\].*?(?:\a|\e\\)//g; s/\e\[[0-9;? ]*[a-zA-Z]//g'
 }
 
 exit_code=0
-last_line=$(tail -n 1 "$tmpfile" || true)
+last_line=$(tail -n 1 "$tmpfile" | strip_escape_sequences || true)
 
-if [[ "$last_line" == EXIT_CODE:* ]]; then
-  exit_code="${last_line#EXIT_CODE:}"
+if [[ "$last_line" == "${_sentinel}:"* ]]; then
+  exit_code="${last_line#"${_sentinel}:"}"
   sed '$d' "$tmpfile" > "${tmpfile}.out"
 else
   cp "$tmpfile" "${tmpfile}.out"
 fi
+[[ "$exit_code" =~ ^[0-9]+$ ]] || exit_code=1
 
 total=$(wc -l < "${tmpfile}.out" | tr -d ' ')
 if [[ "$exit_code" -eq 0 && "$total" -gt "$TAIL_LINES" ]]; then
@@ -70,5 +85,4 @@ else
   strip_escape_sequences < "${tmpfile}.out"
 fi
 
-rm -f "${tmpfile}.out"
 exit "${exit_code}"

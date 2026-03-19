@@ -70,6 +70,7 @@ documentation.
 |---|---|---|
 | `TMUX_PANE_LINGER` | `3` | Seconds to keep the tmux pane visible after the command finishes. Set to `0` to close immediately. |
 | `TMUX_PANE_TAIL_LINES` | `20` | Number of trailing lines to keep when truncating successful output. |
+| `TMUX_PANE_TIMEOUT` | `120` | Maximum seconds to wait for the command to finish before killing the pane (exits with code 124). |
 
 ## Security considerations
 

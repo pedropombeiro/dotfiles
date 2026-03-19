@@ -154,6 +154,7 @@
       "pre-commit *": "allow",
       "printenv *": "allow",
       "printf *": "allow",
+      "ps *": "allow",
       "pwd": "allow",
       "RAILS_ENV=test bundle exec rspec*": "allow",
       "RAILS_ENV=test bundle exec rubocop*": "allow",

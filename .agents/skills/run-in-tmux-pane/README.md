@@ -29,9 +29,9 @@ transparently.
 
 ## How it works
 
-1. Opens a tmux split-pane (30% height, detached) running `zsh -ic`
-2. Executes the command inside the user's full interactive shell
-3. Captures stdout via `tee` to a temp file
+1. Opens a tmux split-pane (30% height, detached) running `zsh -ilc`
+2. Executes the command inside the user's full interactive login shell
+3. Captures stdout and stderr via `tee` to a temp file
 4. Polls until the pane exits, then returns the output with ANSI escapes stripped
 5. Truncates successful output to 20 lines; returns full output on failure
 6. Exits with the command's original exit code
@@ -69,10 +69,11 @@ documentation.
 | Variable | Default | Description |
 |---|---|---|
 | `TMUX_PANE_LINGER` | `3` | Seconds to keep the tmux pane visible after the command finishes. Set to `0` to close immediately. |
+| `TMUX_PANE_TAIL_LINES` | `20` | Number of trailing lines to keep when truncating successful output. |
 
 ## Security considerations
 
-This skill runs commands inside `zsh -ic`, which loads the user's full
+This skill runs commands inside `zsh -ilc`, which loads the user's full
 interactive shell environment (aliases, ssh-agent, GPG keys, etc.). This is
 by design — it solves the problem of agent tools running in a minimal
 non-interactive shell.

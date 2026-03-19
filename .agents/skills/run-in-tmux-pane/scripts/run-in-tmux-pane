@@ -21,10 +21,15 @@ if [[ -z "${TMUX:-}" ]]; then
   exit 1
 fi
 
-linger=${TMUX_PANE_LINGER:-3}
-if [[ ! "$linger" =~ ^[0-9]+$ ]]; then
-  linger=3
+if [[ -n "${TMUX_PANE_LINGER:-}" && ! "${TMUX_PANE_LINGER}" =~ ^[0-9]+$ ]]; then
+  unset TMUX_PANE_LINGER
 fi
+linger=${TMUX_PANE_LINGER:-3}
+
+if [[ -n "${TMUX_PANE_TAIL_LINES:-}" && ! "${TMUX_PANE_TAIL_LINES}" =~ ^[1-9][0-9]*$ ]]; then
+  unset TMUX_PANE_TAIL_LINES
+fi
+TAIL_LINES=${TMUX_PANE_TAIL_LINES:-20}
 
 tmpfile=$(mktemp)
 trap 'rm -f "$tmpfile"' EXIT
@@ -37,7 +42,7 @@ fi
 escaped_cmd="${cmd//\'/\'\\\'\'}"
 
 pane_id=$(tmux split-window -v -l 30% -d -P -F '#{pane_id}' \
-  "zsh -ic '${escaped_cmd}; echo \"EXIT_CODE:\$?\"' | tee '${tmpfile}'; sleep ${linger}")
+  "zsh -ilc '${escaped_cmd}; echo \"EXIT_CODE:\$?\"' 2>&1 | tee '${tmpfile}'; sleep ${linger}")
 
 while tmux list-panes -F '#{pane_id}' 2>/dev/null | grep -q "^${pane_id}$"; do
   sleep 0.5
@@ -47,7 +52,6 @@ strip_escape_sequences() {
   perl -pe 's/\e][^\a]*\a//g; s/\e\[[0-9;? ]*[a-zA-Z]//g'
 }
 
-TAIL_LINES=20
 exit_code=0
 last_line=$(tail -n 1 "$tmpfile" || true)
 

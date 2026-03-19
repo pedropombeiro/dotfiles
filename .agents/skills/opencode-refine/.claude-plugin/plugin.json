@@ -1,0 +1,9 @@
+{
+  "name": "opencode-refine",
+  "description": "Iteratively test and refine prompts, skills, and agent configurations using opencode run",
+  "version": "1.0.0",
+  "author": {
+    "name": "GitLab"
+  },
+  "license": "MIT"
+}

@@ -58,6 +58,13 @@ Agents should follow these conventions when writing on Pedro's behalf.
 - Prefer `1.` ordered lists over bullets for steps.
 - Use `**bold**` for key terms/emphasis, never ALL CAPS.
 
+## Drafting vs. Posting
+
+- When asked to **draft** a comment, reply, or message, **show the text to the user for
+  approval first**. Do NOT post it directly.
+- Only post/submit when the user explicitly says "post", "send", "submit", or "reply"
+  (without the word "draft").
+
 ## What to Avoid
 
 - No filler phrases ("I hope this helps", "Please let me know if you have any questions").

@@ -26,7 +26,7 @@
       "enabled": true
     }
   },
-  "enabled_providers": ["gitlab"],
+  "enabled_providers": ["gitlab", "anthropic", "google"],
   "small_model": "gitlab/duo-chat-haiku-4-5",
   "provider": {
     "gitlab": {

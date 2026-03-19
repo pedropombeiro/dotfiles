@@ -13,4 +13,13 @@ if [[ -x "$mise_bin" ]]; then
   fi
 
   source "$cache_file"
+
+  # Re-prepend shims to PATH: macOS path_helper (/etc/zprofile) reorders PATH
+  # after .zshenv, pushing shims behind /usr/bin. This ensures mise shims take
+  # precedence over system binaries like /usr/bin/rake (Ruby 2.6).
+  # typeset -gU deduplicates the path array (first occurrence wins).
+  # -g is required because this file is sourced inside a function chain
+  # (source_files → _load_settings); without it, typeset creates a local shadow.
+  typeset -gU path
+  path=("${HOME}/.local/share/mise/shims" "${HOME}/.local/bin" $path)
 fi

@@ -138,6 +138,7 @@
       "golangci-lint run*": "allow",
       "grep *": "allow",
       "head *": "allow",
+      "hostname": "allow",
       "ls *": "allow",
       "markdownlint *": "allow",
       "md5 *": "allow",

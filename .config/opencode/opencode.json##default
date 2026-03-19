@@ -145,6 +145,7 @@
       "hostname": "allow",
       "less *": "allow",
       "ls *": "allow",
+      "man *": "deny", // Context7 should be used instead
       "md5 *": "allow",
       "mise ls *": "allow",
       "mise ls-remote *": "allow",
@@ -172,8 +173,9 @@
       "strings *": "allow",
       "tail *": "allow",
       "tmux display-message *": "allow",
-      "tmux show-options *": "allow",
       "tmux list-windows *": "allow",
+      "tmux show -s terminal-features": "allow",
+      "tmux show-options *": "allow",
       "type *": "allow",
       "uname *": "allow",
       "uniq *": "allow",

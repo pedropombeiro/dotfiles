@@ -140,6 +140,7 @@
       "head *": "allow",
       "hostname": "allow",
       "ls *": "allow",
+      "man *": "deny", // Context7 should be used instead
       "markdownlint *": "allow",
       "md5 *": "allow",
       "mise ls *": "allow",
@@ -169,6 +170,10 @@
       "stat *": "allow",
       "strings *": "allow",
       "tail *": "allow",
+      "tmux display-message *": "allow",
+      "tmux list-windows *": "allow",
+      "tmux show -s terminal-features": "allow",
+      "tmux show-options *": "allow",
       "type *": "allow",
       "vale *": "allow",
       "wc *": "allow",

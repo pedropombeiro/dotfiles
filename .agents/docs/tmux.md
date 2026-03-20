@@ -183,6 +183,11 @@ use `run-in-tmux-pane`.
 > **Important:** The script blocks until the tmux pane exits. Set the Bash
 > tool's `timeout` parameter to at least the value in the Timeout column above,
 > or the tool will kill the script prematurely.
+>
+> Do not override `TMUX_PANE_TIMEOUT` to a value lower than the timeout listed
+> in the table. For example, `gpsup` runs pre-push hooks (rubocop, danger,
+> secrets-detection) that routinely take 60–90 s, so the default 120 s is the
+> minimum safe value.
 
 ### How it works
 

@@ -119,13 +119,13 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
   mise install
   if ! (( $+commands[gdk] )); then
     # When ruby is upgraded, we don't have the gdk gem, so we need to reinstall it
-    mise x ruby -- gem install gitlab-development-kit
+    gem install gitlab-development-kit
   fi
   # Ensure the bundler version required by Gemfile.lock is installed (fresh Ruby may not have it)
   local _bundler_ver
   _bundler_ver="$(sed -n '/^BUNDLED WITH/{n;s/^ *//;p;}' Gemfile.lock)"
   if [[ -n "$_bundler_ver" ]]; then
-    mise x ruby -- gem install bundler -v "$_bundler_ver" --conservative
+    gem install bundler -v "$_bundler_ver" --conservative
   fi
 
   set -eo pipefail
@@ -137,10 +137,10 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
   BRANCH_MIGRATIONS=(${(On)${(f)MIGRATIONS_DIFF}:t})
 
   _fgdku_step "bundle install"
-  mise x ruby -- gem uninstall json --all --ignore-dependencies
-  mise x ruby -- ruby -e "load Gem.bin_path('bundler', 'bundle')" -- install
+  gem uninstall json --all --ignore-dependencies
+  ruby -e "load Gem.bin_path('bundler', 'bundle')" -- install
 
-  mise x ruby -- bin/spring stop || echo 'Spring not running'
+  bin/spring stop || echo 'Spring not running'
   pkill spring || echo 'No remaining spring processes' # Ensure there are no leftover spring processes, this sometimes causes issues with the RubyMine debugger hanging trying to establish a connection
   spring_binstubs restore "${GDK_ROOT}/gitlab"
 
@@ -150,27 +150,27 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
   cd $GDK_ROOT
 
-  mise x ruby -- gdk update
+  gdk update
 
   cd gitlab
   git restore db/structure.sql
   sleep 5
 
   _fgdku_step "post-update bundle"
-  mise x ruby -- gem uninstall json --all --ignore-dependencies
-  mise x ruby -- ruby -e "load Gem.bin_path('bundler', 'bundle')" -- install # Needed if Ruby version changed
+  gem uninstall json --all --ignore-dependencies
+  ruby -e "load Gem.bin_path('bundler', 'bundle')" -- install # Needed if Ruby version changed
 
   spring_binstubs generate "${GDK_ROOT}/gitlab"
 
   _fgdku_step "running test"
   printf "${YELLOW}%s${NC}\n" 'Running simple test...'
-  mise x ruby -- bundle exec rspec --failure-exit-code 0 --error-exit-code 1 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb ||
-    mise x ruby -- bundle exec rake db:test:prepare
+  bundle exec rspec --failure-exit-code 0 --error-exit-code 1 ee/spec/services/ci/runners/stale_group_runners_prune_service_spec.rb ||
+    bundle exec rake db:test:prepare
 
   _fgdku_step "ClickHouse migrations"
   printf "${YELLOW}%s${NC}\n" "Run any pending ClickHouse migrations..."
   if gdk status clickhouse >/dev/null 2>&1 && curl -sf http://localhost:8123/ping >/dev/null 2>&1; then
-    mise x ruby -- bundle exec rake gitlab:clickhouse:migrate:main
+    bundle exec rake gitlab:clickhouse:migrate:main
   else
     printf "${YELLOW}%s${NC}\n" 'ClickHouse not available, skipping migrations...'
   fi
@@ -196,7 +196,7 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
 
   _fgdku_step "gdk cleanup"
   (
-    cd $GDK_ROOT && mise x ruby -- bundle install && yes | gdk cleanup
+    cd $GDK_ROOT && bundle install && yes | gdk cleanup
     fd -tf --max-depth 1 --size +10M . gitlab/log -x truncate -s 0 {}
   ) || printf "${YELLOW}%s${NC}\n" "GDK cleanup subshell failed, continuing..."
 
@@ -214,7 +214,7 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
   fi
 
   # Load the app to memory
-  mise x ruby -- bundle exec rails environment
+  bundle exec rails environment
 
   cd - >/dev/null
 )

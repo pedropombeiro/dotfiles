@@ -14,12 +14,17 @@ if [[ -x "$mise_bin" ]]; then
 
   source "$cache_file"
 
-  # Re-prepend shims to PATH: macOS path_helper (/etc/zprofile) reorders PATH
-  # after .zshenv, pushing shims behind /usr/bin. This ensures mise shims take
-  # precedence over system binaries like /usr/bin/rake (Ruby 2.6).
+  # macOS path_helper (/etc/zprofile) reorders PATH after .zshenv, pushing
+  # shims behind /usr/bin. Re-prepend shims so they beat system binaries
+  # (e.g. /usr/bin/rake from Ruby 2.6).
+  # Then eagerly run hook-env so that concrete installs land *ahead* of shims.
+  # This gives the correct priority (installs > shims > system) from the very
+  # first command, including in subshells spawned by gdk update.
   # typeset -gU deduplicates the path array (first occurrence wins).
   # -g is required because this file is sourced inside a function chain
   # (source_files → _load_settings); without it, typeset creates a local shadow.
   typeset -gU path
   path=("${HOME}/.local/share/mise/shims" "${HOME}/.local/bin" $path)
+
+  eval "$("$mise_bin" hook-env -s zsh 2>/dev/null)"
 fi

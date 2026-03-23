@@ -5,7 +5,7 @@ ruby = "3.4.9"
 # Rust toolchain
 rust = "stable"
 # Go toolchain
-go = "1.25.8"
+go = "1.26.1"
 # OLAP database
 clickhouse = "24"
 # Zero-trust infrastructure access (SSH/k8s/DB)

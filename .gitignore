@@ -79,6 +79,7 @@ Thumbs.db
 .local/bin/wait_for_mr_merge
 .local/share/grc-rs
 .pgsql_profile
+.pinchtab/config.json
 .profile
 .shellrc/login.d/brew.sh
 .shellrc/rc.d/aliases-nas.sh

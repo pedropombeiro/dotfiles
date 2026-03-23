@@ -18,6 +18,12 @@
       "command": ["npx", "-y", "@upstash/context7-mcp"]
     },
     {
+      "name": "pinchtab",
+      "description": "Browser control for AI agents via PinchTab",
+      "type": "local",
+      "command": ["pinchtab", "mcp"]
+    },
+    {
       "name": "websearch",
       "description": "Web search via Exa AI",
       "type": "remote",
@@ -40,4 +46,3 @@
     "cache_ttl": 3600
   }
 }
-

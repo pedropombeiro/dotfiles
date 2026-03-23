@@ -9,6 +9,9 @@ clickhouse = "24"
 # Zero-trust infrastructure access (SSH/k8s/DB)
 teleport-community = "17"
 
+# Browser control for AI agents
+"npm:pinchtab" = "latest"
+
 # ── GitLab tooling ────────────────────────────────────────────────────
 # GitLab CLI
 glab = "latest"

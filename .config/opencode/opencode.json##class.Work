@@ -27,10 +27,15 @@
     }
   },
   "enabled_providers": ["gitlab", "anthropic", "google"],
-  "small_model": "gitlab/duo-chat-haiku-4-5",
+  "small_model": "gitlab/duo-workflow-haiku-4-5",
   "provider": {
     "gitlab": {
       "models": {
+        "duo-workflow-opus-4-6": {
+          "cost": {
+            "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
+          }
+        },
         "duo-chat-opus-4-6": {
           "cost": {
             "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
@@ -61,8 +66,17 @@
             "input": 15, "output": 75, "cache_read": 1.50, "cache_write": 18.75
           }
         },
+        "gitlab/duo-workflow-haiku-4-5": {
+          "cost": { "input": 1, "output": 5, "cache_read": 0.10, "cache_write": 1.25 }
+        },
         "duo-chat-haiku-4-5": {
           "cost": { "input": 1, "output": 5, "cache_read": 0.10, "cache_write": 1.25 }
+        },
+        "duo-workflow-gpt-5-3-codex": {
+          "cost": { "input": 1.75, "output": 14, "cache_read": 0.175 }
+        },
+        "duo-workflow-gpt-5-4": {
+          "cost": { "input": 2.50, "output": 15, "cache_read": 0.25 }
         }
       }
     }

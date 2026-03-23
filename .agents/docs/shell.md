@@ -29,6 +29,15 @@ Zsh configuration with modular structure and zinit plugins.
 3. Main configs in `configs/` directory
 4. `post/` configs load last (keybindings, fzf integration)
 
+## PATH Ordering (macOS)
+
+macOS `path_helper` (via `/etc/zprofile`) can push Homebrew and mise paths
+behind `/usr/bin`. `pre/050-fix-path-ordering.zsh` restores the intended
+priority so completion scripts (like Homebrew's `_git`) match the selected
+binary:
+
+`mise installs` > `mise shims` > `~/.local/bin` > `Homebrew` > `system`
+
 ## XDG Base Directories
 
 `~/.zshenv` exports `XDG_CONFIG_HOME=~/.config` so that macOS CLI tools using

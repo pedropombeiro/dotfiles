@@ -33,7 +33,8 @@
     "lua-lsp@claude-plugins-official": true,
     "claude-code-wakatime@wakatime": true,
     "context7@claude-plugins-official": true,
-    "gitlab@claude-plugins-official": true
+    "gitlab@claude-plugins-official": true,
+    "ruby-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "wakatime": {

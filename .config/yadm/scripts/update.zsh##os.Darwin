@@ -58,6 +58,7 @@ if [[ $(yadm config local.class) == 'Work' ]]; then
   source "${YADM_SCRIPTS}/update-work.zsh"
 fi
 
+echo
 _update_step "brew dump"
 mise run brew:dump
 

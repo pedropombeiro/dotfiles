@@ -95,8 +95,6 @@ brew "fio"
 brew "fzf"
 # GitHub command-line tool
 brew "gh"
-# Conversion library
-brew "libiconv"
 # Distributed revision control system
 brew "git"
 # Syntax-highlighting pager for git and diff output
@@ -149,6 +147,8 @@ brew "jq"
 brew "lazydocker"
 # Simple terminal UI for git commands
 brew "lazygit"
+# Conversion library
+brew "libiconv"
 # Postgres C API library
 brew "libpq", link: true
 # Curses-based tool for viewing and analyzing log files

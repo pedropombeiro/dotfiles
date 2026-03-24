@@ -30,6 +30,7 @@ local _zinit_data="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit"
 rm -f ~/*.zwc(N) ~/.shellrc/**/*.zwc(N) ${_zinit_data}/**/*.zwc(N)
 zsh -i -c 'sleep 5' # Allow time for .zlogin to asynchronously regenerate the .zwc files
 
+echo
 printf "${YELLOW}%s${NC}\n" "Build bat theme"
 bat cache --build # Ensure any custom themes and syntax definition files are compiled
 

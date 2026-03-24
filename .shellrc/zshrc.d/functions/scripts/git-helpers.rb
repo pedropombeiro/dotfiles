@@ -5,31 +5,62 @@
 # this script will ensure that branches from the same MR will be rebased correctly, keeping the chain order
 
 def compute_default_branch
-  system(*%w[git show-ref -q --verify refs/heads/main]) ? "main" : "master"
+  @compute_default_branch ||= system(*%w[git show-ref -q --verify refs/heads/main]) ? "main" : "master"
 end
 
 # compute_parent_branch will determine the closest parent branch,
 # ignoring remotes that we're not tracking against, and with a preference
 # for the local branch. In scenarios where the parent branch does not
 # have a local tracking branch, then the remote is returned.
-def compute_parent_branch(branch_name = nil)
-  branch_name ||= `git rev-parse --abbrev-ref HEAD`
-  remote_names = `git remote`.lines.map(&:chomp)
-  active_remote_name = `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split("/").first
-  other_remote_names = remote_names - [active_remote_name]
+def preload_parent_branches!(branches)
+  @compute_parent_branch_cache ||= {}
+  @remote_names ||= `git remote`.lines.map(&:chomp)
 
-  parent_branch_line = `git log --decorate --simplify-by-decoration --oneline #{branch_name}`.lines[1].rstrip
+  missing = branches.reject { |b| @compute_parent_branch_cache.key?(b) }
+  return if missing.empty?
+
+  threads = missing.map do |branch_name|
+    Thread.new do
+      output = `git log --decorate --simplify-by-decoration --oneline #{branch_name}`.lines
+      [branch_name, output]
+    end
+  end
+
+  threads.each do |t|
+    branch_name, output = t.value
+    resolve_parent_branch_from_log(branch_name, output)
+  end
+end
+
+def compute_parent_branch(branch_name = nil)
+  @compute_parent_branch_cache ||= {}
+  branch_name ||= `git rev-parse --abbrev-ref HEAD`
+
+  return @compute_parent_branch_cache[branch_name] if @compute_parent_branch_cache.key?(branch_name)
+
+  output = `git log --decorate --simplify-by-decoration --oneline #{branch_name}`.lines
+  resolve_parent_branch_from_log(branch_name, output)
+end
+
+def resolve_parent_branch_from_log(branch_name, log_lines)
+  @compute_parent_branch_cache ||= {}
+  @remote_names ||= `git remote`.lines.map(&:chomp)
+  @active_remote_name ||= `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split("/").first
+  other_remote_names = @remote_names - [@active_remote_name]
+
+  parent_branch_line = log_lines[1]&.rstrip || ""
   parent_branch_line = parent_branch_line
     .sub("HEAD -> ", "")
     .gsub(/tag: [^,)]+(, )?/, "")
-  return compute_default_branch if parent_branch_line.match?(%r{.* \((origin|security)/(.*)\) .*})
-  return compute_default_branch unless parent_branch_line.match?(/.* \((.*)\) .*/)
+  return @compute_parent_branch_cache[branch_name] = compute_default_branch if parent_branch_line.match?(%r{.* \((origin|security)/(.*)\) .*})
+  return @compute_parent_branch_cache[branch_name] = compute_default_branch unless parent_branch_line.match?(/.* \((.*)\) .*/)
 
-  parent_branch_line
-    .sub(/.* \((.*)\) .*/, '\1')
-    .split(", ")
-    .reject { |b| other_remote_names.any? { |remote_name| b.start_with?("#{remote_name}/") } }
-    .min_by(&:length) || compute_default_branch
+  @compute_parent_branch_cache[branch_name] =
+    parent_branch_line
+      .sub(/.* \((.*)\) .*/, '\1')
+      .split(", ")
+      .reject { |b| other_remote_names.any? { |remote_name| b.start_with?("#{remote_name}/") } }
+      .min_by(&:length) || compute_default_branch
 end
 
 class String
@@ -155,16 +186,30 @@ def rebase_mappings
   user_name = ENV.fetch("USER", nil)
   default_branch = compute_default_branch
 
+  preload_local_branches!
+
   mr_pattern = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/[a-z0-9\-+_]+$}i
   seq_mr_pattern = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/(?<mr_seq_nr>\d+)-[a-z0-9\-+_]+$}i
   backport_pattern = %r{^(security[-/])?#{user_name}/(?<mr_id>\d+)/[a-z0-9\-+_]+-(?<milestone>\d+[-.]\d+)$}i
 
   local_branches =
-    `git branch --list`
-      .lines
-      .map { |line| line[2..].rstrip }
+    @branch_exists_cache.keys
       .select { |branch| branch.start_with?("#{user_name}/", "security-#{user_name}/", "security/#{user_name}/") }
-      .sort_by do |branch|
+
+  non_seq_branches = local_branches.reject { |b| seq_mr_pattern.match?(b) || backport_pattern.match?(b) }
+
+  @remote_names ||= `git remote`.lines.map(&:chomp)
+  @active_remote_name ||= `git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null`.split("/").first
+
+  preload_threads = [
+    Thread.new { branch_distance_map(default_branch, local_branches) },
+    Thread.new { preload_merge_bases!(default_branch, local_branches) },
+    Thread.new { preload_fork_points!(default_branch, local_branches) },
+    Thread.new { preload_parent_branches!(non_seq_branches) }
+  ]
+  preload_threads.each(&:join)
+
+  local_branches = local_branches.sort_by do |branch|
         seq_mr_match_data = seq_mr_pattern.match(branch)
         backport_match_data = backport_pattern.match(branch)
         mr_match_data = mr_pattern.match(branch)
@@ -238,7 +283,7 @@ def rebase_mappings
         prev_branch = seq_map[prev_seq_nr].first
         if branch_exists?(prev_branch)
           if branch_merged_into?(prev_branch, default_branch)
-            mb = `git merge-base #{default_branch} #{branch} 2>/dev/null`.strip
+            mb = merge_base(default_branch, branch)
             fork_point = prev_branch unless branch_merged_into?(prev_branch, mb)
             rebase_onto = default_branch
           else
@@ -251,7 +296,7 @@ def rebase_mappings
         prev_seq_pattern = "#{user_name}/#{current_mr_id}/#{current_mr_seq_nr - 1}-"
         old_tip = deleted_branch_tip_from_reflog(prev_seq_pattern, branch)
         if old_tip
-          mb = `git merge-base #{default_branch} #{branch} 2>/dev/null`.strip
+          mb = merge_base(default_branch, branch)
           fork_point = old_tip unless branch_merged_into?(old_tip, mb)
         end
 
@@ -269,9 +314,11 @@ def rebase_mappings
     end
 
     if fork_point.nil? && (rebase_onto || parent_branch) == default_branch
-      fp = `git merge-base --fork-point #{default_branch} #{branch} 2>/dev/null`.strip
-      mb = `git merge-base #{default_branch} #{branch} 2>/dev/null`.strip
-      if Process.last_status.success? && !fp.empty? && fp != `git rev-parse #{default_branch}`.strip && fp != mb
+      fp_result = compute_fork_point(default_branch, branch)
+      fp = fp_result[:value]
+      mb = merge_base(default_branch, branch)
+      default_branch_sha = resolve_ref(default_branch)
+      if fp_result[:success] && !fp.empty? && fp != default_branch_sha && fp != mb
         fork_point = fp
         rebase_onto = default_branch
       end
@@ -292,12 +339,89 @@ def branch_sort_key(branch_info)
   [branch_info[:chain_mr_id] || "", branch_info[:chain_mr_seq_nr].nil? ? 0 : -branch_info[:chain_mr_seq_nr]]
 end
 
+def preload_local_branches!
+  @branch_exists_cache ||= {}
+  return if @branch_exists_preloaded
+
+  `git for-each-ref --format='%(refname:short)' refs/heads/`.lines.each do |line|
+    @branch_exists_cache[line.strip] = true
+  end
+  @branch_exists_preloaded = true
+end
+
 def branch_exists?(branch)
-  system(*%W[git rev-parse --verify #{branch}], out: File::NULL, err: File::NULL)
+  @branch_exists_cache ||= {}
+  return @branch_exists_cache[branch] if @branch_exists_cache.key?(branch)
+
+  @branch_exists_cache[branch] =
+    system(*%W[git rev-parse --verify #{branch}], out: File::NULL, err: File::NULL)
+end
+
+def resolve_ref(ref)
+  @resolve_ref_cache ||= {}
+  @resolve_ref_cache[ref] ||= `git rev-parse #{ref}`.strip
+end
+
+def merge_base(a, b)
+  @merge_base_cache ||= {}
+  key = "#{a}:#{b}"
+  return @merge_base_cache[key] if @merge_base_cache.key?(key)
+
+  @merge_base_cache[key] = `git merge-base #{a} #{b} 2>/dev/null`.strip
+end
+
+def preload_merge_bases!(default_branch, branches)
+  @merge_base_cache ||= {}
+  missing = branches.reject { |b| @merge_base_cache.key?("#{default_branch}:#{b}") }
+  return if missing.empty?
+
+  threads = missing.map do |branch|
+    Thread.new do
+      result = `git merge-base #{default_branch} #{branch} 2>/dev/null`.strip
+      [branch, result]
+    end
+  end
+
+  threads.each do |t|
+    branch, result = t.value
+    @merge_base_cache["#{default_branch}:#{branch}"] = result
+  end
+end
+
+def preload_fork_points!(default_branch, branches)
+  @fork_point_cache ||= {}
+  missing = branches.reject { |b| @fork_point_cache.key?("#{default_branch}:#{b}") }
+  return if missing.empty?
+
+  threads = missing.map do |branch|
+    Thread.new do
+      result = `git merge-base --fork-point #{default_branch} #{branch} 2>/dev/null`.strip
+      success = Process.last_status.success?
+      [branch, result, success]
+    end
+  end
+
+  threads.each do |t|
+    branch, result, success = t.value
+    @fork_point_cache["#{default_branch}:#{branch}"] = {value: result, success: success}
+  end
+end
+
+def compute_fork_point(default_branch, branch)
+  @fork_point_cache ||= {}
+  key = "#{default_branch}:#{branch}"
+  return @fork_point_cache[key] if @fork_point_cache.key?(key)
+
+  result = `git merge-base --fork-point #{default_branch} #{branch} 2>/dev/null`.strip
+  @fork_point_cache[key] = {value: result, success: Process.last_status.success?}
 end
 
 def branch_merged_into?(branch, target)
-  system(*%W[git merge-base --is-ancestor #{branch} #{target}])
+  @branch_merged_cache ||= {}
+  key = "#{branch}:#{target}"
+  return @branch_merged_cache[key] if @branch_merged_cache.key?(key)
+
+  @branch_merged_cache[key] = system(*%W[git merge-base --is-ancestor #{branch} #{target}])
 end
 
 def deleted_branch_tip_from_reflog(branch_name_prefix, descendant_branch = nil)
@@ -307,28 +431,67 @@ def deleted_branch_tip_from_reflog(branch_name_prefix, descendant_branch = nil)
     /\bcheckout: moving from .+ to #{escaped}/
   ]
 
-  `git reflog --format=%H\\ %gs`.lines.each do |line|
-    sha, description = line.strip.split(" ", 2)
-    next unless description
-    next unless patterns.any? { |p| description.match?(p) }
-    next if descendant_branch && !system(*%W[git merge-base --is-ancestor #{sha} #{descendant_branch}], out: File::NULL, err: File::NULL)
+  reflog_cmd = %W[
+    git reflog --format=%H\ %gs
+    --grep-reflog=checkout.*#{branch_name_prefix}
+    --grep-reflog=rebase.*#{branch_name_prefix}
+  ]
 
-    return sha
+  IO.popen(reflog_cmd) do |io|
+    io.each_line do |line|
+      sha, description = line.strip.split(" ", 2)
+      next unless description
+      next unless patterns.any? { |p| description.match?(p) }
+      next if descendant_branch && !branch_merged_into?(sha, descendant_branch)
+
+      return sha
+    end
   end
 
   nil
 end
 
+def branch_distance_map(parent_branch, branches)
+  @branch_distance_cache ||= {}
+
+  missing = branches.uniq.reject { |branch| @branch_distance_cache.key?("#{branch}:#{parent_branch}") }
+  return if missing.empty?
+
+  missing_set = missing.to_h { |branch| [branch, true] }
+  distances = {}
+
+  output = `git for-each-ref --format='%(refname:short) %(ahead-behind:#{parent_branch})' refs/heads/`
+  if Process.last_status.success?
+    output.lines.each do |line|
+      branch, ahead, behind = line.split
+      next unless branch && ahead && behind
+      next unless missing_set[branch]
+
+      distances[branch] = ahead.to_i
+    end
+  end
+
+  missing.each do |branch|
+    key = "#{branch}:#{parent_branch}"
+    @branch_distance_cache[key] = distances.fetch(branch) do
+      `git rev-list --count #{parent_branch}..#{branch}`.strip.to_i
+    end
+  end
+end
+
 def branch_distance(branch, parent_branch)
-  `git rev-list --count #{parent_branch}..#{branch}`.strip.to_i
+  @branch_distance_cache ||= {}
+  key = "#{branch}:#{parent_branch}"
+  return @branch_distance_cache[key] if @branch_distance_cache.key?(key)
+
+  @branch_distance_cache[key] = `git rev-list --count #{parent_branch}..#{branch}`.strip.to_i
 end
 
 def rebase_all
   require "json"
   default_branch = compute_default_branch
   mappings = rebase_mappings
-    .sort { |b1, b2| branch_sort_key(b1) <=> branch_sort_key(b2) }
-    .sort { |b1, b2| branch_distance(b1[:branch], default_branch) <=> branch_distance(b2[:branch], default_branch) }
+    .sort_by { |b| [branch_distance(b[:branch], default_branch), branch_sort_key(b)] }
     .to_h { |b| [b[:branch], {rebase_onto: b[:rebase_onto], fork_point: b[:fork_point]}] }
   rebase_all_per_capture_info(mappings)
 end

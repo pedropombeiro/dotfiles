@@ -1,6 +1,6 @@
 ---
 description: Post weekly status updates on assigned milestone issues
-model: gitlab/duo-workflow-opus-4-6
+model: gitlab/duo-chat-opus-4-6
 ---
 
 Post weekly status updates on all GitLab issues assigned to me for the current milestone.

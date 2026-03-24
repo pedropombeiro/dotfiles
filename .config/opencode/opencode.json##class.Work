@@ -27,7 +27,7 @@
     }
   },
   "enabled_providers": ["gitlab", "anthropic", "google"],
-  "small_model": "gitlab/duo-workflow-haiku-4-5",
+  "small_model": "gitlab/duo-chat-haiku-4-5",
   "provider": {
     "gitlab": {
       "models": {
@@ -72,11 +72,23 @@
         "duo-chat-haiku-4-5": {
           "cost": { "input": 1, "output": 5, "cache_read": 0.10, "cache_write": 1.25 }
         },
-        "duo-workflow-gpt-5-3-codex": {
+        "duo-chat-gpt-5-3-codex": {
           "cost": { "input": 1.75, "output": 14, "cache_read": 0.175 }
         },
-        "duo-workflow-gpt-5-4": {
+        "duo-chat-gpt-5-2-codex": {
+          "cost": { "input": 1.50, "output": 12, "cache_read": 0.15 }
+        },
+        "duo-chat-gpt-5-mini": {
+          "cost": { "input": 0.75, "output": 3, "cache_read": 0.075 }
+        },
+        "duo-chat-gpt-5-4": {
           "cost": { "input": 2.50, "output": 15, "cache_read": 0.25 }
+        },
+        "duo-chat-gpt-5-4-mini": {
+          "cost": { "input": 1.10, "output": 4.40, "cache_read": 0.11 }
+        },
+        "duo-chat-gpt-5-4-nano": {
+          "cost": { "input": 0.50, "output": 2.00, "cache_read": 0.05 }
         }
       }
     }
@@ -242,16 +254,19 @@
     "task": {
       "general": "allow",
       "explore": "allow",
-      "review-security": "allow",
-      "review-database": "allow",
-      "review-clickhouse": "allow",
-      "review-performance": "allow",
-      "review-qa": "allow",
-      "review-frontend": "allow",
-      "review-backend": "allow",
-      "review-docs": "allow",
-      "review-analytics": "allow",
-      "review-graphql": "allow"
+      "security-reviewer": "allow",
+      "database-reviewer": "allow",
+      "clickhouse-reviewer": "allow",
+      "performance-reviewer": "allow",
+      "qa-reviewer": "allow",
+      "frontend-reviewer": "allow",
+      "backend-reviewer": "allow",
+      "documentation-reviewer": "allow",
+      "analytics-reviewer": "allow",
+      "graphql-reviewer": "allow",
+      "rest-api-reviewer": "allow",
+      "workers-reviewer": "allow",
+      "feature-flags-reviewer": "allow"
     },
     "todowrite": "allow"
   }

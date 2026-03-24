@@ -1,6 +1,6 @@
 ---
 description: Create handoff document for context transfer
-model: gitlab/duo-workflow-gpt-5-3-codex
+model: gitlab/duo-chat-gpt-5-3-codex
 ---
 
 Create a HANDOFF.md file in the current working directory to transfer context to a new agent session.

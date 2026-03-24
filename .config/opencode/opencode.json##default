@@ -71,17 +71,23 @@
             "input": 15, "output": 75, "cache_read": 1.50, "cache_write": 18.75
           }
         },
-        "gitlab/duo-workflow-haiku-4-5": {
+        "duo-workflow-haiku-4-5": {
           "cost": { "input": 1, "output": 5, "cache_read": 0.10, "cache_write": 1.25 }
         },
         "duo-chat-haiku-4-5": {
           "cost": { "input": 1, "output": 5, "cache_read": 0.10, "cache_write": 1.25 }
         },
-        "duo-workflow-gpt-5-3-codex": {
+        "duo-chat-gpt-5-3-codex": {
           "cost": { "input": 1.75, "output": 14, "cache_read": 0.175 }
         },
-        "duo-workflow-gpt-5-4": {
+        "duo-chat-gpt-5-4": {
           "cost": { "input": 2.50, "output": 15, "cache_read": 0.25 }
+        },
+        "duo-chat-gpt-5-4-mini": {
+          "cost": { "input": 1.10, "output": 4.40, "cache_read": 0.11 }
+        },
+        "duo-chat-gpt-5-4-nano": {
+          "cost": { "input": 0.50, "output": 2.00, "cache_read": 0.05 }
         }
       }
     }

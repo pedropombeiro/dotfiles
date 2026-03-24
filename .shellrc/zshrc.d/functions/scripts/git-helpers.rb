@@ -210,42 +210,42 @@ def rebase_mappings
   preload_threads.each(&:join)
 
   local_branches = local_branches.sort_by do |branch|
-        seq_mr_match_data = seq_mr_pattern.match(branch)
-        backport_match_data = backport_pattern.match(branch)
-        mr_match_data = mr_pattern.match(branch)
+    seq_mr_match_data = seq_mr_pattern.match(branch)
+    backport_match_data = backport_pattern.match(branch)
+    mr_match_data = mr_pattern.match(branch)
 
-        if seq_mr_match_data
-          # Sort by: [branch_distance, mr_id, seq_nr, branch_name]
-          # This ensures branches are grouped by MR and ordered by sequence within each MR
-          [
-            branch_distance(branch, default_branch),
-            seq_mr_match_data[:mr_id].to_i,
-            seq_mr_match_data[:mr_seq_nr].to_i,
-            branch
-          ]
-        elsif backport_match_data
-          [
-            branch_distance(branch, default_branch),
-            backport_match_data[:mr_id].to_i,
-            999, # Put backport branches after sequenced branches
-            backport_match_data[:milestone].tr(".", "-").to_f
-          ]
-        elsif mr_match_data
-          [
-            branch_distance(branch, default_branch),
-            mr_match_data[:mr_id].to_i,
-            999, # Put non-sequenced branches after sequenced branches
-            branch
-          ]
-        else
-          [
-            branch_distance(branch, default_branch),
-            999_999, # Put non-MR branches last
-            999,
-            branch
-          ]
-        end
+    if seq_mr_match_data
+      # Sort by: [branch_distance, mr_id, seq_nr, branch_name]
+      # This ensures branches are grouped by MR and ordered by sequence within each MR
+      [
+        branch_distance(branch, default_branch),
+        seq_mr_match_data[:mr_id].to_i,
+        seq_mr_match_data[:mr_seq_nr].to_i,
+        branch
+      ]
+    elsif backport_match_data
+      [
+        branch_distance(branch, default_branch),
+        backport_match_data[:mr_id].to_i,
+        999, # Put backport branches after sequenced branches
+        backport_match_data[:milestone].tr(".", "-").to_f
+      ]
+    elsif mr_match_data
+      [
+        branch_distance(branch, default_branch),
+        mr_match_data[:mr_id].to_i,
+        999, # Put non-sequenced branches after sequenced branches
+        branch
+      ]
+    else
+      [
+        branch_distance(branch, default_branch),
+        999_999, # Put non-MR branches last
+        999,
+        branch
+      ]
     end
+  end
 
   mr_seq_branches = {}
 
@@ -431,10 +431,8 @@ def deleted_branch_tip_from_reflog(branch_name_prefix, descendant_branch = nil)
     /\bcheckout: moving from .+ to #{escaped}/
   ]
 
-  reflog_cmd = %W[
-    git reflog --format=%H\ %gs
-    --grep-reflog=checkout.*#{branch_name_prefix}
-    --grep-reflog=rebase.*#{branch_name_prefix}
+  reflog_cmd = [
+    "git", "reflog", "--format=%H %gs", "--grep-reflog=checkout.*#{branch_name_prefix}", "--grep-reflog=rebase.*#{branch_name_prefix}"
   ]
 
   IO.popen(reflog_cmd) do |io|
@@ -493,7 +491,7 @@ def rebase_all
   mappings = rebase_mappings
     .sort_by { |b| [branch_distance(b[:branch], default_branch), branch_sort_key(b)] }
     .to_h { |b| [b[:branch], {rebase_onto: b[:rebase_onto], fork_point: b[:fork_point]}] }
-  rebase_all_per_capture_info(mappings)
+  exit(1) if rebase_all_per_capture_info(mappings) == false
 end
 
 def git_push_issue(*args)
@@ -533,7 +531,7 @@ def git_push_issue(*args)
 
   puts "Pushing ".brown + branches.map(&:cyan).join(", ") + " to ".brown + active_remote_name.green + "...".brown
 
-  system(*%W[git push --force-with-lease #{active_remote_name}], *branches, *args)
+  exit(1) unless system(*%W[git push --force-with-lease #{active_remote_name}], *branches, *args)
 end
 
 def changed_branch_files(format: nil)

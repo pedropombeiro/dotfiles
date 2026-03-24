@@ -106,7 +106,7 @@ def gitlab_mr_rate(*author)
     GQL
     return if $CHILD_STATUS != 0
 
-    json_res = JSON.parse(res)
+    json_res = Gitlab::Json.safe_parse(res)
     merge_requests = json_res.dig("data", "group", "mergeRequests")
     mrs +=
       merge_requests["nodes"]
@@ -116,7 +116,7 @@ def gitlab_mr_rate(*author)
         rescue
           $stderr.print "\n#{mr}\n"
           raise
-      end
+        end
 
     total_time_to_merge = merge_requests["totalTimeToMerge"]
     page_info = merge_requests["pageInfo"]
@@ -173,6 +173,7 @@ def gitlab_mr_rate(*author)
   else
     puts msg.red
   end
+
   puts "Average per MR: #{(total_time_to_merge / (60 * 60 * 24) / mrs.count).round(1)} days"
   puts "Total MRs merged: #{mrs.count}"
   puts "Best month: #{best_month.strftime("%Y-%m")} (#{best_month_mr_rate} MRs)"
@@ -206,7 +207,7 @@ def gpsup(remote, issue_iid)
   milestone = nil
   labels = []
   if $CHILD_STATUS == 0
-    json_res = JSON.parse(res)
+    json_res = Gitlab::Json.safe_parse(res)
     milestone = json_res.dig(*%w[data project group milestones nodes])
       .map { |h| h["title"] }
       .find { |title| title.match?(/^[0-9]+\.[0-9]+/) }
@@ -234,5 +235,5 @@ def gpsup(remote, issue_iid)
   SHELL
 
   puts cmd
-  system(cmd)
+  exit(1) unless system(cmd)
 end

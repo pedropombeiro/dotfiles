@@ -36,7 +36,7 @@ Runs a single non-interactive agent session. The agent executes, prints its resp
 
 | Flag | Purpose |
 |------|---------|
-| `-m <model>` | Override model (e.g. `-m gitlab/duo-chat-haiku-4-5` for fast/cheap iterations) |
+| `-m <model>` | Override model (e.g. `-m gitlab/duo-chat-gpt-5-4-nano` for fast/cheap iterations) |
 | `--print-logs` | Show debug logs on stderr (permission checks, plugin hooks, config resolution) |
 | `-f <file> --` | Attach a file as context — **requires `--` separator before the prompt** |
 | `--format json` | Machine-readable event stream for scripting |
@@ -67,7 +67,7 @@ opencode run 'run ls -al and tell me what you see'
 opencode run 'your test prompt'
 
 # Use a cheap model for faster iterations:
-opencode run -m gitlab/duo-chat-haiku-4-5 'your test prompt'
+opencode run -m gitlab/duo-chat-gpt-5-4-nano 'your test prompt'
 ```
 
 ### 3. Use --print-logs to debug infrastructure
@@ -213,7 +213,7 @@ Without the `--`, the CLI parser treats the prompt as a second file path and err
 
 - **Keep prompts self-contained**: Avoid vague prompts that might cause the agent to ask clarifying questions — that will hang the process (see Known Limitations).
 - **Config changes are instant**: No restart needed. Each `opencode run` invocation reads fresh config.
-- **Cheap models for iteration**: Use `-m gitlab/duo-chat-haiku-4-5` when testing infrastructure (permissions, plugins). Switch to your primary model for testing prompt/tone quality.
+- **Cheap models for iteration**: Use `-m gitlab/duo-chat-gpt-5-4-nano` when testing infrastructure (permissions, plugins). Switch to your primary model for testing prompt/tone quality.
 - **Stderr for logs, stdout for output**: `--print-logs` writes to stderr, so you can `2>debug.log` and still see the agent's response on stdout.
 - **Stdin piping**: `echo "prompt" | opencode run` works — useful for multi-line prompts or scripted input.
 

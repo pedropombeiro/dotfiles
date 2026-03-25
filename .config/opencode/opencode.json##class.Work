@@ -27,7 +27,7 @@
     }
   },
   "enabled_providers": ["gitlab", "anthropic", "google"],
-  "small_model": "gitlab/duo-chat-haiku-4-5",
+  "small_model": "gitlab/duo-chat-gpt-5-4-nano",
   "provider": {
     "gitlab": {
       "models": {
@@ -66,7 +66,7 @@
             "input": 15, "output": 75, "cache_read": 1.50, "cache_write": 18.75
           }
         },
-        "gitlab/duo-workflow-haiku-4-5": {
+        "duo-workflow-haiku-4-5": {
           "cost": { "input": 1, "output": 5, "cache_read": 0.10, "cache_write": 1.25 }
         },
         "duo-chat-haiku-4-5": {

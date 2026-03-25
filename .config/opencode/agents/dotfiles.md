@@ -1,7 +1,7 @@
 ---
 description: "Use when the user mentions their dotfiles, dotfiles repo, dotfiles config, yadm, or references commits/changes in their personal configuration. Explores yadm-managed dotfiles in the home directory: find config files under ~/, search dotfile contents, look up agent docs, and inspect yadm git history (log, show, diff)."
 mode: subagent
-model: gitlab/duo-chat-haiku-4-5
+model: gitlab/duo-chat-gpt-5-4-nano
 hidden: true
 temperature: 0
 steps: 10

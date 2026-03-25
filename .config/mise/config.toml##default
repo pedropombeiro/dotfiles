@@ -26,7 +26,7 @@ yamllint = "latest"
 # Ruby provider for Neovim plugins
 "gem:neovim" = "0.10.0"
 # Ruby LSP language server
-"gem:ruby-lsp" = "0.26.8"
+"gem:ruby-lsp" = "0.26.9"
 # Ruby linter/formatter (StandardRB)
 "gem:standard" = "latest"
 

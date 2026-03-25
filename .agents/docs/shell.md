@@ -126,6 +126,16 @@ runs. History search widgets are registered early in the same file for this reas
 - Document environment variables in comments
 - Source `~/.zshrc` to test changes
 
+## Standalone Ruby Helpers
+
+Shell helper scripts under `~/.shellrc/zshrc.d/functions/scripts/` may run via plain Ruby
+(`ruby`, `mise x ruby -- ruby`, etc.) outside the GitLab application runtime.
+
+- Do not use GitLab app-only Ruby constants or helpers such as `Gitlab::*`
+- Prefer stdlib and gem dependencies declared for the helper itself, such as `JSON.parse`
+- If a helper consumes external command output, handle parse failures explicitly so shell
+  functions can choose whether to fail hard or continue with degraded behavior
+
 ## File Permissions
 
 - **Config files** (`configs/`, `configs/pre/`, `configs/post/`): Must be executable (`chmod +x`)

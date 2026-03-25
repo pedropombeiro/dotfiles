@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "English"
+require "json"
 
 REJECTED_LABELS = /^(workflow:|missed:|estimate:|Effort:|\[Deprecated|auto updated).*/
 
@@ -64,14 +65,21 @@ def graphql_execute(query, **kwargs)
   `op plugin run -- glab api graphql -f query='#{query}' #{kwargs.map { |k, v| "--field #{k}='#{v}'" }.join(" ")}`
 end
 
+def parse_json(res, fatal: true)
+  JSON.parse(res)
+rescue JSON::ParserError => e
+  warn "Failed to parse GraphQL response: #{e.message}"
+  exit(1) if fatal
+
+  nil
+end
+
 BASELINE_MR_RATE = 13
 
 def gitlab_mr_rate(*author)
   author = ARGV[0] if author.empty?
 
   require "date"
-  require "json"
-
   mrs = []
   start_cursor = nil
   best_month = nil
@@ -106,7 +114,7 @@ def gitlab_mr_rate(*author)
     GQL
     return if $CHILD_STATUS != 0
 
-    json_res = Gitlab::Json.safe_parse(res)
+    json_res = parse_json(res)
     merge_requests = json_res.dig("data", "group", "mergeRequests")
     mrs +=
       merge_requests["nodes"]
@@ -129,7 +137,10 @@ def gitlab_mr_rate(*author)
   now = DateTime.now
   mrs_merged_by_month = mrs
     .sort_by { |mr| now - mr[:merged_at] }
-    .group_by { |mr| [now, DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min }
+    .group_by do |mr|
+      [now,
+        DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min
+  end
   mrs_merged_by_month.reverse_each do |ym, monthly_mrs|
     prorated_mr_count = monthly_mrs.count
     if ym.year == now.year && ym.month == now.month
@@ -203,17 +214,18 @@ def gpsup(remote, issue_iid)
     }
   GQL
 
-  require "json"
   milestone = nil
   labels = []
   if $CHILD_STATUS == 0
-    json_res = Gitlab::Json.safe_parse(res)
-    milestone = json_res.dig(*%w[data project group milestones nodes])
-      .map { |h| h["title"] }
-      .find { |title| title.match?(/^[0-9]+\.[0-9]+/) }
-    labels = json_res.dig(*%w[data project issue labels nodes])
-      &.map { |h| h["title"] }
-      &.reject { |label| label.match?(REJECTED_LABELS) }
+    json_res = parse_json(res, fatal: false)
+    if json_res
+      milestone = json_res.dig(*%w[data project group milestones nodes])
+        .map { |h| h["title"] }
+        .find { |title| title.match?(/^[0-9]+\.[0-9]+/) }
+      labels = json_res.dig(*%w[data project issue labels nodes])
+        &.map { |h| h["title"] }
+        &.reject { |label| label.match?(REJECTED_LABELS) }
+    end
   end
 
   require_relative "git-helpers"

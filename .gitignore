@@ -127,3 +127,8 @@ Thumbs.db
 .vale.ini
 .wakeup
 # END yadm-alt
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key

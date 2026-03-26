@@ -103,14 +103,8 @@ setup_lefthook() {
   cat << EOF > ${gdk_root}/lefthook-local.yml
 EOF
 
-  cat << 'EOF' > ${gdk_root}/gitlab/lefthook-local.yml
-pre-push:
-  commands:
-    danger:
-      env:
-        LANG: en_US.UTF-8
-        RUBYOPT: "-EUTF-8"
-EOF
+  # lefthook-local.yml for the gitlab repo is managed as a dotfile
+  # (synced by sync_dotfiles_to_gitlab). Don't overwrite it here.
 
   (cd ${gdk_root} && mise x -- lefthook install)
 }
@@ -166,42 +160,74 @@ write_mise_gitlab_config() {
 EOF
 }
 
+_sync_dotfiles_to_worktree() {
+  local dotfiles_dir target_dir exclude_file
+  local dotfiles_file rel_path target_file current_target
+
+  dotfiles_dir=${1}
+  target_dir=${2}
+  exclude_file=${3}
+
+  [[ -d "${target_dir}" ]] || return 0
+
+  for dotfiles_file in ${(f)"$(fd -tf . "${dotfiles_dir}")"}; do # (f) splits on newlines
+    rel_path="${dotfiles_file#${dotfiles_dir}/}"
+    target_file="${target_dir}/${rel_path}"
+
+    mkdir -p "${target_file:h}"
+
+    if [[ -f "${target_file}" && ! -L "${target_file}" ]]; then
+      cp -a "${target_file}" "${dotfiles_file}"
+    fi
+
+    if [[ -L "${target_file}" ]]; then
+      current_target=$(readlink "${target_file}")
+      if [[ "${current_target}" != "${dotfiles_file}" ]]; then
+        rm -f "${target_file}"
+      fi
+    elif [[ -e "${target_file}" ]]; then
+      rm -f "${target_file}"
+    fi
+
+    if [[ ! -L "${target_file}" ]]; then
+      ln -s "${dotfiles_file}" "${target_file}"
+    fi
+
+    if [[ -n "${exclude_file}" ]] && ! grep -qF "/${rel_path}" "${exclude_file}"; then
+      echo "/${rel_path}" >> "${exclude_file}"
+    fi
+  done
+}
+
 sync_dotfiles_to_gitlab() {
   local gdk_root dotfiles_dir gitlab_dir exclude_file
-  local dotfiles_file rel_path gdk_file current_target
+  local wt_path wt_name wt_exclude_dir
 
   gdk_root=${1}
   dotfiles_dir="${HOME}/.config/dotfiles/gitlab"
   gitlab_dir="${gdk_root}/gitlab"
-  exclude_file="${gitlab_dir}/.git/info/exclude"
 
   [[ -d "${dotfiles_dir}" ]] || return 0
 
-  for dotfiles_file in ${(f)"$(fd -tf . "${dotfiles_dir}")"}; do # (f) splits on newlines
-    rel_path="${dotfiles_file#${dotfiles_dir}/}"
-    gdk_file="${gitlab_dir}/${rel_path}"
+  # Sync to the main gitlab worktree
+  exclude_file="${gitlab_dir}/.git/info/exclude"
+  _sync_dotfiles_to_worktree "${dotfiles_dir}" "${gitlab_dir}" "${exclude_file}"
 
-    mkdir -p "${gdk_file:h}"
+  # Sync to additional git worktrees
+  git -C "${gitlab_dir}" worktree list --porcelain 2>/dev/null | while IFS= read -r line; do
+    if [[ "${line}" == worktree\ * ]]; then
+      wt_path="${line#worktree }"
+      # Skip the main worktree (already handled above)
+      [[ "${wt_path}" == "${gitlab_dir}" ]] && continue
+      # Only handle worktrees under the GDK root (safety check)
+      [[ "${wt_path}" == "${gdk_root}"/* ]] || continue
 
-    if [[ -f "${gdk_file}" && ! -L "${gdk_file}" ]]; then
-      cp -a "${gdk_file}" "${dotfiles_file}"
-    fi
-
-    if [[ -L "${gdk_file}" ]]; then
-      current_target=$(readlink "${gdk_file}")
-      if [[ "${current_target}" != "${dotfiles_file}" ]]; then
-        rm -f "${gdk_file}"
-      fi
-    elif [[ -e "${gdk_file}" ]]; then
-      rm -f "${gdk_file}"
-    fi
-
-    if [[ ! -L "${gdk_file}" ]]; then
-      ln -s "${dotfiles_file}" "${gdk_file}"
-    fi
-
-    if [[ -f "${exclude_file}" ]] && ! grep -qF "/${rel_path}" "${exclude_file}"; then
-      echo "/${rel_path}" >> "${exclude_file}"
+      wt_name="${wt_path##*/}"
+      wt_exclude_dir="${gitlab_dir}/.git/worktrees/${wt_name}/info"
+      mkdir -p "${wt_exclude_dir}"
+      _sync_dotfiles_to_worktree "${dotfiles_dir}" "${wt_path}" "${wt_exclude_dir}/exclude"
+      $(cd "$wt_path" && yarn install)
+      mise trust "${wt_path}" 2>/dev/null
     fi
   done
 }

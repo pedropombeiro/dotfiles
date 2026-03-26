@@ -106,6 +106,11 @@ def rebase_all_per_capture_info(local_branch_info_hash)
     parent_branch = info.is_a?(Hash) ? info[:rebase_onto] : info
     fork_point = info.is_a?(Hash) ? info[:fork_point] : nil
 
+    if checked_out_in_other_worktree?(branch)
+      puts "  Skipping ".brown + branch.cyan + " (checked out in another worktree)".brown
+      next
+    end
+
     if fork_point
       puts "Rebasing ".brown + branch.cyan + " onto ".brown + parent_branch.green +
         " (skipping already-merged commits)...".brown
@@ -347,6 +352,30 @@ def preload_local_branches!
     @branch_exists_cache[line.strip] = true
   end
   @branch_exists_preloaded = true
+end
+
+def worktree_branches
+  @worktree_branches ||= begin
+    current_dir = File.realpath(Dir.pwd)
+    branches = Set.new
+    current_path = nil
+    `git worktree list --porcelain`.each_line do |line|
+      line.chomp!
+
+      if line.start_with?("worktree ")
+        current_path = line.sub("worktree ", "")
+      elsif line.start_with?("branch ") && current_path
+        next if File.realpath(current_path) == current_dir
+
+        branches << line.sub("branch refs/heads/", "")
+      end
+    end
+    branches
+  end
+end
+
+def checked_out_in_other_worktree?(branch)
+  worktree_branches.include?(branch)
 end
 
 def branch_exists?(branch)

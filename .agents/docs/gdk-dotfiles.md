@@ -17,6 +17,9 @@ canonical repo live under a single well-known location in the dotfiles repo:
    (preserves edits made directly in the GDK repo).
 4. Ensures the target is a symlink pointing to the dotfiles source.
 5. Adds the relative path to `$GDK_ROOT/gitlab/.git/info/exclude` so git ignores it.
+6. Discovers additional git worktrees (via `git worktree list --porcelain`) and repeats
+   steps 2-5 for each worktree under `$GDK_ROOT`. Worktree exclude entries go to
+   `.git/worktrees/<name>/info/exclude`.
 
 ## Adding new files
 
@@ -31,6 +34,7 @@ Track it with YADM: `yadm add ~/.config/dotfiles/gitlab/<path>`.
 | Dotfiles path                             | Purpose                                |
 | ----------------------------------------- | -------------------------------------- |
 | `AGENTS.local.md`                         | Personal AI agent instructions         |
+| `lefthook-local.yml`                      | Force UTF-8 for Ruby hooks (lazygit)   |
 | `.ai/code-style.local.md`                 | Ruby code style lessons                |
 | `.ai/lessons-learned.local.md`            | General AI corrections                 |
 | `.ai/testing.local.md`                    | RSpec testing conventions              |

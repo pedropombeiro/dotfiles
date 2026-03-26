@@ -1,0 +1,85 @@
+# Work around lazygit hardcoding LANG=C / LC_ALL=C, which causes Ruby to
+# default to US-ASCII and break on any file containing multi-byte characters.
+# RUBYOPT="-EUTF-8" forces Encoding.default_external = UTF-8 for all Ruby
+# processes spawned by these hooks.
+
+pre-push:
+  commands:
+    danger:
+      env:
+        RUBYOPT: "-EUTF-8"
+    commit-message-linting:
+      env:
+        RUBYOPT: "-EUTF-8"
+    unused-methods-linter:
+      env:
+        RUBYOPT: "-EUTF-8"
+    rubocop:
+      env:
+        RUBYOPT: "-EUTF-8"
+    haml-lint:
+      env:
+        RUBYOPT: "-EUTF-8"
+    sidekiq-queues:
+      env:
+        RUBYOPT: "-EUTF-8"
+    graphql_docs:
+      env:
+        RUBYOPT: "-EUTF-8"
+    graphql_introspection_check:
+      env:
+        RUBYOPT: "-EUTF-8"
+    openapi_docs:
+      env:
+        RUBYOPT: "-EUTF-8"
+    docs-deprecations:
+      env:
+        RUBYOPT: "-EUTF-8"
+    bundler-lint:
+      env:
+        RUBYOPT: "-EUTF-8"
+    audit_event_types_docs:
+      env:
+        RUBYOPT: "-EUTF-8"
+    custom_roles_docs:
+      env:
+        RUBYOPT: "-EUTF-8"
+    verify_job_token_policies:
+      env:
+        RUBYOPT: "-EUTF-8"
+    static-verification:
+      env:
+        RUBYOPT: "-EUTF-8"
+    verify-tff-mapping:
+      env:
+        RUBYOPT: "-EUTF-8"
+    check-deprecated-files:
+      env:
+        RUBYOPT: "-EUTF-8"
+    validate-fast-spec-helper:
+      env:
+        RUBYOPT: "-EUTF-8"
+    permissions_docs:
+      env:
+        RUBYOPT: "-EUTF-8"
+    gettext:
+      env:
+        RUBYOPT: "-EUTF-8"
+
+pre-commit:
+  commands:
+    rubocop:
+      env:
+        RUBYOPT: "-EUTF-8"
+    docs-deprecations:
+      env:
+        RUBYOPT: "-EUTF-8"
+    validate-fe-islands-ci:
+      env:
+        RUBYOPT: "-EUTF-8"
+    role-permissions-ordering:
+      env:
+        RUBYOPT: "-EUTF-8"
+    gitaly-version-check:
+      env:
+        RUBYOPT: "-EUTF-8"

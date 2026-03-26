@@ -103,7 +103,16 @@ run-in-tmux-pane gdk start rails
 |---|---|---|
 | `TMUX_PANE_LINGER` | `3` | Seconds to keep the tmux pane visible after the command finishes. Set to `0` to close immediately. |
 | `TMUX_PANE_TAIL_LINES` | `20` | Number of trailing lines to keep when truncating successful output. |
-| `TMUX_PANE_TIMEOUT` | `120` | Maximum seconds to wait for the command to finish before killing the pane (exits with code 124). |
+| `TMUX_PANE_TIMEOUT` | `300` | Maximum seconds to wait for the command to finish before killing the pane (exits with code 124). |
+
+## Important: Bash tool timeout must exceed `TMUX_PANE_TIMEOUT`
+
+Always set the Bash tool's `timeout` parameter **higher** than `TMUX_PANE_TIMEOUT`
+(e.g. `timeout: 360000` for the default `TMUX_PANE_TIMEOUT=300`). If the Bash tool times out
+before the tmux pane finishes, you get partial output with no exit code — and the
+tmux command is still running in the background. This can be mistaken for a
+completed run, leading to unnecessary retries or incorrect assumptions about the
+command's result.
 
 ## Limitations
 

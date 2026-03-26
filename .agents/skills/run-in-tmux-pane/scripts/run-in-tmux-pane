@@ -34,7 +34,7 @@ TAIL_LINES=${TMUX_PANE_TAIL_LINES:-20}
 if [[ -n "${TMUX_PANE_TIMEOUT:-}" && ! "${TMUX_PANE_TIMEOUT}" =~ ^[1-9][0-9]*$ ]]; then
   unset TMUX_PANE_TIMEOUT
 fi
-_timeout=${TMUX_PANE_TIMEOUT:-120}
+_timeout=${TMUX_PANE_TIMEOUT:-300}
 
 tmpfile=$(mktemp)
 trap 'rm -f "$tmpfile" "${tmpfile}.out"' EXIT

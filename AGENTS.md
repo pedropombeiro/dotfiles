@@ -8,6 +8,7 @@ This file contains core instructions applicable to most tasks. For specialized t
 - [Bootstrap](~/.agents/docs/bootstrap.md) - YADM bootstrap scripts for system setup
 - [Tmux](~/.agents/docs/tmux.md) - Configuration structure, plugins, and shell integration
 - [OpenCode](~/.agents/docs/opencode.md) - Policy overrides and runtime behaviors
+- [Beads](~/.agents/docs/beads.md) - Issue tracking with bd, Dolt database, cross-machine sync
 - [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`
 - [Developer Directory](~/.agents/docs/developer-directory.md) - Repo clone path convention (`~/Developer/<forge>/<owner>/<repo>`)
 - [Architecture Decisions](~/.agents/docs/adr/) - ADRs for key tool choices

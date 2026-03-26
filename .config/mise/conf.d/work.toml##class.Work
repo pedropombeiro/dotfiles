@@ -1,3 +1,6 @@
+[env]
+HISTIGNORE="*AWS_SECRET*:*AWS_ACCESS*:*glpat-*:*glrt-*:*gloas-*:*PRIVATE-TOKEN*:*CLIENT_SECRET*"
+
 [tools]
 # ── Runtimes & infra ──────────────────────────────────────────────────
 # Ruby runtime

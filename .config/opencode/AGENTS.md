@@ -23,7 +23,6 @@ to check its parameter schema. Do not guess parameter names.
 - [Pre-commit](~/.agents/docs/pre-commit.md) - Hooks and code quality checks
 - [Renovate Bot](~/.agents/docs/renovate.md) - Dependency update configuration and troubleshooting
 - [Writing Style](~/.agents/docs/writing-style.md) - Pedro's tone, formatting, and MR conventions
-- [Beads](~/.agents/docs/beads.md) - Issue tracking with bd, Dolt database, cross-machine sync
 - [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`
 - [Developer Directory](~/.agents/docs/developer-directory.md) - Repo clone path convention (`~/Developer/<forge>/<owner>/<repo>`)
 

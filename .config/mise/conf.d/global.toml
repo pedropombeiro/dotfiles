@@ -16,9 +16,5 @@ pre-commit = "latest"
 "github:twaugh/patchutils" = "latest"
 
 # ── AI tooling ────────────────────────────────────────────────────────
-# Beads - A memory upgrade for your coding agent
-"github:steveyegge/beads" = "latest"
-# Dolt – Git for Data
-"github:dolthub/dolt" = "latest"
 # Lazy-loading MCP server proxy for AI tools
 "npm:lazy-mcp" = "latest"

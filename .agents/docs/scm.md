@@ -89,6 +89,31 @@ This improves clarity and makes history easier to navigate.
 - **Subject**: Concise description of the change
 - **Grouped commits**: Separate logical changes into distinct commits rather than combining unrelated changes
 
+### Fast Heuristic for Smaller Agents
+
+If you are unsure which commit type to use, choose the most mechanical match:
+
+- `docs` for docs, skills, prompts, agent instructions, and reference files
+- `fix` for bug fixes or wrong behavior
+- `feat` for net-new user-facing behavior or new automation/capability
+- `refactor` for structural changes that do not change behavior
+- `chore` for maintenance, renames, tooling, housekeeping, or config-only cleanup
+
+If you are unsure which scope to use:
+
+- use the smallest obvious area name from the changed files
+- prefer a stable repo- or domain-specific area name when one is obvious
+- if the change is entirely about agent docs/skills/instructions, `agents` may be the right scope
+
+If you are still unsure, use this fallback format:
+
+```text
+<type>(<smallest-obvious-scope>): <concise subject>
+```
+
+When choosing a fallback scope, prefer the narrowest stable area name rather than
+defaulting to a generic scope.
+
 ### Enforcement
 
 Commit messages are validated by **commitlint** via a `commit-msg` pre-commit

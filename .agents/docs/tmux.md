@@ -158,6 +158,10 @@ temporary tmux pane. The pane opens, runs the command with full interactive
 zsh environment (autoloaded functions, aliases, completions), captures
 output to a temp file, and returns it along with the exit code.
 
+For agent execution workflow details, prefer the
+`run-in-tmux-pane` skill. This doc keeps the durable tmux-specific reference
+material and machine-specific command notes.
+
 ### Temporary Files
 
 - Use `$TMPDIR` for temporary files and scripts
@@ -175,7 +179,8 @@ run-in-tmux-pane <command> [args...]
 
 **Rule of thumb:** if a command is a zsh autoloaded function (lives in
 `~/.shellrc/zshrc.d/functions/`) or needs the interactive shell environment,
-use `run-in-tmux-pane`.
+use `run-in-tmux-pane`. See the skill for the full Bash-vs-tmux decision rule
+and quoting guidance.
 
 ### Commands that require `run-in-tmux-pane`
 

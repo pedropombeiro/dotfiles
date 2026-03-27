@@ -26,6 +26,10 @@ to check its parameter schema. Do not guess parameter names.
 - [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`
 - [Developer Directory](~/.agents/docs/developer-directory.md) - Repo clone path convention (`~/Developer/<forge>/<owner>/<repo>`)
 
+## Local Repo Guidance
+
+When entering an unfamiliar repository, read its local `AGENTS.md`, `CLAUDE.md`, and task-index docs before broad code exploration. If the repo has matching local skills, load them instead of rediscovering documented workflows.
+
 ## Searching Files in Git Repositories
 
 **IMPORTANT:** Do NOT use `git grep`, `Grep`, `Glob`, `webfetch`, or `gitlab_documentation_search`
@@ -51,6 +55,8 @@ configured, **always ask whether the correction should be documented** in `~/.ag
 - Keep documentation lean: capture the principle or rule, not a transcript of the conversation.
 
 The goal is that future sessions benefit from every correction made in past sessions.
+
+If the correction is about how to route future work through existing repo docs or skills, use the `repo-docs-first-navigation` and `agent-docs-continuous-learning` skills to choose the right durable home.
 
 ### Avoiding Permission Prompts
 

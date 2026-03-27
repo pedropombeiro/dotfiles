@@ -14,30 +14,11 @@ GitHub workflow management using `gh` CLI for pull requests, issues, and Actions
 
 ## Pull Requests
 
-```bash
-# Simple PR
-gh pr create --title "feat: add feature" --body "Brief description"
-
-# Complex PR - write description to file first
-gh pr create --title "feat: add feature" --body "$(cat /tmp/pr-description.md)"
-```
-
-**Templates:** Check `.github/pull_request_template.md` or `.github/PULL_REQUEST_TEMPLATE/` for project-specific templates and follow their structure.
+See `references/WORKFLOW.md` for PR preparation, body formatting, and workflow checks.
 
 ## Issue Management
 
-```bash
-# View issue details
-gh issue view <number>
-
-# List issues with filters
-gh issue list --label "bug" --assignee "@me" --state open
-
-# Create issue - write description to file first
-gh issue create --title "Bug: issue title" --body "$(cat /tmp/issue-description.md)"
-```
-
-**Templates:** Check `.github/ISSUE_TEMPLATE/` for project-specific templates and follow their structure.
+See `references/WORKFLOW.md` for issue-body formatting and preparation guidance.
 
 ## Actions Runs
 
@@ -74,9 +55,4 @@ gh pr merge 456 --merge
 
 ## Agent Guidelines
 
-1. **Use gh CLI** - Never use `curl`/`wget`/`webfetch` to `github.com` or `api.github.com`
-2. **Use gh api as escape hatch** - Prefer `gh api` for endpoints not covered by first-class commands
-3. **Read context first** - Use `gh issue view` or `gh pr view` before implementing
-4. **Use project templates** - Check `.github/ISSUE_TEMPLATE/` and `.github/PULL_REQUEST_TEMPLATE/`
-5. **Write descriptions to files** - Create markdown in `/tmp/` then use `$(cat /tmp/description.md)`
-6. **Reference properly** - Link issues/PRs in commits: `Closes #123`, `Related to #456`
+See `references/WORKFLOW.md` for the detailed workflow and drafting rules.

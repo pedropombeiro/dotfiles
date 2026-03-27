@@ -47,115 +47,14 @@ Runs a single non-interactive agent session. The agent executes, prints its resp
 
 ## Workflow
 
-### 1. Write a test prompt that exercises the behavior you're refining
+1. Write a self-contained prompt that exercises the behavior you want to refine
+2. Run `opencode run`, observe the result, and iterate quickly
+3. Use `--print-logs` when the issue is config, permissions, or plugin loading
+4. Use `--dir` when you need to validate repo-specific config behavior
 
-The prompt should be specific enough to trigger the exact behavior you want to verify. Think of it as a test case.
+See `references/EXAMPLES.md` for concrete commands and patterns.
 
-```bash
-# Bad: too vague — may cause the agent to ask clarifying questions (which hangs)
-opencode run 'do something with files'
-
-# Good: exercises the specific behavior, self-contained
-opencode run 'run ls -al and tell me what you see'
-```
-
-### 2. Run, observe, adjust — tight loop
-
-```bash
-# Edit the config/skill/prompt
-# Then immediately test:
-opencode run 'your test prompt'
-
-# Use a cheap model for faster iterations:
-opencode run -m gitlab/duo-chat-gpt-5-4-nano 'your test prompt'
-```
-
-### 3. Use --print-logs to debug infrastructure
-
-When the agent's behavior is wrong but you're not sure why (wrong config loading, plugins not firing, permissions):
-
-```bash
-opencode run --print-logs 'your test prompt' 2>debug.log
-# Review debug.log for:
-# - Which config files were loaded (config.json, opencode.json, opencode.jsonc)
-# - Session permissions that were applied
-# - Tool registry startup
-# - Bash command execution with input/output/exit code
-```
-
-### 4. Use --dir to test project-specific configs
-
-Each directory can have its own `opencode.json`. Use `--dir` to test configs in context:
-
-```bash
-opencode run --dir ~/workspace/my-project 'run git status'
-# Agent runs in ~/workspace/my-project, uses that project's opencode.json if present
-```
-
-## Example: Refining a System Prompt
-
-```bash
-# Edit ~/.config/opencode/agent/your-agent.md
-# Then test the specific behavior you changed:
-
-opencode run 'what tools do you have access to?'
-# Check: does the agent describe its environment correctly?
-
-opencode run 'I need help with a task'
-# Check: does the agent follow the collaboration style you defined?
-```
-
-## Example: Testing Permissions
-
-After editing permission rules in `opencode.json`:
-
-```bash
-# If bash is set to "ask" — will be auto-rejected in non-interactive mode
-opencode run 'run git status'
-
-# If bash is set to "allow" — will execute
-opencode run 'run date'
-```
-
-**Note:** The behavior depends entirely on your `opencode.json` permission config. Check `~/.config/opencode/opencode.json` and use `--print-logs` to see which rules are applied.
-
-## Example: Scripting with --format json
-
-`--format json` emits a newline-delimited stream of typed events (no colored header):
-
-```bash
-# Extract just the text response
-opencode run --format json 'what is 2+2?' | \
-  python3 -c '
-import sys, json
-for line in sys.stdin:
-    ev = json.loads(line.strip())
-    if ev.get("type") == "text":
-        print(ev["part"]["text"])
-'
-
-# Get token usage from a run
-opencode run --format json 'run date' | \
-  python3 -c '
-import sys, json
-for line in sys.stdin:
-    ev = json.loads(line.strip())
-    if ev.get("type") == "step_finish":
-        print("tokens:", ev["part"]["tokens"])
-'
-
-# Capture session ID for continuation (first event with sessionID)
-SESSION_ID=$(opencode run --format json 'set up scenario X' | \
-  python3 -c '
-import sys, json
-for line in sys.stdin:
-    ev = json.loads(line.strip())
-    if "sessionID" in ev:
-        print(ev["sessionID"])
-        break
-')
-opencode run --session "$SESSION_ID" 'now test variation Y'
-```
+See `references/EXAMPLES.md` for concrete examples covering system-prompt refinement, permissions, JSON output, and multi-turn refinement.
 
 **Event types:**
 
@@ -165,21 +64,6 @@ opencode run --session "$SESSION_ID" 'now test variation Y'
 | `text` | Agent text response chunks |
 | `tool_use` | Tool name, input params, full output, exit code, duration |
 | `step_finish` | Stop reason, token counts (input/output/cache/reasoning), cost |
-
-## Example: Multi-Turn Refinement Loop
-
-Use `--continue` to build context across multiple runs:
-
-```bash
-# Step 1: Set up scenario
-opencode run 'I am working in directory /tmp/myproject. Run git init there.'
-
-# Step 2: Test variations in the same session
-opencode run --continue 'now create a README.md and commit it'
-
-# Step 3: Verify final state
-opencode run --continue 'run git log and show me what happened'
-```
 
 ## Example: Nested opencode run
 
@@ -219,36 +103,4 @@ Without the `--`, the CLI parser treats the prompt as a second file path and err
 
 ## Known Limitations
 
-### question tool hangs in opencode run
-
-The `question` tool is technically `deny`-listed in non-interactive mode, but due to a bug, if the agent calls it, the process hangs waiting for user input instead of auto-rejecting.
-
-**Symptom:** `opencode run` takes unusually long and never exits.
-
-**Workaround:** Write prompts that don't require clarification. If you must handle this, wrap calls with a timeout:
-
-```bash
-# Linux/GNU:
-timeout 30 opencode run 'your prompt' || echo "Timed out — agent may have tried to ask a question"
-
-# macOS (requires coreutils: brew install coreutils):
-gtimeout 30 opencode run 'your prompt' || echo "Timed out — agent may have tried to ask a question"
-```
-
-### Permissions depend on your opencode.json
-
-The skill's "Example: Testing Permissions" only applies if your `bash` permission is set to `"ask"`. Check your actual config:
-
-```bash
-cat ~/.config/opencode/opencode.json | python3 -m json.tool
-```
-
-### Config file locations
-
-opencode checks multiple config files (first match wins for each setting):
-1. `~/.config/opencode/opencode.json` — primary location
-2. `~/.config/opencode/opencode.jsonc`
-3. `~/.opencode/opencode.json`
-4. `<workdir>/opencode.json`
-
-Use `--print-logs` and grep for `service=config` to see which files are loaded.
+See `references/LIMITATIONS.md` for the `question`-tool hang, permission caveats, and config file locations.

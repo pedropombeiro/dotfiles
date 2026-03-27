@@ -158,6 +158,12 @@ temporary tmux pane. The pane opens, runs the command with full interactive
 zsh environment (autoloaded functions, aliases, completions), captures
 output to a temp file, and returns it along with the exit code.
 
+### Temporary Files
+
+- Use `$TMPDIR` for temporary files and scripts
+- Do not hardcode `/tmp` or try to guess a repo- or host-specific temp directory
+- When documenting or generating commands, reference temp paths as `$TMPDIR/...`
+
 ```bash
 run-in-tmux-pane <command> [args...]
 ```

@@ -42,6 +42,13 @@ transparently.
 - A command needs the user's full shell environment (PATH, shims, aliases, etc.)
 - Running interactive CLI tools that need a TTY (e.g. `claude -p`)
 - A tool is not found or misbehaves when run from a non-interactive shell
+- A command depends on environment variables or auth state that are present only in the interactive shell
+
+## When not to use
+
+- For simple non-interactive commands that work fine with the normal Bash tool
+- When you only need to read or edit files; use the dedicated file tools instead
+- When the command requires live stdin interaction after launch; the pane is not interactive once started
 
 ## Setup
 
@@ -54,18 +61,7 @@ ln -s "$(pwd)/scripts/run-in-tmux-pane" ~/.local/bin/run-in-tmux-pane
 
 ## Usage
 
-**Quoting rule:** Only wrap the command in single quotes when it contains inner quotes
-or special shell characters (`"`, `'`, `$`, `` ` ``, `\`). For simple commands with no
-special characters, pass arguments directly (no outer quotes). This produces cleaner
-command patterns for permission matching.
-
-```bash
-# Simple command — no inner quotes, pass directly (preferred)
-run-in-tmux-pane mise doctor
-
-# Command with inner quotes — wrap in single quotes
-run-in-tmux-pane 'claude -p "Hello, how are you?"'
-```
+See `references/USAGE.md` for quoting rules, temp-file conventions, and examples.
 
 ## How it works
 
@@ -84,18 +80,7 @@ run-in-tmux-pane 'claude -p "Hello, how are you?"'
 - `TMUX_PANE_LINGER` controls how many seconds the tmux pane stays visible after the
   command finishes (default: 3). Set to 0 to close immediately.
 
-## Examples
-
-```bash
-# Run a CLI tool that needs shims/PATH — no quotes needed
-run-in-tmux-pane mise doctor
-
-# Ask Claude a question — inner quotes require outer single quotes
-run-in-tmux-pane 'claude --print "Explain this error: undefined method foo"'
-
-# Run a command that needs shell aliases — no quotes needed
-run-in-tmux-pane gdk start rails
-```
+See `references/USAGE.md` for concrete examples.
 
 ## Configuration
 
@@ -113,6 +98,10 @@ before the tmux pane finishes, you get partial output with no exit code — and 
 tmux command is still running in the background. This can be mistaken for a
 completed run, leading to unnecessary retries or incorrect assumptions about the
 command's result.
+
+## Decision Rule
+
+See `references/USAGE.md` for the Bash-vs-tmux decision rule.
 
 ## Limitations
 

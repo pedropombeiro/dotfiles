@@ -5,6 +5,110 @@ YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pw
 source "${YADM_SCRIPTS}/colors.sh"
 (( $+functions[_update_step] )) || _update_step() { : }
 
+benchmark_history_median() {
+  local history_file="$1"
+  local max_samples="${2:-10}"
+  local count=0
+  local line
+  local values=()
+
+  if [[ -f "${history_file}" ]]; then
+    while IFS= read -r line; do
+      [[ -n "${line}" ]] || continue
+      values+=("${line}")
+    done < "${history_file}"
+  fi
+
+  count=${#values[@]}
+  (( count > 0 )) || return 1
+
+  if (( count > max_samples )); then
+    values=("${values[@]: -max_samples}")
+    count=${#values[@]}
+  fi
+
+  printf '%s\n' "${values[@]}" | python3 -c 'import statistics, sys; values = [float(line.strip()) for line in sys.stdin if line.strip()]; print(statistics.median(values))'
+}
+
+append_benchmark_history() {
+  local history_file="$1"
+  local benchmark="$2"
+  local max_samples="${3:-10}"
+  local history_dir="${history_file:h}"
+  local line
+  local values=()
+
+  mkdir -p "${history_dir}"
+
+  if [[ -f "${history_file}" ]]; then
+    while IFS= read -r line; do
+      [[ -n "${line}" ]] || continue
+      values+=("${line}")
+    done < "${history_file}"
+  fi
+
+  values+=("${benchmark}")
+
+  if (( ${#values[@]} > max_samples )); then
+    values=("${values[@]: -max_samples}")
+  fi
+
+  printf '%s\n' "${values[@]}" > "${history_file}"
+}
+
+migrate_legacy_benchmark_history() {
+  local history_file="$1"
+  local legacy_file="$2"
+
+  [[ -f "${legacy_file}" ]] || return 0
+  [[ -f "${history_file}" ]] && return 0
+
+  mkdir -p "${history_file:h}"
+  cp "${legacy_file}" "${history_file}"
+}
+
+report_benchmark() {
+  local label="$1"
+  local benchmark="$2"
+  local hard_limit="$3"
+  local history_file="$4"
+  local baseline_min_samples="${5:-5}"
+  local history_samples=0
+  local line
+  local baseline_median
+  local warned=0
+
+  if [[ -f "${history_file}" ]]; then
+    while IFS= read -r line; do
+      [[ -n "${line}" ]] || continue
+      (( history_samples += 1 ))
+    done < "${history_file}"
+  fi
+
+  printf "Current median startup time: %.0fms\n" $(( benchmark * 1000 ))
+
+  if (( benchmark >= hard_limit )); then
+    printf "${RED}%s${NC}\n" "${label} startup time exceeded hard limit ($(printf '%.0f' $(( hard_limit * 1000 )))ms)."
+    warned=1
+  fi
+
+  if (( history_samples >= baseline_min_samples )); then
+    baseline_median="$(benchmark_history_median "${history_file}")"
+    if [[ -n "${baseline_median}" ]]; then
+      printf "Rolling median (%d prior runs): %.0fms\n" "${history_samples}" $(( baseline_median * 1000 ))
+      if (( benchmark >= baseline_median * 1.1 )); then
+        printf "${RED}%s${NC}\n" "${label} startup time increased over 10%% compared to rolling median."
+        warned=1
+      fi
+    fi
+  else
+    printf "Collecting baseline (%d/%d prior runs).\n" "${history_samples}" "${baseline_min_samples}"
+  fi
+
+  append_benchmark_history "${history_file}" "${benchmark}"
+  return ${warned}
+}
+
 _update_step "tldr"
 printf "${YELLOW}%s${NC}" "Updating tldr... "
 tldr --update
@@ -47,10 +151,7 @@ printf "${YELLOW}%s${NC}\n" "Testing shell instantiation performance..."
 hf_file="$(mktemp)"
 hyperfine --warmup=1 --max-runs 5 'zsh -i -c exit' --export-json "${hf_file}"
 mean_time=$(jq -r '.results[].median' "${hf_file}")
-# zsh (( )) supports float arithmetic natively
-if (( mean_time >= 0.6 )); then
-  printf "${RED}%s${NC}\n" "Zsh performance is too slow!"
-fi
+report_benchmark "Zsh" "${mean_time}" 0.25 "${HOME}/.cache/zsh/.startup-time-history.txt"
 
 _update_step "yazi plugins"
 printf "${YELLOW}%s${NC}\n" "Updating yazi plugins..."
@@ -73,24 +174,10 @@ nvim --headless '+Lazy! sync' +qa && \
 
 _update_step "neovim benchmark"
 printf "${YELLOW}%s${NC}\n" "Testing Neovim startup performance..."
-benchmark_filepath="${HOME}/.cache/nvim/.startup-time.txt"
-
+migrate_legacy_benchmark_history "${HOME}/.cache/nvim/.startup-time-history.txt" "${HOME}/.cache/nvim/.startup-time.txt"
 hyperfine --warmup 5 --export-json "${hf_file}" 'nvim --headless +qa'
 nvim_benchmark="$(jq -r '.results[].median' "${hf_file}")"
-
-if [[ -f ${benchmark_filepath} ]]; then
-  prev_benchmark=$(<"${benchmark_filepath}")
-
-  if (( nvim_benchmark >= prev_benchmark * 1.1 )); then
-    printf "${RED}%s${NC}\n" "Neovim startup time increased over 10% compared to previous run..."
-  else
-    echo "${nvim_benchmark}" > "${benchmark_filepath}"
-  fi
-  # zsh printf handles float arithmetic directly
-  printf "Previous median startup time: %.0fms\n" $(( prev_benchmark * 1000 ))
-else
-  echo "${nvim_benchmark}" > "${benchmark_filepath}"
-fi
+report_benchmark "Neovim" "${nvim_benchmark}" 0.125 "${HOME}/.cache/nvim/.startup-time-history.txt"
 
 rm -f "${hf_file}"
 

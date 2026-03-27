@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+STREAMDECK_PLUGIN_URL="https://github.com/pedropombeiro/streamdeck-linakdesk/releases/latest/download/com.pedropombeiro.streamdeck-linakdesk.streamDeckPlugin"
+STREAMDECK_PLUGIN_VERSION_URL="https://github.com/pedropombeiro/streamdeck-linakdesk/releases/latest/download/VERSION.txt"
+STREAMDECK_PLUGIN_DOWNLOAD_DIR="${HOME}/Downloads"
+STREAMDECK_PLUGIN_DOWNLOAD_PATH="${STREAMDECK_PLUGIN_DOWNLOAD_DIR}/com.pedropombeiro.streamdeck-linakdesk.streamDeckPlugin"
+STREAMDECK_PLUGIN_VERSION_PATH="${STREAMDECK_PLUGIN_DOWNLOAD_DIR}/com.pedropombeiro.streamdeck-linakdesk.version"
+
+if [[ ! -d "/Applications/Elgato Stream Deck.app" ]]; then
+  exit 0
+fi
+
+mkdir -p "${STREAMDECK_PLUGIN_DOWNLOAD_DIR}"
+
+latest_version="$(curl -fsSL "${STREAMDECK_PLUGIN_VERSION_URL}")"
+installed_version=""
+if [[ -f "${STREAMDECK_PLUGIN_VERSION_PATH}" ]]; then
+  installed_version="$(<"${STREAMDECK_PLUGIN_VERSION_PATH}")"
+fi
+
+if [[ -n "${latest_version}" && "${latest_version}" == "${installed_version}" ]]; then
+  exit 0
+fi
+
+printf '%s
+' "Installing Linak Desk Control Stream Deck plugin ${latest_version}"
+curl -fsSL "${STREAMDECK_PLUGIN_URL}" -o "${STREAMDECK_PLUGIN_DOWNLOAD_PATH}"
+printf '%s' "${latest_version}" > "${STREAMDECK_PLUGIN_VERSION_PATH}"
+open "${STREAMDECK_PLUGIN_DOWNLOAD_PATH}"

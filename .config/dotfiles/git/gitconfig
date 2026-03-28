@@ -101,8 +101,9 @@
 [delta]
   features     = decorations side-by-side
   light        = false      # set to true if you're in a terminal w/ a light background color
-  plus-style   = "syntax #012800"
-  minus-style  = "syntax #340001"
+  plus-style   = "#bef2be #012800"
+  minus-style  = "#f2777a #340001"
+  zero-style   = syntax
   syntax-theme = gruvbox-dark
   navigate     = true
   hyperlinks   = true
@@ -121,7 +122,7 @@
   hunk-header-decoration-style  = blue box
   hunk-header-file-style        = red
   hunk-header-line-number-style = "#067a00"
-  hunk-header-style             = file line-number syntax
+  hunk-header-style             = file line-number
 
 [difftool]
 

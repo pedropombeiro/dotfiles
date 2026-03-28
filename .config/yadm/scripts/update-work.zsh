@@ -119,6 +119,8 @@ cleanup_gitlab_excludes() {
   rm -f "${gdk_root}/gitlab/opencode.jsonc"
   if [[ -f ${gitlab_exclude_file} ]]; then
     sed -i '' '/^opencode\.jsonc$/d' "${gitlab_exclude_file}"
+    sed -i '' '/^\/repo-bootstrap\/SKILL\.md$/d' "${gitlab_exclude_file}"
+    sed -i '' '/^\/tool-routing\/SKILL\.md$/d' "${gitlab_exclude_file}"
   fi
 }
 
@@ -161,12 +163,13 @@ EOF
 }
 
 _sync_dotfiles_to_worktree() {
-  local dotfiles_dir target_dir exclude_file
+  local dotfiles_dir target_dir exclude_file exclude_prefix
   local dotfiles_file rel_path target_file current_target
 
   dotfiles_dir=${1}
   target_dir=${2}
   exclude_file=${3}
+  exclude_prefix=${4:-}
 
   [[ -d "${target_dir}" ]] || return 0
 
@@ -193,8 +196,13 @@ _sync_dotfiles_to_worktree() {
       ln -s "${dotfiles_file}" "${target_file}"
     fi
 
-    if [[ -n "${exclude_file}" ]] && ! grep -qF "/${rel_path}" "${exclude_file}"; then
-      echo "/${rel_path}" >> "${exclude_file}"
+    if [[ -n "${exclude_file}" ]]; then
+      local exclude_path
+
+      exclude_path="/${exclude_prefix}${rel_path}"
+      if ! grep -qFx "${exclude_path}" "${exclude_file}"; then
+        echo "${exclude_path}" >> "${exclude_file}"
+      fi
     fi
   done
 }
@@ -212,7 +220,7 @@ sync_dotfiles_to_gitlab() {
   # Sync to the main gitlab worktree
   exclude_file="${gitlab_dir}/.git/info/exclude"
   _sync_dotfiles_to_worktree "${dotfiles_dir}" "${gitlab_dir}" "${exclude_file}"
-  _sync_dotfiles_to_worktree "${dotfiles_dir}/.opencode/skills" "${gitlab_dir}/.opencode/skills" "${exclude_file}"
+  _sync_dotfiles_to_worktree "${dotfiles_dir}/.opencode/skills" "${gitlab_dir}/.opencode/skills" "${exclude_file}" ".opencode/skills/"
 
   # Sync to additional git worktrees
   git -C "${gitlab_dir}" worktree list --porcelain 2>/dev/null | while IFS= read -r line; do
@@ -227,7 +235,7 @@ sync_dotfiles_to_gitlab() {
       wt_exclude_dir="${gitlab_dir}/.git/worktrees/${wt_name}/info"
       mkdir -p "${wt_exclude_dir}"
       _sync_dotfiles_to_worktree "${dotfiles_dir}" "${wt_path}" "${wt_exclude_dir}/exclude"
-      _sync_dotfiles_to_worktree "${dotfiles_dir}/.opencode/skills" "${wt_path}/.opencode/skills" "${wt_exclude_dir}/exclude"
+      _sync_dotfiles_to_worktree "${dotfiles_dir}/.opencode/skills" "${wt_path}/.opencode/skills" "${wt_exclude_dir}/exclude" ".opencode/skills/"
       $(cd "$wt_path" && yarn install)
       mise trust "${wt_path}" 2>/dev/null
     fi

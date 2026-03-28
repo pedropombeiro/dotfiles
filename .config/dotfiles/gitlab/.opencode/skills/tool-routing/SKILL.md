@@ -79,6 +79,7 @@ Return four short sections only:
 - Primary: `clickhouse` skill.
 - Fallback: `Read` known schema files or targeted `git ls-files` and `git grep`.
 - Avoid: broad `Glob` and `Grep` before trying the repo-local ClickHouse workflow, especially when the table name is already known.
+- Avoid: docs or company-knowledge MCP tools unless the user is explicitly asking for documentation or process context.
 
 ### `repo-code-search-broad`
 

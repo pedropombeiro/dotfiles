@@ -6,7 +6,7 @@ the task needs them.
 ## Core Rules
 
 - For library and framework documentation, use Context7 first.
-- Before the first MCP call in a session, use `lazy-mcp_describe_commands` to inspect the schema.
+- Before making an MCP call, use `lazy-mcp_describe_commands` to inspect the schema for that specific server. Do not preflight MCP servers unless you actually plan to use them.
 - In unfamiliar repos, read local `AGENTS.md`, `CLAUDE.md`, and task-index docs before broad exploration.
 - Prefer repo-local skills over rediscovering documented workflows.
 

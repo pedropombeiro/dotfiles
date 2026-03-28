@@ -99,7 +99,7 @@
   diffFilter = delta --color-only --features=interactive
 
 [delta]
-  features     = decorations side-by-side
+  features     = decorations
   light        = false      # set to true if you're in a terminal w/ a light background color
   plus-style   = "#bef2be #012800"
   minus-style  = "#f2777a #340001"
@@ -107,12 +107,16 @@
   syntax-theme = gruvbox-dark
   navigate     = true
   hyperlinks   = true
+  hyperlinks-file-link-format = "file://{path}:{line}"
 
 [delta "interactive"]
   keep-plus-minus-markers = false
 
 [delta "side-by-side"]
   side-by-side = true
+  line-numbers = true
+
+[delta "line-numbers"]
   line-numbers = true
 
 [delta "decorations"]
@@ -132,8 +136,16 @@
 
   cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
 
+[alias]
+
+  diff-side-by-side = -c delta.features="decorations side-by-side" diff
+  diff-line-numbers = -c delta.features="decorations line-numbers" diff
+  show-side-by-side = -c delta.features="decorations side-by-side" show
+  log-side-by-side  = -c delta.features="decorations side-by-side" log -p
+
 [merge]
 
+  conflictStyle = zdiff3
   keepBackup = false
   tool = nvimdiff
 

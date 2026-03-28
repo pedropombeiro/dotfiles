@@ -5,6 +5,8 @@ license: MIT
 compatibility: opencode
 metadata:
   audience: developers
+  author: pedropombeiro
+  keywords: gitlab, glab, merge-requests, issues, epics, work-items
   workflow: gitlab
 ---
 

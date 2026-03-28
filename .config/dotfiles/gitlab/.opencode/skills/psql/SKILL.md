@@ -5,6 +5,8 @@ license: MIT
 compatibility: opencode
 metadata:
   audience: developers
+  author: pedropombeiro
+  keywords: postgres, psql, schema, indexes, sql, gdk
   workflow: database
 ---
 

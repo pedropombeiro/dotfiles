@@ -6,6 +6,8 @@ compatibility: opencode
 allowed-tools: Bash(.opencode/skills/clickhouse/scripts/gdk-clickhouse:*)
 metadata:
   audience: developers
+  author: pedropombeiro
+  keywords: clickhouse, ch, schema, ingestion, analytics, data-patterns
   workflow: database
 ---
 

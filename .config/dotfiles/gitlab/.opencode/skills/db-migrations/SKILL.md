@@ -5,6 +5,8 @@ license: MIT
 compatibility: opencode
 metadata:
   audience: developers
+  author: pedropombeiro
+  keywords: database, migrations, rollback, branch, gitlab
   workflow: database
 ---
 

@@ -5,6 +5,8 @@ license: MIT
 compatibility: opencode
 metadata:
   audience: developers
+  author: pedropombeiro
+  keywords: routing, tools, glean, context7, knowledge-graph, tmux
   workflow: gitlab
 ---
 

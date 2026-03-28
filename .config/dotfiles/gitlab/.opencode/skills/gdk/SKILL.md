@@ -5,6 +5,8 @@ license: MIT
 compatibility: opencode
 metadata:
   audience: developers
+  author: pedropombeiro
+  keywords: gdk, gitlab-development-kit, update, secrets, environment
   workflow: gitlab
 ---
 

@@ -5,6 +5,8 @@ license: MIT
 compatibility: opencode
 metadata:
   audience: developers
+  author: pedropombeiro
+  keywords: bootstrap, instructions, routing, repo-context, gitlab
   workflow: gitlab
 ---
 

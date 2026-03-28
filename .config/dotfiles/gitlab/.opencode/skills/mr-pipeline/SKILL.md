@@ -5,6 +5,7 @@ license: MIT
 compatibility: opencode
 metadata:
   audience: developers
+  author: pedropombeiro
   workflow: gitlab
 ---
 

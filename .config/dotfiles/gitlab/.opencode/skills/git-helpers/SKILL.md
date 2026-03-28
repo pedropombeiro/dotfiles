@@ -5,6 +5,8 @@ license: MIT
 compatibility: opencode
 metadata:
   audience: developers
+  author: pedropombeiro
+  keywords: git, branches, rebase, parent-branch, diff, force-push
   workflow: git
 ---
 

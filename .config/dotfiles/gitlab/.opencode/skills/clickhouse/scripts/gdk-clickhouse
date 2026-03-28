@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
+CLICKHOUSE_DATABASE=${CLICKHOUSE_DATABASE:-gitlab_clickhouse_development}
+CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-9001}
+
+if [[ "$CLICKHOUSE_USER" == "gitlab" ]]; then
+  : "${CLICKHOUSE_GDK_GITLAB_USER_PASSWORD:?Set CLICKHOUSE_GDK_GITLAB_USER_PASSWORD to use the gitlab ClickHouse user}"
+  export CLICKHOUSE_PASSWORD="$CLICKHOUSE_GDK_GITLAB_USER_PASSWORD"
+fi
+
+exec mise x clickhouse -- clickhouse client \
+  --port "$CLICKHOUSE_PORT" \
+  -d "$CLICKHOUSE_DATABASE" \
+  -u "$CLICKHOUSE_USER" \
+  "$@"

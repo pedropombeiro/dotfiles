@@ -257,8 +257,7 @@ write_opencode_config() {
   "instructions": [
     "AGENTS.local.md",
     ".ai/AGENTS.md",
-    ".ai/lessons-learned.local.md",
-    ".gitlab/duo/chat-rules.md"
+    ".ai/lessons-learned.local.md"
   ],
   // Disable formatter to preserve project's existing code style
   "formatter": {

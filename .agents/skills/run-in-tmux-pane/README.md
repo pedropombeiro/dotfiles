@@ -64,6 +64,18 @@ run-in-tmux-pane 'claude -p "Explain this error"'
 See [SKILL.md](SKILL.md) for the full quoting rules and agent-facing
 documentation.
 
+## Decision rule
+
+- Use normal Bash first for standard non-interactive executables.
+- Use `run-in-tmux-pane` immediately for zsh functions, TTY-dependent tools, and commands that rely on login-shell state.
+- If Bash fails due to missing command, missing shell init, or TTY requirements, retry once with `run-in-tmux-pane`.
+
+Common GitLab examples:
+
+- `run-in-tmux-pane fgdku`
+- `run-in-tmux-pane gpsup`
+- `run-in-tmux-pane test_mr`
+
 ## Configuration
 
 | Variable | Default | Description |

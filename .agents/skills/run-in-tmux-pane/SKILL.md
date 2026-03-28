@@ -43,6 +43,7 @@ transparently.
 - Running interactive CLI tools that need a TTY (e.g. `claude -p`)
 - A tool is not found or misbehaves when run from a non-interactive shell
 - A command depends on environment variables or auth state that are present only in the interactive shell
+- The command is a zsh function such as `fgdku`, `gpsup`, or `test_mr`
 
 ## When not to use
 
@@ -101,7 +102,16 @@ command's result.
 
 ## Decision Rule
 
-See `references/USAGE.md` for the Bash-vs-tmux decision rule.
+Use this decision order:
+
+1. Start with the normal Bash tool when the command should work in a non-interactive shell.
+2. Use `run-in-tmux-pane` immediately when the command is a zsh function, requires a TTY, or is
+   known to depend on login-shell state.
+3. If a normal Bash run fails because the command is missing, auth state is absent, shell init was
+   skipped, or a TTY is required, retry once with `run-in-tmux-pane`.
+4. Do not invent shell workarounds when tmux is the correct execution path.
+
+See `references/USAGE.md` for the Bash-vs-tmux checklist and GitLab-specific examples.
 
 ## Limitations
 

@@ -170,7 +170,7 @@ _sync_dotfiles_to_worktree() {
 
   [[ -d "${target_dir}" ]] || return 0
 
-  for dotfiles_file in ${(f)"$(fd -tf . "${dotfiles_dir}")"}; do # (f) splits on newlines
+  for dotfiles_file in ${(f)"$(fd --type f . "${dotfiles_dir}")"}; do # (f) splits on newlines
     rel_path="${dotfiles_file#${dotfiles_dir}/}"
     target_file="${target_dir}/${rel_path}"
 
@@ -212,6 +212,7 @@ sync_dotfiles_to_gitlab() {
   # Sync to the main gitlab worktree
   exclude_file="${gitlab_dir}/.git/info/exclude"
   _sync_dotfiles_to_worktree "${dotfiles_dir}" "${gitlab_dir}" "${exclude_file}"
+  _sync_dotfiles_to_worktree "${dotfiles_dir}/.opencode/skills" "${gitlab_dir}/.opencode/skills" "${exclude_file}"
 
   # Sync to additional git worktrees
   git -C "${gitlab_dir}" worktree list --porcelain 2>/dev/null | while IFS= read -r line; do
@@ -226,6 +227,7 @@ sync_dotfiles_to_gitlab() {
       wt_exclude_dir="${gitlab_dir}/.git/worktrees/${wt_name}/info"
       mkdir -p "${wt_exclude_dir}"
       _sync_dotfiles_to_worktree "${dotfiles_dir}" "${wt_path}" "${wt_exclude_dir}/exclude"
+      _sync_dotfiles_to_worktree "${dotfiles_dir}/.opencode/skills" "${wt_path}/.opencode/skills" "${wt_exclude_dir}/exclude"
       $(cd "$wt_path" && yarn install)
       mise trust "${wt_path}" 2>/dev/null
     fi

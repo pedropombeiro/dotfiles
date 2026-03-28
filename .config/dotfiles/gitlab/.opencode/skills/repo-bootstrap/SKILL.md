@@ -45,7 +45,8 @@ Always start with:
 
 - `AGENTS.local.md`
 - `.ai/AGENTS.md`
-- `.gitlab/duo/chat-rules.md`
+
+Load `.gitlab/duo/chat-rules.md` for testing, git workflow, or weekly-status/report tasks.
 
 Then load matching task modules from `.ai/` and their `.local.md` counterparts when present.
 

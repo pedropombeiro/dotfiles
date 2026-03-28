@@ -24,6 +24,7 @@ Classify the work into one of these intents:
 - `library-docs`
 - `gitlab-docs`
 - `company-knowledge`
+- `clickhouse-schema`
 - `repo-code-search-broad`
 - `repo-code-search-targeted`
 - `known-file-read`
@@ -73,6 +74,12 @@ Return four short sections only:
 - Fallback: Glean search with filters.
 - Avoid: local grep-like tools.
 
+### `clickhouse-schema`
+
+- Primary: `clickhouse` skill.
+- Fallback: `Read` known schema files or targeted `git ls-files` and `git grep`.
+- Avoid: broad `Glob` and `Grep` before trying the repo-local ClickHouse workflow, especially when the table name is already known.
+
 ### `repo-code-search-broad`
 
 - Primary: Knowledge Graph when available.
@@ -106,6 +113,7 @@ Return four short sections only:
 ## GitLab repo-specific notes
 
 - For docs on `docs.gitlab.com`, handbook, runbooks, and internal process, use Glean first.
+- For ClickHouse tables, schemas, ingestion, or `CH` questions in this repo, load `.opencode/skills/clickhouse/SKILL.md` first.
 - For broad code discovery in this repo, Knowledge Graph takes precedence over generic file globbing.
 - For tracked code lookup with a clear pattern, use `git ls-files` and `git grep`.
 - For GDK shell functions like `fgdku`, `gpsup`, and `test_mr`, use `run-in-tmux-pane`.

@@ -100,6 +100,7 @@ Return four short sections only:
 - Broad code discovery: prefer Knowledge Graph when available.
 - Targeted tracked-file lookup: prefer `git ls-files` and `git grep`.
 - GDK update flow: use `fgdku`, not manual update commands.
+- ClickHouse tables, schemas, ingestion, or `CH` questions: load `clickhouse` before direct code search.
 
 ## Example use
 

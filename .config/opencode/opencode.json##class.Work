@@ -246,12 +246,17 @@
     "~/.ssh/*": "deny",
     "skill": {
       "clickhouse": "allow",
+      "db-migrations": "allow",
       "gdk": "allow",
+      "git-helpers": "allow",
       "gitlab-review": "allow",
       "glab": "allow",
+      "mr-pipeline": "allow",
       "mr-workflow": "allow",
       "psql": "allow",
-      "run-in-tmux-pane": "allow"
+      "repo-bootstrap": "allow",
+      "run-in-tmux-pane": "allow",
+      "tool-routing": "allow"
     },
     "task": {
       "general": "allow",

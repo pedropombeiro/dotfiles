@@ -30,6 +30,11 @@ or `gdk update` directly. Always use `fgdku` instead; it handles fetching, rebas
 branches, bundle install, migrations, GDK restart, and post-update cleanup in the correct
 order. See the [GDK skill](.opencode/skills/gdk/SKILL.md) for how to run it.
 
+## ClickHouse
+
+For ClickHouse tables, schemas, ingestion, or `CH` questions in this GitLab repo, load the
+repo-local ClickHouse skill first: `.opencode/skills/clickhouse/SKILL.md`.
+
 ## Learning Protocol
 
 When the user corrects you or points out a mistake:

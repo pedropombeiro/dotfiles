@@ -101,6 +101,7 @@
 [delta]
   features     = decorations
   light        = false      # set to true if you're in a terminal w/ a light background color
+  true-color   = always
   plus-style   = "#bef2be #012800"
   minus-style  = "#f2777a #340001"
   zero-style   = syntax

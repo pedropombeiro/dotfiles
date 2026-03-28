@@ -108,14 +108,18 @@ Full details, GraphQL alternative, and group-level work items: **[references/wor
 
 **Quickest path — use the wrapper scripts:**
 
+- From the repo root, use `.opencode/skills/glab/scripts/...`.
+- From this skill's base directory, `scripts/...` is equivalent.
+- Do not assume bundled scripts are on `PATH`.
+
 ```bash
 # Read all comments (handles pagination)
-epic-notes.sh <group-path> <epic-iid>
-epic-notes.sh gitlab-org 16428
+.opencode/skills/glab/scripts/epic-notes.sh <group-path> <epic-iid>
+.opencode/skills/glab/scripts/epic-notes.sh gitlab-org 16428
 
 # Post a comment
-create-epic-note.sh <group-id> <epic-iid> "body"
-create-epic-note.sh 9970 16428 "My comment"
+.opencode/skills/glab/scripts/create-epic-note.sh <group-id> <epic-iid> "body"
+.opencode/skills/glab/scripts/create-epic-note.sh 9970 16428 "My comment"
 ```
 
 Scripts are in `scripts/`; GraphQL templates in `assets/graphql/`.

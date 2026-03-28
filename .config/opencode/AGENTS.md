@@ -1,18 +1,32 @@
 # Agent Instructions
 
-This file contains core instructions applicable to most tasks. For specialized topics, see the linked documents below.
+This file contains the global rules that apply across repositories. Load the linked docs only when
+the task needs them.
 
-## Documentation
+## Core Rules
 
-When you need library/API documentation, code examples, setup instructions, or configuration syntax for
-any tool or framework, **always use the Context7 MCP first** (`resolve-library-id` → `query-docs`).
-Do NOT fall back to `webfetch` or raw GitHub URLs for documentation lookups — Context7 is faster,
-more structured, and doesn't trigger permission prompts. Use this proactively without being asked.
+- For library and framework documentation, use Context7 first.
+- Before the first MCP call in a session, use `lazy-mcp_describe_commands` to inspect the schema.
+- In unfamiliar repos, read local `AGENTS.md`, `CLAUDE.md`, and task-index docs before broad exploration.
+- Prefer repo-local skills over rediscovering documented workflows.
 
-## MCP Tool Usage
+## Search Routing
 
-Before calling any MCP tool for the first time in a session, use `lazy-mcp_describe_commands`
-to check its parameter schema. Do not guess parameter names.
+- For GitLab docs, runbooks, handbook content, or other company knowledge, use Glean first.
+- For code or config in tracked git files, prefer `git ls-files` and `git grep`.
+- Use `Glob` and `Grep` only when untracked or ignored files matter.
+
+## Permission Prompt Hygiene
+
+- Use the Bash tool `workdir` parameter instead of `git -C`.
+- Do not use `--no-pager` with `git` or `yadm`.
+- Use the Bash tool `workdir` parameter instead of `docker compose -f` when possible.
+
+## Continuous Learning
+
+- When the user corrects tool usage or environment behavior, ask whether the rule should be documented in `~/.agents/docs/`.
+- Keep additions lean and principle-based.
+- If the correction is about routing work through existing repo docs or skills, use the relevant doc-learning workflow.
 
 ## Specialized Topics
 
@@ -25,64 +39,3 @@ to check its parameter schema. Do not guess parameter names.
 - [Writing Style](~/.agents/docs/writing-style.md) - Pedro's tone, formatting, and MR conventions
 - [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`
 - [Developer Directory](~/.agents/docs/developer-directory.md) - Repo clone path convention (`~/Developer/<forge>/<owner>/<repo>`)
-
-## Local Repo Guidance
-
-When entering an unfamiliar repository, read its local `AGENTS.md`, `CLAUDE.md`, and task-index docs before broad code exploration. If the repo has matching local skills, load them instead of rediscovering documented workflows.
-
-## Searching Files in Git Repositories
-
-**IMPORTANT:** Do NOT use `git grep`, `Grep`, `Glob`, `webfetch`, or `gitlab_documentation_search`
-to look up **documentation, runbooks, or company knowledge**. Use the Glean MCP instead
-(if available) — see `AGENTS.local.md` for details. These local tools are a last resort for
-this purpose; Glean is faster, more comprehensive, and indexes sources that local tools
-cannot reach.
-
-When searching **code or configuration** inside a git repo, **prefer `git ls-files` and `git grep`**
-over the Glob and Grep tools. These are faster because they only traverse
-tracked files and respect `.gitignore`. Use the Glob/Grep tools only when
-you need to find untracked or ignored files.
-
-## Continuous Learning
-
-When the user corrects you about how something works, how a tool should be used, or how this environment is
-configured, **always ask whether the correction should be documented** in `~/.agents/docs/`.
-
-- Review the existing docs to find the best fit for the new information.
-- If an existing document covers the topic, propose integrating the learning there.
-- If no existing document is a good fit, propose creating a new themed document and linking it from the
-  Specialized Topics section of the relevant AGENTS.md file(s).
-- Keep documentation lean: capture the principle or rule, not a transcript of the conversation.
-
-The goal is that future sessions benefit from every correction made in past sessions.
-
-If the correction is about how to route future work through existing repo docs or skills, use the `repo-docs-first-navigation` and `agent-docs-continuous-learning` skills to choose the right durable home.
-
-### Avoiding Permission Prompts
-
-**IMPORTANT:** Do NOT use `-f` with `docker compose` or `-C` with `git`. These flags
-change the command pattern and trigger unnecessary permission prompts. Instead:
-
-- For `docker compose`: use the Bash tool's `workdir` parameter to run from the service
-  directory, then use `docker compose config` without `-f`
-- For `git`: use the Bash tool's `workdir` parameter instead of `git -C`
-- For `git`/`yadm`: do NOT use `--no-pager`. The pager does not activate in
-  non-interactive shells, so it is unnecessary and breaks yadm commands.
-
-```bash
-# Correct — use workdir parameter on the Bash tool call
-# workdir: compose/foo
-docker compose config
-
-# Correct — no --no-pager needed (pager is inactive in non-interactive shells)
-git log --oneline -5
-yadm diff -- ~/.config/opencode/
-
-# Incorrect — triggers permission prompts
-docker compose -f compose/foo/docker-compose.yml config
-git -C /path/to/repo status
-
-# Incorrect — unnecessary and breaks yadm
-git --no-pager diff -- ~/.config/opencode/
-yadm --no-pager diff -- ~/.config/opencode/
-```

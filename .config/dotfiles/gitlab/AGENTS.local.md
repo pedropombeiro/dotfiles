@@ -1,6 +1,8 @@
 # Personal AI Agent Instructions
 
-Read and follow all instructions in the `.ai/` directory.
+Read `.ai/AGENTS.md` first, then load only the task-relevant `.ai/` modules it routes to.
+For non-trivial repo work, load `.opencode/skills/repo-bootstrap/SKILL.md` to assemble the active
+repo-local rules before broad exploration or command execution.
 
 ## Glean MCP
 

@@ -1,6 +1,6 @@
 ---
 name: git-helpers
-description: Git branch management helpers (parent branch, rebase all, force-push, diff structure)
+description: Use Git branch-management helpers for GitLab development workflows. Use for finding a branch's parent, rebasing related branches, force-pushing feature branches when appropriate, and understanding commit or diff structure across stacked Git branches.
 license: MIT
 compatibility: opencode
 metadata:

@@ -1,6 +1,6 @@
 ---
 name: glab
-description: GitLab workflow automation using glab CLI
+description: Automate GitLab issue, merge request, epic, and work-item workflows with glab. Use for viewing or updating GitLab metadata, creating or editing issues and MRs, handling epic comments through GraphQL, and other CLI or API-driven GitLab operations in the GitLab repo workflow.
 license: MIT
 compatibility: opencode
 metadata:

@@ -1,6 +1,6 @@
 ---
 name: clickhouse
-description: Connect to local ClickHouse dev database
+description: Inspect GitLab local ClickHouse tables, schemas, ingestion paths, and data patterns. Use for CH table questions, DESCRIBE TABLE, schema/source-of-truth checks under db/click_house, ClickHouse ingestion debugging, and investigating aggregates, distributions, or anomalous data in the GitLab repo.
 license: MIT
 compatibility: opencode
 allowed-tools: Bash(.opencode/skills/clickhouse/scripts/gdk-clickhouse:*)
@@ -30,6 +30,7 @@ Use the bundled wrapper script so connection details stay centralized.
 ## Decision Rule
 
 - If the user asks for the columns or schema of a known ClickHouse table, run `DESCRIBE TABLE <table_name>` first.
+- If the user asks about data patterns, distributions, aggregates, outliers, or anomalies in ClickHouse data, query the live table directly before searching the repo.
 - If the user asks for the repo-defined schema, migrations, or source of truth, inspect the specific SQL definition under `db/click_house/` after or instead of the live table query.
 - If the user asks how data gets into the table, inspect the matching ingestion service after identifying the table schema.
 - Avoid broad `Grep` or `Glob` searches when the table name is already known.

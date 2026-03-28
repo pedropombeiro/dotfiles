@@ -1,6 +1,6 @@
 ---
 name: gdk
-description: GDK update, secrets, and branch management helpers
+description: Handle GitLab Development Kit updates, local secrets, and GDK branch workflows. Use for fgdku-based updates, setting up GitLab secrets, managing branch-specific GDK state, and other local GitLab development environment operations.
 license: MIT
 compatibility: opencode
 metadata:

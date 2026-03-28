@@ -207,6 +207,36 @@ _sync_dotfiles_to_worktree() {
   done
 }
 
+_sync_gitlab_dotfiles_specs() {
+  local dotfiles_dir target_dir exclude_file
+  local spec spec_source spec_target spec_prefix
+
+  dotfiles_dir=${1}
+  target_dir=${2}
+  exclude_file=${3}
+
+  local -a sync_specs=(
+    # Sync the full gitlab dotfiles overlay first; narrower specs below add correct exclude prefixes
+    # for hidden subtrees that need to appear under existing repo-owned directories.
+    '.::'
+    '.gitlab/duo:.gitlab/duo:.gitlab/duo/'
+    '.opencode/skills:.opencode/skills:.opencode/skills/'
+  )
+
+  for spec in ${sync_specs[@]}; do
+    spec_source=${spec%%:*}
+    spec=${spec#*:}
+    spec_target=${spec%%:*}
+    spec_prefix=${spec#*:}
+
+    if [[ "${spec_source}" == '.' ]]; then
+      _sync_dotfiles_to_worktree "${dotfiles_dir}" "${target_dir}" "${exclude_file}" "${spec_prefix}"
+    else
+      _sync_dotfiles_to_worktree "${dotfiles_dir}/${spec_source}" "${target_dir}/${spec_target}" "${exclude_file}" "${spec_prefix}"
+    fi
+  done
+}
+
 sync_dotfiles_to_gitlab() {
   local gdk_root dotfiles_dir gitlab_dir exclude_file
   local wt_path wt_name wt_exclude_dir
@@ -219,8 +249,7 @@ sync_dotfiles_to_gitlab() {
 
   # Sync to the main gitlab worktree
   exclude_file="${gitlab_dir}/.git/info/exclude"
-  _sync_dotfiles_to_worktree "${dotfiles_dir}" "${gitlab_dir}" "${exclude_file}"
-  _sync_dotfiles_to_worktree "${dotfiles_dir}/.opencode/skills" "${gitlab_dir}/.opencode/skills" "${exclude_file}" ".opencode/skills/"
+  _sync_gitlab_dotfiles_specs "${dotfiles_dir}" "${gitlab_dir}" "${exclude_file}"
 
   # Sync to additional git worktrees
   git -C "${gitlab_dir}" worktree list --porcelain 2>/dev/null | while IFS= read -r line; do
@@ -234,8 +263,7 @@ sync_dotfiles_to_gitlab() {
       wt_name="${wt_path##*/}"
       wt_exclude_dir="${gitlab_dir}/.git/worktrees/${wt_name}/info"
       mkdir -p "${wt_exclude_dir}"
-      _sync_dotfiles_to_worktree "${dotfiles_dir}" "${wt_path}" "${wt_exclude_dir}/exclude"
-      _sync_dotfiles_to_worktree "${dotfiles_dir}/.opencode/skills" "${wt_path}/.opencode/skills" "${wt_exclude_dir}/exclude" ".opencode/skills/"
+      _sync_gitlab_dotfiles_specs "${dotfiles_dir}" "${wt_path}" "${wt_exclude_dir}/exclude"
       $(cd "$wt_path" && yarn install)
       mise trust "${wt_path}" 2>/dev/null
     fi

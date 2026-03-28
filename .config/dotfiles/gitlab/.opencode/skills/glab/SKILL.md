@@ -233,3 +233,4 @@ git checkout -b fix/description
 18. **Epic close/reopen via REST** — `state_event=close`/`reopen` on `PUT groups/<id>/epics/<iid>` works; no GraphQL needed
 19. **Prefer `gpsup` for MR creation** — see `scm.md` for details; applies milestone/labels automatically
 20. **Fill in the MR description after creation** — open the new MR and update it using the default template in `.gitlab/merge_request_templates/`
+21. **Prefer structured output for agents** — use `glab api` or JSON-capable commands when you need fields, not human-oriented terminal presentation

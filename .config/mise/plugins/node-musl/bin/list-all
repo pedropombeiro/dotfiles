@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+
+curl -fsSL https://nodejs.org/dist/index.json | jq -r '.[].version' | sed 's/^v//'

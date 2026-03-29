@@ -1,0 +1,10 @@
+#!/bin/sh
+set -eu
+
+version="$ASDF_INSTALL_VERSION"
+filename="node-v${version}-linux-x64-musl.tar.gz"
+url="https://unofficial-builds.nodejs.org/download/release/v${version}/${filename}"
+download_path="$ASDF_DOWNLOAD_PATH"
+
+mkdir -p "$download_path"
+curl -fsSL "$url" -o "$download_path/$filename"

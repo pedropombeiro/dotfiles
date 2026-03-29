@@ -1,5 +1,18 @@
 # OpenCode Policies
 
+## Storage Layout
+
+When inspecting prior OpenCode sessions or tool results, verify the local storage
+layout before assuming project-scoped paths from documentation.
+
+- OpenCode data lives under `~/.local/share/opencode/`
+- OpenCode docs may describe project-scoped storage under
+  `~/.local/share/opencode/project/<project-slug>/storage/`
+- Session diffs are stored in `~/.local/share/opencode/storage/session_diff/`
+- Tool output is stored in `~/.local/share/opencode/tool-output/`
+- Prefer targeted inspection of these known paths over broad recursive searches
+  in large directory trees
+
 ## Command Chaining Approval
 
 When a chained command is submitted using `&&`, `;`, `||`, or `|`:

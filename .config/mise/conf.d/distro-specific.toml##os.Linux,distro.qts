@@ -2,14 +2,9 @@
 precompiled_arch = "x86_64"
 precompiled_os = "unknown-linux-gnu"
 
-[env]
-# Runtime bootstrapped by yadm for the custom `node-musl` mise plugin.
-MISE_NODE_MUSL_RUNTIME = "{{ env.HOME }}/opt/musl-runtime"
-
 [tools]
 # Packages pinned due to QTS glibc constraints (older than 2.31)
 python = "3.14"
-# Custom plugin wraps musl Node builds so `node`, `npm`, and `npx` work on QTS.
-node-musl = "25.8.2"
+node = "23.7.0"
 jless = "0.7.2"
 rust = { version = "1.94.1", profile = "minimal", targets = "x86_64-unknown-linux-musl" }

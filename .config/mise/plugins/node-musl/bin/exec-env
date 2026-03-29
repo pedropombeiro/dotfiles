@@ -1,5 +1,0 @@
-#!/bin/sh
-set -eu
-
-runtime_root=${MISE_NODE_MUSL_RUNTIME:-$HOME/opt/musl-runtime}
-printf 'export LD_LIBRARY_PATH="%s/usr/lib:%s/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"\n' "$runtime_root" "$runtime_root"

@@ -106,6 +106,15 @@ local function on_attach(client, bufnr)
   apply_capability_features(client, bufnr)
 end
 
+---@param cmd string|string[]|fun(dispatchers: vim.lsp.rpc.Dispatchers): vim.lsp.rpc.PublicClient? | nil
+---@return boolean
+local function cmd_is_executable(cmd)
+  if type(cmd) == "function" then return true end
+  if type(cmd) == "string" then return vim.fn.executable(cmd) == 1 end
+  if type(cmd) == "table" and type(cmd[1]) == "string" then return vim.fn.executable(cmd[1]) == 1 end
+  return false
+end
+
 return {
   {
     "b0o/SchemaStore.nvim", -- 🛍  JSON schemas for Neovim
@@ -180,7 +189,8 @@ return {
       local lsp_dir = vim.fn.globpath(lsp_path, "*.lua", false, true)
       for _, file in ipairs(lsp_dir) do
         local server = vim.fn.fnamemodify(file, ":t:r")
-        vim.lsp.enable(server)
+        local config = vim.lsp.config[server]
+        if config and cmd_is_executable(config.cmd) then vim.lsp.enable(server) end
       end
 
       ---@type vim.diagnostic.Opts

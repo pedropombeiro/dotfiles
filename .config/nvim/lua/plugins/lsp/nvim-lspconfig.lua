@@ -77,8 +77,8 @@ local function on_attach(client, bufnr)
   wk.add({
     buffer = bufnr,
     -- Diagnostics (always available)
-    { "[d", function() vim.diagnostic.goto_prev() end, desc = "Previous LSP diagnostic" },
-    { "]d", function() vim.diagnostic.goto_next() end, desc = "Next LSP diagnostic" },
+    { "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end, desc = "Previous LSP diagnostic" },
+    { "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end, desc = "Next LSP diagnostic" },
     -- Rename
     { "<f2>", function() vim.lsp.buf.rename() end, desc = "Rename symbol" },
     { "grn", function() vim.lsp.buf.rename() end, desc = "Rename symbol" },

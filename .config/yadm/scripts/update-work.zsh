@@ -264,7 +264,7 @@ sync_dotfiles_to_gitlab() {
       wt_exclude_dir="${gitlab_dir}/.git/worktrees/${wt_name}/info"
       mkdir -p "${wt_exclude_dir}"
       _sync_gitlab_dotfiles_specs "${dotfiles_dir}" "${wt_path}" "${wt_exclude_dir}/exclude"
-      $(cd "$wt_path" && yarn install)
+      (cd "$wt_path" && yarn install)
       mise trust "${wt_path}" 2>/dev/null
     fi
   done

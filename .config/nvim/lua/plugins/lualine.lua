@@ -48,6 +48,12 @@ return {
         end
       end
 
+      local function progress_status()
+        local ok, status = pcall(vim.ui.progress_status)
+        if not ok or type(status) ~= "string" or status == "" then return nil end
+        return status
+      end
+
       local gstatus = { ahead = 0, behind = 0 }
       local function update_gstatus()
         local ok, Job = pcall(require, "plenary.job")
@@ -175,6 +181,10 @@ return {
             {
               require("lazy.status").updates,
               cond = all_of(require("lazy.status").has_updates, min_width(WIDTH_MEDIUM)),
+            },
+            {
+              progress_status,
+              cond = all_of(min_width(WIDTH_MEDIUM), function() return progress_status() ~= nil end),
             },
             {
               "overseer",

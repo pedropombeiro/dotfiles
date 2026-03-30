@@ -25,6 +25,14 @@ local function apply_capability_features(client, bufnr)
     })
   end
 
+  if client:supports_method("textDocument/codeLens") and not _capability_applied[key_prefix .. ":codeLens"] then
+    _capability_applied[key_prefix .. ":codeLens"] = true
+    wk.add({
+      buffer = bufnr,
+      { "grx", function() vim.lsp.codelens.run() end, desc = "Run code lens" },
+    })
+  end
+
   -- Format-on-save: register a buffer-local BufWritePre autocmd when the server
   -- supports textDocument/formatting.  This acts as a *fallback* — conform.nvim
   -- is the primary formatter and its format_on_save already runs on BufWritePre.
@@ -79,6 +87,7 @@ local function on_attach(client, bufnr)
     { "<leader>K", function() vim.lsp.buf.signature_help() end, desc = "Signature help" },
     -- Navigation
     { "<leader>lD", function() vim.lsp.buf.declaration() end, desc = "Go to declaration" },
+    { "grt", function() vim.lsp.buf.type_definition() end, desc = "Go to type definition" },
     { "<leader>ly", function() vim.lsp.buf.type_definition() end, desc = "Go to type definition" },
     { "<leader>li", function() vim.lsp.buf.implementation() end, desc = "Go to implementation" },
     { "gri", function() vim.lsp.buf.implementation() end, desc = "Go to implementation" },

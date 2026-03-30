@@ -67,6 +67,7 @@ opt.ruler          = true  -- show ruler in status line
 opt.laststatus     = 0     -- never show status line
 opt.scrolloff      = 4     -- keep 4 lines off the edges
 opt.pumheight      = 10    -- popup menu height
+opt.pumborder      = "rounded"
 opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 opt.signcolumn     = "yes" -- Always show the signcolumn, otherwise it would shift the text each time
 opt.splitbelow     = true  -- Put new windows below current
@@ -74,6 +75,7 @@ opt.splitright     = true  -- Put new windows right of current
 
 -- enable a second-stage diff on individual hunks to provide much more accurate diffs.
 opt.diffopt:append("linematch:60")
+opt.diffopt:append("inline:word")
 
 vim.fn.setenv("GIT_CONFIG_PARAMETERS", "'delta.side-by-side=false'") -- Disable .gitconfig"s delta option
 

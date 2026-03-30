@@ -11,6 +11,7 @@ return {
   opts = {
     ensure_installed = {
       "actionlint",
+      "bash-language-server",
       "docker-compose-language-service",
       "fixjson",
       "jsonlint",

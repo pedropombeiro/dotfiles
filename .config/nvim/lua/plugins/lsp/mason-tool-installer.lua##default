@@ -22,6 +22,7 @@ return {
   opts = {
     ensure_installed = {
       "actionlint",
+      "bash-language-server",
       "checkmake",
       "docker-compose-language-service",
       { "erb-formatter", condition = has_ruby },

@@ -22,7 +22,7 @@ delta = "latest"
 
 # ── GitHub releases (musl builds for QTS) ────────────────────────────
 # Pre-built Neovim release (bypasses compile-from-source)
-"github:neovim/neovim-releases[exe=nvim]" = "0.11.6"
+"github:neovim/neovim-releases[exe=nvim]" = "0.11.7"
 # opencode build for old glibc (QTS)
 "github:pedropombeiro/opencode-legacy-glibc" = "latest"
 # Terminal file manager

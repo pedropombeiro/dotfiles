@@ -54,6 +54,13 @@ return {
         return status
       end
 
+      local function diagnostic_status()
+        if type(vim.diagnostic.status) ~= "function" then return nil end
+        local status = vim.diagnostic.status()
+        if type(status) ~= "string" or status == "" then return nil end
+        return status
+      end
+
       local gstatus = { ahead = 0, behind = 0 }
       local function update_gstatus()
         local ok, Job = pcall(require, "plenary.job")
@@ -209,6 +216,10 @@ return {
           },
           lualine_y = {
             "selectioncount",
+            {
+              diagnostic_status,
+              cond = all_of(min_width(WIDTH_WIDE), function() return diagnostic_status() ~= nil end),
+            },
             { "searchcount", maxcount = 999, timeout = 500, cond = min_width(WIDTH_WIDE) },
           },
           lualine_z = {

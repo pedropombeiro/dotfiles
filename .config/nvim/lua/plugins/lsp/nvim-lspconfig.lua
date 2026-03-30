@@ -176,7 +176,7 @@ return {
         local client = vim.lsp.get_client_by_id(ctx.client_id)
         if client then
           -- Re-apply capability-gated features on every buffer this client serves
-          for _, bufnr in ipairs(vim.lsp.get_buffers_by_client_id(ctx.client_id)) do
+          for bufnr, _ in pairs(client.attached_buffers) do
             apply_capability_features(client, bufnr)
           end
         end

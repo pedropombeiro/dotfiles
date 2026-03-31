@@ -1,48 +1,33 @@
 {
-  "model": "opus[1m]",
   "hooks": {
     "PostToolUse": [
       {
-        "matcher": "Edit",
         "hooks": [
           {
-            "type": "command",
-            "command": "[ -n \"$(yadm ls-files $CLAUDE_FILE_PATHS 2>/dev/null)\" ] && mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true"
+            "command": "[ -n \"$(yadm ls-files $CLAUDE_FILE_PATHS 2>/dev/null)\" ] && mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true",
+            "type": "command"
           }
-        ]
+        ],
+        "matcher": "Edit"
       },
       {
-        "matcher": "Write",
         "hooks": [
           {
-            "type": "command",
-            "command": "[ -n \"$(yadm ls-files $CLAUDE_FILE_PATHS 2>/dev/null)\" ] && mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true"
+            "command": "[ -n \"$(yadm ls-files $CLAUDE_FILE_PATHS 2>/dev/null)\" ] && mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true",
+            "type": "command"
           }
-        ]
+        ],
+        "matcher": "Write"
       }
     ]
   },
+  "model": "opus[1m]",
+  "permissions": {
+    "allow": ["mcp__incident_io__*", "Skill(incident)"]
+  },
   "statusLine": {
-    "type": "command",
     "command": "npx -y ccstatusline@latest",
-    "padding": 0
-  },
-  "enabledPlugins": {
-    "github@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true,
-    "lua-lsp@claude-plugins-official": true,
-    "claude-code-wakatime@wakatime": true,
-    "context7@claude-plugins-official": true,
-    "gitlab@claude-plugins-official": true,
-    "ruby-lsp@claude-plugins-official": true
-  },
-  "extraKnownMarketplaces": {
-    "wakatime": {
-      "source": {
-        "source": "git",
-        "url": "https://github.com/wakatime/claude-code-wakatime.git"
-      }
-    }
-  },
-  "alwaysThinkingEnabled": true
+    "padding": 0,
+    "type": "command"
+  }
 }

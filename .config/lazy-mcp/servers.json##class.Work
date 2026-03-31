@@ -39,6 +39,12 @@
       "name": "glean",
       "description": "GitLab enterprise search and knowledge discovery via Glean",
       "url": "https://gitlab-be.glean.com/mcp/default"
+    },
+    {
+      "name": "incident_io",
+      "description": "Gitlab.com incident management tool",
+      "type": "local",
+      "command": ["~/.incidentio/incident"]
     }
   ],
   "discovery": {

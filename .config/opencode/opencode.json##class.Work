@@ -2,9 +2,10 @@
   "$schema": "https://opencode.ai/config.json",
   "default_agent": "plan",
   "plugin": [
-    "opencode-gitlab-plugin",
+    "opencode-gitlab-plugin@latest",
     "@mohak34/opencode-notifier@latest",
     "opencode-atuin-history@latest",
+    "opencode-claude-prefill-fix@latest",
     "opencode-forge-session-title@latest",
     "opencode-homeassistant@latest",
     "opencode-terminal-progress@latest",

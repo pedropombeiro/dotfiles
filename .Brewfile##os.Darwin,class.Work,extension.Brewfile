@@ -311,6 +311,8 @@ cask "bartender"
 cask "beyond-compare@4"
 # Prevents your sleeping computer from connecting to Bluetooth accessories
 cask "bluesnooze"
+# Screen recording software
+cask "cap"
 # Open links in any browser
 cask "choosy"
 # Graphical configurator for Kaleidoscope-powered keyboards

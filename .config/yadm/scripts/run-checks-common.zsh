@@ -49,15 +49,15 @@ if [[ -x "$WAKATIME_CLI" ]]; then
     any_failed=1
   fi
 
-  wakatime_project_from_heartbeat() {
-    "$WAKATIME_CLI" --entity "$1" --project-folder "$2" \
-      --heartbeat-rate-limit-seconds 0 --disable-offline \
-      --verbose --log-to-stdout 2>&1 \
-      | grep 'sendHeartbeats' \
-      | grep -o '\\"project\\":\\"[^\\]*\\"' \
+wakatime_project_from_heartbeat() {
+  "$WAKATIME_CLI" --entity "$1" --project-folder "$2" \
+    --heartbeat-rate-limit-seconds 0 --disable-offline \
+    --verbose --log-to-stdout 2>&1 \
+      | grep 'heartbeats:' \
+      | grep -o 'project\\":\\"[^\\]*\\"' \
       | head -1 \
-      | sed 's/\\"project\\":\\"//;s/\\"//'
-  }
+      | sed 's/project\\":\\"//;s/\\"//'
+}
 
   print_op_stay "Checking wakatime project detection for dotfiles"
   wakatime_project=$(wakatime_project_from_heartbeat "$HOME/.zshrc" "$HOME")

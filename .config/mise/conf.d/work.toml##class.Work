@@ -20,8 +20,6 @@ teleport-community = "17"
 # ── GitLab tooling ────────────────────────────────────────────────────
 # GitLab CLI
 glab = "latest"
-# Random GitLab reviewer assignment
-"go:gitlab.com/ck3g/gitlab-roulette-cli" = "latest"
 # GitLab Duo AI CLI
 "npm:@gitlab/duo-cli" = "latest"
 

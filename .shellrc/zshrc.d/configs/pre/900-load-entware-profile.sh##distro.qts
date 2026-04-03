@@ -3,8 +3,16 @@
 export CONFIG_HOME=/share/Container
 export HOME=/share/homes/${USER}
 
-# Set initial directory
-if [[ ${SHLVL} -le 1 ]]; then
+# Set initial directory to the Docker Compose repo.
+# SHLVL=1: pre-tmux shell (the cd happens before the oh-my-zsh tmux plugin
+#   auto-starts tmux via deferred zinit load).
+# SHLVL>=2 inside tmux with PWD=$HOME: the tmux auto-start spawns a new shell
+#   that begins in $HOME because the SHLVL=1 cd ran before tmux existed.
+#   Without this, osc7.zsh sends $HOME as the OSC 7 path, so #{pane_path}
+#   (used by tmux keybindings for new-window/split-window -c) stays at $HOME.
+# New tmux windows/panes inherit the pane's working directory via #{pane_path},
+# so their $PWD won't be $HOME and this cd is skipped.
+if [[ ${SHLVL} -le 1 || ( -n "$TMUX" && "$PWD" == "$HOME" ) ]]; then
   cd "${CONFIG_HOME}"
 fi
 

@@ -22,6 +22,10 @@ the task needs them.
 - Do not use `--no-pager` with `git` or `yadm`.
 - Use the Bash tool `workdir` parameter instead of `docker compose -f` when possible.
 
+## File Conventions
+
+- Always set the executable bit on new shell scripts (`chmod +x`). Scripts without it will silently fail to run from boot hooks, cron, or task runners.
+
 ## Continuous Learning
 
 - When the user corrects tool usage or environment behavior, ask whether the rule should be documented in `~/.agents/docs/`.

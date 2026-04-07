@@ -17,8 +17,6 @@ tap "zaquestion/tap"
 brew "agg"
 # Slice and dice log files on the command-line
 brew "angle-grinder"
-# General-purpose data compression with high compression ratio
-brew "xz"
 # Arduino command-line interface
 brew "arduino-cli"
 # Record and share terminal sessions
@@ -31,6 +29,8 @@ brew "bash"
 brew "bat"
 # Get/set bluetooth power and discoverable state
 brew "blueutil"
+# General-purpose data compression with high compression ratio
+brew "xz"
 # Collection of portable C++ source libraries
 brew "boost"
 # Resource monitor. C++ version and continuation of bashtop and bpytop

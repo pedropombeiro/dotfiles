@@ -201,6 +201,7 @@
       "sed *": "allow",
       "shellcheck *": "allow",
       "sleep *": "allow",
+      "sort*": "allow",
       "stat *": "allow",
       "strings *": "allow",
       "tail *": "allow",

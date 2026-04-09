@@ -46,18 +46,17 @@ repos:
         args: ["-c", ".yamllint.yml"]
         language_version: python3.14
 
-  - repo: local
+  - repo: https://github.com/JohnnyMorganz/StyLua
+    rev: v2.4.1
     hooks:
-      - id: stylua
+      - id: stylua-github
+        alias: stylua
         name: stylua (check)
-        entry: stylua --check --config-path .config/nvim/.stylua.toml
-        language: system
-        types: [lua]
-      - id: stylua-fix
+        args: ["--check", "--config-path", ".config/nvim/.stylua.toml"]
+      - id: stylua-github
+        alias: stylua-fix
         name: stylua (fix)
-        entry: stylua --config-path .config/nvim/.stylua.toml
-        language: system
-        types: [lua]
+        args: ["--config-path", ".config/nvim/.stylua.toml"]
         stages: [manual]
 
   - repo: https://github.com/pre-commit/mirrors-prettier

@@ -12,7 +12,7 @@ hs.hotkey.bind({ "cmd", "shift" }, "v", function()
     :gsub("&lt;", "<")
     :gsub("&gt;", ">")
     :gsub("&quot;", '"')
-    :gsub("&#(%d+);", function(n) return string.char(tonumber(n)) end)
+    :gsub("&#(%d+);", function(n) return string.char(tonumber(n)) end) ---@diagnostic disable-line: param-type-mismatch
     :gsub("&#x(%x+);", function(n) return string.char(tonumber(n, 16)) end)
 
   local firstPart = title:match("^(.-)%s*·") or title

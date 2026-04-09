@@ -1,4 +1,7 @@
 {
   "diagnostics.globals": ["hs"],
+  "diagnostics.neededFileStatus": {
+    "codestyle-check": "None"
+  },
   "runtime.version": "Lua 5.4"
 }

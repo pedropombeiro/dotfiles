@@ -1,3 +1,5 @@
+require("hs.ipc")
+
 local modules = { "spaces", "sleepwake" }
 
 for _, mod in ipairs(modules) do

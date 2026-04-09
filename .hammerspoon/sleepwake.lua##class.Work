@@ -3,35 +3,49 @@ local spaces = require("spaces")
 local streamDeckHub = "2-1.1.2"
 local streamDeckPort = "2"
 
+local log = hs.logger.new("sleepwake", "info")
+
 local function shell(cmd)
   hs.execute(cmd, true)
 end
 
 local function streamDeckOff()
+  log.i("Stream Deck: powering off")
   shell("uhubctl --action off --location " .. streamDeckHub .. " --port " .. streamDeckPort)
 end
 
 local function onSleep()
+  log.i("onSleep")
   shell("killall Busylight_HTTP_Mac")
   streamDeckOff()
 end
 
-local function onUnlock()
-  shell("open -a BusylightHTTP")
-  shell("brew services restart nginx")
-
-  if hs.application.find("Elgato Control Center") then
-    shell("killall 'Elgato Control Center'")
-  end
-
+local function cycleStreamDeck()
+  log.i("Stream Deck: cycling")
   local output = hs.execute(
     "uhubctl --action cycle --location " .. streamDeckHub .. " --port " .. streamDeckPort .. " --wait 4000",
     true
   )
   if not output:find("Elgato Stream Deck") then
+    log.w("Stream Deck: cycle failed")
     shell(
       "terminal-notifier -title 'uhubctl' -message 'Failed to cycle power to Elgato Stream Deck' -sound boop -ignoreDnD"
     )
+  else
+    log.i("Stream Deck: cycle succeeded")
+  end
+end
+
+local function onUnlock()
+  log.i("onUnlock")
+
+  hs.timer.doAfter(0, cycleStreamDeck)
+
+  shell("brew services restart nginx")
+  shell("open -a BusylightHTTP")
+
+  if hs.application.find("Elgato Control Center") then
+    shell("killall 'Elgato Control Center'")
   end
 
   hs.timer.doAfter(2, function()
@@ -39,7 +53,30 @@ local function onUnlock()
   end)
 end
 
+hs.urlevent.bind("displaysleep", function()
+  log.i("displaysleep URL triggered")
+  streamDeckOff()
+  hs.caffeinate.lockScreen()
+  hs.timer.doAfter(2, function()
+    log.i("sleeping display")
+    hs.execute("pmset displaysleepnow", true)
+  end)
+end)
+
+local eventNames = {
+  [hs.caffeinate.watcher.systemDidWake] = "systemDidWake",
+  [hs.caffeinate.watcher.systemWillSleep] = "systemWillSleep",
+  [hs.caffeinate.watcher.screensDidSleep] = "screensDidSleep",
+  [hs.caffeinate.watcher.screensDidWake] = "screensDidWake",
+  [hs.caffeinate.watcher.screensDidLock] = "screensDidLock",
+  [hs.caffeinate.watcher.screensDidUnlock] = "screensDidUnlock",
+  [hs.caffeinate.watcher.sessionDidResignActive] = "sessionDidResignActive",
+  [hs.caffeinate.watcher.sessionDidBecomeActive] = "sessionDidBecomeActive",
+}
+
 local caffeinateWatcher = hs.caffeinate.watcher.new(function(event)
+  log.i("caffeinate event: " .. (eventNames[event] or tostring(event)))
+
   if event == hs.caffeinate.watcher.systemWillSleep then
     onSleep()
   elseif event == hs.caffeinate.watcher.screensDidSleep then

@@ -1,3 +1,6 @@
-local config = os.getenv("HOME") .. "/.config/hammerspoon/init.lua"
+local modules = { "spaces", "sleepwake" }
 
-if hs.fs.attributes(config) then dofile(config) end
+for _, mod in ipairs(modules) do
+  local path = hs.configdir .. "/" .. mod .. ".lua"
+  if hs.fs.attributes(path) then require(mod) end
+end

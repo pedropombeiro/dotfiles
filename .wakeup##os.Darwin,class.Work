@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-# Disabled: wake events should not trigger system:fix anymore.
-# Run manually when needed:
-#   mise run system:fix
-
-exit 0

@@ -1,0 +1,51 @@
+local spaces = require("spaces")
+
+local streamDeckHub = "2-1.1.2"
+local streamDeckPort = "2"
+
+local function shell(cmd)
+  hs.execute(cmd, true)
+end
+
+local function streamDeckOff()
+  shell("uhubctl --action off --location " .. streamDeckHub .. " --port " .. streamDeckPort)
+end
+
+local function onSleep()
+  shell("killall Busylight_HTTP_Mac")
+  streamDeckOff()
+end
+
+local function onUnlock()
+  hs.timer.doAfter(2, function()
+    shell("open -a BusylightHTTP")
+    shell("brew services restart nginx")
+
+    if hs.application.find("Elgato Control Center") then
+      shell("killall 'Elgato Control Center'")
+    end
+
+    local output = hs.execute(
+      "uhubctl --action cycle --location " .. streamDeckHub .. " --port " .. streamDeckPort .. " --wait 4000",
+      true
+    )
+    if not output:find("Elgato Stream Deck") then
+      shell(
+        "terminal-notifier -title 'uhubctl' -message 'Failed to cycle power to Elgato Stream Deck' -sound boop -ignoreDnD"
+      )
+    end
+
+    spaces.applyRectangleLayout()
+  end)
+end
+
+local caffeinateWatcher = hs.caffeinate.watcher.new(function(event)
+  if event == hs.caffeinate.watcher.systemWillSleep then
+    onSleep()
+  elseif event == hs.caffeinate.watcher.screensDidSleep then
+    streamDeckOff()
+  elseif event == hs.caffeinate.watcher.screensDidUnlock then
+    onUnlock()
+  end
+end)
+caffeinateWatcher:start()

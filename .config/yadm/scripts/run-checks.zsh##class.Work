@@ -30,7 +30,7 @@ check_stream_deck_usb() {
   if uhubctl --location 2-1.1.2 --port 2 | grep "Elgato Stream Deck XL" >/dev/null; then
     print_ok
   else
-    print_failure "uhubctl port location for Stream Deck is out of date, please update .wakeup, .displaysleep, and .displaywakeup"
+    print_failure "uhubctl port location for Stream Deck is out of date, please update ~/.hammerspoon/sleepwake.lua"
     any_failed=1
   fi
 }

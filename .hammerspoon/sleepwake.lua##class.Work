@@ -7,9 +7,7 @@ local streamDeckPort = "2"
 
 local log = hs.logger.new("sleepwake", "info")
 
-local function shell(cmd)
-  hs.execute(cmd, true)
-end
+local function shell(cmd) hs.execute(cmd, true) end
 
 local function streamDeckOff()
   log.i("Stream Deck: powering off")
@@ -30,9 +28,14 @@ local function cycleStreamDeck()
   )
   if not output:find("Elgato Stream Deck") then
     log.w("Stream Deck: cycle failed")
-    shell(
-      "terminal-notifier -title 'uhubctl' -message 'Failed to cycle power to Elgato Stream Deck' -sound boop -ignoreDnD"
-    )
+    hs.notify
+      .new({
+        title = "uhubctl",
+        informativeText = "Failed to cycle power to Elgato Stream Deck",
+        alwaysPresent = true,
+        soundName = "Boop",
+      })
+      :send()
   else
     log.i("Stream Deck: cycle succeeded")
   end
@@ -46,13 +49,9 @@ local function onUnlock()
   shell("brew services restart nginx")
   shell("open -a BusylightHTTP")
 
-  if hs.application.find("Elgato Control Center") then
-    shell("killall 'Elgato Control Center'")
-  end
+  if hs.application.find("Elgato Control Center") then shell("killall 'Elgato Control Center'") end
 
-  hs.timer.doAfter(2, function()
-    spaces.applyRectangleLayout()
-  end)
+  hs.timer.doAfter(2, function() spaces.applyRectangleLayout() end)
 end
 
 function M.displaysleep()
@@ -65,9 +64,7 @@ function M.displaysleep()
   end)
 end
 
-hs.urlevent.bind("displaysleep", function()
-  M.displaysleep()
-end)
+hs.urlevent.bind("displaysleep", function() M.displaysleep() end)
 
 local eventNames = {
   [hs.caffeinate.watcher.systemDidWake] = "systemDidWake",

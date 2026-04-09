@@ -287,7 +287,6 @@ write_opencode_config() {
 
   gdk_root=${1}
 
-  rm -f "${gdk_root}/gitlab/opencode.json" && echo "Removed opencode.json file"
   cat << EOF > "${gdk_root}/gitlab/opencode.jsonc"
 // NOTE: Do not edit directly - Auto generated from ${0:A}
 {

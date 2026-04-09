@@ -295,8 +295,6 @@ cask "1password"
 cask "1password-cli"
 # AirPods companion app
 cask "airbuddy"
-# Application launcher and productivity software
-cask "alfred"
 # Inspect application bundles
 cask "apparency"
 # Application uninstaller

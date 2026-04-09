@@ -209,8 +209,6 @@ cask "1password"
 cask "1password-cli"
 # AirPods companion app
 cask "airbuddy"
-# Application launcher and productivity software
-cask "alfred"
 # Android SDK component
 cask "android-platform-tools"
 # Inspect application bundles

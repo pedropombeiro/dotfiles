@@ -1,7 +1,7 @@
 local M = {}
 
 function M.applyRectangleLayout()
-  hs.execute('open -g "rectanglepro://execute-layout?name=External%20display"')
+  hs.execute('open -g "rectangle-pro://execute-layout?name=External%20display"')
 end
 
 local spaceWatcher = hs.spaces.watcher.new(function()

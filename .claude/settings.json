@@ -1,33 +1,35 @@
 {
-  "hooks": {
-    "PostToolUse": [
-      {
-        "hooks": [
-          {
-            "command": "[ -n \"$(yadm ls-files $CLAUDE_FILE_PATHS 2>/dev/null)\" ] && mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true",
-            "type": "command"
-          }
-        ],
-        "matcher": "Edit"
-      },
-      {
-        "hooks": [
-          {
-            "command": "[ -n \"$(yadm ls-files $CLAUDE_FILE_PATHS 2>/dev/null)\" ] && mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true",
-            "type": "command"
-          }
-        ],
-        "matcher": "Write"
-      }
-    ]
-  },
-  "model": "opus[1m]",
   "permissions": {
     "allow": ["mcp__incident_io__*", "Skill(incident)"]
   },
+  "model": "opus[1m]",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -n \"$(yadm ls-files $CLAUDE_FILE_PATHS 2>/dev/null)\" ] && mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -n \"$(yadm ls-files $CLAUDE_FILE_PATHS 2>/dev/null)\" ] && mise run dotfiles:fix -- $CLAUDE_FILE_PATHS || true"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
+    "type": "command",
     "command": "npx -y ccstatusline@latest",
-    "padding": 0,
-    "type": "command"
-  }
+    "padding": 0
+  },
+  "autoUpdatesChannel": "stable",
+  "minimumVersion": "2.1.89"
 }

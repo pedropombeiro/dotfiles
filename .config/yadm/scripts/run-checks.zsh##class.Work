@@ -35,8 +35,26 @@ check_stream_deck_usb() {
   fi
 }
 
+check_busylight_local() {
+  print_op_stay "Checking Busylight HTTP server (direct)"
+  local current_presence
+  current_presence=$(curl --silent --fail --max-time 0.2 "http://127.0.0.1:8989?action=currentpresence" | jq -r '.runningcommand.parameter')
+  if [[ $? -eq 0 ]]; then
+    print_ok $current_presence
+    return
+  fi
+
+  echo
+  if pgrep Busylight_HTTP_Mac >/dev/null; then
+    print_failure "Busylight HTTP server is running, but API endpoint can't be reached"
+  else
+    print_failure "Busylight HTTP server is not running"
+  fi
+  any_failed=1
+}
+
 check_nginx() {
-  print_op_stay "Checking nginx (for Busylight)"
+  print_op_stay "Checking nginx"
   if pgrep nginx >/dev/null; then
     print_ok
     return
@@ -53,26 +71,8 @@ check_nginx() {
   fi
 }
 
-check_busylight_local() {
-  print_op_stay "Checking Busylight HTTP server"
-  local current_presence
-  current_presence=$(curl --silent --fail --max-time 0.2 "http://127.0.0.1:18989?action=currentpresence" | jq -r '.runningcommand.parameter')
-  if [[ $? -eq 0 ]]; then
-    print_ok $current_presence
-    return
-  fi
-
-  echo
-  if pgrep Busylight_HTTP_Mac >/dev/null; then
-    print_failure "Busylight HTTP server is running, but API endpoint can't be reached"
-  else
-    print_failure "Busylight HTTP server is not running"
-  fi
-  any_failed=1
-}
-
-check_busylight_nginx() {
-  print_op_stay "Checking if Busylight HTTP server is exposed through nginx"
+check_busylight_proxy() {
+  print_op_stay "Checking Busylight HTTP server (via nginx)"
   local current_presence
   current_presence=$(curl --silent --fail --max-time 0.2 "http://gitlab-macbookpro:18989?action=currentpresence" | jq -r '.runningcommand.parameter')
   if [[ $? -eq 0 ]]; then
@@ -81,11 +81,7 @@ check_busylight_nginx() {
   fi
 
   echo
-  print_failure "Busylight HTTP server is not correctly being exposed through nginx"
-  lsof -i :18989
-  sudo pkill nginx
-  brew reinstall nginx
-  brew services restart nginx
+  print_failure "Busylight HTTP server is not reachable through nginx proxy"
   any_failed=1
 }
 
@@ -116,13 +112,14 @@ check_gdk_wakatime_projects() {
   done
 }
 
+check_app_running 'Hammerspoon'
 check_app_running 'Stream Deck'
 
 if uhubctl >/dev/null 2>&1; then
   check_stream_deck_usb
   check_nginx
   check_busylight_local
-  check_busylight_nginx
+  check_busylight_proxy
 fi
 
 check_app_running 'Home Assistant'

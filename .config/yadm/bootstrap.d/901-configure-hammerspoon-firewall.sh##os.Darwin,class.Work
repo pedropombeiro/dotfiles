@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+HS_PATH="/Applications/Hammerspoon.app/Contents/MacOS/Hammerspoon"
+if [[ -x "${HS_PATH}" ]]; then
+  sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add "${HS_PATH}"
+  sudo /usr/libexec/ApplicationFirewall/socketfilterfw --unblockapp "${HS_PATH}"
+fi

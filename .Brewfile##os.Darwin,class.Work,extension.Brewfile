@@ -83,8 +83,6 @@ brew "epr"
 brew "exiftool"
 # Modern, maintained replacement for ls
 brew "eza"
-# CGI support for Nginx
-brew "fcgiwrap"
 # Simple, fast and user-friendly alternative to find
 brew "fd"
 # Play, record, convert, and stream select audio and video codecs
@@ -231,8 +229,6 @@ brew "sevenzip"
 brew "smartmontools"
 # SOcket CAT: netcat on steroids
 brew "socat"
-# Spawn FastCGI processes
-brew "spawn-fcgi"
 # Change macOS audio source from the command-line
 brew "switchaudio-osx"
 # Very fast implementation of tldr in Rust

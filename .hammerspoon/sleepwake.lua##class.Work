@@ -1,5 +1,7 @@
 local spaces = require("spaces")
 
+local M = {}
+
 local streamDeckHub = "2-1.1.2"
 local streamDeckPort = "2"
 
@@ -53,14 +55,18 @@ local function onUnlock()
   end)
 end
 
-hs.urlevent.bind("displaysleep", function()
-  log.i("displaysleep URL triggered")
+function M.displaysleep()
+  log.i("displaysleep triggered")
   streamDeckOff()
   hs.caffeinate.lockScreen()
   hs.timer.doAfter(2, function()
     log.i("sleeping display")
     hs.execute("pmset displaysleepnow", true)
   end)
+end
+
+hs.urlevent.bind("displaysleep", function()
+  M.displaysleep()
 end)
 
 local eventNames = {
@@ -86,3 +92,5 @@ local caffeinateWatcher = hs.caffeinate.watcher.new(function(event)
   end
 end)
 caffeinateWatcher:start()
+
+return M

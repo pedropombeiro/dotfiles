@@ -1,6 +1,6 @@
 require("hs.ipc")
 
-local modules = { "spaces", "sleepwake", "httpserver" }
+local modules = { "spaces", "sleepwake", "httpserver", "hotkeys" }
 
 for _, mod in ipairs(modules) do
   local path = hs.configdir .. "/" .. mod .. ".lua"

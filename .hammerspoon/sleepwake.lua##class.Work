@@ -17,24 +17,24 @@ local function onSleep()
 end
 
 local function onUnlock()
-  hs.timer.doAfter(2, function()
-    shell("open -a BusylightHTTP")
-    shell("brew services restart nginx")
+  shell("open -a BusylightHTTP")
+  shell("brew services restart nginx")
 
-    if hs.application.find("Elgato Control Center") then
-      shell("killall 'Elgato Control Center'")
-    end
+  if hs.application.find("Elgato Control Center") then
+    shell("killall 'Elgato Control Center'")
+  end
 
-    local output = hs.execute(
-      "uhubctl --action cycle --location " .. streamDeckHub .. " --port " .. streamDeckPort .. " --wait 4000",
-      true
+  local output = hs.execute(
+    "uhubctl --action cycle --location " .. streamDeckHub .. " --port " .. streamDeckPort .. " --wait 4000",
+    true
+  )
+  if not output:find("Elgato Stream Deck") then
+    shell(
+      "terminal-notifier -title 'uhubctl' -message 'Failed to cycle power to Elgato Stream Deck' -sound boop -ignoreDnD"
     )
-    if not output:find("Elgato Stream Deck") then
-      shell(
-        "terminal-notifier -title 'uhubctl' -message 'Failed to cycle power to Elgato Stream Deck' -sound boop -ignoreDnD"
-      )
-    end
+  end
 
+  hs.timer.doAfter(2, function()
     spaces.applyRectangleLayout()
   end)
 end

@@ -6,3 +6,5 @@ for _, mod in ipairs(modules) do
   local path = hs.configdir .. "/" .. mod
   if hs.fs.attributes(path .. ".lua") or hs.fs.attributes(path .. "/init.lua") then require(mod) end
 end
+
+hs.pathwatcher.new(hs.configdir, hs.reload):start()

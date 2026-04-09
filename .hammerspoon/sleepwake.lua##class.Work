@@ -4,52 +4,55 @@ local M = {}
 
 local streamDeckHub = "2-1.1.2"
 local streamDeckPort = "2"
+local uhubctl = "/opt/homebrew/bin/uhubctl"
 
 local log = hs.logger.new("sleepwake", "info")
 
-local function shell(cmd) hs.execute(cmd, true) end
+local function task(path, args, callback) hs.task.new(path, callback, args):start() end
 
 local function streamDeckOff()
   log.i("Stream Deck: powering off")
-  shell("uhubctl --action off --location " .. streamDeckHub .. " --port " .. streamDeckPort)
+  task(uhubctl, { "--action", "off", "--location", streamDeckHub, "--port", streamDeckPort })
 end
 
 local function onSleep()
   log.i("onSleep")
-  shell("killall Busylight_HTTP_Mac")
+  task("/usr/bin/killall", { "Busylight_HTTP_Mac" })
   streamDeckOff()
 end
 
 local function cycleStreamDeck()
   log.i("Stream Deck: cycling")
-  local output = hs.execute(
-    "uhubctl --action cycle --location " .. streamDeckHub .. " --port " .. streamDeckPort .. " --wait 4000",
-    true
+  task(
+    uhubctl,
+    { "--action", "cycle", "--location", streamDeckHub, "--port", streamDeckPort, "--wait", "4000" },
+    function(_, stdout)
+      if not stdout:find("Elgato Stream Deck") then
+        log.w("Stream Deck: cycle failed")
+        hs.notify
+          .new({
+            title = "uhubctl",
+            informativeText = "Failed to cycle power to Elgato Stream Deck",
+            alwaysPresent = true,
+            soundName = "Boop",
+          })
+          :send()
+      else
+        log.i("Stream Deck: cycle succeeded")
+      end
+    end
   )
-  if not output:find("Elgato Stream Deck") then
-    log.w("Stream Deck: cycle failed")
-    hs.notify
-      .new({
-        title = "uhubctl",
-        informativeText = "Failed to cycle power to Elgato Stream Deck",
-        alwaysPresent = true,
-        soundName = "Boop",
-      })
-      :send()
-  else
-    log.i("Stream Deck: cycle succeeded")
-  end
 end
 
 local function onUnlock()
   log.i("onUnlock")
 
-  hs.timer.doAfter(0, cycleStreamDeck)
+  cycleStreamDeck()
 
-  shell("brew services restart nginx")
-  shell("open -a BusylightHTTP")
+  task("/opt/homebrew/bin/brew", { "services", "restart", "nginx" })
+  task("/usr/bin/open", { "-a", "BusylightHTTP" })
 
-  if hs.application.find("Elgato Control Center") then shell("killall 'Elgato Control Center'") end
+  if hs.application.find("Elgato Control Center") then task("/usr/bin/killall", { "Elgato Control Center" }) end
 
   hs.timer.doAfter(2, function() spaces.applyRectangleLayout() end)
 end
@@ -60,7 +63,7 @@ function M.displaysleep()
   hs.caffeinate.lockScreen()
   hs.timer.doAfter(2, function()
     log.i("sleeping display")
-    hs.execute("pmset displaysleepnow", true)
+    task("/usr/bin/pmset", { "displaysleepnow" })
   end)
 end
 
@@ -89,5 +92,12 @@ local caffeinateWatcher = hs.caffeinate.watcher.new(function(event)
   end
 end)
 caffeinateWatcher:start()
+
+local usbWatcher = hs.usb.watcher.new(function(event)
+  if event.productName and event.productName:find("Stream Deck") then
+    log.i("Stream Deck USB " .. event.eventType .. ": " .. event.productName)
+  end
+end)
+usbWatcher:start()
 
 return M

@@ -1,5 +1,12 @@
 return {
   single_file_support = true,
+  root_dir = function(bufnr, on_dir)
+    local root = vim.fs.root(bufnr, { ".luarc.json", ".luarc.jsonc", ".luacheckrc", ".stylua.toml", ".git" })
+    if root == vim.env.HOME then
+      root = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":p:h")
+    end
+    on_dir(root)
+  end,
   settings = {
     Lua = {
       runtime = {

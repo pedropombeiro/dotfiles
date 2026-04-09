@@ -1,0 +1,4 @@
+{
+  "diagnostics.globals": ["hs"],
+  "runtime.version": "Lua 5.4"
+}

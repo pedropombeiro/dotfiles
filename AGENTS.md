@@ -10,6 +10,7 @@ This file contains core instructions applicable to most tasks. For specialized t
 - [OpenCode](~/.agents/docs/opencode.md) - Policy overrides and runtime behaviors
 - [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`
 - [Developer Directory](~/.agents/docs/developer-directory.md) - Repo clone path convention (`~/Developer/<forge>/<owner>/<repo>`)
+- [Hammerspoon](~/.agents/docs/hammerspoon.md) - macOS automation (sleep/wake, Stream Deck, HTTP triggers, Rectangle Pro)
 - [Architecture Decisions](~/.agents/docs/adr/) - ADRs for key tool choices
 
 ## Dotfiles (YADM)

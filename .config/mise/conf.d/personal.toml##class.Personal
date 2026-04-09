@@ -4,4 +4,4 @@
 cargo-binstall = "latest"
 # ── Automation ────────────────────────────────────────────────────────
 # Automated dependency update bot
-"npm:renovate" = "43.104.5"
+"npm:renovate" = "43.104.6"

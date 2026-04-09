@@ -349,6 +349,8 @@ cask "gcloud-cli"
 cask "gimp"
 # Web browser
 cask "google-chrome"
+# Desktop automation application
+cask "hammerspoon"
 # Companion app for Home Assistant home automation software
 cask "home-assistant"
 # Tool to optimise images to a smaller size

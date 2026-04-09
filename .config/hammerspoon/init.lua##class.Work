@@ -1,0 +1,18 @@
+local layoutUrl = 'open -g "rectanglepro://execute-layout?name=External%20display"'
+
+local function applyRectangleLayout()
+  hs.execute(layoutUrl)
+end
+
+local spaceWatcher = hs.spaces.watcher.new(function()
+  applyRectangleLayout()
+end)
+spaceWatcher:start()
+
+local caffeinateWatcher = hs.caffeinate.watcher.new(function(event)
+  if event == hs.caffeinate.watcher.screensDidUnlock then
+    -- Give macOS a moment to finish reshuffling windows after unlock.
+    hs.timer.doAfter(2, applyRectangleLayout)
+  end
+end)
+caffeinateWatcher:start()

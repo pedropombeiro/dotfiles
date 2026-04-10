@@ -1,4 +1,5 @@
 local log = hs.logger.new("httpserver.notify", "info")
+local tmux = "/opt/homebrew/bin/tmux"
 
 -- Event type → macOS system sound name (played via afplay, see below)
 local sounds = {
@@ -17,11 +18,13 @@ local subtitles = {
   question = "Question",
 }
 
-local function onActivation(notification, pane)
+local function onActivation(_, pane)
+  log.i("onActivation: pane=" .. tostring(pane))
   hs.application.launchOrFocus("iTerm2")
   if pane and pane ~= "" then
     -- Focus the originating tmux pane so the user lands in the right session
-    hs.execute("/opt/homebrew/bin/tmux select-pane -t " .. pane, true)
+    hs.task.new(tmux, nil, { "select-window", "-t", pane }):start()
+    hs.task.new(tmux, nil, { "select-pane", "-t", pane }):start()
   end
 end
 

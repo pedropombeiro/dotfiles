@@ -58,4 +58,4 @@ urlencode() {
   done < <(printf '%s' "$1")
 }
 
-curl -sf "http://localhost:${HAMMERSPOON_PORT}/?action=notify&event=${EVENT}&message=$(urlencode "$MESSAGE")&title=$(urlencode "$TITLE")&pane=${TMUX_PANE:-}&icon=$(urlencode "$ICON")"
+curl -sf "http://localhost:${HAMMERSPOON_PORT}/?action=notify&event=${EVENT}&message=$(urlencode "$MESSAGE")&title=$(urlencode "$TITLE")&pane=$(urlencode "${TMUX_PANE:-}")&icon=$(urlencode "$ICON")"

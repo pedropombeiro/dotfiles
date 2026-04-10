@@ -27,18 +27,10 @@ local function cycleStreamDeck()
     uhubctl,
     { "--action", "cycle", "--location", streamDeckHub, "--port", streamDeckPort, "--wait", "4000" },
     function(_, stdout)
-      if not stdout:find("Elgato Stream Deck") then
-        log.w("Stream Deck: cycle failed")
-        hs.notify
-          .new({
-            title = "uhubctl",
-            informativeText = "Failed to cycle power to Elgato Stream Deck",
-            alwaysPresent = true,
-            soundName = "Boop",
-          })
-          :send()
-      else
+      if stdout:find("Elgato Stream Deck") then
         log.i("Stream Deck: cycle succeeded")
+      else
+        log.w("Stream Deck: cycle completed, waiting for USB re-enumeration")
       end
     end
   )

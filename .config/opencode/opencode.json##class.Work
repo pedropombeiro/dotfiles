@@ -245,6 +245,7 @@
     "todoread": "allow",
     "webfetch": "ask",
     "websearch": "ask",
+    "~/.agents/docs/*": "allow",
     "~/.aws/*": "deny",
     "~/.config/opencode/*": "deny",
     "~/.gnupg/*": "deny",

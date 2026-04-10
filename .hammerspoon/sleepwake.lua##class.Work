@@ -80,7 +80,7 @@ local eventNames = {
   [hs.caffeinate.watcher.sessionDidBecomeActive] = "sessionDidBecomeActive",
 }
 
-local caffeinateWatcher = hs.caffeinate.watcher.new(function(event)
+M._caffeinateWatcher = hs.caffeinate.watcher.new(function(event)
   log.i("caffeinate event: " .. (eventNames[event] or tostring(event)))
 
   if event == hs.caffeinate.watcher.systemWillSleep then
@@ -91,13 +91,13 @@ local caffeinateWatcher = hs.caffeinate.watcher.new(function(event)
     onUnlock()
   end
 end)
-caffeinateWatcher:start()
+M._caffeinateWatcher:start()
 
-local usbWatcher = hs.usb.watcher.new(function(event)
+M._usbWatcher = hs.usb.watcher.new(function(event)
   if event.productName and event.productName:find("Stream Deck") then
     log.i("Stream Deck USB " .. event.eventType .. ": " .. event.productName)
   end
 end)
-usbWatcher:start()
+M._usbWatcher:start()
 
 return M

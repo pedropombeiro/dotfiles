@@ -4,9 +4,9 @@ function M.applyRectangleLayout()
   hs.execute('open -g "rectangle-pro://execute-layout?name=External%20display"')
 end
 
-local spaceWatcher = hs.spaces.watcher.new(function()
+M._spaceWatcher = hs.spaces.watcher.new(function()
   M.applyRectangleLayout()
 end)
-spaceWatcher:start()
+M._spaceWatcher:start()
 
 return M

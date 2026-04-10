@@ -2,6 +2,10 @@ local sleepwake = require("sleepwake")
 
 local log = hs.logger.new("httpserver", "info")
 local listenPort = 18990
+local actions = {
+  lock = function() hs.caffeinate.lockScreen() end,
+  sleep = function() sleepwake.displaysleep() end,
+}
 
 local server = hs.httpserver.new(false, false)
 server:setPort(listenPort)
@@ -10,12 +14,10 @@ server:setCallback(function(method, path, headers, body)
   log.i(method .. " " .. path)
 
   local action = path:match("action=([^&]*)")
+  local handler = actions[action]
 
-  if action == "lock" then
-    hs.caffeinate.lockScreen()
-    return "OK", 200, {}
-  elseif action == "sleep" then
-    sleepwake.displaysleep()
+  if handler then
+    handler()
     return "OK", 200, {}
   else
     return "Unknown action", 400, {}

@@ -25,6 +25,8 @@ hs.hotkey.bind({ "cmd", "shift" }, "v", function()
   hs.pasteboard.writeDataForUTI("public.html", html)
   hs.pasteboard.writeDataForUTI("public.utf8-plain-text", firstPart, true)
 
+  -- Paste the rich link
   hs.eventtap.keyStroke({ "cmd" }, "v")
+  -- Restore the original pasteboard
   hs.timer.doAfter(0.5, function() hs.pasteboard.writeAllData(original) end)
 end)

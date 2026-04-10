@@ -20,12 +20,12 @@ local subtitles = {
 
 local function onActivation(_, pane)
   log.i("onActivation: pane=" .. tostring(pane))
-  hs.application.launchOrFocus("iTerm2")
   if pane and pane ~= "" then
-    -- Focus the originating tmux pane so the user lands in the right session
     hs.task.new(tmux, nil, { "select-window", "-t", pane }):start()
     hs.task.new(tmux, nil, { "select-pane", "-t", pane }):start()
   end
+  local app = hs.application.find("iTerm2")
+  if app then app:activate() end
 end
 
 local function notify(params)

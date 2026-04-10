@@ -45,6 +45,8 @@ trap 'exit 129' HUP
 _update_step "brew update"
 brew update
 brew upgrade
+brew bundle --global
+brew bundle cleanup --global --force
 
 printf "${YELLOW}%s${NC}\n" "Updating mise plugins and upgrading mise"
 _update_step "mise plugins"

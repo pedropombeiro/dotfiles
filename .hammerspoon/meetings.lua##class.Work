@@ -1,0 +1,73 @@
+local log = hs.logger.new("meetings", "info")
+
+local airpodsName = "Pedro's AirPods Pro"
+local previousDevice = nil
+local spotifyWasPlaying = false
+
+local meetingApps = {
+  ["zoom.us"] = true,
+}
+
+local activeMeetings = {}
+
+local function isMeetingActive()
+  for _, _ in pairs(activeMeetings) do
+    return true
+  end
+  return false
+end
+
+local function onMeetingStart()
+  local current = hs.audiodevice.defaultOutputDevice()
+  if not current or current:name() ~= airpodsName then
+    local airpods = hs.audiodevice.findOutputByName(airpodsName)
+    if airpods then
+      previousDevice = current
+      airpods:setDefaultOutputDevice()
+      log.i("Switched audio output to " .. airpodsName)
+    else
+      log.w("AirPods not available, skipping audio switch")
+    end
+  end
+
+  if hs.spotify.isPlaying() then
+    spotifyWasPlaying = true
+    hs.spotify.pause()
+    log.i("Paused Spotify")
+  end
+end
+
+local function onMeetingEnd()
+  if previousDevice then
+    local dev = hs.audiodevice.findOutputByName(previousDevice:name())
+    if dev then
+      dev:setDefaultOutputDevice()
+      log.i("Restored audio output to " .. dev:name())
+    else
+      log.w("Previous device '" .. previousDevice:name() .. "' no longer available")
+    end
+    previousDevice = nil
+  end
+
+  if spotifyWasPlaying then
+    spotifyWasPlaying = false
+    hs.spotify.play()
+    log.i("Resumed Spotify")
+  end
+end
+
+local watcher = hs.application.watcher.new(function(name, event, app)
+  if not meetingApps[name] then return end
+
+  if event == hs.application.watcher.launched then
+    local wasActive = isMeetingActive()
+    activeMeetings[name] = true
+    if not wasActive then onMeetingStart() end
+  elseif event == hs.application.watcher.terminated then
+    activeMeetings[name] = nil
+    if not isMeetingActive() then onMeetingEnd() end
+  end
+end)
+
+watcher:start()
+log.i("Meeting watcher started")

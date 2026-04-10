@@ -135,6 +135,8 @@ brew "pngquant"
 brew "ocrmypdf"
 # PNG file optimizer
 brew "optipng"
+# PAM module for reattaching to the user's GUI (Aqua) session
+brew "pam-reattach"
 # CLI for Postgres with auto-completion and syntax highlighting
 brew "pgcli"
 # PDF rendering library (based on the xpdf-3.0 code base)

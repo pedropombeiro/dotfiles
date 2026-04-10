@@ -7,6 +7,9 @@ hs.urlevent.httpCallback = function(scheme, host, params, fullURL, senderPID)
   if fullURL:find("zoom.us/j/") or fullURL:find("zoom.us/my/") then
     log.i("routing to Zoom")
     hs.urlevent.openURLWithBundle(fullURL, "us.zoom.videomeetings")
+  elseif host and host:find("%.slack%.com$") then
+    log.i("routing to Slack")
+    hs.urlevent.openURLWithBundle(fullURL, "com.tinyspeck.slackmacgap")
   else
     log.i("routing to default browser")
     hs.urlevent.openURLWithBundle(fullURL, defaultBrowser)

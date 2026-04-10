@@ -173,7 +173,7 @@ def rebase_all_per_capture_info(local_branch_info_hash)
     end
 
     # There is a merge conflict that needs to be resolved by the user, exit now
-    system(%(terminal-notifier -title 'rebase_all failed with merge conflict' -message 'Please resolve merge conflicts!' -sound boop -ignoreDnD))
+    system(%(hs -c 'hs.notify.new({title="rebase_all", informativeText="Failed with merge conflict. Please resolve merge conflicts!"}):send()'))
     return false
   end
 
@@ -184,7 +184,7 @@ def rebase_mappings
   system(*%w[git diff-index --quiet HEAD -- . ':!bin/'])
 
   unless Process.last_status.success?
-    system(%(terminal-notifier -title 'rebase_all failed' -message 'Please stash the changes in the current branch before calling rebase_all!' -sound boop -ignoreDnD))
+    system(%(hs -c 'hs.notify.new({title="rebase_all", informativeText="Please stash the changes in the current branch before calling rebase_all!"}):send()'))
     abort "Please stash the changes in the current branch before calling rebase_all!".red
   end
 

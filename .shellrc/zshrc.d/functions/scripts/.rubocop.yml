@@ -19,7 +19,7 @@ Metrics/PerceivedComplexity:
 Metrics/BlockLength:
   Max: 50
 
-# Allow long lines for terminal-notifier and other shell commands
+# Allow long lines for shell commands
 Layout/LineLength:
   Max: 180
 

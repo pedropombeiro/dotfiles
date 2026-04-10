@@ -4,4 +4,4 @@
 # and notifying when branches have been merged
 
 git fetch --all --prune --jobs=10
-git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | awk '{print $1 " has been merged!"}' | xargs -I _ terminal-notifier -title 'Git fetch' -message _ -sound boop -ignoreDnD
+git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | awk '{print $1 " has been merged!"}' | xargs -I _ hs -c 'hs.notify.new({title="Git fetch", informativeText="_"}):send()'

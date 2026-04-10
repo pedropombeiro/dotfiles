@@ -38,7 +38,7 @@ check_stream_deck_usb() {
 check_busylight_local() {
   print_op_stay "Checking Busylight HTTP server (direct)"
   local current_presence
-  current_presence=$(curl --silent --fail --max-time 0.2 "http://127.0.0.1:8989?action=currentpresence" | jq -r '.runningcommand.parameter')
+  current_presence=$(curl --silent --fail --max-time 0.2 "http://localhost:8989?action=currentpresence" | jq -r '.runningcommand.parameter')
   if [[ $? -eq 0 ]]; then
     print_ok $current_presence
     return

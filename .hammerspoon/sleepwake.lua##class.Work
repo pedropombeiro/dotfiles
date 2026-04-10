@@ -39,6 +39,18 @@ end
 function M.restoreServices()
   log.i("restoreServices")
 
+  hs.execute(uhubctl .. " --action cycle --location " .. streamDeckHub .. " --port " .. streamDeckPort .. " --wait 4000")
+  hs.execute("/opt/homebrew/bin/brew services restart nginx")
+  hs.execute("/usr/bin/open -a BusylightHTTP")
+
+  if hs.application.find("Elgato Control Center") then hs.execute("/usr/bin/killall 'Elgato Control Center'") end
+
+  spaces.applyRectangleLayout()
+end
+
+local function onUnlock()
+  log.i("onUnlock")
+
   cycleStreamDeck()
 
   task("/opt/homebrew/bin/brew", { "services", "restart", "nginx" })
@@ -47,11 +59,6 @@ function M.restoreServices()
   if hs.application.find("Elgato Control Center") then task("/usr/bin/killall", { "Elgato Control Center" }) end
 
   hs.timer.doAfter(2, function() spaces.applyRectangleLayout() end)
-end
-
-local function onUnlock()
-  log.i("onUnlock")
-  M.restoreServices()
 end
 
 function M.displaysleep()

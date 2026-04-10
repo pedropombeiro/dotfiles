@@ -231,8 +231,6 @@ brew "sevenzip"
 brew "smartmontools"
 # SOcket CAT: netcat on steroids
 brew "socat"
-# Change macOS audio source from the command-line
-brew "switchaudio-osx"
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
 # Code-search similar to ack
@@ -307,8 +305,6 @@ cask "beyond-compare@4"
 cask "bluesnooze"
 # Screen recording software
 cask "cap"
-# Open links in any browser
-cask "choosy"
 # Graphical configurator for Kaleidoscope-powered keyboards
 cask "chrysalis"
 # Anthropic's official Claude AI desktop app

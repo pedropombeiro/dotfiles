@@ -55,6 +55,10 @@ Example:
 On QTS, only `sesh.toml##distro.qts` is linked to `~/.config/sesh/sesh.toml`. The default file is
 ignored, so the QTS variant must include all shared config plus any QTS-specific overrides.
 
+**New alternate files must be `yadm add`-ed before the symlink is created.** Writing a file
+with a `##` suffix is not enough — `yadm alt` only processes tracked files. After creating a
+new alternate file, always run `yadm add <file>` then `yadm alt` to activate the symlink.
+
 When renaming or adding files:
 
 1. Only use `yadm mv` or `yadm add` on files with `##` suffixes (the actual tracked files)

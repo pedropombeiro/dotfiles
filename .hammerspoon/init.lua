@@ -1,6 +1,6 @@
 require("hs.ipc")
 
-local modules = { "spaces", "sleepwake", "httpserver", "hotkeys" }
+local modules = { "spaces", "sleepwake", "httpserver", "hotkeys", "urlrouter" }
 
 -- Load modules
 for _, mod in ipairs(modules) do

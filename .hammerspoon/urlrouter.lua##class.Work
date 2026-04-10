@@ -1,0 +1,14 @@
+local log = hs.logger.new("urlrouter", "info")
+
+local defaultBrowser = "com.microsoft.edgemac"
+
+hs.urlevent.httpCallback = function(scheme, host, params, fullURL, senderPID)
+  log.i("URL: " .. fullURL)
+  if fullURL:find("zoom.us/j/") or fullURL:find("zoom.us/my/") then
+    log.i("routing to Zoom")
+    hs.urlevent.openURLWithBundle(fullURL, "us.zoom.videomeetings")
+  else
+    log.i("routing to default browser")
+    hs.urlevent.openURLWithBundle(fullURL, defaultBrowser)
+  end
+end

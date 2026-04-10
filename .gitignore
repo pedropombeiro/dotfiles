@@ -61,6 +61,7 @@ Thumbs.db
 .config/yadm/bootstrap.d/915-install-tmux-terminfo.sh
 .config/yadm/bootstrap.d/930-regular-install.sh
 .config/yadm/bootstrap.d/940-open-apps-at-login.sh
+.config/yadm/bootstrap.d/941-open-hammerspoon-at-login.sh
 .config/yadm/bootstrap.d/945-open-apps-for-first-time.sh
 .config/yadm/bootstrap.d/950-install-gdk.sh
 .config/yadm/bootstrap.d/955-install-stream-deck-plugins.sh
@@ -73,10 +74,10 @@ Thumbs.db
 .config/yadm/scripts/staging-rails-ro.sh
 .config/yadm/scripts/update.zsh
 .default-gems
-.hammerspoon/hotkeys.lua
-.hammerspoon/httpserver.lua
+.hammerspoon/httpserver/triggers.lua
 .hammerspoon/sleepwake.lua
 .hammerspoon/spaces.lua
+.hammerspoon/urlrouter.lua
 .local/bin/run_mr_pipeline
 .local/bin/wait_for_mr_merge
 .local/share/grc-rs

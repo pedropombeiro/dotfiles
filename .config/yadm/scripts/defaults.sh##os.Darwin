@@ -225,6 +225,12 @@ duti -s com.neovide.neovide public.data all                        # Catch-all f
 duti -s org.videolan.vlc m4v viewer
 duti -s org.videolan.vlc mp4 viewer
 
+# Route HTTP/HTTPS URLs through Hammerspoon for URL-based browser routing (Work only, requires urlrouter.lua)
+if [[ $(yadm config local.class) == 'Work' ]]; then
+  duti -s org.hammerspoon.Hammerspoon https
+  duti -s org.hammerspoon.Hammerspoon http
+fi
+
 ###############################################################################
 # Dock, Dashboard, and hot corners                                            #
 ###############################################################################

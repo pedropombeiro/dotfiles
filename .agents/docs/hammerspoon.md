@@ -7,6 +7,7 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 - `init.lua` — Module loader. Requires `hs.ipc` for CLI/URL event support, then conditionally loads modules that exist on disk (yadm alternates ensure class-gated modules are only present on matching machines).
 - `spaces.lua##class.Work` — Applies the Rectangle Pro `External display` layout on every Space switch.
 - `sleepwake.lua##class.Work` — Caffeinate watcher for sleep/wake/unlock events. Manages Stream Deck USB power, BusylightHTTP, nginx, and Elgato Control Center. Exports `displaysleep()` for use by other modules.
+- `urlrouter.lua##class.Work` — URL-based browser router (replaces Choosy). Hammerspoon is registered as the default HTTP/HTTPS handler via `duti`. Routes `zoom.us/j/` and `zoom.us/my/` links to Zoom.app, everything else to Edge.
 - `httpserver/` — Modular HTTP server on `localhost:18990`. Sub-modules each return a table of `{ actionName = handlerFn }` that get merged into a single dispatch table.
   - `httpserver/init.lua` — Server skeleton. Parses query params via `hs.http.urlParts`, loads sub-modules, dispatches on `?action=`.
   - `httpserver/triggers.lua##class.Work` — `lock` and `sleep` actions for Home Assistant (Work only, depends on `sleepwake`).
@@ -24,6 +25,7 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 | HTTP `?action=lock`              | Lock screen (Work only)                                                                                                              |
 | HTTP `?action=sleep`             | Same as `displaysleep` URL handler (Work only)                                                                                       |
 | HTTP `?action=notify`            | Send native macOS notification with click-to-focus (all machines)                                                                    |
+| Any `http`/`https` URL opened    | Route to Zoom.app (meeting links) or Edge (everything else) — replaces Choosy (Work only)                                            |
 
 ## Notify action
 
@@ -75,6 +77,7 @@ open -g "rectangle-pro://execute-layout?name=External%20display"
 - `~/.config/yadm/bootstrap.d/940-open-apps-at-login.sh##os.Darwin,class.Work` — Other Work-only login items (Hammerspoon removed from here)
 - `~/.config/opencode/notifier/notify.sh` — OpenCode notifier script that calls Hammerspoon's notify endpoint
 - `~/.config/yadm/config_templates/nginx/servers/localhost.conf` — nginx reverse proxy config
+- `~/.config/yadm/scripts/defaults.sh##os.Darwin` — Registers Hammerspoon as default HTTP/HTTPS handler via `duti` (for `urlrouter`)
 - `~/.config/mise/conf.d/work.toml##class.Work` — `system:fix` task (manual fallback with sudo powers)
 - `~/.config/yadm/scripts/run-checks.zsh##class.Work` — Health checks for Hammerspoon, nginx, Busylight, Stream Deck
 

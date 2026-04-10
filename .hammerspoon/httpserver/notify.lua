@@ -1,6 +1,6 @@
 local log = hs.logger.new("httpserver.notify", "info")
 
--- Event type → macOS system sound name
+-- Event type → macOS system sound name (played via afplay, see below)
 local sounds = {
   complete = "Glass",
   subagent_complete = "Pop",
@@ -35,12 +35,25 @@ local function notify(params)
     title = params.title or "OpenCode",
     subTitle = subtitles[event] or "",
     informativeText = params.message or "",
-    soundName = sounds[event],
     withdrawAfter = 15,
   })
 
+  if params.icon and params.icon ~= "" then
+    local image = hs.image.imageFromPath(params.icon)
+    if image then
+      n:contentImage(image)
+    end
+  end
+
   log.i("notify: " .. event .. " - " .. (params.message or ""))
   n:send()
+
+  local soundName = sounds[event]
+  if soundName then
+    -- hs.sound and hs.notify's soundName are unreliable on macOS 26 with eqMac;
+    -- use hs.task to run afplay asynchronously without blocking the main thread
+    hs.task.new("/usr/bin/afplay", nil, { "/System/Library/Sounds/" .. soundName .. ".aiff" }):start()
+  end
 end
 
 return {

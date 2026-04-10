@@ -235,8 +235,6 @@ brew "socat"
 brew "switchaudio-osx"
 # Very fast implementation of tldr in Rust
 brew "tealdeer"
-# Send macOS User Notifications from the command-line
-brew "terminal-notifier"
 # Code-search similar to ack
 brew "the_silver_searcher"
 # Terminal multiplexer

@@ -32,6 +32,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 TITLE="${TITLE_OVERRIDE:-OpenCode}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ICON="$SCRIPT_DIR/icon.png"
 
 # Wait briefly — the user may have already returned to the terminal,
 # in which case the notification is unnecessary.
@@ -56,4 +58,4 @@ urlencode() {
   done < <(printf '%s' "$1")
 }
 
-curl -sf "http://localhost:${HAMMERSPOON_PORT}/?action=notify&event=${EVENT}&message=$(urlencode "$MESSAGE")&title=$(urlencode "$TITLE")&pane=${TMUX_PANE:-}"
+curl -sf "http://localhost:${HAMMERSPOON_PORT}/?action=notify&event=${EVENT}&message=$(urlencode "$MESSAGE")&title=$(urlencode "$TITLE")&pane=${TMUX_PANE:-}&icon=$(urlencode "$ICON")"

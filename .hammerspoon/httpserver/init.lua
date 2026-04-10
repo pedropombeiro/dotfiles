@@ -40,6 +40,11 @@ for _, mod in ipairs(modules) do
   end
 end
 
+-- Stop any server left over from a previous config reload to free the port
+if _G._httpserver then
+  _G._httpserver:stop()
+end
+
 local server = hs.httpserver.new(false, false)
 server:setPort(listenPort)
 server:setInterface("localhost")
@@ -57,4 +62,5 @@ server:setCallback(function(method, path, headers, body)
   end
 end)
 server:start()
+_G._httpserver = server
 log.i("listening on port " .. listenPort)

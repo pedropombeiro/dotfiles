@@ -56,9 +56,7 @@ local function tmux_controller(cmd, opts)
 
   local function focus()
     local active_pane = get_pane_id()
-    if active_pane then
-      vim.fn.system(string.format("tmux select-pane -t %s", active_pane))
-    end
+    if active_pane then vim.fn.system(string.format("tmux select-pane -t %s", active_pane)) end
   end
 
   local function toggle(cmd_override)
@@ -151,6 +149,45 @@ local function focus_opencode_term()
   end
 end
 
+--- Ensure the opencode server is responsive before calling `callback`.
+--- Starts the server if needed, then polls the configured port every `interval`
+--- until a successful connection or `timeout_ms` elapses.
+---@param callback fun()
+---@param timeout_ms? number Total time to wait (default 10000)
+---@param interval_ms? number Polling interval (default 500)
+local function ensure_server(callback, timeout_ms, interval_ms)
+  timeout_ms = timeout_ms or 10000
+  interval_ms = interval_ms or 500
+
+  local Server = require("opencode.server")
+  local elapsed = 0
+
+  local function try_connect()
+    Server.new(opencode_port):next(function() vim.schedule(callback) end):catch(function()
+      elapsed = elapsed + interval_ms
+      if elapsed >= timeout_ms then
+        vim.schedule(
+          function()
+            vim.notify(
+              "opencode did not respond within " .. (timeout_ms / 1000) .. "s",
+              vim.log.levels.ERROR,
+              { title = "opencode" }
+            )
+          end
+        )
+      else
+        vim.defer_fn(try_connect, interval_ms)
+      end
+    end)
+  end
+
+  Server.new(opencode_port):next(function() vim.schedule(callback) end):catch(function()
+    local opts = require("opencode.config").opts.server or {}
+    if opts.start then pcall(opts.start) end
+    vim.defer_fn(try_connect, interval_ms)
+  end)
+end
+
 return {
   "NickvanDyke/opencode.nvim",
   dependencies = { "folke/snacks.nvim" },
@@ -181,20 +218,26 @@ return {
     {
       "<leader>aa",
       function()
-        require("opencode").ask("@this: ", { submit = false }):next(function() vim.schedule(focus_opencode_term) end)
+        ensure_server(function()
+          require("opencode").ask("@this: ", { submit = false }):next(function() vim.schedule(focus_opencode_term) end)
+        end)
       end,
       mode = { "n", "x" },
       desc = "Ask opencode…",
     },
     {
       "<leader>as",
-      function() require("opencode").select() end,
+      function()
+        ensure_server(function() require("opencode").select() end)
+      end,
       mode = { "n", "x" },
       desc = "Select opencode action…",
     },
     {
       "<leader>ap",
-      function() require("opencode").prompt("review") end,
+      function()
+        ensure_server(function() require("opencode").prompt("review") end)
+      end,
       mode = { "n", "x" },
       desc = "Review with opencode",
     },

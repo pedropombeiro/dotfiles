@@ -1,0 +1,6 @@
+local sleepwake = require("sleepwake")
+
+return {
+  lock = function() hs.caffeinate.lockScreen() end,
+  sleep = function() sleepwake.displaysleep() end,
+}

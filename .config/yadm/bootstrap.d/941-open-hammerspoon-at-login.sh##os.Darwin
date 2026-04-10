@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+app="/Applications/Hammerspoon.app"
+if [[ -d "$app" ]]; then
+  echo "Setting $app to open at login..."
+  osascript -e "tell application \"System Events\" to make login item at end with properties {path:\"$app\", hidden:false}"
+fi

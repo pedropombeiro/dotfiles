@@ -1,13 +1,16 @@
 # Hammerspoon
 
-macOS automation tool used on `class.Work` machines. Config lives in `~/.hammerspoon/`.
+macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. Config lives in `~/.hammerspoon/`.
 
 ## Architecture
 
-- `init.lua` — Module loader. Requires `hs.ipc` for CLI/URL event support, then conditionally loads modules that exist on disk (yadm alternates ensure only `##class.Work` modules are present on Work machines).
+- `init.lua` — Module loader. Requires `hs.ipc` for CLI/URL event support, then conditionally loads modules that exist on disk (yadm alternates ensure class-gated modules are only present on matching machines).
 - `spaces.lua##class.Work` — Applies the Rectangle Pro `External display` layout on every Space switch.
 - `sleepwake.lua##class.Work` — Caffeinate watcher for sleep/wake/unlock events. Manages Stream Deck USB power, BusylightHTTP, nginx, and Elgato Control Center. Exports `displaysleep()` for use by other modules.
-- `httpserver.lua##class.Work` — HTTP server on `localhost:18990` handling `/trigger?action=lock` and `/trigger?action=sleep` from Home Assistant (proxied through nginx on port 18989).
+- `httpserver/` — Modular HTTP server on `localhost:18990`. Sub-modules each return a table of `{ actionName = handlerFn }` that get merged into a single dispatch table.
+  - `httpserver/init.lua` — Server skeleton. Parses query params via `hs.http.urlParts`, loads sub-modules, dispatches on `?action=`.
+  - `httpserver/triggers.lua##class.Work` — `lock` and `sleep` actions for Home Assistant (Work only, depends on `sleepwake`).
+  - `httpserver/notify.lua` — `notify` action for native macOS notifications via `hs.notify`. Maps event types to sounds/subtitles. Click callback focuses iTerm2 and selects the originating tmux pane.
 
 ## Key behaviours
 
@@ -18,8 +21,25 @@ macOS automation tool used on `class.Work` machines. Config lives in `~/.hammers
 | `screensDidSleep`                | Power off Stream Deck USB                                                                                                            |
 | `screensDidUnlock`               | Cycle Stream Deck (async), restart nginx, reopen BusylightHTTP, restart Elgato Control Center, apply Rectangle Pro layout (2s delay) |
 | `hammerspoon://displaysleep` URL | Power off Stream Deck, lock screen, sleep display after 2s                                                                           |
-| HTTP `/trigger?action=lock`      | Lock screen                                                                                                                          |
-| HTTP `/trigger?action=sleep`     | Same as `displaysleep` URL handler                                                                                                   |
+| HTTP `?action=lock`              | Lock screen (Work only)                                                                                                              |
+| HTTP `?action=sleep`             | Same as `displaysleep` URL handler (Work only)                                                                                       |
+| HTTP `?action=notify`            | Send native macOS notification with click-to-focus (all machines)                                                                    |
+
+## Notify action
+
+Used by `~/.config/opencode/notifier/notify.sh` to deliver OpenCode notifications. The shell script handles the grace period and tmux `@opencode-waiting` check, then delegates to Hammerspoon via `curl`.
+
+Query params: `event`, `message`, `title`, `pane` (tmux pane ID).
+
+Event-to-sound mapping (in `httpserver/notify.lua`):
+
+| Event              | Sound | Subtitle           |
+| ------------------ | ----- | ------------------ |
+| `complete`         | Glass | Session Complete   |
+| `subagent_complete`| Pop   | Subagent Complete  |
+| `error`            | Basso | Error              |
+| `permission`       | Ping  | Permission Required|
+| `question`         | Purr  | Question           |
 
 ## Network topology (Home Assistant → laptop)
 
@@ -50,8 +70,10 @@ open -g "rectangle-pro://execute-layout?name=External%20display"
 
 ## Related files
 
-- `~/.config/yadm/bootstrap.d/901-configure-hammerspoon-firewall.sh##os.Darwin,class.Work` — Adds Hammerspoon to macOS firewall allowlist
-- `~/.config/yadm/bootstrap.d/940-open-apps-at-login.sh##os.Darwin,class.Work` — Launches Hammerspoon at login
+- `~/.config/yadm/bootstrap.d/901-configure-hammerspoon-firewall.sh##os.Darwin,class.Work` — Adds Hammerspoon to macOS firewall allowlist (Work only; Personal machines only use localhost)
+- `~/.config/yadm/bootstrap.d/941-open-hammerspoon-at-login.sh##os.Darwin` — Launches Hammerspoon at login (all Darwin machines)
+- `~/.config/yadm/bootstrap.d/940-open-apps-at-login.sh##os.Darwin,class.Work` — Other Work-only login items (Hammerspoon removed from here)
+- `~/.config/opencode/notifier/notify.sh` — OpenCode notifier script that calls Hammerspoon's notify endpoint
 - `~/.config/yadm/config_templates/nginx/servers/localhost.conf` — nginx reverse proxy config
 - `~/.config/mise/conf.d/work.toml##class.Work` — `system:fix` task (manual fallback with sudo powers)
 - `~/.config/yadm/scripts/run-checks.zsh##class.Work` — Health checks for Hammerspoon, nginx, Busylight, Stream Deck

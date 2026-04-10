@@ -41,9 +41,7 @@ for _, mod in ipairs(modules) do
 end
 
 -- Stop any server left over from a previous config reload to free the port
-if _G._httpserver then
-  _G._httpserver:stop()
-end
+if _G._httpserver then _G._httpserver:stop() end
 
 local server = hs.httpserver.new(false, false)
 server:setPort(listenPort)

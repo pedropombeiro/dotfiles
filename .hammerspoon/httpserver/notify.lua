@@ -29,9 +29,7 @@ local function notify(params)
   local event = params.event or ""
   local pane = params.pane
 
-  local n = hs.notify.new(function(notification)
-    onActivation(notification, pane)
-  end, {
+  local n = hs.notify.new(function(notification) onActivation(notification, pane) end, {
     title = params.title or "OpenCode",
     subTitle = subtitles[event] or "",
     informativeText = params.message or "",
@@ -40,9 +38,7 @@ local function notify(params)
 
   if params.icon and params.icon ~= "" then
     local image = hs.image.imageFromPath(params.icon)
-    if image then
-      n:contentImage(image)
-    end
+    if image then n:contentImage(image) end
   end
 
   log.i("notify: " .. event .. " - " .. (params.message or ""))

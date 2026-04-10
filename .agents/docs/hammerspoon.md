@@ -33,13 +33,13 @@ Query params: `event`, `message`, `title`, `pane` (tmux pane ID).
 
 Event-to-sound mapping (in `httpserver/notify.lua`):
 
-| Event              | Sound | Subtitle           |
-| ------------------ | ----- | ------------------ |
-| `complete`         | Glass | Session Complete   |
-| `subagent_complete`| Pop   | Subagent Complete  |
-| `error`            | Basso | Error              |
-| `permission`       | Ping  | Permission Required|
-| `question`         | Purr  | Question           |
+| Event               | Sound | Subtitle            |
+| ------------------- | ----- | ------------------- |
+| `complete`          | Glass | Session Complete    |
+| `subagent_complete` | Pop   | Subagent Complete   |
+| `error`             | Basso | Error               |
+| `permission`        | Ping  | Permission Required |
+| `question`          | Purr  | Question            |
 
 ## Network topology (Home Assistant → laptop)
 

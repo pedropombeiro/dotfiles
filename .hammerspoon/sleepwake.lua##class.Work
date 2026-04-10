@@ -36,8 +36,8 @@ local function cycleStreamDeck()
   )
 end
 
-local function onUnlock()
-  log.i("onUnlock")
+function M.restoreServices()
+  log.i("restoreServices")
 
   cycleStreamDeck()
 
@@ -47,6 +47,11 @@ local function onUnlock()
   if hs.application.find("Elgato Control Center") then task("/usr/bin/killall", { "Elgato Control Center" }) end
 
   hs.timer.doAfter(2, function() spaces.applyRectangleLayout() end)
+end
+
+local function onUnlock()
+  log.i("onUnlock")
+  M.restoreServices()
 end
 
 function M.displaysleep()

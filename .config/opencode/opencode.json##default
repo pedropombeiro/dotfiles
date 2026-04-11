@@ -11,13 +11,6 @@
   ],
   "default_agent": "plan",
   "small_model": "gitlab/duo-chat-gpt-5-4-nano",
-  "provider": {
-    "anthropic": {
-      "options": {
-        "setCacheKey": true
-      }
-    }
-  },
   "mcp": {
     "lazy-mcp": {
       "type": "local",
@@ -34,6 +27,11 @@
     }
   },
   "provider": {
+    "anthropic": {
+      "options": {
+        "setCacheKey": true
+      }
+    },
     "gitlab": {
       "models": {
         "duo-workflow-opus-4-6": {

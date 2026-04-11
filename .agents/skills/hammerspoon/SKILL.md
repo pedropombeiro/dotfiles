@@ -101,7 +101,7 @@ This requires `hs.ipc` (loaded in `init.lua`). The output includes all `hs.logge
 
 ## API documentation
 
-Use Context7 (`hammerspoon/hammerspoon`) for Hammerspoon API reference — do not guess API signatures. Fallback: https://www.hammerspoon.org/docs/
+Use Context7 (`/hammerspoon/hammerspoon.github.io`) for Hammerspoon API reference and guides — do not guess API signatures. It maps to the Hammerspoon docs site and has broader coverage than the repo entry. Fallback: https://www.hammerspoon.org/docs/
 
 ## Development workflow
 

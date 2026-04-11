@@ -13,29 +13,50 @@ local meetingApps = {
 
 local activeMeetings = {}
 
-local function isMeetingActive()
-  for _, _ in pairs(activeMeetings) do
-    return true
+local function stopPollTimer()
+  if pollTimer then
+    pollTimer:stop()
+    pollTimer = nil
   end
-  return false
 end
 
 local function findAirpods()
   for _, dev in ipairs(hs.audiodevice.allOutputDevices()) do
     if string.find(dev:name(), airpodsPattern, 1, true) then return dev end
   end
-  return nil
 end
 
 local function switchToAirpods(current)
   local airpods = findAirpods()
-  if airpods then
-    previousDevice = current
-    airpods:setDefaultOutputDevice()
-    log.i("Switched audio output to " .. airpods:name())
-    return true
-  end
-  return false
+  if not airpods then return false end
+  previousDevice = current
+  airpods:setDefaultOutputDevice()
+  log.i("Switched audio output to " .. airpods:name())
+  return true
+end
+
+local function connectAndSwitch(current)
+  log.i("AirPods not connected, requesting connection via blueutil")
+  connectTask = hs.task.new("/opt/homebrew/bin/blueutil", function(exitCode, _, stdErr)
+    connectTask = nil
+    if exitCode ~= 0 then
+      log.w("blueutil --connect failed (exit " .. tostring(exitCode) .. "): " .. tostring(stdErr))
+      return
+    end
+    local attempts = 0
+    local function trySwitch()
+      attempts = attempts + 1
+      if switchToAirpods(current) then
+        stopPollTimer()
+      elseif attempts >= 10 then
+        log.w("AirPods did not appear after connection, giving up")
+        stopPollTimer()
+      end
+    end
+    trySwitch()
+    if not findAirpods() then pollTimer = hs.timer.doEvery(1, trySwitch) end
+  end, { "--connect", airpodsAddress })
+  connectTask:start()
 end
 
 local function onMeetingStart()
@@ -43,35 +64,7 @@ local function onMeetingStart()
   if current and string.find(current:name(), airpodsPattern, 1, true) then
     log.i("AirPods already default, skipping switch")
   elseif not switchToAirpods(current) then
-    log.i("AirPods not connected, requesting connection via blueutil")
-    connectTask = hs.task.new("/opt/homebrew/bin/blueutil", function(exitCode, stdOut, stdErr)
-      connectTask = nil
-      if exitCode ~= 0 then
-        log.w("blueutil --connect failed (exit " .. tostring(exitCode) .. "): " .. tostring(stdErr))
-        return
-      end
-      local attempts = 0
-      local maxAttempts = 10
-      local function trySwitch()
-        attempts = attempts + 1
-        if findAirpods() then
-          switchToAirpods(current)
-          if pollTimer then
-            pollTimer:stop()
-            pollTimer = nil
-          end
-        elseif attempts >= maxAttempts then
-          log.w("AirPods did not appear after connection, giving up")
-          if pollTimer then
-            pollTimer:stop()
-            pollTimer = nil
-          end
-        end
-      end
-      trySwitch()
-      if not findAirpods() then pollTimer = hs.timer.doEvery(1, trySwitch) end
-    end, { "--connect", airpodsAddress })
-    connectTask:start()
+    connectAndSwitch(current)
   end
 
   if hs.spotify.isPlaying() then
@@ -100,16 +93,16 @@ local function onMeetingEnd()
   end
 end
 
-local watcher = hs.application.watcher.new(function(name, event, app)
+local watcher = hs.application.watcher.new(function(name, event)
   if not meetingApps[name] then return end
 
   if event == hs.application.watcher.launched then
-    local wasActive = isMeetingActive()
+    local wasActive = next(activeMeetings) ~= nil
     activeMeetings[name] = true
     if not wasActive then onMeetingStart() end
   elseif event == hs.application.watcher.terminated then
     activeMeetings[name] = nil
-    if not isMeetingActive() then onMeetingEnd() end
+    if next(activeMeetings) == nil then onMeetingEnd() end
   end
 end)
 

@@ -420,7 +420,6 @@ mas "MediaInfo", id: 510620098
 mas "MusicBuddy", id: 563706976
 mas "Numbers", id: 409203825
 mas "Okta Extension App", id: 1439967473
-mas "Okta Verify", id: 490179405
 mas "Parcel", id: 375589283
 mas "PLIST Editor", id: 1157491961
 mas "Speedtest", id: 1153157709

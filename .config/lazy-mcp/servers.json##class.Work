@@ -1,5 +1,4 @@
 {
-  "mode": "multi-server",
   "servers": [
     {
       "name": "gitlab",
@@ -44,11 +43,7 @@
       "name": "incident_io",
       "description": "Gitlab.com incident management tool",
       "type": "local",
-      "command": ["~/.incidentio/incident"]
+      "command": ["/Users/pedropombeiro/.incidentio/incident"]
     }
-  ],
-  "discovery": {
-    "cache_strategy": "session",
-    "cache_ttl": 3600
-  }
+  ]
 }

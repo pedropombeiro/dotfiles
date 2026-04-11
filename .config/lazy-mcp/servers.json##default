@@ -1,5 +1,4 @@
 {
-  "mode": "multi-server",
   "servers": [
     {
       "name": "context7",
@@ -7,10 +6,5 @@
       "type": "local",
       "command": ["npx", "-y", "@upstash/context7-mcp"]
     }
-  ],
-  "discovery": {
-    "cache_strategy": "session",
-    "cache_ttl": 3600
-  }
+  ]
 }
-

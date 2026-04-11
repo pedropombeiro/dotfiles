@@ -258,6 +258,7 @@
       "git-helpers": "allow",
       "gitlab-review": "allow",
       "glab": "allow",
+      "hammerspoon": "allow",
       "mr-pipeline": "allow",
       "mr-workflow": "allow",
       "psql": "allow",

@@ -1,3 +1,8 @@
+---
+name: hammerspoon
+description: "Hammerspoon macOS automation. Config in ~/.hammerspoon/. Modules: init.lua, spaces, sleepwake, urlrouter, httpserver, meetings. Keywords: hammerspoon, hs, lua, audiodevice, hotkey, caffeinate, httpserver, Stream Deck, Rectangle Pro, blueutil, AirPods, URL routing. Use when: editing ~/.hammerspoon/ files, debugging Hammerspoon modules, adding Hammerspoon features, checking Hammerspoon logs."
+---
+
 # Hammerspoon
 
 macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. Config lives in `~/.hammerspoon/`.
@@ -8,6 +13,7 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 - `spaces.lua##class.Work` — Applies the Rectangle Pro `External display` layout on every Space switch.
 - `sleepwake.lua##class.Work` — Caffeinate watcher for sleep/wake/unlock events. Manages Stream Deck USB power, BusylightHTTP, nginx, and Elgato Control Center. Exports `displaysleep()` for use by other modules.
 - `urlrouter.lua##class.Work` — URL-based browser router (replaces Choosy). Hammerspoon is registered as the default HTTP/HTTPS handler via `duti`. Routes `zoom.us/j/` and `zoom.us/my/` links to Zoom.app, everything else to Edge.
+- `meetings.lua##class.Work` — Auto-switches audio to AirPods when Zoom launches (connects via `blueutil` if needed), pauses Spotify. Restores previous device on Zoom exit.
 - `httpserver/` — Modular HTTP server on `localhost:18990`. Sub-modules each return a table of `{ actionName = handlerFn }` that get merged into a single dispatch table.
   - `httpserver/init.lua` — Server skeleton. Parses query params via `hs.http.urlParts`, loads sub-modules, dispatches on `?action=`.
   - `httpserver/triggers.lua##class.Work` — `lock` and `sleep` actions for Home Assistant (Work only, depends on `sleepwake`).
@@ -26,6 +32,8 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 | HTTP `?action=sleep`             | Same as `displaysleep` URL handler (Work only)                                                                                       |
 | HTTP `?action=notify`            | Send native macOS notification with click-to-focus (all machines)                                                                    |
 | Any `http`/`https` URL opened    | Route to Zoom.app (meeting links) or Edge (everything else) — replaces Choosy (Work only)                                            |
+| Zoom launched                    | Connect AirPods via blueutil, switch audio output, pause Spotify (Work only)                                                         |
+| Zoom terminated                  | Restore previous audio output, resume Spotify (Work only)                                                                            |
 
 ## Notify action
 
@@ -91,6 +99,21 @@ hs -c "hs.console.getConsole()"
 
 This requires `hs.ipc` (loaded in `init.lua`). The output includes all `hs.logger` messages and extension load traces. There are no on-disk log files by default.
 
-## Stylua
+## API documentation
 
-Lua files are formatted by `stylua` via pre-commit. The hook uses `language: system`, so `stylua` must be available on PATH (e.g. via `mise use -g stylua`).
+Use Context7 (`hammerspoon/hammerspoon`) for Hammerspoon API reference — do not guess API signatures. Fallback: https://www.hammerspoon.org/docs/
+
+## Development workflow
+
+1. Edit Lua files in `~/.hammerspoon/`
+2. Run `stylua` to format (enforced by pre-commit)
+3. Reload config: `hs -c "hs.reload()"` (or use run-in-tmux-pane if `hs` needs shell environment)
+4. Check logs: `hs -c "hs.console.getConsole()"`
+5. `hs.task` objects **must** be stored in module-level variables to prevent garbage collection
+
+## Gotchas
+
+- `hs.task` and `hs.timer` objects are garbage-collected if not stored in a variable — the underlying process/timer is killed immediately.
+- `hs.timer.doUntil` checks the predicate **before** running the action — if the predicate is true immediately, the action never fires. Prefer `hs.timer.doEvery` with manual stop.
+- Hammerspoon needs explicit Bluetooth permission in System Settings > Privacy & Security > Bluetooth to use `blueutil` via `hs.task`.
+- Lua files are formatted by `stylua` via pre-commit. The hook uses `language: system`, so `stylua` must be available on PATH (e.g. via `mise use -g stylua`).

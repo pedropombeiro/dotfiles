@@ -234,7 +234,7 @@
     "~/.gnupg/*": "deny",
     "~/.netrc": "deny",
     "~/.ssh/*": "deny",
-    "skill": { "gh": "allow" },
+    "skill": { "gh": "allow", "hammerspoon": "allow" },
     "task": {
       "general": "allow",
       "explore": "allow"

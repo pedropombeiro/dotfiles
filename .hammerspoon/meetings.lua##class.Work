@@ -1,8 +1,11 @@
 local log = hs.logger.new("meetings", "info")
 
-local airpodsName = "Pedro's AirPods Pro"
+local airpodsPattern = "AirPods"
+local airpodsAddress = "ec-73-79-44-76-9d"
 local previousDevice = nil
 local spotifyWasPlaying = false
+local connectTask = nil
+local pollTimer = nil
 
 local meetingApps = {
   ["zoom.us"] = true,
@@ -17,17 +20,58 @@ local function isMeetingActive()
   return false
 end
 
+local function findAirpods()
+  for _, dev in ipairs(hs.audiodevice.allOutputDevices()) do
+    if string.find(dev:name(), airpodsPattern, 1, true) then return dev end
+  end
+  return nil
+end
+
+local function switchToAirpods(current)
+  local airpods = findAirpods()
+  if airpods then
+    previousDevice = current
+    airpods:setDefaultOutputDevice()
+    log.i("Switched audio output to " .. airpods:name())
+    return true
+  end
+  return false
+end
+
 local function onMeetingStart()
   local current = hs.audiodevice.defaultOutputDevice()
-  if not current or current:name() ~= airpodsName then
-    local airpods = hs.audiodevice.findOutputByName(airpodsName)
-    if airpods then
-      previousDevice = current
-      airpods:setDefaultOutputDevice()
-      log.i("Switched audio output to " .. airpodsName)
-    else
-      log.w("AirPods not available, skipping audio switch")
-    end
+  if current and string.find(current:name(), airpodsPattern, 1, true) then
+    log.i("AirPods already default, skipping switch")
+  elseif not switchToAirpods(current) then
+    log.i("AirPods not connected, requesting connection via blueutil")
+    connectTask = hs.task.new("/opt/homebrew/bin/blueutil", function(exitCode, stdOut, stdErr)
+      connectTask = nil
+      if exitCode ~= 0 then
+        log.w("blueutil --connect failed (exit " .. tostring(exitCode) .. "): " .. tostring(stdErr))
+        return
+      end
+      local attempts = 0
+      local maxAttempts = 10
+      local function trySwitch()
+        attempts = attempts + 1
+        if findAirpods() then
+          switchToAirpods(current)
+          if pollTimer then
+            pollTimer:stop()
+            pollTimer = nil
+          end
+        elseif attempts >= maxAttempts then
+          log.w("AirPods did not appear after connection, giving up")
+          if pollTimer then
+            pollTimer:stop()
+            pollTimer = nil
+          end
+        end
+      end
+      trySwitch()
+      if not findAirpods() then pollTimer = hs.timer.doEvery(1, trySwitch) end
+    end, { "--connect", airpodsAddress })
+    connectTask:start()
   end
 
   if hs.spotify.isPlaying() then

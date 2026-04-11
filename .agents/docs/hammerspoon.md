@@ -81,6 +81,16 @@ open -g "rectangle-pro://execute-layout?name=External%20display"
 - `~/.config/mise/conf.d/work.toml##class.Work` — `system:fix` task (manual fallback with sudo powers)
 - `~/.config/yadm/scripts/run-checks.zsh##class.Work` — Health checks for Hammerspoon, nginx, Busylight, Stream Deck
 
+## Debugging / Logs
+
+Hammerspoon logs to an in-memory console. Read it from the CLI with:
+
+```bash
+hs -c "hs.console.getConsole()"
+```
+
+This requires `hs.ipc` (loaded in `init.lua`). The output includes all `hs.logger` messages and extension load traces. There are no on-disk log files by default.
+
 ## Stylua
 
 Lua files are formatted by `stylua` via pre-commit. The hook uses `language: system`, so `stylua` must be available on PATH (e.g. via `mise use -g stylua`).

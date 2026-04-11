@@ -112,7 +112,27 @@ check_gdk_wakatime_projects() {
   done
 }
 
+check_hammerspoon_bluetooth() {
+  print_op_stay "Checking Hammerspoon Bluetooth permission"
+  local hs_bundle_id="org.hammerspoon.Hammerspoon"
+  if defaults read /Library/Preferences/com.apple.Bluetooth.plist 2>/dev/null | grep -q "$hs_bundle_id"; then
+    print_ok
+    return
+  fi
+
+  local tcc_db="$HOME/Library/Application Support/com.apple.TCC/TCC.db"
+  if [[ -r "$tcc_db" ]] && sqlite3 "$tcc_db" "SELECT client FROM access WHERE service='kTCCServiceBluetoothAlways' AND client='$hs_bundle_id' AND auth_value=2;" 2>/dev/null | grep -q "$hs_bundle_id"; then
+    print_ok
+    return
+  fi
+
+  echo
+  print_failure "Hammerspoon lacks Bluetooth permission (System Settings > Privacy & Security > Bluetooth)"
+  any_failed=1
+}
+
 check_app_running 'Hammerspoon'
+check_hammerspoon_bluetooth
 check_app_running 'Stream Deck'
 
 if uhubctl >/dev/null 2>&1; then

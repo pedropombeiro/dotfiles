@@ -68,6 +68,10 @@ end
 function M.displaysleep()
   log.i("displaysleep triggered")
   streamDeckOff()
+  if hs.spotify.isPlaying() then
+    hs.spotify.pause()
+    log.i("Paused Spotify")
+  end
   hs.caffeinate.lockScreen()
   hs.timer.doAfter(2, function()
     log.i("sleeping display")

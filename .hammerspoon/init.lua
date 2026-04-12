@@ -1,3 +1,4 @@
+-- Required for `hs` CLI to communicate with the running Hammerspoon instance
 require("hs.ipc")
 
 local modules = {

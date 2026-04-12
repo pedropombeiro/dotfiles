@@ -9,7 +9,7 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 
 ## Architecture
 
-- `init.lua` — Module loader. Requires `hs.ipc` for CLI/URL event support, then conditionally loads modules that exist on disk (yadm alternates ensure class-gated modules are only present on matching machines).
+- `init.lua` — Module loader. Loads `hs.ipc` (enables the `hs` CLI to talk to the running instance), then conditionally loads modules that exist on disk (yadm alternates ensure class-gated modules are only present on matching machines).
 - `constants.lua` — Shared hardware and tool path constants used across modules (uhubctl, blueutil, USB hub/port assignments, AirPods address).
 - `spaces.lua##class.Work` — Applies the Rectangle Pro `External display` layout on every Space switch.
 - `sleepwake.lua##class.Work` — Caffeinate watcher for sleep/wake/unlock events. Manages Stream Deck USB power, BusylightHTTP, nginx, and Elgato Control Center. Exports `displaysleep()` for use by other modules.

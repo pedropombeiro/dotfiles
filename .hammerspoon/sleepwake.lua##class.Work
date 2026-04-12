@@ -23,8 +23,10 @@ local function cycleStreamDeck()
   task(
     constants.uhubctl,
     { "--action", "cycle", "--location", constants.usbHub, "--port", constants.streamDeckPort, "--wait", "4000" },
-    function(_, stdout)
-      if stdout:find("Elgato Stream Deck") then
+    function(exitCode, stdout)
+      if exitCode ~= 0 then
+        log.i("Stream Deck: hub not found (undocked?), skipping cycle")
+      elseif stdout:find("Elgato Stream Deck") then
         log.i("Stream Deck: cycle succeeded")
       else
         log.w("Stream Deck: cycle completed, waiting for USB re-enumeration")

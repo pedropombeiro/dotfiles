@@ -1,10 +1,7 @@
+local constants = require("constants")
 local spaces = require("spaces")
 
 local M = {}
-
-local streamDeckHub = "2-1.1.2"
-local streamDeckPort = "2"
-local uhubctl = "/opt/homebrew/bin/uhubctl"
 
 local log = hs.logger.new("sleepwake", "info")
 
@@ -12,7 +9,7 @@ local function task(path, args, callback) hs.task.new(path, callback, args):star
 
 local function streamDeckOff()
   log.i("Stream Deck: powering off")
-  task(uhubctl, { "--action", "off", "--location", streamDeckHub, "--port", streamDeckPort })
+  task(constants.uhubctl, { "--action", "off", "--location", constants.usbHub, "--port", constants.streamDeckPort })
 end
 
 local function onSleep()
@@ -24,8 +21,8 @@ end
 local function cycleStreamDeck()
   log.i("Stream Deck: cycling")
   task(
-    uhubctl,
-    { "--action", "cycle", "--location", streamDeckHub, "--port", streamDeckPort, "--wait", "4000" },
+    constants.uhubctl,
+    { "--action", "cycle", "--location", constants.usbHub, "--port", constants.streamDeckPort, "--wait", "4000" },
     function(_, stdout)
       if stdout:find("Elgato Stream Deck") then
         log.i("Stream Deck: cycle succeeded")
@@ -39,7 +36,14 @@ end
 function M.restoreServices()
   log.i("restoreServices")
 
-  hs.execute(uhubctl .. " --action cycle --location " .. streamDeckHub .. " --port " .. streamDeckPort .. " --wait 4000")
+  hs.execute(
+    constants.uhubctl
+      .. " --action cycle --location "
+      .. constants.usbHub
+      .. " --port "
+      .. constants.streamDeckPort
+      .. " --wait 4000"
+  )
   hs.execute("/opt/homebrew/bin/brew services restart nginx")
   hs.execute("/usr/bin/open -a BusylightHTTP")
 

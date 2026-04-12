@@ -1,11 +1,11 @@
+local constants = require("constants")
 local log = hs.logger.new("meetings", "info")
-
-local airpodsPattern = "AirPods"
-local airpodsAddress = "ec-73-79-44-76-9d"
 local previousDevice = nil
 local spotifyWasPlaying = false
+local eqMacWasRunning = false
 local connectTask = nil
 local pollTimer = nil
+local waveTask = nil
 
 local meetingApps = {
   ["zoom.us"] = true,
@@ -22,7 +22,7 @@ end
 
 local function findAirpods()
   for _, dev in ipairs(hs.audiodevice.allOutputDevices()) do
-    if string.find(dev:name(), airpodsPattern, 1, true) then return dev end
+    if string.find(dev:name(), constants.airpodsPattern, 1, true) then return dev end
   end
 end
 
@@ -37,7 +37,7 @@ end
 
 local function connectAndSwitch(current)
   log.i("AirPods not connected, requesting connection via blueutil")
-  connectTask = hs.task.new("/opt/homebrew/bin/blueutil", function(exitCode, _, stdErr)
+  connectTask = hs.task.new(constants.blueutil, function(exitCode, _, stdErr)
     connectTask = nil
     if exitCode ~= 0 then
       log.w("blueutil --connect failed (exit " .. tostring(exitCode) .. "): " .. tostring(stdErr))
@@ -55,13 +55,13 @@ local function connectAndSwitch(current)
     end
     trySwitch()
     if not findAirpods() then pollTimer = hs.timer.doEvery(1, trySwitch) end
-  end, { "--connect", airpodsAddress })
+  end, { "--connect", constants.airpodsAddress })
   connectTask:start()
 end
 
 local function onMeetingStart()
   local current = hs.audiodevice.defaultOutputDevice()
-  if current and string.find(current:name(), airpodsPattern, 1, true) then
+  if current and string.find(current:name(), constants.airpodsPattern, 1, true) then
     log.i("AirPods already default, skipping switch")
   elseif not switchToAirpods(current) then
     connectAndSwitch(current)
@@ -71,6 +71,13 @@ local function onMeetingStart()
     spotifyWasPlaying = true
     hs.spotify.pause()
     log.i("Paused Spotify")
+  end
+
+  local eqMac = hs.application.get("eqMac")
+  if eqMac then
+    eqMacWasRunning = true
+    eqMac:kill()
+    log.i("Quit eqMac")
   end
 end
 
@@ -91,6 +98,33 @@ local function onMeetingEnd()
     hs.spotify.play()
     log.i("Resumed Spotify")
   end
+
+  if eqMacWasRunning then
+    eqMacWasRunning = false
+    hs.execute("open -g -a eqMac")
+    log.i("Relaunched eqMac in background")
+  end
+
+  local camo = hs.application.get("Camo Studio")
+  if camo then
+    camo:kill()
+    log.i("Quit Camo Studio")
+  end
+
+  waveTask = hs.task.new(constants.uhubctl, function() waveTask = nil end, {
+    "--action",
+    "off",
+    "--location",
+    constants.usbHub,
+    "--port",
+    constants.elgatoWavePort,
+    "--repeat",
+    "3",
+    "--wait",
+    "500",
+  })
+  waveTask:start()
+  log.i("Powered off Elgato Wave USB")
 end
 
 local watcher = hs.application.watcher.new(function(name, event)

@@ -10,10 +10,11 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 ## Architecture
 
 - `init.lua` — Module loader. Requires `hs.ipc` for CLI/URL event support, then conditionally loads modules that exist on disk (yadm alternates ensure class-gated modules are only present on matching machines).
+- `constants.lua` — Shared hardware and tool path constants used across modules (uhubctl, blueutil, USB hub/port assignments, AirPods address).
 - `spaces.lua##class.Work` — Applies the Rectangle Pro `External display` layout on every Space switch.
 - `sleepwake.lua##class.Work` — Caffeinate watcher for sleep/wake/unlock events. Manages Stream Deck USB power, BusylightHTTP, nginx, and Elgato Control Center. Exports `displaysleep()` for use by other modules.
 - `urlrouter.lua##class.Work` — URL-based browser router (replaces Choosy). Hammerspoon is registered as the default HTTP/HTTPS handler via `duti`. Routes `zoom.us/j/` and `zoom.us/my/` links to Zoom.app, everything else to Edge.
-- `meetings.lua##class.Work` — Auto-switches audio to AirPods when Zoom launches (connects via `blueutil` if needed), pauses Spotify. Restores previous device on Zoom exit.
+- `meetings.lua##class.Work` — Auto-switches audio to AirPods when Zoom launches (connects via `blueutil` if needed), pauses Spotify, quits eqMac. On Zoom exit: restores previous audio device, resumes Spotify, relaunches eqMac hidden, quits Camo Studio, powers off Elgato Wave USB port.
 - `httpserver/` — Modular HTTP server on `localhost:18990`. Sub-modules each return a table of `{ actionName = handlerFn }` that get merged into a single dispatch table.
   - `httpserver/init.lua` — Server skeleton. Parses query params via `hs.http.urlParts`, loads sub-modules, dispatches on `?action=`.
   - `httpserver/triggers.lua##class.Work` — `lock` and `sleep` actions for Home Assistant (Work only, depends on `sleepwake`).
@@ -32,8 +33,8 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 | HTTP `?action=sleep`             | Same as `displaysleep` URL handler (Work only)                                                                                       |
 | HTTP `?action=notify`            | Send native macOS notification with click-to-focus (all machines)                                                                    |
 | Any `http`/`https` URL opened    | Route to Zoom.app (meeting links) or Edge (everything else) — replaces Choosy (Work only)                                            |
-| Zoom launched                    | Connect AirPods via blueutil, switch audio output, pause Spotify (Work only)                                                         |
-| Zoom terminated                  | Restore previous audio output, resume Spotify (Work only)                                                                            |
+| Zoom launched                    | Connect AirPods via blueutil, switch audio output, pause Spotify, quit eqMac (Work only)                                             |
+| Zoom terminated                  | Restore previous audio output, resume Spotify, relaunch eqMac hidden, quit Camo Studio, power off Elgato Wave USB (Work only)        |
 
 ## Notify action
 
@@ -68,7 +69,7 @@ The Stream Deck "lock" button should open the URL `hammerspoon://displaysleep` (
 
 ## Stream Deck USB hub location
 
-The Stream Deck XL is connected at `uhubctl` location `2-1.1.2` port `2`. If the hub layout changes, update the constants in `sleepwake.lua` and verify with `uhubctl --location 2-1.1.2 --port 2`.
+The Stream Deck XL is connected at `uhubctl` location `2-1.1.2` port `2`. The Elgato Wave microphone is on the same hub at port `1`. If the hub layout changes, update `constants.lua` and verify with `uhubctl --location 2-1.1.2`.
 
 ## Rectangle Pro
 

@@ -35,27 +35,30 @@ local function cycleStreamDeck()
   )
 end
 
-function M.restoreServices()
-  log.i("restoreServices")
-
-  hs.execute(
-    constants.uhubctl
-      .. " --action cycle --location "
-      .. constants.usbHub
-      .. " --port "
-      .. constants.streamDeckPort
-      .. " --wait 4000"
-  )
-  hs.execute("/opt/homebrew/bin/brew services restart nginx")
-  hs.execute("/usr/bin/open -a BusylightHTTP")
-
-  if hs.application.find("Elgato Control Center") then hs.execute("/usr/bin/killall 'Elgato Control Center'") end
-
-  spaces.applyRectangleLayout()
+local function setDockedAudioOutput()
+  local attempts = 0
+  local timer
+  timer = hs.timer.doEvery(1, function()
+    attempts = attempts + 1
+    for _, dev in ipairs(hs.audiodevice.allOutputDevices()) do
+      if dev:name() and dev:name():find("eqMac") then
+        timer:stop()
+        dev:setDefaultOutputDevice()
+        log.i("eqMac: set as default output device (" .. dev:name() .. ")")
+        return
+      end
+    end
+    if attempts >= 15 then
+      timer:stop()
+      log.w("eqMac: timed out waiting for audio device to register")
+    end
+  end)
 end
 
-local function onUnlock()
-  log.i("onUnlock")
+M.setDockedAudioOutput = setDockedAudioOutput
+
+function M.restoreServices()
+  log.i("restoreServices")
 
   cycleStreamDeck()
 
@@ -65,6 +68,11 @@ local function onUnlock()
   if hs.application.find("Elgato Control Center") then task("/usr/bin/killall", { "Elgato Control Center" }) end
 
   hs.timer.doAfter(2, function() spaces.applyRectangleLayout() end)
+end
+
+local function onUnlock()
+  log.i("onUnlock")
+  M.restoreServices()
 end
 
 function M.displaysleep()

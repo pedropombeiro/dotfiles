@@ -30,7 +30,11 @@ set -eu
 
 hs -c 'require("sleepwake").restoreServices()'
 
-sudo killall coreaudiod
+killall eqMac 2>/dev/null || true
+while pgrep -xq eqMac 2>/dev/null; do sleep 0.5; done
+sleep 1
+open -b com.bitgapp.eqmac
+hs -c 'require("sleepwake").setDockedAudioOutput()'
 
 ~/.config/yadm/scripts/run-checks.zsh
 """

@@ -27,12 +27,19 @@ check_app_running() {
 
 check_stream_deck_usb() {
   print_op_stay "Checking Stream Deck USB port location"
-  if uhubctl --location 2-1.1.2 --port 2 | grep "Elgato Stream Deck XL" >/dev/null; then
-    print_ok
-  else
-    print_failure "uhubctl port location for Stream Deck is out of date, please update ~/.hammerspoon/sleepwake.lua"
-    any_failed=1
-  fi
+  local hub port
+  eval "$(hs -c 'local c = require("constants"); return "hub=" .. c.usbHub .. " port=" .. c.streamDeckPort')"
+  local i=0
+  while (( i < 20 )); do
+    if uhubctl --location "$hub" --port "$port" 2>/dev/null | grep "Elgato Stream Deck XL" >/dev/null; then
+      print_ok
+      return
+    fi
+    sleep 0.5
+    i=$((i + 1))
+  done
+  print_failure "Stream Deck not found at uhubctl location $hub port $port"
+  any_failed=1
 }
 
 check_busylight_local() {

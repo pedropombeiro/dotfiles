@@ -21,6 +21,8 @@ Thumbs.db
 .zshrc
 .config/yazi/flavors/gruvbox-dark.yazi
 
+
+
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
 .config/1Password/ssh/agent.toml
@@ -74,7 +76,9 @@ Thumbs.db
 .config/yadm/scripts/staging-rails-ro.sh
 .config/yadm/scripts/update.zsh
 .default-gems
+.hammerspoon/audio.lua
 .hammerspoon/httpserver/triggers.lua
+.hammerspoon/meetings.lua
 .hammerspoon/sleepwake.lua
 .hammerspoon/spaces.lua
 .hammerspoon/urlrouter.lua

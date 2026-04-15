@@ -1,6 +1,6 @@
+local audio = require("audio")
 local constants = require("constants")
 local log = hs.logger.new("meetings", "info")
-local previousDevice = nil
 local spotifyWasPlaying = false
 local eqMacWasRunning = false
 local connectTask = nil
@@ -29,7 +29,6 @@ end
 local function switchToAirpods(current)
   local airpods = findAirpods()
   if not airpods then return false end
-  previousDevice = current
   airpods:setDefaultOutputDevice()
   log.i("Switched audio output to " .. airpods:name())
   return true
@@ -81,28 +80,22 @@ local function onMeetingStart()
   end
 end
 
-local function onMeetingEnd()
-  if previousDevice then
-    local dev = hs.audiodevice.findOutputByName(previousDevice:name())
-    if dev then
-      dev:setDefaultOutputDevice()
-      log.i("Restored audio output to " .. dev:name())
-    else
-      log.w("Previous device '" .. previousDevice:name() .. "' no longer available")
-    end
-    previousDevice = nil
-  end
-
+local function resumeSpotify()
   if spotifyWasPlaying then
     spotifyWasPlaying = false
     hs.spotify.play()
     log.i("Resumed Spotify")
   end
+end
 
+local function onMeetingEnd()
   if eqMacWasRunning then
     eqMacWasRunning = false
     hs.execute("open -g -a eqMac")
     log.i("Relaunched eqMac in background")
+    audio.setDockedAudioOutput(resumeSpotify)
+  else
+    resumeSpotify()
   end
 
   local camo = hs.application.get("Camo Studio")

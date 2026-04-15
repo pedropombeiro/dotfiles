@@ -10,5 +10,6 @@ M.elgatoWavePort = "1"
 
 M.airpodsPattern = "AirPods"
 M.airpodsAddress = "ec-73-79-44-76-9d"
+M.dockedAudioDevice = "CalDigit TS4 Audio - Rear"
 
 return M

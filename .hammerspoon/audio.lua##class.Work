@@ -1,0 +1,42 @@
+local constants = require("constants")
+
+local M = {}
+
+local log = hs.logger.new("audio", "info")
+
+-- Sets the raw docked audio device as default output.
+-- eqMac detects this and wraps it automatically (e.g. "CalDigit TS4 Audio - Rear (eqMac)").
+-- If a callback is provided, it fires once eqMac has taken over.
+function M.setDockedAudioOutput(callback)
+  local dev = hs.audiodevice.findOutputByName(constants.dockedAudioDevice)
+  if dev then
+    dev:setDefaultOutputDevice()
+    log.i("Set default output to " .. dev:name())
+  else
+    log.w("Docked audio device '" .. constants.dockedAudioDevice .. "' not found")
+    if callback then callback() end
+    return
+  end
+
+  if not callback then return end
+
+  local attempts = 0
+  local timer
+  timer = hs.timer.doEvery(1, function()
+    attempts = attempts + 1
+    local current = hs.audiodevice.defaultOutputDevice()
+    if current and current:name() and current:name():find("eqMac") then
+      timer:stop()
+      log.i("eqMac took over: " .. current:name())
+      callback()
+      return
+    end
+    if attempts >= 15 then
+      timer:stop()
+      log.w("eqMac did not take over, proceeding anyway")
+      callback()
+    end
+  end)
+end
+
+return M

@@ -1,3 +1,4 @@
+local audio = require("audio")
 local constants = require("constants")
 local spaces = require("spaces")
 
@@ -35,32 +36,11 @@ local function cycleStreamDeck()
   )
 end
 
-local function setDockedAudioOutput()
-  local attempts = 0
-  local timer
-  timer = hs.timer.doEvery(1, function()
-    attempts = attempts + 1
-    for _, dev in ipairs(hs.audiodevice.allOutputDevices()) do
-      if dev:name() and dev:name():find("eqMac") then
-        timer:stop()
-        dev:setDefaultOutputDevice()
-        log.i("eqMac: set as default output device (" .. dev:name() .. ")")
-        return
-      end
-    end
-    if attempts >= 15 then
-      timer:stop()
-      log.w("eqMac: timed out waiting for audio device to register")
-    end
-  end)
-end
-
-M.setDockedAudioOutput = setDockedAudioOutput
-
 function M.restoreServices()
   log.i("restoreServices")
 
   cycleStreamDeck()
+  audio.setDockedAudioOutput()
 
   task("/opt/homebrew/bin/brew", { "services", "restart", "nginx" })
   task("/usr/bin/open", { "-a", "BusylightHTTP" })

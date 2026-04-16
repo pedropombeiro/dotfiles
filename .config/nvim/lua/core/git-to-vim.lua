@@ -1,7 +1,7 @@
 -- Git to Vim --
 
 vim.cmd([[
-function OpenBranchCommitedFiles()
+function! OpenBranchCommitedFiles()
 
   let cmd = 'ruby -r ~/.shellrc/zshrc.d/functions/scripts/git-helpers.rb -e "puts changed_branch_files(format: :vim)"'
   let parent_branch_cmd = 'ruby -r ~/.shellrc/zshrc.d/functions/scripts/git-helpers.rb -e "print compute_parent_branch()"'
@@ -20,5 +20,5 @@ function OpenBranchCommitedFiles()
   endif
 endfunction
 
-:command Branch call OpenBranchCommitedFiles()
+:command! Branch call OpenBranchCommitedFiles()
 ]])

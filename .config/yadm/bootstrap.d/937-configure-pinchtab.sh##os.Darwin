@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+pinchtab_config="${HOME}/.pinchtab/config.json"
+
+if [[ ! -f "${pinchtab_config}" ]]; then
+  exit 0
+fi
+
+if ! command -v jq >/dev/null 2>&1; then
+  echo "Skipping PinchTab config update because jq is not installed."
+  exit 0
+fi
+
+tmp_file=$(mktemp)
+trap 'rm -f "${tmp_file}"' EXIT
+
+jq '.multiInstance.strategy = "on-demand"' "${pinchtab_config}" >"${tmp_file}"
+mv "${tmp_file}" "${pinchtab_config}"

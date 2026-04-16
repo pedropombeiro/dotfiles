@@ -27,10 +27,24 @@
       "skillFolderHash": "32e9ccbc6eb9cb46e9822d8a327bc6e90f63d9a1",
       "installedAt": "2026-02-25T21:56:34.833Z",
       "updatedAt": "2026-02-25T21:56:34.833Z"
+    },
+    "hk": {
+      "source": "connorads/dotfiles",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/connorads/dotfiles.git",
+      "skillPath": ".agents/skills/hk/SKILL.md",
+      "skillFolderHash": "03197281ae35865e703aa8eda6d16795afac3334",
+      "installedAt": "2026-04-16T21:19:18.100Z",
+      "updatedAt": "2026-04-16T21:19:18.100Z"
     }
   },
   "dismissed": {
     "findSkillsPrompt": true
   },
-  "lastSelectedAgents": ["codex", "gemini-cli", "github-copilot", "opencode"]
+  "lastSelectedAgents": [
+    "codex",
+    "gemini-cli",
+    "github-copilot",
+    "opencode"
+  ]
 }

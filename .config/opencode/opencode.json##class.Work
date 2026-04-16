@@ -1,5 +1,13 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "plan": {
+      "model": "gitlab/duo-chat-opus-4-5"
+    },
+    "build": {
+      "model": "gitlab/duo-chat-sonnet-4-5"
+    }
+  },
   "default_agent": "plan",
   "plugin": [
     "opencode-gitlab-plugin@latest",
@@ -91,11 +99,18 @@
         "duo-chat-gpt-5-4-nano": {
           "cost": { "input": 0.50, "output": 2.00, "cache_read": 0.05 }
         }
+      },
+      "options": {
+        "instanceUrl": "https://gitlab.com",
+        "featureFlags": {
+          "duo_agent_platform_agentic_chat": true,
+          "duo_agent_platform": true
+        }
       }
     }
   },
   "share": "disabled",
-  "autoupdate": true,
+  "autoupdate": false,
   "server": {
     "hostname": "127.0.0.1",
     "mdns": false

@@ -38,6 +38,7 @@ return {
       { "gofumpt", condition = has_go },
       { "gopls", condition = has_go },
       "jsonlint",
+      "jsonnet-language-server",
       "json-lsp",
       "lua_ls",
       "markdownlint-cli2",

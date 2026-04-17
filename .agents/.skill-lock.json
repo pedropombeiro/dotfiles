@@ -41,10 +41,5 @@
   "dismissed": {
     "findSkillsPrompt": true
   },
-  "lastSelectedAgents": [
-    "codex",
-    "gemini-cli",
-    "github-copilot",
-    "opencode"
-  ]
+  "lastSelectedAgents": ["codex", "gemini-cli", "github-copilot", "opencode"]
 }

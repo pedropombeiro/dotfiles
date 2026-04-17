@@ -31,7 +31,15 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-model="${OPENCODE_COMMIT_MODEL:-${OPENCODE_SMALL_MODEL:-${OPENCODE_MODEL:-openai/gpt-4.1-nano}}}"
+model="${OPENCODE_COMMIT_MODEL:-${OPENCODE_SMALL_MODEL:-${OPENCODE_MODEL:-openai/gpt-4.5-nano}}}"
+
+# Fall back to local model when offline
+_offline_model="${OPENCODE_OFFLINE_MODEL:-ollama/gemma4:e2b}"
+if [ "$model" != "$_offline_model" ] && ! ping -c 1 -W 2 1.1.1.1 >/dev/null 2>&1; then
+  echo "offline: falling back to $_offline_model" >&2
+  model="$_offline_model"
+fi
+unset _offline_model
 
 # Use yadm when running from the home directory (dotfiles repo)
 if [ "$(pwd)" = "$HOME" ] || { ! git rev-parse --git-dir >/dev/null 2>&1 && yadm status >/dev/null 2>&1; }; then

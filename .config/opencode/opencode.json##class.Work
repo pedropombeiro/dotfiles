@@ -35,9 +35,27 @@
       "enabled": true
     }
   },
-  "enabled_providers": ["gitlab", "anthropic", "google"],
+  "enabled_providers": ["ollama", "gitlab", "anthropic", "google"],
   "small_model": "gitlab/duo-chat-gpt-5-4-nano",
   "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": {
+        "baseURL": "http://localhost:11434/v1"
+      },
+      "models": {
+        "gemma4": {
+          "name": "Gemma 4"
+        },
+        "gemma4:26b": {
+          "name": "Gemma 4 26B MoE"
+        },
+        "gemma4:e2b": {
+          "name": "Gemma 4:e2b"
+        }
+      }
+    },
     "gitlab": {
       "models": {
         "duo-workflow-opus-4-6": {

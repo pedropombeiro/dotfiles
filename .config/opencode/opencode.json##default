@@ -9,6 +9,14 @@
     "opencode-tmux-indicator@latest",
     "opencode-wakatime@latest"
   ],
+  "agent": {
+    "plan": {
+      "model": "gitlab/duo-chat-opus-4-6"
+    },
+    "build": {
+      "model": "gitlab/duo-chat-sonnet-4-6"
+    }
+  },
   "default_agent": "plan",
   "small_model": "gitlab/duo-chat-gpt-5-4-nano",
   "mcp": {

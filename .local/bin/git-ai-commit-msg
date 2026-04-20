@@ -31,7 +31,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-model="${OPENCODE_COMMIT_MODEL:-${OPENCODE_SMALL_MODEL:-${OPENCODE_MODEL:-openai/gpt-4.5-nano}}}"
+model="${OPENCODE_COMMIT_MODEL:-${OPENCODE_SMALL_MODEL:-${OPENCODE_MODEL:-openai/gpt-5.4-nano}}}"
 
 # Fall back to local model when offline
 _offline_model="${OPENCODE_OFFLINE_MODEL:-ollama/gemma4:e2b}"

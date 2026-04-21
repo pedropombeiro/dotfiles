@@ -21,6 +21,8 @@ grpcurl = "latest"
 yamllint = "latest"
 # AI coding assistant CLI
 "opencode" = { version = "latest", no_app = true }
+# A CLI tool for tracking token usage
+"npm:tokscale" = "latest"
 
 # ── Ruby gems ─────────────────────────────────────────────────────────
 # Ruby provider for Neovim plugins

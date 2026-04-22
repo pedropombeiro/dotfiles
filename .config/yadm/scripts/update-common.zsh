@@ -97,7 +97,7 @@ report_benchmark() {
     if [[ -n "${baseline_median}" ]]; then
       printf "Rolling median (%d prior runs): %.0fms\n" "${history_samples}" $(( baseline_median * 1000 ))
       if (( benchmark >= baseline_median * 1.1 )); then
-        printf "${RED}%s${NC}\n" "${label} startup time increased over 10%% compared to rolling median."
+        printf "${RED}%s${NC}\n" "${label} startup time increased over 10% compared to rolling median."
         warned=1
       fi
     fi

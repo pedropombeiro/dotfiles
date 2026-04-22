@@ -954,7 +954,7 @@
 			<key>Only The Default BG Color Uses Transparency</key>
 			<true/>
 			<key>Open Password Manager Automatically</key>
-			<false/>
+			<true/>
 			<key>Open Toolbelt</key>
 			<false/>
 			<key>Option Key Sends</key>
@@ -1464,6 +1464,8 @@
 			<string>MesloLGSNF-Regular 15</string>
 			<key>Only The Default BG Color Uses Transparency</key>
 			<false/>
+			<key>Open Password Manager Automatically</key>
+			<true/>
 			<key>Open Toolbelt</key>
 			<false/>
 			<key>Option Key Sends</key>
@@ -5855,6 +5857,8 @@
 			<string>MesloLGSNF-Regular 15</string>
 			<key>Only The Default BG Color Uses Transparency</key>
 			<false/>
+			<key>Open Password Manager Automatically</key>
+			<true/>
 			<key>Open Toolbelt</key>
 			<false/>
 			<key>Option Key Sends</key>
@@ -9171,6 +9175,8 @@
 	</array>
 	<key>NumberOfSpacesPerTab</key>
 	<integer>4</integer>
+	<key>OnePasswordAccount</key>
+	<string>1password@pedro.pombei.ro</string>
 	<key>OnlyWhenMoreTabs</key>
 	<false/>
 	<key>OpenArrangementAtStartup</key>

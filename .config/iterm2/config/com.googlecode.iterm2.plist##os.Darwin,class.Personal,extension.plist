@@ -1972,7 +1972,7 @@ The script should do this: \(ai.prompt)</string>
 			<key>Only The Default BG Color Uses Transparency</key>
 			<true/>
 			<key>Open Password Manager Automatically</key>
-			<false/>
+			<true/>
 			<key>Open Toolbelt</key>
 			<false/>
 			<key>Option Key Sends</key>
@@ -5232,6 +5232,8 @@ The script should do this: \(ai.prompt)</string>
 			<string>/Users/pedropombeiro</string>
 		</dict>
 	</array>
+	<key>OnePasswordAccount</key>
+	<string>1password@pedro.pombei.ro</string>
 	<key>OnlyWhenMoreTabs</key>
 	<false/>
 	<key>OpenArrangementAtStartup</key>

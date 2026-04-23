@@ -145,6 +145,11 @@ on = ["<Space>", "t", "g"]
 run = "plugin lazygit"
 desc = "Run lazygit"
 
+[[mgr.prepend_keymap]]
+on   = ["<Space>", "t", "f"]
+run  = "shell --block -- echo 'Tailing %h...' && tail -f %h"
+desc = "Tail with follow on hovered file"
+
 # https://github.com/KKV9/command.yazi
 [[mgr.prepend_keymap]]
 on = ["c", "p"]

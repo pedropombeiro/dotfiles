@@ -1,6 +1,5 @@
 #!/usr/bin/env zsh
-#MISE description="Run pre-commit fixers (manual stage)"
-#USAGE arg "<files>..."
+#MISE description="Run all fixers on dotfiles"
 set -eu
 
 fpath=(~/.shellrc/zshrc.d/functions $fpath)
@@ -28,8 +27,4 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 trap 'exit 129' HUP
 
-if [ ${#} -gt 0 ]; then
-    yadm enter pre-commit run --files "$@" --hook-stage manual
-else
-    yadm enter pre-commit run --all-files --hook-stage manual
-fi
+yadm enter hk fix --all

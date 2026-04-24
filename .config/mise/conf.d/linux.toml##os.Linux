@@ -53,12 +53,9 @@ btop = "latest"
 "aqua:sharkdp/hyperfine" = "latest"
 
 # ── Linting & formatting ──────────────────────────────────────────────
-# Secrets scanner for git repos
-"aqua:gitleaks/gitleaks" = "latest"
-# Shell script linter
-shellcheck = "latest"
-# Lua code formatter
-stylua = "latest"
+# (most linting tools declared in global.toml; luacheck only available via mise on Linux)
+# Lua linter
+luacheck = "latest"
 
 # ── npm ───────────────────────────────────────────────────────────────
 # Auto-generates table of contents in Markdown

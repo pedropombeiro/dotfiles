@@ -38,7 +38,7 @@ the task needs them.
 - [Mise Tasks](~/.agents/docs/mise-tasks.md) - Task automation for dotfiles
 - [Neovim](~/.agents/docs/neovim.md) - Configuration structure and plugin management
 - [Mise](~/.agents/docs/mise.md) - Runtime versions and CLI tools
-- [Pre-commit](~/.agents/docs/pre-commit.md) - Hooks and code quality checks
+- [hk](~/.agents/docs/hk.md) - Git hooks and code quality checks
 - [Renovate Bot](~/.agents/docs/renovate.md) - Dependency update configuration and troubleshooting
 - [Writing Style](~/.agents/docs/writing-style.md) - Pedro's tone, formatting, and MR conventions
 - [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`

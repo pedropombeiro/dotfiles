@@ -57,13 +57,11 @@ Three plugins coordinate to provide seamless YADM support:
 ### Components
 
 1. **gitsigns-yadm.nvim** (`lua/plugins/gitsigns.lua`)
-
    - Detects when a buffer is tracked by YADM (not a regular git repo)
    - Sets `vim.b.yadm_tracked = true` on YADM-tracked buffers via `on_yadm_attach`
    - Passes YADM context to gitsigns so hunks/blame work correctly
 
 2. **snacks.nvim** (`lua/plugins/snacks.lua`)
-
    - Helper functions detect YADM context:
      - `is_yadm_repo(dir)` - Returns true if in `~` or `~/.config`
      - `yadm_opts()` - Returns git args: `--git-dir ~/.local/share/yadm/repo.git --work-tree ~`

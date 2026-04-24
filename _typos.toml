@@ -1,0 +1,12 @@
+[default.extend-words]
+# Zsh/bash file test operators: -ot (older than), -nt (newer than)
+# typos incorrectly flags these as misspellings of "to", "of", etc.
+ot = "ot"
+Ot = "Ot"
+
+[files]
+extend-exclude = [
+    # Contains deliberate typo examples to demonstrate data quality issues with
+    # unvalidated String fields (e.g. 'shiped' as an intentional bad example)
+    ".agents/skills/clickhouse-best-practices/**",
+]

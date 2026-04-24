@@ -1,6 +1,6 @@
 name: CI
 
-on:
+"on":
   pull_request:
   push:
     branches:
@@ -14,36 +14,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Job 1: Pre-commit hooks
-  pre-commit:
-    name: Pre-commit hooks
+  # Job 1: hk check
+  hk-check:
+    name: hk check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
-        with:
-          python-version: "3.14"
-
-      # Cache pre-commit environments
-      - uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+      - uses: jdx/mise-action@v2
 
       # Install zsh for syntax checking
       - name: Install zsh
         run: sudo apt-get update && sudo apt-get install -y zsh
 
-      # Run pre-commit on all files
-      # Skip hooks that require tools not installed in CI (mise, ruby)
-      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+      # Run hk check on all files
+      # Skip steps that require tools not available in CI (ruby, renovate, yadm)
+      - name: Run hk check
+        run: hk check --all
         env:
-          SKIP: standardrb,renovate-config-validator
-        with:
-          extra_args: --all-files
+          HK_SKIP_STEPS: standardrb,renovate-config-validator,no-yadm-alt-symlinks
 
-  # Job 2: Neovim config validation
+  # Job 2: Luacheck for Neovim Lua files
+  # Kept as a separate job because hk's global exclude hides .config/
+  luacheck:
+    name: Luacheck (Neovim Lua)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Run luacheck
+        uses: nebularg/actions-luacheck@d4137dd840545b28521ed21931e06913d93c0bc1 # v1
+        with:
+          files: ".config/nvim"
+          args: "--config .luacheckrc --formatter plain"
+
+  # Job 3: Neovim config validation
   neovim-validate:
     name: Neovim config validation
     runs-on: ubuntu-latest
@@ -75,19 +80,6 @@ jobs:
 
           echo "Neovim config validation passed"
 
-  # Job 3: Luacheck for Neovim Lua files
-  luacheck:
-    name: Luacheck (Neovim Lua)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Run luacheck
-        uses: nebularg/actions-luacheck@d4137dd840545b28521ed21931e06913d93c0bc1 # v1
-        with:
-          files: ".config/nvim"
-          args: "--config .luacheckrc --formatter plain"
-
   # Job 4: Bootstrap script validation
   bootstrap-validate:
     name: Bootstrap scripts syntax
@@ -96,7 +88,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       # Validate bash syntax for all bootstrap scripts
-      # Note: shellcheck runs in pre-commit job
+      # Note: shellcheck runs in hk-check job
       - name: Bash syntax check
         run: |
           echo "Checking bash syntax for bootstrap scripts..."

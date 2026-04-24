@@ -26,6 +26,14 @@ run = "~/.config/yadm/scripts/update.zsh"
 description = "Run dotfile health checks"
 run = "~/.config/yadm/scripts/run-checks.zsh"
 
+[tasks."dotfiles:lint"]
+description = "Run all linters on dotfiles"
+run = "yadm enter hk check --all"
+
+[tasks."dotfiles:fix"]
+description = "Run all fixers on dotfiles"
+run = "yadm enter hk fix --all"
+
 # ── Git ───────────────────────────────────────────────────────────────
 
 [tasks."git:push"]

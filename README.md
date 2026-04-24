@@ -49,7 +49,6 @@ and supports both macOS and Linux platforms with platform-specific configuration
 This dotfiles setup includes:
 
 - **🐚 Shell Configuration**
-
   - [zinit](https://github.com/zdharma-continuum/zinit) plugin manager with
     [Oh-my-zsh](https://github.com/ohmyzsh/ohmyzsh) plugins
   - Custom aliases and functions for productivity
@@ -59,20 +58,17 @@ This dotfiles setup includes:
   - [mise](https://mise.jdx.dev/) - polyglot runtime manager and environment switcher
 
 - **📝 Editor Configuration**
-
   - [Neovim](https://neovim.io/) with comprehensive plugin setup
   - [Neovide](https://neovide.dev/) - Neovim GUI client
   - Vim configuration with fzf integration
   - VS Code settings sync
 
 - **🤖 Automation & Quality**
-
   - Pre-commit hooks for shell, markdown, Ruby, Lua, and formatting checks
   - CI validations (pre-commit, Neovim config load, luacheck, bootstrap lint, gitleaks)
   - Update scripts for brew, mise, zinit, and Neovim plugin health
 
 - **🔧 Development Tools**
-
   - Git configuration with aliases and utilities ([git-extras](https://github.com/tj/git-extras),
     [git-delta](https://github.com/dandavison/delta), [git-peek](https://github.com/Jarred-Sumner/git-peek))
   - Programming language environments (Ruby, Go, Python, Node.js, Rust)
@@ -80,7 +76,6 @@ This dotfiles setup includes:
   - Database tools (PostgreSQL with [pgcli](https://www.pgcli.com/), [pspg](https://github.com/okbob/pspg))
 
 - **🎨 Terminal Enhancements**
-
   - [iTerm2](https://iterm2.com/) with shell integration
   - Custom color schemes
   - [Yazi](https://github.com/sxyazi/yazi) - blazing fast terminal file manager
@@ -90,7 +85,6 @@ This dotfiles setup includes:
   - [grc](https://github.com/garabik/grc) - generic colouriser
 
 - **📦 Package Management**
-
   - [Homebrew](https://brew.sh/) bundle configuration
   - [mise](https://mise.jdx.dev/) - polyglot runtime manager (modern alternative to asdf)
   - Language-specific package managers

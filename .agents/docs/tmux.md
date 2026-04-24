@@ -11,7 +11,6 @@ The tmux configuration is managed through yadm. The main config is universal (wo
 Tmux automatically loads configuration from the XDG location `~/.config/tmux/tmux.conf`.
 
 1. **`~/.config/tmux/tmux.conf`** (Universal config)
-
    - Shared across all machines
    - Features:
      - Mouse support enabled
@@ -23,7 +22,6 @@ Tmux automatically loads configuration from the XDG location `~/.config/tmux/tmu
    - Sources `~/.config/tmux/tmux.platform.conf` if it exists (for platform-specific overrides)
 
 2. **`~/.config/tmux/tmux.platform.conf##distro.qts`** (QNAP overrides)
-
    - QNAP-specific terminal fixes, sourced by the main config
    - Features:
      - `xterm-keys on` for Ctrl-arrow compatibility
@@ -31,7 +29,6 @@ Tmux automatically loads configuration from the XDG location `~/.config/tmux/tmu
      - `default-terminal "tmux-256color"` with italics and RGB overrides
 
 3. **`~/.shellrc/zshrc.d/configs/tmux.zsh##distro.qts`** (Shell integration, QNAP only)
-
    - Shell-side tmux configuration for auto-starting tmux on QNAP
    - Sets environment variables for tmux behavior:
      - `ZSH_TMUX_AUTOCONNECT=true`
@@ -60,11 +57,9 @@ The configuration uses TPM (Tmux Plugin Manager) with these plugins:
 ### Related Files
 
 - **`~/.config/nvim/lua/plugins/vim-tmux-navigator.lua`**
-
   - Neovim integration for tmux navigation (universal, works on all machines)
 
 - **`~/.config/yadm/bootstrap.d/910-install-tmux-plugin-manager.sh`**
-
   - Bootstrap script to install TPM and plugins (universal)
 
 - **`~/.config/yadm/bootstrap.d/915-install-tmux-terminfo.sh##os.Linux,distro.qts`**

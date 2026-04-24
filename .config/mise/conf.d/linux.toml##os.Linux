@@ -53,12 +53,8 @@ btop = "latest"
 "aqua:sharkdp/hyperfine" = "latest"
 
 # ── Linting & formatting ──────────────────────────────────────────────
-# Secrets scanner for git repos
-"aqua:gitleaks/gitleaks" = "latest"
-# Shell script linter
-shellcheck = "latest"
-# Lua code formatter
-stylua = "latest"
+# (linting tools are declared in global.toml; luacheck runs in its own CI job
+# via nebularg/actions-luacheck action)
 
 # ── npm ───────────────────────────────────────────────────────────────
 # Auto-generates table of contents in Markdown

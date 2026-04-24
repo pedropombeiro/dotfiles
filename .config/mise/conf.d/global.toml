@@ -11,9 +11,27 @@ dua = "latest"
 
 # ── Developer workflow ────────────────────────────────────────────────
 # Git hook manager
-pre-commit = "latest"
+hk = "latest"
+# Pkl configuration language (required by hk)
+pkl = "latest"
 # Utilities for working with patches (filterdiff, etc.)
 "github:twaugh/patchutils" = "latest"
+
+# ── Linting & formatting ──────────────────────────────────────────────
+# Secrets scanner for git repos
+"aqua:gitleaks/gitleaks" = "latest"
+# Shell script linter
+shellcheck = "latest"
+# Shell script formatter
+shfmt = "latest"
+# Lua code formatter
+stylua = "latest"
+# Spell checker for source code
+typos = "latest"
+# EditorConfig file format checker
+"aqua:editorconfig-checker/editorconfig-checker" = "latest"
+# JSON/Markdown/YAML formatter
+prettier = "latest"
 
 # ── AI tooling ────────────────────────────────────────────────────────
 # Lazy-loading MCP server proxy for AI tools

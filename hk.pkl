@@ -1,0 +1,157 @@
+// hk configuration — https://hk.jdx.dev/
+// Dotfiles (yadm) pre-commit hooks
+amends "package://github.com/jdx/hk/releases/download/v1.44.1/hk@1.44.1#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.44.1/hk@1.44.1#/Builtins.pkl"
+
+// Matches the pre-commit global exclude: skip .config/ and .local/ which contain
+// mostly application config files that aren't part of the dotfiles source.
+// Specific subdirs we DO want to lint (nvim, yadm/scripts) are handled by dedicated
+// CI jobs (luacheck) or individual step globs.
+exclude = List(".config", ".local", ".git", "node_modules", ".cache", ".npm", ".cargo", ".rustup")
+
+display_skip_reasons = List()
+terminal_progress = false
+
+// Prevent scanning all of $HOME for untracked files (GIT_WORK_TREE=$HOME in yadm).
+// Requires hk v1.44.1+. See https://github.com/jdx/hk/discussions/860
+env {
+    ["HK_STASH_UNTRACKED"] = "false"
+}
+
+local binary_excludes = List(
+    "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.ico",
+    "*.woff", "*.woff2", "*.ttf", "*.eot", "*.pdf", "*.zip"
+)
+
+local fast_steps = new Mapping<String, Step> {
+    // ── Tier 1: Universal ────────────────────────────────────────────────
+    ["trailing-whitespace"] = (Builtins.trailing_whitespace) {
+        exclude = binary_excludes
+    }
+    ["newlines"] = (Builtins.newlines) {
+        exclude = binary_excludes
+    }
+    ["check-merge-conflict"] = (Builtins.check_merge_conflict) {}
+
+    // ── Tier 2: Common tools ─────────────────────────────────────────────
+    ["typos"] = (Builtins.typos) {
+        exclude = binary_excludes
+    }
+    ["gitleaks"] {
+        check = "gitleaks protect --staged --redact --no-banner"
+    }
+    ["yamllint"] = (Builtins.yamllint) {}
+    ["editorconfig-checker"] = (Builtins.editorconfig_checker) {
+        exclude = List(
+            ".config/*", ".local/*",
+            ".shellrc/zshrc.d/functions/scripts/*.rb",
+            "*.md"
+        )
+    }
+
+    // ── Shell ────────────────────────────────────────────────────────────
+    ["shellcheck"] = (Builtins.shellcheck) {
+        exclude = List(
+            "*.zsh", "*.zsh##*", ".zlogin", ".zshenv",
+            ".shellrc/zshrc.d/*"
+        )
+        batch = true
+    }
+    ["shfmt"] = (Builtins.shfmt) {
+        exclude = List(
+            "*.zsh", "*.zsh##*",
+            ".iterm2_shell_integration.*"
+        )
+        batch = true
+    }
+    ["zsh-syntax-check"] {
+        glob = List(
+            "*.zsh", "*.zsh##*", ".zlogin",
+            ".shellrc/zshrc.d/functions/*"
+        )
+        check = "zsh -n {{files}}"
+    }
+
+    // ── Lua ──────────────────────────────────────────────────────────────
+    // Note: .config/nvim/ Lua files are linted by the separate luacheck CI job.
+    // stylua here only sees top-level .lua files (e.g. .hammerspoon/) which
+    // use Hammerspoon-specific conventions.
+    ["stylua"] = (Builtins.stylua) {}
+
+    // ── JSON / Markdown / YAML formatting ────────────────────────────────
+    ["prettier"] = (Builtins.prettier) {
+        glob = List("*.json", "*.md", "*.yaml", "*.yml")
+        exclude = List(".agents/skills/*")
+    }
+
+    // ── Ruby ─────────────────────────────────────────────────────────────
+    ["standardrb"] {
+        glob = List("*.rb")
+        check = "standardrb {{files}}"
+        fix = "standardrb --fix {{files}}"
+    }
+
+    // ── Validation ───────────────────────────────────────────────────────
+    ["check-json"] {
+        glob = List("*.json")
+        check = "python3 -c 'import json,sys; [json.load(open(f)) for f in sys.argv[1:]]' {{files}}"
+    }
+    ["check-executables-have-shebangs"] {
+        check = """
+          for f in {{files}}; do
+            if [ -x "$f" ] && [ -f "$f" ] && ! head -c2 "$f" | grep -q '^#!'; then
+              echo "$f: executable without shebang"
+              exit 1
+            fi
+          done
+          """
+    }
+    ["check-added-large-files"] {
+        check = """
+          max_kb=500
+          for f in {{files}}; do
+            if [ -f "$f" ]; then
+              size_kb=$(( $(wc -c < "$f") / 1024 ))
+              if [ "$size_kb" -gt "$max_kb" ]; then
+                echo "$f is ${size_kb}KB (max ${max_kb}KB)"
+                exit 1
+              fi
+            fi
+          done
+          """
+    }
+
+    // ── Dotfiles-specific ────────────────────────────────────────────────
+    ["no-yadm-alt-symlinks"] {
+        glob = List("*")
+        check = ".config/yadm/scripts/check-no-alt-symlinks.zsh {{files}}"
+    }
+    ["mise-fmt"] = (Builtins.mise) {}
+    ["renovate-config-validator"] {
+        glob = List("*renovate*")
+        check = "mise x npm:renovate -- renovate-config-validator --strict"
+    }
+}
+
+hooks {
+    ["pre-commit"] {
+        fix = true
+        stash = "none"
+        steps = fast_steps
+    }
+    ["fix"] {
+        fix = true
+        stash = "none"
+        steps = fast_steps
+    }
+    ["check"] {
+        steps = fast_steps
+    }
+    ["commit-msg"] {
+        steps {
+            ["commitlint"] {
+                check = "npx --yes --package @commitlint/cli -- commitlint < {{commit_msg_file}}"
+            }
+        }
+    }
+}

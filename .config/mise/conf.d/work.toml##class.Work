@@ -5,14 +5,14 @@ HISTIGNORE="*AWS_SECRET*:*AWS_ACCESS*:*glpat-*:*glrt-*:*gloas-*:*PRIVATE-TOKEN*:
 # ── Runtimes & infra ──────────────────────────────────────────────────
 # Ruby runtime
 ruby = "3.4.9"
-# Rust toolchain
-rust = "stable"
 # Go toolchain
 go = "1.26.2"
 # OLAP database
 clickhouse = "24"
 # Zero-trust infrastructure access (SSH/k8s/DB)
 teleport-community = "17"
+
+# ── AI tooling ────────────────────────────────────────────────────
 
 # Browser control for AI agents
 "npm:pinchtab" = "latest"

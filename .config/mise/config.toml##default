@@ -11,14 +11,20 @@ idiomatic_version_file_enable_tools = []
 uvx = true
 
 [tools]
+# ── Runtimes & infra ──────────────────────────────────────────────────
 # JavaScript runtime
 node = "latest"
 # Ruby runtime
 ruby = "3.4.9"
+# Rust toolchain
+rust = "stable"
 # cURL-like tool for gRPC servers
 grpcurl = "latest"
 # YAML linter
 yamllint = "latest"
+
+# ── AI tooling ────────────────────────────────────────────────────
+
 # AI coding assistant CLI
 "opencode" = { version = "latest", no_app = true }
 # A CLI tool for tracking token usage

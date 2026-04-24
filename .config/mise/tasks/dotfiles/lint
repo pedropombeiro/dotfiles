@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 #MISE description="Run all linters on dotfiles"
+#MISE raw=true
 set -eu
 
 fpath=(~/.shellrc/zshrc.d/functions $fpath)

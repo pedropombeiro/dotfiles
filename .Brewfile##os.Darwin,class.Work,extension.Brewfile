@@ -409,23 +409,7 @@ cask "visual-studio-code"
 cask "wakatime"
 # Native desktop client for WhatsApp
 cask "whatsapp"
-mas "Amphetamine", id: 937984704
-mas "Backdrop", id: 411461952
-mas "DaisyDisk", id: 411643860
-mas "Discovery", id: 1381004916
-mas "Expressions", id: 913158085
-mas "HazeOver", id: 430798174
-mas "iMovie", id: 408981434
-mas "Kindle", id: 302584613
-mas "Mactracker", id: 430255202
-mas "MediaInfo", id: 510620098
-mas "MusicBuddy", id: 563706976
-mas "Numbers", id: 409203825
-mas "Okta Extension App", id: 1439967473
-mas "Parcel", id: 375589283
-mas "PLIST Editor", id: 1157491961
-mas "Speedtest", id: 1153157709
-mas "WireGuard", id: 1451685025
+
 vscode "chrischinchilla.vale-vscode"
 vscode "davidanson.vscode-markdownlint"
 vscode "deque-systems.vscode-axe-linter"

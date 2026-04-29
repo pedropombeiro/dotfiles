@@ -1,0 +1,46 @@
+# Mac App Store apps — reference only (not managed by brew bundle).
+#
+# Tracking these via `mas` lines in ~/.Brewfile triggers per-app App Store
+# authentication prompts during `brew bundle install` on recent macOS / mas 6.x.
+# See: https://github.com/mas-cli/mas/issues/1029
+#      https://github.com/mas-cli/mas/issues/1232
+#
+# When mas 7.x lands in Homebrew, consider restoring mas lines to the Brewfiles.
+# To install on a fresh machine: mas install <id>
+#
+# Format: Name    ID
+
+# ── Personal ──────────────────────────────────────────────────────────────────
+1Password for Safari    1569813296
+Amphetamine             937984704
+Brother iPrint&Scan     1193539993
+Developer               640199958
+Discovery               1381004916
+Kindle                  302584613
+Mactracker              430255202
+Microsoft To Do         1274495053
+Paperparrot             1663665267
+Parcel                  375589283
+Router                  1229416813
+Shazam                  897118787
+Speedtest               1153157709
+WireGuard               1451685025
+
+# ── Work ──────────────────────────────────────────────────────────────────────
+Amphetamine             937984704
+Backdrop                411461952
+DaisyDisk               411643860
+Discovery               1381004916
+Expressions             913158085
+HazeOver                430798174
+iMovie                  408981434
+Kindle                  302584613
+Mactracker              430255202
+MediaInfo               510620098
+MusicBuddy              563706976
+Numbers                 409203825
+Okta Extension App      1439967473
+Parcel                  375589283
+PLIST Editor            1157491961
+Speedtest               1153157709
+WireGuard               1451685025

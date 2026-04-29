@@ -351,17 +351,3 @@ cask "whatsapp"
 cask "yubico-yubikey-manager"
 # Video communication and virtual meeting platform
 cask "zoom"
-mas "1Password for Safari", id: 1569813296
-mas "Amphetamine", id: 937984704
-mas "Brother iPrint&Scan", id: 1193539993
-mas "Developer", id: 640199958
-mas "Discovery", id: 1381004916
-mas "Kindle", id: 302584613
-mas "Mactracker", id: 430255202
-mas "Microsoft To Do", id: 1274495053
-mas "Paperparrot", id: 1663665267
-mas "Parcel", id: 375589283
-mas "Router", id: 1229416813
-mas "Shazam", id: 897118787
-mas "Speedtest", id: 1153157709
-mas "WireGuard", id: 1451685025

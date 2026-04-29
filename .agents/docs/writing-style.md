@@ -44,7 +44,7 @@ Agents should follow these conventions when writing on Pedro's behalf.
   - `## MR acceptance checklist`
 - Use numbered/ordered MR stacks when part of a series:
   `1. **!12345 (this MR)** -- Description`
-- Explain design decisions explicitly using bold labels and em-dashes:
+- Explain design decisions explicitly using bold labels and double-hyphens (`--`):
   `- **Unified payload**: \`features.tracing\` both signals enablement and carries trace context -- no separate boolean toggle needed`
 - Use tables for structured comparisons (field descriptions, test matrices).
 - Validation steps use numbered shell/Ruby console blocks with expected outputs as comments (`# => true`).
@@ -67,7 +67,7 @@ Agents should follow these conventions when writing on Pedro's behalf.
 
 ## Formatting Preferences
 
-- Em-dashes (`--`) over semicolons or parenthetical asides.
+- Double-hyphens (`--`) over semicolons or parenthetical asides. Never the em-dash character (`—`, U+2014).
 - Backtick-wrapped code identifiers everywhere.
 - Use bullets to improve readability for lists and structured updates.
 - In longer messages, separate paragraphs with double line breaks.
@@ -94,3 +94,4 @@ Agents should follow these conventions when writing on Pedro's behalf.
 - No emoji overuse.
 - No long-winded introductions or conclusions.
 - Never apologetic when providing technical corrections -- state facts cleanly.
+- Never use the em-dash character (`—`, U+2014). Use `--` (two hyphens) instead.

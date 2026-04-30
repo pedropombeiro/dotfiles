@@ -24,9 +24,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/clickhouse/agent-skills.git",
       "skillPath": "skills/clickhouse-best-practices/SKILL.md",
-      "skillFolderHash": "32e9ccbc6eb9cb46e9822d8a327bc6e90f63d9a1",
+      "skillFolderHash": "6e67a3daa26a7bcbd0cb300c05b912ae4ddd3312",
       "installedAt": "2026-02-25T21:56:34.833Z",
-      "updatedAt": "2026-02-25T21:56:34.833Z"
+      "updatedAt": "2026-04-28T05:55:25.015Z"
     },
     "hk": {
       "source": "connorads/dotfiles",

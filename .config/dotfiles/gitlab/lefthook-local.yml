@@ -53,9 +53,6 @@ pre-push:
     verify-tff-mapping:
       env:
         RUBYOPT: "-EUTF-8"
-    check-deprecated-files:
-      env:
-        RUBYOPT: "-EUTF-8"
     validate-fast-spec-helper:
       env:
         RUBYOPT: "-EUTF-8"

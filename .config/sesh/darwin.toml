@@ -8,5 +8,5 @@ preview_command = "eza --all --icons --color=always --sort=modified --reverse {}
 
 [[wildcard]]
 pattern = "~/Developer/github.com/pedropombeiro/*"
-startup_command = "nvim"
+startup_command = "zsh"
 preview_command = "eza --all --git --icons --color=always {}"

@@ -1,11 +1,12 @@
 local function setup()
-  ps.sub("cd", function()
+  ps.sub("ind-sort", function(opt)
     local cwd = cx.active.current.cwd
     if cwd:ends_with("Downloads") then
-      ya.mgr_emit("sort", { "mtime", reverse = true, dir_first = false })
+      opt.by, opt.reverse, opt.dir_first = "mtime", true, false
     else
-      ya.mgr_emit("sort", { "alphabetical", reverse = false, dir_first = true })
+      opt.by, opt.reverse, opt.dir_first = "natural", false, true
     end
+    return opt
   end)
 end
 

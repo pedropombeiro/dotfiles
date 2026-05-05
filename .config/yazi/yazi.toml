@@ -1,11 +1,10 @@
-show_symlink = true
-sort_by = "natural"  # Sort naturally, e.g. 1.md < 2.md < 10.md
-sort_translit = true # Transliterate filenames for sorting, i.e. replaces Â as A, Æ as AE, etc.
-
 [mgr]
 ratio = [2, 3, 5]
 linemode = "size"
 show_hidden = true
+show_symlink = true
+sort_by = "natural"  # Sort naturally, e.g. 1.md < 2.md < 10.md
+sort_translit = true # Transliterate filenames for sorting, i.e. replaces Â as A, Æ as AE, etc.
 
 [opener]
 edit = [
@@ -35,8 +34,8 @@ prepend_rules = [
 
 [plugin]
 prepend_fetchers = [
-  { id = "git", name = "*", run = "git" },
-  { id = "git", name = "*/", run = "git" },
+  { url = "*", run = "git", group = "git" },
+  { url = "*/", run = "git", group = "git" },
 ]
 
 prepend_previewers = [

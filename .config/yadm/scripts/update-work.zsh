@@ -219,6 +219,7 @@ _sync_gitlab_dotfiles_specs() {
     # Sync the full gitlab dotfiles overlay first; narrower specs below add correct exclude prefixes
     # for hidden subtrees that need to appear under existing repo-owned directories.
     '.::'
+    '.ai:.ai:.ai/'
     '.gitlab/duo:.gitlab/duo:.gitlab/duo/'
     '.opencode/skills:.opencode/skills:.opencode/skills/'
   )

@@ -30,6 +30,10 @@ yamllint = "latest"
 # A CLI tool for tracking token usage
 "npm:tokscale" = "latest"
 
+# ── GitHub releases ───────────────────────────────────────────────────
+# Terminal file manager
+"github:sxyazi/yazi" = "26.5.6"
+
 # ── Ruby gems ─────────────────────────────────────────────────────────
 # Ruby provider for Neovim plugins
 "gem:neovim" = "0.10.0"

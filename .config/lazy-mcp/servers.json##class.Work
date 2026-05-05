@@ -3,24 +3,40 @@
     {
       "name": "gitlab",
       "description": "GitLab MCP server",
-      "url": "https://gitlab.com/api/v4/mcp"
+      "url": "https://gitlab.com/api/v4/mcp",
+      "type": "remote",
+      "oauth": {
+        "callbackPort": 47357
+      }
     },
     {
       "name": "gitlab-knowledge-graph",
       "description": "GitLab repository knowledge graph and code analysis",
-      "command": ["npx", "-y", "mcp-remote@latest", "http://localhost:27495/mcp"]
+      "command": [
+        "npx",
+        "-y",
+        "mcp-remote@latest",
+        "http://localhost:27495/mcp"
+      ]
     },
     {
       "name": "context7",
       "description": "Library documentation and code examples",
       "type": "local",
-      "command": ["npx", "-y", "@upstash/context7-mcp"]
+      "command": [
+        "npx",
+        "-y",
+        "@upstash/context7-mcp"
+      ]
     },
     {
       "name": "pinchtab",
       "description": "Browser control for AI agents via PinchTab",
       "type": "local",
-      "command": ["pinchtab", "mcp"]
+      "command": [
+        "pinchtab",
+        "mcp"
+      ]
     },
     {
       "name": "websearch",
@@ -44,7 +60,9 @@
       "name": "incident_io",
       "description": "Gitlab.com incident management tool",
       "type": "local",
-      "command": ["/Users/pedropombeiro/.incidentio/incident"]
+      "command": [
+        "/Users/pedropombeiro/.incidentio/incident"
+      ]
     }
   ]
 }

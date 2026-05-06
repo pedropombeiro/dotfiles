@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
+typeset -g SCRIPT_PATH=${(%):-%x}
 
 source "${YADM_SCRIPTS}/colors.sh"
 (( $+functions[_update_step] )) || _update_step() { : }
@@ -130,7 +131,7 @@ write_mise_root_config() {
   gdk_root=${1}
 
   cat << EOF > "${gdk_root}/.mise.toml"
-## NOTE: Do not edit directly - Auto generated from ${0:A}
+## NOTE: Do not edit directly - Auto generated from ${SCRIPT_PATH}
 [env]
 BUNDLER_CHECKSUM_VERIFICATION_OPT_IN = "1"
 COREPACK_ENABLE_AUTO_PIN = "0"
@@ -139,7 +140,7 @@ ENABLE_SPRING = "1"
 GITLAB_USE_MODEL_LOAD_BALANCING = "1"
 GITLAB_VIM_URL = "https://gitlab.com"
 OP_BIOMETRIC_UNLOCK_ENABLED = "true"
-OPENCODE_MODEL = "gitlab/duo-chat-opus-4-6"
+OPENCODE_MODEL = "gitlab/duo-chat-opus-4-7"
 PUMA_WORKER_TIMEOUT = "9999999"
 QA_GITLAB_URL = "http://gdk.test:3000"
 QA_LOG_LEVEL = "DEBUG"
@@ -157,7 +158,7 @@ write_mise_gitlab_config() {
   gdk_root=${1}
 
   cat << EOF > "${gdk_root}/gitlab/.mise.toml"
-## NOTE: Do not edit directly - Auto generated from ${0:A}
+## NOTE: Do not edit directly - Auto generated from ${SCRIPT_PATH}
 [env]
 EOF
 }
@@ -289,7 +290,7 @@ write_opencode_config() {
   gdk_root=${1}
 
   cat << EOF > "${gdk_root}/gitlab/opencode.jsonc"
-// NOTE: Do not edit directly - Auto generated from ${0:A}
+// NOTE: Do not edit directly - Auto generated from ${SCRIPT_PATH}
 {
   "\$schema": "https://opencode.ai/config.json",
   "instructions": [

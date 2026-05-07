@@ -22,6 +22,10 @@ function print_failure() {
   printf "${RED}%s${NC}\n" "$1"
 }
 
+function print_warn() {
+  printf "${YELLOW}%s${NC} %s\n" '⚠️  WARN' "$1"
+}
+
 any_failed=0
 
 WAKATIME_CLI="$HOME/.wakatime/wakatime-cli"

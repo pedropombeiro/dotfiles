@@ -54,7 +54,10 @@ end
 local function onUnlock()
   log.i("onUnlock")
   M.restoreServices()
-  if not hs.application.get("zoom.us") then webcam.off() end
+  M._unlockWebcamTimer = hs.timer.doAfter(5, function()
+    M._unlockWebcamTimer = nil
+    if not webcam.anyAppRunning() then webcam.off() end
+  end)
 end
 
 function M.displaysleep()

@@ -8,8 +8,6 @@ local connectTask = nil
 local pollTimer = nil
 local waveTask = nil
 
-local meetingApps = webcam.apps
-
 local activeMeetings = {}
 
 local function stopPollTimer()
@@ -124,22 +122,24 @@ local function onMeetingEnd()
 end
 
 local watcher = hs.application.watcher.new(function(name, event)
-  if not meetingApps[name] then return end
+  if not webcam.apps[name] then return end
+  if event ~= hs.application.watcher.launched and event ~= hs.application.watcher.terminated then return end
 
-  if event == hs.application.watcher.launched then
-    local wasActive = next(activeMeetings) ~= nil
-    activeMeetings[name] = true
-    if not wasActive then onMeetingStart() end
-  elseif event == hs.application.watcher.terminated then
-    activeMeetings[name] = nil
-    if next(activeMeetings) == nil then onMeetingEnd() end
+  local previouslyActive = next(activeMeetings) ~= nil
+
+  activeMeetings = {}
+  for appName in pairs(webcam.apps) do
+    if hs.application.get(appName) then activeMeetings[appName] = true end
+  end
+
+  local nowActive = next(activeMeetings) ~= nil
+
+  if nowActive and not previouslyActive then
+    onMeetingStart()
+  elseif previouslyActive and not nowActive then
+    onMeetingEnd()
   end
 end)
 
 watcher:start()
-
-for name in pairs(meetingApps) do
-  if hs.application.get(name) then activeMeetings[name] = true end
-end
-
 log.i("Meeting watcher started")

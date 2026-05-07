@@ -40,13 +40,17 @@ function M.off()
   setPower("off")
 end
 
-local function anyAppRunning()
+function M.anyAppRunning()
   for name in pairs(M.apps) do
     if hs.application.get(name) then return true end
   end
   return false
 end
 
-if anyAppRunning() then M.on() else M.off() end
+function M.reconcile()
+  if M.anyAppRunning() then M.on() else M.off() end
+end
+
+M.reconcile()
 
 return M

@@ -137,4 +137,9 @@ local watcher = hs.application.watcher.new(function(name, event)
 end)
 
 watcher:start()
+
+for name in pairs(meetingApps) do
+  if hs.application.get(name) then activeMeetings[name] = true end
+end
+
 log.i("Meeting watcher started")

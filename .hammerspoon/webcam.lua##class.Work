@@ -2,7 +2,12 @@ local constants = require("constants")
 local log = hs.logger.new("webcam", "info")
 local task = nil
 
-local M = {}
+local M = {
+  apps = {
+    ["zoom.us"] = true,
+    ["YoloLiv Compose"] = true,
+  },
+}
 
 local function setPower(action)
   task = hs.task.new(constants.uhubctl, function(exitCode, _, stdErr)
@@ -35,6 +40,13 @@ function M.off()
   setPower("off")
 end
 
-if hs.application.get("zoom.us") or hs.application.get("YoloLiv Compose") then M.on() else M.off() end
+local function anyAppRunning()
+  for name in pairs(M.apps) do
+    if hs.application.get(name) then return true end
+  end
+  return false
+end
+
+if anyAppRunning() then M.on() else M.off() end
 
 return M

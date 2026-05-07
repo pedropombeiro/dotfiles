@@ -8,10 +8,7 @@ local connectTask = nil
 local pollTimer = nil
 local waveTask = nil
 
-local meetingApps = {
-  ["zoom.us"] = true,
-  ["YoloLiv Compose"] = true,
-}
+local meetingApps = webcam.apps
 
 local activeMeetings = {}
 

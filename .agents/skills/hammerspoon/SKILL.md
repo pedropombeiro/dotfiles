@@ -1,6 +1,6 @@
 ---
 name: hammerspoon
-description: "Hammerspoon macOS automation. Config in ~/.hammerspoon/. Modules: init.lua, spaces, sleepwake, urlrouter, httpserver, meetings. Keywords: hammerspoon, hs, lua, audiodevice, hotkey, caffeinate, httpserver, Stream Deck, Rectangle Pro, blueutil, AirPods, URL routing. Use when: editing ~/.hammerspoon/ files, debugging Hammerspoon modules, adding Hammerspoon features, checking Hammerspoon logs."
+description: "Hammerspoon macOS automation. Config in ~/.hammerspoon/. Modules: init.lua, spaces, sleepwake, urlrouter, httpserver, meetings, webcam. Keywords: hammerspoon, hs, lua, audiodevice, hotkey, caffeinate, httpserver, Stream Deck, Rectangle Pro, blueutil, AirPods, URL routing, webcam, uhubctl. Use when: editing ~/.hammerspoon/ files, debugging Hammerspoon modules, adding Hammerspoon features, checking Hammerspoon logs."
 ---
 
 # Hammerspoon
@@ -14,7 +14,8 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 - `spaces.lua##class.Work` — Applies the Rectangle Pro `External display` layout on every Space switch.
 - `sleepwake.lua##class.Work` — Caffeinate watcher for sleep/wake/unlock events. Manages Stream Deck USB power, BusylightHTTP, nginx, and Elgato Control Center. Exports `displaysleep()` for use by other modules.
 - `urlrouter.lua##class.Work` — URL-based browser router (replaces Choosy). Hammerspoon is registered as the default HTTP/HTTPS handler via `duti`. Routes `zoom.us/j/` and `zoom.us/my/` links to Zoom.app, everything else to Chrome.
-- `meetings.lua##class.Work` — Auto-switches audio to AirPods when Zoom launches (connects via `blueutil` if needed), pauses Spotify, quits eqMac. On Zoom exit: restores previous audio device, resumes Spotify, relaunches eqMac hidden, quits Camo Studio, powers off Elgato Wave USB port.
+- `meetings.lua##class.Work` — Auto-switches audio to AirPods when Zoom launches (connects via `blueutil` if needed), pauses Spotify, quits eqMac, powers on webcam USB. On Zoom exit: restores previous audio device, resumes Spotify, relaunches eqMac hidden, quits Camo Studio, powers off Elgato Wave USB port and webcam USB port.
+- `webcam.lua##class.Work` — Powers the YoloCam S3 USB port on/off via uhubctl. Exports `webcam.on()` and `webcam.off()`. Powers off on Hammerspoon load (unless Zoom is running). Called by `meetings.lua` and `sleepwake.lua`.
 - `httpserver/` — Modular HTTP server on `localhost:18990`. Sub-modules each return a table of `{ actionName = handlerFn }` that get merged into a single dispatch table.
   - `httpserver/init.lua` — Server skeleton. Parses query params via `hs.http.urlParts`, loads sub-modules, dispatches on `?action=`.
   - `httpserver/triggers.lua##class.Work` — `lock` and `sleep` actions for Home Assistant (Work only, depends on `sleepwake`).
@@ -27,14 +28,14 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 | Space switch                     | Apply Rectangle Pro layout                                                                                                           |
 | `systemWillSleep`                | Kill BusylightHTTP, power off Stream Deck USB                                                                                        |
 | `screensDidSleep`                | Power off Stream Deck USB                                                                                                            |
-| `screensDidUnlock`               | Cycle Stream Deck (async), restart nginx, reopen BusylightHTTP, restart Elgato Control Center, apply Rectangle Pro layout (2s delay) |
+| `screensDidUnlock`               | Cycle Stream Deck (async), restart nginx, reopen BusylightHTTP, restart Elgato Control Center, apply Rectangle Pro layout (2s delay); power off webcam if Zoom not running |
 | `hammerspoon://displaysleep` URL | Power off Stream Deck, lock screen, sleep display after 2s                                                                           |
 | HTTP `?action=lock`              | Lock screen (Work only)                                                                                                              |
 | HTTP `?action=sleep`             | Same as `displaysleep` URL handler (Work only)                                                                                       |
 | HTTP `?action=notify`            | Send native macOS notification with click-to-focus (all machines)                                                                    |
 | Any `http`/`https` URL opened    | Route to Zoom.app (meeting links) or Chrome (everything else) — replaces Choosy (Work only)                                          |
-| Zoom launched                    | Connect AirPods via blueutil, switch audio output, pause Spotify, quit eqMac (Work only)                                             |
-| Zoom terminated                  | Restore previous audio output, resume Spotify, relaunch eqMac hidden, quit Camo Studio, power off Elgato Wave USB (Work only)        |
+| Zoom launched                    | Power on webcam USB, connect AirPods via blueutil, switch audio output, pause Spotify, quit eqMac (Work only)                        |
+| Zoom terminated                  | Power off webcam USB, restore previous audio output, resume Spotify, relaunch eqMac hidden, quit Camo Studio, power off Elgato Wave USB (Work only) |
 
 ## Notify action
 
@@ -67,9 +68,28 @@ Home Assistant
 
 The Stream Deck "lock" button should open the URL `hammerspoon://displaysleep` (configured to open with Hammerspoon). This replaces the previous `Ctrl+Cmd+Q` + `pmset displaysleepnow` approach which had timing issues with USB wake events.
 
-## Stream Deck USB hub location
+## USB hub locations
 
-The Stream Deck XL is connected at `uhubctl` location `2-1.1.2` port `2`. The Elgato Wave microphone is on the same hub at port `1`. If the hub layout changes, update `constants.lua` and verify with `uhubctl --location 2-1.1.2`.
+### CalDigit TS4 USB2 hub (`M.usbHub = "2-1.1.2"`)
+
+Verify with: `uhubctl --location 2-1.1.2`
+
+| Port | Constant           | Device                  |
+| ---- | ------------------ | ----------------------- |
+| 1    | (Elgato Wave hub)  | USB 2.0 Hub (ganged)    |
+| 2    | `streamDeckPort`   | Elgato Stream Deck XL   |
+
+The Elgato Wave microphone is on a sub-hub at port `1`.
+
+### CalDigit TS4 USB3 hub (`M.usbHub3 = "2-2.4.1"`)
+
+Verify with: `uhubctl --location 2-2.4.1`
+
+| Port | Constant     | Device               |
+| ---- | ------------ | -------------------- |
+| 2    | `webcamPort` | YoloCam S3 (46f8:0855) |
+
+If the hub layout changes, update `constants.lua`.
 
 ## Rectangle Pro
 

@@ -1,6 +1,7 @@
 local audio = require("audio")
 local constants = require("constants")
 local spaces = require("spaces")
+local webcam = require("webcam")
 
 local M = {}
 
@@ -53,6 +54,7 @@ end
 local function onUnlock()
   log.i("onUnlock")
   M.restoreServices()
+  if not hs.application.get("zoom.us") then webcam.off() end
 end
 
 function M.displaysleep()

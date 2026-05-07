@@ -1,5 +1,6 @@
 local audio = require("audio")
 local constants = require("constants")
+local webcam = require("webcam")
 local log = hs.logger.new("meetings", "info")
 local spotifyWasPlaying = false
 local eqMacWasRunning = false
@@ -59,6 +60,8 @@ local function connectAndSwitch(current)
 end
 
 local function onMeetingStart()
+  webcam.on()
+
   local current = hs.audiodevice.defaultOutputDevice()
   if current and string.find(current:name(), constants.airpodsPattern, 1, true) then
     log.i("AirPods already default, skipping switch")
@@ -89,6 +92,8 @@ local function resumeSpotify()
 end
 
 local function onMeetingEnd()
+  webcam.off()
+
   if eqMacWasRunning then
     eqMacWasRunning = false
     hs.execute("open -g -a eqMac")

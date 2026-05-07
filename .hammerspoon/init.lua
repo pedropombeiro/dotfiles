@@ -8,6 +8,7 @@ local modules = {
   "sleepwake",
   "spaces",
   "urlrouter",
+  "webcam",
 }
 
 -- Load modules

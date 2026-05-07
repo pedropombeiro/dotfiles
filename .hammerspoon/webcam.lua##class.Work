@@ -1,0 +1,40 @@
+local constants = require("constants")
+local log = hs.logger.new("webcam", "info")
+local task = nil
+
+local M = {}
+
+local function setPower(action)
+  task = hs.task.new(constants.uhubctl, function(exitCode, _, stdErr)
+    task = nil
+    if exitCode ~= 0 then
+      log.w("uhubctl " .. action .. " failed (exit " .. tostring(exitCode) .. "): " .. tostring(stdErr))
+    else
+      log.i("Webcam powered " .. action)
+    end
+  end, {
+    "--action",
+    action,
+    "--location",
+    constants.usbHub3,
+    "--port",
+    constants.webcamPort,
+    "--repeat",
+    "3",
+    "--wait",
+    "500",
+  })
+  task:start()
+end
+
+function M.on()
+  setPower("on")
+end
+
+function M.off()
+  setPower("off")
+end
+
+if not hs.application.get("zoom.us") then M.off() end
+
+return M

@@ -119,6 +119,24 @@ check_gdk_wakatime_projects() {
   done
 }
 
+check_glab_auth() {
+  print_op_stay "Checking glab authentication"
+  if ! command -v glab >/dev/null 2>&1; then
+    echo
+    print_failure "glab is not installed"
+    any_failed=1
+    return
+  fi
+
+  if glab auth status >/dev/null 2>&1; then
+    print_ok
+  else
+    echo
+    print_failure "glab is not authenticated (run: glab auth login)"
+    any_failed=1
+  fi
+}
+
 check_hammerspoon_bluetooth() {
   print_op_stay "Checking Hammerspoon Bluetooth permission"
   local hs_bundle_id="org.hammerspoon.Hammerspoon"
@@ -150,6 +168,7 @@ if uhubctl >/dev/null 2>&1; then
 fi
 
 check_app_running 'Home Assistant'
+check_glab_auth
 check_gdk_wakatime_projects
 
 if (( any_failed )); then

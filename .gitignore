@@ -24,6 +24,8 @@ Thumbs.db
 
 
 
+
+
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
 .config/1Password/ssh/agent.toml
@@ -84,6 +86,8 @@ Thumbs.db
 .hammerspoon/sleepwake.lua
 .hammerspoon/spaces.lua
 .hammerspoon/urlrouter.lua
+.hammerspoon/usb.lua
+.hammerspoon/webcam.lua
 .local/bin/run_mr_pipeline
 .local/bin/wait_for_mr_merge
 .local/share/grc-rs

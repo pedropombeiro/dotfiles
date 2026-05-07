@@ -1,5 +1,6 @@
 local audio = require("audio")
 local constants = require("constants")
+local usb = require("usb")
 local webcam = require("webcam")
 local log = hs.logger.new("meetings", "info")
 local spotifyWasPlaying = false
@@ -105,19 +106,7 @@ local function onMeetingEnd()
     log.i("Quit Camo Studio")
   end
 
-  waveTask = hs.task.new(constants.uhubctl, function() waveTask = nil end, {
-    "--action",
-    "off",
-    "--location",
-    constants.usbHub,
-    "--port",
-    constants.elgatoWavePort,
-    "--repeat",
-    "3",
-    "--wait",
-    "500",
-  })
-  waveTask:start()
+  waveTask = usb.power(constants.usbHub, constants.elgatoWavePort, "off", function() waveTask = nil end)
   log.i("Powered off Elgato Wave USB")
 end
 

@@ -1,6 +1,7 @@
 local audio = require("audio")
 local constants = require("constants")
 local spaces = require("spaces")
+local usb = require("usb")
 local webcam = require("webcam")
 
 local M = {}
@@ -11,7 +12,7 @@ local function task(path, args, callback) hs.task.new(path, callback, args):star
 
 local function streamDeckOff()
   log.i("Stream Deck: powering off")
-  task(constants.uhubctl, { "--action", "off", "--location", constants.usbHub, "--port", constants.streamDeckPort })
+  usb.power(constants.usbHub, constants.streamDeckPort, "off")
 end
 
 local function onSleep()
@@ -22,19 +23,15 @@ end
 
 local function cycleStreamDeck()
   log.i("Stream Deck: cycling")
-  task(
-    constants.uhubctl,
-    { "--action", "cycle", "--location", constants.usbHub, "--port", constants.streamDeckPort, "--wait", "4000" },
-    function(exitCode, stdout)
-      if exitCode ~= 0 then
-        log.i("Stream Deck: hub not found (undocked?), skipping cycle")
-      elseif stdout:find("Elgato Stream Deck") then
-        log.i("Stream Deck: cycle succeeded")
-      else
-        log.w("Stream Deck: cycle completed, waiting for USB re-enumeration")
-      end
+  usb.cycle(constants.usbHub, constants.streamDeckPort, 4000, function(exitCode, stdout)
+    if exitCode ~= 0 then
+      log.i("Stream Deck: hub not found (undocked?), skipping cycle")
+    elseif stdout:find("Elgato Stream Deck") then
+      log.i("Stream Deck: cycle succeeded")
+    else
+      log.w("Stream Deck: cycle completed, waiting for USB re-enumeration")
     end
-  )
+  end)
 end
 
 function M.restoreServices()

@@ -1,0 +1,52 @@
+local constants = require("constants")
+local log = hs.logger.new("usb", "info")
+
+local M = {}
+
+local function run(args, callback)
+  local t = hs.task.new(constants.uhubctl, callback, args)
+  t:start()
+  return t
+end
+
+function M.power(location, port, action, callback)
+  return run({
+    "--action",
+    action,
+    "--location",
+    location,
+    "--port",
+    tostring(port),
+    "--repeat",
+    "3",
+    "--wait",
+    "500",
+  }, function(exitCode, stdout, stdErr)
+    if exitCode ~= 0 then
+      log.w("uhubctl " .. action .. " failed at " .. location .. ":" .. port .. " (exit " .. tostring(exitCode) .. "): " .. tostring(stdErr))
+    else
+      log.i("Port " .. location .. ":" .. port .. " powered " .. action)
+    end
+    if callback then callback(exitCode, stdout, stdErr) end
+  end)
+end
+
+function M.cycle(location, port, wait, callback)
+  return run({
+    "--action",
+    "cycle",
+    "--location",
+    location,
+    "--port",
+    tostring(port),
+    "--wait",
+    tostring(wait or 500),
+  }, function(exitCode, stdout, stdErr)
+    if exitCode ~= 0 then
+      log.w("uhubctl cycle failed at " .. location .. ":" .. port .. " (exit " .. tostring(exitCode) .. "): " .. tostring(stdErr))
+    end
+    if callback then callback(exitCode, stdout, stdErr) end
+  end)
+end
+
+return M

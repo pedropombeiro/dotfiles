@@ -23,6 +23,7 @@ Thumbs.db
 
 
 
+
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
 .config/1Password/ssh/agent.toml
@@ -62,6 +63,7 @@ Thumbs.db
 .config/yadm/bootstrap.d/901-configure-hammerspoon-firewall.sh
 .config/yadm/bootstrap.d/915-install-tmux-terminfo.sh
 .config/yadm/bootstrap.d/930-regular-install.sh
+.config/yadm/bootstrap.d/937-configure-pinchtab.sh
 .config/yadm/bootstrap.d/940-open-apps-at-login.sh
 .config/yadm/bootstrap.d/941-open-hammerspoon-at-login.sh
 .config/yadm/bootstrap.d/945-open-apps-for-first-time.sh

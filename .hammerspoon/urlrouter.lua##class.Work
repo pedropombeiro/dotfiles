@@ -1,5 +1,5 @@
 local log = hs.logger.new("urlrouter", "info")
-local defaultBrowser = "com.microsoft.edgemac"
+local defaultBrowser = "com.google.Chrome"
 local routes = {
   { host = "%.slack%.com$", bundle = "com.tinyspeck.slackmacgap", name = "Slack" },
   { url = "zoom.us/j/", bundle = "us.zoom.videomeetings", name = "Zoom" },

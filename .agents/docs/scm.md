@@ -70,7 +70,7 @@ When renaming or adding files:
 1. Use `yadm ls-files` to find relevant files quickly
 2. Use `yadm grep` to search content instead of grep/ripgrep
 3. Edit files preserving alternate file naming conventions
-4. Validate with `yadm enter pre-commit run --all-files` before committing
+4. Validate with `yadm enter hk check --all` before committing (hooks also run automatically via hk on `yadm commit`)
 5. Commit with clear, descriptive messages
 
 ## Conventional Commits

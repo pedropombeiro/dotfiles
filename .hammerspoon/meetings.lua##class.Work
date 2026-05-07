@@ -10,6 +10,7 @@ local waveTask = nil
 
 local meetingApps = {
   ["zoom.us"] = true,
+  ["YoloLiv Compose"] = true,
 }
 
 local activeMeetings = {}

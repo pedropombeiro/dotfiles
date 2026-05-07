@@ -35,6 +35,6 @@ function M.off()
   setPower("off")
 end
 
-if not hs.application.get("zoom.us") then M.off() end
+if hs.application.get("zoom.us") then M.on() else M.off() end
 
 return M

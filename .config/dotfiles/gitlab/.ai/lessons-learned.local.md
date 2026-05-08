@@ -11,3 +11,5 @@ Subject-specific lessons live in their `.local.md` counterparts (e.g. `testing.l
 
 - Do not post comments directly on MRs, issues, or epics. Only update descriptions, labels, and metadata.
 - Do not assign reviewers unless the user explicitly asks — leave reviewer selection to the user.
+- When replying in-thread with `gitlab_create_discussion`, verify the `discussion_id` belongs to the specific thread containing the target note — match by note ID from `gitlab_list_discussions`, not by proximity in the listing.
+

@@ -7,10 +7,13 @@ local webcam = require("webcam")
 local M = {}
 
 local log = hs.logger.new("sleepwake", "info")
+local streamDeckPowered = true
 
 local function task(path, args, callback) hs.task.new(path, callback, args):start() end
 
 local function streamDeckOff()
+  if not streamDeckPowered then return end
+  streamDeckPowered = false
   log.i("Stream Deck: powering off")
   usb.power(constants.usbHub, constants.streamDeckPort, "off")
 end
@@ -50,6 +53,7 @@ end
 
 local function onUnlock()
   log.i("onUnlock")
+  streamDeckPowered = true
   M.restoreServices()
   M._unlockWebcamTimer = hs.timer.doAfter(5, function()
     M._unlockWebcamTimer = nil

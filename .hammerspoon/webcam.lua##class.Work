@@ -2,6 +2,7 @@ local constants = require("constants")
 local usb = require("usb")
 local log = hs.logger.new("webcam", "info")
 local task = nil
+local lastAction = nil
 
 local M = {
   apps = {
@@ -11,6 +12,8 @@ local M = {
 }
 
 local function setPower(action)
+  if action == lastAction then return end
+  lastAction = action
   task = usb.power(constants.usbHub3, constants.webcamPort, action, function(exitCode)
     task = nil
     if exitCode == 0 then log.i("Webcam powered " .. action) end
@@ -37,5 +40,7 @@ function M.reconcile()
 end
 
 M.reconcile()
+
+M._reconcileTimer = hs.timer.doEvery(60, M.reconcile)
 
 return M

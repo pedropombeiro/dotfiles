@@ -57,7 +57,7 @@ local function connectAndSwitch(current)
 end
 
 local function onMeetingStart()
-  webcam.on()
+  webcam.on("onMeetingStart")
 
   local current = hs.audiodevice.defaultOutputDevice()
   if current and string.find(current:name(), constants.airpodsPattern, 1, true) then
@@ -89,7 +89,7 @@ local function resumeSpotify()
 end
 
 local function onMeetingEnd()
-  webcam.off()
+  webcam.off("onMeetingEnd")
 
   if eqMacWasRunning then
     eqMacWasRunning = false

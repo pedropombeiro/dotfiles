@@ -11,36 +11,56 @@ local M = {
   },
 }
 
-local function setPower(action)
-  if action == lastAction then return end
+local function runningApps()
+  local names = {}
+  for name in pairs(M.apps) do
+    if hs.application.get(name) then table.insert(names, name) end
+  end
+  return names
+end
+
+local function setPower(action, reason)
+  if action == lastAction then
+    log.i("Skipping " .. action .. " (already in that state) [" .. (reason or "?") .. "]")
+    return
+  end
   lastAction = action
+  log.i("Setting power " .. action .. " [" .. (reason or "?") .. "]")
   task = usb.power(constants.usbHub3, constants.webcamPort, action, function(exitCode)
     task = nil
     if exitCode == 0 then log.i("Webcam powered " .. action) end
   end)
 end
 
-function M.on()
-  setPower("on")
+function M.on(reason)
+  setPower("on", reason or "M.on")
 end
 
-function M.off()
-  setPower("off")
+function M.off(reason)
+  local apps = runningApps()
+  if #apps > 0 then
+    log.w("Refusing to power off; meeting app running: " .. table.concat(apps, ", ") .. " [" .. (reason or "?") .. "]")
+    return
+  end
+  setPower("off", reason or "M.off")
 end
 
 function M.anyAppRunning()
-  for name in pairs(M.apps) do
-    if hs.application.get(name) then return true end
+  return #runningApps() > 0
+end
+
+function M.reconcile(reason)
+  reason = reason or "reconcile"
+  local apps = runningApps()
+  if #apps > 0 then
+    setPower("on", reason .. " (apps: " .. table.concat(apps, ", ") .. ")")
+  else
+    setPower("off", reason .. " (no apps)")
   end
-  return false
 end
 
-function M.reconcile()
-  if M.anyAppRunning() then M.on() else M.off() end
-end
+M.reconcile("boot")
 
-M.reconcile()
-
-M._reconcileTimer = hs.timer.doEvery(60, M.reconcile)
+M._reconcileTimer = hs.timer.doEvery(60, function() M.reconcile("periodic") end)
 
 return M

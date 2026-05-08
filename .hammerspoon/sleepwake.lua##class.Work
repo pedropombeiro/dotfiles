@@ -57,7 +57,7 @@ local function onUnlock()
   M.restoreServices()
   M._unlockWebcamTimer = hs.timer.doAfter(5, function()
     M._unlockWebcamTimer = nil
-    webcam.reconcile()
+    webcam.reconcile("onUnlock+5s")
   end)
 end
 

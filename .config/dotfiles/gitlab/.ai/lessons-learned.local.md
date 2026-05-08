@@ -5,7 +5,7 @@ Subject-specific lessons live in their `.local.md` counterparts (e.g. `testing.l
 
 ## General
 
-- Always read and internalize `AGENTS.local.md` and `.ai/AGENTS.md` at the start of every session, then load only the task-relevant `.ai/` modules.
+- Always read and internalize `CLAUDE.local.md` and `.ai/AGENTS.md` at the start of every session, then load only the task-relevant `.ai/` modules.
 
 ## Work Items (MRs, Issues, Epics)
 

@@ -45,7 +45,7 @@ If no hint is provided, infer the likely task category from the user request.
 
 Always start with:
 
-- `AGENTS.local.md`
+- `CLAUDE.local.md`
 - `.ai/AGENTS.md`
 
 Load `.gitlab/duo/chat-rules.md` for testing, git workflow, or weekly-status/report tasks.
@@ -118,7 +118,7 @@ Expected shape:
 ```text
 Scope
 - Inferred task: testing
-- Loaded: AGENTS.local.md, .ai/AGENTS.md, .ai/testing.md, .ai/testing.local.md, .gitlab/duo/chat-rules.md
+- Loaded: CLAUDE.local.md, .ai/AGENTS.md, .ai/testing.md, .ai/testing.local.md, .gitlab/duo/chat-rules.md
 
 Active rules
 - Run Ruby specs with `bundle exec rspec <file> --format documentation`.

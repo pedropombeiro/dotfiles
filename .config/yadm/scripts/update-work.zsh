@@ -294,7 +294,7 @@ write_opencode_config() {
 {
   "\$schema": "https://opencode.ai/config.json",
   "instructions": [
-    "AGENTS.local.md",
+    "CLAUDE.local.md",
     ".ai/AGENTS.md",
     ".ai/lessons-learned.local.md"
   ],

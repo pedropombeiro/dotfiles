@@ -33,7 +33,7 @@ Track it with YADM: `yadm add ~/.config/dotfiles/gitlab/<path>`.
 
 | Dotfiles path                             | Purpose                                |
 | ----------------------------------------- | -------------------------------------- |
-| `AGENTS.local.md`                         | Personal AI agent instructions         |
+| `CLAUDE.local.md`                         | Personal AI agent instructions         |
 | `lefthook-local.yml`                      | Force UTF-8 for Ruby hooks (lazygit)   |
 | `.ai/code-style.local.md`                 | Ruby code style lessons                |
 | `.ai/lessons-learned.local.md`            | General AI corrections                 |

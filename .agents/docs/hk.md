@@ -102,3 +102,32 @@ hk version is managed by mise (`hk = "latest"` in `~/.config/mise/conf.d/global.
 When upgrading, bump the `amends` and `import` URLs in `~/hk.pkl` to match the new version.
 
 Check current version: `hk --version`
+
+## Caveats
+
+### Global hook PATH issue
+
+`hk install --global` writes hook commands to `~/.gitconfig` that call `hk` by name. Since hk
+is managed by mise (not in a system PATH like `/opt/homebrew/bin`), any git invocation from a
+subshell that doesn't load mise shims (e.g. Homebrew tap updates, IDE git operations) will fail
+with `hk: command not found` and abort the git operation.
+
+To fix this, the hook commands are patched to silently no-op when `hk` is not found:
+
+```bash
+# Instead of the default:
+test "${HK:-1}" = "0" || hk run <event> --from-hook "$@"
+
+# We use:
+{ [ "${HK:-1}" = "0" ] || ! command -v hk >/dev/null 2>&1 ; } || hk run <event> --from-hook "$@"
+```
+
+**If you ever re-run `hk install --global`**, the default (broken) commands will be reinstalled.
+Re-apply the patch with:
+
+```bash
+for event in commit-msg post-checkout post-commit post-merge post-rewrite pre-commit pre-push pre-rebase prepare-commit-msg; do
+  git config --global "hook.hk-${event}.command" \
+    "{ [ \"\${HK:-1}\" = \"0\" ] || ! command -v hk >/dev/null 2>&1 ; } || hk run ${event} --from-hook \"\$@\""
+done
+```

@@ -122,9 +122,16 @@ local fast_steps = new Mapping<String, Step> {
     }
 
     // ── Dotfiles-specific ────────────────────────────────────────────────
+    // Only runs when invoked from the yadm work tree ($HOME); a no-op elsewhere
+    // so this global hk.pkl can be safely picked up by other repos under $HOME.
     ["no-yadm-alt-symlinks"] {
         glob = List("*")
-        check = ".config/yadm/scripts/check-no-alt-symlinks.zsh {{files}}"
+        check = """
+          script="$HOME/.config/yadm/scripts/check-no-alt-symlinks.zsh"
+          [ -x "$script" ] || exit 0
+          [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$HOME" ] || exit 0
+          "$script" {{files}}
+          """
     }
     ["mise-fmt"] = (Builtins.mise) {}
     ["renovate-config-validator"] {

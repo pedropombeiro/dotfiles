@@ -117,11 +117,10 @@ cleanup_gitlab_excludes() {
   gdk_root=${1}
   gitlab_exclude_file="${gdk_root}/gitlab/.git/info/exclude"
 
-  rm -f "${gdk_root}/gitlab/opencode.jsonc"
+    rm -f "${gdk_root}/gitlab/opencode.jsonc"
   if [[ -f ${gitlab_exclude_file} ]]; then
     sed -i '' '/^opencode\.jsonc$/d' "${gitlab_exclude_file}"
-    sed -i '' '/^\/repo-bootstrap\/SKILL\.md$/d' "${gitlab_exclude_file}"
-    sed -i '' '/^\/tool-routing\/SKILL\.md$/d' "${gitlab_exclude_file}"
+    sed -i '' '/^\/AGENTS\.local\.md$/d' "${gitlab_exclude_file}"
   fi
 }
 
@@ -174,7 +173,7 @@ _sync_dotfiles_to_worktree() {
 
   [[ -d "${target_dir}" ]] || return 0
 
-  for dotfiles_file in ${(f)"$(fd --type f . "${dotfiles_dir}")"}; do # (f) splits on newlines
+  for dotfiles_file in ${(f)"$(fd --hidden --type f . "${dotfiles_dir}")"}; do # (f) splits on newlines
     rel_path="${dotfiles_file#${dotfiles_dir}/}"
     target_file="${target_dir}/${rel_path}"
 
@@ -217,12 +216,7 @@ _sync_gitlab_dotfiles_specs() {
   exclude_file=${3}
 
   local -a sync_specs=(
-    # Sync the full gitlab dotfiles overlay first; narrower specs below add correct exclude prefixes
-    # for hidden subtrees that need to appear under existing repo-owned directories.
     '.::'
-    '.ai:.ai:.ai/'
-    '.gitlab/duo:.gitlab/duo:.gitlab/duo/'
-    '.opencode/skills:.opencode/skills:.opencode/skills/'
   )
 
   for spec in ${sync_specs[@]}; do
@@ -295,7 +289,6 @@ write_opencode_config() {
   "\$schema": "https://opencode.ai/config.json",
   "instructions": [
     "CLAUDE.local.md",
-    ".ai/AGENTS.md",
     ".ai/lessons-learned.local.md"
   ],
   // Disable formatter to preserve project's existing code style

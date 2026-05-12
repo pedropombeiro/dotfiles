@@ -45,8 +45,9 @@ If no hint is provided, infer the likely task category from the user request.
 
 Always start with:
 
-- `CLAUDE.local.md`
-- `.ai/AGENTS.md`
+- `AGENTS.md` (repo root — auto-discovered by OpenCode)
+- `CLAUDE.local.md` (personal overrides — loaded via `opencode.jsonc` instructions)
+- `.ai/README.md` (module map for `.ai/<topic>.md` files)
 
 Load `.gitlab/duo/chat-rules.md` for testing, git workflow, or weekly-status/report tasks.
 
@@ -118,7 +119,7 @@ Expected shape:
 ```text
 Scope
 - Inferred task: testing
-- Loaded: CLAUDE.local.md, .ai/AGENTS.md, .ai/testing.md, .ai/testing.local.md, .gitlab/duo/chat-rules.md
+- Loaded: AGENTS.md, CLAUDE.local.md, .ai/testing.md, .ai/testing.local.md, .gitlab/duo/chat-rules.md
 
 Active rules
 - Run Ruby specs with `bundle exec rspec <file> --format documentation`.

@@ -35,6 +35,24 @@ ripgrep = "latest"
 "pipx:vale" = "latest"
 ```
 
+### Backend Caveats (pipx / uv)
+
+The `pipx:` and `uv:` mise backends shell out to the real `pipx` / `uv` binary
+at install time. If a project uses these backends, the backend tool itself must
+also be present in the same mise context — otherwise install fails with:
+
+```
+pipx may be required but was not found.
+Failed to install pipx:<pkg>: pipx install <pkg>==<ver>: No such file or directory
+```
+
+This bites most often in CI when `MISE_TOOLS` is an explicit allow-list. Always
+include `pipx` (or `uv`) alongside any `pipx:foo` / `uv:foo` entry.
+
+Note: the `uv:` backend is only available as a built-in in newer mise versions.
+Check `mise backends` to confirm it is listed before using it; otherwise fall
+back to `pipx:` with an explicit `pipx` entry in `MISE_TOOLS`.
+
 ## QNAP/QTS Compatibility
 
 The QTS environment has glibc 2.21 limitations. Distro-specific pins live in
@@ -93,4 +111,5 @@ Tools are auto-updated by Renovate bot via `~/.renovaterc.json`. Check PRs for p
 - Prefer mise-managed tools over system packages
 - Use `latest` version when appropriate
 - Document QNAP compatibility issues
-- Use pipx backend for Python CLI tools
+- Use `pipx:` backend for Python CLI tools; always include `pipx` itself in `MISE_TOOLS` when used in CI
+- Before using `uv:` backend, confirm it appears in `mise backends` — it requires a newer mise version

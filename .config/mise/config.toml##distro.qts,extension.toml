@@ -25,8 +25,8 @@ delta = "latest"
 "github:neovim/neovim-releases[exe=nvim]" = "latest"
 # opencode build for old glibc (QTS)
 "github:pedropombeiro/opencode-legacy-glibc" = "latest"
-# Terminal file manager
-"github:sxyazi/yazi" = "26.5.6"
+# Terminal file manager (aqua backend selects musl asset on Linux, works on old glibc)
+"aqua:sxyazi/yazi" = "26.5.6"
 # Log file viewer and navigator
 "github:tstack/lnav" = "latest"
 # Secure peer-to-peer file transfer

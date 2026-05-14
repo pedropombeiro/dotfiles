@@ -88,6 +88,11 @@ use = "imsi32/yatline-githead"
 rev = "929e52c"
 hash = "8282baf02fcd6aac00ccad2276775358"
 
+[[plugin.deps]]
+use = "moxuze/parent-arrow"
+rev = "1fdb8b4"
+hash = "2f76b82244c113bbd61553f37a6b52d8"
+
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"
 rev = "619fdc5"

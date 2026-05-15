@@ -24,11 +24,7 @@ delta = "latest"
 # Pre-built Neovim release (bypasses compile-from-source)
 "github:neovim/neovim-releases[exe=nvim]" = "latest"
 # opencode build for old glibc (QTS)
-# Pinned to 1.14.48 (latest working): later versions introduced an OpenTUI
-# native render lib that requires GLIBC_2.27, but QTS ships glibc 2.21.
-# TUI hangs on startup on newer releases.
-# Unpin once the fork ships a build with a legacy-glibc OpenTUI.
-"github:pedropombeiro/opencode-legacy-glibc" = "1.14.48"
+"github:pedropombeiro/opencode-legacy-glibc" = "latest"
 # Terminal file manager (aqua backend selects musl asset on Linux, works on old glibc)
 "aqua:sxyazi/yazi" = "26.5.6"
 # Log file viewer and navigator

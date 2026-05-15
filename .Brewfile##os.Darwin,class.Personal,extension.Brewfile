@@ -10,8 +10,6 @@ tap "jstkdng/programs"
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
 tap "showwin/speedtest"
 tap "zaquestion/tap"
-# General-purpose data compression with high compression ratio
-brew "xz"
 # Arduino command-line interface
 brew "arduino-cli"
 # Record and share terminal sessions
@@ -22,6 +20,8 @@ brew "bash"
 brew "bat"
 # Resource monitor. C++ version and continuation of bashtop and bpytop
 brew "btop"
+# General-purpose data compression with high compression ratio
+brew "xz"
 # Linter/analyzer for Makefiles
 brew "checkmake"
 # Copy files from your terminal that actually paste into GUI apps

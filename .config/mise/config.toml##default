@@ -48,7 +48,7 @@ yamllint = "latest"
 
 # ── Video editing tools ────────────────────────────────────────────────
 # Programs to process GoPro MP4 & Generic GPX/FIT files and create video dashboards & maps
-"pipx:gopro-overlay" = "0.133.0"
+"pipx:gopro-overlay" = "0.134.0"
 
 # ── Brew ──────────────────────────────────────────────────────────────
 

@@ -1,7 +1,12 @@
 local log = hs.logger.new("urlrouter", "info")
 local defaultBrowser = "com.google.Chrome"
 local routes = {
-  { host = "%.slack%.com$", bundle = "com.tinyspeck.slackmacgap", name = "Slack" },
+  {
+    host = "%.slack%.com$",
+    bundle = "com.tinyspeck.slackmacgap",
+    name = "Slack",
+    exclude = { "/ssb/", "/sso/", "/sign_in", "/signin", "/oauth" },
+  },
   { url = "zoom.us/j/", bundle = "us.zoom.videomeetings", name = "Zoom" },
   { url = "zoom.us/my/", bundle = "us.zoom.videomeetings", name = "Zoom" },
 }
@@ -10,7 +15,17 @@ hs.urlevent.httpCallback = function(scheme, host, params, fullURL, senderPID)
   log.i("URL: " .. fullURL)
 
   for _, route in ipairs(routes) do
-    if (route.host and host and host:find(route.host)) or (route.url and fullURL:find(route.url, 1, true)) then
+    if
+      ((route.host and host and host:find(route.host)) or (route.url and fullURL:find(route.url, 1, true)))
+      and not (
+        route.exclude
+        and (function()
+          for _, pat in ipairs(route.exclude) do
+            if fullURL:find(pat, 1, true) then return true end
+          end
+        end)()
+      )
+    then
       log.i("routing to " .. route.name)
       hs.urlevent.openURLWithBundle(fullURL, route.bundle)
       return

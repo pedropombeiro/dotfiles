@@ -1,7 +1,7 @@
 [tools]
 # ── Rust tooling ──────────────────────────────────────────────────────
 # Install Rust binaries without compiling from source
-cargo-binstall = "latest"
+"aqua:cargo-bins/cargo-binstall" = "latest"
 # ── Automation ────────────────────────────────────────────────────────
 # Automated dependency update bot
 "npm:renovate" = "43.150.0"

@@ -54,9 +54,9 @@ if [[ -x "$WAKATIME_CLI" ]]; then
   fi
 
 wakatime_project_from_heartbeat() {
-  "$WAKATIME_CLI" --entity "$1" --project-folder "$2" \
+  (cd "$HOME" && "$WAKATIME_CLI" --entity "$1" --project-folder "$2" \
     --heartbeat-rate-limit-seconds 0 --disable-offline \
-    --verbose --log-to-stdout 2>&1 \
+    --verbose --log-to-stdout 2>&1) \
       | grep 'heartbeats:' \
       | grep -o 'project\\":\\"[^\\]*\\"' \
       | head -1 \

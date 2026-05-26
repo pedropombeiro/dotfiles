@@ -74,7 +74,6 @@ Plugins load in turbo priority order after the first prompt:
 | `wait'0a'` | fzf-tab, mise completions                   | common-plugins.zsh |
 | `wait'0b'` | fzf, common-aliases                         | fzf.zsh, aliases   |
 | `wait'0c'` | atuin, git-extras                           | atuin.zsh, git.zsh |
-| `wait'0d'` | accept-line ghost text fix                  | common-plugins.zsh |
 
 ### FSH + autosuggestions ordering
 
@@ -82,13 +81,54 @@ FSH must load **before** autosuggestions (per FSH README) so autosuggestions wra
 `accept-line` outermost. Use `atload'!_zsh_autosuggest_start'` (with `!` prefix
 for zinit replay tracking).
 
-### Autosuggestion ghost text fix
+### Autosuggestion ghost text fixes
 
-Even with correct load order, `_zsh_autosuggest_clear` sets `POSTDISPLAY=` but
-its `zle -R` runs **after** the inner `accept-line` commits the line, leaving
-ghost text painted in default foreground. The `wait'0d'` block in
-`common-plugins.zsh` installs an outermost `accept-line` wrapper that clears
-`POSTDISPLAY` + `region_highlight` and calls `zle -R` **before** `zle .accept-line`.
+Two independent ghost-text bugs exist; each has its own fix.
+
+**Bug 1: rendering artifact on normal accept-line.** `_zsh_autosuggest_clear`
+sets `POSTDISPLAY=` but its `zle -R` redraw fires _after_ the inner
+`accept-line` commits the line, leaving suggestion text painted in default
+foreground on the committed prompt. Fix: `common-plugins.zsh` defines
+`_fix_autosuggest_accept_line`, an outer `accept-line` widget that clears
+`POSTDISPLAY` + `region_highlight` and calls `zle -R` _before_ delegating to
+`zle .accept-line` (the builtin).
+
+**Bug 2: autosuggestion appended to buffer on atuin accept.** When you select
+a command from atuin's TUI and press Enter, atuin's widget sets
+`LBUFFER=$output` / `RBUFFER=""`, then calls `zle accept-line`. At that point
+`POSTDISPLAY` still holds the suggestion text visible before the TUI opened.
+Autosuggestions' bound `accept-line` checks
+`cursor == #BUFFER && #POSTDISPLAY > 0` (both true) and appends `POSTDISPLAY`
+to `BUFFER` — turning `atuin stats --help` into
+`atuin stats --help stats --help`. Fix: `post/atuin.zsh` wraps
+`atuin-search` and `atuin-search-viins` (the widgets bound to `^R` / vicmd
+`/` by `_atuin_rebind_ctrl_r`) with thin wrappers that clear `POSTDISPLAY=`
+before delegating to atuin's original functions. By the time atuin invokes
+`accept-line`, the suggestion is gone.
+
+#### Why the outer wrapper must be chained into autosuggestions' atload
+
+The Bug 1 wrapper must install _after_ autosuggestions wraps `accept-line`,
+otherwise autosuggestions buries it. **Do not** install via a `precmd` hook
+or a separate `zinit wait'0*'` block: zinit loads turbo plugins
+asynchronously via `zle -F`, so any user wrapper installed by precmd runs
+_before_ autosuggestions' atload fires. Autosuggestions then wraps over the
+user wrapper, leaving the bound `accept-line` as
+`_zsh_autosuggest_bound_1_accept-line` with our wrapper hidden inside.
+
+The only mechanism that works: chain the install into autosuggestions' own
+`atload`, after `_zsh_autosuggest_start`:
+
+```zsh
+atload'!_zsh_autosuggest_start; _fix_autosuggest_accept_line' zsh-users/zsh-autosuggestions
+```
+
+`ZSH_AUTOSUGGEST_MANUAL_REBIND=1` ensures autosuggestions doesn't re-wrap on
+later precmds, so the wrapper stays outermost for the life of the shell.
+
+**Wait suffix note:** zinit only accepts `wait'0'`, `wait'0a'`, `wait'0b'`,
+`wait'0c'`. `wait'0d'` and beyond emit `Warning: wait ice received invalid
+suffix letter` and silently fall back to `wait'0'`.
 
 ### Ctrl-R ownership (atuin)
 

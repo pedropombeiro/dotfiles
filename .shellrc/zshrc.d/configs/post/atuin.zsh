@@ -23,6 +23,18 @@ fi
 _atuin_setup_keybindings() {
   source "$1"
 
+  # Atuin sets LBUFFER/RBUFFER from the TUI selection and calls `zle accept-line`
+  # without clearing POSTDISPLAY first. Autosuggestions' accept-line wrapper sees
+  # cursor-at-end + non-empty POSTDISPLAY and appends the ghost text to the buffer,
+  # producing e.g. `atuin stats --help stats --help`. Wrap the atuin search widgets
+  # (the two bound by `_atuin_rebind_ctrl_r` below) to clear POSTDISPLAY before the
+  # inner widget runs so the stale suggestion is gone by the time atuin calls
+  # `zle accept-line`.
+  _atuin_search_clear() { POSTDISPLAY=; _atuin_search "$@" }
+  _atuin_search_viins_clear() { POSTDISPLAY=; _atuin_search_viins "$@" }
+  zle -N atuin-search _atuin_search_clear
+  zle -N atuin-search-viins _atuin_search_viins_clear
+
   _atuin_rebind_ctrl_r
   bindkey '^[[A' history-beginning-search-backward-end  # Up arrow (normal/xterm mode)
   bindkey '^[OA' history-beginning-search-backward-end  # Up arrow (application/keypad mode)

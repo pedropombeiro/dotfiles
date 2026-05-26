@@ -25,14 +25,34 @@ ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(
   history-beginning-search-forward-end
 )
 
+# Outer accept-line wrapper that clears POSTDISPLAY + region_highlight and
+# forces zle -R before the builtin accept-line. Fixes a rendering bug where
+# `_zsh_autosuggest_clear` sets POSTDISPLAY= but its zle -R fires after the
+# inner accept-line commits the line, leaving ghost text painted in default
+# foreground on the committed prompt. Must install AFTER autosuggestions has
+# wrapped accept-line (see atload chain below).
+_fix_autosuggest_accept_line() {
+  _accept_line_and_clear_suggestion() {
+    POSTDISPLAY=
+    region_highlight=()
+    zle -R
+    zle .accept-line
+  }
+  zle -N accept-line _accept_line_and_clear_suggestion
+}
+
 # Load syntax highlighting, wakatime, then autosuggestions via zinit turbo.
 # Order matters: autosuggestions must load last so it wraps accept-line
 # outermost (per FSH README). The ! prefix on atload ensures the function
-# is tracked by zinit for proper replay.
+# is tracked by zinit for proper replay. The accept-line wrapper is chained
+# into autosuggestions' atload so it installs immediately after autosuggestions
+# wraps accept-line — this is the only mechanism that survives, because zinit
+# loads turbo plugins asynchronously via `zle -F`, so any precmd-based install
+# runs BEFORE autosuggestions wraps and gets buried inside it.
 zinit wait'0' lucid light-mode for \
   zdharma-continuum/fast-syntax-highlighting \
   atinit'ZSH_WAKATIME_BIN="$HOME/.wakatime/wakatime-cli"' sobolevn/wakatime-zsh-plugin \
-  atload'!_zsh_autosuggest_start' zsh-users/zsh-autosuggestions
+  atload'!_zsh_autosuggest_start; _fix_autosuggest_accept_line' zsh-users/zsh-autosuggestions
 
 # fzf-tab: replace zsh completion menu with fzf popup
 zinit wait'0a' lucid light-mode for \
@@ -61,22 +81,3 @@ zinit wait lucid nocd for \
 zinit wait lucid as"completion" for \
   OMZP::yarn/_yarn \
   OMZP::redis-cli/_redis-cli
-
-# Fix autosuggestion ghost text on accept-line. The autosuggestions clear
-# widget sets POSTDISPLAY= but the terminal redraw (zle -R) runs after the
-# inner accept-line has already committed the line, leaving suggestion text
-# painted in default foreground. This outermost wrapper clears POSTDISPLAY
-# and forces a redraw before calling the builtin accept-line.
-_fix_autosuggest_accept_line() {
-  _accept_line_and_clear_suggestion() {
-    POSTDISPLAY=
-    region_highlight=()
-    zle -R
-    zle .accept-line
-  }
-  zle -N accept-line _accept_line_and_clear_suggestion
-}
-
-zinit wait'0d' lucid nocd light-mode for \
-  atload'_fix_autosuggest_accept_line' \
-  zdharma-continuum/null

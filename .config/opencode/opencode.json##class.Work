@@ -10,6 +10,7 @@
   },
   "default_agent": "plan",
   "plugin": [
+    "opencode-gitlab-dap@latest",
     "opencode-gitlab-plugin@latest",
     "@mohak34/opencode-notifier@latest",
     "opencode-atuin-history@latest",

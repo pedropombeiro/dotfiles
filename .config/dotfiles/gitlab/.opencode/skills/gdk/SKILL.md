@@ -31,7 +31,7 @@ Comprehensive GDK update orchestrator. Performs the full update cycle:
 6. Reinstalls bundle and regenerates Spring binstubs
 7. Runs a simple rspec test to bring up Gitaly
 8. Runs pending ClickHouse migrations
-9. Prunes stale local branches and rebases all remaining branches
+9. Rebases all local branches, then prunes those whose tip is reachable from master
 10. Switches back to the original branch
 11. Runs `gdk cleanup`, truncates large logs, restarts GDK
 12. Enables db sandbox, regenerates schema if branch migrations exist

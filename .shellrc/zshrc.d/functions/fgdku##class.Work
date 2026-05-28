@@ -22,7 +22,7 @@
 # - reinstalls bundle and regenerates spring binstubs
 # - runs a simple rspec test to bring up Gitaly
 # - runs pending ClickHouse migrations
-# - prunes local branches that no longer exist on remote
+# - prunes local branches whose tip is already reachable from master, or whose remote was deleted
 # - rebases all local branches, preserving branch dependencies
 # - switches back to the original branch if it still exists
 # - runs gdk cleanup and truncates large log files
@@ -168,9 +168,21 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
     bundle exec rake db:test:prepare
 
   _fgdku_step "pruning branches"
-  printf "${YELLOW}%s${NC}\n" 'Pruning local branches...'
+  printf "${YELLOW}%s${NC}\n" 'Pruning local branches merged into master...'
   git fetch --jobs=10 || { printf "${RED}%s${NC}\n" 'git fetch failed, retrying...'; sleep 5; git fetch --jobs=10; }
-  git branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | xargs git branch -D 2>/dev/null || true
+  local _current_branch _master_sha _b
+  _current_branch="$(git branch --show-current)"
+  _master_sha="$(git rev-parse "${MAIN_BRANCH}")"
+  git for-each-ref --format='%(refname:short)' refs/heads/ \
+    | grep -v -E '^(master|main)$' \
+    | grep -v '^_' \
+    | while read -r _b; do
+        [[ "$_b" == "$_current_branch" ]] && continue
+        git worktree list --porcelain | grep -q "branch refs/heads/${_b}$" && continue
+        git merge-base --is-ancestor "$_b" "$_master_sha" 2>/dev/null && { echo "$_b"; continue; }
+        git branch -vv --list "$_b" | grep -qE '(origin|security)/.*: gone\]' && echo "$_b"
+      done \
+    | xargs -r git branch -D 2>/dev/null || true
   printf "${GREEN}%s${NC}\n" "Done."
 
   _fgdku_step "rebasing branches"

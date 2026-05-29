@@ -1,5 +1,9 @@
 local log = hs.logger.new("urlrouter", "info")
-local defaultBrowser = "com.google.Chrome"
+local workBrowser = "com.google.Chrome"
+local spaceBrowsers = {
+  [1] = workBrowser, -- Work Space
+  [3] = "com.microsoft.edgemac", -- Personal Space
+}
 local routes = {
   {
     host = "%.slack%.com$",
@@ -10,6 +14,24 @@ local routes = {
   { url = "zoom.us/j/", bundle = "us.zoom.videomeetings", name = "Zoom" },
   { url = "zoom.us/my/", bundle = "us.zoom.videomeetings", name = "Zoom" },
 }
+
+local function browserForCurrentSpace()
+  local ok, spaceID = pcall(function() return hs.spaces.activeSpaceOnScreen(hs.screen.mainScreen():getUUID()) end)
+  if ok and spaceID and spaceBrowsers[spaceID] then return spaceBrowsers[spaceID] end
+  return workBrowser
+end
+
+local M = {}
+
+function M.assignCurrentSpaceTo(bundleID)
+  local ok, spaceID = pcall(function() return hs.spaces.activeSpaceOnScreen(hs.screen.mainScreen():getUUID()) end)
+  if not ok or not spaceID then
+    log.e("assignCurrentSpaceTo: could not determine active Space ID")
+    return
+  end
+  spaceBrowsers[spaceID] = bundleID
+  log.i("assigned Space " .. spaceID .. " to " .. bundleID)
+end
 
 hs.urlevent.httpCallback = function(scheme, host, params, fullURL, senderPID)
   log.i("URL: " .. fullURL)
@@ -32,6 +54,9 @@ hs.urlevent.httpCallback = function(scheme, host, params, fullURL, senderPID)
     end
   end
 
-  log.i("routing to default browser")
-  hs.urlevent.openURLWithBundle(fullURL, defaultBrowser)
+  local browser = browserForCurrentSpace()
+  log.i("routing to default browser: " .. browser)
+  hs.urlevent.openURLWithBundle(fullURL, browser)
 end
+
+return M

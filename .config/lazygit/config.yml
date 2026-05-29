@@ -468,7 +468,7 @@ keybinding:
     markCommitAsBaseForRebase: B
     tagCommit: T
     checkoutCommit: <space>
-    resetCherryPick: <c-R>
+    resetCherryPick: <ctrl-shift-r>
     copyCommitAttributeToClipboard: "y"
     openLogMenu: <c-l>
     openInBrowser: o
@@ -499,7 +499,7 @@ customCommands:
     context: "localBranches"
     description: "Go to MR in gitlab"
     output: log
-  - key: "<c-E>"
+  - key: "<ctrl-shift-e>"
     description: Custom git push
     context: "global"
     prompts:

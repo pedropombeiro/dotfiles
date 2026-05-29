@@ -107,10 +107,10 @@ brew "gitleaks"
 brew "glab"
 # GNU implementation of the famous stream editor
 brew "gnu-sed"
-# Validating, recursive, caching DNS resolver
-brew "unbound"
 # GNU Transport Layer Security (TLS) Library
 brew "gnutls"
+# Validating, recursive, caching DNS resolver
+brew "unbound"
 # GNU Privacy Guard (OpenPGP)
 brew "gnupg"
 # Library access to GnuPG

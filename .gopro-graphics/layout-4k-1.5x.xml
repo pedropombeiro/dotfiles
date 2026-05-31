@@ -5,16 +5,15 @@
     </composite>
 
     <composite x="3516" y="0" name="gps_info">
-        <frame name="gps-lock" x="-150" y="6" width="48" height="48" bg="0,0,0,128" cr="5" opacity="0.4">
+        <frame name="gps-lock" x="-230" y="24" width="48" height="48" bg="0,0,0,128" cr="5" opacity="0.4">
             <component type="gps-lock-icon" size="48"/>
         </frame>
 
-        <composite y="12">
-            <component type="text" x="40" y="0" size="24" align="centre">GPS INFO</component>
-            <component type="text" x="-190" y="44" size="24" align="left">Lat: </component>
-            <component type="text" x="-10" y="44" size="24" align="left">Lon: </component>
-            <component type="metric" x="-20" y="44" metric="lat" dp="6" size="24" align="right" cache="False"/>
-            <component type="metric" x="190" y="44" metric="lon" dp="6" size="24" align="right" cache="False"/>
+        <composite y="36">
+            <component type="text" x="-160" y="0" size="24" align="left">Lat: </component>
+            <component type="text" x="20" y="0" size="24" align="left">Lon: </component>
+            <component type="metric" x="10" y="0" metric="lat" dp="6" size="24" align="right" cache="False"/>
+            <component type="metric" x="220" y="0" metric="lon" dp="6" size="24" align="right" cache="False"/>
         </composite>
     </composite>
 

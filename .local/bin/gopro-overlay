@@ -20,6 +20,10 @@
 #   gopro-overlay -n <input.mp4> <activity.fit>            # dry-run
 #   gopro-overlay <input.mp4> <activity.fit> -- --map-style osm   # passthrough
 #
+# Layout defaults to ${GOPRO_OVERLAY_LAYOUT:-$HOME/.gopro-graphics/layout-4k-1.5x.xml}
+# (includes a power/Watt widget). Override with --layout-xml FILE or disable the
+# custom layout with --no-layout to fall back to the built-in default.
+#
 # Output defaults to ${GOPRO_OVERLAY_OUTDIR:-$HOME/Downloads}/<basename>.output.mp4
 
 set -e
@@ -27,12 +31,13 @@ set -e
 prog=$(basename "$0")
 
 usage() {
-  sed -n '2,24p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,28p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 input=""
 fit=""
 output=""
+layout_xml="${GOPRO_OVERLAY_LAYOUT:-$HOME/.gopro-graphics/layout-4k-1.5x.xml}"
 use_touch=0
 offset=""
 dry_run=0
@@ -53,6 +58,14 @@ while [ $# -gt 0 ]; do
     -o|--output)
       output="$2"
       shift 2
+      ;;
+    --layout-xml)
+      layout_xml="$2"
+      shift 2
+      ;;
+    --no-layout)
+      layout_xml=""
+      shift
       ;;
     --touch)
       use_touch=1
@@ -183,6 +196,14 @@ set -- \
   --profile apple-silicon \
   --video-time-start "$time_start" \
   --units-speed kph --units-distance km --map-style cyclosm
+
+if [ -n "$layout_xml" ]; then
+  if [ ! -f "$layout_xml" ]; then
+    echo "$prog: error: layout file not found: $layout_xml" >&2
+    exit 1
+  fi
+  set -- "$@" --layout xml --layout-xml "$layout_xml"
+fi
 
 if [ -n "$extra_args" ]; then
   # shellcheck disable=SC2086

@@ -18,16 +18,11 @@
         </composite>
     </composite>
 
-    <composite x="16" y="1620" name="big_mph">
-        <component type="metric_unit" metric="speed" units="speed" size="24">{:~c}</component>
-        <component type="metric" x="0" y="0" metric="speed" units="speed" dp="0" size="200" />
-    </composite>
-
-    <composite x="16" y="1840" name="gears">
-        <component type="text" x="0" y="0" size="24">GEARS (F x R)</component>
-        <component type="metric" x="0" y="27" metric="gear.front" dp="0" size="48"/>
-        <component type="text" x="60" y="27" size="48">x</component>
-        <component type="metric" x="110" y="27" metric="gear.rear" dp="0" size="48"/>
+    <!-- ENVIRONMENTAL (left column) -->
+    <composite x="16" y="1560" name="temperature">
+        <component type="metric_unit" x="105" y="0" size="24" metric="temp" units="temp">TEMP({:~C})</component>
+        <component type="icon" x="0" y="0" file="thermometer.png" size="96"/>
+        <component type="metric" x="105" y="27" dp="0" size="48" metric="temp" units="temp"/>
     </composite>
 
     <component type="chart" name="gradient_chart" x="500" y="1960" units="alt" />
@@ -44,10 +39,17 @@
         <component type="metric" x="105" y="27" metric="alt" units="alt" dp="0" size="48" />
     </composite>
 
-    <composite x="3770" y="1570" name="temperature">
-        <component type="metric_unit" x="-105" y="0" size="24" align="right" metric="temp" units="temp">TEMP({:~C})</component>
-        <component type="icon" x="-96" y="0" file="thermometer.png" size="96"/>
-        <component type="metric" x="-105" y="27" dp="0" size="48" align="right" metric="temp" units="temp"/>
+    <!-- PERFORMANCE (right column) -->
+    <composite x="3770" y="1340" name="big_kph">
+        <component type="metric_unit" x="-200" metric="speed" units="speed" size="24" align="right">{:~c}</component>
+        <component type="metric" x="0" y="0" metric="speed" units="speed" dp="0" size="160" align="right" />
+    </composite>
+
+    <composite x="3770" y="1570" name="gears">
+        <component type="text" x="-105" y="0" size="24" align="right">GEARS (F x R)</component>
+        <component type="metric" x="-110" y="27" metric="gear.front" dp="0" size="48" align="right"/>
+        <component type="text" x="-50" y="27" size="48" align="right">x</component>
+        <component type="metric" x="0" y="27" metric="gear.rear" dp="0" size="48" align="right"/>
     </composite>
 
     <composite x="3770" y="1700" name="cadence">

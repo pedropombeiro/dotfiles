@@ -19,47 +19,47 @@
     </composite>
 
     <!-- ENVIRONMENTAL (left column, top to bottom: temp, altitude, slope, chart) -->
-    <composite x="16" y="1500" name="temperature">
+    <composite x="16" y="1610" name="temperature">
         <component type="metric_unit" x="105" y="0" size="24" metric="temp" units="temp">TEMP({:~C})</component>
         <component type="icon" x="0" y="0" file="thermometer.png" size="96"/>
         <component type="metric" x="105" y="27" dp="0" size="48" metric="temp" units="temp"/>
     </composite>
 
-    <composite x="16" y="1620" name="altitude">
+    <composite x="16" y="1730" name="altitude">
         <component type="metric_unit" x="105" y="0" metric="alt" units="alt" size="24">ALT({:~C})</component>
         <component type="icon" x="0" y="0" file="mountain.png" size="96"/>
         <component type="metric" x="105" y="27" metric="alt" units="alt" dp="0" size="48" />
     </composite>
 
-    <composite x="16" y="1740" name="gradient">
+    <composite x="16" y="1850" name="gradient">
         <component type="text" x="105" y="0" size="24">SLOPE(%)</component>
         <component type="icon" x="0" y="0" file="slope-triangle.png" size="96"/>
         <component type="metric" x="105" y="27" metric="gradient" dp="0" size="48" />
     </composite>
 
-    <component type="chart" name="gradient_chart" x="16" y="1900" units="alt" />
+    <component type="chart" name="gradient_chart" x="16" y="1980" units="alt" width="420" height="120" />
 
     <!-- PERFORMANCE (right column, bottom to top: speed hero, power, gears, RPM, HR) -->
-    <composite x="3770" y="1240" name="heartbeat">
+    <composite x="3770" y="1370" name="heartbeat">
         <component type="text" x="-105" y="0" size="24" align="right">BPM</component>
         <component type="icon" x="-96" y="0" file="heartbeat.png" size="96"/>
         <component type="metric" x="-105" y="27" metric="hr" dp="0" size="48" align="right"/>
     </composite>
 
-    <composite x="3770" y="1360" name="cadence">
+    <composite x="3770" y="1490" name="cadence">
         <component type="text" x="-105" y="0" size="24" align="right">RPM</component>
         <component type="icon" x="-96" y="0" file="gauge.png" size="96"/>
         <component type="metric" x="-105" y="27" metric="cadence" dp="0" size="48" align="right"/>
     </composite>
 
-    <composite x="3770" y="1480" name="gears">
-        <component type="text" x="-105" y="0" size="24" align="right">GEARS (F x R)</component>
+    <composite x="3770" y="1610" name="gears">
+        <component type="text" x="-55" y="0" size="24" align="centre">GEARS (F x R)</component>
         <component type="metric" x="-110" y="27" metric="gear.front" dp="0" size="48" align="right"/>
         <component type="text" x="-50" y="27" size="48" align="right">x</component>
         <component type="metric" x="0" y="27" metric="gear.rear" dp="0" size="48" align="right"/>
     </composite>
 
-    <composite x="3770" y="1600" name="power">
+    <composite x="3770" y="1730" name="power">
         <component type="text" x="-105" y="0" size="24" align="right">Watt</component>
         <component type="icon" x="-96" y="0" file="power.png" size="96"/>
         <component type="metric" x="-105" y="27" metric="power" dp="0" size="48" align="right"/>
@@ -68,7 +68,7 @@
         </translate>
     </composite>
 
-    <composite x="3770" y="1770" name="big_kph">
+    <composite x="3770" y="1900" name="big_kph">
         <component type="metric_unit" x="-200" metric="speed" units="speed" size="24" align="right">{:~c}</component>
         <component type="metric" x="0" y="0" metric="speed" units="speed" dp="0" size="160" align="right" />
     </composite>

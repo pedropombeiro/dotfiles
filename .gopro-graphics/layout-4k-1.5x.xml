@@ -23,6 +23,13 @@
         <component type="metric" x="0" y="0" metric="speed" units="speed" dp="0" size="200" />
     </composite>
 
+    <composite x="16" y="1840" name="gears">
+        <component type="text" x="0" y="0" size="24">GEARS (F x R)</component>
+        <component type="metric" x="0" y="27" metric="gear.front" dp="0" size="48"/>
+        <component type="text" x="60" y="27" size="48">x</component>
+        <component type="metric" x="110" y="27" metric="gear.rear" dp="0" size="48"/>
+    </composite>
+
     <component type="chart" name="gradient_chart" x="500" y="1960" units="alt" />
 
     <composite x="280" y="1960" name="gradient">
@@ -59,6 +66,9 @@
         <component type="text" x="-105" y="0" size="24" align="right">Watt</component>
         <component type="icon" x="-96" y="0" file="power.png" size="96"/>
         <component type="metric" x="-105" y="27" metric="power" dp="0" size="48" align="right"/>
+        <translate x="-200" y="100" name="power-zone">
+            <component type="zone-bar" width="200" height="18" metric="power" max="600" z1="150" z2="250" z3="350" outline="255,255,255,80" outline-width="1" zone-divider="255,255,255,60" z0-rgb="67,235,52,200" z1-rgb="67,235,52,200" z2-rgb="240,232,19,200" z3-rgb="207,19,2,200"/>
+        </translate>
     </composite>
 
     <component type="moving_map" name="moving_map" x="3260" y="100" size="512" zoom="17" corner_radius="35" />

@@ -11,7 +11,7 @@
   ],
   "agent": {
     "plan": {
-      "model": "gitlab/duo-chat-opus-4-7"
+      "model": "gitlab/duo-chat-opus-4-8"
     },
     "build": {
       "model": "gitlab/duo-chat-sonnet-4-6"
@@ -42,6 +42,11 @@
     },
     "gitlab": {
       "models": {
+        "duo-workflow-opus-4-8": {
+          "cost": {
+            "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
+          }
+        },
         "duo-workflow-opus-4-7": {
           "cost": {
             "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25

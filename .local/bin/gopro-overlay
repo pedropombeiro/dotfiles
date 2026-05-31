@@ -1,0 +1,204 @@
+#!/usr/bin/env sh
+# Overlay FIT-file activity data onto a GoPro video via gopro-dashboard.py.
+#
+# Wraps the routine flags so a typical run is just the input video + FIT file.
+# The video's embedded creation_time is read directly (--video-time-start
+# video-created), so the old "touch -d <encoded timestamp>" step is unnecessary.
+# A --touch fallback reproduces the legacy flow (ffprobe creation_time ->
+# touch -d -> --video-time-start file-accessed) for files with bad metadata.
+#
+# To correct a wrong camera clock, use --offset to shift the timestamp. This
+# implies --touch (the offset is applied to the touched creation_time, since
+# gopro-dashboard.py itself has no time-shift option). Offset accepts a signed
+# duration like +90, -1m30s, +2h, -45s (bare numbers are seconds).
+#
+# Usage:
+#   gopro-overlay <input.mp4> <activity.fit>
+#   gopro-overlay -o out.mp4 <input.mp4> <activity.fit>
+#   gopro-overlay --touch <input.mp4> <activity.fit>
+#   gopro-overlay --offset -90 <input.mp4> <activity.fit>  # clock 90s fast
+#   gopro-overlay -n <input.mp4> <activity.fit>            # dry-run
+#   gopro-overlay <input.mp4> <activity.fit> -- --map-style osm   # passthrough
+#
+# Output defaults to ${GOPRO_OVERLAY_OUTDIR:-$HOME/Downloads}/<basename>.output.mp4
+
+set -e
+
+prog=$(basename "$0")
+
+usage() {
+  sed -n '2,24p' "$0" | sed 's/^# \{0,1\}//'
+}
+
+input=""
+fit=""
+output=""
+use_touch=0
+offset=""
+dry_run=0
+passthrough=0
+extra_args=""
+
+while [ $# -gt 0 ]; do
+  if [ "$passthrough" -eq 1 ]; then
+    extra_args="$extra_args $1"
+    shift
+    continue
+  fi
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -o|--output)
+      output="$2"
+      shift 2
+      ;;
+    --touch)
+      use_touch=1
+      shift
+      ;;
+    --offset)
+      offset="$2"
+      use_touch=1
+      shift 2
+      ;;
+    -n|--dry-run)
+      dry_run=1
+      shift
+      ;;
+    --)
+      passthrough=1
+      shift
+      ;;
+    -*)
+      echo "$prog: error: unknown option: $1" >&2
+      exit 1
+      ;;
+    *)
+      if [ -z "$input" ]; then
+        input="$1"
+      elif [ -z "$fit" ]; then
+        fit="$1"
+      else
+        echo "$prog: error: unexpected argument: $1" >&2
+        exit 1
+      fi
+      shift
+      ;;
+  esac
+done
+
+if [ -z "$input" ] || [ -z "$fit" ]; then
+  echo "$prog: error: both <input.mp4> and <activity.fit> are required" >&2
+  echo >&2
+  usage >&2
+  exit 1
+fi
+
+if [ ! -f "$input" ]; then
+  echo "$prog: error: input video not found: $input" >&2
+  exit 1
+fi
+
+if [ ! -f "$fit" ]; then
+  echo "$prog: error: FIT file not found: $fit" >&2
+  exit 1
+fi
+
+if ! command -v gopro-dashboard.py >/dev/null 2>&1; then
+  echo "$prog: error: gopro-dashboard.py not found on PATH" >&2
+  exit 1
+fi
+
+if [ -z "$output" ]; then
+  outdir="${GOPRO_OVERLAY_OUTDIR:-$HOME/Downloads}"
+  base=$(basename "$input")
+  stem="${base%.*}"
+  output="$outdir/$stem.output.mp4"
+fi
+
+time_start="video-created"
+
+if [ "$use_touch" -eq 1 ]; then
+  if ! command -v ffprobe >/dev/null 2>&1; then
+    echo "$prog: error: --touch requires ffprobe on PATH" >&2
+    exit 1
+  fi
+  ts=$(ffprobe -v error -select_streams v:0 \
+    -show_entries stream_tags=creation_time \
+    -of default=noprint_wrappers=1:nokey=1 "$input" | head -n 1)
+  if [ -z "$ts" ]; then
+    ts=$(ffprobe -v error \
+      -show_entries format_tags=creation_time \
+      -of default=noprint_wrappers=1:nokey=1 "$input" | head -n 1)
+  fi
+  if [ -z "$ts" ]; then
+    echo "$prog: error: could not read creation_time from $input" >&2
+    exit 1
+  fi
+  if [ -n "$offset" ]; then
+    offset_secs=$(printf '%s' "$offset" | awk '
+      {
+        s = $0
+        sign = 1
+        if (substr(s, 1, 1) == "+") { s = substr(s, 2) }
+        else if (substr(s, 1, 1) == "-") { sign = -1; s = substr(s, 2) }
+        if (s ~ /^[0-9]+$/) { print sign * s; next }
+        total = 0; num = ""
+        n = split(s, ch, "")
+        for (i = 1; i <= n; i++) {
+          c = ch[i]
+          if (c ~ /[0-9]/) { num = num c }
+          else if (c == "h") { total += num * 3600; num = "" }
+          else if (c == "m") { total += num * 60;   num = "" }
+          else if (c == "s") { total += num;        num = "" }
+          else { print "ERR"; exit }
+        }
+        if (num != "") { print "ERR"; exit }
+        print sign * total
+      }')
+    if [ "$offset_secs" = "ERR" ] || [ -z "$offset_secs" ]; then
+      echo "$prog: error: invalid --offset value: $offset (use e.g. +90, -1m30s, +2h)" >&2
+      exit 1
+    fi
+    base_epoch=$(date -j -u -f '%Y-%m-%dT%H:%M:%S' "${ts%%.*}" '+%s' 2>/dev/null) || {
+      echo "$prog: error: could not parse creation_time '$ts' for offset" >&2
+      exit 1
+    }
+    new_epoch=$((base_epoch + offset_secs))
+    ts=$(date -j -u -r "$new_epoch" '+%Y-%m-%dT%H:%M:%SZ')
+    echo "$prog: applied offset ${offset} (${offset_secs}s) -> $ts" >&2
+  fi
+  echo "$prog: touch -d '$ts' $input" >&2
+  if [ "$dry_run" -eq 0 ]; then
+    touch -d "$ts" "$input"
+  fi
+  time_start="file-accessed"
+fi
+
+set -- \
+  --fit "$fit" \
+  --use-gpx-only --gpx-merge OVERWRITE --load ACCL GRAV CORI \
+  --profile apple-silicon \
+  --video-time-start "$time_start" \
+  --units-speed kph --units-distance km --map-style cyclosm
+
+if [ -n "$extra_args" ]; then
+  # shellcheck disable=SC2086
+  set -- "$@" $extra_args
+fi
+
+set -- "$@" "$input" "$output"
+
+if [ "$dry_run" -eq 1 ]; then
+  printf 'gopro-dashboard.py'
+  for a in "$@"; do
+    printf ' %s' "$a"
+  done
+  printf '\n'
+  exit 0
+fi
+
+echo "$prog: output -> $output" >&2
+exec gopro-dashboard.py "$@"

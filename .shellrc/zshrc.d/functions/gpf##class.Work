@@ -1,0 +1,16 @@
+
+#
+# The `gpf` function force-pushes the current branch with --force-with-lease,
+# using yadm when in the home directory.
+#
+# Defined as an autoloaded function (not an oh-my-zsh alias) so it is reliably
+# available in non-interactive login shells (e.g. `zsh -ilc`), where the
+# turbo-deferred OMZ git plugin aliases are not yet loaded.
+#
+
+local git_cmd=git
+if [[ "$PWD" == "$HOME" ]]; then
+  git_cmd=yadm
+fi
+
+$git_cmd push --force-with-lease "$@"

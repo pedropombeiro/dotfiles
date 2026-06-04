@@ -161,7 +161,24 @@ project's default template (`.gitlab/merge_request_templates/`).
 | `gpsup` | `git push --set-upstream origin <branch>` | First push / creating MR (see above) |
 | `gpf`   | `git push --force-with-lease`             | Subsequent pushes to existing branch |
 
-Use `gpf` (not `gpsup`) when the branch already tracks a remote and you just need to update it.
+Both `gpsup` and `gpf` are **autoloaded zsh functions** (in
+`~/.shellrc/zshrc.d/functions/`), loaded synchronously at shell init, so they are
+reliably available under `run-in-tmux-pane`'s `zsh -ilc` invocation. Run them via
+`run-in-tmux-pane`:
+
+```bash
+run-in-tmux-pane "cd <repo> && gpf"
+```
+
+Use `gpf` (not `gpsup`) when the branch already tracks a remote and you just need to
+update it.
+
+> **History note:** `gpf` was previously only an oh-my-zsh git-plugin alias loaded
+> via zinit turbo (`zinit wait'0'`), which loads asynchronously _after_ the first
+> interactive prompt. Under `zsh -ilc "<cmd>"` the shell runs the command and exits
+> before turbo loading fires, so the alias was absent (`command not found`) even
+> though the synchronously-autoloaded `gpsup` function worked. It is now a dedicated
+> autoload function, matching the `gpsup` pattern, so this no longer applies.
 
 ## Commit/Push Behavior
 

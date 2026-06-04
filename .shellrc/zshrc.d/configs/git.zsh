@@ -4,7 +4,7 @@
 # Unalias OMZ git shortcuts that are replaced by custom functions in zshrc.d/functions/
 zinit wait'0' lucid for \
   OMZL::git.zsh \
-  atload'unalias gf gfa gp gpsup gswm 2>/dev/null' OMZP::git
+  atload'unalias gf gfa gp gpf gpsup gswm 2>/dev/null' OMZP::git
 
 zinit ice wait'0c' lucid
 zinit snippet OMZP::git-extras

@@ -26,6 +26,7 @@ Thumbs.db
 
 
 
+
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
 .config/1Password/ssh/agent.toml
@@ -118,6 +119,7 @@ Thumbs.db
 .shellrc/zshrc.d/functions/fgdku
 .shellrc/zshrc.d/functions/git_parent
 .shellrc/zshrc.d/functions/glt_info
+.shellrc/zshrc.d/functions/gpf
 .shellrc/zshrc.d/functions/gpif
 .shellrc/zshrc.d/functions/gpsup
 .shellrc/zshrc.d/functions/gswm

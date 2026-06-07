@@ -1,0 +1,21 @@
+{
+  "apple-silicon": {
+    "input": ["-hwaccel", "videotoolbox"],
+    "output": [
+      "-pix_fmt",
+      "nv12",
+      "-c:v",
+      "hevc_videotoolbox",
+      "-b:v",
+      "50M",
+      "-maxrate",
+      "70M",
+      "-bufsize",
+      "100M",
+      "-tag:v",
+      "hvc1",
+      "-c:a",
+      "copy"
+    ]
+  }
+}

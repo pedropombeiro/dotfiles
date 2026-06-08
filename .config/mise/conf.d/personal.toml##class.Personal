@@ -4,4 +4,4 @@
 "aqua:cargo-bins/cargo-binstall" = "latest"
 # ── Automation ────────────────────────────────────────────────────────
 # Automated dependency update bot
-"npm:renovate" = "43.212.2"
+"npm:renovate" = "43.213.1"

@@ -31,5 +31,7 @@
     "padding": 0
   },
   "autoUpdatesChannel": "stable",
-  "minimumVersion": "2.1.89"
+  "minimumVersion": "2.1.89",
+  "editorMode": "vim",
+  "tui": "fullscreen"
 }

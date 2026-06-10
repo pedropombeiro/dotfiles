@@ -313,8 +313,6 @@ cask "raspberry-pi-imager"
 cask "raycast"
 # Window snapping tool
 cask "rectangle-pro"
-# Tool for sending personal documents to Kindles from Macs
-cask "send-to-kindle"
 # Screenshot measurement and annotation tool
 cask "shottr"
 # Team communication and collaboration software
@@ -347,7 +345,5 @@ cask "b00y0h/wakadash/wakadash"
 cask "wakatime"
 # Native desktop client for WhatsApp
 cask "whatsapp"
-# Application for configuring any YubiKey
-cask "yubico-yubikey-manager"
 # Video communication and virtual meeting platform
 cask "zoom"

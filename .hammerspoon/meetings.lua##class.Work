@@ -9,6 +9,8 @@ local connectTask = nil
 local pollTimer = nil
 local waveTask = nil
 
+local M = {}
+
 local activeMeetings = {}
 
 local function stopPollTimer()
@@ -110,7 +112,7 @@ local function onMeetingEnd()
   log.i("Powered off Elgato Wave USB")
 end
 
-local watcher = hs.application.watcher.new(function(name, event)
+M._watcher = hs.application.watcher.new(function(name, event)
   if not webcam.apps[name] then return end
   if event ~= hs.application.watcher.launched and event ~= hs.application.watcher.terminated then return end
 
@@ -130,5 +132,13 @@ local watcher = hs.application.watcher.new(function(name, event)
   end
 end)
 
-watcher:start()
+M._watcher:start()
+
+-- Seed state so a reload mid-meeting does not fire a spurious onMeetingStart.
+for appName in pairs(webcam.apps) do
+  if hs.application.get(appName) then activeMeetings[appName] = true end
+end
+
 log.i("Meeting watcher started")
+
+return M

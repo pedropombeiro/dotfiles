@@ -21,12 +21,6 @@ Thumbs.db
 .zshrc
 .config/yazi/flavors/gruvbox-dark.yazi
 
-
-
-
-
-
-
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
 .config/1Password/ssh/agent.toml
@@ -40,13 +34,14 @@ Thumbs.db
 .config/mise/conf.d/personal.toml
 .config/mise/conf.d/work.toml
 .config/mise/config.toml
+.config/mise/uv-overrides/homeassistant-cli.txt
 .config/nvim/lua/core/distro.lua
 .config/nvim/lua/core/gdk.lua
 .config/nvim/lua/plugins/image.lua
 .config/nvim/lua/plugins/lsp/mason-tool-installer.lua
 .config/opencode/opencode-homeassistant.json
-.config/opencode/opencode-notifier.json
 .config/opencode/opencode.json
+.config/opencode/opencode-notifier.json
 .config/opencode/plugins/deny-rm-rf.js
 .config/opencode/plugins/require-gpsup.js
 .config/opencode/tui.json
@@ -139,3 +134,4 @@ Thumbs.db
 .ssh/config
 .vale.ini
 # END yadm-alt
+

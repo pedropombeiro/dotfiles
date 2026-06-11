@@ -54,10 +54,15 @@ if [[ -x "$WAKATIME_CLI" ]]; then
   fi
 
 wakatime_project_from_heartbeat() {
-  (cd "$HOME" && "$WAKATIME_CLI" --entity "$1" --project-folder "$2" \
+  local entity="$1"
+  # Only inspect the JSON heartbeat array line ('heartbeats: [{...}]') and
+  # restrict to objects matching our entity, so stale offline-queued
+  # heartbeats for other files/projects are ignored.
+  (cd "$HOME" && "$WAKATIME_CLI" --entity "$entity" --project-folder "$2" \
     --heartbeat-rate-limit-seconds 0 --disable-offline \
     --verbose --log-to-stdout 2>&1) \
-      | grep 'heartbeats:' \
+      | grep -o 'heartbeats: \[.*\]' \
+      | grep -o "{[^{}]*\\\\\"entity\\\\\":\\\\\"${entity//\//\\/}\\\\\"[^{}]*}" \
       | grep -o 'project\\":\\"[^\\]*\\"' \
       | head -1 \
       | sed 's/project\\":\\"//;s/\\"//'

@@ -1,18 +1,18 @@
-tap "anomalyco/tap"
-tap "arkweid/lefthook"
-tap "derailed/k9s"
-tap "dteoh/sqa"
-tap "fforster/gitlab-mcp", "https://gitlab.com/fforster/homebrew-gitlab-mcp.git"
-tap "jarred-sumner/git-peek"
-tap "jdxcode/tap"
-tap "jstkdng/programs"
-tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
-tap "lihaoyun6/tap"
-tap "mike-engel/jwt-cli"
-tap "minio/stable"
-tap "moul/moul"
-tap "mvp/uhubctl", "https://github.com/mvp/uhubctl"
-tap "zaquestion/tap"
+tap "anomalyco/tap", trusted: true
+tap "arkweid/lefthook", trusted: true
+tap "derailed/k9s", trusted: true
+tap "dteoh/sqa", trusted: true
+tap "fforster/gitlab-mcp", "https://gitlab.com/fforster/homebrew-gitlab-mcp.git", trusted: true
+tap "jarred-sumner/git-peek", trusted: true
+tap "jdxcode/tap", trusted: true
+tap "jstkdng/programs", trusted: true
+tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git", trusted: true
+tap "lihaoyun6/tap", trusted: true
+tap "mike-engel/jwt-cli", trusted: true
+tap "minio/stable", trusted: true
+tap "moul/moul", trusted: true
+tap "mvp/uhubctl", "https://github.com/mvp/uhubctl", trusted: true
+tap "zaquestion/tap", trusted: true
 # Asciicast to GIF converter
 brew "agg"
 # Slice and dice log files on the command-line
@@ -37,10 +37,6 @@ brew "boost"
 brew "btop"
 # Core application library for C
 brew "glib"
-# OpenType text shaping engine
-brew "harfbuzz"
-# Framework for layout and rendering of i18n text
-brew "pango"
 # Linter/analyzer for Makefiles
 brew "checkmake"
 # Cross-platform make
@@ -93,6 +89,10 @@ brew "fio"
 brew "fzf"
 # GitHub command-line tool
 brew "gh"
+# OpenType text shaping engine
+brew "harfbuzz"
+# Framework for layout and rendering of i18n text
+brew "pango"
 # Distributed revision control system
 brew "git"
 # Syntax-highlighting pager for git and diff output
@@ -121,8 +121,6 @@ brew "graphicsmagick"
 brew "grc"
 # GNU troff text-formatting system
 brew "groff"
-# Package compiler and linker metadata toolkit
-brew "pkgconf"
 # Free Kerberos 5 implementation
 brew "heimdal"
 # Kubernetes package manager
@@ -201,6 +199,8 @@ brew "pinentry-mac"
 brew "pipenv"
 # Execute binaries from Python packages in isolated environments
 brew "pipx"
+# Package compiler and linker metadata toolkit
+brew "pkgconf"
 # PDF rendering library (based on the xpdf-3.0 code base)
 brew "poppler"
 # Unix pager optimized for psql

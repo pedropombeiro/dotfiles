@@ -1,15 +1,15 @@
-tap "adembc/tap"
-tap "anomalyco/tap"
-tap "b00y0h/wakadash"
-tap "borgbackup/tap"
+tap "adembc/tap", trusted: true
+tap "anomalyco/tap", trusted: true
+tap "b00y0h/wakadash", trusted: true
+tap "borgbackup/tap", trusted: true
 tap "homebrew/bundle"
 tap "homebrew/services"
-tap "jarred-sumner/git-peek"
-tap "jdxcode/tap"
-tap "jstkdng/programs"
-tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git"
-tap "showwin/speedtest"
-tap "zaquestion/tap"
+tap "jarred-sumner/git-peek", trusted: true
+tap "jdxcode/tap", trusted: true
+tap "jstkdng/programs", trusted: true
+tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git", trusted: true
+tap "showwin/speedtest", trusted: true
+tap "zaquestion/tap", trusted: true
 # Arduino command-line interface
 brew "arduino-cli"
 # Record and share terminal sessions

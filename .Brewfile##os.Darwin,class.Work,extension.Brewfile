@@ -372,8 +372,6 @@ cask "lunar"
 cask "microsoft-auto-update"
 # Multi-platform web browser
 cask "microsoft-edge"
-# Multi-platform web browser
-cask "microsoft-edge@canary"
 # Silence embarrassing notifications while screensharing
 cask "muzzle"
 # Neovim Client

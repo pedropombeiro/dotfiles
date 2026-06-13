@@ -20,9 +20,10 @@
 #   gopro-overlay -n <input.mp4> <activity.fit>            # dry-run
 #   gopro-overlay <input.mp4> <activity.fit> -- --map-style osm   # passthrough
 #
-# Layout defaults to ${GOPRO_OVERLAY_LAYOUT:-$HOME/.gopro-graphics/layout-4k-1.5x.xml}
-# (includes a power/Watt widget). Override with --layout-xml FILE or disable the
-# custom layout with --no-layout to fall back to the built-in default.
+# Layout is auto-selected by video resolution when GOPRO_OVERLAY_LAYOUT is unset:
+#   5312x2988 (5.3K) -> layout-5.3k.xml
+#   3840x2160 (4K)   -> layout-4k-1.5x.xml  (default for unknown resolutions)
+# Override with GOPRO_OVERLAY_LAYOUT, --layout-xml FILE, or --no-layout.
 #
 # Output defaults to ${GOPRO_OVERLAY_OUTDIR:-$HOME/Downloads}/<basename>.output.mp4
 
@@ -37,7 +38,8 @@ usage() {
 input=""
 fit=""
 output=""
-layout_xml="${GOPRO_OVERLAY_LAYOUT:-$HOME/.gopro-graphics/layout-4k-1.5x.xml}"
+layout_xml="${GOPRO_OVERLAY_LAYOUT:-}"
+layout_xml_override=0
 use_touch=0
 offset=""
 dry_run=0
@@ -61,10 +63,12 @@ while [ $# -gt 0 ]; do
       ;;
     --layout-xml)
       layout_xml="$2"
+      layout_xml_override=1
       shift 2
       ;;
     --no-layout)
       layout_xml=""
+      layout_xml_override=1
       shift
       ;;
     --touch)
@@ -129,6 +133,33 @@ if [ -z "$output" ]; then
   base=$(basename "$input")
   stem="${base%.*}"
   output="$outdir/$stem.output.mp4"
+fi
+
+if [ "$layout_xml_override" -eq 0 ] && [ -z "$layout_xml" ]; then
+  layout_dir="$HOME/.gopro-graphics"
+  if command -v ffprobe >/dev/null 2>&1; then
+    vid_dims=$(ffprobe -v error -select_streams v:0 \
+      -show_entries stream=width,height \
+      -of default=noprint_wrappers=1:nokey=1 "$input" 2>/dev/null | \
+      awk 'NR==1{w=$0} NR==2{print w"x"$0}')
+    case "$vid_dims" in
+      5312x2988)
+        layout_xml="$layout_dir/layout-5.3k.xml"
+        echo "$prog: detected 5.3K video ($vid_dims), using layout-5.3k.xml" >&2
+        ;;
+      3840x2160)
+        layout_xml="$layout_dir/layout-4k-1.5x.xml"
+        echo "$prog: detected 4K video ($vid_dims), using layout-4k-1.5x.xml" >&2
+        ;;
+      *)
+        layout_xml="$layout_dir/layout-4k-1.5x.xml"
+        echo "$prog: warning: unrecognised resolution ($vid_dims), falling back to layout-4k-1.5x.xml" >&2
+        ;;
+    esac
+  else
+    layout_xml="$HOME/.gopro-graphics/layout-4k-1.5x.xml"
+    echo "$prog: warning: ffprobe not found, falling back to layout-4k-1.5x.xml" >&2
+  fi
 fi
 
 time_start="video-created"

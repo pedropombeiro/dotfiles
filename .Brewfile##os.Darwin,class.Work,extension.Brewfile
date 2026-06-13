@@ -333,6 +333,7 @@ cask "etrecheckpro"
 cask "firefox"
 cask "font-jetbrains-mono"
 cask "font-meslo-lg-nerd-font"
+cask "font-roboto"
 # GIT client
 cask "fork"
 # Set of tools to manage resources and applications hosted on Google Cloud

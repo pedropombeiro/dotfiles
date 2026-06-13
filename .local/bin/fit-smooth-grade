@@ -1,0 +1,402 @@
+#!/usr/bin/env sh
+# Pre-process a Garmin FIT file to inject SMOOTHED altitude + gradient ("grade").
+#
+# Why: gopro-dashboard computes slope as a raw ~3s rise/run over the FIT's
+# altitude channel, and also plots that altitude directly in the chart widget.
+# When the source altitude is bad -- e.g. a defective barometer (this device
+# logs ~2500m of phantom ascent for a +54m-net ride) -- both the slope number
+# and the altitude chart become garbage. Its gradient widget prefers a
+# FIT-provided `grade` field (e.grad) over its own noisy value (e.cgrad).
+#
+# This tool:
+#   1. Optionally REPLACES altitude with a true DEM (SRTM) lookup from the GPS
+#      track, bypassing the broken barometer entirely (--source dem, default).
+#   2. Smooths altitude over a centered time window.
+#   3. Computes grade = d(smoothed_alt)/d(recorded_distance)*100 and writes it
+#      into both the altitude channel and the `grade` field.
+# No patching of the (pipx-managed) gopro-dashboard venv.
+#
+# The output is a purpose-built ACTIVITY FIT containing exactly the channels
+# gopro-dashboard consumes: position, altitude, distance, speed, hr, cadence,
+# power, temperature, plus front/rear gear-change events. Sessions/laps/HRV/etc
+# are intentionally omitted (gopro-dashboard ignores them).
+#
+# Recorded distance is used for the slope run so GPS horizontal jitter -- a
+# major noise source -- is avoided entirely.
+#
+# Two independent smoothing windows:
+#   --window N        altitude window (default 20s) -- drives the altitude
+#                     CHART; kept narrow so real short terrain features (a
+#                     ~20-30s trough) appear at their true time without lag.
+#   --grade-window N  gradient window (default 60s) -- drives the slope NUMBER;
+#                     wider so the slope reading stays steady on sustained
+#                     climbs/descents. Does not affect the chart timing.
+#
+# Usage:
+#   fit-smooth-grade <input.fit>
+#   fit-smooth-grade -o out.fit <input.fit>
+#   fit-smooth-grade --window 20 --grade-window 60 <input.fit>
+#   fit-smooth-grade --source dem <input.fit>    # DEM/SRTM altitude (default)
+#   fit-smooth-grade --source baro <input.fit>   # keep recorded altitude
+#
+# --source dem looks up terrain elevation from NASA SRTM tiles (cached under
+# ~/.cache/srtm; needs network on first use for a new region).
+#
+# Output defaults to <input>_smoothed.fit
+#
+# Requires: pipx (fetches fitdecode + fit-tool + SRTM.py ephemerally).
+
+set -e
+
+prog=$(basename "$0")
+
+usage() {
+  sed -n '2,47p' "$0" | sed 's/^# \{0,1\}//'
+}
+
+input=""
+output=""
+window="20"
+grade_window="60"
+source="dem"
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -o|--output)
+      output="$2"
+      shift 2
+      ;;
+    --window)
+      window="$2"
+      shift 2
+      ;;
+    --grade-window)
+      grade_window="$2"
+      shift 2
+      ;;
+    --source)
+      source="$2"
+      shift 2
+      ;;
+    -*)
+      echo "$prog: error: unknown option: $1" >&2
+      exit 1
+      ;;
+    *)
+      if [ -z "$input" ]; then
+        input="$1"
+      else
+        echo "$prog: error: unexpected argument: $1" >&2
+        exit 1
+      fi
+      shift
+      ;;
+  esac
+done
+
+if [ -z "$input" ]; then
+  echo "$prog: error: <input.fit> is required" >&2
+  echo >&2
+  usage >&2
+  exit 1
+fi
+
+if [ ! -f "$input" ]; then
+  echo "$prog: error: input file not found: $input" >&2
+  exit 1
+fi
+
+if [ -z "$output" ]; then
+  stem="${input%.*}"
+  output="${stem}_smoothed.fit"
+fi
+
+if ! command -v pipx >/dev/null 2>&1; then
+  echo "$prog: error: pipx not found on PATH" >&2
+  exit 1
+fi
+
+case "$source" in
+  dem|baro) ;;
+  *)
+    echo "$prog: error: --source must be 'dem' or 'baro' (got: $source)" >&2
+    exit 1
+    ;;
+esac
+
+echo "$prog: smoothing (alt-window=${window}s, grade-window=${grade_window}s, source=${source}): $input -> $output" >&2
+
+FIT_IN="$input" FIT_OUT="$output" FIT_WINDOW="$window" FIT_GRADE_WINDOW="$grade_window" FIT_SOURCE="$source" \
+  pipx run --spec fit-tool --with fitdecode --with SRTM.py python - << 'PYEOF'
+import os
+import sys
+import datetime
+
+import fitdecode
+from fit_tool.fit_file_builder import FitFileBuilder
+from fit_tool.profile.messages.file_id_message import FileIdMessage
+from fit_tool.profile.messages.record_message import RecordMessage
+from fit_tool.profile.messages.event_message import EventMessage
+from fit_tool.profile.profile_type import FileType, Manufacturer, Event, EventType
+
+src = os.environ["FIT_IN"]
+dst = os.environ["FIT_OUT"]
+alt_window_s = float(os.environ["FIT_WINDOW"])
+grade_window_s = float(os.environ["FIT_GRADE_WINDOW"])
+source = os.environ.get("FIT_SOURCE", "dem")
+
+# FIT lat/lon are stored in semicircles; convert to degrees.
+SC_TO_DEG = 180.0 / (2 ** 31)
+
+# FIT "invalid" sentinel for uint32 altitude shows up as a huge float; guard it.
+def valid_alt(v):
+    return v is not None and 0.0 < v < 10000.0
+
+records = []   # list of dicts in file order
+events = []    # gear-change events (timestamp + gear fields)
+
+with fitdecode.FitReader(src) as fit:
+    for frame in fit:
+        if not isinstance(frame, fitdecode.FitDataMessage):
+            continue
+        if frame.name == "record":
+            d = {f.name: f.value for f in frame.fields}
+            records.append(d)
+        elif frame.name == "event":
+            d = {f.name: f.value for f in frame.fields}
+            if d.get("event") in ("front_gear_change", "rear_gear_change"):
+                events.append(d)
+
+if not records:
+    sys.exit("fit-smooth-grade: no record messages found in input")
+
+# Build parallel arrays for smoothing.
+def epoch(ts):
+    return ts.timestamp() if isinstance(ts, datetime.datetime) else None
+
+times = [epoch(r.get("timestamp")) for r in records]
+dists = [r.get("distance") for r in records]
+
+n = len(records)
+
+# Altitude basis: barometric (recorded) or DEM (SRTM terrain lookup).
+baro_alts = [
+    r.get("enhanced_altitude") if r.get("enhanced_altitude") is not None else r.get("altitude")
+    for r in records
+]
+
+if source == "dem":
+    import srtm
+    dem = srtm.get_data()
+    alts = [None] * n
+    misses = 0
+    last_good = None
+    for i, r in enumerate(records):
+        lat = r.get("position_lat")
+        lon = r.get("position_long")
+        if lat is not None and lon is not None:
+            # approximate=True bilinearly interpolates between SRTM grid cells,
+            # removing the within-cell staircase steps that otherwise inflate
+            # the gradient. Cell-to-cell transitions (real terrain) still show.
+            e = dem.get_elevation(lat * SC_TO_DEG, lon * SC_TO_DEG, approximate=True)
+            if e is not None:
+                alts[i] = float(e)
+                last_good = float(e)
+            else:
+                # SRTM void (e.g. water) -> carry last good, fall back to baro
+                alts[i] = last_good if last_good is not None else baro_alts[i]
+                misses += 1
+        else:
+            alts[i] = last_good if last_good is not None else baro_alts[i]
+    got = sum(1 for a in alts if valid_alt(a))
+    print(f"fit-smooth-grade: DEM elevation resolved for {got}/{n} points "
+          f"({misses} SRTM voids filled)", file=sys.stderr)
+else:
+    alts = baro_alts
+
+# 1) Smooth altitude with a centered moving average over the ALTITUDE window.
+# This window is kept narrow so genuine short terrain features (e.g. a 20-30s
+# trough) survive in the altitude chart at their true time, with no lag. A wide
+# window here would smear and delay such features (the "30s lag" symptom).
+half = alt_window_s / 2.0
+smooth_alt = [None] * n
+for i in range(n):
+    if times[i] is None:
+        continue
+    lo = times[i] - half
+    hi = times[i] + half
+    acc = 0.0
+    cnt = 0
+    # times are monotonic; small linear scan around i is fine for these sizes
+    j = i
+    while j >= 0 and times[j] is not None and times[j] >= lo:
+        if valid_alt(alts[j]):
+            acc += alts[j]; cnt += 1
+        j -= 1
+    j = i + 1
+    while j < n and times[j] is not None and times[j] <= hi:
+        if valid_alt(alts[j]):
+            acc += alts[j]; cnt += 1
+        j += 1
+    if cnt:
+        smooth_alt[i] = acc / cnt
+
+# 2) Gradient = d(smooth_alt)/d(distance)*100 over the GRADE window. This window
+# is wider than the altitude window so the slope NUMBER stays steady on sustained
+# climbs/descents (a narrow run would make it jumpy). The wider grade window does
+# not affect the chart, which plots smooth_alt directly, so troughs stay on time.
+raw_grade = [None] * n
+half_w = grade_window_s / 2.0
+for i in range(n):
+    if times[i] is None or dists[i] is None:
+        continue
+    # centered window: look ~half_w seconds before AND after, so the gradient
+    # is attributed to the current point (no lag) and reflects the sustained
+    # slope rather than short-lived DEM elevation bumps.
+    lo_t = times[i] - half_w
+    hi_t = times[i] + half_w
+    a = i
+    while a > 0 and times[a - 1] is not None and times[a - 1] >= lo_t:
+        a -= 1
+    b = i
+    while b < n - 1 and times[b + 1] is not None and times[b + 1] <= hi_t:
+        b += 1
+    if b <= a or smooth_alt[a] is None or smooth_alt[b] is None:
+        continue
+    if dists[a] is None or dists[b] is None:
+        continue
+    drun = dists[b] - dists[a]
+    if drun and drun > 1.0:
+        g = (smooth_alt[b] - smooth_alt[a]) / drun * 100.0
+        if abs(g) < 45.0:
+            raw_grade[i] = g
+
+# carry-forward to fill any gaps (no EMA: the centered window already smooths,
+# and an EMA would only reintroduce lag).
+grade = [None] * n
+prev = None
+for i in range(n):
+    g = raw_grade[i]
+    if g is None:
+        grade[i] = prev
+    else:
+        grade[i] = g
+        prev = g
+
+# ---- Write a clean ACTIVITY fit with records + gear events ----
+builder = FitFileBuilder(auto_define=True, min_string_size=50)
+
+fid = FileIdMessage()
+fid.type = FileType.ACTIVITY
+fid.manufacturer = Manufacturer.DEVELOPMENT.value
+fid.product = 0
+first_ts = next((t for t in times if t is not None), datetime.datetime.now().timestamp())
+fid.time_created = round(first_ts * 1000)
+fid.serial_number = 0x12345678
+builder.add(fid)
+
+start_event = EventMessage()
+start_event.event = Event.TIMER
+start_event.event_type = EventType.START
+start_event.timestamp = round(first_ts * 1000)
+builder.add(start_event)
+
+def ms(ts):
+    return round(epoch(ts) * 1000)
+
+# gopro-dashboard's FIT loader applies gear-change events to records via a
+# running bisect over events seen SO FAR (fit.py). Events must therefore appear
+# in the file at or before the records they apply to. We build a single stream
+# ordered by (timestamp, kind) where kind=0 (event) sorts before kind=1
+# (record) at the same timestamp, matching the source file's layout.
+stream = []  # (epoch_ms, kind, builder_message)
+
+written = 0
+for i, r in enumerate(records):
+    ts = r.get("timestamp")
+    if ts is None:
+        continue
+    m = RecordMessage()
+    t = ms(ts)
+    m.timestamp = t
+    lat = r.get("position_lat")
+    lon = r.get("position_long")
+    # fitdecode returns lat/lon in semicircles; fit-tool wants degrees.
+    if lat is not None:
+        m.position_lat = lat * SC_TO_DEG
+    if lon is not None:
+        m.position_long = lon * SC_TO_DEG
+    # Write SMOOTHED altitude so both the altitude chart and the gradient use
+    # clean elevation (raw DEM altitude oscillates +/-7m, producing a fake
+    # descent-then-ascent on the chart). Fall back to raw if no smoothed value.
+    alt_out = smooth_alt[i] if smooth_alt[i] is not None else alts[i]
+    if valid_alt(alt_out):
+        m.enhanced_altitude = alt_out
+    if dists[i] is not None:
+        m.distance = dists[i]
+    spd = r.get("enhanced_speed")
+    if spd is None:
+        spd = r.get("speed")
+    if spd is not None:
+        m.enhanced_speed = spd
+    if r.get("heart_rate") is not None:
+        m.heart_rate = r["heart_rate"]
+    if r.get("cadence") is not None:
+        m.cadence = r["cadence"]
+    if r.get("power") is not None:
+        m.power = r["power"]
+    if r.get("temperature") is not None:
+        m.temperature = r["temperature"]
+    if grade[i] is not None:
+        m.grade = grade[i]
+    stream.append((t, 1, m))
+    written += 1
+
+# Gear-change events (gopro-dashboard reads front_gear_num / rear_gear_num)
+gear_written = 0
+for d in events:
+    ts = d.get("timestamp")
+    if ts is None:
+        continue
+    e = EventMessage()
+    t = ms(ts)
+    e.timestamp = t
+    ev = d.get("event")
+    try:
+        e.event = Event.FRONT_GEAR_CHANGE if ev == "front_gear_change" else Event.REAR_GEAR_CHANGE
+    except AttributeError:
+        pass
+    if d.get("front_gear_num") is not None:
+        try:
+            e.front_gear_num = d["front_gear_num"]
+        except Exception:
+            pass
+    if d.get("rear_gear_num") is not None:
+        try:
+            e.rear_gear_num = d["rear_gear_num"]
+        except Exception:
+            pass
+    stream.append((t, 0, e))
+    gear_written += 1
+
+# stable sort: events (kind 0) precede records (kind 1) at the same timestamp
+stream.sort(key=lambda x: (x[0], x[1]))
+for _, _, msg in stream:
+    try:
+        builder.add(msg)
+    except Exception:
+        pass
+
+fit_file = builder.build()
+fit_file.to_file(dst)
+
+grade_count = sum(1 for g in grade if g is not None)
+print(f"fit-smooth-grade: wrote {written} records ({grade_count} with grade), "
+      f"{gear_written} gear events -> {dst}", file=sys.stderr)
+PYEOF
+
+echo "$prog: done -> $output" >&2

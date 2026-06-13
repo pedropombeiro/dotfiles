@@ -18,7 +18,12 @@
 #   gopro-overlay --touch <input.mp4> <activity.fit>
 #   gopro-overlay --offset -90 <input.mp4> <activity.fit>  # clock 90s fast
 #   gopro-overlay -n <input.mp4> <activity.fit>            # dry-run
+#   gopro-overlay --smooth-grade <input.mp4> <activity.fit>  # smooth slope widget
 #   gopro-overlay <input.mp4> <activity.fit> -- --map-style osm   # passthrough
+#
+# --smooth-grade pre-processes the FIT via fit-smooth-grade to inject a smoothed
+# `grade` field, which gopro-dashboard's gradient widget prefers over its own
+# noisy rise/run computation. Produces <activity>_smoothed.fit and uses that.
 #
 # Layout is auto-selected by video resolution when GOPRO_OVERLAY_LAYOUT is unset:
 #   5312x2988 (5.3K) -> layout-5.3k.xml
@@ -32,7 +37,7 @@ set -e
 prog=$(basename "$0")
 
 usage() {
-  sed -n '2,28p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,33p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 input=""
@@ -43,6 +48,7 @@ layout_xml_override=0
 use_touch=0
 offset=""
 dry_run=0
+smooth_grade=0
 passthrough=0
 extra_args=""
 
@@ -79,6 +85,10 @@ while [ $# -gt 0 ]; do
       offset="$2"
       use_touch=1
       shift 2
+      ;;
+    --smooth-grade)
+      smooth_grade=1
+      shift
       ;;
     -n|--dry-run)
       dry_run=1
@@ -126,6 +136,21 @@ fi
 if ! command -v gopro-dashboard.py >/dev/null 2>&1; then
   echo "$prog: error: gopro-dashboard.py not found on PATH" >&2
   exit 1
+fi
+
+if [ "$smooth_grade" -eq 1 ]; then
+  if ! command -v fit-smooth-grade >/dev/null 2>&1; then
+    echo "$prog: error: --smooth-grade requires fit-smooth-grade on PATH" >&2
+    exit 1
+  fi
+  fit_stem="${fit%.*}"
+  smoothed_fit="${fit_stem}_smoothed.fit"
+  if [ "$dry_run" -eq 1 ]; then
+    echo "$prog: would run: fit-smooth-grade -o $smoothed_fit $fit" >&2
+  else
+    fit-smooth-grade -o "$smoothed_fit" "$fit"
+  fi
+  fit="$smoothed_fit"
 fi
 
 if [ -z "$output" ]; then
@@ -253,4 +278,26 @@ if [ "$dry_run" -eq 1 ]; then
 fi
 
 echo "$prog: output -> $output" >&2
-exec gopro-dashboard.py "$@"
+gopro-dashboard.py "$@"
+
+# Align the output file's modification time with its embedded recording time
+# (creation_time), so the rendered clip sorts/imports in DaVinci Resolve and
+# Finder by when it was filmed rather than when it was rendered. The
+# creation_time metadata is carried through from the source by gopro-dashboard.
+if command -v ffprobe >/dev/null 2>&1 && [ -f "$output" ]; then
+  out_ct=$(ffprobe -v error -show_entries format_tags=creation_time \
+    -of default=noprint_wrappers=1:nokey=1 "$output" 2>/dev/null | head -n 1)
+  if [ -n "$out_ct" ]; then
+    # creation_time is UTC ISO-8601 (e.g. 2026-06-13T09:12:59.000000Z). Parse it
+    # as UTC to an epoch, then format the local-time "touch -t" stamp so the
+    # file's wall-clock mtime matches the recording instant.
+    epoch=$(date -j -u -f '%Y-%m-%dT%H:%M:%S' "${out_ct%.*}" '+%s' 2>/dev/null)
+    if [ -n "$epoch" ]; then
+      local_stamp=$(date -j -r "$epoch" '+%Y%m%d%H%M.%S' 2>/dev/null)
+      if [ -n "$local_stamp" ]; then
+        touch -t "$local_stamp" "$output"
+        echo "$prog: set mtime of output to recording time ($out_ct)" >&2
+      fi
+    fi
+  fi
+fi

@@ -123,16 +123,17 @@ Re-run `ffprobe` to confirm `creation_time` updated **and** the `bt2020/smpte208
 ## 8. Telemetry overlay
 
 The graded file has **no telemetry** — GPMF data lives only in the original GoPro file.
+Use the transparent-overlay method so the gauges sit pristine above the HDR grade:
 
 1. In a telemetry tool (e.g. **Telemetry Overlay**, supports Hero 12), load the **original**
    GoPro `.MP4` to read GPS / speed / elevation.
 2. _(Optional)_ import external data (Garmin `.fit` / `.gpx` for power, HR, cadence) and sync —
-   the original's timestamp anchors the alignment.
+   the original's `creation_time` timestamp anchors the alignment.
 3. Export a **transparent MOV** (gauges only, with alpha).
 4. In Resolve: graded clip on **V1**, transparent overlay on **V2**, aligned at the same
-   start frame. Render the final.
+   start frame. Render the final composite.
 
-> Keep clips untrimmed for frame-accurate sync, or account for the offset.
+> Keep clips untrimmed for frame-accurate sync, or account for the offset explicitly.
 
 ## 9. Upload to YouTube
 

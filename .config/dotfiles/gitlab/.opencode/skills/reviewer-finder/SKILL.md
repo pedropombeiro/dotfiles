@@ -196,6 +196,43 @@ Hey @<reviewer> :wave:, mind doing the <review-type> review? <one-line context>
 - Escape backticks/`$` in the comment body via a file + `$(cat ...)` (see the
   `glab` skill's message-escaping guidance).
 
+### Pre-warm the merge pipeline for the final reviewer
+
+When you assign the **last required reviewer** (i.e. their approval will satisfy
+all remaining approval rules — `approvalsLeft` will drop to 0) **and** you expect
+them to complete the review **within ~16 hours**, you can save end-to-end time by
+running the full merge pipeline ahead of approval. Once they approve, the MR can
+merge immediately instead of waiting for a fresh pipeline.
+
+Conditions (all must hold):
+
+- The reviewer being assigned is the **last** outstanding required approval —
+  check the MR's `approvalState`: after their approval `approvalsLeft` becomes 0
+  (e.g. a maintainer-only MR where this is the sole required rule).
+- They are likely to review within ~16 hours — they are available now (not
+  OOO/PTO), low load, and ideally in a timezone where the window covers their
+  workday. Use the same signals the ranking already gathered.
+
+Then:
+
+```bash
+# Move the MR to the full (tier-3) pipeline and trigger a fresh run.
+glab mr update <iid> --label "pipeline::tier-3" -R <owner/repo>
+glab api --method POST "projects/<id>/merge_requests/<iid>/pipelines"
+# or, with the mr-pipeline skill: run_mr_pipeline <iid> -R <owner/repo>
+```
+
+Notes:
+
+- `pipeline::tier-3` is the full pipeline tier; tier-1/tier-2 run reduced job
+  sets that may not be sufficient for merge. Only escalate to tier-3 when you
+  intend the run to be merge-ready.
+- This is an **optimization, not a default** — only do it when the last-reviewer
+  + 16-hour conditions hold, since a full pipeline is expensive. If the review is
+  likely to take longer, skip it (the pipeline would go stale).
+- This is covered by the explicit/standing assign instruction; report that you
+  set the label and started the pipeline, alongside the review request.
+
 A plan-mode approval or answering a clarifying question does **not** count as an
 assign instruction. Absent an explicit ask, stop at the recommendation.
 
@@ -217,3 +254,8 @@ assign instruction. Absent an explicit ask, stop at the recommendation.
 6. **Degrade gracefully** — if a signal source (status, last activity, Glean) is
    unavailable for a candidate, treat it as unknown and say so, rather than
    excluding the candidate.
+7. **Pre-warm the merge pipeline** when assigning the *last* required reviewer
+   who is likely to approve within ~16 hours: set `pipeline::tier-3` and trigger
+   a fresh pipeline so merge can proceed immediately on approval — see
+   "Pre-warm the merge pipeline for the final reviewer". Optimization only, not a
+   default.

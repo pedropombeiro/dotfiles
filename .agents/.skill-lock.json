@@ -36,6 +36,15 @@
       "skillFolderHash": "03197281ae35865e703aa8eda6d16795afac3334",
       "installedAt": "2026-04-16T21:19:18.100Z",
       "updatedAt": "2026-04-16T21:19:18.100Z"
+    },
+    "stop-slop": {
+      "source": "hardikpandya/stop-slop",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/hardikpandya/stop-slop.git",
+      "skillPath": "SKILL.md",
+      "skillFolderHash": "8da1f030185bdfe8471220585162991eaeb970e9",
+      "installedAt": "2026-06-15T13:19:47.916Z",
+      "updatedAt": "2026-06-15T13:19:47.916Z"
     }
   },
   "dismissed": {

@@ -26,11 +26,12 @@
 # `grade` field, which gopro-dashboard's gradient widget prefers over its own
 # noisy rise/run computation. Produces <activity>_smoothed.fit and uses that.
 #
-# --overlay-only renders the gauges as a TRANSPARENT clip (ProRes 4444 with
-# alpha, profile overlay-prores4444) instead of compositing onto the source
-# video. Superimpose it over the graded footage in DaVinci Resolve (graded clip
-# on V1, this overlay on V2). The source video is still read so timing and
-# overlay dimensions match the clip. Output defaults to <basename>.overlay.mov.
+# --overlay-only renders the gauges as a TRANSPARENT clip (lossless QuickTime
+# Animation / QTRLE with alpha, profile overlay-qtrle) instead of compositing
+# onto the source video. Superimpose it over the graded footage in DaVinci
+# Resolve (graded clip on V1, this overlay on V2). The source video is still
+# read so timing and overlay dimensions match the clip. Output defaults to
+# <basename>.overlay.mov.
 #
 # Layout is auto-selected by video resolution when GOPRO_OVERLAY_LAYOUT is unset:
 #   5312x2988 (5.3K) -> layout-5.3k.xml
@@ -171,7 +172,7 @@ if [ -z "$output" ]; then
   base=$(basename "$input")
   stem="${base%.*}"
   if [ "$overlay_only" -eq 1 ]; then
-    # Transparent overlay (ProRes 4444 with alpha) to superimpose in an editor;
+    # Transparent overlay (lossless QTRLE with alpha) to superimpose in an editor;
     # .overlay.mov avoids colliding with the burned-in .output.mp4 renders.
     output="$outdir/$stem.overlay.mov"
   else
@@ -266,7 +267,7 @@ if [ "$use_touch" -eq 1 ]; then
 fi
 
 if [ "$overlay_only" -eq 1 ]; then
-  profile="overlay-prores4444"
+  profile="overlay-qtrle"
 else
   profile="apple-silicon"
 fi

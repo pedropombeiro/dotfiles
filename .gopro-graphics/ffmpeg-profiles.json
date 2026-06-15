@@ -18,19 +18,8 @@
       "copy"
     ]
   },
-  "overlay-prores4444": {
+  "overlay-qtrle": {
     "input": [],
-    "output": [
-      "-c:v",
-      "prores_ks",
-      "-profile:v",
-      "4444",
-      "-pix_fmt",
-      "yuva444p10le",
-      "-alpha_bits",
-      "16",
-      "-vendor",
-      "apl0"
-    ]
+    "output": ["-c:v", "qtrle", "-pix_fmt", "argb"]
   }
 }

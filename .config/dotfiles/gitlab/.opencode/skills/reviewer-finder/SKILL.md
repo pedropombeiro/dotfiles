@@ -166,35 +166,41 @@ When assigning:
 
 ### How to request the review
 
-The conventional, human-facing way to request a review is a short friendly
-comment using the `/request_review` quick action — **not** a bare API reassign.
-The quick action both assigns the reviewer and notifies them, and the comment
-tells them **what kind of review** is expected. Post one comment per reviewer:
+Assign the reviewer (set the MR's reviewer via `glab mr update --reviewer` or the
+`/request_review` quick action), **then** post a short friendly ping comment. The
+comment is the human-facing nudge — keep it terse, in this exact shape:
 
 ```
-Hey @<reviewer> :wave:, mind doing the <review-type> review? <one-line context>
-
-/request_review @<reviewer>
+Hey @<reviewer> :waves:, mind doing the <~labels> <stage> review?
 ```
 
-- **`<review-type>`** names the stage so the reviewer knows their role:
-  - For a **named SME section** (e.g. `[Backend]`, `[Database]`), use the team's
-    scoped label phrasing — e.g. "the ~backend initial review".
-  - For the **maintainer** stage (the `Maintainers` rule / second review), say
-    "the maintainer review".
-  - **Maintainer-only MRs** (the only applicable rule is the `Maintainers`
-    `/spec/`-style rule, with no separate SME section) → phrase it as "the
-    maintainer review", since there is no separate SME/initial stage.
-- **`<one-line context>`** is a brief reason that helps the reviewer triage
-  (e.g. "It's a test-only cleanup removing `let_it_be freeze: false` opt-outs.").
-- Because `/request_review @user` performs the assignment, the comment alone is
-  sufficient — you don't also need `glab mr update --reviewer`. If you already
-  set the reviewer via the API, the quick action is idempotent for the same user.
-- Posting these review-request comments **is** covered by the explicit/standing
-  assign instruction (assigning a reviewer is the user's intent). Still respect
-  the no-other-comments rule: only the `/request_review` request, nothing else.
-- Escape backticks/`$` in the comment body via a file + `$(cat ...)` (see the
-  `glab` skill's message-escaping guidance).
+Real examples (from gitlab-org/gitlab!240710):
+
+```
+Hey @abime  :waves:, mind doing the ~backend / ~authorization maintainer review?
+Hey @mfanGitLab :waves:, mind doing the ~"devops::verify" maintainer review?
+```
+
+Rules of the pattern:
+
+- **Greeting:** `Hey @<reviewer> :waves:,` — note the emoji is **`:waves:`**
+  (plural), not `:wave:`.
+- **`<~labels>`** name the MR's **area/domain**, using the project's scoped
+  labels — e.g. `~backend`, `~authorization`, `~"devops::verify"` (quote labels
+  containing `::` or spaces). When several areas apply, join them with ` / `
+  (e.g. `~backend / ~authorization`). Derive these from the MR's own labels and
+  the CODE_OWNER section(s) that apply.
+- **`<stage>`** is the review stage: typically **`maintainer`** (final approval).
+  For a distinct first/SME pass use the team's wording (e.g. "initial").
+- **No `/request_review` in the comment body**, and **no context sentence** — the
+  request is terse. The actual reviewer assignment is done separately (reviewer
+  field / quick action), immediately before the comment.
+- One comment per reviewer.
+- Posting these ping comments **is** covered by the explicit/standing assign
+  instruction. Respect the no-other-comments rule: only the ping, nothing else.
+- Escape `::`/quotes safely by writing the body to a file first, then
+  `glab mr note <iid> -m "$(cat "$FILE")"` (see the `glab` skill's
+  message-escaping guidance).
 
 ### Pre-warm the merge pipeline for the final reviewer
 
@@ -240,9 +246,10 @@ assign instruction. Absent an explicit ask, stop at the recommendation.
 
 1. **Recommend by default; assign only on an explicit/standing instruction**,
    then report. This is the one narrow case where assigning reviewers is allowed.
-   Request the review via a friendly `/request_review @user` comment that names
-   the expected **review type** (SME `~label` initial vs maintainer) — see
-   "How to request the review".
+   Assign the reviewer, then post a terse ping:
+   `Hey @user :waves:, mind doing the ~area maintainer review?` — scoped area
+   labels, `:waves:`, no `/request_review` or context sentence. See "How to
+   request the review".
 2. **Backtick usernames** in all chat output.
 3. **OOO inference and Glean PTO findings are advisory** — cite the evidence so
    the user can override; never present them as certainty.

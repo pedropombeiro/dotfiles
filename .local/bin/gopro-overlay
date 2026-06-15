@@ -19,11 +19,18 @@
 #   gopro-overlay --offset -90 <input.mp4> <activity.fit>  # clock 90s fast
 #   gopro-overlay -n <input.mp4> <activity.fit>            # dry-run
 #   gopro-overlay --smooth-grade <input.mp4> <activity.fit>  # smooth slope widget
+#   gopro-overlay --overlay-only <input.mp4> <activity.fit>  # transparent overlay
 #   gopro-overlay <input.mp4> <activity.fit> -- --map-style osm   # passthrough
 #
 # --smooth-grade pre-processes the FIT via fit-smooth-grade to inject a smoothed
 # `grade` field, which gopro-dashboard's gradient widget prefers over its own
 # noisy rise/run computation. Produces <activity>_smoothed.fit and uses that.
+#
+# --overlay-only renders the gauges as a TRANSPARENT clip (ProRes 4444 with
+# alpha, profile overlay-prores4444) instead of compositing onto the source
+# video. Superimpose it over the graded footage in DaVinci Resolve (graded clip
+# on V1, this overlay on V2). The source video is still read so timing and
+# overlay dimensions match the clip. Output defaults to <basename>.overlay.mov.
 #
 # Layout is auto-selected by video resolution when GOPRO_OVERLAY_LAYOUT is unset:
 #   5312x2988 (5.3K) -> layout-5.3k.xml
@@ -31,13 +38,14 @@
 # Override with GOPRO_OVERLAY_LAYOUT, --layout-xml FILE, or --no-layout.
 #
 # Output defaults to ${GOPRO_OVERLAY_OUTDIR:-$HOME/Downloads}/<basename>.output.mp4
+# (or <basename>.overlay.mov with --overlay-only)
 
 set -e
 
 prog=$(basename "$0")
 
 usage() {
-  sed -n '2,33p' "$0" | sed 's/^# \{0,1\}//'
+  sed -n '2,41p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 input=""
@@ -49,6 +57,7 @@ use_touch=0
 offset=""
 dry_run=0
 smooth_grade=0
+overlay_only=0
 passthrough=0
 extra_args=""
 
@@ -88,6 +97,10 @@ while [ $# -gt 0 ]; do
       ;;
     --smooth-grade)
       smooth_grade=1
+      shift
+      ;;
+    --overlay-only)
+      overlay_only=1
       shift
       ;;
     -n|--dry-run)
@@ -157,7 +170,13 @@ if [ -z "$output" ]; then
   outdir="${GOPRO_OVERLAY_OUTDIR:-$HOME/Downloads}"
   base=$(basename "$input")
   stem="${base%.*}"
-  output="$outdir/$stem.output.mp4"
+  if [ "$overlay_only" -eq 1 ]; then
+    # Transparent overlay (ProRes 4444 with alpha) to superimpose in an editor;
+    # .overlay.mov avoids colliding with the burned-in .output.mp4 renders.
+    output="$outdir/$stem.overlay.mov"
+  else
+    output="$outdir/$stem.output.mp4"
+  fi
 fi
 
 if [ "$layout_xml_override" -eq 0 ] && [ -z "$layout_xml" ]; then
@@ -246,12 +265,25 @@ if [ "$use_touch" -eq 1 ]; then
   time_start="file-accessed"
 fi
 
+if [ "$overlay_only" -eq 1 ]; then
+  profile="overlay-prores4444"
+else
+  profile="apple-silicon"
+fi
+
 set -- \
   --fit "$fit" \
   --use-gpx-only --gpx-merge OVERWRITE --load ACCL GRAV CORI \
-  --profile apple-silicon \
+  --profile "$profile" \
   --video-time-start "$time_start" \
   --units-speed kph --units-distance km --map-style cyclosm
+
+if [ "$overlay_only" -eq 1 ]; then
+  # Produce a transparent overlay (gauges only, alpha) instead of compositing
+  # onto the source video. The input video is still passed so timing, duration
+  # and overlay dimensions match the clip.
+  set -- "$@" --generate overlay
+fi
 
 if [ -n "$layout_xml" ]; then
   if [ ! -f "$layout_xml" ]; then

@@ -17,5 +17,20 @@
       "-c:a",
       "copy"
     ]
+  },
+  "overlay-prores4444": {
+    "input": [],
+    "output": [
+      "-c:v",
+      "prores_ks",
+      "-profile:v",
+      "4444",
+      "-pix_fmt",
+      "yuva444p10le",
+      "-alpha_bits",
+      "16",
+      "-vendor",
+      "apl0"
+    ]
   }
 }

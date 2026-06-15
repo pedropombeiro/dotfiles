@@ -48,7 +48,9 @@ yamllint = "latest"
 
 # ── Video editing tools ────────────────────────────────────────────────
 # Programs to process GoPro MP4 & Generic GPX/FIT files and create video dashboards & maps
-"pipx:gopro-overlay" = "0.134.0"
+# Personal fork adds whole-ride extent for the journey map & elevation chart
+# (journey_map extent="ride", chart range="ride"). See whole-ride-extent branch.
+"pipx:git+https://github.com/pedropombeiro/gopro-dashboard-overlay.git" = "whole-ride-extent"
 
 # ── Brew ──────────────────────────────────────────────────────────────
 

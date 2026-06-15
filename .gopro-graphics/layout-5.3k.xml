@@ -36,7 +36,7 @@
         <component type="metric" x="145" y="37" metric="gradient" dp="0" size="66" />
     </composite>
 
-    <component type="chart" name="gradient_chart" x="22" y="2739" units="alt" width="581" height="166" />
+    <component type="chart" name="gradient_chart" x="22" y="2739" units="alt" width="581" height="166" range="ride" />
 
     <!-- PERFORMANCE (right column, bottom to top: speed hero, power, gears, RPM, HR) -->
     <composite x="5215" y="1895" name="heartbeat">
@@ -73,5 +73,5 @@
     </composite>
 
     <component type="moving_map" name="moving_map" x="4510" y="138" size="708" zoom="17" corner_radius="48" />
-    <component type="journey_map" name="journey_map" x="4510" y="968" size="708" corner_radius="48"/>
+    <component type="journey_map" name="journey_map" x="4510" y="968" size="708" corner_radius="48" extent="ride"/>
 </layout>

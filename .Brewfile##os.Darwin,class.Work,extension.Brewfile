@@ -1,10 +1,10 @@
 tap "anomalyco/tap", trusted: true
-tap "arkweid/lefthook", trusted: true
 tap "derailed/k9s", trusted: true
 tap "dteoh/sqa", trusted: true
+tap "evilmartians/lefthook", trusted: true
 tap "fforster/gitlab-mcp", "https://gitlab.com/fforster/homebrew-gitlab-mcp.git", trusted: true
 tap "jarred-sumner/git-peek", trusted: true
-tap "jdxcode/tap", trusted: true
+tap "jdx/tap", trusted: true
 tap "jstkdng/programs", trusted: true
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git", trusted: true
 tap "lihaoyun6/tap", trusted: true

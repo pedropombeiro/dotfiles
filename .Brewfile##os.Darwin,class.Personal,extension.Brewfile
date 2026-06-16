@@ -5,7 +5,7 @@ tap "borgbackup/tap", trusted: true
 tap "homebrew/bundle"
 tap "homebrew/services"
 tap "jarred-sumner/git-peek", trusted: true
-tap "jdxcode/tap", trusted: true
+tap "jdx/tap", trusted: true
 tap "jstkdng/programs", trusted: true
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git", trusted: true
 tap "showwin/speedtest", trusted: true

@@ -50,6 +50,20 @@ else
   fi
 fi
 
+# Fallback: derive the repo from the git origin remote when glab could not
+# (e.g. resolve-mr.sh <IID> run from inside the repo without -R, where
+# `glab repo view` returns nothing). Handles both SSH and HTTPS GitLab URLs.
+if [[ -z "$REPO" ]]; then
+  origin_url="$(git remote get-url origin 2>/dev/null || true)"
+  if [[ -n "$origin_url" ]]; then
+    REPO="$(sed -E \
+      -e 's#^git@[^:]+:##' \
+      -e 's#^https?://[^/]+/##' \
+      -e 's#\.git$##' \
+      <<<"$origin_url")"
+  fi
+fi
+
 [[ -n "$IID" ]] || die "could not determine MR IID"
 [[ -n "$REPO" ]] || die "could not determine repository (pass -R owner/repo)"
 

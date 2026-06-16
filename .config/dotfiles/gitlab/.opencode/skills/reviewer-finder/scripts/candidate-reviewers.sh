@@ -26,7 +26,8 @@
 #
 # Options:
 #   --recent-authors <n>        Recent git authors to add as SME hints (default 5)
-#   --active-reviews-days <n>    Recency window for active-review load (default 7)
+#   --active-reviews-days <n>    Deprecated no-op (load is computed by
+#                                reviewer-signals.sh). Accepted for compatibility.
 #   --include-satisfied          Also include rules already satisfied
 #                                (approvalsRequired == 0). Default: only rules
 #                                that still need approval.
@@ -38,8 +39,7 @@
 #     sections: [ { name, required, stage:"sme", optional:false,
 #                   members:[usernames], recent_authors:[...] } ],
 #     maintainers: { members:[usernames] },
-#     member_signals: { "<user>": { load, assigned_open, job_title, location,
-#                                   last_activity_on, status } }
+#     member_signals: {}   # always empty; reviewer-signals.sh gathers signals
 #   }
 #
 # Requires: glab (authenticated), jq, git.
@@ -54,7 +54,6 @@ command -v glab >/dev/null || die "glab not found"
 command -v jq >/dev/null || die "jq not found"
 
 RECENT_AUTHORS=5
-ACTIVE_REVIEWS_DAYS=7
 INCLUDE_SATISFIED=false
 MR_JSON_FILE=""
 
@@ -65,7 +64,7 @@ while [[ $# -gt 0 ]]; do
     shift 2
     ;;
   --active-reviews-days)
-    ACTIVE_REVIEWS_DAYS="$2"
+    # Deprecated no-op kept for backward compatibility.
     shift 2
     ;;
   --include-satisfied)
@@ -92,17 +91,23 @@ IID="$(jq -r '.iid' <<<"$MR_JSON")"
 [[ -n "$PROJECT" && "$PROJECT" != "null" ]] || die "MR JSON missing project"
 [[ -n "$IID" && "$IID" != "null" ]] || die "MR JSON missing iid"
 
-iso_days_ago() {
-  local d="$1"
-  date -u -v-"${d}"d +%Y-%m-%dT%H:%M:%SZ 2>/dev/null ||
-    date -u -d "${d} days ago" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null
-}
-ACTIVE_REVIEWS_AFTER="$(iso_days_ago "$ACTIVE_REVIEWS_DAYS")"
-
-# --- Query the MR's approval rules (the SSOT for eligible approvers), with
-# per-approver signals attached. The eligibleApprovers field is not a paginated
-# connection here, so a single request returns the full set.
-QUERY='query($fullPath: ID!, $iid: String!, $activeReviewsAfter: Time) {
+# --- Query the MR's approval rules (the SSOT for eligible approvers).
+#
+# IMPORTANT: this query is deliberately LIGHTWEIGHT — it fetches only the
+# identity fields (`username bot state`) per eligible approver, NOT per-approver
+# signals (active reviews, assigned MRs, jobTitle, location, status). Broad
+# CODE_OWNER rules can have very large approver sets (e.g. the doc's cited "153
+# code owners for /spec/"); inlining signal subqueries for every one of them
+# made GitLab's GraphQL resolver partially time out and return a truncated/
+# invalid payload, which then broke the downstream pipeline with
+# "jq: invalid JSON text passed to --argjson".
+#
+# All per-candidate signals (load, status, location, idle, jobTitle) are
+# gathered separately and efficiently by reviewer-signals.sh via batched,
+# concurrent `users(usernames: [...])` requests. candidate-reviewers.sh
+# therefore emits an empty member_signals map; the merge in reviewer-signals.sh
+# tolerates that (it uses `// {}`), so the output contract is unchanged.
+QUERY='query($fullPath: ID!, $iid: String!) {
   project(fullPath: $fullPath) {
     mergeRequest(iid: $iid) {
       approvalState {
@@ -112,14 +117,7 @@ QUERY='query($fullPath: ID!, $iid: String!, $activeReviewsAfter: Time) {
           type
           approvalsRequired
           approved
-          eligibleApprovers {
-            username bot state jobTitle location lastActivityOn
-            status { availability message emoji }
-            activeReviews: reviewRequestedMergeRequests(state: opened, updatedAfter: $activeReviewsAfter) {
-              nodes { approvedBy { nodes { username } } }
-            }
-            assignedMergeRequests(state: opened) { count }
-          }
+          eligibleApprovers { username bot state }
         }
       }
     }
@@ -129,8 +127,7 @@ QUERY='query($fullPath: ID!, $iid: String!, $activeReviewsAfter: Time) {
 RESP="$(glab api graphql \
   -f query="$QUERY" \
   -f fullPath="$PROJECT" \
-  -f iid="$IID" \
-  -f activeReviewsAfter="$ACTIVE_REVIEWS_AFTER" 2>/dev/null || echo '{}')"
+  -f iid="$IID" 2>/dev/null || echo '{}')"
 
 # If GraphQL returned errors (e.g. a resolver timeout on a very large rule's
 # eligibleApprovers), the rules payload may be partial/invalid. Fail clearly
@@ -207,26 +204,16 @@ jq -n \
   | ( [ $corules[] | select(is_maint(.))
         | .eligibleApprovers[] | select(usable(.)) | .username ] | unique ) as $maint_members
 
-  # Flatten signals across all CODE_OWNER rules (union by username).
-  | ( reduce ($corules[].eligibleApprovers[]? | select(usable(.))) as $a ({};
-        .[$a.username] = {
-          load: ([ ($a.activeReviews.nodes // [])[]
-                   | [ .approvedBy.nodes[].username ]
-                   | select(index($a.username) | not) ] | length),
-          assigned_open: ($a.assignedMergeRequests.count // 0),
-          job_title: ($a.jobTitle // ""),
-          location: ($a.location // ""),
-          last_activity_on: ($a.lastActivityOn // null),
-          status: ($a.status // {})
-        }
-      ) ) as $member_signals
-
+  # Per-candidate signals (load, status, location, idle, jobTitle) are gathered
+  # downstream by reviewer-signals.sh, which evaluates every username via
+  # batched GraphQL. We intentionally emit an empty map here so this script
+  # stays cheap and never trips the eligibleApprovers resolver timeout.
   | {
       project: $mr.project,
       iid: $mr.iid,
       author: $mr.author,
       sections: $sme_sections,
       maintainers: { members: $maint_members },
-      member_signals: $member_signals
+      member_signals: {}
     }
 '

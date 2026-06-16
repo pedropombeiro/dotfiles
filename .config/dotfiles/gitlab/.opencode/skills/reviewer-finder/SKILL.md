@@ -31,6 +31,31 @@ The user asks any of:
 - There is no MR yet and the user only wants general team-ownership info — that's
   a CODEOWNERS lookup, not reviewer selection.
 
+## Fast path for trivial, single-area MRs
+
+The full four-script pipeline is overkill for a tiny, single-file change (a
+test-only fix, a typo, a one-line maintenance change). For these, the best
+reviewer is almost always the **author/owner of the changed file**, confirmed
+against the **MR's own area labels** — which is also the reliable fallback when
+the pipeline has trouble.
+
+When the MR touches one file (or one tight area) and is low-risk:
+
+1. Find the file's recent owners:
+   `git log --format='%an' -8 -- <path> | sort | uniq -c | sort -rn`
+2. Take the dominant author and read their current signals directly:
+   ```bash
+   glab api graphql -f query='{ user(username: "<u>") {
+     location status { availability message emoji }
+     reviewRequestedMergeRequests(state: opened) { count } } }'
+   ```
+3. Sanity-check they match the MR's scoped area labels (e.g. `group::…`,
+   `devops::…`), are not OOO, and have reasonable load.
+
+For a trivial single-area MR, one reviewer covers both the SME and maintainer
+stages — no need to split. Escalate to the full pipeline only when the change
+spans multiple areas or is non-trivial.
+
 ## How it works
 
 Four scripts under `scripts/` form a pipeline (all `glab` + `jq`, read-only):
@@ -42,8 +67,12 @@ Four scripts under `scripts/` form a pipeline (all `glab` + `jq`, read-only):
    Maintainers fallback → maintainer pool; others → per-area SME). This avoids
    CODEOWNERS parsing and group-membership expansion entirely — so non-approvers
    (e.g. a UX designer with an inherited `gitlab-org` role) never appear. SME
-   sections are augmented with recent authors of the files; per-approver signals
-   are gathered in the same query.
+   sections are augmented with recent authors of the files. The query is
+   **lightweight by design** — it fetches only approver identities
+   (`username bot state`), not per-approver signals. Inlining signal subqueries
+   for a large rule (the cited "153 code owners") made GitLab's GraphQL resolver
+   partially time out and return invalid JSON; signals are instead gathered in
+   bulk by step 3.
 3. **`reviewer-signals.sh`** — per candidate: outstanding review load, current
    OOO/PTO status, role (`jobTitle`), location, and days-idle. Reuses signals
    pre-gathered during group expansion; fills gaps for handle/recent-author
@@ -63,6 +92,28 @@ SK=~/.config/dotfiles/gitlab/.opencode/skills/reviewer-finder/scripts
   | "$SK/reviewer-signals.sh" \
   | "$SK/rank-reviewers.sh" --author-tz <author_utc_offset> > /tmp/reviewers.json
 ```
+
+**Pass the IID explicitly for a just-created MR.** Branch inference
+(`resolve-mr.sh` with no args) calls `glab mr view`, which can fail to find an
+MR immediately after `gpsup` pushes and creates it (branch-tracking/propagation
+lag). When you just created the MR, call `resolve-mr.sh <IID>` — the repo is
+auto-derived from the git `origin` remote, so `-R` is not needed from inside the
+repo.
+
+### Running the pipeline robustly
+
+A broad CODE_OWNER rule can yield a 150+ approver pool. The scripts handle this,
+but to keep failures debuggable and avoid dumping huge GraphQL blobs into
+context:
+
+- **Run stages to temp files and validate JSON between them** rather than one
+  long pipe, e.g. `resolve-mr.sh <IID> > /tmp/mr.json`, then
+  `candidate-reviewers.sh < /tmp/mr.json > /tmp/cand.json`, checking each is
+  valid JSON before continuing.
+- **Never pipe a stage whose exit code was non-zero** — a partial blob breaks
+  the next stage's `--argjson` with `invalid JSON text`.
+- If a stage prints a giant payload on error, capture stderr to a file and read
+  the tail; do not echo the whole thing.
 
 `reviewer-signals.sh` gathers all signals (load, status, location, contribution
 recency) via **batched GraphQL** in small chunks fetched **concurrently**, so it
@@ -274,3 +325,10 @@ assign instruction. Absent an explicit ask, stop at the recommendation.
    a fresh pipeline so merge can proceed immediately on approval — see
    "Pre-warm the merge pipeline for the final reviewer". Optimization only, not a
    default.
+8. **Use the fast path for trivial single-area MRs** — for a one-file/one-area
+   low-risk change (e.g. a test-only fix), prefer git authorship of the changed
+   file plus the MR's area labels over the full pipeline. See "Fast path for
+   trivial, single-area MRs". It is also the correct fallback if the pipeline
+   errors.
+9. **Just-created MRs:** pass the IID explicitly to `resolve-mr.sh` — branch
+   inference can miss an MR right after `gpsup` creates it.

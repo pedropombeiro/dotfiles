@@ -392,8 +392,6 @@ cask "protonvpn"
 cask "raycast"
 # Window snapping tool
 cask "rectangle-pro"
-# Tool for sending personal documents to Kindles from Macs
-cask "send-to-kindle"
 # Screenshot measurement and annotation tool
 cask "shottr"
 # Team communication and collaboration software

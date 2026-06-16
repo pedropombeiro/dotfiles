@@ -165,6 +165,54 @@ SIGNALS="$(
       end;
     def daysfrom($epoch):
       if $epoch == null then null else (($now - $epoch) / 86400 | floor) end;
+
+    # Best-effort UTC offset (hours, standard time) from a free-text profile
+    # location. GitLab exposes no numeric timezone, so we approximate from the
+    # location string by matching country/city/region keywords. Returns null
+    # when the location is empty or unrecognized (then timezone scoring is
+    # skipped for that person, as before). Coarse by design — it only needs to
+    # be good enough to prefer a near-timezone reviewer over a far one.
+    def tz_from_location($loc):
+      ($loc // "" | ascii_downcase) as $l
+      | if $l == "" then null
+        # UTC-8 / Pacific
+        elif ($l | test("seattle|portland|oregon|san francisco|bay area|california|vancouver|los angeles|pacific time|pdt|pst")) then -8
+        # UTC-7 / Mountain
+        elif ($l | test("denver|colorado|arizona|salt lake|mountain time|calgary")) then -7
+        # UTC-6 / Central US + most of Mexico/Central America
+        elif ($l | test("chicago|kansas|texas|austin|dallas|houston|minnesota|wisconsin|illinois|central time|mexico|guatemala|costa rica|winnipeg")) then -6
+        # UTC-5 / Eastern US + Toronto + Colombia/Peru
+        elif ($l | test("new york|boston|toronto|ottawa|montreal|montreal|atlanta|florida|miami|ohio|michigan|eastern time|edt|est|colombia|peru|bogota|lima")) then -5
+        # UTC-4 / Atlantic + Chile (approx) + Caribbean
+        elif ($l | test("halifax|santiago|chile|caracas|bolivia|puerto rico")) then -4
+        # UTC-3 / most of Brazil + Argentina + Uruguay
+        elif ($l | test("brazil|brasil|sao paulo|são paulo|rio de janeiro|argentina|buenos aires|uruguay|montevideo")) then -3
+        # UTC+0 / UK, Portugal, Iceland
+        elif ($l | test("london|england|scotland|wales|united kingdom|\\buk\\b|ireland|dublin|lisbon|portugal|iceland|reykjavik|nottingham|brighton|manchester")) then 0
+        # UTC+1 / Western & Central Europe + W. Africa
+        elif ($l | test("madrid|spain|barcelona|france|paris|germany|berlin|munich|netherlands|amsterdam|huissen|belgium|brussels|switzerland|zurich|geneva|freiburg|italy|rome|milan|austria|vienna|poland|warsaw|prague|czech|sweden|stockholm|norway|oslo|denmark|copenhagen|nigeria|lagos|morocco|cet")) then 1
+        # UTC+2 / Eastern Europe, Israel, South Africa, parts of Africa
+        elif ($l | test("finland|helsinki|greece|athens|romania|moldova|bucharest|ukraine|kyiv|kiev|israel|tel aviv|south africa|cape town|johannesburg|cairo|egypt|estonia|latvia|lithuania|bulgaria|eet")) then 2
+        # UTC+3 / Moscow, Turkey, East Africa, Gulf-ish
+        elif ($l | test("moscow|turkey|istanbul|kenya|nairobi|saudi|riyadh|qatar|kuwait|nairobi")) then 3
+        # UTC+4 / UAE, Armenia, Georgia
+        elif ($l | test("dubai|abu dhabi|\\buae\\b|united arab emirates|armenia|yerevan|georgia tbilisi|azerbaijan|baku|mauritius")) then 4
+        # UTC+5 / Pakistan, Uzbekistan
+        elif ($l | test("pakistan|karachi|lahore|islamabad|uzbekistan|tashkent|kazakhstan|almaty")) then 5
+        # UTC+5:30 / India (rounded to 5)
+        elif ($l | test("india|bangalore|bengaluru|mumbai|delhi|hyderabad|chennai|pune|kolkata|sri lanka")) then 5
+        # UTC+7 / SE Asia
+        elif ($l | test("thailand|bangkok|vietnam|hanoi|ho chi minh|indonesia|jakarta|cambodia")) then 7
+        # UTC+8 / China, Singapore, Malaysia, Philippines, W. Australia
+        elif ($l | test("china|beijing|shanghai|singapore|malaysia|kuala lumpur|philippines|manila|hong kong|taiwan|perth")) then 8
+        # UTC+9 / Japan, Korea
+        elif ($l | test("japan|tokyo|osaka|korea|seoul")) then 9
+        # UTC+10 / Eastern Australia
+        elif ($l | test("sydney|melbourne|brisbane|canberra|queensland|new south wales|victoria.*australia|australia")) then 10
+        # UTC+12 / New Zealand
+        elif ($l | test("new zealand|auckland|wellington|christchurch")) then 12
+        else null
+        end;
     reduce $nodes[] as $n ({};
       # Skip bot users and service accounts (e.g. *-bot, *securitybot); they
       # are never valid human reviewers.
@@ -206,7 +254,7 @@ SIGNALS="$(
             job_title: ($n.jobTitle // ""),
             location: ($n.location // ""),
             last_activity_on: ($n.lastActivityOn // null),
-            tz_offset: null
+            tz_offset: tz_from_location($n.location)
           }
         }
       end
@@ -222,17 +270,42 @@ SIGNALS="$(
 # so they always come from SIGNALS.
 jq \
   --argjson sig "$SIGNALS" \
-  '(.member_signals // {}) as $pre
+  'def tz_from_location($loc):
+     ($loc // "" | ascii_downcase) as $l
+     | if $l == "" then null
+       elif ($l | test("seattle|portland|oregon|san francisco|bay area|california|vancouver|los angeles|pacific time|pdt|pst")) then -8
+       elif ($l | test("denver|colorado|arizona|salt lake|mountain time|calgary")) then -7
+       elif ($l | test("chicago|kansas|texas|austin|dallas|houston|minnesota|wisconsin|illinois|central time|mexico|guatemala|costa rica|winnipeg")) then -6
+       elif ($l | test("new york|boston|toronto|ottawa|montreal|atlanta|florida|miami|ohio|michigan|eastern time|edt|est|colombia|peru|bogota|lima")) then -5
+       elif ($l | test("halifax|santiago|chile|caracas|bolivia|puerto rico")) then -4
+       elif ($l | test("brazil|brasil|sao paulo|são paulo|rio de janeiro|argentina|buenos aires|uruguay|montevideo")) then -3
+       elif ($l | test("london|england|scotland|wales|united kingdom|\\buk\\b|ireland|dublin|lisbon|portugal|iceland|reykjavik|nottingham|brighton|manchester")) then 0
+       elif ($l | test("madrid|spain|barcelona|france|paris|germany|berlin|munich|netherlands|amsterdam|huissen|belgium|brussels|switzerland|zurich|geneva|freiburg|italy|rome|milan|austria|vienna|poland|warsaw|prague|czech|sweden|stockholm|norway|oslo|denmark|copenhagen|nigeria|lagos|morocco|cet")) then 1
+       elif ($l | test("finland|helsinki|greece|athens|romania|moldova|bucharest|ukraine|kyiv|kiev|israel|tel aviv|south africa|cape town|johannesburg|cairo|egypt|estonia|latvia|lithuania|bulgaria|eet")) then 2
+       elif ($l | test("moscow|turkey|istanbul|kenya|nairobi|saudi|riyadh|qatar|kuwait")) then 3
+       elif ($l | test("dubai|abu dhabi|\\buae\\b|united arab emirates|armenia|yerevan|georgia tbilisi|azerbaijan|baku|mauritius")) then 4
+       elif ($l | test("pakistan|karachi|lahore|islamabad|uzbekistan|tashkent|kazakhstan|almaty")) then 5
+       elif ($l | test("india|bangalore|bengaluru|mumbai|delhi|hyderabad|chennai|pune|kolkata|sri lanka")) then 5
+       elif ($l | test("thailand|bangkok|vietnam|hanoi|ho chi minh|indonesia|jakarta|cambodia")) then 7
+       elif ($l | test("china|beijing|shanghai|singapore|malaysia|kuala lumpur|philippines|manila|hong kong|taiwan|perth")) then 8
+       elif ($l | test("japan|tokyo|osaka|korea|seoul")) then 9
+       elif ($l | test("sydney|melbourne|brisbane|canberra|queensland|new south wales|australia")) then 10
+       elif ($l | test("new zealand|auckland|wellington|christchurch")) then 12
+       else null
+       end;
+   (.member_signals // {}) as $pre
    | .signals = (
        ($sig | keys) + ($pre | keys) | unique
        | map(select(test("(^|[._-])bot([._-]|$)|securitybot"; "i") | not))
        | reduce .[] as $u ({};
            ($sig[$u] // {}) as $s
            | ($pre[$u] // {}) as $p
+           | (if ($s.location // "") != "" then $s.location else ($p.location // "") end) as $loc
            | .[$u] = ($s + {
                load: ($p.load // $s.load // 0),
                job_title: (if ($s.job_title // "") != "" then $s.job_title else ($p.job_title // "") end),
-               location: (if ($s.location // "") != "" then $s.location else ($p.location // "") end),
+               location: $loc,
+               tz_offset: (($s.tz_offset) // tz_from_location($loc)),
                assigned_open: ($p.assigned_open // null)
              })
          )

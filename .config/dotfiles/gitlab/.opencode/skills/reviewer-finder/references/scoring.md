@@ -100,7 +100,7 @@ via the plural `users(usernames: [...])` field:
 | Outstanding load (handle/recent-author fallback) | `reviewRequestedMergeRequests(state: opened, reviewStates: [UNREVIEWED, REVIEWED, REQUESTED_CHANGES]).count` | Used only for `@user` SME owners and recent-author hints not sourced from a group; `reviewStates` excludes `APPROVED`. |
 | Role fit | `jobTitle` | Surfaced for every candidate. In a section with a clear domain (backend/frontend/database), a candidate whose `jobTitle` clearly belongs to another discipline (designer/PM/UX/tech-writer) gets a mild penalty + advisory note. Never a hard exclude. |
 | Assigned MRs (context) | `assignedMergeRequests(state: opened).count` | Reported as `assigned_open`; extra context on how busy the person is, not scored directly. |
-| Profile / timezone | `location` | The API does not expose a numeric timezone; `tz_offset` is left null and `location` is used as a hint. |
+| Profile / timezone | `location` | The API exposes no numeric timezone, so `reviewer-signals.sh` derives a coarse `tz_offset` (UTC hours) from the free-text `location` via a keyword map (countries/cities/regions). Unrecognized/empty location → `tz_offset: null` and timezone scoring is skipped for that person. |
 | Inferred inactivity | `lastAuthored` + `lastReviewed` (most recent `updatedAt`) | `days_idle` = days since the most recent **contribution** (authored or reviewer-requested MR update). `>= --stale-days` (default 3) marks the candidate **stale** — advisory, never excluded. |
 | No footprint | both subqueries empty | `no_footprint: true` when **no** authored or reviewed MR is found at all. This is treated as **stale** (penalized), not neutral: a candidate with no visible engineering activity is a responsiveness risk we should not silently rank highly. `days_idle` stays `null` (genuinely unknown count) but the staleness penalty still applies. |
 | Liveness hint only | `lastActivityOn` | Reported as `last_activity_on` but **not** used for `days_idle`: it ticks on bare sign-ins/token use and over-reports liveness (e.g. "active today" for someone with no contribution in weeks). |
@@ -143,7 +143,8 @@ score = load * LOAD_WEIGHT             # default LOAD_WEIGHT = 10
       + STALE_PENALTY (if stale)       # default STALE_PENALTY = 15
       + ROLE_MISMATCH_PENALTY (if role # default = 10
         clearly mismatches section)
-      + timezone term                  # only when tz_offset is known
+      + tz_score * TZ_WEIGHT           # default TZ_WEIGHT = 3; only when
+                                       # tz_offset and --author-tz are known
 ```
 
 Hard-excluded (dropped from `ranked`, listed under `excluded`): `ooo_now == true`.
@@ -159,16 +160,29 @@ writer, documentation) gets `ROLE_MISMATCH_PENALTY` and a visible
 are imperfect), and it does not apply to the generic `Maintainers` pool (no
 single domain). All candidates show `role: <jobTitle>` in their rationale.
 
-### Timezone term
+### Timezone term (`tz_score * TZ_WEIGHT`, default TZ_WEIGHT=3)
 
-Only applied when both the candidate's `tz_offset` and `--author-tz` are known.
-Let `delta = |candidate_tz - author_tz|`.
+Applied only when both the candidate's `tz_offset` and `--author-tz` are known
+(otherwise 0). It uses the **current UTC hour** (`--now-utc-hour`, defaults to
+now) to compute each candidate's **local hour at request time**, then scores by
+`--tz-mode`:
 
-- **Handoff mode (default):** `term = |delta - 8|`. Lowest near an ~8h offset, so
-  a reviewer who is starting their day as the author ends theirs is favored —
-  good for low-churn MRs where the author can hand off and walk away.
-- **Coordination-heavy mode (`--coordination-heavy`):** `term = delta * 2`. Lowest
-  when the timezones overlap — preferred when a lot of back-and-forth is expected.
+- **`day-ahead` (DEFAULT):** prefer a reviewer who has most of their **workday
+  still ahead** right now, so they can pick the review up today. Using their
+  local hour `h` and a 9:00–18:00 workday:
+  - `h` before 09:00 → small penalty `(9 - h) * 0.5` (they'll start soon),
+  - `h` within hours → `((h - 9) / 9) * 8` (rises from 0 at start to ~8 as the
+    day elapses),
+  - `h` at/after 18:00 → `12` (their day is over — strongly deprioritized).
+
+  So at 07:00 UTC a Madrid reviewer (local 08:00) wins; at 17:00 UTC a US-Pacific
+  reviewer (local 09:00) wins. This matches "send it to someone whose full day is
+  ahead of them."
+- **`overlap` (`--tz-mode overlap`, or the deprecated `--coordination-heavy`):**
+  `|delta| * 2` — closest timezone wins; best when heavy back-and-forth is
+  expected.
+- **`handoff` (`--tz-mode handoff`):** `| |delta| - 8 |` — favors a reviewer ~8h
+  ahead, the classic end-of-day handoff.
 
 ## Upcoming PTO (Glean — agent step, not a script)
 
@@ -193,6 +207,10 @@ surfaced.
 | `rank-reviewers.sh` | `SME_BONUS` | 20 | Bonus for recent authors of the changed files. |
 | `rank-reviewers.sh` | `STALE_PENALTY` | 15 | Penalty for stale candidates. |
 | `rank-reviewers.sh` | `ROLE_MISMATCH_PENALTY` | 10 | Penalty when `jobTitle` clearly mismatches a domain section (advisory). |
+| `rank-reviewers.sh` | `TZ_WEIGHT` | 3 | Multiplier on the timezone score. |
+| `rank-reviewers.sh` | `--tz-mode` | day-ahead | `day-ahead` (full day ahead, default), `overlap` (closest tz), or `handoff` (~8h ahead). |
+| `rank-reviewers.sh` | `--now-utc-hour` | now | UTC hour driving the day-ahead model; override for "what if I send later". |
+| `rank-reviewers.sh` | `WORKDAY_START` / `WORKDAY_END` | 9 / 18 | Local workday window for the day-ahead model. |
 
 ## Performance
 
@@ -212,7 +230,10 @@ users are dropped), so the list is never padded with score-0 noise.
 - Recent-author hints derive from commit email local-parts, which are not always
   GitLab usernames. They are soft signals; treat a missing signal entry as
   "unknown", not "unavailable".
-- The users API does not expose a numeric timezone; `tz_offset` is null and the
-  agent should reason about timezone from `location` instead. Many load-0 active
-  candidates therefore tie at score 0 — break ties with `location`/timezone
-  judgement and the Glean PTO check.
+- The users API exposes no numeric timezone; `tz_offset` is **derived from the
+  free-text `location`** via a keyword map. It is coarse (city/country/region
+  level, standard-time offsets, no DST) and only good enough to prefer a
+  near/day-ahead reviewer over a far one. Candidates with an empty or
+  unrecognized location get `tz_offset: null` and are not timezone-scored — so a
+  reviewer with no location set (like `johnmason`) will never be preferred on
+  timezone grounds; pick someone with a known, suitable location instead.

@@ -8,14 +8,21 @@
 #   - load:          + load * LOAD_WEIGHT
 #   - stale:         + STALE_PENALTY if stale (advisory; not excluded)
 #   - sme bonus:     - SME_BONUS if the user is a recent author of the files
-#   - timezone:      handoff-optimized by default (favor reviewers starting
-#                    their day); with --coordination-heavy, favor overlap.
-#                    Timezone is applied only when tz_offset is known.
+#   - timezone:      overlap-optimized by DEFAULT (favor reviewers in a close
+#                    timezone, who will see the request during shared hours);
+#                    with --handoff, favor a reviewer ~8h ahead (starting their
+#                    day as the author ends theirs). Applied only when both the
+#                    candidate tz_offset and --author-tz are known.
 #
 # Options:
-#   --author-tz <h>          Author UTC offset hours (e.g. 1, -5). Optional.
-#   --coordination-heavy     Prefer timezone overlap with the author instead
-#                            of handoff.
+#   --author-tz <h>          Author UTC offset hours (e.g. 1, -5). Optional but
+#                            strongly recommended — without it timezone is
+#                            ignored and far-away reviewers can rank as high as
+#                            near ones.
+#   --handoff                Optimize for an end-of-day handoff (~8h ahead)
+#                            instead of the default timezone overlap.
+#   --coordination-heavy     Deprecated alias for the default (overlap); kept
+#                            for backward compatibility, no-op.
 #   --in <file>              Read from file instead of stdin.
 #
 # Emits JSON on stdout:
@@ -39,8 +46,12 @@ LOAD_WEIGHT=10
 STALE_PENALTY=15
 SME_BONUS=20
 ROLE_MISMATCH_PENALTY=10
+TZ_WEIGHT=3
 AUTHOR_TZ=""
-COORDINATION_HEAVY=false
+NOW_UTC_HOUR=""
+TZ_MODE="day-ahead"
+WORKDAY_START=9
+WORKDAY_END=18
 IN_FILE=""
 
 while [[ $# -gt 0 ]]; do
@@ -49,8 +60,17 @@ while [[ $# -gt 0 ]]; do
     AUTHOR_TZ="$2"
     shift 2
     ;;
+  --now-utc-hour)
+    NOW_UTC_HOUR="$2"
+    shift 2
+    ;;
+  --tz-mode)
+    TZ_MODE="$2"
+    shift 2
+    ;;
   --coordination-heavy)
-    COORDINATION_HEAVY=true
+    # Deprecated: overlap is now expressed via --tz-mode overlap.
+    TZ_MODE="overlap"
     shift
     ;;
   --in)
@@ -65,15 +85,52 @@ if [[ -n "$IN_FILE" ]]; then IN="$(cat "$IN_FILE")"; else IN="$(cat)"; fi
 [[ -n "$IN" ]] || die "no signals JSON on stdin"
 
 [[ -n "$AUTHOR_TZ" ]] || AUTHOR_TZ=null
+# Current UTC hour drives the "day-ahead" model (candidate's local time now).
+[[ -n "$NOW_UTC_HOUR" ]] || NOW_UTC_HOUR="$(date -u +%H)"
 
 jq \
   --argjson load_w "$LOAD_WEIGHT" \
   --argjson stale_p "$STALE_PENALTY" \
   --argjson sme_b "$SME_BONUS" \
   --argjson role_p "$ROLE_MISMATCH_PENALTY" \
+  --argjson tz_w "$TZ_WEIGHT" \
   --argjson author_tz "$AUTHOR_TZ" \
-  --argjson coord "$COORDINATION_HEAVY" '
+  --argjson now_utc "$NOW_UTC_HOUR" \
+  --arg tz_mode "$TZ_MODE" \
+  --argjson wstart "$WORKDAY_START" \
+  --argjson wend "$WORKDAY_END" '
   def absn($x): if $x < 0 then -$x else $x end;
+
+  # Candidate local hour (0-23) at request time, from their UTC offset.
+  def local_hour($tz): (($now_utc + $tz) % 24 + 24) % 24;
+
+  # Timezone score (lower = better), applied only when tz is known. Three modes:
+  #
+  #  day-ahead (default): prefer a reviewer who has most of their workday still
+  #    ahead of them right now, so they can pick the review up today. Score is
+  #    the fraction of the workday already elapsed (0 at/just-before start, high
+  #    after hours). Outside working hours is penalized — before start a little
+  #    (they will start soon), after end heavily (their day is over).
+  #
+  #  overlap: prefer the closest timezone (most shared working hours).
+  #
+  #  handoff: prefer a reviewer ~8h ahead (classic end-of-day handoff).
+  def tz_score($tz):
+    if ($tz == null or $author_tz == null) then 0
+    else
+      local_hour($tz) as $h
+      | if $tz_mode == "overlap" then absn($tz - $author_tz) * 2
+        elif $tz_mode == "handoff" then absn(absn($tz - $author_tz) - 8)
+        else
+          # day-ahead: how much of the workday is gone (capped), with
+          # out-of-hours penalties.
+          ($wend - $wstart) as $wlen
+          | if $h < $wstart then ($wstart - $h) * 0.5      # before work: minor
+            elif $h >= $wend then 12                        # after work: heavy
+            else (($h - $wstart) / $wlen) * 8               # during: 0..8 as day elapses
+            end
+        end
+    end;
 
   # Map a CODEOWNERS section name to a coarse engineering domain, or null when
   # the section has no clear single domain (e.g. generic "Maintainers").
@@ -105,14 +162,7 @@ jq \
     | (if ($recent | index($u)) then -$sme_b else 0 end) as $sme
     | (if ($s.stale // false) then $stale_p else 0 end) as $stale
     | (if role_mismatch($s.job_title; $section) then $role_p else 0 end) as $role
-    | ($s.tz_offset) as $tz
-    | (if ($tz != null and $author_tz != null) then
-         absn($tz - $author_tz) as $delta
-         | (if $coord
-             then ($delta * 2)                 # overlap: closer is better
-             else absn($delta - 8)             # handoff: ~8h apart is ideal
-            end)
-       else 0 end) as $tzscore
+    | (tz_score($s.tz_offset) * $tz_w) as $tzscore
     | ($load * $load_w) + $sme + $stale + $role + $tzscore;
 
   def reasons($u; $sig; $recent; $section):
@@ -126,6 +176,9 @@ jq \
          then "role mismatch: \($s.job_title) (advisory)" else empty end),
         (if ($s.job_title // "") != "" then "role: \($s.job_title)" else empty end),
         (if ($s.location // "") != "" then "loc \($s.location)" else empty end),
+        (if ($s.tz_offset != null)
+         then "local ~\(local_hour($s.tz_offset)):00 (UTC\(if $s.tz_offset >= 0 then "+" else "" end)\($s.tz_offset))"
+         else empty end),
         (if ($s.status_message // "") != "" then "status: \($s.status_message)" else empty end)
       ];
 

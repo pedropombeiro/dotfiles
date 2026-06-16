@@ -73,10 +73,14 @@ sampling or per-candidate REST fan-out.
 reviewer-requested MR update), not `lastActivityOn` — the latter ticks on bare
 sign-ins and falsely reports "active today" for someone idle for weeks.
 
-Pass `--author-tz <hours>` (e.g. `1`, `-5`) when you know the author's UTC offset
-so timezone scoring applies. Add `--coordination-heavy` to `rank-reviewers.sh`
-when the MR will need a lot of back-and-forth (prefers timezone overlap instead
-of a handoff).
+Pass `--author-tz <hours>` (e.g. `1`, `-5`) so timezone scoring applies — without
+it, far-away reviewers can rank as high as near ones. `tz_offset` is derived from
+each candidate's profile `location`. Timezone modes (`--tz-mode`):
+
+- **`day-ahead` (default)** — prefer a reviewer who has their **full workday
+  ahead** right now (uses the current UTC hour; override with `--now-utc-hour`).
+- **`overlap`** — closest timezone, for heavy back-and-forth.
+- **`handoff`** — a reviewer ~8h ahead (classic end-of-day handoff).
 
 See [`references/scoring.md`](references/scoring.md) for the full scoring model,
 API field reference, and tunable constants.
@@ -92,8 +96,9 @@ Lower score = better. Per candidate:
 - **SME bonus** → recent authors of the changed files rank higher in their section.
 - **Inferred inactivity** → idle ≥ 3 days (default) is flagged **advisory**, not
   excluded.
-- **Timezone fit** → handoff-optimized by default; `--coordination-heavy` prefers
-  overlap. Applied only when the timezone is known.
+- **Timezone fit** → `day-ahead` by default (favor a reviewer whose full workday
+  is still ahead at request time); `--tz-mode overlap|handoff` for other
+  strategies. Derived from `location`; applied only when the timezone is known.
 
 ## Upcoming-PTO check (Glean)
 
@@ -138,10 +143,12 @@ no specific SME section owns the files, so the same reviewer covers both stages.
 
 ### Score ties
 
-Because the users API exposes no numeric timezone, many load-0 active candidates
-tie at score 0. Break ties with `location`/timezone judgement (favor a handoff or
-overlap per the MR's needs) and the Glean upcoming-PTO check, and present a few
-options rather than a single arbitrary pick.
+`tz_offset` is derived from `location`, so timezone now differentiates most
+candidates. Remaining ties (e.g. several same-timezone, zero-load reviewers, or
+candidates with **no** location and thus no timezone score) should be broken with
+the Glean upcoming-PTO check and by spreading load across a batch. Never prefer a
+no-location candidate on timezone grounds — their `tz_offset` is null, so they
+were not timezone-scored at all.
 
 ## Assigning (opt-in)
 
@@ -255,9 +262,10 @@ assign instruction. Absent an explicit ask, stop at the recommendation.
    the user can override; never present them as certainty.
 4. **Whole-pool evaluation** — signals come from batched GraphQL, so even large
    maintainer pools are fully evaluated in seconds; no sampling caveat needed.
-5. **Author timezone** — derive it from the MR author's `location` (via the
-   resolved data) and pass `--author-tz`; if unknown, skip timezone scoring and
-   reason about it qualitatively from `location`.
+5. **Author timezone** — derive it from the MR author's `location` and **always
+   pass `--author-tz`**; without it, timezone is ignored and a far reviewer can
+   tie a near one. Default `--tz-mode day-ahead` favors a reviewer whose full
+   workday is ahead at request time — usually what you want for a review request.
 6. **Degrade gracefully** — if a signal source (status, last activity, Glean) is
    unavailable for a candidate, treat it as unknown and say so, rather than
    excluding the candidate.

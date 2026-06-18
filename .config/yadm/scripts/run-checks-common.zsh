@@ -55,6 +55,11 @@ if [[ -x "$WAKATIME_CLI" ]]; then
 
 wakatime_project_from_heartbeat() {
   local entity="$1"
+  # Escape regex metacharacters (e.g. '.') so the entity path is matched
+  # literally. Slashes are not special in grep BRE, so they are left as-is
+  # to avoid GNU grep's "stray \ before /" warnings.
+  local entity_re
+  entity_re=$(printf '%s' "$entity" | sed 's/[][\\.^$*+?(){}|]/\\&/g')
   # Only inspect the JSON heartbeat array line ('heartbeats: [{...}]') and
   # restrict to objects matching our entity, so stale offline-queued
   # heartbeats for other files/projects are ignored.
@@ -62,7 +67,7 @@ wakatime_project_from_heartbeat() {
     --heartbeat-rate-limit-seconds 0 --disable-offline \
     --verbose --log-to-stdout 2>&1) \
       | grep -o 'heartbeats: \[.*\]' \
-      | grep -o "{[^{}]*\\\\\"entity\\\\\":\\\\\"${entity//\//\\/}\\\\\"[^{}]*}" \
+      | grep -o "{[^{}]*\\\\\"entity\\\\\":\\\\\"${entity_re}\\\\\"[^{}]*}" \
       | grep -o 'project\\":\\"[^\\]*\\"' \
       | head -1 \
       | sed 's/project\\":\\"//;s/\\"//'

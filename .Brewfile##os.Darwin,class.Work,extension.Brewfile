@@ -131,6 +131,8 @@ brew "highlight"
 brew "htop"
 # Command-line benchmarking tool
 brew "hyperfine"
+# Tools and libraries to manipulate images in select formats
+brew "imagemagick"
 # Update of iperf: measures TCP, UDP, and SCTP bandwidth
 brew "iperf3"
 # Official CLI for the IPinfo IP Address API

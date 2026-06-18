@@ -1,6 +1,6 @@
 ---
 name: run-in-tmux-pane
-description: Run commands in a temporary tmux pane with full interactive zsh environment (login shell, shims, PATH, aliases, TTY).
+description: "Run commands in a temporary tmux pane with full interactive zsh environment (login shell, shims, PATH, aliases, TTY)."
 version: 1.0.0
 license: MIT
 compatibility: opencode

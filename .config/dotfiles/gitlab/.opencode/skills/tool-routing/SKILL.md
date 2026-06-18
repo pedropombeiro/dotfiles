@@ -1,6 +1,6 @@
 ---
 name: tool-routing
-description: Choose the right lookup and execution tools for GitLab repo work
+description: "Use when choosing the right lookup and execution tools for GitLab repo work"
 license: MIT
 compatibility: opencode
 metadata:

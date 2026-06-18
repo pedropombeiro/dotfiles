@@ -1,6 +1,10 @@
 ---
 name: psql
-description: Inspect local GDK PostgreSQL test and development databases with gdk psql. Use for Postgres schema checks, table and index inspection, read-only SQL queries, migration verification, and investigating GitLab data in local test or dev databases.
+description: >-
+  Inspect local GDK PostgreSQL test and development
+  databases with gdk psql. Use for Postgres schema checks, table and index
+  inspection, read-only SQL queries, migration verification, and investigating
+  GitLab data in local test or dev databases.
 license: MIT
 compatibility: opencode
 metadata:

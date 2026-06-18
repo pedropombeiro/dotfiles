@@ -1,6 +1,6 @@
 ---
 name: mr-pipeline
-description: Wait for MR merge and trigger MR pipelines using glab CLI helpers
+description: "Use when waiting for MR merge and trigger MR pipelines using glab CLI helpers"
 license: MIT
 compatibility: opencode
 metadata:

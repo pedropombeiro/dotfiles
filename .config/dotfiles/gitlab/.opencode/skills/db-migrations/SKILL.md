@@ -1,6 +1,10 @@
 ---
 name: db-migrations
-description: List, inspect, and undo branch-specific GitLab database migrations. Use for checking which migrations were introduced by the current branch, rolling them back safely, and understanding migration state during local GitLab database work.
+description: >-
+  Use when list, inspect, and undo branch-specific GitLab database
+  migrations. Use for checking which migrations were introduced by the current
+  branch, rolling them back safely, and understanding migration state during
+  local GitLab database work.
 license: MIT
 compatibility: opencode
 metadata:

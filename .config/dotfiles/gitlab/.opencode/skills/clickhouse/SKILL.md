@@ -1,6 +1,6 @@
 ---
 name: clickhouse
-description: Inspect GitLab local ClickHouse tables, schemas, ingestion paths, and data patterns. Use for CH table questions, DESCRIBE TABLE, schema/source-of-truth checks under db/click_house, ClickHouse ingestion debugging, and investigating aggregates, distributions, or anomalous data in the GitLab repo.
+description: "Inspect GitLab local ClickHouse tables, schemas, ingestion paths, and data patterns. Use for CH table questions, DESCRIBE TABLE, schema/source-of-truth checks under db/click_house, ClickHouse ingestion debugging, and investigating aggregates, distributions, or anomalous data in the GitLab repo."
 license: MIT
 compatibility: opencode
 allowed-tools: Bash(.opencode/skills/clickhouse/scripts/gdk-clickhouse:*)

@@ -1,6 +1,6 @@
 ---
 name: repo-bootstrap
-description: Load and reconcile repo-local GitLab instructions before substantive work
+description: "Load and reconcile repo-local GitLab instructions before substantive work"
 license: MIT
 compatibility: opencode
 metadata:

@@ -56,7 +56,7 @@ yamllint = "latest"
 
 [tasks."brew:dump"]
 description = "Dump current Homebrew packages to Brewfile"
-run = "brew bundle dump --global --describe --force --formula --cask --tap"
+run = "brew bundle dump --global --force --formula --cask --tap"
 
 [tasks."brew:cleanup"]
 description = "Remove packages not in Brewfile"

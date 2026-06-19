@@ -15,6 +15,23 @@ local routes = {
   { url = "zoom.us/my/", bundle = "us.zoom.videomeetings", name = "Zoom" },
 }
 
+local slackTeams = {
+  gitlab = "E03N1RJJX7C",
+}
+
+local function slackDeepLink(fullURL)
+  local subdomain, channel, ts = fullURL:match("https?://([^%.]+)%.slack%.com/archives/([^/?]+)/p(%d+)")
+  if not channel or not ts then return nil end
+  if #ts <= 6 then return nil end
+  local message = ts:sub(1, #ts - 6) .. "." .. ts:sub(#ts - 5)
+  local deepLink = "slack://channel?id=" .. channel .. "&message=" .. message
+  local team = slackTeams[subdomain]
+  if team then deepLink = deepLink .. "&team=" .. team end
+  local threadTS = fullURL:match("[?&]thread_ts=([%d%.]+)")
+  if threadTS then deepLink = deepLink .. "&thread_ts=" .. threadTS end
+  return deepLink
+end
+
 local function browserForCurrentSpace()
   local ok, spaceID = pcall(function() return hs.spaces.activeSpaceOnScreen(hs.screen.mainScreen():getUUID()) end)
   if ok and spaceID and spaceBrowsers[spaceID] then return spaceBrowsers[spaceID] end
@@ -49,6 +66,14 @@ hs.urlevent.httpCallback = function(scheme, host, params, fullURL, senderPID)
       )
     then
       log.i("routing to " .. route.name)
+      if route.bundle == "com.tinyspeck.slackmacgap" then
+        local deepLink = slackDeepLink(fullURL)
+        if deepLink then
+          log.i("slack deep link: " .. deepLink)
+          hs.urlevent.openURLWithBundle(deepLink, route.bundle)
+          return
+        end
+      end
       hs.urlevent.openURLWithBundle(fullURL, route.bundle)
       return
     end

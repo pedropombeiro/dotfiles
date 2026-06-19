@@ -13,7 +13,7 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 - `constants.lua` — Shared hardware and tool path constants used across modules (uhubctl, blueutil, USB hub/port assignments, AirPods address).
 - `spaces.lua##class.Work` — Applies the Rectangle Pro `External display` layout on every Space switch.
 - `sleepwake.lua##class.Work` — Caffeinate watcher for sleep/wake/unlock events. Manages Stream Deck USB power, BusylightHTTP, nginx, and Elgato Control Center. Exports `displaysleep()` for use by other modules.
-- `urlrouter.lua##class.Work` — URL-based browser router (replaces Choosy). Hammerspoon is registered as the default HTTP/HTTPS handler via `duti`. Routes `zoom.us/j/` and `zoom.us/my/` links to Zoom.app, everything else to Chrome.
+- `urlrouter.lua##class.Work` — URL-based browser router (replaces Choosy). Hammerspoon is registered as the default HTTP/HTTPS handler via `duti`. Routes `zoom.us/j/` and `zoom.us/my/` links to Zoom.app, `*.slack.com` links to Slack.app, everything else to Chrome. Slack archive URLs are converted to `slack://channel` deep links (see Slack deep linking below) so the desktop app navigates to the message/thread instead of just focusing.
 - `meetings.lua##class.Work` — Auto-switches audio to AirPods when Zoom launches (connects via `blueutil` if needed), pauses Spotify, quits eqMac, powers on webcam USB. On Zoom exit: restores previous audio device, resumes Spotify, relaunches eqMac hidden, quits Camo Studio, powers off Elgato Wave USB port and webcam USB port. Uses a single `hs.application.watcher` (stored in `M._watcher` and `return M` so it isn't GC'd) keyed on `webcam.apps`; seeds `activeMeetings` from running apps on load so a reload mid-meeting doesn't fire a spurious start.
 - `webcam.lua##class.Work` — Powers the YoloCam S3 USB port on/off via uhubctl. Exports `webcam.on()` and `webcam.off()`. Powers off on Hammerspoon load (unless Zoom is running). Called by `meetings.lua` and `sleepwake.lua`.
 - `httpserver/` — Modular HTTP server on `localhost:18990`. Sub-modules each return a table of `{ actionName = handlerFn }` that get merged into a single dispatch table.
@@ -98,6 +98,18 @@ URL scheme is `rectangle-pro://` (not `rectanglepro://`). Layout is triggered vi
 ```
 open -g "rectangle-pro://execute-layout?name=External%20display"
 ```
+
+## Slack deep linking (urlrouter)
+
+Opening a Slack web archive URL (`https://<ws>.slack.com/archives/<CHANNEL>/p<TS>`) in the Slack desktop app via `openURLWithBundle` only **focuses** the app — it does not navigate to the message. Chrome works because Slack's web redirect page builds a proper `slack://` deep link server-side (it knows the team ID). `urlrouter.lua##slackDeepLink` reproduces this:
+
+- Parses subdomain, channel ID, and packed timestamp from the archive URL.
+- Converts the packed `p<TS>` to a message ts by inserting a `.` before the last 6 digits (`p1773236141113359` → `1773236141.113359`).
+- Maps the workspace subdomain to a team ID via the `slackTeams` table and appends `&team=<TEAM_ID>` — **required**; without `team`, Slack only focuses and does not navigate (verified). GitLab workspace (`gitlab`) team ID is `E03N1RJJX7C` (Enterprise Grid).
+- Preserves `thread_ts` from the query string for threaded replies.
+- Produces `slack://channel?id=<CHANNEL>&message=<TS>&team=<TEAM>[&thread_ts=<TS>]`.
+
+Find a workspace's team ID in `~/Library/Application Support/Slack/storage/root-state.json` (`workspaces[*].team_id` → `domain`). Add new workspaces to the `slackTeams` map. Non-archive Slack URLs (sign-in, SSO — see `exclude`) fall through to the raw URL.
 
 ## Related files
 

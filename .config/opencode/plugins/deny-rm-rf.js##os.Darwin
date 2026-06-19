@@ -10,7 +10,7 @@ export const DenyRmRf = async () => {
       const command = output?.args?.command ?? ""
 
       if (RM_RF_PATTERN.test(command)) {
-        throw new Error("Refusing to run `rm -rf` without user supervision. Use `trash` instead or a non-destructive way of achieving the goal.")
+        throw new Error("Refusing to run `rm -rf` without user supervision. YOU MUST use do it in a non-destructive way (such as `trash` on MacOS) or ask for permission. DO NOT attempt to work around this instruction.")
       }
     }
   }

@@ -9,6 +9,7 @@
     "messages_first": "ctrl+g",
     "messages_last": "ctrl+alt+g"
   },
+  "plugin": ["opencode-spend"],
   "tui": {
     "scroll_speed": 3,
     "scroll_acceleration": {

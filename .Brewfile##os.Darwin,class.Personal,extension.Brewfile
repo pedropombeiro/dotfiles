@@ -1,11 +1,11 @@
-tap "adembc/tap", trusted: true
+tap "adembc/tap", "https://github.com/Adembc/homebrew-tap", trusted: true
 tap "anomalyco/tap", trusted: true
 tap "b00y0h/wakadash", trusted: true
 tap "borgbackup/tap", trusted: true
 tap "homebrew/bundle"
 tap "homebrew/services"
 tap "jarred-sumner/git-peek", trusted: true
-tap "jdx/tap", trusted: true
+tap "jdx/tap", "https://github.com/jdx/homebrew-tap.git", trusted: true
 tap "jstkdng/programs", trusted: true
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git", trusted: true
 tap "showwin/speedtest", trusted: true

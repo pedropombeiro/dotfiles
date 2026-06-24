@@ -6,7 +6,7 @@ local lastAction = nil
 
 local M = {
   apps = {
-    ["zoom.us"] = true,
+    ["Zoom"] = true,
     ["YoloLiv Compose"] = true,
   },
 }
@@ -32,9 +32,7 @@ local function setPower(action, reason)
   end)
 end
 
-function M.on(reason)
-  setPower("on", reason or "M.on")
-end
+function M.on(reason) setPower("on", reason or "M.on") end
 
 function M.off(reason)
   local apps = runningApps()
@@ -45,9 +43,7 @@ function M.off(reason)
   setPower("off", reason or "M.off")
 end
 
-function M.anyAppRunning()
-  return #runningApps() > 0
-end
+function M.anyAppRunning() return #runningApps() > 0 end
 
 function M.reconcile(reason)
   reason = reason or "reconcile"

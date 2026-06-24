@@ -118,9 +118,13 @@ M._watcher = hs.application.watcher.new(function(name, event)
 
   local previouslyActive = next(activeMeetings) ~= nil
 
-  activeMeetings = {}
-  for appName in pairs(webcam.apps) do
-    if hs.application.get(appName) then activeMeetings[appName] = true end
+  -- Derive per-app state from the authoritative event, not hs.application.get,
+  -- which races against process reaping on terminated and may still report a
+  -- dying app (and would miss already-running background processes).
+  if event == hs.application.watcher.launched then
+    activeMeetings[name] = true
+  else
+    activeMeetings[name] = nil
   end
 
   local nowActive = next(activeMeetings) ~= nil

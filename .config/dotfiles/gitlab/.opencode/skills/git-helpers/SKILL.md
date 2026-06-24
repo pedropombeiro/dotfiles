@@ -1,12 +1,12 @@
 ---
 name: git-helpers
-description: Use Git branch-management helpers for GitLab development workflows. Use for finding a branch's parent, rebasing related branches, force-pushing feature branches when appropriate, and understanding commit or diff structure across stacked Git branches.
+description: Use before any Git branch operation in this repo. SSOT for the branch naming convention (<username>/<issue-id>/<branch-name>) — load before creating a branch instead of guessing the name. Also provides helpers for finding a branch's parent, rebasing related branches, force-pushing feature branches, and understanding commit or diff structure across stacked Git branches.
 license: MIT
 compatibility: opencode
 metadata:
   audience: developers
   author: pedropombeiro
-  keywords: git, branches, rebase, parent-branch, diff, force-push
+  keywords: git, branches, branch-naming, create-branch, rebase, parent-branch, diff, force-push
   workflow: git
 ---
 

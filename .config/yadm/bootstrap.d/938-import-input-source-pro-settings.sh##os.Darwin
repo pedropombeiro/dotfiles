@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+class="$(yadm config --get local.class)"
+backup="${HOME}/Sync/pedro/Briefcase/Backups/MBP.${class}/Input Source Pro Settings.json"
+
+if [[ ! -f "${backup}" ]]; then
+  echo "Skipping Input Source Pro import: backup not found at ${backup}"
+  exit 0
+fi
+
+if ! osascript -e 'id of app "Input Source Pro"' &>/dev/null; then
+  echo "Skipping Input Source Pro import: app not found"
+  exit 0
+fi
+
+echo "Ensuring Input Source Pro URL handler is registered..."
+open -a "Input Source Pro"
+sleep 3
+
+echo "Importing Input Source Pro settings from ${backup}"
+open "inputsourcepro://import?path=${backup}"

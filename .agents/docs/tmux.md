@@ -179,21 +179,28 @@ and quoting guidance.
 
 ### Commands that require `run-in-tmux-pane`
 
-| Command             | Why                                                | Timeout         | Docs                                                                                 |
-| ------------------- | -------------------------------------------------- | --------------- | ------------------------------------------------------------------------------------ |
-| `gpsup`             | Autoloaded zsh function, needs interactive shell   | 120 s           | [SCM](scm.md#how-to-run-gpsup)                                                       |
-| `fgdku`             | Autoloaded zsh function, long-running, interactive | 1800 s (30 min) | [GDK skill](~/.config/dotfiles/gitlab/.opencode/skills/gdk/SKILL.md)                 |
-| `test_mr`           | Autoloaded zsh function, runs rspec for branch     | 600 s (10 min)  | [MR workflow skill](~/.config/dotfiles/gitlab/.opencode/skills/mr-workflow/SKILL.md) |
-| `bundle exec rspec` | Long-running test suite                            | 600 s (10 min)  | —                                                                                    |
+| Command             | Why                                                | Bash `timeout`      | Docs                                                                                 |
+| ------------------- | -------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------ |
+| `gpsup`             | Autoloaded zsh function, needs interactive shell   | 360000 ms (6 min)   | [SCM](scm.md#how-to-run-gpsup)                                                       |
+| `fgdku`             | Autoloaded zsh function, long-running, interactive | 1800000 ms (30 min) | [GDK skill](~/.config/dotfiles/gitlab/.opencode/skills/gdk/SKILL.md)                 |
+| `test_mr`           | Autoloaded zsh function, runs rspec for branch     | 600000 ms (10 min)  | [MR workflow skill](~/.config/dotfiles/gitlab/.opencode/skills/mr-workflow/SKILL.md) |
+| `bundle exec rspec` | Long-running test suite                            | 600000 ms (10 min)  | —                                                                                    |
 
-> **Important:** The script blocks until the tmux pane exits. Set the Bash
-> tool's `timeout` parameter to at least the value in the Timeout column above,
-> or the tool will kill the script prematurely.
+> **Critical:** The Bash tool's `timeout` MUST exceed the script's own
+> `TMUX_PANE_TIMEOUT` (default **300 s**), or the Bash tool kills the call while
+> the pane is still legitimately running. You then get **partial output with no
+> exit code, and the command keeps running in the background** — easily mistaken
+> for a completed (or stalled) run, which is the usual cause of "the agent
+> stopped waiting after a few seconds".
 >
-> Do not override `TMUX_PANE_TIMEOUT` to a value lower than the timeout listed
-> in the table. For example, `gpsup` runs pre-push hooks (rubocop, danger,
-> secrets-detection) that routinely take 60–90 s, so the default 120 s is the
-> minimum safe value.
+> Formula (from the `run-in-tmux-pane` skill): `bash_timeout_ms =
+(TMUX_PANE_TIMEOUT + 60) * 1000`. With the default 300 s pane timeout, the
+> floor is **360000 ms** — never set less, even for `gpsup`. `gpsup` pushes to
+> GitLab and waits on slow pre-push hooks (rubocop, danger, secrets-detection)
+> plus remote MR creation, which routinely exceeds 120 s, so the old 120 s
+> guidance was wrong.
+>
+> Do not lower `TMUX_PANE_TIMEOUT` below the value implied by the table.
 
 ### How it works
 

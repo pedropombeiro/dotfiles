@@ -52,8 +52,17 @@ _git_wait_lock() {
     fi
     (( _waited == 0 )) && printf "${YELLOW}%s${NC}\n" 'Waiting for another git process to release .git/index.lock...'
     sleep 1
-    (( _waited++ ))
+    _waited=$(( _waited + 1 ))
   done
+}
+
+# core.fsmonitor keeps a background daemon that writes the index (untracked cache)
+# on git operations. During gdk update it races `git checkout master` for
+# .git/index.lock. Stop the daemon (and any orphaned strays) before the update;
+# git auto-restarts it on the next status, so no explicit resume is needed.
+_git_fsmonitor_stop() {
+  git -C "${GDK_ROOT}/gitlab" fsmonitor--daemon stop 2>/dev/null
+  pkill -f 'git fsmonitor--daemon run' 2>/dev/null || true
 }
 
 _fgdku_total=$(( $(grep -c '^[[:space:]]*_fgdku_step "' "${(%):-%x}" 2>/dev/null || echo 17) ))
@@ -88,6 +97,8 @@ _fgdku_cleanup() {
 trap '_fgdku_rc=130; _fgdku_cleanup; return $_fgdku_rc' INT
 trap '_fgdku_rc=143; _fgdku_cleanup; return $_fgdku_rc' TERM
 trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
+
+_git_fsmonitor_stop
 
 (
   cd "${GDK_ROOT}/gitlab" || exit 0
@@ -164,6 +175,11 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
 
   _fgdku_step "gdk update"
   printf "${YELLOW}%s${NC}\n" 'Updating GDK...'
+  # Earlier git calls (rev-parse/diff) may have respawned the fsmonitor daemon,
+  # which writes the index and races gdk update's `git checkout master`. Stop it
+  # again right before the update; git restarts it lazily afterwards.
+  _git_fsmonitor_stop
+  _git_wait_lock
   cd $GDK_ROOT
 
   gdk update

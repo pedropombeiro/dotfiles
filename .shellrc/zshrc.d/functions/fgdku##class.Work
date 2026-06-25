@@ -42,6 +42,20 @@ ha_webhook() {
     printf "${YELLOW}%s${NC}\n" 'Home Assistant webhook unavailable, continuing...'
 }
 
+_git_wait_lock() {
+  local _lock=".git/index.lock" _waited=0 _timeout=60
+  while [[ -e "$_lock" ]]; do
+    if (( _waited >= _timeout )); then
+      printf "${YELLOW}%s${NC}\n" "index.lock held for ${_timeout}s, removing stale lock..."
+      rm -f "$_lock"
+      break
+    fi
+    (( _waited == 0 )) && printf "${YELLOW}%s${NC}\n" 'Waiting for another git process to release .git/index.lock...'
+    sleep 1
+    (( _waited++ ))
+  done
+}
+
 _fgdku_total=$(( $(grep -c '^[[:space:]]*_fgdku_step "' "${(%):-%x}" 2>/dev/null || echo 17) ))
 _fgdku_current=0
 _fgdku_step() {
@@ -79,6 +93,7 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
   cd "${GDK_ROOT}/gitlab" || exit 0
 
   spring_binstubs restore "${GDK_ROOT}/gitlab"
+  _git_wait_lock
   git restore db/structure.sql package.json
 
   if [[ $(git diff --shortstat 2>/dev/null | tail -n1) != "" || $(git diff --shortstat --cached 2>/dev/null | tail -n1) != "" ]]; then
@@ -92,6 +107,7 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
       exit 1
     fi
 
+    _git_wait_lock
     git full-reset
   fi
 
@@ -153,7 +169,6 @@ trap '_fgdku_rc=129; _fgdku_cleanup; return $_fgdku_rc' HUP
   gdk update
 
   cd gitlab
-  git restore db/structure.sql
   sleep 5
 
   _fgdku_step "post-update bundle"

@@ -184,7 +184,7 @@ brew "nmap"
 # Prometheus exporter for machine metrics
 brew "node_exporter", restart_service: :changed
 # Create, run, and share large language models (LLMs)
-brew "ollama", restart_service: :changed
+brew "ollama"
 # PAM module for reattaching to the user's GUI (Aqua) session
 brew "pam-reattach"
 # Swiss-army knife of markup format conversion

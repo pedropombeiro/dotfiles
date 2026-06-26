@@ -93,6 +93,8 @@ brew "gh"
 brew "harfbuzz"
 # Framework for layout and rendering of i18n text
 brew "pango"
+# Remote repository management made easy
+brew "ghq"
 # Distributed revision control system
 brew "git"
 # Syntax-highlighting pager for git and diff output

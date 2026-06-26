@@ -232,3 +232,6 @@
   fetchJobs = 2
 [status]
   submoduleSummary = true
+
+[ghq]
+  root = ~/Developer

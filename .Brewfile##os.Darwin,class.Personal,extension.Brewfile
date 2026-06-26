@@ -64,6 +64,8 @@ brew "fping"
 brew "fzf"
 # GitHub command-line tool
 brew "gh"
+# Remote repository management made easy
+brew "ghq"
 # Distributed revision control system
 brew "git"
 # Syntax-highlighting pager for git and diff output

@@ -22,6 +22,7 @@ teleport-community = "17"
 glab = "latest"
 # GitLab Duo AI CLI
 "npm:@gitlab/duo-cli" = "latest"
+uv = "latest"
 
 [tasks."system:fix"]
 description = "Run system fix actions manually"

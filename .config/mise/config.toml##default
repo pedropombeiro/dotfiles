@@ -15,7 +15,7 @@ uvx = true
 # JavaScript runtime
 node = "latest"
 # Ruby runtime
-ruby = "3.4.9"
+ruby = "4.0.5"
 # Rust toolchain
 rust = "stable"
 # cURL-like tool for gRPC servers

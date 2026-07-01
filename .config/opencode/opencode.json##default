@@ -82,6 +82,11 @@
             "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
           }
         },
+        "duo-chat-sonnet-5": {
+          "cost": {
+            "input": 3, "output": 15, "cache_read": 0.30, "cache_write": 3.75
+          }
+        },
         "duo-chat-sonnet-4-6": {
           "cost": {
             "input": 3, "output": 15, "cache_read": 0.30, "cache_write": 3.75

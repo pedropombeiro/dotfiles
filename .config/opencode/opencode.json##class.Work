@@ -320,6 +320,7 @@
       "db-migrations": "allow",
       "gdk": "allow",
       "git-helpers": "allow",
+      "gitlab-coding-principles": "allow",
       "gitlab-review": "allow",
       "glab": "allow",
       "hammerspoon": "allow",

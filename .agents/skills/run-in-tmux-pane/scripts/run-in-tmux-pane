@@ -37,7 +37,14 @@ fi
 _timeout=${TMUX_PANE_TIMEOUT:-300}
 
 tmpfile=$(mktemp)
-trap 'rm -f "$tmpfile" "${tmpfile}.out"' EXIT
+pane_id=""
+cleanup() {
+  # Kill the pane if the script is interrupted/terminated so a long-running
+  # command (e.g. a git push) cannot keep running detached in the background.
+  [[ -n "${pane_id}" ]] && tmux kill-pane -t "${pane_id}" 2>/dev/null || true
+  rm -f "$tmpfile" "${tmpfile}.out"
+}
+trap cleanup EXIT INT TERM
 
 _sentinel="SKILL_EXIT_${RANDOM}_${RANDOM}"
 

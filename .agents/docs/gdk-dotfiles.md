@@ -58,6 +58,8 @@ Track it with YADM: `yadm add ~/.config/dotfiles/gitlab/<path>`.
 | `.opencode/skills/glab/assets/graphql/*.graphql` (3) | GraphQL query files for glab skill         |
 | `.opencode/skills/glab/references/*.md` (5)          | Reference docs for glab skill              |
 | `.opencode/skills/glab/scripts/*.sh` (2)             | Helper scripts for glab skill              |
+| `.opencode/skills/issue-state/SKILL.md`              | Issue status/MR-sync + start-issue skill   |
+| `.opencode/skills/issue-state/scripts/*.sh` (5)      | Helper scripts for issue-state skill       |
 | `.opencode/skills/mr-pipeline/SKILL.md`              | MR pipeline coordination tools skill       |
 | `.opencode/skills/mr-workflow/SKILL.md`              | MR lifecycle helpers skill                 |
 | `.opencode/skills/orbit/SKILL.md`                    | Orbit analytics skill                      |

@@ -42,7 +42,9 @@ Track it with YADM: `yadm add ~/.config/dotfiles/gitlab/<path>`.
 | `CLAUDE.local.md`                                    | Personal AI agent instructions             |
 | `lefthook-local.yml`                                 | Force UTF-8 for Ruby hooks (lazygit)       |
 | `.ai/code-style.local.md`                            | Ruby code style lessons                    |
+| `.ai/git.local.md`                                   | Git and branch workflow lessons            |
 | `.ai/lessons-learned.local.md`                       | General AI corrections                     |
+| `.ai/merge-requests.local.md`                        | MR lifecycle and issue-state lessons       |
 | `.ai/testing.local.md`                               | RSpec testing conventions                  |
 | `.gitlab/duo/chat-rules.md`                          | Duo chat persona rules                     |
 | `.opencode/commands/review-mr.md`                    | Multi-agent MR review command              |

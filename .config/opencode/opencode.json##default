@@ -14,7 +14,7 @@
       "model": "gitlab/duo-chat-opus-4-8"
     },
     "build": {
-      "model": "gitlab/duo-chat-sonnet-4-6"
+      "model": "gitlab/duo-chat-sonnet-5"
     }
   },
   "default_agent": "plan",

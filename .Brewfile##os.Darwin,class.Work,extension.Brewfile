@@ -111,8 +111,6 @@ brew "glab"
 brew "gnu-sed"
 # GNU Transport Layer Security (TLS) Library
 brew "gnutls"
-# Validating, recursive, caching DNS resolver
-brew "unbound"
 # GNU Privacy Guard (OpenPGP)
 brew "gnupg"
 # Library access to GnuPG
@@ -249,6 +247,8 @@ brew "tokei"
 brew "trash"
 # USB hub per-port power control
 brew "uhubctl"
+# Validating, recursive, caching DNS resolver
+brew "unbound"
 # Syntax-aware linter for prose
 brew "vale"
 # Modern watch command

@@ -39,6 +39,16 @@
   "enabled_providers": ["ollama", "gitlab", "anthropic", "google"],
   "small_model": "gitlab/duo-chat-gpt-5-4-nano",
   "provider": {
+    "anthropic": {
+      "models": {
+        "claude-fable-5": {
+          "name": "Fable 5",
+          "cost": {
+            "input": 10, "output": 50, "cache_read": 1, "cache_write": 12.5
+          }
+        }
+      }
+    },
     "ollama": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (local)",
@@ -82,6 +92,11 @@
         "duo-chat-opus-4-7": {
           "cost": {
             "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
+          }
+        },
+        "duo-workflow-claude-fable-5": {
+          "cost": {
+            "input": 10, "output": 50, "cache_read": 1, "cache_write": 12.5
           }
         },
         "duo-workflow-opus-4-6": {

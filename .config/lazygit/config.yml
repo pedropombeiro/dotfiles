@@ -407,6 +407,7 @@ keybinding:
     increaseRenameSimilarityThreshold: )
     decreaseRenameSimilarityThreshold: (
     openDiffTool: <c-t>
+    newWorktree: w
   status:
     checkForUpdate: u
     recentRepos: <enter>
@@ -447,8 +448,6 @@ keybinding:
     setUpstream: u
     fetchRemote: f
     sortOrder: s
-  worktrees:
-    viewWorktreeOptions: w
   commits:
     squashDown: s
     renameCommit: r
@@ -584,6 +583,7 @@ customCommands:
         body: "Are you sure you want to commit?"
     command: >-
       message=$'{{.Form.Type}}{{ if .Form.Scope }}({{ .Form.Scope }}){{ end }}{{.Form.Breaking}}: {{.Form.Message}}'; description=$'{{.Form.Description}}'; echo $message > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT; echo $description >> {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT; git commit --message $message {{ if .Form.Description }} --message $description {{ end }} &&
+
 
         echo -n > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT
     loadingText: "Creating conventional commit..."

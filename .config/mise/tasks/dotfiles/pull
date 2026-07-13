@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 #MISE description="Fetch and hard-reset dotfiles to origin/master"
+#MISE raw=true
 set -eu
 
 if [ -n "$(yadm status -s)" ]; then

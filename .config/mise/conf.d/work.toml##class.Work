@@ -4,7 +4,7 @@ HISTIGNORE="*AWS_SECRET*:*AWS_ACCESS*:*glpat-*:*glrt-*:*gloas-*:*PRIVATE-TOKEN*:
 [tools]
 # ── Runtimes & infra ──────────────────────────────────────────────────
 # Ruby runtime
-ruby = "3.4.9"
+ruby = "4.0.6"
 # Go toolchain
 go = "1.26.2"
 # OLAP database

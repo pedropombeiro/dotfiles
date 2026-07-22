@@ -56,9 +56,6 @@ pre-push:
     validate-fast-spec-helper:
       env:
         RUBYOPT: "-EUTF-8"
-    permissions_docs:
-      env:
-        RUBYOPT: "-EUTF-8"
     gettext:
       env:
         RUBYOPT: "-EUTF-8"

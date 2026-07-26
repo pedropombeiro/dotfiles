@@ -234,7 +234,6 @@ cask "calibre"
 cask "claude"
 # Terminal-based AI coding assistant
 cask "claude-code"
-# Create and run Linux containers using lightweight virtual machines
 cask "container"
 # Allows switching between application windows
 cask "contexts"
@@ -307,7 +306,6 @@ cask "p4v"
 cask "plex"
 # VPN client focusing on security
 cask "protonvpn"
-# Display image info and preview unsupported formats in QuickLook
 cask "qlimagesize"
 # Imaging utility to install operating systems to a microSD card
 cask "raspberry-pi-imager"

@@ -49,6 +49,8 @@ brew "croc"
 brew "ctop"
 # Get a file from an HTTP, HTTPS or FTP server
 brew "curl"
+# TIFF library and utilities
+brew "libtiff"
 # Command-line interface for SQLite
 brew "sqlite"
 # Tool for exploring each layer in a docker image
@@ -183,8 +185,6 @@ brew "nginx", restart_service: :changed
 brew "nmap"
 # Prometheus exporter for machine metrics
 brew "node_exporter", restart_service: :changed
-# Create, run, and share large language models (LLMs)
-brew "ollama"
 # PAM module for reattaching to the user's GUI (Aqua) session
 brew "pam-reattach"
 # Swiss-army knife of markup format conversion
@@ -317,7 +317,6 @@ cask "chrysalis"
 cask "claude"
 # Terminal-based AI coding assistant
 cask "claude-code"
-# Create and run Linux containers using lightweight virtual machines
 cask "container"
 # Allows switching between application windows
 cask "contexts"

@@ -61,7 +61,8 @@
       "description": "Gitlab.com incident management tool",
       "type": "local",
       "command": [
-        "/Users/pedropombeiro/.incidentio/incident"
+        "/Users/pedropombeiro/.incidentio/incident",
+        "mcp"
       ]
     }
   ]

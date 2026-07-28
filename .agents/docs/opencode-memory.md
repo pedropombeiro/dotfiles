@@ -79,7 +79,9 @@ Fix applied here:
 invocation, which can pull 2.x back in. Verify with
 `ls -d ~/.local/share/opencode-memory-install/.venv/lib/python3.*/site-packages/mcp-*.dist-info`.
 Upstream's own guidance is to constrain the dep (`mcp>=1.28,<2`); until that lands,
-this pin is manual.
+this pin is manual. Reported upstream as
+[ghavenga/opencode-memory#223](https://gitlab.com/ghavenga/opencode-memory/-/issues/223) —
+once it is fixed and the install updated, this pin can be dropped.
 
 ## LLM Provider Needs an Absolute Path
 

@@ -4,10 +4,7 @@
       "name": "gitlab",
       "description": "GitLab MCP server",
       "url": "https://gitlab.com/api/v4/mcp",
-      "type": "remote",
-      "oauth": {
-        "callbackPort": 47357
-      }
+      "type": "remote"
     },
     {
       "name": "gitlab-knowledge-graph",

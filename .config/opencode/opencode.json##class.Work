@@ -19,7 +19,8 @@
     "opencode-homeassistant@latest",
     "opencode-terminal-progress@latest",
     "opencode-tmux-indicator@latest",
-    "opencode-wakatime@latest"
+    "opencode-wakatime@latest",
+    "/Users/pedropombeiro/.local/share/opencode-memory-install/plugin"
   ],
   "mcp": {
     "lazy-mcp": {
@@ -34,6 +35,10 @@
         "~/.config/lazy-mcp/servers.json"
       ],
       "enabled": true
+    },
+    "memory": {
+      "type": "remote",
+      "url": "http://localhost:9824/mcp"
     }
   },
   "enabled_providers": ["ollama", "gitlab", "anthropic", "google"],

@@ -3,6 +3,16 @@
 This file contains the global rules that apply across repositories. Load the linked docs only when
 the task needs them.
 
+## Session Context
+
+Session context (boot gates, blockers, reminders) is automatically injected at the start of each
+session and after compaction. Boot gates (⛔) are standing instructions - follow them when the
+relevant situation arises.
+
+**If you do not see boot context** (no boot gates, no blockers section, no reminders) in the system
+prompt after this AGENTS.md section, call `memory_get_boot_context()` to load it manually. This is a
+fallback for when automatic injection fails.
+
 ## Core Rules
 
 - For library and framework documentation, use Context7 first.
@@ -51,3 +61,4 @@ the task needs them.
 - [Writing Style](~/.agents/docs/writing-style.md) - Pedro's tone, formatting, and MR conventions
 - [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`
 - [Developer Directory](~/.agents/docs/developer-directory.md) - Repo clone path convention (`~/Developer/<forge>/<owner>/<repo>`)
+- [OpenCode Memory](~/.agents/docs/opencode-memory.md) - Long-term memory tools and installer caveats

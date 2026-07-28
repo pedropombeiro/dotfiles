@@ -65,6 +65,13 @@ def graphql_execute(query, **kwargs)
   `op plugin run -- glab api graphql -f query='#{query}' #{kwargs.map { |k, v| "--field #{k}='#{v}'" }.join(" ")}`
 end
 
+# Like graphql_execute, but passes variables with --raw-field so numeric-looking
+# values stay strings. `--field` coerces them to integers, which breaks
+# variables declared as String! (e.g. an issue iid such as "429470").
+def graphql_execute_raw(query, **kwargs)
+  `op plugin run -- glab api graphql -f query='#{query}' #{kwargs.map { |k, v| "--raw-field #{k}='#{v}'" }.join(" ")}`
+end
+
 def parse_json(res, fatal: true)
   JSON.parse(res)
 rescue JSON::ParserError => e
@@ -138,9 +145,8 @@ def gitlab_mr_rate(*author)
   mrs_merged_by_month = mrs
     .sort_by { |mr| now - mr[:merged_at] }
     .group_by do |mr|
-      [now,
-        DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min
-  end
+      [now, DateTime.civil(mr[:merged_at].year, mr[:merged_at].month, -1)].min
+    end
   mrs_merged_by_month.reverse_each do |ym, monthly_mrs|
     prorated_mr_count = monthly_mrs.count
     if ym.year == now.year && ym.month == now.month
@@ -190,20 +196,62 @@ def gitlab_mr_rate(*author)
   puts "Best month: #{best_month.strftime("%Y-%m")} (#{best_month_mr_rate} MRs)"
 end
 
+# Team labels are only meaningful in the projects this team actually works in.
+# Applying them everywhere pollutes MRs in unrelated projects (and the labels
+# may not even exist there), so they are keyed by project path.
+TEAM_LABELS = [
+  "Category:Fleet Visibility",
+  "section::ci",
+  "devops::verify",
+  "group::ci platform"
+].freeze
+
+TEAM_LABEL_PROJECTS = %w[
+  gitlab-org/gitlab
+  gitlab-org/gitlab-foss
+  gitlab-org/ci-cd/runner-tools/runner-fleet-dashboards
+].freeze
+
+# Derive the GitLab project path ("group/subgroup/project") from a remote URL.
+# Handles both SSH (git@gitlab.com:group/project.git) and HTTPS
+# (https://gitlab.com/group/project.git) forms. Returns nil if it can't parse.
+def project_path_from_remote(remote)
+  url = `git remote get-url #{remote} 2>/dev/null`.strip
+  return nil if url.empty?
+
+  path =
+    if url.include?("://")
+      url.sub(%r{\A[^:]+://}, "").sub(%r{\A[^/]+/}, "")
+    else
+      url.sub(/\A.*:/, "")
+    end
+
+  path = path.sub(/\.git\z/, "").sub(%r{\A/}, "").sub(%r{/\z}, "")
+  path.empty? ? nil : path
+end
+
 def gpsup(remote, issue_iid)
   require "date"
 
-  res = graphql_execute(<<~GQL)
-    query issueLabels {
-      project(fullPath: "gitlab-org/gitlab") {
-        group {
-          milestones(sort: DUE_DATE_DESC, containingDate: "#{Date.today}") {
-            nodes {
-              title
-            }
+  project_path = project_path_from_remote(remote)
+  if project_path.nil?
+    warn "gpsup: could not determine project path from remote '#{remote}'".red
+    exit(1)
+  end
+
+  # Fetch the active milestone covering today (including inherited group
+  # milestones) and, when the branch encodes an issue iid, that issue's labels
+  # so the MR inherits them. Scoped to the *current* project rather than a
+  # hardcoded one.
+  res = graphql_execute_raw(<<~GQL, projectPath: project_path, today: Date.today.to_s, iid: issue_iid.to_s)
+    query mrDefaults($projectPath: ID!, $today: Time, $iid: String) {
+      project(fullPath: $projectPath) {
+        milestones(includeAncestors: true, state: active, containingDate: $today) {
+          nodes {
+            title
           }
         }
-        issue(iid: "#{issue_iid}") {
+        issue(iid: $iid) {
           labels {
             nodes {
               title
@@ -219,9 +267,9 @@ def gpsup(remote, issue_iid)
   if $CHILD_STATUS == 0
     json_res = parse_json(res, fatal: false)
     if json_res
-      milestone = json_res.dig(*%w[data project group milestones nodes])
-        .map { |h| h["title"] }
-        .find { |title| title.match?(/^[0-9]+\.[0-9]+/) }
+      milestone = json_res.dig(*%w[data project milestones nodes])
+        &.map { |h| h["title"] }
+        &.find { |title| title.match?(/^[0-9]+\.[0-9]+/) }
       labels = json_res.dig(*%w[data project issue labels nodes])
         &.map { |h| h["title"] }
         &.reject { |label| label.match?(REJECTED_LABELS) }
@@ -235,12 +283,10 @@ def gpsup(remote, issue_iid)
     "create",
     "squash",
     "target='#{parent_branch}'",
-    "assign='#{ENV.fetch("USER", nil)}'",
-    "label='Category:Fleet Visibility'",
-    "label='section::ci'",
-    "label='devops::verify'",
-    "label='group::ci platform'"
-  ] + (labels&.map { |label| "label='#{label}'" } || [])
+    "assign='#{ENV.fetch("USER", nil)}'"
+  ]
+  options += TEAM_LABELS.map { |label| "label='#{label}'" } if TEAM_LABEL_PROJECTS.include?(project_path)
+  options += labels&.map { |label| "label='#{label}'" } || []
   options << "milestone='#{milestone}'" if milestone
   cmd = <<~SHELL.lines(chomp: true).join(" ")
     git push --set-upstream "#{remote}" "#{branch}" #{options.uniq.map { |option| "-o merge_request.#{option}" }.join(" ")} #{ARGV.join(" ")}

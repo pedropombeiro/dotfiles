@@ -307,7 +307,7 @@
       "vale *": "allow",
       "wc *": "allow",
       "which *": "allow",
-      "curl *": "deny",
+      "curl *": "ask",
       "wget *": "deny",
       "xxd *": "allow",
       "yamllint *": "allow"

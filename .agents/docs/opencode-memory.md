@@ -8,6 +8,28 @@ installed to `~/.local/share/opencode-memory-install/`). Runs as a local MCP ser
 Configuration lives in `~/.config/opencode-memory/config.toml`, tracked by YADM as a
 `##class.Work` alt file because it holds machine-specific absolute paths.
 
+## Routed Behind lazy-mcp
+
+The memory tools are proxied through lazy-mcp rather than registered directly, so their
+schemas are discovered on demand instead of occupying the context window every message.
+Two pieces make this work:
+
+- `~/.config/lazy-mcp/servers.json` has a `memory` server pointing at the **local shim**
+  `scripts/memory-mcp.sh` — not the daemon's `http://localhost:9824/mcp` URL. The shim
+  advertises the consolidated set (`recall`, `remember`, `memory`, `workflow`,
+  `memory_shutdown`) and serves `workflow` in-process; fronting the daemon by URL
+  instead exposes the raw un-shrunk tool list and `workflow` fails there.
+- `opencode.json`'s plugin entry uses the array form with `{ "tools": false }` so the
+  plugin skips registering its own `secret_guard_forget` tool (upstream #155). Context
+  injection and secret-guard redaction run via hooks and are unaffected — only the tool
+  schema is withheld. Reach the tool through lazy-mcp when needed.
+
+`workflow` needs `GITLAB_TOKEN` in the session environment; the shim inherits it from
+the shell, which the shared daemon cannot do. Since the token is fetched on demand via
+`setup_gitlab_secrets` (1Password) rather than exported by default, `workflow` actions
+that call the GitLab API fail until that function has been run in the shell that
+launched OpenCode. The plain `memory_*` tools do not need the token.
+
 ## Verifying the Stack
 
 ```

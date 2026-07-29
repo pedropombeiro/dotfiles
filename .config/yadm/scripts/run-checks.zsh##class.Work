@@ -208,6 +208,56 @@ check_hammerspoon_bluetooth() {
   any_failed=1
 }
 
+check_opencode_memory() {
+  print_op_stay "Checking opencode-memory service"
+
+  local expected_agents=3
+  local running_agents
+  running_agents=$(launchctl list 2>/dev/null | grep -c 'com\.opencode\.memory')
+
+  if (( running_agents < expected_agents )); then
+    echo
+    print_failure "Only ${running_agents}/${expected_agents} opencode-memory launchd agents running"
+    any_failed=1
+    return
+  fi
+
+  if curl -s --max-time 2 http://localhost:9824/health >/dev/null 2>&1; then
+    print_ok "(${running_agents}/${expected_agents} agents, port 9824 healthy)"
+  else
+    echo
+    print_failure "opencode-memory agents running but :9824/health is not responding"
+    any_failed=1
+  fi
+}
+
+check_weekly_log_repo() {
+  setopt LOCAL_OPTIONS EXTENDED_GLOB
+  print_op_stay "Checking weekly-log repo"
+
+  local repo_dir="$HOME/Developer/gitlab.com/pedropombeiro/weekly-log"
+  if [[ ! -d "$repo_dir/.git" ]]; then
+    echo
+    print_failure "weekly-log repo not found at $repo_dir"
+    any_failed=1
+    return
+  fi
+
+  # brain/ itself exists on every branch (scaffolding only: .gitkeep +
+  # README.md); a populated brain/<YYYY>/ is the real signal that content is
+  # checked out and the opencode-memory watcher has something to ingest.
+  local -a year_dirs
+  year_dirs=("$repo_dir"/brain/[0-9](#c4)(N/))
+  if (( ${#year_dirs} == 0 )); then
+    echo
+    print_failure "$repo_dir/brain has no year directories - checked out an empty branch?"
+    any_failed=1
+    return
+  fi
+
+  print_ok
+}
+
 check_app_running 'Hammerspoon'
 check_hammerspoon_bluetooth
 check_app_running 'Stream Deck'
@@ -222,6 +272,8 @@ fi
 check_app_running 'Home Assistant'
 check_glab_auth
 check_gdk_wakatime_projects
+check_opencode_memory
+check_weekly_log_repo
 
 if (( any_failed )); then
   printf "${YELLOW}%s${NC}\n" "⚠️  Checks finished with errors/warnings!"

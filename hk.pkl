@@ -69,6 +69,13 @@ local fast_steps = new Mapping<String, Step> {
             "*.zsh", "*.zsh##*", ".zlogin",
             ".shellrc/zshrc.d/functions/*"
         )
+        // functions/ holds extensionless zsh autoload functions, but
+        // functions/scripts/ holds helpers in other languages (Ruby, Gemfile,
+        // psql). `zsh -n` on those fails with a bogus parse error, so exclude
+        // the subdirectory and keep only its genuinely-zsh members via glob.
+        exclude = List(
+            ".shellrc/zshrc.d/functions/scripts/*"
+        )
         check = "zsh -n {{files}}"
     }
 

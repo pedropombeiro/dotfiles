@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+#
+# Ensures the personal weekly-log repo is cloned at the path opencode-memory's
+# config.toml##class.Work watches for second-brain files
+# (ingestion.watch_paths -> .../weekly-log/brain). Idempotent: safe to re-run,
+# never touches an existing worktree's branch or history.
+
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
+
+# shellcheck source=../scripts/colors.sh
+source "${YADM_SCRIPTS}/colors.sh"
+
+REPO_DIR="${HOME}/Developer/gitlab.com/pedropombeiro/weekly-log"
+ORIGIN_URL="git@gitlab.com:pedropombeiro/weekly-log.git"
+UPSTREAM_URL="ssh://git@gitlab.com/gitlab-org/growth/ai/weekly-log-template.git"
+
+if [[ ! -e "${REPO_DIR}" ]]; then
+  printf "${YELLOW}%s${NC}\n" "Cloning weekly-log repo to ${REPO_DIR}..."
+  mkdir -p "$(dirname "${REPO_DIR}")"
+  if ! git clone --quiet "${ORIGIN_URL}" "${REPO_DIR}"; then
+    printf "${RED}%s${NC}\n" "Failed to clone weekly-log repo (SSH agent locked? no network?) - skipping, run manually later"
+    exit 0
+  fi
+  git -C "${REPO_DIR}" remote add upstream "${UPSTREAM_URL}"
+  printf "${GREEN}%s${NC}\n" "Weekly-log repo cloned"
+  exit 0
+fi
+
+if [[ ! -d "${REPO_DIR}/.git" ]]; then
+  printf "${RED}%s${NC}\n" "${REPO_DIR} exists but is not a git repo - skipping (inspect manually)"
+  exit 0
+fi
+
+printf "${YELLOW}%s${NC}\n" "Weekly-log repo already present at ${REPO_DIR} - checking remotes..."
+
+current_origin="$(git -C "${REPO_DIR}" remote get-url origin 2>/dev/null || true)"
+current_upstream="$(git -C "${REPO_DIR}" remote get-url upstream 2>/dev/null || true)"
+
+if [[ -z "${current_origin}" ]]; then
+  git -C "${REPO_DIR}" remote add origin "${ORIGIN_URL}"
+  printf "${GREEN}%s${NC}\n" "Added missing 'origin' remote"
+elif [[ "${current_origin}" != "${ORIGIN_URL}" ]]; then
+  printf "${YELLOW}%s${NC}\n" "'origin' remote is '${current_origin}', expected '${ORIGIN_URL}' - leaving as-is"
+fi
+
+if [[ -z "${current_upstream}" ]]; then
+  git -C "${REPO_DIR}" remote add upstream "${UPSTREAM_URL}"
+  printf "${GREEN}%s${NC}\n" "Added missing 'upstream' remote"
+elif [[ "${current_upstream}" != "${UPSTREAM_URL}" ]]; then
+  printf "${YELLOW}%s${NC}\n" "'upstream' remote is '${current_upstream}', expected '${UPSTREAM_URL}' - leaving as-is"
+fi
+
+if ! compgen -G "${REPO_DIR}/brain/[0-9][0-9][0-9][0-9]" >/dev/null; then
+  printf "${YELLOW}%s${NC}\n" "No brain/<YYYY>/ directory found - second-brain watcher has nothing to ingest yet"
+fi

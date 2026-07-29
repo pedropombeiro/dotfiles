@@ -22,6 +22,7 @@ Thumbs.db
 .config/yazi/flavors/gruvbox-dark.yazi
 
 
+
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
 .config/1Password/ssh/agent.toml
@@ -70,6 +71,8 @@ Thumbs.db
 .config/yadm/bootstrap.d/945-open-apps-for-first-time.sh
 .config/yadm/bootstrap.d/950-install-gdk.sh
 .config/yadm/bootstrap.d/955-install-stream-deck-plugins.sh
+.config/yadm/bootstrap.d/965-ensure-weekly-log.sh
+.config/yadm/bootstrap.d/970-install-opencode-memory.sh
 .config/yadm/config_templates/LaunchDaemons/org.gitlab1.ifconfig.plist
 .config/yadm/scripts/defaults.sh
 .config/yadm/scripts/iterm2-setup.sh
@@ -137,3 +140,4 @@ Thumbs.db
 .ssh/config
 .vale.ini
 # END yadm-alt
+

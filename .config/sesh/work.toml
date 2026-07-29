@@ -1,6 +1,12 @@
 #:schema https://github.com/joshmedeski/sesh/raw/main/sesh.schema.json
 
 [[session]]
+name = "Weekly log"
+path = "~/Developer/gitlab.com/pedropombeiro/weekly-log"
+startup_command = "opencode"
+preview_command = "eza -TL=3 --almost-all --git --icons --reverse --color=always {}/{brain,logs}"
+
+[[session]]
 name = "Handbook"
 path = "~/Developer/gitlab.com/gitlab-com/content-sites/handbook"
 startup_command = "nvim"

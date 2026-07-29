@@ -70,40 +70,44 @@ Throughout a session:
 When ending a session or summarizing work done, include the session ID (shown in the
 session context footer) to enable continuation tracking across sessions.
 
-## Pinned `mcp` Dependency (do not remove)
+## Troubleshooting: Server Silently Dead After Install/Upgrade
 
-The install requires the **1.x** line of the `mcp` PyPI package (the upstream Model
-Context Protocol Python SDK). `mcp` 2.0.0 replaced decorator handler registration
-(`@server.list_tools()`) with constructor handlers (`Server(..., on_list_tools=...)`),
-so on 2.x the server dies at import with:
+Symptom: `launchctl list | grep opencode` shows all three agents running, but nothing
+answers on `:9824` — proactive injection and boot context silently stop working while
+looking healthy at a glance. Check `~/.local/state/opencode-memory/server.error.log`
+for:
 
 ```
 AttributeError: 'Server' object has no attribute 'list_tools'
 ERROR:    Application startup failed. Exiting.
 ```
 
-Nothing listens on 9824 after that, so proactive injection and boot context silently
-stop working while the daemon and worker keep running (a partial-failure state that
-looks healthy at a glance).
+Diagnosis: the `mcp` PyPI package (the upstream Model Context Protocol Python SDK) went
+2.0.0 on 2026-07-28, which replaced decorator handler registration
+(`@server.list_tools()`) with constructor handlers (`Server(..., on_list_tools=...)`).
+`opencode-memory`'s `pyproject.toml` declares an unbounded `mcp>=1.0.0` (while
+`uv.lock` pins `1.27.0`), and `scripts/setup.sh` installs with plain `pip install -e .`,
+which ignores the lockfile — so any install/upgrade run after that date can resolve to
+the incompatible major. Confirm with:
 
-Root cause: `pyproject.toml` declares an unbounded `mcp>=1.0.0` while `uv.lock` pins
-`1.27.0`, and `scripts/setup.sh` installs with plain `pip install -e .`, which ignores
-the lockfile. `mcp` 2.0.0 was released 2026-07-28, so any install after that date
-resolves to the incompatible major.
+```
+ls -d ~/.local/share/opencode-memory-install/.venv/lib/python3.*/site-packages/mcp-*.dist-info
+```
 
-Fix applied here:
+Remediation: pin the install to the 1.x line and restart the server:
 
 ```
 ~/.local/share/opencode-memory-install/.venv/bin/pip install 'mcp==1.27.0'
+launchctl kickstart -k gui/$UID/com.opencode.memory
 ```
 
-**Re-apply after every installer re-run** — `setup.sh` runs `pip install -e .` on each
-invocation, which can pull 2.x back in. Verify with
-`ls -d ~/.local/share/opencode-memory-install/.venv/lib/python3.*/site-packages/mcp-*.dist-info`.
-Upstream's own guidance is to constrain the dep (`mcp>=1.28,<2`); until that lands,
-this pin is manual. Reported upstream as
-[ghavenga/opencode-memory#223](https://gitlab.com/ghavenga/opencode-memory/-/issues/223) —
-once it is fixed and the install updated, this pin can be dropped.
+This is a workaround for
+[ghavenga/opencode-memory#223](https://gitlab.com/ghavenga/opencode-memory/-/issues/223)
+(unbounded `mcp>=1.0.0`, still open as of 2026-07-28). Once upstream constrains the
+dependency (their own stated intent is `mcp>=1.28,<2`), this stops being necessary.
+Bootstrap does not pre-apply this pin — see "Fresh Machine Bootstrap" below, which
+instead verifies the server actually comes up rather than guessing which `mcp` major
+is safe today.
 
 ## LLM Provider Needs an Absolute Path
 
@@ -148,3 +152,43 @@ string `"If you do not see boot context"`.
 - After any re-run of the installer (`setup.sh`), run `yadm diff` to check whether it
   touched `.config/opencode/AGENTS.md`, `.config/opencode/opencode.json##class.Work`, or
   `.config/lazy-mcp/servers.json##class.Work` and re-merge if needed.
+
+## Fresh Machine Bootstrap
+
+Two `yadm` bootstrap.d scripts (both `##class.Work`, since the install is
+machine-specific) handle a new work machine end to end:
+
+- `965-ensure-weekly-log.sh` clones the personal weekly-log repo
+  (`git@gitlab.com:pedropombeiro/weekly-log.git`, `origin` remote; the
+  `gitlab-org/growth/ai/weekly-log-template` template lives as `upstream`) to
+  `~/Developer/gitlab.com/pedropombeiro/weekly-log` — the path
+  `config.toml##class.Work`'s `ingestion.watch_paths` points at. It is safe to re-run:
+  if the directory already exists (e.g. copied over from another machine), it only
+  adds missing remotes and never touches an existing worktree's branch or history.
+- `970-install-opencode-memory.sh` runs `setup.sh` non-interactively using the
+  `[setup]` values already saved in `config.toml##class.Work`
+  (`OPENCODE_MEMORY_RUNTIME=python OPENCODE_MEMORY_STARTUP=always
+OPENCODE_MEMORY_AGENTS=opencode,claude`), then:
+  1. Polls `:9824/health` for up to 60s (absorbing the one-time ~90MB embedding-model
+     download) and **fails loudly** with the `server.error.log` tail if the server
+     never comes up — this is the same failure class described above, just caught at
+     install time instead of discovered later.
+  2. Diffs the four yadm-managed files it can touch (`AGENTS.md`, `opencode.json`,
+     `servers.json`, `config.toml`) before/after and **fails** if any changed, with a
+     `yadm checkout --` remediation hint.
+  3. Backfills any existing `brain/<YYYY>/*.md` files into memory via
+     `python -m opencode_memory.cli ingest ... --recursive`, guarded by a marker file
+     so it only runs once. `insert_memory` (`storage/sqlite.py`) dedupes on
+     `(category, content_hash)`, so re-running this (e.g. after copying
+     `~/.local/share/opencode-memory/memory.db` from another machine) is a harmless
+     no-op beyond re-embedding cost — the marker is a fast-path, not a correctness
+     requirement.
+
+Neither script pins `mcp`. If the health-check step fails, consult "Troubleshooting:
+Server Silently Dead After Install/Upgrade" above.
+
+`scripts/run-checks.zsh##class.Work` has matching drift checks —
+`check_opencode_memory` (3 launchd agents + `:9824` healthy) and
+`check_weekly_log_repo` (repo cloned, `brain/<YYYY>/` non-empty) — so a later
+`mise run checks` catches the service dying or the repo silently landing on a branch
+without content.

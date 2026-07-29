@@ -11,13 +11,25 @@ recent_decisions = false
 max_hot_items = 5
 
 [ingestion]
-watch_paths = ["~/.local/share/opencode/opencode.db"]
+# Directories are watched recursively for *.md (watcher.py defaults to {".md"});
+# a *.db entry is instead polled as the OpenCode session store. The brain dir is
+# the second-brain half of the weekly-log loop (gitlab-org/growth/ai/weekly-log-template),
+# so weekly entries are ingested as they land. Absolute-ish path is fine here --
+# this file is already a ##class.Work alt for machine-specific paths.
+watch_paths = [
+  "~/.local/share/opencode/opencode.db",
+  "~/Developer/gitlab.com/gitlab-org/growth/ai/weekly-log-template/brain",
+]
 db_poll_interval = 30
-# LLM-based knowledge extraction from old conversations
-# WARNING: This uses 'opencode run' for each conversation and WILL incur
-# API costs. Runs every 6 hours on up to 50 conversations per cycle.
-# Only enable if you understand the cost implications.
-llm_extraction = true
+# LLM-based knowledge extraction from old conversations. Uses 'opencode run'
+# per conversation (every 6h, up to 50 per cycle) and WILL incur API costs.
+# Disabled 2026-07-29: the curated second-brain loop above is now the source of
+# durable knowledge, so paying an LLM to mine old transcripts is redundant.
+# Note this flag also gates CONTRADICTS link detection in linking/linker.py --
+# acceptable here since it had produced 0 such links (only extends/related/
+# same_entity, which are non-LLM). Passive session ingestion is unaffected;
+# it is governed by `enabled`, not this flag.
+llm_extraction = false
 
 [storage]
 path = "~/.local/share/opencode-memory"

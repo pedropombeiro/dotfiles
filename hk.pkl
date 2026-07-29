@@ -35,7 +35,12 @@ local fast_steps = new Mapping<String, Step> {
 
     // ── Tier 2: Common tools ─────────────────────────────────────────────
     ["typos"] = (Builtins.typos) {
-        exclude = binary_excludes
+        // orbit is a symlink to its upstream clone, and this step follows it and
+        // AUTOFIXES, writing to a repo outside the dotfiles tree. It renamed a real
+        // GitLab Rails concern and an abbreviated local variable there, the latter
+        // silently breaking a subcommand. Examples are omitted on purpose: typos
+        // rewrites them inside this comment too.
+        exclude = binary_excludes + List(".agents/skills/orbit/*")
     }
     ["gitleaks"] {
         check = "gitleaks protect --staged --redact --no-banner"
@@ -45,6 +50,11 @@ local fast_steps = new Mapping<String, Step> {
         exclude = List(
             ".config/*", ".local/*",
             ".shellrc/zshrc.d/functions/scripts/*.rb",
+            // orbit is a symlink to its upstream clone. Its files are untracked, but
+            // this step walks the filesystem and follows the symlink into the clone.
+            // Scoped to orbit rather than .agents/skills/*/scripts/* so the tracked
+            // run-in-tmux-pane script keeps its coverage.
+            ".agents/skills/orbit/*",
             "*.md"
         )
     }

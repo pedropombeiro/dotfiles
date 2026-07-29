@@ -62,8 +62,6 @@ Track it with YADM: `yadm add ~/.config/dotfiles/gitlab/<path>`.
 | `.opencode/skills/issue-state/scripts/*.sh` (5)      | Helper scripts for issue-state skill       |
 | `.opencode/skills/mr-pipeline/SKILL.md`              | MR pipeline coordination tools skill       |
 | `.opencode/skills/mr-workflow/SKILL.md`              | MR lifecycle helpers skill                 |
-| `.opencode/skills/orbit/SKILL.md`                    | Orbit analytics skill                      |
-| `.opencode/skills/orbit/references/*.md` (3)         | Reference docs for orbit skill             |
 | `.opencode/skills/psql/SKILL.md`                     | PostgreSQL dev database skill              |
 | `.opencode/skills/repo-bootstrap/SKILL.md`           | Repo bootstrap / first-session setup skill |
 | `.opencode/skills/tool-routing/SKILL.md`             | Tool routing / MCP dispatch skill          |

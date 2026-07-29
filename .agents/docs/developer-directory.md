@@ -30,3 +30,16 @@ If the exact owner is unknown, list candidates:
 ```bash
 ls ~/Developer/github.com/
 ```
+
+## Global agent skills
+
+Skills under `~/.agents/skills/` are symlinks into clones here, so `git pull` in the
+clone upgrades the skill and nothing needs vendoring into the dotfiles repo:
+
+| Clone                                         | Provides                                                                                 |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `gitlab.com/gitlab-org/ai/skills`             | `handoff`, `write-large-file`, `glab-glql`, `gitlab-babysit-mr`, `gitlab-pipeline-watch` |
+| `gitlab.com/gitlab-org/orbit/knowledge-graph` | `orbit` (canonical home per the skill's own `references/maintaining.md`)                 |
+
+The symlinks themselves are deliberately left untracked by YADM — the upstream clone is
+the source of truth. Only genuinely local skills get tracked.

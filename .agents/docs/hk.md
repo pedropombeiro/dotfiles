@@ -105,6 +105,38 @@ Check current version: `hk --version`
 
 ## Caveats
 
+### Steps follow symlinks out of the repo and can write to the target
+
+Several steps walk the **filesystem**, not the git index, so a symlink pointing outside
+`$HOME` pulls the target's files into scope. Being untracked is not protection.
+
+For fixer steps this is destructive: they write to a repo you did not intend to touch, and
+the edit lands silently because the file is untracked (`yadm status` stays clean).
+
+Observed with `~/.agents/skills/orbit`, a symlink into
+`~/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph`:
+
+- `editorconfig-checker` failed the commit on upstream Python whose continuation-line
+  indents it misreads. Noisy but harmless.
+- **`typos` rewrote files in the upstream clone**, renaming a real GitLab Rails concern and
+  an abbreviated local variable. The latter broke a subcommand, since the definition was
+  renamed but not every reference.
+
+Mitigation: exclude the symlinked path per step, scoped as narrowly as possible so sibling
+files keep coverage.
+
+```pkl
+["typos"] = (Builtins.typos) {
+    exclude = binary_excludes + List(".agents/skills/orbit/*")
+}
+```
+
+Prefer a path scoped to the symlink itself over a broad glob like
+`.agents/skills/*/scripts/*`, which would also silence genuinely local files.
+
+**When adding a symlink to a repo outside `$HOME`**, run `hk check --all`, then check
+`git status` _in the target repo_ — not just `yadm status` — to confirm no fixer wrote to it.
+
 ### Global hook PATH issue
 
 `hk install --global` writes hook commands to `~/.gitconfig` that call `hk` by name. Since hk

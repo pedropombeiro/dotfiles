@@ -121,6 +121,8 @@ cleanup_gitlab_excludes() {
   if [[ -f ${gitlab_exclude_file} ]]; then
     sed -i '' '/^opencode\.jsonc$/d' "${gitlab_exclude_file}"
     sed -i '' '/^\/AGENTS\.local\.md$/d' "${gitlab_exclude_file}"
+    # Retired in favour of the global ~/.agents/skills/orbit copy
+    sed -i '' '\|^/\.opencode/skills/orbit/|d' "${gitlab_exclude_file}"
   fi
 }
 

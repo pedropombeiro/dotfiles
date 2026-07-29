@@ -2,7 +2,7 @@
 # Shared helpers for the issue-state skill.
 # Not executable on its own; sourced by the other scripts.
 
-set -euo pipefail
+set -Eeuo pipefail
 
 # glab authenticates via a 1Password shell plugin. In interactive shells `glab`
 # is an alias for `op plugin run -- glab`; scripts don't get that alias, and a
@@ -23,8 +23,10 @@ glab() {
       return 127
     fi
   fi
+  # `command` is required for the bare-glab case: without it, `glab ...` would
+  # re-enter this function instead of reaching the binary, recursing forever.
   # shellcheck disable=SC2086
-  ${_glab_cmd} "$@"
+  command ${_glab_cmd} "$@"
 }
 
 die() {
@@ -88,4 +90,27 @@ work_item_gid() {
     workItems(first: 1, iid: \"${ISSUE_IID}\") { nodes { id } }
   }
 }" | jq -r '.data.project.workItems.nodes[0].id // empty'
+}
+
+# Statuses in these lifecycle categories are terminal: something (usually the
+# close automation, or a human) has already decided the outcome. Don't move an
+# issue out of them just because its MRs look a certain way.
+# shellcheck disable=SC2034  # consumed by sourcing scripts (sync-issue-state.sh)
+TERMINAL_STATUS_CATEGORIES='["done","canceled"]'
+
+# Print the issue's current status as compact JSON: {"name":...,"category":...}
+# Prints nothing if the work item has no status set or no STATUS widget.
+# Requires PROJECT_PATH and ISSUE_IID to be set.
+current_status_json() {
+  glab api graphql -f query="
+{
+  project(fullPath: \"${PROJECT_PATH}\") {
+    workItems(first: 1, iid: \"${ISSUE_IID}\") {
+      nodes {
+        widgets { ... on WorkItemWidgetStatus { status { name category } } }
+      }
+    }
+  }
+}" | jq -c '[.data.project.workItems.nodes[0].widgets[]?
+             | select(.status != null) | .status] | .[0] // empty'
 }

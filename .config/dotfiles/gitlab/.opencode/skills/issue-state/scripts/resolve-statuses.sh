@@ -9,8 +9,9 @@
 # Without --name: prints a JSON array of {id, name, category} for every allowed status.
 # With --name: prints the single global ID whose name matches (case-insensitive), or exits 1.
 
-set -euo pipefail
+set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source-path=SCRIPTDIR
 # shellcheck source=lib.sh
 source "${SCRIPT_DIR}/lib.sh"
 

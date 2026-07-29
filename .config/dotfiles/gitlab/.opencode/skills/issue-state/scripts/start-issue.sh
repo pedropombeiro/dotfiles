@@ -13,8 +13,9 @@
 # Milestone selection uses the project's active milestones (including ancestor/group
 # milestones) and picks the one whose start_date..due_date window contains today.
 
-set -euo pipefail
+set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source-path=SCRIPTDIR
 # shellcheck source=lib.sh
 source "${SCRIPT_DIR}/lib.sh"
 

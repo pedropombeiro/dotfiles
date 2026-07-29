@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+#
+# Installs/updates opencode-memory (https://gitlab.com/ghavenga/opencode-memory)
+# non-interactively, using the [setup] values already saved in
+# ~/.config/opencode-memory/config.toml##class.Work so setup.sh never prompts.
+# Verifies the server actually comes up (rather than trusting setup.sh's exit
+# code alone - see ~/.agents/docs/opencode-memory.md for the failure mode
+# where the process tree looks healthy but nothing listens on 9824), and
+# verifies the installer did not clobber the four yadm-managed config files
+# it touches.
+#
+# Safe to re-run: setup.sh itself is idempotent, and the one-off brain/
+# backfill is marker-guarded (and independently safe to repeat - see comment
+# below).
+
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
+
+# shellcheck source=../scripts/colors.sh
+source "${YADM_SCRIPTS}/colors.sh"
+
+INSTALL_DIR="${HOME}/.local/share/opencode-memory-install"
+WEEKLY_LOG_BRAIN_DIR="${HOME}/Developer/gitlab.com/pedropombeiro/weekly-log/brain"
+BACKFILL_MARKER="${HOME}/.local/state/opencode-memory/.weekly-log-brain-backfilled"
+
+MANAGED_FILES=(
+  "${HOME}/.config/opencode/AGENTS.md"
+  "${HOME}/.config/opencode/opencode.json"
+  "${HOME}/.config/lazy-mcp/servers.json"
+  "${HOME}/.config/opencode-memory/config.toml"
+)
+
+for tool in python3 git jq; do
+  if ! command -v "${tool}" >/dev/null 2>&1; then
+    printf "${RED}%s${NC}\n" "opencode-memory install requires '${tool}', which is not on PATH - aborting"
+    exit 1
+  fi
+done
+
+python_version="$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
+python_major="${python_version%%.*}"
+python_minor="${python_version##*.}"
+if (( python_major < 3 || (python_major == 3 && python_minor < 11) )); then
+  printf "${RED}%s${NC}\n" "opencode-memory requires Python 3.11+, found ${python_version} - aborting"
+  exit 1
+fi
+
+# Snapshot the managed files before running the installer so we can detect
+# whether it wrote anything beyond what was already dirty going in (see
+# ~/.agents/docs/opencode-memory.md "Installer Overwrite Hazard").
+declare -A before_hash
+for f in "${MANAGED_FILES[@]}"; do
+  before_hash["${f}"]="$(md5 -q "${f}" 2>/dev/null || echo "MISSING")"
+done
+
+printf "${YELLOW}%s${NC}\n" "Installing/updating opencode-memory..."
+OPENCODE_MEMORY_RUNTIME=python \
+OPENCODE_MEMORY_STARTUP=always \
+OPENCODE_MEMORY_AGENTS=opencode,claude \
+  bash -c "curl -fsSL https://gitlab.com/ghavenga/opencode-memory/-/raw/master/scripts/setup.sh | bash"
+setup_rc=$?
+
+if [[ ${setup_rc} -ne 0 ]]; then
+  printf "${RED}%s${NC}\n" "opencode-memory setup.sh exited ${setup_rc} - aborting"
+  exit 1
+fi
+
+printf "${YELLOW}%s${NC}\n" "Waiting for opencode-memory server to become healthy on :9824..."
+healthy=0
+for _ in $(seq 1 30); do
+  if curl -s --max-time 2 http://localhost:9824/health >/dev/null 2>&1; then
+    healthy=1
+    break
+  fi
+  sleep 2
+done
+
+if [[ "${healthy}" -ne 1 ]]; then
+  printf "${RED}%s${NC}\n" "opencode-memory did not become healthy within 60s. Last server.error.log lines:"
+  tail -n 20 "${HOME}/.local/state/opencode-memory/server.error.log" 2>/dev/null
+  printf "${RED}%s${NC}\n" "See ~/.agents/docs/opencode-memory.md for troubleshooting."
+  exit 1
+fi
+printf "${GREEN}%s${NC}\n" "opencode-memory server is healthy"
+
+clobbered=()
+for f in "${MANAGED_FILES[@]}"; do
+  after_hash="$(md5 -q "${f}" 2>/dev/null || echo "MISSING")"
+  if [[ "${after_hash}" != "${before_hash[${f}]}" ]]; then
+    clobbered+=("${f}")
+  fi
+done
+
+if (( ${#clobbered[@]} > 0 )); then
+  printf "${RED}%s${NC}\n" "setup.sh modified yadm-managed file(s):"
+  for f in "${clobbered[@]}"; do
+    echo "  ${f}"
+  done
+  printf "${RED}%s${NC}\n" "Review with 'yadm diff -- <file>' and restore with 'yadm checkout -- <file>' if the change is unwanted."
+  exit 1
+fi
+
+if [[ -d "${WEEKLY_LOG_BRAIN_DIR}" ]] && compgen -G "${WEEKLY_LOG_BRAIN_DIR}/[0-9][0-9][0-9][0-9]" >/dev/null; then
+  if [[ ! -f "${BACKFILL_MARKER}" ]]; then
+    printf "${YELLOW}%s${NC}\n" "Backfilling second-brain files into opencode-memory..."
+    # insert_memory (storage/sqlite.py) dedupes on (category, content_hash), so
+    # re-ingesting an already-populated memory.db (e.g. copied from another
+    # machine) is a harmless no-op beyond re-embedding cost. The marker below
+    # is a fast-path, not a correctness requirement.
+    mkdir -p "$(dirname "${BACKFILL_MARKER}")"
+    if "${INSTALL_DIR}/.venv/bin/python" -m opencode_memory.cli ingest "${WEEKLY_LOG_BRAIN_DIR}" --recursive; then
+      touch "${BACKFILL_MARKER}"
+    else
+      printf "${YELLOW}%s${NC}\n" "Backfill failed - will retry on next bootstrap run"
+    fi
+  fi
+else
+  printf "${YELLOW}%s${NC}\n" "No brain/<YYYY>/ content found yet - skipping backfill"
+fi

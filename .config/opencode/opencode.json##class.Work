@@ -277,6 +277,7 @@
       "mise tasks info *": "allow",
       "mise tasks ls *": "allow",
       "npx markdownlint-cli2 *": "allow",
+      "pinchtab *": "allow",
       "pre-commit *": "allow",
       "printenv *": "allow",
       "printf *": "allow",

@@ -75,6 +75,8 @@ brew "dust"
 brew "duti"
 # Run arbitrary commands when files change
 brew "entr"
+# Interpreted, interactive, object-oriented programming language
+brew "python@3.13"
 # Command-line EPUB reader
 brew "epr"
 # Perl lib for reading and writing EXIF metadata

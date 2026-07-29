@@ -1,6 +1,6 @@
 ---
 name: mr-pipeline
-description: "Use when waiting for MR merge and trigger MR pipelines using glab CLI helpers"
+description: "Use for cross-MR pipeline coordination: block until a *different* MR merges, then create a fresh pipeline for yours (e.g. waiting for a revert to land). Does NOT triage pipeline failures — load gitlab-babysit-mr for that."
 license: MIT
 compatibility: opencode
 metadata:
@@ -11,8 +11,27 @@ metadata:
 
 # MR Pipeline Tools Skill
 
-Helper scripts for coordinating GitLab merge request pipelines. Useful when an MR depends on
-another MR being merged first (e.g. waiting for a revert to land before retriggering your MR's pipeline).
+Helper scripts for **cross-MR pipeline coordination**: blocking until some *other* MR merges, then
+creating a fresh pipeline for yours. The canonical case is waiting for a revert to land on `master`
+before re-running your MR.
+
+## Scope — this skill vs. `gitlab-babysit-mr`
+
+These two are complementary, not alternatives.
+
+| Need | Use |
+|------|-----|
+| Block until a *different* MR merges | `wait_for_mr_merge` (here) |
+| Create a **new** pipeline (re-resolves the merge ref against current `master`) | `run_mr_pipeline` (here) |
+| Watch *your* MR's pipeline and triage failures (flaky / master-broken / lint / real) | `gitlab-babysit-mr` |
+| **Retry** jobs or an existing pipeline | `gitlab-babysit-mr` |
+
+The distinction in row 2 matters: retrying a pipeline re-runs jobs within the existing pipeline and
+keeps the old merge ref. Only creating a new pipeline picks up a fixed `master`. `gitlab-babysit-mr`
+only retries, so it cannot substitute for `run_mr_pipeline` in the revert scenario.
+
+Typical combined flow: wait for the revert, create a fresh pipeline, then hand off to
+`gitlab-babysit-mr` to nurse it to green.
 
 ## Available Commands
 
@@ -67,6 +86,9 @@ wait_for_mr_merge https://gitlab.com/gitlab-org/gitlab/-/merge_requests/226808 &
   run_mr_pipeline https://gitlab.com/gitlab-org/gitlab/-/merge_requests/226128
 ```
 
+Once the fresh pipeline is running, hand off to `gitlab-babysit-mr` to watch it and triage any
+failures.
+
 ### `wait_gdk_mr_merged`
 
 Zsh function (`~/.shellrc/zshrc.d/functions/`) that waits for an MR to be merged,
@@ -100,3 +122,5 @@ as it supports full URLs, configurable intervals, and any GitLab repository.
 4. **Non-interactive** — `wait_for_mr_merge` and `run_mr_pipeline` are fully non-interactive and safe for agent use
 5. **POST requests** — `run_mr_pipeline` uses `glab api` to POST; ensure `GITLAB_TOKEN` has `api` scope
 6. **Prefer `wait_for_mr_merge` over `wait_gdk_mr_merged`** — it's more flexible and supports any repo
+7. **Don't triage failures here** — this skill only coordinates *when* pipelines run. For classifying
+   and acting on failures, load `gitlab-babysit-mr`

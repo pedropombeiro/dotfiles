@@ -18,19 +18,21 @@ The `content` key and closing brace are missing. The arguments were truncated in
 retrying the identical call usually fails again — though it is flaky rather than deterministic,
 and an occasional retry does get through.
 
-**Mitigation:** for files over roughly 100 lines, do not write the whole file in one call.
+**Mitigation:** load the `write-large-file` skill and follow it. It is the canonical procedure —
+chunked `cat >` / `cat >>` with quoted heredocs, split at section boundaries, verified with `wc -l`.
+Bypassing the `write` tool entirely avoids the truncation path rather than working around it.
 
-1. `write` a skeleton containing the final headings plus a placeholder comment per section, e.g.
-   `<!-- S1 -->`, `<!-- S2 -->`.
-2. Fill each section with a separate `edit` call, replacing its placeholder.
-3. Verify the result (`rg -n '^#'` for structure, `awk 'length > N'` for line-length limits).
+Fall back to the skeleton-plus-`edit` approach only when heredocs are impractical (content contains
+arbitrary delimiters, or you are editing an existing file rather than creating one): `write` a
+skeleton of headings with placeholder comments (`<!-- S1 -->`), then replace each placeholder with a
+separate `edit` call.
 
 **Caveats:**
 
-- The size threshold is unverified. ~100 lines is a conservative guess based on two failures at
-  ~180 lines and successes well below that.
+- The size threshold is unverified. The skill says ~150 lines; two observed failures were at
+  ~180 lines, with successes well below that. Treat ~100 lines as the conservative trigger point.
 - Content shape may matter as much as length. Both observed failures were markdown containing
   tables, backticks, and many inline links.
-- This is a harness-level issue, not a property of any particular project. Do not encode the
-  workaround in project skills, prompts, or specs — especially in repos intended to be forked,
-  where the fork's harness may not have the problem.
+- This is a harness-level issue, not a property of any particular project. Keep the mitigation in
+  the global `write-large-file` skill — do not copy it into project skills, prompts, or specs,
+  especially in repos intended to be forked, where the fork's harness may not have the problem.

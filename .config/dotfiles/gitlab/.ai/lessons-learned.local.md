@@ -14,3 +14,7 @@ Subject-specific lessons live in their `.local.md` counterparts (e.g. `testing.l
 - When replying in-thread with `gitlab_create_discussion`, verify the `discussion_id` belongs to the specific thread containing the target note — match by note ID from `gitlab_list_discussions`, not by proximity in the listing.
 - Plan-mode approval (e.g. answering Q1/Q3/Q5) is approval to proceed with the plan, NOT approval to post comments. Always draft the final comment text in chat and wait for an explicit "post it" / "go ahead" before calling `gitlab_create_note` or `gitlab_create_discussion`.
 
+## Skill Overrides
+
+- `gitlab-babysit-mr` posts by default (status reports in a resolved discussion thread, and `@duo-developer-gitlab-org` lint-fix delegation comments). Both are overridden by the no-post rule above: report findings in chat instead, and fix lint locally rather than delegating via MR comment. Its retry/classify actions need no approval.
+

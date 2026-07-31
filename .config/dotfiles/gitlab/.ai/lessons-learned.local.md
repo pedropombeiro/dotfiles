@@ -6,6 +6,7 @@ Subject-specific lessons live in their `.local.md` counterparts (e.g. `testing.l
 ## General
 
 - `CLAUDE.local.md` and this file are loaded explicitly via `opencode.jsonc` instructions. Load other `.ai/<topic>.md` modules (and matching `.local.md`) on demand based on the task.
+- Before writing or editing code comments, load `.ai/code-style.local.md` and apply its comment reflow rules.
 
 ## Work Items (MRs, Issues, Epics)
 
@@ -17,4 +18,3 @@ Subject-specific lessons live in their `.local.md` counterparts (e.g. `testing.l
 ## Skill Overrides
 
 - `gitlab-babysit-mr` posts by default (status reports in a resolved discussion thread, and `@duo-developer-gitlab-org` lint-fix delegation comments). Both are overridden by the no-post rule above: report findings in chat instead, and fix lint locally rather than delegating via MR comment. Its retry/classify actions need no approval.
-

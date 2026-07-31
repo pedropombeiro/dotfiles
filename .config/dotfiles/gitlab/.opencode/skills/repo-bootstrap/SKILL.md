@@ -51,7 +51,9 @@ Always start with:
 
 Load `.gitlab/duo/chat-rules.md` for testing, git workflow, or weekly-status/report tasks.
 
-Then load matching task modules from `.ai/` and their `.local.md` counterparts when present.
+Then route by task topic and load matching modules from `.ai/`. Load a matching `.ai/<topic>.local.md` file even when
+there is no base `.ai/<topic>.md` module. Known `.local.md`-only modules are `testing` and `code-style`; `git` and
+`merge-requests` have both base and local modules.
 
 ## Precedence
 

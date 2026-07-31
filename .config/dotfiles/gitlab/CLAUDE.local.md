@@ -52,5 +52,9 @@ When the user corrects you or points out a mistake:
 
 ## Context Loading (Personal)
 
-When loading a module from `.ai/` (for example, `.ai/testing.md`), also check for and load its `.local.md` counterpart
-if it exists (for example, `.ai/testing.local.md`). Always load `.ai/lessons-learned.local.md` if it exists.
+Route context by task topic, not by whether a tracked `.ai/<topic>.md` file exists. When a topic matches, load its
+`.ai/<topic>.local.md` file if present, even when there is no base `.ai/<topic>.md` module. When the base module exists,
+load both it and its `.local.md` counterpart.
+
+Known `.local.md`-only modules: `testing`, `code-style`. The `git` and `merge-requests` topics have both base and local
+modules. Always load `.ai/lessons-learned.local.md` if it exists.

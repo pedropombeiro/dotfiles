@@ -14,7 +14,7 @@
       "model": "gitlab/duo-chat-opus-5"
     },
     "build": {
-      "model": "gitlab/duo-chat-gpt-5-6-sol"
+      "model": "gitlab/duo-chat-gpt-5-6-terra"
     }
   },
   "default_agent": "plan",

@@ -4,4 +4,13 @@
 "aqua:cargo-bins/cargo-binstall" = "latest"
 # ── Automation ────────────────────────────────────────────────────────
 # Automated dependency update bot
-"npm:renovate" = "44.0.1"
+# Trust-policy exception: @yarnpkg/libzip@3.2.2 (transitive via @yarnpkg/core)
+# lost the npm provenance that 3.2.0/3.2.1 carried. Upstream cause: the release
+# came from a cherry-pick branch lacking `npmPublishProvenance: true`, so the
+# whole 16-package batch (fslib@3.1.3, core@4.4.4, ...) published unattested.
+# Audited 2026-08-02: tarball sha1/sha512 match registry metadata; diff vs 3.2.1
+# is a 3-line `parentPath` fix plus .d.ts type churn; .wasm blobs byte-identical;
+# no install scripts. Not exploitable-looking; this is release-process drift.
+# Upstream: https://github.com/yarnpkg/berry/issues/7182
+# REMOVE this exclusion once libzip ships a provenance-bearing release (>3.2.2).
+"npm:renovate" = { version = "44.0.1", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"] }

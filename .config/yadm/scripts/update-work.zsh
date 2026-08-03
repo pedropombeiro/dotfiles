@@ -86,7 +86,6 @@ registry:
   self_signed: true
 runner:
   bin: "${HOME}/Developer/gitlab.com/gitlab-org/gitlab-runner/out/binaries/gitlab-runner"
-  config_file: "${HOME}/.gitlab-runner/config.gdk.toml"
   enabled: true
 snowplow_micro:
   enabled: false

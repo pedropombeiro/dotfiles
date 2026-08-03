@@ -28,6 +28,8 @@ populate_gdk_yaml() {
 
   cat << EOF > ${gdk_root}/gdk.tmp.yml
 ---
+ai_services:
+  enabled: true
 asdf:
   opt_out: true  # Required to use mise instead
 clickhouse:
@@ -38,6 +40,11 @@ clickhouse:
 gdk:
   experimental:
     ruby_services: true
+  # Keep disabled: reconfigure:provision_license hangs on CustomersDot activation.
+  license_provisioning:
+    duo:
+      tier: enterprise
+    enabled: false
   overwrite_changes: true
   update_hooks:
     before:
@@ -46,8 +53,6 @@ gdk:
       - git -C "${gdk_root}/gitlab" restore db/structure.sql
 # https:
 #   enabled: true
-# nginx:
-#   enabled: true
 #   ssl:
 #     certificate: "${gdk_root}/gdk.localhost+2.pem"
 #     key: "${gdk_root}/gdk.localhost+2-key.pem"
@@ -55,9 +60,18 @@ gitlab:
   rails:
 #     address: 'http://gdk.test:3000'
 #     sherlock: true
+# Must be explicit: 'environment' defaults to 'staging', which sets
+# CLOUD_CONNECTOR_BASE_URL to cloud.staging.gitlab.com and breaks local Duo flows.
+gitlab_ai_gateway:
+  environment: local
+# Disabled: the HTTP router is incompatible with Duo remote flow WebSockets.
+gitlab_http_router:
+  enabled: false
 hostname: gdk.test
 listen_address: 172.16.123.1
 mise:
+  enabled: true
+nginx:
   enabled: true
 port: 3000
 postgresql:
@@ -73,7 +87,7 @@ registry:
 runner:
   bin: "${HOME}/Developer/gitlab.com/gitlab-org/gitlab-runner/out/binaries/gitlab-runner"
   config_file: "${HOME}/.gitlab-runner/config.gdk.toml"
-  enabled: false
+  enabled: true
 snowplow_micro:
   enabled: false
   port: 9090

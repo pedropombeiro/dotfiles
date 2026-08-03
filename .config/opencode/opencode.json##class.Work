@@ -263,6 +263,9 @@
       "git status*": "allow",
       "gdk psql*": "allow",
       ".opencode/skills/clickhouse/scripts/gdk-clickhouse *": "allow",
+      ".opencode/skills/issue-state/scripts/start-issue.sh *": "allow",
+      ".opencode/skills/issue-state/scripts/set-issue-status.sh *": "allow",
+      ".opencode/skills/issue-state/scripts/sync-issue-state.sh *": "allow",
       "CLICKHOUSE_USER=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *": "allow",
       "CLICKHOUSE_GDK_GITLAB_USER_PASSWORD=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *": "allow",
       "CLICKHOUSE_USER=* CLICKHOUSE_GDK_GITLAB_USER_PASSWORD=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *": "allow",
@@ -372,13 +375,15 @@
       "glab-glql": "allow",
       "hammerspoon": "allow",
       "handoff": "allow",
+      "issue-state": "allow",
       "mr-pipeline": "allow",
       "mr-workflow": "allow",
       "psql": "allow",
       "repo-bootstrap": "allow",
       "run-in-tmux-pane": "allow",
-      "write-large-file": "allow",
-      "tool-routing": "allow"
+      "tool-routing": "allow",
+      "weekly-status": "allow",
+      "write-large-file": "allow"
     },
     "task": {
       "general": "allow",

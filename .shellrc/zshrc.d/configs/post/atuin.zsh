@@ -7,13 +7,19 @@
 # Regenerates when the atuin binary is newer (i.e. after upgrades).
 _atuin_init="${XDG_DATA_HOME:-$HOME/.local/share}/atuin/init.zsh"
 
-# Regenerate when: missing, binary was upgraded, or this script was updated (e.g. yadm pull).
+# Regenerate when: missing or empty, binary was upgraded, or this script was updated (e.g. yadm pull).
 # ${(%):-%x} is a zsh prompt expansion that resolves to the current script's file path.
-if [[ ! -f "$_atuin_init" || "$_atuin_init" -ot "$commands[atuin]" || "$_atuin_init" -ot "${(%):-%x}" ]]; then
+if [[ ! -s "$_atuin_init" || "$_atuin_init" -ot "$commands[atuin]" || "$_atuin_init" -ot "${(%):-%x}" ]]; then
   mkdir -p "${_atuin_init:h}"
   # --disable-up-arrow so we can bind up-arrow to native prefix search below,
   # while Ctrl-R still opens the Atuin TUI.
-  atuin init zsh --disable-up-arrow >"$_atuin_init"
+  _atuin_init_tmp="${_atuin_init}.tmp.$$"
+  if atuin init zsh --disable-up-arrow >"$_atuin_init_tmp" && [[ -s "$_atuin_init_tmp" ]]; then
+    mv "$_atuin_init_tmp" "$_atuin_init"
+  else
+    rm -f "$_atuin_init_tmp"
+  fi
+  unset _atuin_init_tmp
 fi
 
 # Up-arrow / k: inline prefix search with cursor at end of line.
@@ -21,7 +27,11 @@ fi
 # Widgets are created in common-plugins.zsh (before autosuggestions) so they
 # get wrapped for autosuggest clear. Here we just source atuin and bind keys.
 _atuin_setup_keybindings() {
+  [[ -s "$1" ]] || return
   source "$1"
+
+  # Do not replace the native history widgets if cache generation failed.
+  (( $+functions[_atuin_search] && $+functions[_atuin_search_viins] )) || return
 
   # Atuin sets LBUFFER/RBUFFER from the TUI selection and calls `zle accept-line`
   # without clearing POSTDISPLAY first. Autosuggestions' accept-line wrapper sees
@@ -48,6 +58,7 @@ _atuin_setup_keybindings() {
 # (re)initialises keymaps. Hook into both zvm_after_init (eager) and
 # zvm_after_lazy_keybindings (deferred first keymap switch) to reclaim ^R.
 _atuin_rebind_ctrl_r() {
+  (( $+functions[_atuin_search] && $+functions[_atuin_search_viins] )) || return
   bindkey -M emacs '^r' atuin-search
   bindkey -M viins '^r' atuin-search-viins
   bindkey -M vicmd '/' atuin-search

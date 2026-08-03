@@ -142,6 +142,23 @@ Two plugins try to claim `^R`:
    hooks `zvm_after_init_commands` and `zvm_after_lazy_keybindings_commands`
    to rebind `^R` to atuin's widgets after every zvm keymap reset.
 
+#### Cached init recovery
+
+`post/atuin.zsh` caches `atuin init zsh --disable-up-arrow` at
+`$XDG_DATA_HOME/atuin/init.zsh` (normally `~/.local/share/atuin/init.zsh`). A
+failed shell-out can otherwise truncate that cache, leaving `^R` bound to a
+wrapper that calls an undefined `_atuin_search`. Generate into a temporary
+file and move it into place only when the command succeeds with non-empty
+output. The cache test must use `-s`, not `-f`, so a previously corrupt empty
+file is rebuilt automatically.
+
+If an older configuration leaves an empty cache behind, remove it and start a
+new shell:
+
+```zsh
+rm ~/.local/share/atuin/init.zsh
+```
+
 ### `ZSH_AUTOSUGGEST_MANUAL_REBIND=1`
 
 Set in `common-plugins.zsh` to skip O(n) widget re-wrapping on every precmd.

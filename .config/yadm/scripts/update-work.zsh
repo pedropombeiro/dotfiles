@@ -86,6 +86,9 @@ registry:
   self_signed: true
 runner:
   bin: "${HOME}/Developer/gitlab.com/gitlab-org/gitlab-runner/out/binaries/gitlab-runner"
+  # Duo remote-flow evals run one CI job per row; the default of 1 serialises them
+  # and a single hung flow starves the whole queue.
+  concurrent: 32
   enabled: true
 snowplow_micro:
   enabled: false
@@ -99,6 +102,11 @@ vite:
   enabled: true
 webpack:
   enabled: false
+# Compile from source instead of downloading prebuilt binaries. A prebuilt binary
+# can lag the Rails checkout, and Rails rejects Workhorse JWTs that predate its
+# own 'iat' claim requirement ("JWT iat claim is missing" -> 403 on git clone).
+workhorse:
+  skip_compile: false
 EOF
 
   if ! delta "${gdk_root}/gdk.yml" "${gdk_root}/gdk.tmp.yml"; then

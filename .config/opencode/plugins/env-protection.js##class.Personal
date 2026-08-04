@@ -1,0 +1,199 @@
+import { existsSync, readFileSync, statSync } from "node:fs";
+import { basename, resolve } from "node:path";
+
+export const EnvProtection = async ({ directory, worktree }) => {
+  delete process.env.MANPAGER;
+  delete process.env.VIMPAGER_VIM;
+  process.env.EDITOR = "cat";
+  process.env.VISUAL = "cat";
+  process.env.GIT_EDITOR = "cat";
+
+  /**
+   * Matches .env files and all variants:
+   * .env, .env.local, .env.production, .env.development, .env.test, etc.
+   * Handles paths like /foo/.env, /foo/.env.local, .env, ../.env.production
+   *
+   * Allows safe template files: .env.example, .env.sample, .env.template
+   */
+  const SAFE_SUFFIXES = /\.(?:example|sample|template)$/i;
+  const ENV_FILE_PATTERN = /(^|[/\\])\.env(\.[a-zA-Z0-9_.]+)?$/;
+  const ENV_FILE_TOKEN_PATTERN = /(?:^|[/\\])[^/\\]*\.env(?:\.[a-zA-Z0-9_.]+)?$/i;
+  const MAX_ENV_FILE_SIZE = 256 * 1024;
+  const PLACEHOLDER_VALUES = new Set([
+    "changeme",
+    "dummy",
+    "example",
+    "placeholder",
+    "todo",
+    "xxx",
+  ]);
+
+  /** Checks if a string contains a reference to a .env file */
+  const containsEnvRef = (str) => {
+    if (!str) return false;
+    // Match .env variants as standalone path segments (word boundary or path separator)
+    const matches = str.match(
+      /\.env(\.[a-zA-Z0-9_.]+)?/gi,
+    );
+    if (!matches) return false;
+    // Only flag if at least one match is NOT a safe template suffix
+    return matches.some((m) => !SAFE_SUFFIXES.test(m));
+  };
+
+  /** Checks if a file path points to a .env variant */
+  const isEnvFile = (filePath) => {
+    if (!filePath) return false;
+    if (SAFE_SUFFIXES.test(filePath)) return false;
+    return ENV_FILE_PATTERN.test(filePath);
+  };
+
+  const ERROR_MSG = "Access to .env files is not allowed";
+
+  const envPathsInCommand = (command) => {
+    if (!command) return [];
+    const paths = new Set();
+    for (const token of command.split(/[\s|&;<>()[\]{}'"`=]+/)) {
+      if (!token || SAFE_SUFFIXES.test(token) || !ENV_FILE_TOKEN_PATTERN.test(token)) {
+        continue;
+      }
+      paths.add(token);
+    }
+    return [...paths];
+  };
+
+  const resolveEnvPath = (filePath) => {
+    const candidates = filePath.startsWith("/")
+      ? [filePath]
+      : [resolve(directory, filePath), resolve(worktree, filePath)];
+    return candidates.find((candidate) => existsSync(candidate));
+  };
+
+  const isSecretValue = (value) => {
+    if (value.length < 8 || PLACEHOLDER_VALUES.has(value.toLowerCase())) return false;
+    if (/^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?$/.test(value)) return false;
+    return !/^(?:~\/|\.\/|\/)/.test(value);
+  };
+
+  const envValues = (filePath) => {
+    try {
+      if (statSync(filePath).size > MAX_ENV_FILE_SIZE) return [];
+      return readFileSync(filePath, "utf8")
+        .split(/\r?\n/)
+        .flatMap((line) => {
+          const match = line.match(
+            /^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/,
+          );
+          if (!match) return [];
+          const [, key, rawValue] = match;
+          const value = rawValue.replace(/^(["'])(.*)\1$/, "$2");
+          return isSecretValue(value) ? [{ key, value }] : [];
+        });
+    } catch {
+      return [];
+    }
+  };
+
+  const redact = (text, values) => {
+    if (typeof text !== "string") return { text, count: 0 };
+    let result = text;
+    let count = 0;
+    for (const { key, value, source } of values) {
+      if (!result.includes(value)) continue;
+      count += result.split(value).length - 1;
+      result = result.split(value).join(`[REDACTED:${source}:${key}]`);
+    }
+    return { text: result, count };
+  };
+
+  const redactDeep = (value, values) => {
+    if (typeof value === "string") {
+      const result = redact(value, values);
+      return { value: result.text, count: result.count };
+    }
+    if (Array.isArray(value)) {
+      const count = value.reduce((total, item, index) => {
+        const result = redactDeep(item, values);
+        value[index] = result.value;
+        return total + result.count;
+      }, 0);
+      return { value, count };
+    }
+    if (value && typeof value === "object") {
+      const count = Object.keys(value).reduce((total, key) => {
+        const result = redactDeep(value[key], values);
+        value[key] = result.value;
+        return total + result.count;
+      }, 0);
+      return { value, count };
+    }
+    return { value, count: 0 };
+  };
+
+  return {
+    "tool.execute.before": async (input, output) => {
+      const tool = input.tool;
+      const args = output.args || {};
+
+      // Tools that have a direct filePath argument: read, edit, patch
+      if (["read", "edit", "patch"].includes(tool)) {
+        if (isEnvFile(args.filePath)) {
+          throw new Error(ERROR_MSG);
+        }
+      }
+
+      // grep: block if targeting .env files via path or include pattern
+      if (tool === "grep") {
+        if (isEnvFile(args.path) || containsEnvRef(args.include)) {
+          throw new Error(ERROR_MSG);
+        }
+      }
+
+      // glob: block if the pattern or path targets .env files
+      if (tool === "glob") {
+        if (containsEnvRef(args.pattern) || isEnvFile(args.path)) {
+          throw new Error(ERROR_MSG);
+        }
+      }
+    },
+    "tool.execute.after": async (input, output) => {
+      if (input.tool !== "bash") return;
+
+      try {
+        const values = envPathsInCommand(input.args?.command)
+          .map(resolveEnvPath)
+          .filter(Boolean)
+          .flatMap((filePath) =>
+            envValues(filePath).map((value) => ({
+              ...value,
+              source: basename(filePath),
+            })),
+          )
+          .sort((a, b) => b.value.length - a.value.length);
+        if (values.length === 0) return;
+
+        let count = 0;
+        const result = redact(output.output, values);
+        output.output = result.text;
+        count += result.count;
+
+        const title = redact(output.title, values);
+        output.title = title.text;
+        count += title.count;
+
+        if (output.metadata && typeof output.metadata === "object") {
+          const metadata = redactDeep(output.metadata, values);
+          count += metadata.count;
+        }
+
+        if (count > 0) {
+          output.output =
+            `⚠️ env-protection: redacted ${count} value(s) from an env file. ` +
+            "Reference them via the file path or an environment variable, never the literal value.\n" +
+            (output.output || "");
+        }
+      } catch {
+        // A redaction failure must never prevent the command from completing.
+      }
+    },
+  };
+};

@@ -23,6 +23,7 @@ Thumbs.db
 
 
 
+
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
 .config/1Password/ssh/agent.toml
@@ -45,6 +46,7 @@ Thumbs.db
 .config/opencode/opencode-homeassistant.json
 .config/opencode/opencode-notifier.json
 .config/opencode/opencode.json
+.config/opencode/plugins/env-protection.js
 .config/opencode/plugins/deny-rm-rf.js
 .config/opencode/plugins/require-gpsup.js
 .config/opencode/tui.json

@@ -1,5 +1,13 @@
 # OpenCode Policies
 
+## Secret Protection
+
+`env-protection.js##class.Personal` is installed only on Personal machines.
+Work machines and the classless QTS NAS use secret-guard, bundled with
+opencode-memory, instead. Keep these layers mutually exclusive: if
+opencode-memory is added to the default OpenCode config, remove
+`env-protection.js##class.Personal`.
+
 ## Storage Layout
 
 When inspecting prior OpenCode sessions or tool results, verify the local storage

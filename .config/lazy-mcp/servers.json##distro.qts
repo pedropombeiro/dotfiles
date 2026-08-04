@@ -1,0 +1,16 @@
+{
+  "servers": [
+    {
+      "name": "context7",
+      "description": "Library documentation and code examples",
+      "type": "local",
+      "command": ["npx", "-y", "@upstash/context7-mcp"]
+    },
+    {
+      "name": "memory",
+      "description": "opencode-memory: persistent semantic memory + GitLab workflow tools",
+      "type": "remote",
+      "url": "http://localhost:9824/mcp"
+    }
+  ]
+}

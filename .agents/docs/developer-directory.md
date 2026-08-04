@@ -6,6 +6,8 @@ All cloned repositories live under `~/Developer` following a **go-style** path c
 ~/Developer/<forge-host>/<owner>/<repo>
 ```
 
+> **macOS only.** The QTS NAS has no `~/Developer`; see "QTS NAS" below.
+
 ## Examples
 
 - `~/Developer/github.com/pedropombeiro/opencode-plugins`
@@ -30,6 +32,21 @@ If the exact owner is unknown, list candidates:
 ```bash
 ls ~/Developer/github.com/
 ```
+
+## QTS NAS
+
+The NAS does not use `~/Developer` or the go-style nesting. Clones live **flat** under
+`~/opt`:
+
+```
+~/opt/<repo>
+```
+
+Examples: `~/opt/vscode-home-assistant`, `~/opt/opencode-memory`.
+
+`~/opt` also holds non-repo build support (e.g. `~/opt/qts-glibc-shim`), so treat it
+as "local software", not purely a clone root. The skill symlinks described below are a
+macOS arrangement and are not present there.
 
 ## Global agent skills
 

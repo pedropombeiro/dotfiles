@@ -44,10 +44,10 @@ Thumbs.db
 .config/nvim/lua/plugins/lsp/mason-tool-installer.lua
 .config/opencode-memory/config.toml
 .config/opencode/opencode-homeassistant.json
-.config/opencode/opencode-notifier.json
 .config/opencode/opencode.json
-.config/opencode/plugins/env-protection.js
+.config/opencode/opencode-notifier.json
 .config/opencode/plugins/deny-rm-rf.js
+.config/opencode/plugins/env-protection.js
 .config/opencode/plugins/require-gpsup.js
 .config/opencode/tui.json
 .config/pgcli/config
@@ -75,6 +75,7 @@ Thumbs.db
 .config/yadm/bootstrap.d/955-install-stream-deck-plugins.sh
 .config/yadm/bootstrap.d/965-ensure-weekly-log.sh
 .config/yadm/bootstrap.d/970-install-opencode-memory.sh
+.config/yadm/bootstrap.d/975-verify-opencode-memory.sh
 .config/yadm/config_templates/LaunchDaemons/org.gitlab1.ifconfig.plist
 .config/yadm/scripts/defaults.sh
 .config/yadm/scripts/iterm2-setup.sh
@@ -142,3 +143,4 @@ Thumbs.db
 .ssh/config
 .vale.ini
 # END yadm-alt
+

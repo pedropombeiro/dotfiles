@@ -65,11 +65,16 @@ Two reporting quirks to expect:
 
 Throughout a session:
 
-- Before working on an MR/issue/epic, call `memory_get_context(entity_ref)` to get history.
-- Use `memory_claim_item()` before making changes to prevent conflicts.
-- Store important decisions, blockers, and procedures with `memory_remember()`.
-- Release claimed items when done with `memory_release_item()`.
-- Use `memory_recall(query)` to search for relevant context.
+- On this NAS's Rust HTTP server, before working on an MR/issue/epic, call
+  `get_context(entity_ref)` to get history.
+- Use `claim_item()` before making changes to prevent conflicts.
+- Store important decisions, blockers, and procedures with `remember()`.
+- Release claimed items when done with `release_item()`.
+- Use `recall(query)` to search for relevant context.
+
+The Mac stdio shim consolidates the full tool surface behind `memory(action=...)`.
+The NAS Rust runtime intentionally does not implement that shim and exposes its
+bare tools directly; see [MCP wiring: URL form, not the shim](#mcp-wiring-url-form-not-the-shim).
 
 ## Session Tracking
 

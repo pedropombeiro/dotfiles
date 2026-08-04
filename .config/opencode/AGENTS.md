@@ -10,7 +10,7 @@ session and after compaction. Boot gates (⛔) are standing instructions - follo
 relevant situation arises.
 
 **If you do not see boot context** (no boot gates, no blockers section, no reminders) in the system
-prompt after this AGENTS.md section, call `memory_get_boot_context()` to load it manually. This is a
+prompt after this AGENTS.md section, call `get_boot_context()` to load it manually. This is a
 fallback for when automatic injection fails.
 
 ## Core Rules

@@ -8,6 +8,8 @@
 // (upstream #155); the context injection runs from hooks and is unaffected.
 // The memory tools themselves arrive lazily through lazy-mcp, which matters
 // here because the Rust server advertises 86 uncollapsed schemas.
+// secret-guard treats env-protection's [REDACTED:...] markers as placeholders,
+// so both protections remain safe regardless of plugin load order.
 import { server } from "/share/homes/admin/opt/opencode-memory/plugin/dist/index.js"
 
 export default async (input) => server(input, { tools: false })

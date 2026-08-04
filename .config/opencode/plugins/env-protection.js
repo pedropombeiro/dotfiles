@@ -243,6 +243,8 @@ export const EnvProtection = async ({ directory, worktree }) => {
         }
 
         if (count > 0) {
+          // secret-guard recognises this [REDACTED:...] marker as a placeholder,
+          // so both protection plugins remain safe regardless of load order.
           output.output =
             `⚠️ env-protection: redacted ${count} value(s) from a protected credential file. ` +
             "Reference them via the file path or an environment variable, never the literal value.\n" +

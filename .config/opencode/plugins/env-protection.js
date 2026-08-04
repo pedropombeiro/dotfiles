@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, statSync } from "node:fs";
-import { basename, resolve } from "node:path";
+import { existsSync, readFileSync, realpathSync, statSync } from "node:fs";
+import { basename, resolve, sep } from "node:path";
 
 export const EnvProtection = async ({ directory, worktree }) => {
   delete process.env.MANPAGER;
@@ -28,6 +28,43 @@ export const EnvProtection = async ({ directory, worktree }) => {
     "xxx",
   ]);
 
+  const loadSecretDirs = () => {
+    const configPath = resolve(
+      process.env.XDG_CONFIG_HOME || resolve(process.env.HOME || "~", ".config"),
+      "opencode",
+      "env-protection.json",
+    );
+    try {
+      const { secretDirs = [] } = JSON.parse(readFileSync(configPath, "utf8"));
+      if (!Array.isArray(secretDirs)) return [];
+      return secretDirs
+        .filter((dir) => typeof dir === "string")
+        .flatMap((dir) => {
+          try {
+            return [realpathSync(dir)];
+          } catch {
+            return [];
+          }
+        });
+    } catch {
+      return [];
+    }
+  };
+
+  const secretDirs = loadSecretDirs();
+
+  const inSecretDir = (filePath) => {
+    if (!filePath) return false;
+    try {
+      const resolved = realpathSync(filePath);
+      return secretDirs.some((dir) => resolved === dir || resolved.startsWith(dir + sep));
+    } catch {
+      // Also protect a path before it exists (for example, an edit creating one).
+      const resolved = resolve(filePath);
+      return secretDirs.some((dir) => resolved === dir || resolved.startsWith(dir + sep));
+    }
+  };
+
   /** Checks if a string contains a reference to a .env file */
   const containsEnvRef = (str) => {
     if (!str) return false;
@@ -47,16 +84,18 @@ export const EnvProtection = async ({ directory, worktree }) => {
     return ENV_FILE_PATTERN.test(filePath);
   };
 
-  const ERROR_MSG = "Access to .env files is not allowed";
+  const isProtectedFile = (filePath) => isEnvFile(filePath) || inSecretDir(filePath);
+
+  const ERROR_MSG = "Access to protected credential files is not allowed";
 
   const envPathsInCommand = (command) => {
     if (!command) return [];
     const paths = new Set();
     for (const token of command.split(/[\s|&;<>()[\]{}'"`=]+/)) {
-      if (!token || SAFE_SUFFIXES.test(token) || !ENV_FILE_TOKEN_PATTERN.test(token)) {
+      if (!token || SAFE_SUFFIXES.test(token)) {
         continue;
       }
-      paths.add(token);
+      if (ENV_FILE_TOKEN_PATTERN.test(token) || inSecretDir(token)) paths.add(token);
     }
     return [...paths];
   };
@@ -68,15 +107,32 @@ export const EnvProtection = async ({ directory, worktree }) => {
     return candidates.find((candidate) => existsSync(candidate));
   };
 
+  const protectedPathsInCommand = (command) => {
+    const paths = new Set(envPathsInCommand(command));
+    if (!command) return [...paths];
+    for (const token of command.split(/\s+/)) {
+      const path = token.replace(/^["']|["']$/g, "");
+      if (inSecretDir(path)) paths.add(path);
+    }
+    return [...paths];
+  };
+
   const isSecretValue = (value) => {
     if (value.length < 8 || PLACEHOLDER_VALUES.has(value.toLowerCase())) return false;
     if (/^\$\{?[A-Za-z_][A-Za-z0-9_]*\}?$/.test(value)) return false;
     return !/^(?:~\/|\.\/|\/)/.test(value);
   };
 
-  const envValues = (filePath) => {
+  const protectedFileValues = (filePath) => {
     try {
       if (statSync(filePath).size > MAX_ENV_FILE_SIZE) return [];
+      if (inSecretDir(filePath)) {
+        const value = readFileSync(filePath, "utf8").trim();
+        // Every non-empty file in a configured directory is secret material.
+        return value
+          ? [{ key: basename(filePath), value, protectedFile: true }]
+          : [];
+      }
       return readFileSync(filePath, "utf8")
         .split(/\r?\n/)
         .flatMap((line) => {
@@ -136,21 +192,21 @@ export const EnvProtection = async ({ directory, worktree }) => {
 
       // Tools that have a direct filePath argument: read, edit, patch
       if (["read", "edit", "patch"].includes(tool)) {
-        if (isEnvFile(args.filePath)) {
+        if (isProtectedFile(args.filePath)) {
           throw new Error(ERROR_MSG);
         }
       }
 
       // grep: block if targeting .env files via path or include pattern
       if (tool === "grep") {
-        if (isEnvFile(args.path) || containsEnvRef(args.include)) {
+        if (isProtectedFile(args.path) || containsEnvRef(args.include)) {
           throw new Error(ERROR_MSG);
         }
       }
 
       // glob: block if the pattern or path targets .env files
       if (tool === "glob") {
-        if (containsEnvRef(args.pattern) || isEnvFile(args.path)) {
+        if (containsEnvRef(args.pattern) || isProtectedFile(args.path)) {
           throw new Error(ERROR_MSG);
         }
       }
@@ -159,15 +215,16 @@ export const EnvProtection = async ({ directory, worktree }) => {
       if (input.tool !== "bash") return;
 
       try {
-        const values = envPathsInCommand(input.args?.command)
+        const values = protectedPathsInCommand(input.args?.command)
           .map(resolveEnvPath)
           .filter(Boolean)
           .flatMap((filePath) =>
-            envValues(filePath).map((value) => ({
+            protectedFileValues(filePath).map((value) => ({
               ...value,
               source: basename(filePath),
             })),
           )
+          .filter(({ value, protectedFile }) => protectedFile || isSecretValue(value))
           .sort((a, b) => b.value.length - a.value.length);
         if (values.length === 0) return;
 
@@ -187,7 +244,7 @@ export const EnvProtection = async ({ directory, worktree }) => {
 
         if (count > 0) {
           output.output =
-            `⚠️ env-protection: redacted ${count} value(s) from an env file. ` +
+            `⚠️ env-protection: redacted ${count} value(s) from a protected credential file. ` +
             "Reference them via the file path or an environment variable, never the literal value.\n" +
             (output.output || "");
         }

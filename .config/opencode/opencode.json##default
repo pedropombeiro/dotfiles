@@ -172,7 +172,9 @@
       "*": "allow",
       "*.env": "deny",
       "*.env.*": "deny",
-      "*.env.example": "allow"
+      "*.env.example": "allow",
+      "/share/Container/secrets/**": "deny",
+      "/share/CACHEDEV1_DATA/Container/secrets/**": "deny"
     },
     "bash": {
       "*": "ask",

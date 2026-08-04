@@ -26,6 +26,7 @@ Thumbs.db
 
 
 
+
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
 .config/1Password/ssh/agent.toml
@@ -44,12 +45,12 @@ Thumbs.db
 .config/nvim/lua/core/gdk.lua
 .config/nvim/lua/plugins/image.lua
 .config/nvim/lua/plugins/lsp/mason-tool-installer.lua
+.config/opencode/env-protection.json
 .config/opencode-memory/config.toml
 .config/opencode/opencode-homeassistant.json
 .config/opencode/opencode.json
 .config/opencode/opencode-notifier.json
 .config/opencode/plugins/deny-rm-rf.js
-.config/opencode/plugins/env-protection.js
 .config/opencode/plugins/opencode-memory.js
 .config/opencode/plugins/require-gpsup.js
 .config/opencode/tui.json

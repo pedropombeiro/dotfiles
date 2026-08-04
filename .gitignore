@@ -24,6 +24,8 @@ Thumbs.db
 
 
 
+
+
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
 .config/1Password/ssh/agent.toml
@@ -48,6 +50,7 @@ Thumbs.db
 .config/opencode/opencode-notifier.json
 .config/opencode/plugins/deny-rm-rf.js
 .config/opencode/plugins/env-protection.js
+.config/opencode/plugins/opencode-memory.js
 .config/opencode/plugins/require-gpsup.js
 .config/opencode/tui.json
 .config/pgcli/config
@@ -143,4 +146,3 @@ Thumbs.db
 .ssh/config
 .vale.ini
 # END yadm-alt
-

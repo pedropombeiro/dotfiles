@@ -1,0 +1,13 @@
+// opencode-memory (GHMEM) proactive context injection, NAS-only.
+//
+// This wrapper exists so opencode.json does not need a ##distro.qts fork just
+// to add one plugin entry. Files in this directory are auto-discovered, and
+// yadm's ##distro.qts suffix keeps it off every other machine.
+//
+// `tools: false` stops the plugin registering its own secret_guard_forget tool
+// (upstream #155); the context injection runs from hooks and is unaffected.
+// The memory tools themselves arrive lazily through lazy-mcp, which matters
+// here because the Rust server advertises 86 uncollapsed schemas.
+import { server } from "/share/homes/admin/opt/opencode-memory/plugin/dist/index.js"
+
+export default async (input) => server(input, { tools: false })

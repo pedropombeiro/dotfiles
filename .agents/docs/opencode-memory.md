@@ -76,6 +76,13 @@ The Mac stdio shim consolidates the full tool surface behind `memory(action=...)
 The NAS Rust runtime intentionally does not implement that shim and exposes its
 bare tools directly; see [MCP wiring: URL form, not the shim](#mcp-wiring-url-form-not-the-shim).
 
+Those five are the common-path tools, **not** the whole surface: the Rust server
+advertises 86 tools. Confirm anything beyond them (`edit_memory`, `archive_memory`,
+`set_reminder`, `resolve_blocker`, `get_by_id`, the `queue_*` and `graph_*` families,
+etc.) with `lazy-mcp_list_commands` before use. Do not extrapolate names from the Mac
+Python shim: plausible names such as `update_memory` and `get_memory` do not exist on
+the NAS; use `edit_memory` and `get_by_id` instead.
+
 ## Session Tracking
 
 When ending a session or summarizing work done, include the session ID (shown in the

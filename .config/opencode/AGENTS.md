@@ -16,7 +16,9 @@ fallback for when automatic injection fails.
 ## Core Rules
 
 - For library and framework documentation, use Context7 first.
-- Before making an MCP call, use `lazy-mcp_describe_commands` to inspect the schema for that specific server. Do not preflight MCP servers unless you actually plan to use them.
+- MCP call order is `lazy-mcp_list_commands` -> `lazy-mcp_describe_commands` -> `lazy-mcp_invoke_command`. Never pass a command name to `describe_commands` that `list_commands` did not return; guessing a plausible name is the most common cause of a failed schema lookup.
+- `describe_commands` appears batch-atomic: one invalid name can discard schemas for valid names in the same call. Skip it entirely for commands already invoked successfully in the current session.
+- Do not preflight MCP servers unless you actually plan to use them.
 - In unfamiliar repos, read local `AGENTS.md`, `CLAUDE.md`, and task-index docs before broad exploration.
 - Prefer repo-local skills over rediscovering documented workflows.
 - Never post or reply to issues, MRs/PRs, comments, discussions, chat, or any external channel without explicit user approval. Draft the content and ask for confirmation first.

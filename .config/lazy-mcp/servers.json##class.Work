@@ -47,7 +47,7 @@
       "name": "websearch",
       "description": "Web search via Exa AI",
       "type": "remote",
-      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa"
+      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa,web_search_advanced_exa"
     },
     {
       "name": "grep_app",

@@ -75,6 +75,11 @@ When renaming or adding files:
 
 ## Conventional Commits
 
+## Amending commits
+
+- Amend an unreviewed local commit when needed to correct its contents or commit message.
+- Do not amend a commit after its merge request has undergone review; create a follow-up commit instead.
+
 Use **scoped conventional commits** to organize changes logically.
 This improves clarity and makes history easier to navigate.
 

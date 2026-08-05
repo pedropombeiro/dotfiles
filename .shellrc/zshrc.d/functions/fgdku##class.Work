@@ -232,7 +232,7 @@ _git_fsmonitor_stop
   _fgdku_step "gdk cleanup"
   (
     cd $GDK_ROOT && bundle install && yes | gdk cleanup
-    fd -tf --max-depth 1 --size +10M . gitlab/log -x truncate -s 0 {}
+    fd -tf --no-ignore --max-depth 1 --size +10M . gitlab/log -x truncate -s 0 {}
   ) || printf "${YELLOW}%s${NC}\n" "GDK cleanup subshell failed, continuing..."
 
   _fgdku_step "gdk restart"

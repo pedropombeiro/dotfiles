@@ -158,6 +158,64 @@ There is **no enable flag**. Injection is on whenever the plugin path is present
 injection off you must remove the plugin entry. If the server is down, injection fails
 silently rather than erroring.
 
+## Session Capture And LLM Gate
+
+Passive OpenCode and Claude Code ingestion records `conversation_summary` rows containing
+session metadata (title, message count, tools, entities, and a first-prompt excerpt). These
+are not durable extracted knowledge and lifecycle cleanup archives them after 90 days.
+
+The plugin's Tier 1 salient-turn capture is enabled unconditionally by
+`~/.shellrc/rc.d/opencode-memory.sh`, which exports `OPENCODE_MEMORY_TIER1_CAPTURE=1`.
+It uses the deterministic salience gate and encoder only: it does not make LLM calls.
+
+There are two delivery paths for this setting:
+
+- The shell file covers OpenCode launched directly from a terminal. A shell only exports it
+  when started after the file exists, so `exec zsh` or a new pane is required; restarting
+  OpenCode in an old shell is insufficient.
+- `~/.config/tmux/tmux.conf` sets it in tmux's global environment. This covers the usual
+  tmux and `opencode.nvim` path: its `tmux split-window <cmd>` launches OpenCode directly
+  and bypasses the login shell.
+
+Verify a running instance inherited the setting with:
+
+```
+ps eww -p <opencode-pid> | tr ' ' '\n' | grep OPENCODE_MEMORY_TIER1_CAPTURE
+```
+
+OpenCode launched by a GUI Neovim instance outside tmux still needs Neovim to have inherited
+the shell setting; re-exec its parent shell or restart Neovim after changing the shell file.
+
+`ingestion.llm_extraction` is misleadingly named. It is the worker's master LLM-capability
+gate, so `false` disables all scheduled jobs that require an LLM, including knowledge and
+concept extraction, effectiveness analysis, CREDIT reflection, and LLM CONTRADICTS linking.
+It currently remains `false` to avoid those costs.
+
+The periodic `KnowledgeExtraction` job currently has no passive-ingestion input: it queries
+`conversation` memories, while the daemon calls `extract_session_summary()` and stores only
+`conversation_summary`. Do not enable `llm_extraction` expecting it to mine normal sessions
+until upstream fixes that ingestion mismatch.
+
+When changing `[ingestion]` watch paths, restart the daemon explicitly:
+
+```
+launchctl kickstart -k gui/$UID/com.opencode.memory.daemon
+```
+
+`memory-ctl.sh start` does not reload configuration when the HTTP server is already healthy.
+After changing a brain watch path, backfill it once with:
+
+```
+~/.local/share/opencode-memory-install/.venv/bin/python \
+  -m opencode_memory.cli ingest \
+  ~/Developer/gitlab.com/pedropombeiro/weekly-log/brain --recursive
+```
+
+Memory source paths were migrated on 2026-08-06 from the former
+`gitlab-org/growth/ai/weekly-log-template` clone to the personal
+`pedropombeiro/weekly-log` clone. The migration changes provenance only; it neither creates
+nor re-embeds memories.
+
 ## Installer Overwrite Hazard
 
 `opencode-memory`'s `scripts/setup.sh` (`setup_agents_md()`) writes

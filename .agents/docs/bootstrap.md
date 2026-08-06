@@ -58,3 +58,10 @@ echo "Done: <description>"
 - Use descriptive numbering (leave gaps for future scripts)
 - Make executable: `chmod +x <script>`
 - Validate syntax: `bash -n <script>`
+
+## 1Password Secrets
+
+Use account and vault UUIDs for `op` calls in bootstrap scripts. Vault names such
+as `Private` can exist in multiple 1Password accounts on the same machine.
+Use the vault UUID in the secret reference and pin the account with `--account`.
+Item titles remain readable unless their name is expected to change.

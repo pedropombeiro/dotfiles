@@ -26,6 +26,7 @@ fallback for when automatic injection fails.
 ## Search Routing
 
 - For GitLab docs, runbooks, handbook content, or other company knowledge, use Glean first.
+- For Pedro's personal notes, memos, and saved snippets, use the `memos` MCP server.
 - For code or config in tracked git files, prefer `git ls-files` and `git grep`.
 - Use `Glob` and `Grep` only when untracked or ignored files matter.
 

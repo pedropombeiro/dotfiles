@@ -69,6 +69,15 @@
         "/Users/pedropombeiro/.incidentio/incident",
         "mcp"
       ]
+    },
+    {
+      "name": "memos",
+      "description": "Personal notes and memos via Memos",
+      "type": "remote",
+      "url": "https://memos.pombei.ro/mcp",
+      "headers": {
+        "Authorization": "Bearer {file:~/.config/lazy-mcp/memos-token}"
+      }
     }
   ]
 }

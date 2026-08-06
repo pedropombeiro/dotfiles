@@ -20,6 +20,7 @@ Thumbs.db
 .profile
 .zshrc
 .config/yazi/flavors/gruvbox-dark.yazi
+.config/lazy-mcp/memos-token
 
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile

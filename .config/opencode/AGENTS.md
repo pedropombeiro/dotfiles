@@ -35,6 +35,7 @@ fallback for when automatic injection fails.
 - Use the Bash tool `workdir` parameter instead of `git -C`.
 - Do not use `--no-pager` with `git` or `yadm`.
 - Use the Bash tool `workdir` parameter instead of `docker compose -f` when possible.
+- Decode JSON with `jq`, which is pre-approved. Avoid `python3 -c` for parsing JSON.
 - When chaining shell commands with `&&`, put each subcommand on its own line, end intermediate lines with ` && \`, and indent continuation lines with two spaces. Example:
 
   ```

@@ -88,44 +88,30 @@ the NAS; use `edit_memory` and `get_by_id` instead.
 When ending a session or summarizing work done, include the session ID (shown in the
 session context footer) to enable continuation tracking across sessions.
 
-## Troubleshooting: Server Silently Dead After Install/Upgrade
+## Upgrades
 
-Symptom: `launchctl list | grep opencode` shows all three agents running, but nothing
-answers on `:9824` — proactive injection and boot context silently stop working while
-looking healthy at a glance. Check `~/.local/state/opencode-memory/server.error.log`
-for:
+As of v0.18.1, upstream constrains the Python MCP SDK to `<2`, fixing the former
+unbounded-dependency startup failure. The current venv may remain on `mcp==1.27.0`; it is
+compatible. Do not manually pin it unless an older installation still declares an unbounded
+dependency.
 
-```
-AttributeError: 'Server' object has no attribute 'list_tools'
-ERROR:    Application startup failed. Exiting.
-```
+Use `scripts/setup.sh` for upgrades rather than a bare `git pull`: it updates the release
+channel, rebuilds the untracked `plugin/dist/` JavaScript that OpenCode actually loads, and
+refreshes macOS LaunchAgents. It runs `git reset --hard` and `git clean -fd`, so export and
+commit any required local patch before running it. The project-attribution workaround is stored
+in `~/.agents/patches/opencode-memory-auto-project.patch`; reapply it after each upgrade and
+restart all three services.
 
-Diagnosis: the `mcp` PyPI package (the upstream Model Context Protocol Python SDK) went
-2.0.0 on 2026-07-28, which replaced decorator handler registration
-(`@server.list_tools()`) with constructor handlers (`Server(..., on_list_tools=...)`).
-`opencode-memory`'s `pyproject.toml` declares an unbounded `mcp>=1.0.0` (while
-`uv.lock` pins `1.27.0`), and `scripts/setup.sh` installs with plain `pip install -e .`,
-which ignores the lockfile — so any install/upgrade run after that date can resolve to
-the incompatible major. Confirm with:
+The setup script overwrites the YADM-tracked `~/.config/opencode/AGENTS.md`. Confirm that file
+is clean before upgrading, then restore it with `yadm checkout -- .config/opencode/AGENTS.md`
+afterward. Setup can also add Claude Code hooks when `setup.agents` includes `claude`; retain
+them if that integration is wanted.
 
-```
-ls -d ~/.local/share/opencode-memory-install/.venv/lib/python3.*/site-packages/mcp-*.dist-info
-```
-
-Remediation: pin the install to the 1.x line and restart the server:
-
-```
-~/.local/share/opencode-memory-install/.venv/bin/pip install 'mcp==1.27.0'
-launchctl kickstart -k gui/$UID/com.opencode.memory
-```
-
-This is a workaround for
-[ghavenga/opencode-memory#223](https://gitlab.com/ghavenga/opencode-memory/-/issues/223)
-(unbounded `mcp>=1.0.0`, still open as of 2026-07-28). Once upstream constrains the
-dependency (their own stated intent is `mcp>=1.28,<2`), this stops being necessary.
-Bootstrap does not pre-apply this pin — see "Fresh Machine Bootstrap" below, which
-instead verifies the server actually comes up rather than guessing which `mcp` major
-is safe today.
+Before a version carrying storage migrations, stop the HTTP server, daemon, and worker and take
+a snapshot of `memory.db`, `memory.db-wal`, `memory.db-shm`, and `vectors/`. The v0.18.1 update
+was verified on 2026-08-07: schema version 9 migrated to 15, including inert single-user memory
+visibility columns, the existing reminder survived, and project-scoped Tier 1 capture still
+resolved correctly after the workaround was reapplied.
 
 ## LLM Provider Needs an Absolute Path
 

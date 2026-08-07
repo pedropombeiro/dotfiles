@@ -22,15 +22,13 @@ watch_paths = [
   "~/Developer/gitlab.com/pedropombeiro/weekly-log/brain",
 ]
 db_poll_interval = 30
-# LLM-based knowledge extraction from old conversations. Uses 'opencode run'
-# per conversation (every 6h, up to 50 per cycle) and WILL incur API costs.
-# Disabled 2026-07-29: the curated second-brain loop above is now the source of
-# durable knowledge, so paying an LLM to mine old transcripts is redundant.
-# Note this flag also gates CONTRADICTS link detection in linking/linker.py --
-# acceptable here since it had produced 0 such links (only extends/related/
-# same_entity, which are non-LLM). Passive session ingestion is unaffected;
-# it is governed by `enabled`, not this flag.
-llm_extraction = false
+# Master gate for all scheduled LLM jobs. Enabled 2026-08-07 for concept
+# extraction and injection-effectiveness analysis. It runs about 264 calls/day
+# while the current backlogs drain, then declines. KnowledgeExtraction remains
+# inert: passive ingestion stores conversation_summary, not conversation rows.
+# It also enables CONTRADICTS linking. Passive session ingestion is governed by
+# `enabled`, not this setting.
+llm_extraction = true
 
 [storage]
 path = "~/.local/share/opencode-memory"

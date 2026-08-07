@@ -189,12 +189,25 @@ the shell setting; re-exec its parent shell or restart Neovim after changing the
 `ingestion.llm_extraction` is misleadingly named. It is the worker's master LLM-capability
 gate, so `false` disables all scheduled jobs that require an LLM, including knowledge and
 concept extraction, effectiveness analysis, CREDIT reflection, and LLM CONTRADICTS linking.
-It currently remains `false` to avoid those costs.
+It was enabled on 2026-08-07 to process concept and effectiveness-analysis backlogs. Expect
+about 264 provider calls/day while these drain: concept extraction processes ten memories every
+two hours, and effectiveness analysis rechecks three injections every 30 minutes. Reassess the
+cost and failure rate after 48 hours.
 
 The periodic `KnowledgeExtraction` job currently has no passive-ingestion input: it queries
 `conversation` memories, while the daemon calls `extract_session_summary()` and stores only
 `conversation_summary`. Do not enable `llm_extraction` expecting it to mine normal sessions
 until upstream fixes that ingestion mismatch.
+
+Do not replay historical transcripts through Tier 1's deterministic salience gate. A 150-session
+sample retained 9.18 whole turns per session at its normal threshold (about 39,000 across the
+history). Increasing the threshold selected longer transcript blobs rather than more precise
+claims: median retained length grew from 210 characters at one signal to 3,505 at three. Tier 1
+is for short-lived, in-session recall; use selective LLM extraction for historical knowledge.
+
+`context_injections` is a deprecated table retained for migrations. Current plugin activity is
+recorded in `context_events`; inspect its `boot`, `user_injection`, and `thinking_injection`
+event types when measuring whether a memory reaches an agent's context window.
 
 When changing `[ingestion]` watch paths, restart the daemon explicitly:
 

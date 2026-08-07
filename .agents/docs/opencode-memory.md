@@ -197,7 +197,13 @@ cost and failure rate after 48 hours.
 The periodic `KnowledgeExtraction` job currently has no passive-ingestion input: it queries
 `conversation` memories, while the daemon calls `extract_session_summary()` and stores only
 `conversation_summary`. Do not enable `llm_extraction` expecting it to mine normal sessions
-until upstream fixes that ingestion mismatch.
+until upstream fixes this regression. In upstream commit `7dbed6c` (v0.3.0, 2026-05-10), the
+three-process refactor dropped both full-conversation and pattern-insight ingestion from the
+daemon. `extract_session_memories()` still returns `(full, summary)`, but its remaining observer
+callers discard `full`; `extract_session_insights()` is now only called by a manual script.
+See [upstream issue #284](https://gitlab.com/ghavenga/opencode-memory/-/work_items/284) for the
+bisect and linked source references. Do not patch the editable local install: installer upgrades
+would overwrite it. Wait for the upstream fix or contribute it as an MR.
 
 Do not replay historical transcripts through Tier 1's deterministic salience gate. A 150-session
 sample retained 9.18 whole turns per session at its normal threshold (about 39,000 across the

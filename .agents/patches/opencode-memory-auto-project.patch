@@ -1,0 +1,9 @@
+diff --git a/src/opencode_memory/server.py b/src/opencode_memory/server.py
+--- a/src/opencode_memory/server.py
++++ b/src/opencode_memory/server.py
+@@ -4197 +4197 @@
+-        if not project:
++        if project == "auto" or project is None:
+@@ -4267 +4267 @@
+-        if not project:
++        if project == "auto" or project is None:

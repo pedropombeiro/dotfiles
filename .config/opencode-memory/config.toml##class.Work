@@ -33,6 +33,12 @@ llm_extraction = true
 [storage]
 path = "~/.local/share/opencode-memory"
 
+# Persist the cheap, read-only health signals used by the observability dashboard.
+[observability]
+enabled = true
+interval_seconds = 3600
+retention_days = 90
+
 # Opt-in auto-updates (#152). OFF by default. When enabled the background
 # worker periodically checks the chosen channel and, per the tiered consent
 # below, may apply updates and restart the services automatically.

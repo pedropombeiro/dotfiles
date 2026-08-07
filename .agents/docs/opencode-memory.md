@@ -215,6 +215,41 @@ is for short-lived, in-session recall; use selective LLM extraction for historic
 recorded in `context_events`; inspect its `boot`, `user_injection`, and `thinking_injection`
 event types when measuring whether a memory reaches an agent's context window.
 
+## Tier 1 Project Attribution
+
+The plugin deliberately sends `project = "auto"` with every Tier 1 capture and includes the
+session working directory so the server can resolve the Git remote. In upstream `server.py`,
+`_capture_turn()` initially checked only `if not project`, leaving the truthy sentinel string in
+the `memories.project` column. This made scoped recall silently omit every Tier 1 memory and
+would also propagate `auto` into Tier 2 spans and derived concepts.
+
+The local editable install has the canonical guard at both `_capture_turn()` and `_remember()`:
+
+```python
+if project == "auto" or project is None:
+    project = _detect_current_project(working_directory)
+```
+
+On 2026-08-07, all existing `project = 'auto'` rows were restored from exact verbatim-turn
+matches in `~/.local/share/opencode/opencode.db`: 37 to `gitlab-org/gitlab`, four to the prompt
+library project, and 24 to `NULL` for home-directory sessions without a Git remote. A snapshot
+including `memory.db`, `memory.db-wal`, and `memory.db-shm` is in
+`~/.local/share/opencode-memory/backups/` before the migration. A direct capture from the local
+upstream checkout then stored `ghavenga/opencode-memory`, proving the forward fix.
+
+The server is a separate LaunchAgent from daemon and worker. After changing this server code,
+restart all three to ensure the process listening on port 9824 has reloaded it:
+
+```
+launchctl kickstart -k gui/$UID/com.opencode.memory
+launchctl kickstart -k gui/$UID/com.opencode.memory.daemon
+launchctl kickstart -k gui/$UID/com.opencode.memory.worker
+```
+
+The source edit is deliberately local and will be overwritten by an installer upgrade. Keep it
+until upstream accepts an equivalent fix; the upstream issue was deferred until this local proof
+was complete.
+
 ## Tier 2/3 And LLM Isolation
 
 Tier 3 reflection is not ready to enable in normal use. It needs Tier 2 span capture first:

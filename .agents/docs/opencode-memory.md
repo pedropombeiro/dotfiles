@@ -215,6 +215,25 @@ is for short-lived, in-session recall; use selective LLM extraction for historic
 recorded in `context_events`; inspect its `boot`, `user_injection`, and `thinking_injection`
 event types when measuring whether a memory reaches an agent's context window.
 
+## Tier 2/3 And LLM Isolation
+
+Tier 3 reflection is not ready to enable in normal use. It needs Tier 2 span capture first:
+`SessionReflector.reflect()` returns `no_transcript` when `span_turns` is empty, and spans are
+only written with `ingestion.tier2_distill = true`. It also only enqueues from the `session_end`
+tool, which the bundled plugin does not call. The session registry is agent-driven, not
+plugin-driven. Tier 3 was introduced in upstream commit `a9fd1c0` without plugin changes; do not
+enable either tier until an explicit session-end trigger and their ongoing per-span LLM cost have
+been evaluated.
+
+The README warning against the `opencode` summarizer provider applies to the separate
+bulk-ingest subsystem, which is not configured here. It does not apply directly to
+`ingestion.llm_extraction`. The underlying risk is mitigated by `[BG] memory-*` session titles:
+passive ingestion and Tier 1 capture skip them. This was verified on 2026-08-07 after enabling
+LLM analysis: 120 background sessions had produced zero memories traceable to a background
+session. Recheck this during the 48-hour review. If a non-MCP provider becomes necessary,
+configure a per-purpose `duo` override under `[llm.purpose_overrides]` rather than changing the
+global provider mid-trial.
+
 When changing `[ingestion]` watch paths, restart the daemon explicitly:
 
 ```

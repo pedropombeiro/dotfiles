@@ -39,6 +39,15 @@ enabled = true
 interval_seconds = 3600
 retention_days = 90
 
+# Daily token-economics series. Required for the dashboard's spend panel and for
+# the observability snapshot's token_* columns; without it they stay empty.
+# Aggregates existing opencode.db sessions, so it costs no LLM calls. GitLab Duo
+# is flat-rate, so the dollar figures are an illustrative proxy, not a bill.
+[token_usage]
+enabled = true
+period_type = "day"
+interval_seconds = 86400
+
 # Opt-in auto-updates (#152). OFF by default. When enabled the background
 # worker periodically checks the chosen channel and, per the tiered consent
 # below, may apply updates and restart the services automatically.

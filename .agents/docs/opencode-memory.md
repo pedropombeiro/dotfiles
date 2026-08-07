@@ -61,6 +61,42 @@ Two reporting quirks to expect:
   `memory-ctl.sh start` no-ops with "server already healthy" if the HTTP port
   answers, so it will not reload config on its own.
 
+### Config Changes Need Every Reader Restarted
+
+Each service reads `config.toml` once at startup, so a setting is only live in the processes
+restarted since the edit. Several settings are read by more than one service, and a partial
+restart fails silently: the feature works but appears disabled.
+
+| Section                             | Worker                     | HTTP server                                     | Daemon            |
+| ----------------------------------- | -------------------------- | ----------------------------------------------- | ----------------- |
+| `[observability]`                   | schedules the snapshot job | renders `/dashboard` and `/observability/trend` | —                 |
+| `[token_usage]`                     | schedules the snapshot job | renders the dashboard's spend panel             | —                 |
+| `[ingestion]` watch paths           | —                          | —                                               | watches the paths |
+| `[llm]`, `ingestion.llm_extraction` | gates all LLM jobs         | —                                               | —                 |
+
+Both `[observability]` and `[token_usage]` bit this way on 2026-08-07: the worker restart
+scheduled the jobs and rows accumulated, but the dashboard kept reporting the feature disabled
+because the HTTP server still held the old config. When unsure, restart all three:
+
+```
+launchctl kickstart -k gui/$UID/com.opencode.memory
+launchctl kickstart -k gui/$UID/com.opencode.memory.daemon
+launchctl kickstart -k gui/$UID/com.opencode.memory.worker
+```
+
+Check what the HTTP server currently believes rather than trusting the config file:
+
+```
+curl -s 'http://localhost:9824/observability/trend?hours=24' \
+  | jq '{snapshots_enabled, token_enabled: .token_lifetime.enabled}'
+```
+
+Avoid restarting the worker repeatedly in quick succession. A job claimed by a worker that is
+killed mid-run is reclaimed, and once reclaims exceed `max_retries` it is marked dead with
+`death_reason = crash_looped`. Three restarts inside three minutes during the v0.18.1 upgrade
+killed one `ConceptExtraction` and one `EffectivenessAnalysis` job this way. Those are recorded
+in `dead_jobs` and are not LLM failures.
+
 ## Tool Usage
 
 Throughout a session:

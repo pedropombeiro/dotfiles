@@ -59,7 +59,10 @@
       "name": "glean_default",
       "description": "GitLab enterprise search and knowledge discovery via Glean",
       "type": "remote",
-      "url": "https://gitlab-be.glean.com/mcp/default"
+      "url": "https://gitlab-be.glean.com/mcp/default",
+      "oauth": {
+        "callbackPort": 53900
+      }
     },
     {
       "name": "incident_io",

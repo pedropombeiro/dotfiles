@@ -3,6 +3,8 @@
 # typos incorrectly flags these as misspellings of "to", "of", etc.
 ot = "ot"
 Ot = "Ot"
+# x265 HDR static-metadata option; do not replace it with the invalid "max-call".
+cll = "cll"
 
 [files]
 extend-exclude = [

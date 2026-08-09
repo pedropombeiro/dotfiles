@@ -11,15 +11,6 @@
       "description": "opencode-memory: persistent semantic memory + GitLab workflow tools",
       "type": "remote",
       "url": "http://localhost:9824/mcp"
-    },
-    {
-      "name": "memos",
-      "description": "Personal notes and memos via Memos",
-      "type": "remote",
-      "url": "https://memos.pombei.ro/mcp",
-      "headers": {
-        "Authorization": "Bearer {file:~/.config/lazy-mcp/memos-token}"
-      }
     }
   ]
 }

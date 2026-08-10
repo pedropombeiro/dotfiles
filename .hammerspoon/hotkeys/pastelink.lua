@@ -1,6 +1,10 @@
 hs.hotkey.bind({ "cmd", "shift" }, "v", function()
-  local url = hs.pasteboard.getContents()
-  if not url or not url:match("^https?://") then return end
+  local clipboard = hs.pasteboard.getContents()
+  local url = clipboard and clipboard:match("^%s*(.-)%s*$")
+  if not url or not url:match("^https?://") then
+    hs.eventtap.keyStroke({ "cmd" }, "v")
+    return
+  end
 
   local title = hs.execute(
     '/usr/bin/curl -sL --max-time 5 "' .. url .. "\" | sed -n 's/.*<title[^>]*>\\([^<]*\\)<\\/title>.*/\\1/p' | head -1"

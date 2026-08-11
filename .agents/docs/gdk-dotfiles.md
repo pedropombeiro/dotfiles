@@ -37,34 +37,18 @@ Track it with YADM: `yadm add ~/.config/dotfiles/gitlab/<path>`.
 
 ## Current contents
 
-| Dotfiles path                                        | Purpose                                    |
-| ---------------------------------------------------- | ------------------------------------------ |
-| `CLAUDE.local.md`                                    | Personal AI agent instructions             |
-| `lefthook-local.yml`                                 | Force UTF-8 for Ruby hooks (lazygit)       |
-| `.ai/code-style.local.md`                            | Ruby code style lessons                    |
-| `.ai/git.local.md`                                   | Git and branch workflow lessons            |
-| `.ai/lessons-learned.local.md`                       | General AI corrections                     |
-| `.ai/merge-requests.local.md`                        | MR lifecycle and issue-state lessons       |
-| `.ai/testing.local.md`                               | RSpec testing conventions                  |
-| `.gitlab/duo/chat-rules.md`                          | Duo chat persona rules                     |
-| `.opencode/commands/review-mr.md`                    | Multi-agent MR review command              |
-| `.opencode/commands/weekly-update.md`                | Weekly milestone status update command     |
-| `.opencode/skills/clickhouse/SKILL.md`               | ClickHouse dev database skill              |
-| `.opencode/skills/clickhouse/scripts/gdk-clickhouse` | ClickHouse helper script                   |
-| `.opencode/skills/db-migrations/SKILL.md`            | Branch migration list/undo skill           |
-| `.opencode/skills/gdk/SKILL.md`                      | GDK update & secrets skill                 |
-| `.opencode/skills/git-helpers/SKILL.md`              | Git branch management helpers skill        |
-| `.opencode/skills/glab/SKILL.md`                     | GitLab CLI workflow skill                  |
-| `.opencode/skills/glab/assets/graphql/*.graphql` (3) | GraphQL query files for glab skill         |
-| `.opencode/skills/glab/references/*.md` (5)          | Reference docs for glab skill              |
-| `.opencode/skills/glab/scripts/*.sh` (2)             | Helper scripts for glab skill              |
-| `.opencode/skills/issue-state/SKILL.md`              | Issue status/MR-sync + start-issue skill   |
-| `.opencode/skills/issue-state/scripts/*.sh` (5)      | Helper scripts for issue-state skill       |
-| `.opencode/skills/mr-pipeline/SKILL.md`              | MR pipeline coordination tools skill       |
-| `.opencode/skills/mr-workflow/SKILL.md`              | MR lifecycle helpers skill                 |
-| `.opencode/skills/psql/SKILL.md`                     | PostgreSQL dev database skill              |
-| `.opencode/skills/repo-bootstrap/SKILL.md`           | Repo bootstrap / first-session setup skill |
-| `.opencode/skills/tool-routing/SKILL.md`             | Tool routing / MCP dispatch skill          |
+Do not hand-maintain an inventory here — it drifts. List ground truth with:
+
+```bash
+fd --hidden --type f . ~/.config/dotfiles/gitlab/
+```
+
+Broadly: `CLAUDE.local.md`, `lefthook-local.yml`, the `.ai/*.local.md` lesson files,
+`.gitlab/duo/chat-rules.md`, `.opencode/commands/`, and the `.opencode/skills/` tree.
+
+> The `glab` skill used to live here too. It was a stale fork of the git-tracked
+> `.claude/skills/glab/` (which is the SSOT, synced to `gitlab-org/ai/skills`) and was
+> shadowed by it at load time, so it was removed.
 
 ## Why not `##class.Work` alternates?
 

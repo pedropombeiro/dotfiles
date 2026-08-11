@@ -144,6 +144,10 @@ cleanup_gitlab_excludes() {
     sed -i '' '/^\/AGENTS\.local\.md$/d' "${gitlab_exclude_file}"
     # Retired in favour of the global ~/.agents/skills/orbit copy
     sed -i '' '\|^/\.opencode/skills/orbit/|d' "${gitlab_exclude_file}"
+    # Retired in favour of the repo-tracked .claude/skills/glab copy
+    sed -i '' '\|^/\.opencode/skills/glab/|d' "${gitlab_exclude_file}"
+    # Malformed entries from an earlier sync that dropped the .opencode/skills prefix
+    sed -i '' '\|^/glab/|d' "${gitlab_exclude_file}"
   fi
 }
 

@@ -11,7 +11,7 @@ pre-push:
     commit-message-linting:
       env:
         RUBYOPT: "-EUTF-8"
-    unused-methods-linter:
+    unused-code-linter:
       env:
         RUBYOPT: "-EUTF-8"
     rubocop:

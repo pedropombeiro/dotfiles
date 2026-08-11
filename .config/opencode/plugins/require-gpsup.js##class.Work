@@ -17,7 +17,7 @@ export const RequireGpsup = async () => {
         "Do not use `git push -u` directly for GitLab.com remotes. " +
         "Use `gpsup` instead — load the `mr-workflow` skill and " +
         "follow the instructions in `~/.agents/docs/scm.md` § " +
-        "'How to run gpsup'."
+        "'Creating Merge Requests'."
       )
     }
   }

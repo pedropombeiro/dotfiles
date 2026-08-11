@@ -258,6 +258,39 @@ check_weekly_log_repo() {
   print_ok
 }
 
+# lefthook-local.yml only supplies `env:` overlays for commands defined in
+# lefthook.yml. When upstream renames or drops a command, the orphaned override
+# has no `run:`, and lefthook aborts the whole hook — blocking every push with
+# an error buried under the passing checks.
+check_lefthook_local_overrides() {
+  print_op_stay "Checking lefthook-local.yml overrides"
+
+  local repo="$GDK_ROOT/gitlab"
+  local local_cfg="$repo/lefthook-local.yml"
+  local base_cfg="$repo/lefthook.yml"
+
+  if [[ ! -f "$local_cfg" || ! -f "$base_cfg" ]]; then
+    print_ok "(skipped, no lefthook config)"
+    return
+  fi
+
+  local -a orphans
+  local cmd
+  # Command names are the 4-space-indented keys under each hook's `commands:`.
+  for cmd in ${(f)"$(grep -oE '^ {4}[A-Za-z0-9_-]+:' "$local_cfg" | tr -d ' :')"}; do
+    grep -qE "^ +${cmd}:" "$base_cfg" || orphans+=("$cmd")
+  done
+
+  if (( ${#orphans} == 0 )); then
+    print_ok
+  else
+    echo
+    for cmd in "${orphans[@]}"; do
+      print_warn "lefthook-local.yml overrides '${cmd}', absent from lefthook.yml — pushes will abort"
+    done
+  fi
+}
+
 check_app_running 'Hammerspoon'
 check_hammerspoon_bluetooth
 check_app_running 'Stream Deck'
@@ -274,6 +307,7 @@ check_glab_auth
 check_gdk_wakatime_projects
 check_opencode_memory
 check_weekly_log_repo
+check_lefthook_local_overrides
 
 if (( any_failed )); then
   printf "${YELLOW}%s${NC}\n" "⚠️  Checks finished with errors/warnings!"

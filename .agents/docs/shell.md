@@ -48,12 +48,7 @@ Tools unaffected (use Rust `dirs` crate, ignores XDG on macOS): rtk, zoxide, neo
 
 ## Alternate Files
 
-Use platform-specific suffixes:
-
-- `##distro.qts` - QNAP QTS
-- `##os.Darwin` - macOS
-- `##os.Linux` - Generic Linux
-- `##class.Work` - Work-specific configs
+Use platform-specific suffixes — see [SCM](scm.md#file-organization) for the list.
 
 ## Adding Functions
 

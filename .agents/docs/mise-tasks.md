@@ -10,38 +10,8 @@
 
 ## Available Tasks
 
-```bash
-mise tasks        # List all tasks
-mise run <task>   # Run a task (alias: mise r)
-```
+Do not mirror the task list here — it drifts. `mise tasks` prints the live set with
+descriptions, and `mise run <task>` (alias `mise r`) runs one.
 
-### Dotfiles
-
-| Task                   | Description                          |
-| ---------------------- | ------------------------------------ |
-| `dotfiles:install`     | Bootstrap the system via yadm        |
-| `dotfiles:update`      | Run update scripts                   |
-| `dotfiles:pull`        | Fetch and reset dotfiles from origin |
-| `dotfiles:checkhealth` | Run dotfile health checks            |
-| `dotfiles:fix`         | Run pre-commit hooks with auto-fix   |
-| `dotfiles:lint`        | Run pre-commit hooks (lint only)     |
-
-### Git
-
-| Task         | Description                     |
-| ------------ | ------------------------------- |
-| `git:push`   | Push (auto-detects yadm vs git) |
-| `git:commit` | AI-assisted commit message      |
-
-### Brew (macOS only)
-
-| Task           | Description                        |
-| -------------- | ---------------------------------- |
-| `brew:dump`    | Dump Homebrew packages to Brewfile |
-| `brew:cleanup` | Remove unlisted Homebrew packages  |
-
-### Network (macOS only)
-
-| Task                   | Description                  |
-| ---------------------- | ---------------------------- |
-| `network:wifi-traffic` | Sniff AP traffic via tcpdump |
+Task descriptions come from the `#MISE description=` header (file tasks) or the
+`description` key (TOML tasks), so `mise tasks` is always ground truth.

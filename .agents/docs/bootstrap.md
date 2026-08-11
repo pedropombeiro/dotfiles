@@ -18,14 +18,8 @@ YADM bootstrap scripts for automated system setup.
 
 ## Alternate File Syntax
 
-Scripts use YADM alternate files for platform targeting:
-
-| Suffix         | Target             |
-| -------------- | ------------------ |
-| `##os.Darwin`  | macOS only         |
-| `##os.Linux`   | Linux only         |
-| `##distro.qts` | QNAP QTS only      |
-| `##class.Work` | Work machines only |
+Scripts use YADM alternate files for platform targeting. See
+[SCM](scm.md#file-organization) for the suffix list.
 
 ## Running Bootstrap
 
@@ -36,28 +30,23 @@ mise run dotfiles:install  # Via mise tasks
 
 ## Script Template
 
+Copy an existing script rather than starting from scratch. They use
+`#!/usr/bin/env bash` and source the shared helpers:
+
 ```bash
-#!/bin/bash
-set -euo pipefail
+#!/usr/bin/env bash
 
-echo "Running: <description>"
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
-# Your setup commands here
-
-echo "Done: <description>"
+# shellcheck source=../scripts/colors.sh
+source "${YADM_SCRIPTS}/colors.sh"
 ```
 
 ## Guidelines
 
-- Scripts must be idempotent (safe to re-run)
-- Use `set -euo pipefail` for safety
-- Check for existing installations before installing
-- Print progress messages for visibility
-- Handle both fresh install and update scenarios
-- Keep scripts focused on single responsibility
-- Use descriptive numbering (leave gaps for future scripts)
-- Make executable: `chmod +x <script>`
-- Validate syntax: `bash -n <script>`
+- Scripts must be idempotent — bootstrap is re-run on every machine update, not just
+  on first install
+- Leave numbering gaps so later scripts can be inserted without renumbering
 
 ## 1Password Secrets
 

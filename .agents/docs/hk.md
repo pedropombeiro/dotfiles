@@ -41,28 +41,11 @@ yadm enter hk check --plan
 
 ## Configured Steps
 
-| Step                            | Purpose                                        |
-| ------------------------------- | ---------------------------------------------- |
-| trailing-whitespace             | Remove trailing whitespace                     |
-| newlines                        | Ensure files end with a newline                |
-| check-merge-conflict            | Detect leftover conflict markers               |
-| typos                           | Spell checking for source code                 |
-| gitleaks                        | Secret detection                               |
-| yamllint                        | YAML linting                                   |
-| editorconfig-checker            | EditorConfig conformance                       |
-| shellcheck                      | Shell script linting (bash/sh only)            |
-| shfmt                           | Shell script formatting                        |
-| zsh-syntax-check                | Zsh syntax validation (`zsh -n`)               |
-| stylua                          | Lua formatting (top-level .lua only)           |
-| prettier                        | JSON/Markdown/YAML formatting                  |
-| standardrb                      | Ruby linting/formatting                        |
-| check-json                      | JSON parse validation                          |
-| check-executables-have-shebangs | Executables must have shebangs                 |
-| check-added-large-files         | Block files over 500KB                         |
-| no-yadm-alt-symlinks            | Reject staged yadm alt symlinks                |
-| mise-fmt                        | Mise config formatting                         |
-| renovate-config-validator       | Renovate config validation                     |
-| commitlint                      | Conventional commit messages (commit-msg hook) |
+Do not mirror the step list here — it drifts from `hk.pkl`. List the live plan with
+`yadm enter hk check --plan`, which also shows which steps matched files.
+
+`commitlint` is the one step not in that plan: it lives under the `commit-msg` hook, not
+`fast_steps`.
 
 ## CI Integration
 

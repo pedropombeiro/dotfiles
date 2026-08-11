@@ -1,0 +1,144 @@
+#!/bin/bash
+# Select the next tmux window whose OpenCode instance is waiting for input.
+
+set -o pipefail
+
+TMUX_BIN=/opt/homebrew/bin/tmux
+CURSOR_OPTION=@opencode-goto-cursor
+# Per-session option remembering which terminal tab last displayed a session, so a
+# detached session returns to its own tab rather than the frontmost one.
+HOME_TTY_OPTION=@opencode-home-tty
+DRY_RUN=false
+
+if [[ ${1:-} == "--dry-run" ]]; then
+  DRY_RUN=true
+elif [[ $# -gt 0 ]]; then
+  echo "Usage: ${0##*/} [--dry-run]" >&2
+  exit 2
+fi
+
+# `has-session` without a target only succeeds from a tmux client's environment.
+"$TMUX_BIN" list-sessions >/dev/null 2>&1 || exit 4
+
+process_tree_has_opencode() {
+  local root=$1
+
+  ps -eo pid=,ppid=,comm= | awk -v root="$root" '
+    { parent[$1] = $2; name[$1] = $3 }
+    END {
+      for (pid in name) {
+        if (name[pid] != "opencode") continue
+        current = pid
+        while (current != root && current in parent) current = parent[current]
+        if (current == root) exit 0
+      }
+      exit 1
+    }
+  '
+}
+
+# Echoes the first pane running OpenCode, directly or as a descendant.
+opencode_pane_in_window() {
+  local window_id=$1
+  local pane_id pane_pid command
+
+  while IFS='|' read -r pane_id pane_pid command; do
+    if [[ $command == "opencode" ]] || process_tree_has_opencode "$pane_pid"; then
+      printf '%s\n' "$pane_id"
+      return 0
+    fi
+  done < <("$TMUX_BIN" list-panes -t "$window_id" -F '#{pane_id}|#{pane_pid}|#{pane_current_command}' 2>/dev/null)
+
+  return 1
+}
+
+declare -a candidates=()
+while IFS='|' read -r window_id session_name window_index; do
+  if pane_id=$(opencode_pane_in_window "$window_id"); then
+    candidates+=("$window_id|$session_name|$window_index|$pane_id")
+  elif [[ $DRY_RUN == false ]]; then
+    # A killed OpenCode process cannot clear its option; remove stale indicators.
+    "$TMUX_BIN" set-option -w -u -t "$window_id" @opencode-waiting 2>/dev/null || true
+  fi
+done < <(
+  "$TMUX_BIN" list-windows -a -f '#{@opencode-waiting}' \
+    -F '#{window_id}|#{session_name}|#{window_index}' 2>/dev/null | sort -f -t '|' -k2,2 -k3,3n
+)
+
+((${#candidates[@]} > 0)) || exit 3
+
+# Only trust iTerm2's current tab when iTerm2 actually has focus; otherwise its
+# "current session" refers to a tab the user is not looking at.
+frontmost_tty=
+frontmost_app=$(osascript -e 'tell application "System Events" to return name of first application process whose frontmost is true' 2>/dev/null || true)
+if [[ $frontmost_app == "iTerm2" ]]; then
+  frontmost_tty=$(osascript -e 'tell application "iTerm2" to return tty of current session of current window' 2>/dev/null || true)
+fi
+
+client_info=$("$TMUX_BIN" list-clients -F '#{client_tty}|#{client_session}|#{window_id}|#{client_activity}' 2>/dev/null || true)
+[[ -n $client_info ]] || exit 4
+
+# Refresh each attached session's home tab before choosing, so affinity reflects
+# where sessions actually live right now.
+if [[ $DRY_RUN == false ]]; then
+  while IFS='|' read -r tty session _ _; do
+    [[ -n $tty && -n $session ]] || continue
+    "$TMUX_BIN" set-option -t "$session" "$HOME_TTY_OPTION" "$tty" 2>/dev/null || true
+  done <<<"$client_info"
+fi
+
+# Cycle strictly from the stored cursor. Deriving it from the frontmost tab would
+# stall: the target session now stays in its own tab, so the frontmost tab does not
+# move between invocations and would keep resolving to the same target.
+cursor=$("$TMUX_BIN" show-option -gqv "$CURSOR_OPTION" 2>/dev/null || true)
+
+target_index=0
+for index in "${!candidates[@]}"; do
+  if [[ ${candidates[index]%%|*} == "$cursor" ]]; then
+    target_index=$(((index + 1) % ${#candidates[@]}))
+    break
+  fi
+done
+
+IFS='|' read -r target_window target_session target_index_in_session target_pane <<<"${candidates[target_index]}"
+
+# Client priority:
+#   1. a client already displaying the target session (it is already in its tab)
+#   2. the tab that last displayed the target session (its remembered home tab)
+#   3. the frontmost tab
+#   4. the most recently active client
+client_tty=
+home_tty=$("$TMUX_BIN" show-option -t "$target_session" -qv "$HOME_TTY_OPTION" 2>/dev/null || true)
+home_match=
+fallback_tty=
+while IFS='|' read -r tty session _ activity; do
+  [[ -n $tty ]] || continue
+  if [[ $session == "$target_session" ]]; then
+    client_tty=$tty
+    break
+  fi
+  [[ -n $home_tty && $tty == "$home_tty" ]] && home_match=$tty
+  if [[ $tty == "$frontmost_tty" ]]; then
+    fallback_tty=$tty
+    most_recent_activity=
+  elif [[ -z $fallback_tty || (-n ${most_recent_activity:-} && $activity -gt $most_recent_activity) ]]; then
+    fallback_tty=$tty
+    most_recent_activity=$activity
+  fi
+done <<<"$client_info"
+
+client_tty=${client_tty:-${home_match:-$fallback_tty}}
+[[ -n $client_tty ]] || exit 4
+
+if [[ $DRY_RUN == true ]]; then
+  printf '%s|%s:%s|%s\n' "$client_tty" "$target_session" "$target_index_in_session" "$target_window"
+  exit 0
+fi
+
+"$TMUX_BIN" switch-client -c "$client_tty" -t "$target_session"
+"$TMUX_BIN" select-window -t "$target_window"
+"$TMUX_BIN" select-pane -t "$target_pane"
+"$TMUX_BIN" set-option -g "$CURSOR_OPTION" "$target_window"
+"$TMUX_BIN" set-option -t "$target_session" "$HOME_TTY_OPTION" "$client_tty" 2>/dev/null || true
+
+printf '%s|%s:%s|%s\n' "$client_tty" "$target_session" "$target_index_in_session" "$target_window"

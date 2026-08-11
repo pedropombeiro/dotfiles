@@ -5,7 +5,7 @@ local configDir = hs.configdir .. "/httpserver/"
 -- Sub-modules each return a table of { actionName = handlerFn }.
 -- Modules gated by yadm alternates (e.g. ##class.Work) will be absent on
 -- non-matching machines and silently skipped via the fs.attributes check.
-local modules = { "triggers", "notify" }
+local modules = { "opencode", "triggers", "notify" }
 
 -- Parse query string params using hs.http.urlParts, which returns already-
 -- unescaped values via NSURLComponents. The callback's `path` arg looks like

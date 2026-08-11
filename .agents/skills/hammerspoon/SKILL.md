@@ -20,6 +20,8 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
   - `httpserver/init.lua` — Server skeleton. Parses query params via `hs.http.urlParts`, loads sub-modules, dispatches on `?action=`.
   - `httpserver/triggers.lua##class.Work` — `lock` and `sleep` actions for Home Assistant (Work only, depends on `sleepwake`).
   - `httpserver/notify.lua` — `notify` action for native macOS notifications via `hs.notify`. Maps event types to sounds/subtitles. Click callback focuses iTerm2 and selects the originating tmux pane.
+  - `httpserver/opencode.lua` — `opencode-goto` action for selecting the next OpenCode window waiting for input.
+- `opencode.lua` — Shared OpenCode navigation and iTerm2 tab-focus helper for the hotkey, HTTP action, and notification callback.
 
 ## Key behaviours
 
@@ -33,6 +35,7 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 | HTTP `?action=lock`              | Lock screen (Work only)                                                                                                              |
 | HTTP `?action=sleep`             | Same as `displaysleep` URL handler (Work only)                                                                                       |
 | HTTP `?action=notify`            | Send native macOS notification with click-to-focus (all machines)                                                                    |
+| HTTP `?action=opencode-goto`     | Cycle to the next tmux OpenCode window waiting for input and activate its iTerm2 tab                                                  |
 | Any `http`/`https` URL opened    | Route to Zoom.app (meeting links) or Chrome (everything else) — replaces Choosy (Work only)                                          |
 | Zoom launched                    | Power on webcam USB, connect AirPods via blueutil, switch audio output, pause Spotify, quit eqMac (Work only)                        |
 | Zoom terminated                  | Power off webcam USB, restore previous audio output, resume Spotify, relaunch eqMac hidden, quit Camo Studio, power off Elgato Wave USB (Work only) |
@@ -52,6 +55,49 @@ Event-to-sound mapping (in `httpserver/notify.lua`):
 | `error`             | Basso | Error               |
 | `permission`        | Ping  | Permission Required |
 | `question`          | Purr  | Question            |
+
+## OpenCode waiting-session navigation
+
+`Hyper+A` and `Caps Lock+A` call `~/.local/bin/opencode-goto-waiting` through the shared
+`opencode.lua` module. It finds tmux windows with `@opencode-waiting`, clears any stale flag
+whose window no longer has an `opencode` process, and cycles through the remaining windows.
+
+Client selection resolves the **target first**, then picks a client in this order:
+
+1. a client already displaying the target session,
+2. the session's **home tab** — the tab that last displayed it, stored in the per-session
+   `@opencode-home-tty` option and refreshed for every attached session on each run,
+3. the frontmost tab,
+4. the most recently active client.
+
+Steps 1–2 keep a session in the tab where it normally lives instead of pulling it into the
+frontmost tab. Step 2 matters for **detached** sessions: `#{client_last_session}` only holds one
+level of history and nothing at all for a detached session, so the affinity must be persisted.
+Session-scoped options survive detachment, need no name mangling, and expand in formats via
+`#{@opencode-home-tty}`.
+
+Cycling reads only the stored `@opencode-goto-cursor`: deriving the cursor from the frontmost tab
+stalls the rotation, because the frontmost tab no longer moves between invocations once sessions
+stay put.
+
+The HTTP equivalent is `http://localhost:18990/?action=opencode-goto`. A missing waiting session
+shows a brief Hammerspoon alert and plays `Tink`. The navigator task is stored in
+`opencode._tasks`; active `hs.task` objects must be retained to avoid garbage collection.
+
+**iTerm2 AppleScript:** never get a tab's `index`; iTerm2 raises an AppleScript `-1700` error for
+that coercion. Iterate session objects by `tty`, then `select w`, `select t`, and `select s` on
+the object references. The notification click handler uses the same helper.
+
+**tmux `pane_tty` is not a terminal tab.** It is the pane's own pty (e.g. `/dev/ttys008`), which
+never matches an iTerm2 session `tty`. To focus the tab showing a pane, resolve `#{client_tty}`
+from the client attached to that pane's session.
+
+**Not Hyper+O:** Shottr's OCR capture owns `Ctrl+Opt+Cmd+O` (`cc.ffitch.shottr`,
+`KeyboardShortcuts_ocr` = `carbonModifiers:6400, carbonKeyCode:31`). Because `hyperBind` also
+registers a bare-key eventtap while Caps Lock/F18 is held, Shottr wins that keypress. Before
+claiming a hyper key, check `defaults read cc.ffitch.shottr` and
+`defaults read com.knollsoft.Hookshot` for the Carbon/CG keycode. Carbon modifiers: `cmd=256`,
+`shift=512`, `option=2048`, `control=4096`.
 
 ## Network topology (Home Assistant → laptop)
 

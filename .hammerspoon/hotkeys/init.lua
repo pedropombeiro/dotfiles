@@ -1,5 +1,5 @@
 local configDir = hs.configdir .. "/hotkeys/"
-local modules = { "desk", "hyperkey", "pastelink" }
+local modules = { "desk", "hyperkey", "opencode", "pastelink" }
 
 -- Load modules
 for _, mod in ipairs(modules) do

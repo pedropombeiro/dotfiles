@@ -1,6 +1,4 @@
 local log = hs.logger.new("httpserver.notify", "info")
-local tmux = "/opt/homebrew/bin/tmux"
-
 -- Event type → macOS system sound name (played via afplay, see below)
 local sounds = {
   complete = "Glass",
@@ -20,12 +18,7 @@ local subtitles = {
 
 local function onActivation(_, pane)
   log.i("onActivation: pane=" .. tostring(pane))
-  if pane and pane ~= "" then
-    hs.task.new(tmux, nil, { "select-window", "-t", pane }):start()
-    hs.task.new(tmux, nil, { "select-pane", "-t", pane }):start()
-  end
-  local app = hs.application.find("iTerm2")
-  if app then app:activate() end
+  require("opencode").activatePane(pane)
 end
 
 local function notify(params)

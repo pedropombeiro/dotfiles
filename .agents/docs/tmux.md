@@ -135,6 +135,17 @@ The plugin also writes a BEL to the pane TTY so tmux sets `window_bell_flag`, en
 from forwarding to iTerm2 or overriding tab styling, `tmux.conf` sets `bell-action none` and
 `window-status-bell-style default`.
 
+`Hyper+A` (or `Caps Lock+A`) invokes `~/.local/bin/opencode-goto-waiting` through Hammerspoon.
+It cycles through waiting windows in a stable session/window order, including sessions that are
+detached from every tmux client. Client selection prefers, in order: a client **already displaying
+the target session**; the tab that **last displayed** it (its home tab, remembered in the
+per-session `@opencode-home-tty` option); the frontmost tab; the most recently active client. This
+keeps a session in the tab where it usually lives instead of dragging it into the frontmost tab,
+including when the session is detached. Hammerspoon then activates iTerm2 and selects that tab.
+It stores its cycle cursor in tmux's global `@opencode-goto-cursor` option and clears stale
+waiting flags when their window no longer contains an `opencode` process. The same action is
+available at Hammerspoon's `?action=opencode-goto` endpoint.
+
 ## Alt+Number Window Switching
 
 `Alt+0` through `Alt+9` are bound in the root key table (`bind-key -n`) to jump directly to

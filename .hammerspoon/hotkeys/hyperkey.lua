@@ -41,3 +41,5 @@ end
 
 -- 5. DEFINE SHORTCUTS HERE
 hyperBind("v", function() hs.eventtap.keyStrokes(hs.pasteboard.getContents()) end)
+
+return { hyperBind = hyperBind }

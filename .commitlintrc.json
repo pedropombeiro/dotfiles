@@ -18,6 +18,7 @@
         "defaults",
         "git",
         "hammerspoon",
+        "hk",
         "llm",
         "mise",
         "nvim",
@@ -26,8 +27,8 @@
         "renovate",
         "shell",
         "tmux",
-        "yazi",
-        "yadm"
+        "yadm",
+        "yazi"
       ]
     ],
     "scope-empty": [1, "never"],

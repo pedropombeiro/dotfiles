@@ -4,16 +4,20 @@
 
 **Main config**: `~/.renovaterc.json`
 
-**Validate changes**: `yadm enter pre-commit run renovate-config-validator --all-files`
+**Validate changes**: `yadm enter hk check --step renovate-config-validator`
 
 ## Managers Configured
 
 | Manager          | Files                                           | Purpose              |
 | ---------------- | ----------------------------------------------- | -------------------- |
 | `github-actions` | `.github/workflows/*.yml`                       | Action versions      |
-| `pre-commit`     | `.pre-commit-config.yaml`                       | Hook versions        |
+| `pre-commit`     | `.pre-commit-config.yaml` (dead — see below)    | Hook versions        |
 | `mise`           | `.config/mise/config.toml##*`, `conf.d/*.toml*` | Tool versions        |
 | `custom.regex`   | mise configs                                    | GitHub backend tools |
+
+> The `pre-commit` manager and its two `packageRules` in `~/.renovaterc.json` are dead:
+> hk replaced pre-commit and `.pre-commit-config.yaml` no longer exists. Harmless, but
+> safe to drop from the config.
 
 ## Adding Package Rules
 

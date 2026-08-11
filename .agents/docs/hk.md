@@ -103,6 +103,10 @@ When upgrading, bump the `amends` and `import` URLs in `~/hk.pkl` to match the n
 
 Check current version: `hk --version`
 
+> **Known drift:** the binary is well ahead of the `amends`/`import` pins in `hk.pkl`
+> (v1.44.1). `yadm enter hk validate` still passes, so this is not urgent — but the pins
+> are what the pkl schema is resolved against, so bump them when adopting new features.
+
 ## Caveats
 
 ### Steps follow symlinks out of the repo and can write to the target

@@ -2,11 +2,20 @@
 
 ## Secret Protection
 
-`env-protection.js##class.Personal` is installed only on Personal machines.
-Work machines and the classless QTS NAS use secret-guard, bundled with
-opencode-memory, instead. Keep these layers mutually exclusive: if
-opencode-memory is added to the default OpenCode config, remove
-`env-protection.js##class.Personal`.
+Two layers exist:
+
+- `~/.config/opencode/plugins/env-protection.js` — a plain (non-alt) tracked file, so it
+  is active on **every** machine.
+- secret-guard, bundled with the opencode-memory plugin, loaded via the `plugin` array in
+  `opencode.json`.
+
+Both run concurrently on this Work machine. secret-guard redacts matches inline as
+`[[SG:learned:<hash>]]` when a file is **read**; the bytes on disk are unchanged. Do not
+mistake such a marker for file corruption — check with `od -c` before "fixing" it.
+
+> Earlier revisions of this doc described `env-protection.js##class.Personal` as
+> Personal-only and mutually exclusive with opencode-memory. That is no longer how it is
+> deployed.
 
 ## Storage Layout
 

@@ -5,7 +5,7 @@
 Git commands on the `~` directory are managed through `yadm` instead of `git`.
 
 - Use `yadm` commands instead of `git` for version control in the home directory
-- For commands needing git context (e.g., `pre-commit run`), prefix with `yadm enter`
+- For commands needing git context (e.g., `hk check`), prefix with `yadm enter`
 
 ### Key Commands
 
@@ -94,7 +94,7 @@ This improves clarity and makes history easier to navigate.
 ### Rules
 
 - **Type**: One of `feat`, `fix`, `docs`, `chore`, `refactor`, `test`, `style`, `perf`
-- **Scope**: The area affected (e.g., `llm`, `mise`, `nvim`, `shell`, `pre-commit`)
+- **Scope**: The area affected (e.g., `llm`, `mise`, `nvim`, `shell`, `hk`)
 - **Subject**: Concise description of the change
 - **Grouped commits**: Separate logical changes into distinct commits rather than combining unrelated changes
 
@@ -125,9 +125,10 @@ defaulting to a generic scope.
 
 ### Enforcement
 
-Commit messages are validated by **commitlint** via a `commit-msg` pre-commit
-hook (see `.commitlintrc.json` for the allowed types and scopes). The hook runs
-automatically on `yadm commit`; to bypass in rare cases use `--no-verify`.
+Commit messages are validated by **commitlint** via the hk `commit-msg` hook
+(see `.commitlintrc.json` for the allowed types and scopes, and `hk.pkl` for the
+step). The hook runs automatically on `yadm commit`; to bypass in rare cases use
+`--no-verify`.
 
 ### Examples
 

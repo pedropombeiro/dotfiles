@@ -4,7 +4,12 @@ Runtime versions and CLI tools management.
 
 ## Configuration
 
-**Main config**: `~/.config/mise/config.toml##distro.qts`
+**Main config**: `~/.config/mise/config.toml` — a YADM alt symlink. On this machine it
+resolves to `config.toml##default`; on QTS to the `distro.qts` alt.
+
+Additional layered configs live in `~/.config/mise/conf.d/` (`global.toml`, `tasks.toml`,
+`work.toml##class.Work`, `distro-specific.toml##os.Linux,distro.qts`, ...). File-based
+tasks live in `~/.config/mise/tasks/`.
 
 ## Tool Categories
 
@@ -101,6 +106,14 @@ Example:
 #MISE description="Build with sourcemaps"
 #USAGE arg "<package>" help="Package to build"
 ```
+
+## Task Semantics
+
+- `depends = [...]` runs the listed tasks **in parallel**. To force sequential
+  execution, use a `run` array instead — its entries run in order.
+- `sources` / `outputs` enable caching: mise skips the task when every `sources`
+  glob is older than every `outputs` glob.
+- `run_windows` overrides `run` on Windows.
 
 ## Renovate Integration
 

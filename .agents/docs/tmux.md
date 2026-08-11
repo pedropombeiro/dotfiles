@@ -181,7 +181,7 @@ and quoting guidance.
 
 | Command             | Why                                                | Bash `timeout`      | Docs                                                                                 |
 | ------------------- | -------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------ |
-| `gpsup`             | Autoloaded zsh function, needs interactive shell   | 360000 ms (6 min)   | [SCM](scm.md#how-to-run-gpsup)                                                       |
+| `gpsup`             | Autoloaded zsh function, needs interactive shell   | 360000 ms (6 min)   | [SCM](scm.md#push-shortcuts)                                                         |
 | `fgdku`             | Autoloaded zsh function, long-running, interactive | 1800000 ms (30 min) | [GDK skill](~/.config/dotfiles/gitlab/.opencode/skills/gdk/SKILL.md)                 |
 | `test_mr`           | Autoloaded zsh function, runs rspec for branch     | 600000 ms (10 min)  | [MR workflow skill](~/.config/dotfiles/gitlab/.opencode/skills/mr-workflow/SKILL.md) |
 | `bundle exec rspec` | Long-running test suite                            | 600000 ms (10 min)  | —                                                                                    |

@@ -1,24 +1,6 @@
 {
   "version": 3,
   "skills": {
-    "mise-expert": {
-      "source": "samhvw8/dotfiles",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/samhvw8/dotfiles.git",
-      "skillPath": "dot_ccp/hub/skills/mise-expert/SKILL.md",
-      "skillFolderHash": "cc2778e4ad1050c7c3d070aef9e2d6e09ea174dc",
-      "installedAt": "2026-02-25T21:38:19.273Z",
-      "updatedAt": "2026-02-25T21:42:33.010Z"
-    },
-    "find-skills": {
-      "source": "vercel-labs/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/vercel-labs/skills.git",
-      "skillPath": "skills/find-skills/SKILL.md",
-      "skillFolderHash": "3013fdeb8a11b10b1eb795ec3ae8bfca38f7c26d",
-      "installedAt": "2026-02-25T21:38:24.838Z",
-      "updatedAt": "2026-03-13T22:30:17.503Z"
-    },
     "clickhouse-best-practices": {
       "source": "clickhouse/agent-skills",
       "sourceType": "github",

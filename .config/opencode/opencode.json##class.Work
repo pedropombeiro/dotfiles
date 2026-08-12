@@ -377,6 +377,7 @@
       "ruby -c *": "allow",
       "seq *": "allow",
       "sed *": "allow",
+      "sha256 *": "allow",
       "shellcheck *": "allow",
       "sleep *": "allow",
       "sort*": "allow",

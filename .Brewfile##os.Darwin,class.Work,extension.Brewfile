@@ -1,4 +1,5 @@
 tap "anomalyco/tap", trusted: true
+tap "brewforge/extras"
 tap "derailed/k9s", trusted: true
 tap "dteoh/sqa", trusted: true
 tap "evilmartians/lefthook", "https://github.com/evilmartians/homebrew-lefthook.git", trusted: true
@@ -363,10 +364,8 @@ cask "iterm2"
 cask "jetbrains-toolbox"
 # Open-source screen recorder built with web technology
 cask "kap"
-# Open-source keystroke visualiser
-cask "keycastr"
-# Find shortcuts for any installed application
-cask "keyclu"
+# Visualize your keystrokes && mouse actions in real-time
+cask "brewforge/extras/keyviz", trusted: true
 # Utility that shows the latest app updates
 cask "latest"
 # Free cross-platform office suite, fresh version

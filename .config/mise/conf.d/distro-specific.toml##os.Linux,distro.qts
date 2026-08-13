@@ -2,6 +2,10 @@
 precompiled_arch = "x86_64"
 precompiled_os = "unknown-linux-gnu"
 
+[env]
+# Entware exports this only in login shells; mise must use one Rust proxy path everywhere.
+CARGO_HOME = "/opt/share/cargo"
+
 [tools]
 # Packages pinned due to QTS glibc constraints (older than 2.31)
 python = "3.14"

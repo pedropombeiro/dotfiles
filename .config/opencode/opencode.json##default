@@ -1,13 +1,13 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
-    "@mohak34/opencode-notifier@latest",
-    "opencode-anthropic-auth@latest",
-    "opencode-atuin-history@latest",
-    "opencode-homeassistant@latest",
-    "opencode-terminal-progress@latest",
-    "opencode-tmux-indicator@latest",
-    "opencode-wakatime@latest"
+    "@mohak34/opencode-notifier@0.2.8",
+    "opencode-anthropic-auth@0.0.13",
+    "opencode-atuin-history@0.2.0",
+    "opencode-homeassistant@0.6.0",
+    "opencode-terminal-progress@0.5.1",
+    "opencode-tmux-indicator@0.4.1",
+    "opencode-wakatime@1.3.9"
   ],
   "agent": {
     "plan": {

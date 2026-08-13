@@ -96,6 +96,13 @@
       "groupName": "mise shared opencode"
     },
     {
+      "description": "Group opencode npm plugin updates (after the mise opencode rule so it wins for opencode.json)",
+      "matchManagers": ["custom.regex"],
+      "matchFileNames": [".config/opencode/opencode.json##**"],
+      "groupName": "opencode plugins",
+      "groupSlug": "opencode-plugins"
+    },
+    {
       "description": "Group shared npm:renovate updates across all mise configs (last to ensure it overrides other groups)",
       "matchManagers": ["mise"],
       "matchPackageNames": ["/npm:renovate/"],
@@ -144,6 +151,18 @@
       "depNameTemplate": "anomalyco/opencode",
       "datasourceTemplate": "github-releases",
       "versioningTemplate": "loose"
+    },
+    {
+      "description": "opencode npm plugins pinned in opencode.json",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)\\.config/opencode/opencode\\.json(##[^/]+)?$/"
+      ],
+      "matchStrings": [
+        "\"(?<depName>(@[^\"/@]+/)?[^\"@/]+)@(?<currentValue>\\d+\\.\\d+\\.\\d+[^\"]*)\""
+      ],
+      "datasourceTemplate": "npm",
+      "versioningTemplate": "npm"
     }
   ]
 }

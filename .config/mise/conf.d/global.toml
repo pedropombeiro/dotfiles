@@ -35,4 +35,7 @@ prettier = "latest"
 
 # ── AI tooling ────────────────────────────────────────────────────────
 # Lazy-loading MCP server proxy for AI tools
-"npm:lazy-mcp" = "latest"
+# aube's low-download gate (<1000 weekly) blocks this. It's a GitLab-org tool
+# (gitlab.com/gitlab-org/ai/lazy-mcp, maintainer dgruzd@gitlab.com), niche by
+# design, so the popularity signal will never clear the threshold.
+"npm:lazy-mcp" = { version = "latest", allow_low_downloads = true }

@@ -58,6 +58,35 @@ Note: the `uv:` backend is only available as a built-in in newer mise versions.
 Check `mise backends` to confirm it is listed before using it; otherwise fall
 back to `pipx:` with an explicit `pipx` entry in `MISE_TOOLS`.
 
+### Backend Caveats (npm / aube)
+
+Since mise 2026.8.x, `npm:` tools install through mise's embedded `aube`
+package manager, which applies supply-chain gates that npm does not. In
+non-interactive contexts (`mise run` auto-install, CI) aube's confirmation
+prompts cannot be answered, so they surface as an opaque abort:
+
+```
+Failed to install npm:<pkg>@latest: aube install failed: user aborted `mise add <pkg>`
+```
+
+To see the real prompt, force a TTY:
+
+```bash
+script -qfec "mise install npm:<pkg>@latest" /dev/null
+```
+
+Fix with the narrowly scoped tool option, never a global override:
+
+| aube gate | Symptom | Tool option |
+| --- | --- | --- |
+| `lowDownloadThreshold` (1000 weekly) | "looks suspicious: N downloads last week" | `allow_low_downloads = true` |
+| `trustPolicy=no-downgrade` | version lost provenance versus an earlier release | `trust_policy_excludes = ["pkg@ver"]` |
+| build-script approval | dependency needs a lifecycle script | `allow_builds = ["esbuild"]` |
+
+Do **not** set `npm.shell_out=true` or `lowDownloadThreshold: 0`: both disable
+aube's checks for every package. Prefer version-scoped exceptions over bare
+package names, and record why in a comment (see `npm:renovate`).
+
 ## QNAP/QTS Compatibility
 
 The QTS environment has glibc 2.21 limitations. Distro-specific pins live in
@@ -126,3 +155,4 @@ Tools are auto-updated by Renovate bot via `~/.renovaterc.json`. Check PRs for p
 - Document QNAP compatibility issues
 - Use `pipx:` backend for Python CLI tools; always include `pipx` itself in `MISE_TOOLS` when used in CI
 - Before using `uv:` backend, confirm it appears in `mise backends` — it requires a newer mise version
+- For `npm:` install failures, identify which aube gate fired before adding an exception; use the per-tool option, not a global setting

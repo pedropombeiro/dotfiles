@@ -77,11 +77,11 @@ script -qfec "mise install npm:<pkg>@latest" /dev/null
 
 Fix with the narrowly scoped tool option, never a global override:
 
-| aube gate | Symptom | Tool option |
-| --- | --- | --- |
-| `lowDownloadThreshold` (1000 weekly) | "looks suspicious: N downloads last week" | `allow_low_downloads = true` |
-| `trustPolicy=no-downgrade` | version lost provenance versus an earlier release | `trust_policy_excludes = ["pkg@ver"]` |
-| build-script approval | dependency needs a lifecycle script | `allow_builds = ["esbuild"]` |
+| aube gate                            | Symptom                                           | Tool option                           |
+| ------------------------------------ | ------------------------------------------------- | ------------------------------------- |
+| `lowDownloadThreshold` (1000 weekly) | "looks suspicious: N downloads last week"         | `allow_low_downloads = true`          |
+| `trustPolicy=no-downgrade`           | version lost provenance versus an earlier release | `trust_policy_excludes = ["pkg@ver"]` |
+| build-script approval                | dependency needs a lifecycle script               | `allow_builds = ["esbuild"]`          |
 
 Do **not** set `npm.shell_out=true` or `lowDownloadThreshold: 0`: both disable
 aube's checks for every package. Prefer version-scoped exceptions over bare

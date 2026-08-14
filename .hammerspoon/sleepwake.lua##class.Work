@@ -8,6 +8,7 @@ local M = {}
 
 local log = hs.logger.new("sleepwake", "info")
 local streamDeckPowered = true
+local iterm2BundleID = "com.googlecode.iterm2"
 
 local function task(path, args, callback) hs.task.new(path, callback, args):start() end
 
@@ -51,10 +52,35 @@ function M.restoreServices()
   hs.timer.doAfter(2, function() spaces.applyRectangleLayout() end)
 end
 
+-- Only focus iTerm2 when it is already visible on the unlocked Space.
+local function focusITerm2()
+  local app = hs.application.get(iterm2BundleID)
+  if not app then return end
+
+  local focusedSpace = hs.spaces.focusedSpace()
+  for _, win in ipairs(app:visibleWindows()) do
+    if win:isStandard() then
+      for _, space in ipairs(hs.spaces.windowSpaces(win) or {}) do
+        if space == focusedSpace then
+          log.i("focusing iTerm2 window: " .. tostring(win:title()))
+          win:focus()
+          return
+        end
+      end
+    end
+  end
+
+  log.i("no visible iTerm2 window on the focused Space")
+end
+
 local function onUnlock()
   log.i("onUnlock")
   streamDeckPowered = true
   M.restoreServices()
+  M._unlockFocusTimer = hs.timer.doAfter(3, function()
+    M._unlockFocusTimer = nil
+    focusITerm2()
+  end)
   M._unlockWebcamTimer = hs.timer.doAfter(5, function()
     M._unlockWebcamTimer = nil
     webcam.reconcile("onUnlock+5s")

@@ -3,7 +3,7 @@
   "permission": {
     "task": "allow",
     "edit": {
-      ".shellrc/": "allow"
+      ".shellrc/": "allow",
     },
     "bash": {
       // YADM commands (dotfiles-specific)
@@ -22,7 +22,8 @@
       "yadm ls-files*": "allow",
       "yadm push": "allow",
       "yadm show *": "allow",
-      "yadm status*": "allow"
-    }
-  }
+      "yadm status*": "allow",
+      "stylua *": "allow",
+    },
+  },
 }

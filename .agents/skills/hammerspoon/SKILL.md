@@ -22,6 +22,7 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
   - `httpserver/notify.lua` — `notify` action for native macOS notifications via `hs.notify`. Maps event types to sounds/subtitles. Click callback focuses iTerm2 and selects the originating tmux pane.
   - `httpserver/opencode.lua` — `opencode-goto` action for selecting the next OpenCode window waiting for input.
 - `opencode.lua` — Shared OpenCode navigation and iTerm2 tab-focus helper for the hotkey, HTTP action, and notification callback.
+- `hotkeys/sesh.lua` — `fn+Tab` and `Caps Lock+L` (also `Hyper+L`) in iTerm2 switch the frontmost tab's tmux client to its last session, mirroring `prefix + L`. See "fn as a modifier" and "Do not synthesize keystrokes from a hotkey" below.
 
 ## Key behaviours
 
@@ -36,6 +37,7 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 | HTTP `?action=sleep`             | Same as `displaysleep` URL handler (Work only)                                                                                       |
 | HTTP `?action=notify`            | Send native macOS notification with click-to-focus (all machines)                                                                    |
 | HTTP `?action=opencode-goto`     | Cycle to the next tmux OpenCode window waiting for input and activate its iTerm2 tab                                                  |
+| `fn+Tab` / `Caps Lock+L` in iTerm2 | Switch the frontmost tab's tmux client to its last session, mirroring `prefix + L` (all machines)                                   |
 | Any `http`/`https` URL opened    | Route to Zoom.app (meeting links) or Chrome (everything else) — replaces Choosy (Work only)                                          |
 | Zoom launched                    | Power on webcam USB, connect AirPods via blueutil, switch audio output, pause Spotify, quit eqMac (Work only)                        |
 | Zoom terminated                  | Power off webcam USB, restore previous audio output, resume Spotify, relaunch eqMac hidden, quit Camo Studio, power off Elgato Wave USB (Work only) |
@@ -98,6 +100,60 @@ registers a bare-key eventtap while Caps Lock/F18 is held, Shottr wins that keyp
 claiming a hyper key, check `defaults read cc.ffitch.shottr` and
 `defaults read com.knollsoft.Hookshot` for the Carbon/CG keycode. Carbon modifiers: `cmd=256`,
 `shift=512`, `option=2048`, `control=4096`.
+
+## fn as a modifier
+
+Terminals cannot see `fn`/Globe: macOS consumes it, so it never arrives as an escape sequence.
+A terminal-app keybinding (`tmux.conf`, iTerm2 keymap) therefore cannot use it — the shortcut has
+to be synthesized from Hammerspoon.
+
+`hs.hotkey.bind` does not accept `"fn"` in its modifier table. Use `hs.eventtap.new` on
+`keyDown` and test `event:getFlags()`, the same pattern `hotkeys/hyperkey.lua` uses for its
+bare-key bindings. `hs.eventtap.event:getFlags()` **does** report `fn`, alongside
+`cmd`/`alt`/`shift`/`ctrl`, and exposes `contain(mods)` / `containExactly(mods)` helpers.
+
+Rules of thumb for such taps:
+
+- Prefer `containExactly({ "fn" })` over `contain` so richer combos pass through unclaimed.
+- Return `false` for non-matching events so the key behaves normally; return `true` only to
+  swallow the event you handled.
+- Gate on `hs.application.frontmostApplication():bundleID()` to keep the override app-scoped.
+- Retain the tap on a module table and `return M` (see the GC gotcha below), otherwise it is
+  collected and silently stops firing.
+- Verify the flags empirically before building on them, e.g. a throwaway
+  `hs -c` tap that logs `getFlags()` for the target keycode. Keys in the hardware `fn` set
+  (`fn+F1`, `fn+Delete`, arrows) are remapped by macOS and may not surface as the base key at
+  all; `Tab` does surface, as plain Tab with the `fn` flag set.
+
+## Do not synthesize keystrokes from a hotkey — call the target directly
+
+A hotkey action that posts keystrokes has its own output caught by the tap that triggered it,
+because the physical modifier (F18/Caps Lock, or `fn`) is **still held** when the synthetic events
+are delivered. `hotkeys/sesh.lua` originally synthesized tmux `prefix + L`; under `Caps Lock+L`
+the emitted `Shift+L` re-entered the tap and emitted again — a runaway loop of 500+ events whose
+only visible symptom was "it types `l` and does not switch".
+
+A boolean re-entrancy guard **cannot** fix this: `hs.eventtap.keyStroke` and `event:post()` are
+asynchronous, so `emitting = false` runs before the synthetic events arrive and the flag is
+already clear when the tap sees them. Tagging events with `eventSourceUserData` does work (the
+property survives the round-trip), but it is a lot of plumbing for the wrong approach.
+
+**Prefer driving the underlying tool directly.** `sesh.lua` runs
+`tmux switch-client -c <tty> -l` via `hs.task`, which removes the recursion at its source and
+needs no marker, no guard, and no changes to the shared `hyperBind` helper.
+
+Resolve the frontmost iTerm2 tab's tty with:
+
+```
+tell application "iTerm2" to return tty of current session of current tab of current window
+```
+
+`-c <tty>` matters: each tmux client tracks its own `client_last_session`, so without it tmux
+targets the most recently active client rather than the tab in front of you.
+
+If you ever do need synthesis, note that `hs.eventtap.keyStroke` with a modifier table
+force-releases held modifiers — verified: a synthesized `ctrl+b` under a held hyper arrives as
+`flags=[ctrl]`, not `[ctrl,alt,cmd,shift]`.
 
 ## Network topology (Home Assistant → laptop)
 

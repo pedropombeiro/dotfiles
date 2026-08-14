@@ -238,6 +238,29 @@ Tmux integrates with `sesh` for session discovery and switching.
 
 - `prefix + T` opens the sesh picker in a tmux popup (fzf-tmux).
 - `prefix + L` switches to the last active session using `sesh last`.
+- `fn + Tab` and `Caps Lock + L` (iTerm2 only) are alternatives to `prefix + L`, implemented in
+  Hammerspoon. `Hyper + L` works too, via the same `hyperBind` registration.
+
+### fn+Tab and Caps Lock+L last-session shortcuts
+
+Both live in `~/.hammerspoon/hotkeys/sesh.lua`. They run
+`tmux switch-client -c <frontmost iTerm2 tty> -l`, which is what `prefix + L` ends up doing.
+
+The `fn`/Globe modifier is consumed by macOS and never reaches the terminal as an escape
+sequence, so it **cannot** be bound in `tmux.conf`. `hs.hotkey.bind` also rejects `fn` as a
+modifier, so the module uses a raw `hs.eventtap` that inspects `event:getFlags()` on the Tab
+keycode. `Caps Lock + L` goes through the existing `hyperBind` helper in `hotkeys/hyperkey.lua`.
+
+Notes:
+
+- The `fn` tap matches `containExactly({ "fn" })`, so `cmd+fn+Tab` and similar pass through.
+- Both are scoped to the iTerm2 bundle ID, so the keys are untouched in other apps.
+- `-c <tty>` is required: each tmux client tracks its own `client_last_session`, so omitting it
+  switches the most recently active client rather than the tab in front of you.
+- `fn` only exists on Apple keyboards. On external non-Apple keyboards use `Caps Lock + L` or
+  `prefix + L`.
+- The shortcuts deliberately do **not** synthesize `prefix + L` keystrokes; see the Hammerspoon
+  skill for why that recurses.
 
 ### Shell Integration
 

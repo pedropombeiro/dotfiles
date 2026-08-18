@@ -21,22 +21,22 @@ printf "%s\n" "Do you want to set up atuin sync? (r)egister new account, (l)ogin
 read -r -p "> " choice
 
 case "${choice}" in
-  r|R)
-    read -r -p "Username: " username
-    read -r -p "Email: " email
-    atuin register -u "${username}" -e "${email}"
-    printf "${GREEN}%s${NC}\n" "Registered! Save your encryption key — you need it to login on other machines."
-    printf "${CYAN}%s${NC}\n" "Run 'atuin key' to display it."
-    atuin sync
-    ;;
-  l|L)
-    read -r -p "Username: " username
-    read -r -s -p "Key (encryption key from 'atuin key'): " key
-    echo
-    atuin login -u "${username}" -k "${key}"
-    atuin sync
-    ;;
-  *)
-    printf "${YELLOW}%s${NC}\n" "Skipping atuin sync setup"
-    ;;
+r | R)
+  read -r -p "Username: " username
+  read -r -p "Email: " email
+  atuin register -u "${username}" -e "${email}"
+  printf "${GREEN}%s${NC}\n" "Registered! Save your encryption key — you need it to login on other machines."
+  printf "${CYAN}%s${NC}\n" "Run 'atuin key' to display it."
+  atuin sync
+  ;;
+l | L)
+  read -r -p "Username: " username
+  read -r -s -p "Key (encryption key from 'atuin key'): " key
+  echo
+  atuin login -u "${username}" -k "${key}"
+  atuin sync
+  ;;
+*)
+  printf "${YELLOW}%s${NC}\n" "Skipping atuin sync setup"
+  ;;
 esac

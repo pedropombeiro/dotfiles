@@ -24,18 +24,18 @@ set_milestone=1
 args=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --status)
-      start_status="$2"
-      shift 2
-      ;;
-    --no-milestone)
-      set_milestone=0
-      shift
-      ;;
-    *)
-      args+=("$1")
-      shift
-      ;;
+  --status)
+    start_status="$2"
+    shift 2
+    ;;
+  --no-milestone)
+    set_milestone=0
+    shift
+    ;;
+  *)
+    args+=("$1")
+    shift
+    ;;
   esac
 done
 

@@ -43,17 +43,17 @@ iterm2_progress() {
   _iterm2_active || return 0
   _iterm2_osc
   case "${1:-}" in
-    -i) _iterm2_write "${_ITERM2_OSC}9;4;3${_ITERM2_ST}" ;;
-    -e)
-      if [ -n "${2:-}" ]; then
-        _iterm2_write "${_ITERM2_OSC}9;4;2;%d${_ITERM2_ST}" "${2}"
-      else
-        _iterm2_write "${_ITERM2_OSC}9;4;2${_ITERM2_ST}"
-      fi
-      ;;
-    -w) _iterm2_write "${_ITERM2_OSC}9;4;4;%d${_ITERM2_ST}" "${2:-0}" ;;
-    -c) _iterm2_write "${_ITERM2_OSC}9;4;0${_ITERM2_ST}" ;;
-    *) _iterm2_write "${_ITERM2_OSC}9;4;1;%d${_ITERM2_ST}" "${1:-0}" ;;
+  -i) _iterm2_write "${_ITERM2_OSC}9;4;3${_ITERM2_ST}" ;;
+  -e)
+    if [ -n "${2:-}" ]; then
+      _iterm2_write "${_ITERM2_OSC}9;4;2;%d${_ITERM2_ST}" "${2}"
+    else
+      _iterm2_write "${_ITERM2_OSC}9;4;2${_ITERM2_ST}"
+    fi
+    ;;
+  -w) _iterm2_write "${_ITERM2_OSC}9;4;4;%d${_ITERM2_ST}" "${2:-0}" ;;
+  -c) _iterm2_write "${_ITERM2_OSC}9;4;0${_ITERM2_ST}" ;;
+  *) _iterm2_write "${_ITERM2_OSC}9;4;1;%d${_ITERM2_ST}" "${1:-0}" ;;
   esac
 }
 

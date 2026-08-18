@@ -26,13 +26,13 @@ done < <(fd -L -tf -tl --exclude '*##*' --exclude '*~$*' . "${BOOTSTRAP_D}" | so
 
 _bootstrap_total=0
 for bootstrap in "${bootstraps[@]}"; do
-  [[ -x "${bootstrap}" ]] && (( _bootstrap_total++ ))
+  [[ -x "${bootstrap}" ]] && ((_bootstrap_total++))
 done
 _bootstrap_current=0
 
 _cleanup_done=0
 _bootstrap_cleanup() {
-  (( _cleanup_done )) && return
+  ((_cleanup_done)) && return
   _cleanup_done=1
   local rc=$?
   if [[ $rc -ne 0 ]]; then
@@ -55,8 +55,8 @@ iterm2_progress -i
 
 for bootstrap in "${bootstraps[@]}"; do
   if [[ -x "${bootstrap}" ]]; then
-    (( _bootstrap_current++ ))
-    iterm2_progress "$(( _bootstrap_current * 100 / _bootstrap_total ))"
+    ((_bootstrap_current++))
+    iterm2_progress "$((_bootstrap_current * 100 / _bootstrap_total))"
     iterm2_badge "bootstrap: $(basename "${bootstrap}")"
     printf "${YELLOW}%s${NC}\n" "Executing ${bootstrap} ..."
     if ! "${bootstrap}"; then

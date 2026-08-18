@@ -35,18 +35,18 @@ force=0
 args=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --dry-run)
-      dry_run=1
-      shift
-      ;;
-    --force)
-      force=1
-      shift
-      ;;
-    *)
-      args+=("$1")
-      shift
-      ;;
+  --dry-run)
+    dry_run=1
+    shift
+    ;;
+  --force)
+    force=1
+    shift
+    ;;
+  *)
+    args+=("$1")
+    shift
+    ;;
   esac
 done
 
@@ -74,7 +74,7 @@ fi
 
 # Gather related + closing MRs (deduped by project + iid: IIDs are only unique
 # within a project, and related MRs can come from other projects).
-mrs_json="$( {
+mrs_json="$({
   glab api "projects/${enc}/issues/${ISSUE_IID}/related_merge_requests" 2>/dev/null || echo '[]'
   glab api "projects/${enc}/issues/${ISSUE_IID}/closed_by" 2>/dev/null || echo '[]'
 } | jq -s 'add | unique_by([.project_id, .iid])')"

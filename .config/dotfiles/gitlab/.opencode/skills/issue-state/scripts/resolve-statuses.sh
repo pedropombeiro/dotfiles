@@ -19,14 +19,14 @@ name_filter=""
 args=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --name)
-      name_filter="$2"
-      shift 2
-      ;;
-    *)
-      args+=("$1")
-      shift
-      ;;
+  --name)
+    name_filter="$2"
+    shift 2
+    ;;
+  *)
+    args+=("$1")
+    shift
+    ;;
   esac
 done
 

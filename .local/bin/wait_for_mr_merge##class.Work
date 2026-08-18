@@ -43,10 +43,19 @@ shift
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -R) REPO="$2"; shift 2 ;;
-    -i) INTERVAL="$2"; shift 2 ;;
-    -h) usage ;;
-    *) echo "Unknown option: $1" >&2; usage ;;
+  -R)
+    REPO="$2"
+    shift 2
+    ;;
+  -i)
+    INTERVAL="$2"
+    shift 2
+    ;;
+  -h) usage ;;
+  *)
+    echo "Unknown option: $1" >&2
+    usage
+    ;;
   esac
 done
 
@@ -61,17 +70,17 @@ while true; do
   state=$(glab mr view "$MR_IID" -F json "${repo_flag[@]}" 2>/dev/null | jq -r '.state')
 
   case "$state" in
-    merged)
-      echo "MR !${MR_IID} has been merged." >&2
-      exit 0
-      ;;
-    closed)
-      echo "MR !${MR_IID} was closed without merging." >&2
-      exit 1
-      ;;
-    *)
-      echo "  state: ${state} — waiting ${INTERVAL}s..." >&2
-      sleep "$INTERVAL"
-      ;;
+  merged)
+    echo "MR !${MR_IID} has been merged." >&2
+    exit 0
+    ;;
+  closed)
+    echo "MR !${MR_IID} was closed without merging." >&2
+    exit 1
+    ;;
+  *)
+    echo "  state: ${state} — waiting ${INTERVAL}s..." >&2
+    sleep "$INTERVAL"
+    ;;
   esac
 done

@@ -26,7 +26,7 @@ trap 'rm -f "${tmp_file}"' EXIT
 
 if command -v op >/dev/null 2>&1; then
   if op read --account "${op_account_id}" \
-    "op://${op_vault_id}/${op_item_title}/password" >"${tmp_file}" && \
+    "op://${op_vault_id}/${op_item_title}/password" >"${tmp_file}" &&
     [[ -s "${tmp_file}" ]]; then
     mv "${tmp_file}" "${token_file}"
     chmod 600 "${token_file}"

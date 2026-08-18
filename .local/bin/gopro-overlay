@@ -69,64 +69,64 @@ while [ $# -gt 0 ]; do
     continue
   fi
   case "$1" in
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    -o|--output)
-      output="$2"
-      shift 2
-      ;;
-    --layout-xml)
-      layout_xml="$2"
-      layout_xml_override=1
-      shift 2
-      ;;
-    --no-layout)
-      layout_xml=""
-      layout_xml_override=1
-      shift
-      ;;
-    --touch)
-      use_touch=1
-      shift
-      ;;
-    --offset)
-      offset="$2"
-      use_touch=1
-      shift 2
-      ;;
-    --smooth-grade)
-      smooth_grade=1
-      shift
-      ;;
-    --overlay-only)
-      overlay_only=1
-      shift
-      ;;
-    -n|--dry-run)
-      dry_run=1
-      shift
-      ;;
-    --)
-      passthrough=1
-      shift
-      ;;
-    -*)
-      echo "$prog: error: unknown option: $1" >&2
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  -o | --output)
+    output="$2"
+    shift 2
+    ;;
+  --layout-xml)
+    layout_xml="$2"
+    layout_xml_override=1
+    shift 2
+    ;;
+  --no-layout)
+    layout_xml=""
+    layout_xml_override=1
+    shift
+    ;;
+  --touch)
+    use_touch=1
+    shift
+    ;;
+  --offset)
+    offset="$2"
+    use_touch=1
+    shift 2
+    ;;
+  --smooth-grade)
+    smooth_grade=1
+    shift
+    ;;
+  --overlay-only)
+    overlay_only=1
+    shift
+    ;;
+  -n | --dry-run)
+    dry_run=1
+    shift
+    ;;
+  --)
+    passthrough=1
+    shift
+    ;;
+  -*)
+    echo "$prog: error: unknown option: $1" >&2
+    exit 1
+    ;;
+  *)
+    if [ -z "$input" ]; then
+      input="$1"
+    elif [ -z "$fit" ]; then
+      fit="$1"
+    else
+      echo "$prog: error: unexpected argument: $1" >&2
       exit 1
-      ;;
-    *)
-      if [ -z "$input" ]; then
-        input="$1"
-      elif [ -z "$fit" ]; then
-        fit="$1"
-      else
-        echo "$prog: error: unexpected argument: $1" >&2
-        exit 1
-      fi
-      shift
-      ;;
+    fi
+    shift
+    ;;
   esac
 done
 
@@ -185,21 +185,21 @@ if [ "$layout_xml_override" -eq 0 ] && [ -z "$layout_xml" ]; then
   if command -v ffprobe >/dev/null 2>&1; then
     vid_dims=$(ffprobe -v error -select_streams v:0 \
       -show_entries stream=width,height \
-      -of default=noprint_wrappers=1:nokey=1 "$input" 2>/dev/null | \
+      -of default=noprint_wrappers=1:nokey=1 "$input" 2>/dev/null |
       awk 'NR==1{w=$0} NR==2{print w"x"$0}')
     case "$vid_dims" in
-      5312x2988)
-        layout_xml="$layout_dir/layout-5.3k.xml"
-        echo "$prog: detected 5.3K video ($vid_dims), using layout-5.3k.xml" >&2
-        ;;
-      3840x2160)
-        layout_xml="$layout_dir/layout-4k-1.5x.xml"
-        echo "$prog: detected 4K video ($vid_dims), using layout-4k-1.5x.xml" >&2
-        ;;
-      *)
-        layout_xml="$layout_dir/layout-4k-1.5x.xml"
-        echo "$prog: warning: unrecognised resolution ($vid_dims), falling back to layout-4k-1.5x.xml" >&2
-        ;;
+    5312x2988)
+      layout_xml="$layout_dir/layout-5.3k.xml"
+      echo "$prog: detected 5.3K video ($vid_dims), using layout-5.3k.xml" >&2
+      ;;
+    3840x2160)
+      layout_xml="$layout_dir/layout-4k-1.5x.xml"
+      echo "$prog: detected 4K video ($vid_dims), using layout-4k-1.5x.xml" >&2
+      ;;
+    *)
+      layout_xml="$layout_dir/layout-4k-1.5x.xml"
+      echo "$prog: warning: unrecognised resolution ($vid_dims), falling back to layout-4k-1.5x.xml" >&2
+      ;;
     esac
   else
     layout_xml="$HOME/.gopro-graphics/layout-4k-1.5x.xml"

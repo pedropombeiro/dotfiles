@@ -16,9 +16,9 @@
 
 original=$(pbpaste)
 
-echo "$original" | \
-  sed 's/\\"/"/g' | \
-  /opt/homebrew/bin/pg_format --nocomment - | \
+echo "$original" |
+  sed 's/\\"/"/g' |
+  /opt/homebrew/bin/pg_format --nocomment - |
   pbcopy
 
 osascript -e 'tell application "System Events" to keystroke "v" using command down'

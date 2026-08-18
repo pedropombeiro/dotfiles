@@ -12,7 +12,7 @@ export HOME=/share/homes/${USER}
 #   (used by tmux keybindings for new-window/split-window -c) stays at $HOME.
 # New tmux windows/panes inherit the pane's working directory via #{pane_path},
 # so their $PWD won't be $HOME and this cd is skipped.
-if [[ ${SHLVL} -le 1 || ( -n "$TMUX" && "$PWD" == "$HOME" ) ]]; then
+if [[ ${SHLVL} -le 1 || (-n "$TMUX" && "$PWD" == "$HOME") ]]; then
   cd "${CONFIG_HOME}"
 fi
 

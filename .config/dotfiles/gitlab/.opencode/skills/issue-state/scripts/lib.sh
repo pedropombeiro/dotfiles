@@ -46,11 +46,11 @@ parse_issue_ref() {
   local repo=""
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      -R | --repo)
-        repo="$2"
-        shift 2
-        ;;
-      *) shift ;;
+    -R | --repo)
+      repo="$2"
+      shift 2
+      ;;
+    *) shift ;;
     esac
   done
 

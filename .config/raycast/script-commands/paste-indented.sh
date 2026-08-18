@@ -16,7 +16,7 @@
 
 original=$(pbpaste)
 
-sed 's/^/    /' <<< "$original" | pbcopy
+sed 's/^/    /' <<<"$original" | pbcopy
 
 osascript -e 'tell application "System Events" to keystroke "v" using command down'
 sleep 0.5

@@ -16,13 +16,12 @@
 
 original=$(pbpaste)
 
-echo "$original" | \
-  sed 's/\\"/"/g' | \
-  /opt/homebrew/bin/pg_format --nocomment - | \
-  xargs -0 printf "\`\`\`sql\n%s\`\`\`" | \
+echo "$original" |
+  sed 's/\\"/"/g' |
+  /opt/homebrew/bin/pg_format --nocomment - |
+  xargs -0 printf "\`\`\`sql\n%s\`\`\`" |
   pbcopy
 
 osascript -e 'tell application "System Events" to keystroke "v" using command down'
 sleep 0.5
 echo "$original" | pbcopy
-

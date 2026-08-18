@@ -25,5 +25,5 @@ fi
 printf '%s
 ' "Installing Linak Desk Control Stream Deck plugin ${latest_version}"
 curl -fsSL "${STREAMDECK_PLUGIN_URL}" -o "${STREAMDECK_PLUGIN_DOWNLOAD_PATH}"
-printf '%s' "${latest_version}" > "${STREAMDECK_PLUGIN_VERSION_PATH}"
+printf '%s' "${latest_version}" >"${STREAMDECK_PLUGIN_VERSION_PATH}"
 open "${STREAMDECK_PLUGIN_DOWNLOAD_PATH}"

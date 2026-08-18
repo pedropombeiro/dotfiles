@@ -62,39 +62,39 @@ source="dem"
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    -o|--output)
-      output="$2"
-      shift 2
-      ;;
-    --window)
-      window="$2"
-      shift 2
-      ;;
-    --grade-window)
-      grade_window="$2"
-      shift 2
-      ;;
-    --source)
-      source="$2"
-      shift 2
-      ;;
-    -*)
-      echo "$prog: error: unknown option: $1" >&2
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  -o | --output)
+    output="$2"
+    shift 2
+    ;;
+  --window)
+    window="$2"
+    shift 2
+    ;;
+  --grade-window)
+    grade_window="$2"
+    shift 2
+    ;;
+  --source)
+    source="$2"
+    shift 2
+    ;;
+  -*)
+    echo "$prog: error: unknown option: $1" >&2
+    exit 1
+    ;;
+  *)
+    if [ -z "$input" ]; then
+      input="$1"
+    else
+      echo "$prog: error: unexpected argument: $1" >&2
       exit 1
-      ;;
-    *)
-      if [ -z "$input" ]; then
-        input="$1"
-      else
-        echo "$prog: error: unexpected argument: $1" >&2
-        exit 1
-      fi
-      shift
-      ;;
+    fi
+    shift
+    ;;
   esac
 done
 
@@ -121,17 +121,17 @@ if ! command -v pipx >/dev/null 2>&1; then
 fi
 
 case "$source" in
-  dem|baro) ;;
-  *)
-    echo "$prog: error: --source must be 'dem' or 'baro' (got: $source)" >&2
-    exit 1
-    ;;
+dem | baro) ;;
+*)
+  echo "$prog: error: --source must be 'dem' or 'baro' (got: $source)" >&2
+  exit 1
+  ;;
 esac
 
 echo "$prog: smoothing (alt-window=${window}s, grade-window=${grade_window}s, source=${source}): $input -> $output" >&2
 
 FIT_IN="$input" FIT_OUT="$output" FIT_WINDOW="$window" FIT_GRADE_WINDOW="$grade_window" FIT_SOURCE="$source" \
-  pipx run --spec fit-tool --with fitdecode --with SRTM.py python - << 'PYEOF'
+  pipx run --spec fit-tool --with fitdecode --with SRTM.py python - <<'PYEOF'
 import os
 import sys
 import datetime

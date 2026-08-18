@@ -39,7 +39,7 @@ done
 python_version="$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')"
 python_major="${python_version%%.*}"
 python_minor="${python_version##*.}"
-if (( python_major < 3 || (python_major == 3 && python_minor < 11) )); then
+if ((python_major < 3 || (python_major == 3 && python_minor < 11))); then
   printf "${RED}%s${NC}\n" "opencode-memory requires Python 3.11+, found ${python_version} - aborting"
   exit 1
 fi
@@ -54,8 +54,8 @@ done
 
 printf "${YELLOW}%s${NC}\n" "Installing/updating opencode-memory..."
 OPENCODE_MEMORY_RUNTIME=python \
-OPENCODE_MEMORY_STARTUP=always \
-OPENCODE_MEMORY_AGENTS=opencode,claude \
+  OPENCODE_MEMORY_STARTUP=always \
+  OPENCODE_MEMORY_AGENTS=opencode,claude \
   bash -c "curl -fsSL https://gitlab.com/ghavenga/opencode-memory/-/raw/master/scripts/setup.sh | bash"
 setup_rc=$?
 
@@ -90,7 +90,7 @@ for f in "${MANAGED_FILES[@]}"; do
   fi
 done
 
-if (( ${#clobbered[@]} > 0 )); then
+if ((${#clobbered[@]} > 0)); then
   printf "${RED}%s${NC}\n" "setup.sh modified yadm-managed file(s):"
   for f in "${clobbered[@]}"; do
     echo "  ${f}"

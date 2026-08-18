@@ -25,18 +25,18 @@ type=""
 do_commit=1
 while [ $# -gt 0 ]; do
   case "$1" in
-    --type)
-      type="$2"
-      shift 2
-      ;;
-    --no-commit)
-      do_commit=0
-      shift
-      ;;
-    *)
-      echo "error: unknown argument: $1" >&2
-      exit 1
-      ;;
+  --type)
+    type="$2"
+    shift 2
+    ;;
+  --no-commit)
+    do_commit=0
+    shift
+    ;;
+  *)
+    echo "error: unknown argument: $1" >&2
+    exit 1
+    ;;
   esac
 done
 

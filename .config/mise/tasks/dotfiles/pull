@@ -4,17 +4,17 @@
 set -eu
 
 if [ -n "$(yadm status -s)" ]; then
-    if [ -r /dev/tty ]; then
-        printf "This will discard local dotfile changes. Continue? [y/N] " > /dev/tty
-        read -r reply < /dev/tty
-    else
-        echo "Refusing to discard local dotfile changes (no TTY)." >&2
-        exit 1
-    fi
-    case "${reply}" in
-        [yY]|[yY][eE][sS]) ;;
-        *) exit 1 ;;
-    esac
+  if [ -r /dev/tty ]; then
+    printf "This will discard local dotfile changes. Continue? [y/N] " >/dev/tty
+    read -r reply </dev/tty
+  else
+    echo "Refusing to discard local dotfile changes (no TTY)." >&2
+    exit 1
+  fi
+  case "${reply}" in
+  [yY] | [yY][eE][sS]) ;;
+  *) exit 1 ;;
+  esac
 fi
 yadm fetch
 yadm reset --hard origin/master

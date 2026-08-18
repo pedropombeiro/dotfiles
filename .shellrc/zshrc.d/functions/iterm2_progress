@@ -10,10 +10,10 @@
 #   iterm2_progress -c               Clear the progress bar
 #
 
-[[ "${TERM_PROGRAM}" == "iTerm.app" || "${LC_TERMINAL}" == "iTerm2" || -n "${ITERM_SESSION_ID}" ]] || return 0
+[[ "${TERM_PROGRAM:-}" == "iTerm.app" || "${LC_TERMINAL:-}" == "iTerm2" || -n "${ITERM_SESSION_ID:-}" ]] || return 0
 
 local _iterm2_osc _iterm2_st
-if [[ -n "${TMUX}" ]]; then
+if [[ -n "${TMUX:-}" ]]; then
   _iterm2_osc="\ePtmux;\e\e]"
   _iterm2_st="\a\e\\"
 else
@@ -21,26 +21,31 @@ else
   _iterm2_st="\a"
 fi
 
+# The redirect is what fails when there is no controlling terminal (as under
+# `mise run`), and the shell reports that on its own stderr rather than the
+# command's. Nest the group so the outer 2>/dev/null suppresses it.
 {
-case "${1}" in
-  -i)
-    printf "${_iterm2_osc}9;4;3${_iterm2_st}"
-    ;;
-  -e)
-    if [[ -n "${2}" ]]; then
-      printf "${_iterm2_osc}9;4;2;%d${_iterm2_st}" "${2}"
-    else
-      printf "${_iterm2_osc}9;4;2${_iterm2_st}"
-    fi
-    ;;
-  -w)
-    printf "${_iterm2_osc}9;4;4;%d${_iterm2_st}" "${2}"
-    ;;
-  -c)
-    printf "${_iterm2_osc}9;4;0${_iterm2_st}"
-    ;;
-  *)
-    printf "${_iterm2_osc}9;4;1;%d${_iterm2_st}" "${1}"
-    ;;
-esac
-} >"${ITERM2_TTY:-/dev/tty}" 2>/dev/null || true
+  {
+    case "${1}" in
+      -i)
+        printf "${_iterm2_osc}9;4;3${_iterm2_st}"
+        ;;
+      -e)
+        if [[ -n "${2:-}" ]]; then
+          printf "${_iterm2_osc}9;4;2;%d${_iterm2_st}" "${2}"
+        else
+          printf "${_iterm2_osc}9;4;2${_iterm2_st}"
+        fi
+        ;;
+      -w)
+        printf "${_iterm2_osc}9;4;4;%d${_iterm2_st}" "${2:-0}"
+        ;;
+      -c)
+        printf "${_iterm2_osc}9;4;0${_iterm2_st}"
+        ;;
+      *)
+        printf "${_iterm2_osc}9;4;1;%d${_iterm2_st}" "${1}"
+        ;;
+    esac
+  } >"${ITERM2_TTY:-/dev/tty}"
+} 2>/dev/null || true

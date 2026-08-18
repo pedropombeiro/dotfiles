@@ -6,10 +6,10 @@
 #   iterm2_notify <message>
 #
 
-[[ "${TERM_PROGRAM}" == "iTerm.app" || "${LC_TERMINAL}" == "iTerm2" || -n "${ITERM_SESSION_ID}" ]] || return 0
+[[ "${TERM_PROGRAM:-}" == "iTerm.app" || "${LC_TERMINAL:-}" == "iTerm2" || -n "${ITERM_SESSION_ID:-}" ]] || return 0
 
 local _iterm2_osc _iterm2_st
-if [[ -n "${TMUX}" ]]; then
+if [[ -n "${TMUX:-}" ]]; then
   _iterm2_osc="\ePtmux;\e\e]"
   _iterm2_st="\a\e\\"
 else
@@ -17,4 +17,11 @@ else
   _iterm2_st="\a"
 fi
 
-printf "${_iterm2_osc}9;%s${_iterm2_st}" "${*}" >"${ITERM2_TTY:-/dev/tty}" 2>/dev/null || true
+# The redirect is what fails when there is no controlling terminal (as under
+# `mise run`), and the shell reports that on its own stderr rather than the
+# command's. Nest the group so the outer 2>/dev/null suppresses it.
+{
+  {
+    printf "${_iterm2_osc}9;%s${_iterm2_st}" "${*}"
+  } >"${ITERM2_TTY:-/dev/tty}"
+} 2>/dev/null || true

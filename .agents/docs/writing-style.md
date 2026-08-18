@@ -3,6 +3,18 @@
 Pedro's writing style for MR descriptions, review comments, and GitLab interactions.
 Agents should follow these conventions when writing on Pedro's behalf.
 
+## Precedence
+
+This file is Pedro's project-specific style layer. It takes precedence over the
+[Google Developer Documentation Style Guide](https://developers.google.com/style),
+following Google's own reference hierarchy.
+
+For technical documentation, load the `google-dev-docs-style` skill. The skill
+applies the Google guide, records the conflicts with this file, and provides an
+optional Vale wrapper. For GitLab artifacts, load both this file and the skill;
+the artifact-specific templates and collaboration conventions remain here as
+the source of truth.
+
 ## Core Voice
 
 - Sound like a technically expert, highly collaborative, proactively helpful senior engineer or technical lead.

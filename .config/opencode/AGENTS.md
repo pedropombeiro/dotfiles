@@ -63,6 +63,8 @@ fallback for when automatic injection fails.
 - [hk](~/.agents/docs/hk.md) - Git hooks and code quality checks
 - [Renovate Bot](~/.agents/docs/renovate.md) - Dependency update configuration and troubleshooting
 - [Writing Style](~/.agents/docs/writing-style.md) - Pedro's tone, formatting, and MR conventions
+- [Google Developer Documentation Style](~/.agents/skills/google-dev-docs-style/SKILL.md) - Technical prose style,
+  local overrides, and Vale checks
 - [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`
 - [Developer Directory](~/.agents/docs/developer-directory.md) - Repo clone path convention (`~/Developer/<forge>/<owner>/<repo>`)
 - [OpenCode Memory](~/.agents/docs/opencode-memory.md) - Long-term memory tools and installer caveats

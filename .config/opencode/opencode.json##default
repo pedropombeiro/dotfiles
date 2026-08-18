@@ -352,7 +352,11 @@
     "~/.gnupg/*": "deny",
     "~/.netrc": "deny",
     "~/.ssh/*": "deny",
-    "skill": { "gh": "allow", "hammerspoon": "allow" },
+    "skill": {
+      "gh": "allow",
+      "google-dev-docs-style": "allow",
+      "hammerspoon": "allow"
+    },
     "task": {
       "general": "allow",
       "explore": "allow"

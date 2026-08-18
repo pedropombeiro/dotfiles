@@ -476,6 +476,7 @@
       "gitlab-pipeline-watch": "allow",
       "glab": "allow",
       "glab-glql": "allow",
+      "google-dev-docs-style": "allow",
       "hammerspoon": "allow",
       "handoff": "allow",
       "issue-state": "allow",

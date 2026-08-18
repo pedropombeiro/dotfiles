@@ -1,0 +1,8 @@
+extends: existence
+message: "Use a single dash or rewrite the sentence; don't use '%s' as punctuation."
+link: "https://developers.google.com/style/dashes"
+level: error
+nonword: true
+tokens:
+  - '[—–]'
+  - '--+'

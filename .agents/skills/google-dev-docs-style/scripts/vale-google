@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly script_dir
+skill_dir="$(cd "$script_dir/.." && pwd)"
+readonly skill_dir
+readonly cache_root="${XDG_CACHE_HOME:-$HOME/.cache}/vale-google"
+readonly styles_dir="$cache_root/styles"
+readonly config_file="$cache_root/vale.ini"
+
+usage() {
+  cat <<'EOF'
+Usage: vale-google [--sync] PATH...
+
+Lint Markdown or text with Google's official Vale package and Pedro's local
+overrides. --sync refreshes the cached Google package before linting.
+EOF
+}
+
+if ! command -v vale >/dev/null 2>&1; then
+  printf 'vale-google: vale is not installed or not on PATH\n' >&2
+  exit 127
+fi
+
+sync_styles=false
+if [[ ${1:-} == "--sync" ]]; then
+  sync_styles=true
+  shift
+fi
+
+if (($# == 0)); then
+  usage >&2
+  exit 64
+fi
+
+mkdir -p "$styles_dir/Pedro"
+cp "$skill_dir/vale/styles/Pedro/NoDashPunctuation.yml" "$styles_dir/Pedro/"
+
+cat >"$config_file" <<EOF
+StylesPath = $styles_dir
+MinAlertLevel = suggestion
+Packages = Google
+
+[*.{md,mdx,txt}]
+BasedOnStyles = Google, Pedro
+Google.EmDash = NO
+Google.FirstPerson = NO
+Google.We = NO
+Google.WordList = NO
+Google.WordListCase = NO
+EOF
+
+if [[ $sync_styles == true || ! -d $styles_dir/Google ]]; then
+  vale --config="$config_file" sync
+fi
+
+exec vale --config="$config_file" "$@"

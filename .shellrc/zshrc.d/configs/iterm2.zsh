@@ -1,8 +1,10 @@
 #!/usr/bin/env zsh
 
-[[ "${TERM_PROGRAM}" == "iTerm.app" || "${LC_TERMINAL}" == "iTerm2" || -n "${ITERM_SESSION_ID}" ]] || return 0
+[[ "${TERM_PROGRAM:-}" == "iTerm.app" || "${LC_TERMINAL:-}" == "iTerm2" || -n "${ITERM_SESSION_ID:-}" ]] || return 0
 
 export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
+# mise tasks have no controlling terminal; pass the active iTerm2 pty to them.
+[[ -n "${TTY:-}" ]] && export ITERM2_TTY="${TTY}"
 
 [[ -e "${HOME}/.iterm2_shell_integration.zsh" ]] && source "${HOME}/.iterm2_shell_integration.zsh"
 

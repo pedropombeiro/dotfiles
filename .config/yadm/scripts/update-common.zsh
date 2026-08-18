@@ -125,6 +125,27 @@ if [[ -f "${ZINIT_HOME}/zinit.zsh" ]]; then
   source "${ZINIT_HOME}/zinit.zsh"
   zinit self-update
   zinit update --parallel
+
+  # Self-heal stripped snippets. Before re-extracting, zinit moves a snippet's
+  # existing files into ._backup and only restores them on a *handled* failure,
+  # so an update killed in between leaves the directory holding just ._zinit
+  # metadata (and possibly a stale .zwc). Unlike plugins, which are git clones
+  # that recover on the next update, single-file snippets stay broken and every
+  # new shell then reports "Snippet not loaded (...)". Detect the empty ones and
+  # force a re-download.
+  () {
+    setopt local_options extended_glob
+    local dir
+    local -a stripped payload
+    for dir in ${ZINIT[SNIPPETS_DIR]:-${HOME}/.local/share/zinit/snippets}/**/._zinit(N/); do
+      dir="${dir:h}"
+      payload=( ${dir}/*~*.zwc(.N) )
+      (( ${#payload} )) || stripped+=("${dir:t}")
+    done
+    (( ${#stripped} )) || return 0
+    printf "${YELLOW}%s${NC}\n" "Re-downloading ${#stripped} snippet(s) with missing files: ${stripped[*]}"
+    zinit update --reset --snippets
+  }
 fi
 
 # Delete dead symlinks in ~/.shellrc — (-@) = broken symlinks (symlinks whose target doesn't exist)

@@ -12,6 +12,15 @@
 
 set -e
 
+# Progress indicators are cosmetic, so a missing helper must not abort the commit.
+_iterm2_helpers="${HOME}/.config/yadm/scripts/iterm2.sh"
+if [ -r "${_iterm2_helpers}" ]; then
+  # shellcheck source=../../.config/yadm/scripts/iterm2.sh
+  . "${_iterm2_helpers}"
+else
+  iterm2_progress() { :; }
+fi
+
 type=""
 do_commit=1
 while [ $# -gt 0 ]; do
@@ -47,15 +56,6 @@ if [ "$(pwd)" = "$HOME" ] || { ! git rev-parse --git-dir >/dev/null 2>&1 && yadm
 else
   git_cmd="git"
 fi
-
-_iterm2_progress() {
-  [ "${TERM_PROGRAM}" = "iTerm.app" ] || [ "${LC_TERMINAL}" = "iTerm2" ] || [ -n "${ITERM_SESSION_ID}" ] || return 0
-  if [ -n "${TMUX}" ]; then
-    printf "\033Ptmux;\033\033]9;4;%s\a\033\\" "$1" >/dev/tty 2>/dev/null || true
-  else
-    printf "\033]9;4;%s\a" "$1" >/dev/tty 2>/dev/null || true
-  fi
-}
 
 tmpfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-msg.XXXXXX")
 statusfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-status.XXXXXX")
@@ -109,14 +109,14 @@ if [ "$type" != "none" ]; then
 fi
 prompt="$prompt CRITICAL: Your response must contain ONLY the commit message itself. No explanations, no preamble, no thinking, no markdown. Start directly with the subject line."
 
-_iterm2_progress 3
+iterm2_progress -i
 # Preserve mise's real state and data dirs before overriding XDG_STATE_HOME
 # and XDG_DATA_HOME for opencode isolation. Must be computed beforehand
 # because zsh evaluates command-prefix assignments left-to-right.
 mise_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/mise"
 mise_data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/mise"
 msg=$(OPENCODE_TERMINAL_PROGRESS=0 XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" MISE_STATE_DIR="$mise_state_dir" MISE_DATA_DIR="$mise_data_dir" opencode run -m "$model" --agent build "$prompt" -f "$statusfile" -f "$tmpfile")
-_iterm2_progress 0
+iterm2_progress -c
 rm -rf "$opencode_commit_data/opencode/log"
 
 if [ -z "$msg" ]; then

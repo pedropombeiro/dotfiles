@@ -65,16 +65,16 @@
       "groupName": "mise backend tools"
     },
     {
-      "description": "Strip ipinfo- tag prefix so GitHub releases compare as plain versions",
+      "description": "Compare ipinfo- prefixed tags while keeping the prefix mise needs to resolve them",
       "matchManagers": ["custom.regex", "mise"],
       "matchPackageNames": ["/^([a-z]+:)?ipinfo/cli$/"],
-      "extractVersion": "^ipinfo-(?<version>.+)$"
+      "versioning": "regex:^ipinfo-(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
     },
     {
-      "description": "Strip gping-v tag prefix so GitHub releases compare as plain versions",
+      "description": "Compare gping-v prefixed tags while keeping the prefix mise needs to resolve them",
       "matchManagers": ["custom.regex", "mise"],
       "matchPackageNames": ["/^([a-z]+:)?orf/gping$/"],
-      "extractVersion": "^gping-v(?<version>.+)$"
+      "versioning": "regex:^gping-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
     },
     {
       "description": "Group shared dua updates",

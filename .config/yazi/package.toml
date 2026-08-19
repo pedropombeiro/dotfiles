@@ -69,11 +69,6 @@ rev = "e60e122"
 hash = "fbaf0adc8efc59555b748d36aab62d40"
 
 [[plugin.deps]]
-use = "carlosedp/yatline"
-rev = "61d3a3a"
-hash = "37fe452b2406df3f24e33b429ef699c2"
-
-[[plugin.deps]]
 use = "yazi-rs/plugins:zoom"
 rev = "6f26ae0"
 hash = "e8e279463ee99c940e6945a14cf4aa9e"
@@ -87,6 +82,11 @@ hash = "8282baf02fcd6aac00ccad2276775358"
 use = "moxuze/parent-arrow"
 rev = "1fdb8b4"
 hash = "2f76b82244c113bbd61553f37a6b52d8"
+
+[[plugin.deps]]
+use = "imsi32/yatline"
+rev = "c5d4b48"
+hash = "e6e98d12b1648d1894c2b560d85eeaa7"
 
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"

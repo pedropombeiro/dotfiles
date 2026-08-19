@@ -91,7 +91,9 @@ require("yatline"):setup({
         { type = "string", custom = false, name = "hovered_size" },
       },
       section_c = {
-        { type = "coloreds", custom = false, name = "tab_path" },
+        { type = "string", custom = false, name = "hovered_path" },
+        { type = "string", custom = false, name = "search_query", params = { " search:" } },
+        { type = "string", custom = false, name = "filter_query", params = { " filter:" } },
       },
     },
     right = {
@@ -110,16 +112,23 @@ require("yatline"):setup({
   },
 })
 
--- Override hovered_path to include file icon
-function Yatline.string.get:hovered_path(config)
+-- Override hovered_path to include the file icon.
+-- Trimming params are accepted for signature compatibility with upstream (v0.5.0
+-- replaced the old single-table argument) but unused, since the status line does
+-- not pass them.
+function Yatline.string.get:hovered_path(_trimmed, _max_length, _trim_length)
   local h = cx.active.current.hovered
   if not h then
     return ""
   end
 
+  -- In a search/flatten view the URL carries the `search://` scheme, which
+  -- `ya.readable_path` does not strip; use the plain path instead.
+  local url = h.url
+  local path = ya.readable_path(tostring(url.spec.is_search and url.path or url))
+
   -- `th.icon:match()` returns `Icon?`, so guard against no matching [icon] rule
   local icon = th.icon:match(h)
-  local path = ya.readable_path(tostring(h.url))
   return icon and (icon.text .. " " .. path) or path
 end
 
@@ -180,116 +189,85 @@ require("yatline-githead"):setup({
   untracked_symbol = " ",
 })
 
-local tab_path_opts = {
-  path_fg = "#a89984",  -- Match Lualine section_c fg (gray)
-  filter_fg = "brightyellow",
-  search_label = " search",
-  filter_label = " filter",
-  no_filter_label = "",
-  flatten_label = " flatten",
-  separator = "  ",
-}
-
--- `tab_path` below started as yatline-tab-path.yazi, but that plugin's only job is
--- to define `Yatline.coloreds.get:tab_path`, and this version replaces it entirely
--- (deprecated `Url.is_search`, a `""` colour yazi rejects, a `frag` field that no
--- longer exists, and cwd instead of the hovered path). The plugin is therefore no
--- longer required or installed.
---
--- `count` is still a local fix for a live upstream deprecation:
---   yatline: https://github.com/carlosedp/yatline.yazi (main.lua:805)
+-- TEMPORARY FIX: upstream yatline still uses two APIs deprecated in yazi 26.8,
+-- which warn on every status-line redraw. Remove each once fixed upstream:
+--   `File:icon()`   -> `th.icon:match(file)`   https://github.com/imsi32/yatline.yazi/issues/79
+--   `Url.is_search` -> `Url.spec.is_search`    (unreported)
 if Yatline then
-  function Yatline.coloreds.get:tab_path()
-    local cwd = cx.active.current.cwd
-    local filter = cx.active.current.files.filter
-
-    local filter_suffix
-
-    -- Upstream reads the search keyword from `cwd:frag()`. In this yazi version
-    -- `frag` always returns nil; the keyword now lives on `cwd.spec.domain`
-    -- (empty for a flattened view, which has no keyword).
-    local search = ""
-    if cwd.spec.is_search then
-      local keyword = cwd.spec.domain
-      search = (keyword and #keyword > 0)
-          and string.format("%s: %s", tab_path_opts.search_label, keyword)
-        or tab_path_opts.flatten_label
-    end
-
-    if not filter then
-      filter_suffix = search
-    elseif search == "" then
-      filter_suffix = string.format("%s: %s", tab_path_opts.filter_label, tostring(filter))
-    else
-      filter_suffix = string.format(
-        "%s%s%s: %s",
-        search,
-        tab_path_opts.separator,
-        tab_path_opts.filter_label,
-        tostring(filter)
-      )
-    end
-
-    if filter_suffix == "" then
-      filter_suffix = tab_path_opts.no_filter_label
-    end
-
-    -- Upstream renders `cwd` here, which only ever shows the tab's directory.
-    -- Show the hovered file's path with its icon instead, falling back to the
-    -- directory when nothing is hovered (e.g. an empty folder).
+  -- `hovered_file_extension` is not in the status line above, but override it so the
+  -- deprecation cannot resurface if it is ever added back.
+  function Yatline.string.get:hovered_file_extension(show_icon)
     local hovered = cx.active.current.hovered
-    local path, icon
-    if hovered then
-      -- In a search/flatten view the hovered URL carries the `search://` scheme,
-      -- which `ya.readable_path` does not strip. Rebuild it from the real path so
-      -- the status bar always shows a plain filesystem path.
-      local url = hovered.url
-      path = ya.readable_path(tostring(url.spec.is_search and url.path or url))
-      icon = th.icon:match(hovered)
-    else
-      path = ya.readable_path(tostring(cwd.spec.is_search and cwd.path or cwd))
+    if not hovered then
+      return ""
     end
 
-    if path == "" and filter_suffix == "" then
-      return {}
+    local name = hovered.cha.is_dir and "dir" or (tostring(hovered.url.ext or "null"))
+
+    if not show_icon then
+      return name
     end
 
-    -- Upstream uses `""` for the spacing colour, which yazi rejects with
-    -- "Failed to parse Colors"; "reset" is the correct no-op colour.
-    return {
-      { " ", "reset" },
-      { icon and (icon.text .. " ") or "", "reset" },
-      { string.format("%s", path), tab_path_opts.path_fg },
-      { filter_suffix ~= "" and " " or "", "reset" },
-      { string.format("%s", filter_suffix), tab_path_opts.filter_fg },
-      { " ", "reset" },
-    }
+    local icon = th.icon:match(hovered)
+    return icon and (icon.text .. " " .. name) or name
   end
 
-  -- `count` reads icons/colours from variables that are `local` to yatline.yazi and
-  -- unreachable here, so they are re-derived from the theme. Keep in sync with
-  -- yatline-gruvbox.yazi if the flavor changes.
-  function Yatline.coloreds.get:count(filter)
+  local function is_search(url)
+    return url.spec.is_search
+  end
+
+  function Yatline.string.get:search_query(key)
+    key = key or "search:"
+
+    local cwd = cx.active.current.cwd
+    if is_search(cwd) then
+      return string.format("%s %s", key, cwd.spec.domain)
+    end
+
+    return ""
+  end
+
+  -- Verbatim copy of upstream `count` with `cwd.is_search` -> `cwd.spec.is_search`.
+  -- Reads icons/colours from `Yatline.config`, so it needs no theme duplication.
+  function Yatline.coloreds.get:count(filter, zero_check)
+    filter = filter or false
+    zero_check = zero_check or false
+
     local num_yanked = #cx.yanked
     local num_selected = #cx.active.selected
     local num_files = #cx.active.current.files
 
-    local yanked = cx.yanked.is_cut and gruvbox_theme.cut or gruvbox_theme.copied
-    local files_count = (cx.active.current.files.filter or cx.active.current.cwd.spec.is_search)
-        and gruvbox_theme.filtereds
-      or gruvbox_theme.files
+    local coloreds = {}
 
     if filter then
-      return {
-        { string.format("%s %d ", files_count.icon, num_files), files_count.fg },
-        { string.format("%s %d ", gruvbox_theme.selected.icon, num_selected), gruvbox_theme.selected.fg },
-        { string.format("%s %d", yanked.icon, num_yanked), yanked.fg },
-      }
+      local files_count = (cx.active.current.files.filter or is_search(cx.active.current.cwd))
+          and Yatline.config.filtereds
+        or Yatline.config.files
+
+      if (zero_check and num_files > 0) or not zero_check then
+        table.insert(coloreds, { string.format("%s %d", files_count.icon, num_files), files_count.fg })
+      end
     end
 
-    return {
-      { string.format("%s %d ", gruvbox_theme.selected.icon, num_selected), gruvbox_theme.selected.fg },
-      { string.format("%s %d", yanked.icon, num_yanked), yanked.fg },
-    }
+    if (zero_check and num_selected > 0) or not zero_check then
+      if #coloreds > 0 then
+        table.insert(coloreds, { " ", Yatline.config.selected.fg })
+      end
+      table.insert(
+        coloreds,
+        { string.format("%s %d", Yatline.config.selected.icon, num_selected), Yatline.config.selected.fg }
+      )
+    end
+
+    if (zero_check and num_yanked > 0) or not zero_check then
+      local yanked = cx.yanked.is_cut and Yatline.config.cut or Yatline.config.copied
+
+      if #coloreds > 0 then
+        table.insert(coloreds, { " ", yanked.fg })
+      end
+      table.insert(coloreds, { string.format("%s %d", yanked.icon, num_yanked), yanked.fg })
+    end
+
+    return coloreds
   end
 end

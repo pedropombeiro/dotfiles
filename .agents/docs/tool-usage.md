@@ -36,3 +36,41 @@ separate `edit` call.
 - This is a harness-level issue, not a property of any particular project. Keep the mitigation in
   the global `write-large-file` skill — do not copy it into project skills, prompts, or specs,
   especially in repos intended to be forked, where the fork's harness may not have the problem.
+
+## `sed -i` silently destroys non-ASCII characters
+
+**Symptom:** a `sed -i '' 's/old/new/g'` rename appears to succeed, but unrelated lines show up in
+the diff with no visible change. The lines look byte-identical in terminal output and in `read`.
+
+Observed in `~/.config/yazi/init.lua`, where a variable rename stripped the Nerd Font glyphs from
+label strings — `search_label = "\uf002 search"` became `search_label = " search"`. The diff showed
+the lines as modified, but both versions rendered identically, so the damage was invisible.
+
+**Mitigation:** use the `edit` tool for renames, even repetitive ones. Use `edit` with
+`replaceAll: true` for a whole-file rename rather than reaching for `sed`.
+
+This matters well beyond one config file: Nerd Font glyphs, box-drawing characters, emoji, and
+accented text are common in prompts, status lines, themes, and docs across these dotfiles.
+
+**Detection:** `read` and plain `diff` are not sufficient — compare bytes.
+
+```bash
+# Confirm a suspicious line survived intact
+sed -n '186p' init.lua | hexdump -C
+yadm show HEAD:.config/yazi/init.lua | sed -n '186p' | hexdump -C
+```
+
+Before committing any mechanical rewrite of a file containing non-ASCII characters, check that the
+diff contains only intended hunks:
+
+```bash
+yadm diff <file> | grep -E "^[-+]" | grep -v <expected-pattern>
+```
+
+**Recovery:** restore the affected lines from `HEAD` rather than retyping the glyphs, which risks
+substituting a similar-looking codepoint:
+
+```bash
+yadm show HEAD:<path> | sed -n '<start>,<end>p'   # inspect
+# then splice those exact lines back over the damaged range
+```

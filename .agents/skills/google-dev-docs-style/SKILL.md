@@ -118,6 +118,7 @@ Before delivering prose, verify that:
 - Code, placeholders, and UI elements use the correct formatting.
 - Claims are factual, inclusive, accessible, and suitable for a global audience.
 - No banned dash punctuation, filler, or avoidable jargon remains.
+- No AI writing patterns listed in `~/.agents/docs/writing-style.md` remain.
 
 ## Source scope
 

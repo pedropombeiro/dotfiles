@@ -7,6 +7,14 @@ YADM_SCRIPTS=$(cd -- "$(dirname -- "${(%):-%x}")/../scripts" &>/dev/null && pwd)
 
 source "${YADM_SCRIPTS}/colors.sh"
 
+printf "${YELLOW}%s${NC}\n" "Linking OpenCode skills..."
+if [[ -L ${HOME}/.config/opencode/skills/skills &&
+      $(readlink "${HOME}/.config/opencode/skills/skills") == "${HOME}/.agents/skills" ]]; then
+  rm "${HOME}/.config/opencode/skills/skills"
+  rmdir "${HOME}/.config/opencode/skills"
+fi
+ln -sfn "${HOME}/.agents/skills" "${HOME}/.config/opencode/skills"
+
 printf "${YELLOW}%s${NC}\n" "Linking run-in-tmux-pane..."
 mkdir -p "${HOME}/.local/bin"
 ln -sfn "${HOME}/.agents/skills/run-in-tmux-pane/scripts/run-in-tmux-pane" "${HOME}/.local/bin/run-in-tmux-pane"

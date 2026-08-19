@@ -107,3 +107,13 @@ the source of truth.
 - No long-winded introductions or conclusions.
 - Never apologetic when providing technical corrections - state facts cleanly.
 - Never use double-hyphens (`--`) or the em-dash character (`—`, U+2014). Use a single dash (`-`) instead.
+
+### AI writing patterns
+
+- State the point directly instead of using binary contrasts such as `not X, but Y` or `it's not just X - it's Y`.
+- Name the actor. Avoid giving inanimate subjects false agency, such as `the decision emerged` or `the complaint became a fix`.
+- Replace vague declarations such as `the implications are significant` with the specific implication.
+- Remove throat-clearing openers and meta-commentary such as `here's the thing`, `let's dive in`, and `the rest of this document covers`.
+- Avoid dramatic fragments and punchy pull-quote endings. Vary sentence and paragraph rhythm naturally.
+- Don't pad lists to three items or repeat the same sentence structure mechanically.
+- Prefer precise verbs over adverb crutches such as `very`, `significantly`, and `essentially`.

@@ -11,7 +11,7 @@ CARGO_HOME = "/opt/share/cargo"
 python = "3.14"
 node = "23.7.0"
 jless = "0.9.0"
-rust = { version = "1.96.0", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
+rust = { version = "1.97.1", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
 # Required to build opencode-memory's native Rust runtime: Lance/prost-build
 # shells out to protoc, and rust/.cargo/config.toml hardcodes sccache as the
 # rustc-wrapper (the build fails outright when it is missing from PATH).

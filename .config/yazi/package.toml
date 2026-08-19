@@ -9,11 +9,6 @@ rev = "f570b77"
 hash = "244048d1c3e7c557796f372c5c01de5d"
 
 [[plugin.deps]]
-use = "blackdaemon/yatline-tab-path"
-rev = "101fe7c"
-hash = "b58a6786383df06dc16fc6dbd1876d31"
-
-[[plugin.deps]]
 use = "dedukun/bookmarks"
 rev = "9ef1254"
 hash = "92fbb5483657fa7976cdf4e0104e18e0"

@@ -5,7 +5,6 @@
     ":automergePatch",
     ":automergeRequireAllStatusChecks",
     ":configMigration",
-    ":enablePreCommit",
     ":prImmediately"
   ],
   "separateMajorMinor": true,
@@ -33,24 +32,6 @@
       "description": "Prefix automerge updates in MR titles",
       "matchUpdateTypes": ["patch", "pin", "digest"],
       "commitMessageSuffix": "- `AUTOMERGE`"
-    },
-    {
-      "description": "Enable automerge for pre-commit package updates",
-      "matchDepTypes": ["devDependencies"],
-      "matchPackageNames": ["pre-commit"],
-      "automerge": true,
-      "commitMessageSuffix": "- `AUTOMERGE`"
-    },
-    {
-      "description": "Group pre-commit hook updates",
-      "matchManagers": ["pre-commit"],
-      "groupName": "pre-commit hooks"
-    },
-    {
-      "description": "Limit renovatebot/pre-commit-hooks updates to monthly",
-      "matchManagers": ["pre-commit"],
-      "matchPackageNames": ["renovatebot/pre-commit-hooks"],
-      "schedule": ["on the first day of the month"]
     },
     {
       "description": "Limit Renovate updates to monthly",
@@ -82,6 +63,18 @@
         ".config/mise/conf.d/**"
       ],
       "groupName": "mise backend tools"
+    },
+    {
+      "description": "Strip ipinfo- tag prefix so GitHub releases compare as plain versions",
+      "matchManagers": ["custom.regex", "mise"],
+      "matchPackageNames": ["/^([a-z]+:)?ipinfo/cli$/"],
+      "extractVersion": "^ipinfo-(?<version>.+)$"
+    },
+    {
+      "description": "Strip gping-v tag prefix so GitHub releases compare as plain versions",
+      "matchManagers": ["custom.regex", "mise"],
+      "matchPackageNames": ["/^([a-z]+:)?orf/gping$/"],
+      "extractVersion": "^gping-v(?<version>.+)$"
     },
     {
       "description": "Group shared dua updates",
@@ -134,7 +127,8 @@
         "\"aqua:(?<depName>[^\"\\[]+)(\\[[^\\]]*\\])?\"\\s*=\\s*\"(?<currentValue>[^\"]+)\""
       ],
       "datasourceTemplate": "github-releases",
-      "versioningTemplate": "loose"
+      "versioningTemplate": "loose",
+      "extractVersionTemplate": "^v?(?<version>.*)$"
     },
     {
       "description": "mise opencode inline-table package (aqua backend)",

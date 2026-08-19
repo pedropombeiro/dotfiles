@@ -8,10 +8,10 @@
 
 ## Managers Configured
 
-| Manager          | Files                                           | Purpose              |
-| ---------------- | ----------------------------------------------- | -------------------- |
-| `github-actions` | `.github/workflows/*.yml`                       | Action versions      |
-| `mise`           | `.config/mise/config.toml##*`, `conf.d/*.toml*` | Tool versions        |
+| Manager          | Files                                           | Purpose                |
+| ---------------- | ----------------------------------------------- | ---------------------- |
+| `github-actions` | `.github/workflows/*.yml`                       | Action versions        |
+| `mise`           | `.config/mise/config.toml##*`, `conf.d/*.toml*` | Tool versions          |
 | `custom.regex`   | mise configs, `opencode.json##*`                | Backend tools, plugins |
 
 ## Prefixed Release Tags

@@ -8,7 +8,7 @@ HISTIGNORE="*AWS_SECRET*:*AWS_ACCESS*:*glpat-*:*glrt-*:*gloas-*:*PRIVATE-TOKEN*:
 # whose versions.txt has no macos/arm64 build past 3.4.9. Newer pins fall back to
 # a slow source compile, which leaves ruby missing and silently degrades the
 # gem: backend to system Ruby 2.6.
-ruby = "3.4.9"
+ruby = "4.0.6"
 # Go toolchain
 go = "1.26.6"
 # OLAP database

@@ -282,8 +282,10 @@ return {
 
           -- indents
           if vim.tbl_get(opts, "indent", "enable") ~= false and M.have(ev.match, "indents") then
-            if vim.tbl_contains({ "eruby", "html", "python", "css", "rust" }, ev.match) == 0 then
-              vim.api.nvim_set_option_value("indentexpr", "v:lua.M.indentexpr()", { scope = "local" })
+            -- These filetypes have better indenting from their runtime ftplugin.
+            if not vim.tbl_contains({ "eruby", "html", "python", "css", "rust" }, ev.match) then
+              local indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+              vim.api.nvim_set_option_value("indentexpr", indentexpr, { scope = "local" })
             end
           end
 

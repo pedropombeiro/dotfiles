@@ -13,4 +13,4 @@
 # no install scripts. Not exploitable-looking; this is release-process drift.
 # Upstream: https://github.com/yarnpkg/berry/issues/7182
 # REMOVE this exclusion once libzip ships a provenance-bearing release (>3.2.2).
-"npm:renovate" = { version = "44.0.1", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"] }
+"npm:renovate" = { version = "44.30.4", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"] }

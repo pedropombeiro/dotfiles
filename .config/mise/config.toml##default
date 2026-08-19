@@ -32,7 +32,7 @@ yamllint = "latest"
 
 # ── GitHub releases ───────────────────────────────────────────────────
 # Terminal file manager
-"github:sxyazi/yazi" = "26.5.6"
+"github:sxyazi/yazi" = "26.8.15"
 
 # ── Ruby gems ─────────────────────────────────────────────────────────
 # Ruby provider for Neovim plugins

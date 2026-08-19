@@ -97,6 +97,7 @@ This improves clarity and makes history easier to navigate.
 - **Scope**: The area affected (e.g., `llm`, `mise`, `nvim`, `shell`, `hk`)
 - **Subject**: Concise description of the change
 - **Grouped commits**: Separate logical changes into distinct commits rather than combining unrelated changes
+- **Body prose**: Follow `~/.agents/docs/writing-style.md`, especially the AI writing patterns to avoid
 
 ### Fast Heuristic for Smaller Agents
 

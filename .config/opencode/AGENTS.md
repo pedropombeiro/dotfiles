@@ -22,6 +22,7 @@ fallback for when automatic injection fails.
 - In unfamiliar repos, read local `AGENTS.md`, `CLAUDE.md`, and task-index docs before broad exploration.
 - Prefer repo-local skills over rediscovering documented workflows.
 - Never post or reply to issues, MRs/PRs, comments, discussions, chat, or any external channel without explicit user approval. Draft the content and ask for confirmation first.
+- Before drafting or replying to any GitLab prose (MR descriptions, review comments, issue updates, team messages) or a multi-line commit message body, read `~/.agents/docs/writing-style.md` first.
 
 ## Search Routing
 

@@ -10,7 +10,7 @@ Post weekly status updates on all GitLab issues assigned to me for the current m
 Read these files for reference before starting:
 
 - @.gitlab/duo/chat-rules.md -- contains the weekly update template and formatting rules
-- @~/.agents/docs/writing-style.md -- Pedro's writing style conventions
+- @~/.agents/docs/writing-style.md -- Pedro's writing style conventions. You MUST read this before drafting any prose.
 
 ## Workflow
 

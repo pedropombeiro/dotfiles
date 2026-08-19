@@ -1,7 +1,7 @@
 # Writing Style
 
-Pedro's writing style for MR descriptions, review comments, and GitLab interactions.
-Agents should follow these conventions when writing on Pedro's behalf.
+Pedro's writing style for MR descriptions, review comments, commit message bodies, and
+GitLab interactions. Agents should follow these conventions when writing on Pedro's behalf.
 
 ## Precedence
 

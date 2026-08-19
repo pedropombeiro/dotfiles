@@ -16,6 +16,8 @@ calculating MR throughput, tidying stale to-dos, and applying MR patches locally
 
 All functions are zsh functions loaded from `~/.shellrc/zshrc.d/functions/`.
 
+When drafting MR descriptions or replies, first read `~/.agents/docs/writing-style.md` for tone and formatting.
+
 ## Available Commands
 
 ### `gpsup`

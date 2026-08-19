@@ -14,8 +14,10 @@ uvx = true
 # ── Runtimes & infra ──────────────────────────────────────────────────
 # JavaScript runtime
 node = "latest"
-# Ruby runtime
-ruby = "3.4.10"
+# Ruby runtime is declared per class, not here: the work machine resolves `ruby`
+# through GitLab's asdf-gitlab-ruby plugin, which publishes no macos/arm64 build
+# past 3.4.9, while personal uses core:ruby and can track newer releases.
+# See conf.d/work.toml##class.Work and conf.d/personal.toml##class.Personal.
 # Rust toolchain
 rust = "stable"
 # cURL-like tool for gRPC servers

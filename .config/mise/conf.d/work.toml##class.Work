@@ -4,7 +4,11 @@ HISTIGNORE="*AWS_SECRET*:*AWS_ACCESS*:*glpat-*:*glrt-*:*gloas-*:*PRIVATE-TOKEN*:
 [tools]
 # ── Runtimes & infra ──────────────────────────────────────────────────
 # Ruby runtime
-ruby = "3.4.10"
+# Pinned to 3.4.9: global ruby resolves through GitLab's asdf-gitlab-ruby plugin,
+# whose versions.txt has no macos/arm64 build past 3.4.9. Newer pins fall back to
+# a slow source compile, which leaves ruby missing and silently degrades the
+# gem: backend to system Ruby 2.6.
+ruby = "3.4.9"
 # Go toolchain
 go = "1.26.6"
 # OLAP database

@@ -1,4 +1,8 @@
 [tools]
+# ── Runtimes ──────────────────────────────────────────────────────────
+# Ruby runtime. Declared here rather than in config.toml because the work
+# machine needs an older pin (see conf.d/work.toml##class.Work).
+ruby = "3.4.10"
 # ── Rust tooling ──────────────────────────────────────────────────────
 # Install Rust binaries without compiling from source
 "aqua:cargo-bins/cargo-binstall" = "latest"

@@ -91,7 +91,7 @@ require("yatline"):setup({
         { type = "string", custom = false, name = "hovered_size" },
       },
       section_c = {
-        { type = "string", custom = false, name = "hovered_path" },
+        { type = "coloreds", custom = false, name = "hovered_path_icon" },
         { type = "string", custom = false, name = "search_query", params = { " search:" } },
         { type = "string", custom = false, name = "filter_query", params = { " filter:" } },
       },
@@ -112,11 +112,14 @@ require("yatline"):setup({
   },
 })
 
--- Override hovered_path to include the file icon.
--- Trimming params are accepted for signature compatibility with upstream (v0.5.0
--- replaced the old single-table argument) but unused, since the status line does
--- not pass them.
-function Yatline.string.get:hovered_path(_trimmed, _max_length, _trim_length)
+-- Coloreds variant of `hovered_path` that prefixes the file icon in the icon's own
+-- theme colour. This has to be `coloreds` rather than `string` so the icon and the
+-- path can carry different colours.
+--
+-- `Icon.style` is userdata whose `fg` is a getter *method*, not a value: passing
+-- `icon.style.fg` to `Span:fg()` fails with "expected a Color". Call
+-- `icon.style:fg()` to get the `Color` that `Span:fg()` accepts.
+function Yatline.coloreds.get:hovered_path_icon()
   local h = cx.active.current.hovered
   if not h then
     return ""
@@ -126,10 +129,22 @@ function Yatline.string.get:hovered_path(_trimmed, _max_length, _trim_length)
   -- `ya.readable_path` does not strip; use the plain path instead.
   local url = h.url
   local path = ya.readable_path(tostring(url.spec.is_search and url.path or url))
+  local path_fg = "#a89984" -- Match Lualine section_c fg (gray)
 
   -- `th.icon:match()` returns `Icon?`, so guard against no matching [icon] rule
   local icon = th.icon:match(h)
-  return icon and (icon.text .. " " .. path) or path
+  if not icon then
+    return { { path, path_fg } }
+  end
+
+  local ok, icon_fg = pcall(function()
+    return icon.style:fg()
+  end)
+
+  return {
+    { icon.text .. " ", (ok and icon_fg) or path_fg },
+    { path, path_fg },
+  }
 end
 
 require("yatline-modified-time"):setup()

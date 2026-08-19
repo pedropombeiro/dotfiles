@@ -225,6 +225,7 @@
       "gh pr diff *": "allow",
       "gh pr list *": "allow",
       "gh pr view *": "allow",
+      "gh release list *": "allow",
       "gh release view *": "allow",
       "gh run list *": "allow",
       "gh run view *": "allow",

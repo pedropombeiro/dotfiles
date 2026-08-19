@@ -108,6 +108,12 @@
       "matchPackageNames": ["/npm:renovate/"],
       "groupName": "mise shared npm:renovate",
       "groupSlug": "mise-shared-npm-renovate"
+    },
+    {
+      "description": "Never auto-bump the gopro-dashboard-overlay fork. It is pinned to a fork-only tag (v0.134.0-whole-ride.N) carrying local patches. Under semver that tag is a prerelease of 0.134.0, so any upstream tag would rank higher and an update would silently drop the whole-ride extent patches. Re-tag the fork by hand after rebasing onto upstream.",
+      "matchManagers": ["mise"],
+      "matchPackageNames": ["pedropombeiro/gopro-dashboard-overlay"],
+      "enabled": false
     }
   ],
   "mise": {

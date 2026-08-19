@@ -45,7 +45,18 @@ yamllint = "latest"
 # no install scripts. Not exploitable-looking; this is release-process drift.
 # Upstream: https://github.com/yarnpkg/berry/issues/7182
 # REMOVE this exclusion once libzip ships a provenance-bearing release (>3.2.2).
-"npm:renovate" = { version = "44.30.4", trust_policy_excludes = ["@yarnpkg/libzip@3.2.2"] }
+#
+# allow_builds: re2 is an optional native dep. aube denies dependency build
+# scripts by default, so without this its .node binary is never built and every
+# renovate invocation warns "RE2 not usable, falling back to RegExp", which
+# also makes regex validation less accurate than the real run in CI/Docker.
+# re2 is a Google-maintained binding built from source here; no postinstall
+# beyond the compile step.
+"npm:renovate" = { version = "44.30.4", trust_policy_excludes = [
+  "@yarnpkg/libzip@3.2.2",
+], allow_builds = [
+  "re2",
+] }
 
 # ── GitHub releases ───────────────────────────────────────────────────
 # Terminal file manager
@@ -66,8 +77,12 @@ yamllint = "latest"
 # ── Video editing tools ────────────────────────────────────────────────
 # Programs to process GoPro MP4 & Generic GPX/FIT files and create video dashboards & maps
 # Personal fork adds whole-ride extent for the journey map & elevation chart
-# (journey_map extent="ride", chart range="ride"). See whole-ride-extent branch.
-"pipx:git+https://github.com/pedropombeiro/gopro-dashboard-overlay.git" = "whole-ride-extent"
+# (journey_map extent="ride", chart range="ride"), now merged to the fork's main.
+# Pinned to a fork release, not a branch: mise's pipx git backend resolves
+# versions from GitHub *releases* only, so a branch pin makes `mise upgrade` warn
+# "no latest version found". Tags carry a -whole-ride.N suffix so they never
+# collide with a future upstream v0.134.0.
+"pipx:git+https://github.com/pedropombeiro/gopro-dashboard-overlay.git" = "v0.134.0-whole-ride.1"
 
 # ── Brew ──────────────────────────────────────────────────────────────
 

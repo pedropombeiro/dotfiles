@@ -142,6 +142,57 @@ Do **not** set `npm.shell_out=true` or `lowDownloadThreshold: 0`: both disable
 aube's checks for every package. Prefer version-scoped exceptions over bare
 package names, and record why in a comment (see `npm:renovate`).
 
+#### Warnings that are expected, not misconfiguration
+
+Two aube install warnings have no per-tool fix and should be left alone:
+
+- `Unsupported engine <pkg>: wanted node ^X, got Y`. aube checks the package's
+  `engines.node` against the **global** mise node (`node = "latest"`). It is a
+  warning only (`engineStrict` defaults to false). There is no per-tool node pin
+  for the npm backend: `install_env` is not applied on the embedded-aube install
+  path, and aube's `nodeVersion` is validation-only and lives in an `.npmrc` that
+  mise owns and rewrites. If a specific step genuinely needs a matching runtime,
+  scope it at the call site with `mise x node@24 npm:<pkg> -- <cmd>`.
+- `N transitive packages have deprecation warnings`. aube's
+  `deprecationWarnings` defaults to `direct`, which prints a count for
+  transitives. These belong to the package's own dependency tree, so there is
+  nothing to fix locally, and the only levers (`AUBE_DEPRECATION_WARNINGS`,
+  `allowedDeprecatedVersions`) are global or in the mise-owned `.npmrc`.
+
+Conversely, `RE2 not usable, falling back to RegExp` from `npm:renovate` **is**
+actionable: `re2` is an optional native dep whose build aube denies by default,
+so it needs `allow_builds = ["re2"]`.
+
+### Backend Caveats (pipx git sources)
+
+For `pipx:git+https://github.com/<owner>/<repo>.git`, mise resolves versions
+from that repo's **GitHub releases only**, never tags and never branches. A repo
+with tags but no releases lists zero versions.
+
+A branch pin therefore makes every `mise upgrade` warn:
+
+```
+Error getting latest version for pipx:git+https://…: no latest version found
+```
+
+The pin still installs correctly. Only "what is latest?" fails. Fixes, best
+first: cut a GitHub release in the fork and pin that tag, or pass
+`mise upgrade --exclude '<full backend spec>'`. The short tool name does not
+match, and `minimum_release_age_excludes` does not help, since it is a different
+code path.
+
+A newly published release stays hidden for 24h under the default
+`minimum_release_age`, so the same warning persists until the window passes.
+Confirm that is the only cause with `MISE_MINIMUM_RELEASE_AGE=0s mise upgrade --dry-run`.
+
+When pinning a fork tag, avoid a bare upstream-shaped version. A suffix such as
+`v0.134.0-whole-ride.1` keeps the tag from colliding with a future upstream
+`v0.134.0`. Note that semver reads that suffix as a _prerelease_ which sorts
+**below** plain `0.134.0`, so Renovate ranks any upstream tag higher and would
+silently drop the fork's patches. Disable the package in `~/.renovaterc.json` and
+re-tag by hand after rebasing onto upstream (see
+`pedropombeiro/gopro-dashboard-overlay`).
+
 ## QNAP/QTS Compatibility
 
 The QTS environment has glibc 2.21 limitations. Distro-specific pins live in

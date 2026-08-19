@@ -47,8 +47,8 @@ tail ~/.local/state/opencode-memory/server.error.log
 grep -i "LLM:" ~/.local/state/opencode-memory/worker.error.log | tail -1
 ```
 
-If `curl` is denied by the OpenCode permission rules, the `lsof` and log checks cover
-the same ground.
+Read-only `curl` requests are allowed by the OpenCode permission rules. The `lsof`
+and log checks provide alternative health checks.
 
 Healthy state is **three** processes: `http_server`, `daemon`, `jobs.worker`.
 
@@ -496,11 +496,8 @@ up — not an error. On first start the daemon ingests the whole existing
 rather than the status code:
 
 ```
-python3 -c "import urllib.request,json;print(urllib.request.urlopen('http://127.0.0.1:9824/health').read())"
+curl -s http://127.0.0.1:9824/health
 ```
-
-(`curl` is denied by the OpenCode permission rules; use Python or check the process
-list instead.)
 
 ### Backups
 

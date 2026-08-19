@@ -64,6 +64,11 @@ return {
       "toml",
       "typescript",
       "yaml",
+      -- FileType autocmd patterns match the whole dotted filetype, so each
+      -- `yaml.*` variant needs its own entry to load ufo.
+      "yaml.docker-compose",
+      "yaml.gitlab",
+      "yaml.homeassistant",
     },
     -- stylua: ignore
     ---@module "lazy"

@@ -289,9 +289,8 @@ return {
 
           -- folds
           if vim.tbl_get(opts, "folds", "enable") ~= false and M.have(ev.match, "folds") then
-            if vim.api.nvim_set_option_value("foldmethod", "expr", { scope = "local" }) then
-              vim.api.nvim_set_option_value("foldexpr", "v:lua.M.foldexpr()", { scope = "local" })
-            end
+            vim.api.nvim_set_option_value("foldmethod", "expr", { scope = "local" })
+            vim.api.nvim_set_option_value("foldexpr", "v:lua.vim.treesitter.foldexpr()", { scope = "local" })
           end
         end,
       })

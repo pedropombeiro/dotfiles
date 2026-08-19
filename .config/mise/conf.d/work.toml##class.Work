@@ -4,9 +4,9 @@ HISTIGNORE="*AWS_SECRET*:*AWS_ACCESS*:*glpat-*:*glrt-*:*gloas-*:*PRIVATE-TOKEN*:
 [tools]
 # ── Runtimes & infra ──────────────────────────────────────────────────
 # Ruby runtime
-ruby = "3.4.9"
+ruby = "3.4.10"
 # Go toolchain
-go = "1.26.2"
+go = "1.26.6"
 # OLAP database
 clickhouse = "25.12.11.4-stable"
 # Zero-trust infrastructure access (SSH/k8s/DB)

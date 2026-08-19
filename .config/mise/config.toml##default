@@ -15,7 +15,7 @@ uvx = true
 # JavaScript runtime
 node = "latest"
 # Ruby runtime
-ruby = "3.4.9"
+ruby = "3.4.10"
 # Rust toolchain
 rust = "stable"
 # cURL-like tool for gRPC servers
@@ -38,7 +38,7 @@ yamllint = "latest"
 # Ruby provider for Neovim plugins
 "gem:neovim" = "0.10.0"
 # Ruby LSP language server
-"gem:ruby-lsp" = "0.26.9"
+"gem:ruby-lsp" = "0.26.10"
 # Ruby linter/formatter (StandardRB)
 "gem:standard" = "latest"
 

@@ -40,9 +40,9 @@ delta = "latest"
 # Network bandwidth monitor by process
 "github:imsnif/bandwhich" = "latest"
 # IP address info lookup
-"github:ipinfo/cli[exe=ipinfo]" = "ipinfo-3.3.1"
+"github:ipinfo/cli[exe=ipinfo]" = "ipinfo-3.3.2"
 # Ping with a real-time graph
-"github:orf/gping" = "gping-v1.20.1"
+"github:orf/gping" = "gping-v1.20.4"
 
 # ── go ────────────────────────────────────────────────────────────────
 # Timestamps each line of command output

@@ -2,7 +2,6 @@
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
     "@mohak34/opencode-notifier@0.2.8",
-    "opencode-anthropic-auth@0.0.13",
     "opencode-atuin-history@0.2.0",
     "opencode-homeassistant@0.7.4",
     "opencode-terminal-progress@0.5.1",

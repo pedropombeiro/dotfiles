@@ -65,6 +65,13 @@
       "groupName": "mise backend tools"
     },
     {
+      "description": "Pin Ruby on the work machine: `ruby` resolves through GitLab's asdf-gitlab-ruby plugin, whose versions.txt publishes no macos/arm64 build past 3.4.9. Newer pins fall back to a slow source compile, leaving ruby missing and silently degrading the gem: backend to system Ruby 2.6. Raise this once the manifest catches up.",
+      "matchManagers": ["mise"],
+      "matchPackageNames": ["ruby"],
+      "matchFileNames": [".config/mise/conf.d/work.toml##class.Work"],
+      "allowedVersions": "3.4.9"
+    },
+    {
       "description": "Compare ipinfo- prefixed tags while keeping the prefix mise needs to resolve them",
       "matchManagers": ["custom.regex", "mise"],
       "matchPackageNames": ["/^([a-z]+:)?ipinfo/cli$/"],

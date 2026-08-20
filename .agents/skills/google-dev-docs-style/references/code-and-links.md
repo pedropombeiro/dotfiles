@@ -133,6 +133,24 @@ Recommended: `For more information, see [Make headings into link targets].`
 
 Not recommended: `For more information, see [this document].`
 
+## Code references in GitLab prose
+
+Pedro's convention, applied in issues, merge request descriptions, and review
+comments. See the Formatting Preferences section of
+[`writing-style.md`](../../../../.agents/docs/writing-style.md).
+
+- Hyperlink a file, function, config key, or line range rather than only naming it.
+- Pin the link to a commit SHA and include the line range, so it keeps pointing at
+  the same code after the file changes.
+- Link a branch only when the current state of that branch is the point.
+- State the SHA in the prose when a document carries several permalinks.
+- Check repository visibility first. Inline the snippet when the target is private.
+
+Recommended:
+`the [confidence criteria](https://gitlab.com/group/project/-/blob/b00832b9/path/prompt.jinja#L229-246) restrict this to two categories`
+
+Not recommended: `the confidence criteria in prompt.jinja restrict this to two categories`
+
 ## Filenames and examples
 
 - Use lowercase filenames unless a platform or established name requires

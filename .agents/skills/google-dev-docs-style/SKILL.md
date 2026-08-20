@@ -115,6 +115,8 @@ Before delivering prose, verify that:
 - Procedures use numbered steps with an imperative verb near the start.
 - Lists use parallel grammar and consistent punctuation.
 - Links have descriptive text.
+- Code references are hyperlinked, pinned to a SHA with a line range, and point at
+  a repository the reader can access.
 - Code, placeholders, and UI elements use the correct formatting.
 - Claims are factual, inclusive, accessible, and suitable for a global audience.
 - No banned dash punctuation, filler, or avoidable jargon remains.

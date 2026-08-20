@@ -81,6 +81,19 @@ the source of truth.
 
 - Single dashes (`-`) over semicolons or parenthetical asides. Never double-hyphens (`--`) or the em-dash character (`—`, U+2014).
 - Backtick-wrapped code identifiers everywhere.
+- Hyperlink code references, don't just name them. When citing a file, function, config
+  key, or line range in GitLab prose, link it so the reader can jump straight there:
+  - Use a permalink pinned to a commit SHA with a line range, such as
+    `[the confidence criteria](https://gitlab.com/group/project/-/blob/<sha>/path/file.jinja#L229-246)`,
+    so the link keeps pointing at the same lines after the file changes.
+  - Link a branch instead of a SHA only when the point is that the current state of that
+    branch matters.
+  - Note the SHA in the prose (`references are pinned to <short-sha>`) when a document
+    carries several permalinks.
+  - Check the target repository's visibility first. A link into a private repo is a dead
+    end for most readers, so inline the relevant snippet or rule instead.
+  - Link the specific artifacts under discussion, not just the repo root: for a version
+    mismatch, link both files that disagree.
 - Use bullets to improve readability for lists and structured updates.
 - In longer messages, separate paragraphs with double line breaks.
 - Minimal emoji - use them functionally:

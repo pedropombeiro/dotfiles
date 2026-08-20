@@ -11,7 +11,7 @@
   "default_agent": "plan",
   "plugin": [
     "opencode-gitlab-dap@1.19.4",
-    "opencode-gitlab-plugin@2.6.0",
+    "opencode-gitlab-plugin@2.6.1",
     "@mohak34/opencode-notifier@0.2.8",
     "opencode-atuin-history@0.2.0",
     "opencode-claude-prefill-fix@0.1.0",

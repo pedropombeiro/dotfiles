@@ -9,5 +9,5 @@
   "haApiUrl": "https://ha.pombei.ro/api",
   "haToken": "${HA_OPENCODE_TOKEN}",
   "permissionResponseEntity": "input_text.opencode_permission_response",
-  "permissionTimeout": 120
+  "permissionTimeout": 600
 }

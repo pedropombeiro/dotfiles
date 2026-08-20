@@ -115,7 +115,7 @@ iterm2_progress -i
 # because zsh evaluates command-prefix assignments left-to-right.
 mise_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/mise"
 mise_data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/mise"
-msg=$(OPENCODE_TERMINAL_PROGRESS=0 XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" MISE_STATE_DIR="$mise_state_dir" MISE_DATA_DIR="$mise_data_dir" opencode run -m "$model" --agent build "$prompt" -f "$statusfile" -f "$tmpfile")
+msg=$(OPENCODE_TERMINAL_PROGRESS=0 XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" MISE_STATE_DIR="$mise_state_dir" MISE_DATA_DIR="$mise_data_dir" opencode run --pure -m "$model" --agent build "$prompt" -f "$statusfile" -f "$tmpfile")
 iterm2_progress -c
 rm -rf "$opencode_commit_data/opencode/log"
 

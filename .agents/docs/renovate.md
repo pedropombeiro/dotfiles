@@ -84,6 +84,11 @@ Rules are evaluated in order; place specific rules after generic ones:
 ## Troubleshooting
 
 - **PR not created**: Check for `enabled: false` rules, verify file patterns
+- **PR not created, npm dependency**: `config:best-practices` extends
+  `security:minimumReleaseAgeNpm`, which delays npm updates for 3 days after
+  publication. The Dependency Dashboard lists the version under Detected Dependencies
+  with no branch or PR. Confirm its age with
+  `curl -s https://registry.npmjs.org/<package> | jq '.time'` before changing config.
 - **Wrong version**: Verify regex in custom manager, check datasource
 - **Auto-merge not working**: Verify status checks pass, check rule matches update type
 

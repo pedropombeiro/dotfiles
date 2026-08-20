@@ -15,7 +15,7 @@ rust = { version = "1.97.1", profile = "minimal", targets = "x86_64-unknown-linu
 # Required to build opencode-memory's native Rust runtime: Lance/prost-build
 # shells out to protoc, and rust/.cargo/config.toml hardcodes sccache as the
 # rustc-wrapper (the build fails outright when it is missing from PATH).
-"aqua:protocolbuffers/protobuf/protoc" = "35.1"
+"aqua:protocolbuffers/protobuf/protoc" = "36.0"
 "aqua:mozilla/sccache" = "0.17.0"
 # HA-CLI pins regex<2025, but that regex has no cp314 wheel and fails to build on Py3.14.
 # Override to a regex release with Python 3.14 support (built from source on this QTS NAS).

@@ -12,11 +12,6 @@ python = "3.14"
 node = "23.7.0"
 jless = "0.9.0"
 rust = { version = "1.98.0", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
-# Required to build opencode-memory's native Rust runtime: Lance/prost-build
-# shells out to protoc, and rust/.cargo/config.toml hardcodes sccache as the
-# rustc-wrapper (the build fails outright when it is missing from PATH).
-"aqua:protocolbuffers/protobuf/protoc" = "35.1"
-"aqua:mozilla/sccache" = "0.17.0"
 # HA-CLI pins regex<2025, but that regex has no cp314 wheel and fails to build on Py3.14.
 # Override to a regex release with Python 3.14 support (built from source on this QTS NAS).
 "pipx:homeassistant-cli" = { version = "latest", install_env = { UV_OVERRIDE = "/share/homes/admin/.config/mise/uv-overrides/homeassistant-cli.txt" } }

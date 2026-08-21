@@ -5,11 +5,10 @@ upstream now brands it GHMEM). Runs as a local MCP server
 (`memory`, `http://localhost:9824/mcp`) plus a plugin. Full docs:
 `opencode-memory/BOOTSTRAP.md`.
 
-> **Two very different deployments.** Everything up to "NAS (QTS) Deployment" describes
-> the **work Mac**: the _Python_ runtime installed to
-> `~/.local/share/opencode-memory-install/` via `setup.sh`, under launchd. The NAS runs
-> the _Rust_ runtime built from source, with no launchd, no shim, and different paths.
-> Do not apply Mac instructions to the NAS or vice versa.
+> **Work Mac only.** This describes the _Python_ runtime installed to
+> `~/.local/share/opencode-memory-install/` via `setup.sh`, under launchd. The QTS NAS
+> previously ran a Rust build of the same project; that deployment was removed, so
+> nothing here applies to the NAS.
 
 Configuration lives in `~/.config/opencode-memory/config.toml`, tracked by YADM as a
 `##class.Work` alt file because it holds machine-specific absolute paths.
@@ -101,23 +100,18 @@ in `dead_jobs` and are not LLM failures.
 
 Throughout a session:
 
-- On this NAS's Rust HTTP server, before working on an MR/issue/epic, call
-  `get_context(entity_ref)` to get history.
+- Before working on an MR/issue/epic, call `get_context(entity_ref)` to get history.
 - Use `claim_item()` before making changes to prevent conflicts.
 - Store important decisions, blockers, and procedures with `remember()`.
 - Release claimed items when done with `release_item()`.
 - Use `recall(query)` to search for relevant context.
 
-The Mac stdio shim consolidates the full tool surface behind `memory(action=...)`.
-The NAS Rust runtime intentionally does not implement that shim and exposes its
-bare tools directly; see [MCP wiring: URL form, not the shim](#mcp-wiring-url-form-not-the-shim).
+The stdio shim consolidates the full tool surface behind `memory(action=...)`.
 
-Those five are the common-path tools, **not** the whole surface: the Rust server
-advertises 86 tools. Confirm anything beyond them (`edit_memory`, `archive_memory`,
-`set_reminder`, `resolve_blocker`, `get_by_id`, the `queue_*` and `graph_*` families,
-etc.) with `lazy-mcp_list_commands` before use. Do not extrapolate names from the Mac
-Python shim: plausible names such as `update_memory` and `get_memory` do not exist on
-the NAS; use `edit_memory` and `get_by_id` instead.
+Those five are the common-path tools, **not** the whole surface. Confirm anything
+beyond them (`edit_memory`, `archive_memory`, `set_reminder`, `resolve_blocker`,
+`get_by_id`, the `queue_*` and `graph_*` families, etc.) with
+`lazy-mcp_list_commands` before use.
 
 ## Session Tracking
 
@@ -363,153 +357,3 @@ Server Silently Dead After Install/Upgrade" above.
 `check_weekly_log_repo` (repo cloned, `brain/<YYYY>/` non-empty) — so a later
 `mise run checks` catches the service dying or the repo silently landing on a branch
 without content.
-
-## NAS (QTS) Deployment
-
-The NAS runs a **different runtime to the Mac**: the Rust implementation from the
-repo's `rust/` subtree, built from source and installed to `~/.local/bin/memory`.
-Nothing here uses `setup.sh`, launchd, systemd, Docker, or the Python package.
-
-|               | Work Mac                                               | NAS (QTS)                                  |
-| ------------- | ------------------------------------------------------ | ------------------------------------------ |
-| Runtime       | Python (`opencode-semantic-memory`)                    | Rust (`memory` binary)                     |
-| Install       | `setup.sh` → `~/.local/share/opencode-memory-install/` | built from `~/opt/opencode-memory`         |
-| Supervision   | launchd (3 agents)                                     | RunLast at boot + `*/5` cron watchdog      |
-| MCP transport | local shim `memory-mcp.sh`                             | **remote URL** `http://localhost:9824/mcp` |
-| Config alt    | `##class.Work`                                         | `##distro.qts`                             |
-| Memory corpus | work store                                             | independent — deliberately not synced      |
-
-### Why Rust and not Python
-
-The Python runtime needs `lancedb` + `torch`, which only publish
-`manylinux_2_28` wheels. This NAS is **glibc 2.21**, so they can never be installed
-and building them from source is not realistic. The Rust runtime uses `candle`
-instead of `torch` and compiles against the host toolchain.
-
-It is also far lighter: **~340-380MB RSS** across all three processes (measured),
-versus the ~2GB the Python/torch stack holds resident.
-
-### Building
-
-```
-/share/Container/scripts/build-opencode-memory.sh          # build if needed
-/share/Container/scripts/build-opencode-memory.sh --force  # force rebuild
-```
-
-That script is the single source of truth. It pins an upstream **commit** (there are
-no release tags — the releases API returns `[]`), warns when the pin falls behind
-`origin/master`, and skips work when the installed binary already matches.
-
-- A cold build is **~105 minutes** (845 crates including all of `datafusion` and
-  `candle`, on a 4-core Celeron J4125).
-- `--release` is mandatory: upstream notes embeddings run ~20× slower in debug.
-- `yadm bootstrap` deliberately does **not** build. `975-verify-opencode-memory.sh`
-  only reports whether the binary exists and prints the build command.
-
-### Build prerequisites (the non-obvious ones)
-
-Both are declared in `~/.config/mise/conf.d/distro-specific.toml`:
-
-- **`protoc`** — `lance`/`prost-build` shell out to it. Entware ships protobuf
-  _libraries_ but no `protoc` binary.
-- **`sccache`** — upstream's `rust/.cargo/config.toml` hardcodes
-  `rustc-wrapper = "sccache"`, so the build fails outright when it is missing, not
-  merely uncached.
-
-### The glibc 2.25 proc-macro trap
-
-This NAS has **two glibcs**:
-
-|         | Path                 | Version                                    |
-| ------- | -------------------- | ------------------------------------------ |
-| System  | `/lib/libc.so.6`     | 2.21 — `rustc` itself runs under this      |
-| Entware | `/opt/lib/libc.so.6` | 2.27 — the only available `gcc` links here |
-
-Rust's libstd carries a _weak undefined_ `getrandom` reference. The Entware linker
-binds it to `getrandom@GLIBC_2.25`. When `rustc` then `dlopen()`s a proc-macro `.so`
-into its own process — running under the 2.21 loader — the load fails:
-
-```
-libserde_derive-*.so: /lib/libc.so.6: version `GLIBC_2.25' not found
-```
-
-This breaks **any** crate using derive macros, so it is a general limitation of
-building Rust on this host, not something specific to this project.
-
-**Fix:** link `/share/Container/scripts/lib/qts-getrandom-shim.c` (a direct syscall
-implementation) into every crate, with `-Wl,-Bsymbolic` so the local definition wins
-over the versioned glibc one:
-
-```
-RUSTFLAGS="-C link-args=<shim>.o -C link-args=-Wl,-Bsymbolic"
-```
-
-No upstream patching is needed, so there is no fork to maintain. The build script
-handles this automatically.
-
-**Consequence:** the resulting binary uses Entware's loader
-(`/opt/lib/ld-linux-x86-64.so.2`) and needs glibc 2.27, so it **cannot start before
-Entware is mounted**. The ensure script checks for this explicitly.
-
-### Startup and supervision
-
-There is no systemd on QTS, and BusyBox crond (1.33.1) has **no `@reboot`** — verified
-by inspecting the binary's strings. Two mechanisms cover the two failure modes:
-
-| Mechanism                                       | Covers                                                   |
-| ----------------------------------------------- | -------------------------------------------------------- |
-| `scripts/runlast/95-start-opencode-memory.sh`   | boot (RunLast waits for QTS to finish starting packages) |
-| `*/5` line in `scripts/runlast/10-user.crontab` | crashes (RunLast fires only once per boot)               |
-
-Both call the same idempotent `scripts/cron.d/ensure-opencode-memory.sh`, which starts
-only the processes that are actually missing and annotates Grafana when it does.
-
-Two host quirks that shape that script:
-
-- **There is no `nohup` on this NAS.** Use `setsid` alone to detach.
-- **RunLast's `RunAndLog` captures output with `stdout=$(eval ...)`**, which blocks
-  until the pipe closes. A child inheriting stdout would hang the entire boot
-  sequence, so every process is started with stdin from `/dev/null` and
-  stdout/stderr redirected to files under `~/.local/state/opencode-memory/`.
-
-### MCP wiring: URL form, not the shim
-
-`servers.json##distro.qts` points lazy-mcp at `http://localhost:9824/mcp` directly.
-This **contradicts the Mac guidance above**, and deliberately so: the Rust runtime
-does not implement the stdio shim at all (`rust/crates/memory-server/src/workflow/mod.rs`
-— "Shim not ported"). It serves MCP over HTTP and appends the `workflow` tool to its
-own advertised list, so the URL form is the intended access path here.
-
-Routing through lazy-mcp is **mandatory, not an optimisation**: the Rust server
-advertises **86 tools** with no `memory(action=...)` consolidation, which would
-otherwise land in every session's context window.
-
-`GITLAB_TOKEN` is intentionally **unset**. The Rust server reads it from its own
-process environment, so GitLab enrichment, spider, and watchers stay off; plain memory
-tools are unaffected.
-
-### Health check quirk
-
-`/health` returns **503 with `status: degraded`** while the embedding queue is backed
-up — not an error. On first start the daemon ingests the whole existing
-`opencode.db` (300+ memories), which took ~2.5 minutes to drain. Check the body
-rather than the status code:
-
-```
-curl -s http://127.0.0.1:9824/health
-```
-
-### Backups
-
-`config/borg/borgmatic.d/homes.yml` covers `~/opt` and
-`~/.local/share/opencode-memory`, excluding regenerable output (`rust/target` ~2.8GB,
-`node_modules` ~84MB, and the LanceDB `vectors/`, which are re-embedded from
-`memory.db`).
-
-**Do not add a SQLite dump hook, and never exclude the `-wal` file.** The database is
-in WAL mode; backing up `memory.db` with its `-wal`/`-shm` siblings restores exactly
-like a crash recovery. This was verified by copying all three during 57 concurrent
-writes: `integrity_check` passed and the result was a consistent point-in-time
-snapshot. Conversely, backing up `memory.db` _alone_ silently loses the newest
-memories — the WAL was 4.3MB against a 1.2MB main DB, and a test copy dropped 3
-recent rows. Backups also run at 04:00, when nothing is writing.

@@ -42,7 +42,7 @@ The NAS does not use `~/Developer` or the go-style nesting. Clones live **flat**
 ~/opt/<repo>
 ```
 
-Examples: `~/opt/vscode-home-assistant`, `~/opt/opencode-memory`.
+Examples: `~/opt/vscode-home-assistant`.
 
 `~/opt` also holds non-repo build support (e.g. `~/opt/qts-glibc-shim`), so treat it
 as "local software", not purely a clone root. The skill symlinks described below are a

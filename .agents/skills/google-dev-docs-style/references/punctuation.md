@@ -39,12 +39,12 @@ Not recommended: `Locations are divided into zones, regions and multi-regions.`
 - Use a hyphen to combine words that readers should interpret as one modifier
   before a noun: `a well-designed app`.
 - In general, don't hyphenate the same compound after a verb: `The app is well
-  designed.` Follow the dictionary for compounds that stay hyphenated.
+designed.` Follow the dictionary for compounds that stay hyphenated.
 - Don't hyphenate an `-ly` adverb with the word that it modifies.
 - Use a hyphen for numeric ranges or write `from` and `to`. Don't mix the forms.
 - Never put spaces around a hyphen.
 - Hyphenate a number and a spelled-out unit when they modify a noun: `a
-  five-minute wait`.
+five-minute wait`.
 - Don't hyphenate a number and an abbreviated unit. Use a nonbreaking space when
   needed: `200 GB disk`.
 - Avoid compound modifiers longer than two words. Rewrite them after the noun.
@@ -86,16 +86,16 @@ Not recommended: `You can export raw and/or processed events.`
 
 ## Formatting summary
 
-| Content | Formatting |
-| --- | --- |
-| UI elements and run-in headings | `**bold**` |
-| Technical emphasis in GitLab prose | `**bold**`, following Pedro's override |
-| Defined terms and words as words | `_italic_` |
-| Book, movie, and other full-work titles | `_italic_` unless linked |
-| Inline code, filenames, commands, values, and user input | `` `code` `` |
-| Code samples and terminal output | fenced code block |
-| Links | descriptive link text; underline through site styling |
-| Placeholders | `UPPER_SNAKE_CASE` in code font |
+| Content                                                  | Formatting                                            |
+| -------------------------------------------------------- | ----------------------------------------------------- |
+| UI elements and run-in headings                          | `**bold**`                                            |
+| Technical emphasis in GitLab prose                       | `**bold**`, following Pedro's override                |
+| Defined terms and words as words                         | `_italic_`                                            |
+| Book, movie, and other full-work titles                  | `_italic_` unless linked                              |
+| Inline code, filenames, commands, values, and user input | `` `code` ``                                          |
+| Code samples and terminal output                         | fenced code block                                     |
+| Links                                                    | descriptive link text; underline through site styling |
+| Placeholders                                             | `UPPER_SNAKE_CASE` in code font                       |
 
 - In Google-style product documentation, use italics rather than bold for
   emphasis. Usually, rewrite so the words carry the emphasis without styling.

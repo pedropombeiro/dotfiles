@@ -127,7 +127,7 @@ be broken.`
 - Spell out an unfamiliar abbreviation on first use, followed by the
   abbreviation in parentheses. Use the abbreviation thereafter.
 - Italicize both forms when introducing an abbreviation in documentation that
-  follows Google formatting: *Border Gateway Protocol* (*BGP*).
+  follows Google formatting: _Border Gateway Protocol_ (_BGP_).
 - Don't capitalize the spelled-out term unless it is a proper noun.
 - Don't spell out widely understood forms when doing so doesn't improve
   comprehension. Examples include `AI`, `API`, `HTML`, `PDF`, `RAM`, `REST`,

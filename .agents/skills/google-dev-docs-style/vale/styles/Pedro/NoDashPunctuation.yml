@@ -4,5 +4,5 @@ link: "https://developers.google.com/style/dashes"
 level: error
 nonword: true
 tokens:
-  - '[—–]'
-  - '--+'
+  - "[—–]"
+  - "--+"

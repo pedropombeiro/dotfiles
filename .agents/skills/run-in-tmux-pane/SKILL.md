@@ -85,11 +85,11 @@ See `references/USAGE.md` for concrete examples.
 
 ## Configuration
 
-| Variable | Default | Description |
-|---|---|---|
-| `TMUX_PANE_LINGER` | `3` | Seconds to keep the tmux pane visible after the command finishes. Set to `0` to close immediately. |
-| `TMUX_PANE_TAIL_LINES` | `20` | Number of trailing lines to keep when truncating successful output. |
-| `TMUX_PANE_TIMEOUT` | `300` | Maximum seconds to wait for the command to finish before killing the pane (exits with code 124). |
+| Variable               | Default | Description                                                                                        |
+| ---------------------- | ------- | -------------------------------------------------------------------------------------------------- |
+| `TMUX_PANE_LINGER`     | `3`     | Seconds to keep the tmux pane visible after the command finishes. Set to `0` to close immediately. |
+| `TMUX_PANE_TAIL_LINES` | `20`    | Number of trailing lines to keep when truncating successful output.                                |
+| `TMUX_PANE_TIMEOUT`    | `300`   | Maximum seconds to wait for the command to finish before killing the pane (exits with code 124).   |
 
 ## Important: Bash tool timeout must exceed `TMUX_PANE_TIMEOUT`
 

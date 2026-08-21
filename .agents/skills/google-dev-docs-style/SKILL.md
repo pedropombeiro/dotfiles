@@ -66,7 +66,7 @@ mapping.
 8. Use the serial comma. Avoid semicolons, ellipses, slashes, parentheses, and
    exclamation marks when a clearer sentence works.
 9. Use descriptive link text that makes sense out of context. Never use `click
-   here`, `this document`, or a bare URL as link text.
+here`, `this document`, or a bare URL as link text.
 10. Put code-related literals in code font and UI elements in bold. Use
     `UPPER_SNAKE_CASE` placeholders and explain each placeholder.
 11. Write inclusively and accessibly. Avoid ableist or divisive terminology,

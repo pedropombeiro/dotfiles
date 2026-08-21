@@ -121,6 +121,13 @@ files keep coverage.
 Prefer a path scoped to the symlink itself over a broad glob like
 `.agents/skills/*/scripts/*`, which would also silence genuinely local files.
 
+Do not broadly exclude `.agents/skills/*` from steps that operate on files supplied by
+hk. Locally maintained skills should receive normal formatting and validation. Most
+externally maintained skills are untracked symlinks and are absent from the staged/index
+file list, but some imported skills are tracked copies, such as `opencode-refine`; add
+narrow path exclusions for those. Tools that independently walk the filesystem still need
+narrow exclusions for imported symlinks.
+
 **When adding a symlink to a repo outside `$HOME`**, run `hk check --all`, then check
 `git status` _in the target repo_ — not just `yadm status` — to confirm no fixer wrote to it.
 

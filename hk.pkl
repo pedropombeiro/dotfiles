@@ -98,7 +98,7 @@ local fast_steps = new Mapping<String, Step> {
     // ── JSON / Markdown / YAML formatting ────────────────────────────────
     ["prettier"] = (Builtins.prettier) {
         glob = List("*.json", "*.md", "*.yaml", "*.yml")
-        exclude = List(".agents/skills/*")
+        exclude = List(".agents/skills/opencode-refine/*")
     }
 
     // ── Ruby ─────────────────────────────────────────────────────────────

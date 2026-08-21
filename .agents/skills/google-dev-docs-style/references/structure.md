@@ -81,7 +81,7 @@ Not recommended: `To get the USB driver:`
   task flow.
 - Don't use `please`, directional descriptions, or keyboard shortcuts.
 - Introduce a command by stating its purpose, not with `Run the following
-  command`.
+command`.
 
 Recommended: `In the Google Cloud console, go to the **Monitoring** page.`
 

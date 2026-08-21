@@ -69,16 +69,16 @@ Not recommended: `Click the bell icon.`
 
 Use these conventions in reference syntax:
 
-| Notation | Meaning |
-| --- | --- |
-| `[OPTION]` | Optional item |
-| `{ONE\|TWO}` | Exactly one required choice |
-| `\|` | Mutually exclusive choices |
-| `ITEM...` | Repeatable item |
-| `UPPER_SNAKE_CASE` | Placeholder |
-| `\` | Linux or Cloud Shell line continuation |
-| `^` | Windows line continuation |
-| `$` | Shell prompt |
+| Notation           | Meaning                                |
+| ------------------ | -------------------------------------- |
+| `[OPTION]`         | Optional item                          |
+| `{ONE\|TWO}`       | Exactly one required choice            |
+| `\|`               | Mutually exclusive choices             |
+| `ITEM...`          | Repeatable item                        |
+| `UPPER_SNAKE_CASE` | Placeholder                            |
+| `\`                | Linux or Cloud Shell line continuation |
+| `^`                | Windows line continuation              |
+| `$`                | Shell prompt                           |
 
 - Don't put brackets, braces, or ellipses inside placeholder formatting.
 - Avoid syntax notation in click-to-copy commands. Show the recommended command
@@ -103,7 +103,7 @@ Use these conventions in reference syntax:
 - After a command with several placeholders, write `Replace the following:` and
   list them in appearance order.
 - Start each placeholder description with lowercase text after a colon.
-- In Markdown prose, format an inline placeholder as *`PLACEHOLDER`*. Inside a
+- In Markdown prose, format an inline placeholder as _`PLACEHOLDER`_. Inside a
   fenced block, use plain `PLACEHOLDER` text because Markdown styling doesn't
   apply there.
 

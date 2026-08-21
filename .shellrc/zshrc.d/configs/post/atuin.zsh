@@ -30,13 +30,6 @@ _atuin_setup_keybindings() {
   [[ -s "$1" ]] || return
   source "$1"
 
-  # Atuin's autosuggest strategy starts a new database query for every
-  # keystroke. On the NAS, async workers can queue faster than they finish,
-  # so use zsh's in-memory history for ghost-text suggestions instead. Atuin
-  # remains available through Ctrl-R and the history search keybindings.
-  typeset -ga ZSH_AUTOSUGGEST_STRATEGY=(history)
-  unset -f _zsh_autosuggest_strategy_atuin 2>/dev/null
-
   # Do not replace the native history widgets if cache generation failed.
   (( $+functions[_atuin_search] && $+functions[_atuin_search_viins] )) || return
 

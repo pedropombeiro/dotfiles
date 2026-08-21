@@ -1,12 +1,29 @@
 local M = {}
 
+local log = hs.logger.new("spaces", "info")
+
+-- Apps whose presence makes window rearrangement disruptive.
+local layoutBlockingApps = {
+  ["so.cap.desktop"] = "Cap",
+}
+
+local function blockingApp()
+  for bundleID, name in pairs(layoutBlockingApps) do
+    if hs.application.get(bundleID) then return name end
+  end
+end
+
 function M.applyRectangleLayout()
+  local blocker = blockingApp()
+  if blocker then
+    log.i("skipping Rectangle layout: " .. blocker .. " is running")
+    return
+  end
+
   hs.execute('open -g "rectangle-pro://execute-layout?name=External%20display"')
 end
 
-M._spaceWatcher = hs.spaces.watcher.new(function()
-  M.applyRectangleLayout()
-end)
+M._spaceWatcher = hs.spaces.watcher.new(function() M.applyRectangleLayout() end)
 M._spaceWatcher:start()
 
 return M

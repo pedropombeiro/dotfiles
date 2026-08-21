@@ -11,7 +11,7 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 
 - `init.lua` — Module loader. Loads `hs.ipc` (enables the `hs` CLI to talk to the running instance), then conditionally loads modules that exist on disk (yadm alternates ensure class-gated modules are only present on matching machines).
 - `constants.lua` — Shared hardware and tool path constants used across modules (uhubctl, blueutil, USB hub/port assignments, AirPods address).
-- `spaces.lua##class.Work` — Applies the Rectangle Pro `External display` layout on every Space switch.
+- `spaces.lua##class.Work` — Applies the Rectangle Pro `External display` layout on every Space switch, unless an app in `layoutBlockingApps` is running.
 - `sleepwake.lua##class.Work` — Caffeinate watcher for sleep/wake/unlock events. Manages Stream Deck USB power, BusylightHTTP, nginx, and Elgato Control Center. On unlock, focuses the visible iTerm2 window on the current Space after the Rectangle Pro layout settles. Exports `displaysleep()` for use by other modules.
 - `urlrouter.lua##class.Work` — URL-based browser router (replaces Choosy). Hammerspoon is registered as the default HTTP/HTTPS handler via `duti`. Routes `zoom.us/j/` and `zoom.us/my/` links to Zoom.app, `*.slack.com` links to Slack.app, everything else to Chrome. Slack archive URLs are converted to `slack://channel` deep links (see Slack deep linking below) so the desktop app navigates to the message/thread instead of just focusing.
 - `meetings.lua##class.Work` — Auto-switches audio to AirPods when Zoom launches (connects via `blueutil` if needed), pauses Spotify, quits eqMac, powers on webcam USB. On Zoom exit: restores previous audio device, resumes Spotify, relaunches eqMac hidden, quits Camo Studio, powers off Elgato Wave USB port and webcam USB port. Uses a single `hs.application.watcher` (stored in `M._watcher` and `return M` so it isn't GC'd) keyed on `webcam.apps`; seeds `activeMeetings` from running apps on load so a reload mid-meeting doesn't fire a spurious start.
@@ -28,7 +28,7 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 
 | Event                            | Actions                                                                                                                              |
 | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Space switch                     | Apply Rectangle Pro layout                                                                                                           |
+| Space switch                     | Apply Rectangle Pro layout, unless an app in `layoutBlockingApps` is running                                                                   |
 | `systemWillSleep`                | Kill BusylightHTTP, power off Stream Deck USB                                                                                        |
 | `screensDidSleep`                | Power off Stream Deck USB                                                                                                            |
 | `screensDidUnlock`               | Cycle Stream Deck (async), restart nginx, reopen BusylightHTTP, restart Elgato Control Center, apply Rectangle Pro layout (2s delay), focus a visible iTerm2 window on the current Space (3s delay); power off webcam if Zoom not running |
@@ -200,6 +200,8 @@ URL scheme is `rectangle-pro://` (not `rectanglepro://`). Layout is triggered vi
 ```
 open -g "rectangle-pro://execute-layout?name=External%20display"
 ```
+
+`spaces.lua##class.Work` checks `layoutBlockingApps` before triggering Rectangle Pro. It contains Cap (`so.cap.desktop`): keeping Cap open suppresses layouts because rearranging windows is disruptive during screen recording. This guard also covers the unlock-triggered layout in `sleepwake.lua`, because it calls `spaces.applyRectangleLayout()`.
 
 ## Slack deep linking (urlrouter)
 

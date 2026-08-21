@@ -14,6 +14,10 @@ zinit wait'0' lucid for \
 # Skip autosuggestions' automatic widget re-binding on every precmd (O(n) in widget count).
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
 ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+ZSH_AUTOSUGGEST_USE_ASYNC=1
+# Keep autosuggestions local and non-blocking; Atuin remains available through
+# its dedicated history-search widgets.
+typeset -ga ZSH_AUTOSUGGEST_STRATEGY=(history)
 
 # Register history prefix search widgets early so zsh-autosuggestions can wrap
 # them during its initial bind. The actual keybindings happen later in atuin.zsh.

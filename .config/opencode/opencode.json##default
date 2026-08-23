@@ -284,6 +284,7 @@
       "golangci-lint run*": "allow",
       "grep *": "allow",
       "head *": "allow",
+      "hk check *": "allow",
       "hostname": "allow",
       "jq *": "allow",
       "less *": "allow",

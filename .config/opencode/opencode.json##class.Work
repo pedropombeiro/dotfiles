@@ -332,6 +332,8 @@
       "golangci-lint run*": "allow",
       "grep *": "allow",
       "head *": "allow",
+      "hk check *": "allow",
+      "hk run pre-commit *": "allow",
       "hostname": "allow",
       "jq *": "allow",
       "ls *": "allow",

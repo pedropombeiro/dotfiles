@@ -340,6 +340,7 @@
       "ls *": "allow",
       "man *": "deny", // Context7 should be used instead
       "markdownlint *": "allow",
+      "markdownlint-cli2 *": "allow",
       "md5 *": "allow",
       "mise ls *": "allow",
       "mise x clickhouse *": "allow",

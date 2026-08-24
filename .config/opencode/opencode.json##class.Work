@@ -306,6 +306,7 @@
       "glab mr create *": "allow",
       "glab mr diff *": "allow",
       "glab mr list *": "allow",
+      "glab mr note list *": "allow",
       "glab mr view *": "allow",
       "go build*": "allow",
       "go test*": "allow",

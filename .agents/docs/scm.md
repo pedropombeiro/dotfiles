@@ -153,6 +153,9 @@ When the remote points to `gitlab.com`, **always use `gpsup`** to push the branc
 create the MR. It automatically applies the current milestone, issue labels, and team
 labels via GitLab push options — do not use `glab mr create` or manual push options.
 
+For a temporary remote branch used only by server-side tests, where no MR should be
+created yet, use a direct `git push --set-upstream origin <branch>` instead of `gpsup`.
+
 `gpsup` is a zsh autoloaded function — run it via
 [`run-in-tmux-pane`](tmux.md#running-commands-in-a-temporary-tmux-pane) (see the
 commands table there for the required timeout). Pass extra `git push` arguments

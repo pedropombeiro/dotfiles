@@ -83,8 +83,9 @@ the source of truth.
 - Backtick-wrapped code identifiers everywhere.
 - Hyperlink code references, don't just name them. When citing a file, function, config
   key, or line range in GitLab prose, link it so the reader can jump straight there:
-  - Use descriptive inline Markdown links (`[label](URL)`), not a label followed by a
-    bare URL in parentheses (`label (URL)`).
+  - Write descriptive references as inline Markdown links, for example
+    `[AI principles distillation schedule](https://gitlab.com/gitlab-org/gitlab/-/pipeline_schedules)`.
+    Never write a label followed by a bare URL in parentheses (`label (URL)`).
   - Use a permalink pinned to a commit SHA with a line range, such as
     `[the confidence criteria](https://gitlab.com/group/project/-/blob/<sha>/path/file.jinja#L229-246)`,
     so the link keeps pointing at the same lines after the file changes.

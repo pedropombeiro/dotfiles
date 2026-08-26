@@ -15,10 +15,12 @@ experimental = true
 
 [tools]
 # ── Core ──────────────────────────────────────────────────────────────
-# CLI usage/help generation framework (used by mise)
-usage = "latest"
+# Secure peer-to-peer file transfer
+croc = "latest"
 # Syntax-highlighting pager for git/diff
 delta = "latest"
+# CLI usage/help generation framework (used by mise)
+usage = "latest"
 
 # ── GitHub releases (musl builds for QTS) ────────────────────────────
 # Pre-built Neovim release (bypasses compile-from-source)
@@ -29,8 +31,6 @@ delta = "latest"
 "aqua:sxyazi/yazi" = "26.8.15"
 # Log file viewer and navigator
 "github:tstack/lnav" = "latest"
-# Secure peer-to-peer file transfer
-"github:schollz/croc" = "latest"
 
 # ── Networking (musl builds for QTS) ─────────────────────────────────
 # Modern ps replacement

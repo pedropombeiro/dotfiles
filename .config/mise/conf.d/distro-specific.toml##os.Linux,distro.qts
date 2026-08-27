@@ -1,3 +1,10 @@
+[settings]
+# QTS ships glibc 2.21. Since mise 2026.8.9, the aqua and github backends prefer
+# glibc assets on unqualified-glibc Linux hosts, which pulls binaries requiring
+# GLIBC 2.29+. Force musl so asset selection stays strict.
+# See https://github.com/jdx/mise/pull/12093
+libc = "musl"
+
 [settings.python]
 precompiled_arch = "x86_64"
 precompiled_os = "unknown-linux-gnu"

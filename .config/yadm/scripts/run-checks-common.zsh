@@ -197,3 +197,9 @@ function check_skill_lock_orphans() {
 
 check_agent_doc_links
 check_skill_lock_orphans
+
+# Runs in a subshell: the check defines its own print helpers and an allowlist
+# that must not leak into the shared namespace here.
+if [[ -x "${YADM_SCRIPTS}/check-glibc-compat.zsh" ]]; then
+  "${YADM_SCRIPTS}/check-glibc-compat.zsh" || any_failed=1
+fi

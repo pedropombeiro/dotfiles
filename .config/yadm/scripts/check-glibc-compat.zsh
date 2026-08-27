@@ -8,22 +8,15 @@
 # Compare each dynamically linked binary's highest required GLIBC_2.x symbol
 # version against the glibc that its own ELF interpreter resolves to, so
 # binaries using the Entware loader are judged against 2.27 rather than 2.21.
+#
+# There is deliberately no allowlist: a tool that cannot exec here does not
+# belong in this machine's mise config. Remove it instead of muting it.
 
 setopt LOCAL_OPTIONS EXTENDED_GLOB NULL_GLOB
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 
 source "${YADM_SCRIPTS}/colors.sh"
-
-# Tools with no musl or low-glibc build available upstream. These are already
-# known to be unrunnable here, so they are reported quietly to keep a genuinely
-# new regression visible instead of buried in expected noise. Drop an entry once
-# upstream ships a compatible asset.
-typeset -ga KNOWN_GLIBC_INCOMPATIBLE=(
-  ipinfo  # only publishes one CGO-enabled linux/amd64 build
-  jless   # only publishes unknown-linux-gnu, also needs libxcb
-  rustnet # glibc asset selected, also needs libpcap
-)
 
 function print_op_stay() {
   printf "${CYAN}%-63s${NC} " "- $1..."
@@ -35,10 +28,6 @@ function print_ok() {
 
 function print_warn() {
   printf "${YELLOW}%s${NC} %s\n" '⚠️  WARN' "$1"
-}
-
-function print_note() {
-  printf "${CYAN}%s${NC} %s\n" '   note' "$1"
 }
 
 # Highest glibc minor version offered by the libc next to a given ELF loader.
@@ -62,7 +51,7 @@ function check_glibc_compat() {
   fi
 
   local -A loader_minor
-  local -a regressions known_hits
+  local -a incompatible
   local dir f interp need minor ceiling
   local scanned=0
 
@@ -91,31 +80,23 @@ function check_glibc_compat() {
       # An unresolvable loader is a missing-dependency problem, not a version
       # mismatch, so leave it to the tool's own error message.
       (( ceiling < 0 )) && continue
-      (( minor > ceiling )) || continue
 
-      if (( ${KNOWN_GLIBC_INCOMPATIBLE[(Ie)${f:t}]} )); then
-        known_hits+=("${f:t} (needs 2.${minor})")
-      else
-        regressions+=("${f:t} needs GLIBC 2.${minor}, ${interp:h} provides 2.${ceiling}")
-      fi
+      (( minor > ceiling )) &&
+        incompatible+=("${f:t} needs GLIBC 2.${minor}, ${interp:h} provides 2.${ceiling}")
     done
   done
 
-  if (( ${#regressions} == 0 )); then
+  if (( ${#incompatible} == 0 )); then
     print_ok "(${scanned} dynamic binaries)"
-    (( ${#known_hits} )) &&
-      print_note "known incompatible, no upstream musl build: ${(j:, :)known_hits}"
     return 0
   fi
 
   echo
   local entry
-  for entry in "${regressions[@]}"; do
+  for entry in "${incompatible[@]}"; do
     print_warn "$entry"
   done
-  print_warn "Check 'mise settings get libc' and whether upstream ships a musl asset"
-  (( ${#known_hits} )) &&
-    print_note "known incompatible, ignored: ${(j:, :)known_hits}"
+  print_warn "Check 'mise settings get libc', or drop the tool from this host's config"
   return 1
 }
 

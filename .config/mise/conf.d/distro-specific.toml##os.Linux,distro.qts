@@ -17,7 +17,8 @@ CARGO_HOME = "/opt/share/cargo"
 # Packages pinned due to QTS glibc constraints (older than 2.31)
 python = "3.14"
 node = "23.7.0"
-jless = "0.9.0"
+# Omitted on QTS: jless publishes only unknown-linux-gnu (glibc 2.34) and needs
+# libxcb, so it has never run here. The Macs get it from Homebrew.
 rust = { version = "1.98.0", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
 # HA-CLI pins regex<2025, but that regex has no cp314 wheel and fails to build on Py3.14.
 # Override to a regex release with Python 3.14 support (built from source on this QTS NAS).

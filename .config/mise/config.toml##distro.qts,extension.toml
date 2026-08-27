@@ -35,14 +35,12 @@ usage = "latest"
 # ── Networking (musl builds for QTS) ─────────────────────────────────
 # Modern ps replacement
 "github:dalance/procs" = "latest"
-# Network diagnostics (ping/traceroute/scan)
-"github:domcyrus/rustnet" = "1.6.0"
 # Network bandwidth monitor by process
 "github:imsnif/bandwhich" = "latest"
-# IP address info lookup
-"github:ipinfo/cli[exe=ipinfo]" = "ipinfo-3.3.2"
 # Ping with a real-time graph
 "github:orf/gping" = "gping-v1.20.4"
+# Omitted on QTS: rustnet and ipinfo/cli publish only glibc 2.32+ builds and
+# have never run here. The Macs get ipinfo from Homebrew.
 
 # ── go ────────────────────────────────────────────────────────────────
 # Timestamps each line of command output

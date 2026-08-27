@@ -2,7 +2,11 @@ const COMMIT_OR_TAG_PATTERN = /(^|[;&|]\s*)\s*(?:git|yadm)\s+(?:enter\s+git\s+)?
 const CROSS_PROJECT_REFERENCE_PATTERN = /\b[\w.-]+(?:\/[\w.-]+)*[#!&]\d+\b/
 const BARE_ISSUE_REFERENCE_PATTERN = /(?<![\w/#])#\d+\b/
 const BARE_MR_REFERENCE_PATTERN = /(?<![\w/!])!\d+\b/
-const BARE_EPIC_REFERENCE_PATTERN = /(?<![\w/&])&\d+\b/
+// The `>` exclusion keeps shell redirects such as `2>&1` and `1>&2` from being
+// read as epic references, since the whole command is scanned, not just the
+// commit message. Cross-project epics like `gitlab-org&42` are still caught by
+// CROSS_PROJECT_REFERENCE_PATTERN.
+const BARE_EPIC_REFERENCE_PATTERN = /(?<![\w/&>])&\d+\b/
 
 const findShortReference = (message) => {
   for (const pattern of [

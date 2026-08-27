@@ -10,6 +10,7 @@ Subject-specific lessons live in their `.local.md` counterparts (e.g. `testing.l
 
 ## Work Items (MRs, Issues, Epics)
 
+- Write commit SHAs as plain text in GitLab prose so GitLab autolinks them; do not wrap SHAs in backticks.
 - Do not post comments directly on MRs, issues, or epics. Only update descriptions, labels, and metadata.
 - In review notes, link to the human-authored SSOT documentation rather than generated distilled-principle files.
 - Do not assign reviewers unless the user explicitly asks — leave reviewer selection to the user.

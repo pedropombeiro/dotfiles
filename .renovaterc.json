@@ -176,6 +176,21 @@
       ],
       "datasourceTemplate": "npm",
       "versioningTemplate": "npm"
+    },
+    {
+      "description": "mise ipinfo/cli built via the go backend. The Go module proxy reports no versions for this repo, so track the GitHub release tags instead.",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)\\.config/mise/config\\.toml##[^/]+$/",
+        "/(^|/)\\.config/mise/config\\.toml$/",
+        "/(^|/)\\.config/mise/config\\.local\\.toml$/",
+        "/(^|/)\\.config/mise/conf\\.d/[^/]+\\.toml(##[^/]+)?$/"
+      ],
+      "matchStrings": [
+        "\"go:github\\.com/ipinfo/cli/ipinfo\"\\s*=\\s*\\{[^}]*version\\s*=\\s*\"(?<currentValue>[^\"]+)\"[^}]*\\}"
+      ],
+      "depNameTemplate": "ipinfo/cli",
+      "datasourceTemplate": "github-releases"
     }
   ]
 }

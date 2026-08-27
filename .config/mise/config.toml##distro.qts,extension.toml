@@ -39,12 +39,15 @@ usage = "latest"
 "github:imsnif/bandwhich" = "latest"
 # Ping with a real-time graph
 "github:orf/gping" = "gping-v1.20.4"
-# Omitted on QTS: rustnet and ipinfo/cli publish only glibc 2.32+ builds and
-# have never run here. The Macs get ipinfo from Homebrew.
+# Omitted on QTS: rustnet publishes only glibc 2.32+ builds and also needs
+# libpcap, so it has never run here.
 
 # ── go ────────────────────────────────────────────────────────────────
 # Timestamps each line of command output
 "go:github.com/zmwangx/ets" = "0.2.2"
+# IP address info lookup. Upstream release binaries are CGO-enabled and need
+# glibc 2.32+, so build from source instead; CGO_ENABLED=0 makes it static.
+"go:github.com/ipinfo/cli/ipinfo" = { version = "ipinfo-3.3.2", install_env = { CGO_ENABLED = "0" } }
 
 # ── pipx ──────────────────────────────────────────────────────────────
 # Python code formatter

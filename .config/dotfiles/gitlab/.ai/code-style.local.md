@@ -8,11 +8,12 @@
 
 ## Comments
 
+- Keep code comments terse; remove implementation detail that the code already makes clear.
 - Wrap comments greedily to the full line-length limit (120 chars in this repo), not to ~80. Do not leave a comment
   line short unless a sentence ends there.
 - Start each new sentence on its own line. Two sentences never share a line, even when both would fit — so a line may
   end well before 120 chars if the next sentence begins there.
-- The result reads as one sentence per paragraph-line, each greedily wrapped. Example:
+  The result reads as one sentence per paragraph-line, each greedily wrapped. Example:
 
   ```ruby
   # Concurrency is capped at MAX_CONCURRENT_DISTILLATIONS by assigning each principle a `resource_group` slot.
@@ -22,4 +23,4 @@
   # which is the property that matters.
   ```
 
-- Applies to comments in all languages in this repo, including RSpec `#` comments and YAML.
+- Applies to comments in all languages, including RSpec `#` comments and YAML.

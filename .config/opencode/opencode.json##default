@@ -376,7 +376,8 @@
     "skill": {
       "gh": "allow",
       "google-dev-docs-style": "allow",
-      "hammerspoon": "allow"
+      "hammerspoon": "allow",
+      "video-takeaways": "allow"
     },
     "task": {
       "general": "allow",

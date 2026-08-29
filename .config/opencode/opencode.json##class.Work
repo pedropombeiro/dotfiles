@@ -510,6 +510,7 @@
       "repo-bootstrap": "allow",
       "run-in-tmux-pane": "allow",
       "tool-routing": "allow",
+      "video-takeaways": "allow",
       "weekly-status": "allow",
       "write-large-file": "allow"
     },

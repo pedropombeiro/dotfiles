@@ -1,0 +1,215 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: fetch-transcript [--lang LANGUAGE] [--keep-vtt] VIDEO_URL
+
+Download the best available caption track and normalize it to TSV:
+SECONDS<TAB>HH:MM:SS<TAB>CAPTION_TEXT
+
+Options:
+  --lang LANGUAGE  Prefer this caption language, such as en or fr.
+  --keep-vtt       Keep the downloaded VTT and print its path.
+  -h, --help       Show this help.
+EOF
+}
+
+for dependency in yt-dlp jq perl; do
+  if ! command -v "$dependency" >/dev/null 2>&1; then
+    printf 'fetch-transcript: required command not found: %s\n' "$dependency" >&2
+    exit 127
+  fi
+done
+
+language=""
+keep_vtt=false
+
+while (($# > 0)); do
+  case "$1" in
+    --lang)
+      if (($# < 2)); then
+        printf 'fetch-transcript: --lang requires a value\n' >&2
+        usage >&2
+        exit 64
+      fi
+      language=$2
+      shift 2
+      ;;
+    --keep-vtt)
+      keep_vtt=true
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      printf 'fetch-transcript: unknown option: %s\n' "$1" >&2
+      usage >&2
+      exit 64
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if (($# != 1)); then
+  usage >&2
+  exit 64
+fi
+
+readonly video_url=$1
+temp_root=${TMPDIR:-/tmp}
+temp_root=${temp_root%/}
+readonly temp_root
+work_dir=$(mktemp -d "$temp_root/video-takeaways.XXXXXX")
+readonly work_dir
+metadata_file="$work_dir/metadata.json"
+readonly metadata_file
+
+cleanup() {
+  if [[ $keep_vtt == false ]]; then
+    rm -rf "$work_dir"
+  fi
+}
+trap cleanup EXIT
+
+if ! yt-dlp --dump-single-json --skip-download "$video_url" >"$metadata_file"; then
+  printf 'fetch-transcript: yt-dlp could not read the video metadata\n' >&2
+  exit 1
+fi
+
+selection=$(jq -r --arg requested "$language" '
+  def keys_or_empty(value): (value // {} | keys);
+  def first_match(keys; wanted):
+    ([keys[] | select(. == wanted)] + [keys[] | select(startswith(wanted + "-"))] | first) // "";
+
+  (keys_or_empty(.subtitles)) as $manual |
+  (keys_or_empty(.automatic_captions)) as $automatic |
+  (.language // "") as $original |
+  if $requested != "" then
+    (first_match($manual; $requested)) as $manual_match |
+    (first_match($automatic; $requested)) as $automatic_match |
+    if $manual_match != "" then "manual\t" + $manual_match
+    elif $automatic_match != "" then "automatic\t" + $automatic_match
+    else empty end
+  else
+    (first_match($manual; $original)) as $manual_original |
+    (first_match($automatic; $original)) as $automatic_original |
+    (first_match($manual; "en")) as $manual_en |
+    (first_match($automatic; "en")) as $automatic_en |
+    if $manual_original != "" then "manual\t" + $manual_original
+    elif $automatic_original != "" then "automatic\t" + $automatic_original
+    elif $manual_en != "" then "manual\t" + $manual_en
+    elif $automatic_en != "" then "automatic\t" + $automatic_en
+    elif ($manual | length) > 0 then "manual\t" + $manual[0]
+    elif ($automatic | length) > 0 then "automatic\t" + $automatic[0]
+    else empty end
+  end
+' "$metadata_file")
+
+if [[ -z $selection ]]; then
+  if [[ -n $language ]]; then
+    printf 'fetch-transcript: no caption track matches language %s\n' "$language" >&2
+    available_manual=$(jq -r '
+      def summarize:
+        length as $count |
+        if $count == 0 then "none"
+        elif $count <= 24 then join(", ")
+        else (.[0:24] | join(", ")) + ", ... (" + ($count | tostring) + " total)"
+        end;
+      (.language // "") as $original |
+      (.subtitles // {} | keys) |
+      ([.[] | select(. == $original)] + [.[] | select(. != $original)]) | summarize
+    ' "$metadata_file")
+    available_automatic=$(jq -r '
+      def summarize:
+        length as $count |
+        if $count == 0 then "none"
+        elif $count <= 24 then join(", ")
+        else (.[0:24] | join(", ")) + ", ... (" + ($count | tostring) + " total)"
+        end;
+      (.language // "") as $original |
+      (.automatic_captions // {} | keys) |
+      ([.[] | select(. == $original)] + [.[] | select(. != $original)]) | summarize
+    ' "$metadata_file")
+    printf 'fetch-transcript: available manual caption languages: %s\n' "$available_manual" >&2
+    printf 'fetch-transcript: available automatic caption languages: %s\n' "$available_automatic" >&2
+  else
+    printf 'fetch-transcript: this video has no available captions\n' >&2
+  fi
+  exit 1
+fi
+
+IFS=$'\t' read -r caption_source caption_language <<<"$selection"
+readonly caption_source caption_language
+
+subtitle_flag=--write-auto-subs
+if [[ $caption_source == manual ]]; then
+  subtitle_flag=--write-subs
+fi
+readonly subtitle_flag
+
+if ! yt-dlp --skip-download "$subtitle_flag" --sub-langs "$caption_language" \
+  --sub-format vtt --output "$work_dir/source.%(ext)s" "$video_url" >/dev/null; then
+  printf 'fetch-transcript: yt-dlp could not download the selected captions\n' >&2
+  exit 1
+fi
+
+vtt_file=""
+for candidate in "$work_dir"/source*.vtt; do
+  if [[ -f $candidate ]]; then
+    vtt_file=$candidate
+    break
+  fi
+done
+
+if [[ -z $vtt_file ]]; then
+  printf 'fetch-transcript: the selected caption track did not produce a VTT file\n' >&2
+  exit 1
+fi
+
+transcript_file=$(mktemp "$temp_root/video-takeaways-transcript.XXXXXX")
+readonly transcript_file
+
+perl -ne '
+  if (/^(\d\d):(\d\d):(\d\d)\.\d+ --> /) {
+    $seconds = ($1 * 3600) + ($2 * 60) + $3;
+    $timestamp = sprintf("%02d:%02d:%02d", $1, $2, $3);
+    next;
+  }
+  next if /^WEBVTT|^Kind:|^Language:|^\s*$/;
+  s/<[^>]*>//g;
+  s/\r//g;
+  chomp;
+  next if $_ eq "" || $_ eq $last;
+  $last = $_;
+  print "$seconds\t$timestamp\t$_\n";
+' "$vtt_file" >"$transcript_file"
+
+if [[ ! -s $transcript_file ]]; then
+  printf 'fetch-transcript: caption normalization produced an empty transcript\n' >&2
+  rm -f "$transcript_file"
+  exit 1
+fi
+
+jq -r '
+  "title=" + (.title // ""),
+  "uploader=" + (.uploader // .channel // ""),
+  "duration_seconds=" + ((.duration // 0) | tostring),
+  "video_id=" + (.id // ""),
+  "webpage_url=" + (.webpage_url // .original_url // "")
+' "$metadata_file"
+printf 'caption_language=%s\n' "$caption_language"
+printf 'caption_source=%s\n' "$caption_source"
+if [[ $keep_vtt == true ]]; then
+  printf 'vtt=%s\n' "$vtt_file"
+fi
+printf 'transcript=%s\n' "$transcript_file"

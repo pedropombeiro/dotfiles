@@ -200,6 +200,17 @@ if [[ ! -s $transcript_file ]]; then
   exit 1
 fi
 
+thumbnail_url=$(jq -r '
+  ([.thumbnails[]? | select(.url != null and (.url | test("\\.(jpg|jpeg)(\\?|$)"; "i")))]
+    | sort_by((.width // 0) * (.height // 0))
+    | last
+    | .url) // empty
+' "$metadata_file")
+
+if [[ -z $thumbnail_url ]]; then
+  printf 'fetch-transcript: warning: no JPEG video thumbnail is available\n' >&2
+fi
+
 jq -r '
   "title=" + (.title // ""),
   "uploader=" + (.uploader // .channel // ""),
@@ -209,6 +220,9 @@ jq -r '
 ' "$metadata_file"
 printf 'caption_language=%s\n' "$caption_language"
 printf 'caption_source=%s\n' "$caption_source"
+if [[ -n $thumbnail_url ]]; then
+  printf 'thumbnail_url=%s\n' "$thumbnail_url"
+fi
 if [[ $keep_vtt == true ]]; then
   printf 'vtt=%s\n' "$vtt_file"
 fi

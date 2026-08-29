@@ -36,6 +36,27 @@ Memos extracts tags from hashtags in the Markdown content. The response's
 `tags` field is output-only, so do not send it in the request. Every video
 summary must include `#video-takeaways`; use additional tags for its subject.
 
+## Add the video thumbnail
+
+The transcript helper prints `thumbnail_url=URL` when a thumbnail is available.
+Put the thumbnail directly below the H1 and link it to the source video:
+
+```markdown
+# Video title
+
+[![Video thumbnail](THUMBNAIL_URL)](VIDEO_URL)
+```
+
+The current Memos MCP attachment API does not reliably preserve
+`externalLink`, and passing large base64 image content through the tool is
+fragile. Use the linked Markdown image instead. Thumbnail failure is non-fatal;
+save the approved summary and report that the source did not provide a usable
+thumbnail.
+
+If attachment uploads become reliable later, add image resampling before
+uploading bytes. Cap the long edge and JPEG quality rather than storing the
+largest source thumbnail unchanged.
+
 ## Update an existing memo
 
 `memo_update_memo` requires the memo resource, body, and update mask:
@@ -64,4 +85,5 @@ Call `memo_get_memo` with the full resource name:
 ```
 
 Confirm that the stored memo is private, contains the complete draft, retains
-the timestamp links, and exposes `video-takeaways` among the extracted tags.
+the timestamp links, exposes `video-takeaways` among the extracted tags, and
+contains the expected linked thumbnail when one was available.

@@ -15,8 +15,8 @@ language, the helper prefers human-authored captions to automatic captions.
 Without `--lang`, it tries the video's original language, then English, then the
 first available track.
 
-The helper prints video metadata and the path to a tab-separated transcript.
-Each transcript row has this shape:
+The helper prints video metadata, a JPEG thumbnail URL when available, and the
+path to a tab-separated transcript. Each transcript row has this shape:
 
 ```text
 SECONDS<TAB>HH:MM:SS<TAB>CAPTION_TEXT
@@ -99,9 +99,11 @@ Show the full draft to the user and ask for confirmation before saving it.
 
 1. Read the stored memo or file again.
 2. Confirm that Markdown links and hashtags survived unchanged.
-3. Spot-check several saved timestamps against the TSV, including at least one
+3. For Memos, confirm that the linked Markdown thumbnail appears below the H1
+   when the helper produced one.
+4. Spot-check several saved timestamps against the TSV, including at least one
    near the beginning and one near the end.
-4. Report the memo resource name or destination path to the user.
+5. Report the memo resource name or destination path to the user.
 
 Remove temporary transcript files after the task when they are no longer
 useful.

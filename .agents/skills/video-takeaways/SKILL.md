@@ -38,7 +38,8 @@ notes in English, even when the video uses another language.
    actionable language, and append a timestamp hyperlink to every takeaway.
 4. Ask for confirmation before writing to Memos. If the user explicitly asks
    for another destination, use that destination instead.
-5. After confirmation, save the draft and verify the stored content. Follow
+5. After confirmation, save the draft with a linked video thumbnail and verify
+   the stored content. Follow
    [`references/MEMOS-API.md`](references/MEMOS-API.md) when using Memos.
 
 ## Output contract
@@ -60,6 +61,9 @@ notes in English, even when the video uses another language.
   or retain the original-language term in parentheses.
 - End every Memos summary with `#video-takeaways` so all summaries are easy to
   find. Add other relevant `#hashtags` on the same line.
+- Put the video's thumbnail directly below the H1 as a linked Markdown image
+  when the helper provides one. Link the image to the source video. Do not fail
+  the summary when the source has no usable thumbnail.
 
 ## Language and destination
 

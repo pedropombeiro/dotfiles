@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: list-memo-tags
+
+Print existing Memos tags with usage counts, most used first.
+
+Environment:
+  MEMOS_BASE_URL    Memos base URL (default: https://memos.pombei.ro)
+  MEMOS_TOKEN_FILE  Bearer token file (default: ~/.config/lazy-mcp/memos-token)
+EOF
+}
+
+if (($# > 0)); then
+  case "$1" in
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      usage >&2
+      exit 64
+      ;;
+  esac
+fi
+
+for dependency in curl jq; do
+  if ! command -v "$dependency" >/dev/null 2>&1; then
+    printf 'list-memo-tags: required command not found: %s\n' "$dependency" >&2
+    exit 127
+  fi
+done
+
+readonly base_url=${MEMOS_BASE_URL:-https://memos.pombei.ro}
+readonly token_file=${MEMOS_TOKEN_FILE:-$HOME/.config/lazy-mcp/memos-token}
+
+if [[ ! -r $token_file ]]; then
+  printf 'list-memo-tags: token file is not readable: %s\n' "$token_file" >&2
+  exit 1
+fi
+
+temp_root=${TMPDIR:-/tmp}
+temp_root=${temp_root%/}
+readonly temp_root
+work_dir=$(mktemp -d "$temp_root/video-takeaway-tags.XXXXXX")
+readonly work_dir
+tags_file="$work_dir/tags"
+readonly tags_file
+
+cleanup() {
+  rm -rf "$work_dir"
+}
+trap cleanup EXIT
+
+page_token=""
+
+while :; do
+  response_file="$work_dir/response.json"
+
+  request_url="$base_url/api/v1/memos?pageSize=1000&orderBy=create_time%20desc"
+  if [[ -n $page_token ]]; then
+    encoded_page_token=$(jq -rn --arg value "$page_token" '$value | @uri')
+    request_url+="&pageToken=$encoded_page_token"
+  fi
+
+  http_status=$(
+    printf 'header = "Authorization: Bearer %s"\n' "$(<"$token_file")" |
+      curl --config - --silent --show-error --output "$response_file" \
+        --write-out '%{http_code}' "$request_url"
+  )
+
+  if [[ $http_status != 200 ]]; then
+    printf 'list-memo-tags: Memos request failed with HTTP %s\n' "$http_status" >&2
+    exit 1
+  fi
+
+  jq -r '.memos[]?.tags[]?' "$response_file" >>"$tags_file"
+  page_token=$(jq -r '.nextPageToken // ""' "$response_file")
+  [[ -n $page_token ]] || break
+done
+
+if [[ ! -s $tags_file ]]; then
+  printf 'list-memo-tags: no existing tags found\n' >&2
+  exit 0
+fi
+
+sort "$tags_file" | uniq -c | sort -k1,1nr -k2,2 | awk '{ print $1 "\t" $2 }'

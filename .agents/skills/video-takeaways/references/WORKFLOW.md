@@ -2,6 +2,24 @@
 
 Use this workflow to turn caption cues into verifiable, actionable notes.
 
+## Consult existing tags
+
+Before processing the first video in a session, run:
+
+```bash
+~/.agents/skills/video-takeaways/scripts/list-memo-tags
+```
+
+Run it only once per session. Reuse its output for subsequent videos in the
+same conversation.
+
+Always include `#video-takeaways` and aim for 3-5 tags total. Prefer an existing
+tag whenever its meaning fits, even if a narrower new tag seems attractive.
+Create a new tag only when the inventory has no suitable concept, and identify
+the proposed new tag when showing the draft to the user. Use lowercase and
+hyphens for multi-word tags, and avoid near-synonyms such as introducing
+`bikefit` when `cycling` already serves the same retrieval need.
+
 ## Fetch the transcript
 
 Run the helper with the video URL:
@@ -87,11 +105,13 @@ Check the draft for these requirements:
 
 - Every actionable bullet or numbered item has a timestamp link.
 - Every link points near the start of the relevant explanation.
-- Advice is in English and remains faithful to the source.
+- Notes are in the agreed language and remain faithful to the source.
 - Uncertain automatic-caption terms are qualified or omitted.
 - Personal stories have not become general rules without support.
 - The source title and URL are present.
 - A Memos draft ends with `#video-takeaways` and any subject-specific tags.
+- The draft uses 3-5 tags, reuses existing labels where possible, and identifies
+  any proposed new tag.
 
 Show the full draft to the user and ask for confirmation before saving it.
 

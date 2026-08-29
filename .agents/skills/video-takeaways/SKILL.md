@@ -11,8 +11,8 @@ metadata:
 
 # Video takeaways
 
-Turn a captioned video into concise, actionable, source-linked notes. Write the
-notes in English, even when the video uses another language.
+Turn a captioned video into concise, actionable, source-linked notes. Notes
+default to English, even when the video uses another language.
 
 ## When to use
 
@@ -30,15 +30,19 @@ notes in English, even when the video uses another language.
 
 ## Workflow
 
-1. Run [`scripts/fetch-transcript`](scripts/fetch-transcript) instead of trying
+1. Before processing the first video in a session, run
+   [`scripts/list-memo-tags`](scripts/list-memo-tags) once to see which tags
+   already exist. Reuse that output for every video in the same session; do not
+   run it again for each video.
+2. Run [`scripts/fetch-transcript`](scripts/fetch-transcript) instead of trying
    to retrieve a YouTube transcript with `webfetch`.
-2. Follow [`references/WORKFLOW.md`](references/WORKFLOW.md) to identify topics,
+3. Follow [`references/WORKFLOW.md`](references/WORKFLOW.md) to identify topics,
    verify claims, and map each takeaway to a caption timestamp.
-3. Draft the complete English summary for the user. Group advice by theme, use
-   actionable language, and append a timestamp hyperlink to every takeaway.
-4. Ask for confirmation before writing to Memos. If the user explicitly asks
+4. Draft the complete summary in the agreed language. Group advice by theme,
+   use actionable language, and append a timestamp hyperlink to every takeaway.
+5. Ask for confirmation before writing to Memos. If the user explicitly asks
    for another destination, use that destination instead.
-5. After confirmation, save the draft with a linked video thumbnail and verify
+6. After confirmation, save the draft with a linked video thumbnail and verify
    the stored content. Follow
    [`references/MEMOS-API.md`](references/MEMOS-API.md) when using Memos.
 
@@ -60,15 +64,22 @@ notes in English, even when the video uses another language.
 - If automatic captions make a term or number uncertain, omit it, qualify it,
   or retain the original-language term in parentheses.
 - End every Memos summary with `#video-takeaways` so all summaries are easy to
-  find. Add other relevant `#hashtags` on the same line.
+  find.
+- Aim for 3-5 tags total, including `#video-takeaways`.
+- Prefer an existing tag whenever one fits, even when a more specific label
+  comes to mind. Propose a new tag only when no existing tag covers the topic,
+  and identify it as new when presenting the draft.
+- Use lowercase and hyphens for multi-word tags. Do not create a near-synonym
+  of an existing tag.
 - Put the video's thumbnail directly below the H1 as a linked Markdown image
   when the helper provides one. Link the image to the source video. Do not fail
   the summary when the source has no usable thumbnail.
 
 ## Language and destination
 
-- Always write the notes in English. Translate for meaning rather than word for
-  word.
+- Default to English, even when the video uses another language. Write in the
+  video's original language, or another language, when the user asks. Translate
+  for meaning rather than word for word.
 - Default to a private Memos memo after the user approves the draft.
 - Honor an explicit request to use a local file, repository document, or other
   destination.
@@ -76,7 +87,7 @@ notes in English, even when the video uses another language.
 
 ## Dependencies
 
-The transcript helper requires `yt-dlp`, `jq`, and `perl`. If captions are not
+The helpers require `yt-dlp`, `curl`, `jq`, and `perl`. If captions are not
 available, report that clearly. Do not silently substitute an unverified
 summary from video metadata or search results.
 

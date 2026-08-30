@@ -1,7 +1,20 @@
-# Memos API reference
+# Memos output reference
 
-Use the `memos` MCP server to store approved video notes. Memos is the default
-destination, but the user can request another destination.
+Use the `memos` MCP server to store approved video notes when the user selects
+Memo output.
+
+Memos support is optional. Do not assume a particular host, username, token
+path, or default visibility. For scripts, configure access with CLI flags first,
+then environment variables:
+
+```text
+--base-url URL       MEMOS_BASE_URL
+--token-file PATH    MEMOS_TOKEN_FILE
+```
+
+Never accept a raw token as a command-line argument. Read it from a file and
+pass the authorization header to `curl --config -` through standard input so it
+does not appear in process arguments.
 
 ## Discover commands
 
@@ -15,7 +28,7 @@ Follow the required MCP sequence:
 The relevant commands are usually `memo_create_memo`, `memo_update_memo`, and
 `memo_get_memo`.
 
-## Create a private memo
+## Create a memo
 
 Pass `content` and `visibility` inside `body`:
 
@@ -29,8 +42,8 @@ Pass `content` and `visibility` inside `body`:
 ```
 
 Do not pass `visibility` as a top-level parameter. The server rejects that
-shape. Omitting visibility also defaults to `PRIVATE`, but setting it explicitly
-documents the intended access level.
+shape. Use the visibility requested by the user. When none is specified,
+prefer `PRIVATE` rather than publishing notes implicitly.
 
 Memos extracts tags from hashtags in the Markdown content. The response's
 `tags` field is output-only, so do not send it in the request. Every video

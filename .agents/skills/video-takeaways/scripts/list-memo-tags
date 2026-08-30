@@ -4,18 +4,37 @@ set -euo pipefail
 
 usage() {
   cat <<'EOF'
-Usage: list-memo-tags
+Usage: list-memo-tags [--base-url URL] [--token-file PATH]
 
 Print existing Memos tags with usage counts, most used first.
 
 Environment:
-  MEMOS_BASE_URL    Memos base URL (default: https://memos.pombei.ro)
-  MEMOS_TOKEN_FILE  Bearer token file (default: ~/.config/lazy-mcp/memos-token)
+  MEMOS_BASE_URL    Memos base URL
+  MEMOS_TOKEN_FILE  File containing a Memos personal access token
 EOF
 }
 
-if (($# > 0)); then
+base_url=${MEMOS_BASE_URL:-}
+token_file=${MEMOS_TOKEN_FILE:-}
+
+while (($# > 0)); do
   case "$1" in
+    --base-url)
+      if (($# < 2)); then
+        printf 'list-memo-tags: --base-url requires a value\n' >&2
+        exit 64
+      fi
+      base_url=$2
+      shift 2
+      ;;
+    --token-file)
+      if (($# < 2)); then
+        printf 'list-memo-tags: --token-file requires a value\n' >&2
+        exit 64
+      fi
+      token_file=$2
+      shift 2
+      ;;
     -h|--help)
       usage
       exit 0
@@ -25,7 +44,7 @@ if (($# > 0)); then
       exit 64
       ;;
   esac
-fi
+done
 
 for dependency in curl jq; do
   if ! command -v "$dependency" >/dev/null 2>&1; then
@@ -34,8 +53,18 @@ for dependency in curl jq; do
   fi
 done
 
-readonly base_url=${MEMOS_BASE_URL:-https://memos.pombei.ro}
-readonly token_file=${MEMOS_TOKEN_FILE:-$HOME/.config/lazy-mcp/memos-token}
+base_url=${base_url%/}
+readonly base_url token_file
+
+if [[ -z $base_url ]]; then
+  printf 'list-memo-tags: set --base-url or MEMOS_BASE_URL\n' >&2
+  exit 64
+fi
+
+if [[ -z $token_file ]]; then
+  printf 'list-memo-tags: set --token-file or MEMOS_TOKEN_FILE\n' >&2
+  exit 64
+fi
 
 if [[ ! -r $token_file ]]; then
   printf 'list-memo-tags: token file is not readable: %s\n' "$token_file" >&2

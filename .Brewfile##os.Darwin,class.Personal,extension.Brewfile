@@ -138,6 +138,8 @@ brew "ocrmypdf"
 brew "optipng"
 # PAM module for reattaching to the user's GUI (Aqua) session
 brew "pam-reattach"
+# Swiss-army knife of markup format conversion
+brew "pandoc"
 # CLI for Postgres with auto-completion and syntax highlighting
 brew "pgcli"
 # PDF rendering library (based on the xpdf-3.0 code base)

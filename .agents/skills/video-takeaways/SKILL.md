@@ -1,6 +1,6 @@
 ---
 name: video-takeaways
-description: "Video URLs and YouTube links: extract actionable takeaways with timestamp hyperlinks, then save approved notes to Memos or another requested destination. Use when asked to summarize learnings, lessons, rules of thumb, or practical advice from a video, talk, tutorial, or interview."
+description: "Video URLs and YouTube links: extract actionable takeaways with timestamp hyperlinks, then save approved notes to Memos, create an EPUB for Kindle, or use another requested destination. Use when asked to summarize learnings, lessons, rules of thumb, practical advice, EPUBs, or Send to Kindle documents from a video, talk, tutorial, or interview."
 version: 1.0.0
 license: MIT
 compatibility: opencode
@@ -19,7 +19,8 @@ default to English, even when the video uses another language.
 - The user provides a video URL and asks for learnings, takeaways, notes, a
   checklist, or rules of thumb.
 - The user wants each takeaway linked to the relevant point in the video.
-- The user wants the result saved to Memos or another note destination.
+- The user wants the result saved to Memos, exported as an EPUB for Kindle, or
+  written to another destination.
 
 ## When not to use
 
@@ -30,21 +31,20 @@ default to English, even when the video uses another language.
 
 ## Workflow
 
-1. Before processing the first video in a session, run
-   [`scripts/list-memo-tags`](scripts/list-memo-tags) once to see which tags
-   already exist. Reuse that output for every video in the same session; do not
-   run it again for each video.
-2. Run [`scripts/fetch-transcript`](scripts/fetch-transcript) instead of trying
+1. Run [`scripts/fetch-transcript`](scripts/fetch-transcript) instead of trying
    to retrieve a YouTube transcript with `webfetch`.
-3. Follow [`references/WORKFLOW.md`](references/WORKFLOW.md) to identify topics,
+2. Follow [`references/WORKFLOW.md`](references/WORKFLOW.md) to identify topics,
    verify claims, and map each takeaway to a caption timestamp.
-4. Draft the complete summary in the agreed language. Group advice by theme,
+3. Draft the complete summary in the agreed language. Group advice by theme,
    use actionable language, and append a timestamp hyperlink to every takeaway.
-5. Ask for confirmation before writing to Memos. If the user explicitly asks
-   for another destination, use that destination instead.
-6. After confirmation, save the draft with a linked video thumbnail and verify
-   the stored content. Follow
-   [`references/MEMOS-API.md`](references/MEMOS-API.md) when using Memos.
+4. After approval, use the `question` tool with multiple selection enabled to
+   offer **Memo** and **EPUB**. Honor an explicit destination already chosen by
+   the user without asking again.
+5. For Memo output, consult existing tags once per session, then save and verify
+   the note using [`references/MEMOS.md`](references/MEMOS.md).
+6. For EPUB output, run [`scripts/create-epub`](scripts/create-epub) and follow
+   [`references/EPUB.md`](references/EPUB.md). When both outputs are selected,
+   save the memo first and create the EPUB from the canonical stored memo.
 
 ## Output contract
 
@@ -80,16 +80,20 @@ default to English, even when the video uses another language.
 - Default to English, even when the video uses another language. Write in the
   video's original language, or another language, when the user asks. Translate
   for meaning rather than word for word.
-- Default to a private Memos memo after the user approves the draft.
+- Memos is an optional output adapter. Do not assume a host, token path,
+  username, or visibility.
+- EPUB is an optional output adapter. Generate it only when selected, and never
+  upload or email it without separate explicit approval.
 - Honor an explicit request to use a local file, repository document, or other
   destination.
 - Do not publish, share, or make a memo public unless the user explicitly asks.
 
 ## Dependencies
 
-The helpers require `yt-dlp`, `curl`, `jq`, and `perl`. If captions are not
-available, report that clearly. Do not silently substitute an unverified
-summary from video metadata or search results.
+The core transcript helper requires `yt-dlp`, `jq`, and Perl. Memos output also
+requires `curl`; EPUB output requires Pandoc and optionally ImageMagick and
+`unzip`. If captions are not available, report that clearly. Do not silently
+substitute an unverified summary from video metadata or search results.
 
 ## When captions are unavailable
 

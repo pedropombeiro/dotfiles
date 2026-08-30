@@ -2,16 +2,33 @@
 
 Use this workflow to turn caption cues into verifiable, actionable notes.
 
-## Consult existing tags
+## Choose outputs after approval
 
-Before processing the first video in a session, run:
+After the user approves the draft, use the `question` tool with multiple
+selection enabled and offer **Memo** and **EPUB**, unless the user already chose
+a destination explicitly.
+
+- For Memo only, consult tags and follow `MEMOS.md`.
+- For EPUB only, generate directly from the approved local Markdown draft.
+- For both, save the memo first, then generate the EPUB from the canonical
+  stored memo.
+
+Never upload or email an EPUB without a separate explicit request.
+
+## Consult existing tags for Memos
+
+Before the first Memo output in a session, run:
 
 ```bash
-~/.agents/skills/video-takeaways/scripts/list-memo-tags
+scripts/list-memo-tags \
+  --base-url https://memos.example.com \
+  --token-file ~/.config/memos/token
 ```
 
-Run it only once per session. Reuse its output for subsequent videos in the
-same conversation.
+Configure the helper using `--base-url` and `--token-file`, or
+`MEMOS_BASE_URL` and `MEMOS_TOKEN_FILE`. Run it only once per session and reuse
+its output for subsequent Memo outputs in the same conversation. Skip this step
+when Memos is not selected.
 
 Always include `#video-takeaways` and aim for 3-5 tags total. Prefer an existing
 tag whenever its meaning fits, even if a narrower new tag seems attractive.
@@ -25,7 +42,7 @@ hyphens for multi-word tags, and avoid near-synonyms such as introducing
 Run the helper with the video URL:
 
 ```bash
-~/.agents/skills/video-takeaways/scripts/fetch-transcript VIDEO_URL
+scripts/fetch-transcript VIDEO_URL
 ```
 
 Use `--lang LANGUAGE` when you need a specific caption track. For a selected
@@ -124,6 +141,9 @@ Show the full draft to the user and ask for confirmation before saving it.
 4. Spot-check several saved timestamps against the TSV, including at least one
    near the beginning and one near the end.
 5. Report the memo resource name or destination path to the user.
+
+For EPUB output, also report the output path, file size, title, author,
+language, cover state, and validation result produced by `scripts/create-epub`.
 
 Remove temporary transcript files after the task when they are no longer
 useful.

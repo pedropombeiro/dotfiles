@@ -1,0 +1,334 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: create-epub [OPTIONS] INPUT
+
+Create an EPUB 3 from a local Markdown file, Memos URL, or memos/MEMO_ID.
+
+Options:
+  --base-url URL       Memos base URL (or MEMOS_BASE_URL)
+  --token-file PATH    Memos personal access token file (or MEMOS_TOKEN_FILE)
+  --output PATH        Output EPUB path
+  --title TITLE        Override the document title
+  --author AUTHOR      Override the document author
+  --lang LANGUAGE      Override the document language (default: en)
+  --thumbnail SOURCE   Override cover image with a URL or local path
+  --no-cover           Generate the EPUB without a cover
+  -h, --help           Show this help
+EOF
+}
+
+base_url=${MEMOS_BASE_URL:-}
+token_file=${MEMOS_TOKEN_FILE:-}
+output=""
+title=""
+author=""
+language=""
+thumbnail=""
+no_cover=false
+
+while (($# > 0)); do
+  case "$1" in
+    --base-url|--token-file|--output|--title|--author|--lang|--thumbnail)
+      if (($# < 2)); then
+        printf 'create-epub: %s requires a value\n' "$1" >&2
+        exit 64
+      fi
+      case "$1" in
+        --base-url) base_url=$2 ;;
+        --token-file) token_file=$2 ;;
+        --output) output=$2 ;;
+        --title) title=$2 ;;
+        --author) author=$2 ;;
+        --lang) language=$2 ;;
+        --thumbnail) thumbnail=$2 ;;
+      esac
+      shift 2
+      ;;
+    --no-cover)
+      no_cover=true
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      printf 'create-epub: unknown option: %s\n' "$1" >&2
+      usage >&2
+      exit 64
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if (($# != 1)); then
+  usage >&2
+  exit 64
+fi
+
+for dependency in pandoc jq perl; do
+  if ! command -v "$dependency" >/dev/null 2>&1; then
+    printf 'create-epub: required command not found: %s\n' "$dependency" >&2
+    exit 127
+  fi
+done
+
+readonly input=$1
+temp_root=${TMPDIR:-/tmp}
+temp_root=${temp_root%/}
+readonly temp_root
+work_dir=$(mktemp -d "$temp_root/video-takeaway-epub.XXXXXX")
+readonly work_dir
+source_file="$work_dir/source.md"
+book_file="$work_dir/book.md"
+cover_file="$work_dir/cover.jpg"
+
+cleanup() {
+  rm -rf "$work_dir"
+}
+trap cleanup EXIT
+
+fetch_memo=false
+memo_id=""
+case "$input" in
+  http://*/memos/*|https://*/memos/*)
+    fetch_memo=true
+    inferred_base_url=${input%%/memos/*}
+    memo_id=${input#*/memos/}
+    memo_id=${memo_id%%[/?#]*}
+    [[ -n $base_url ]] || base_url=$inferred_base_url
+    ;;
+  memos/*)
+    fetch_memo=true
+    memo_id=${input#memos/}
+    ;;
+esac
+
+if [[ $fetch_memo == true ]]; then
+  if ! command -v curl >/dev/null 2>&1; then
+    printf 'create-epub: required command not found for Memos input: curl\n' >&2
+    exit 127
+  fi
+  base_url=${base_url%/}
+  if [[ -z $base_url ]]; then
+    printf 'create-epub: set --base-url or MEMOS_BASE_URL for a Memos resource\n' >&2
+    exit 64
+  fi
+  if [[ -z $token_file ]]; then
+    printf 'create-epub: set --token-file or MEMOS_TOKEN_FILE for a Memos input\n' >&2
+    exit 64
+  fi
+  if [[ ! -r $token_file ]]; then
+    printf 'create-epub: token file is not readable: %s\n' "$token_file" >&2
+    exit 1
+  fi
+
+  response_file="$work_dir/memo.json"
+  http_status=$(
+    printf 'header = "Authorization: Bearer %s"\n' "$(<"$token_file")" |
+      curl --config - --silent --show-error --output "$response_file" \
+        --write-out '%{http_code}' "$base_url/api/v1/memos/$memo_id"
+  )
+  if [[ $http_status != 200 ]]; then
+    printf 'create-epub: Memos request failed with HTTP %s\n' "$http_status" >&2
+    exit 1
+  fi
+  jq -r '.content // empty' "$response_file" >"$source_file"
+  if [[ ! -s $source_file ]]; then
+    printf 'create-epub: memo content is empty\n' >&2
+    exit 1
+  fi
+else
+  if [[ ! -r $input ]]; then
+    printf 'create-epub: input file is not readable: %s\n' "$input" >&2
+    exit 1
+  fi
+  cp "$input" "$source_file"
+fi
+
+if [[ -z $title ]]; then
+  title=$(perl -ne 'if (/^#\s+(.+?)\s*$/) { print $1; exit }' "$source_file")
+fi
+if [[ -z $title ]]; then
+  title=$(basename "$input")
+  title=${title%.*}
+fi
+
+if [[ -z $author ]]; then
+  author=$(perl -ne '
+    if (/^Source:.*\(([^,()]+),\s*[^()]*(?:language|english|french|german|spanish|italian|portuguese)[^()]*\)\s*\.?$/i) {
+      print $1;
+      exit;
+    }
+  ' "$source_file")
+fi
+if [[ -z $author ]]; then
+  author=$(perl -ne 'if (/^Source:\s+\[([^]]+?)(?:\s+on\s+YouTube)?\]\(/i) { print $1; exit }' "$source_file")
+fi
+author=${author:-Video Takeaways}
+language=${language:-en}
+
+if [[ -z $thumbnail && $no_cover == false ]]; then
+  thumbnail=$(perl -ne 'if (/^\[!\[[^]]*\]\(([^)]+)\)\]\([^)]+\)\s*$/) { print $1; exit }' "$source_file")
+fi
+
+perl -ne 'next if /^\[!\[[^]]*\]\([^)]+\)\]\([^)]+\)\s*$/; print' "$source_file" >"$book_file"
+
+cover_ready=false
+if [[ $no_cover == false && -n $thumbnail ]]; then
+  image_source=$thumbnail
+  case "$thumbnail" in
+    http://*|https://*)
+      if ! command -v curl >/dev/null 2>&1; then
+        printf 'create-epub: warning: curl is unavailable; generating without a cover\n' >&2
+        image_source=""
+      else
+        downloaded_image="$work_dir/thumbnail"
+        if curl --fail --location --silent --show-error "$thumbnail" --output "$downloaded_image"; then
+          image_source=$downloaded_image
+        else
+          printf 'create-epub: warning: thumbnail download failed; generating without a cover\n' >&2
+          image_source=""
+        fi
+      fi
+      ;;
+    *)
+      if [[ ! -r $thumbnail ]]; then
+        printf 'create-epub: warning: thumbnail is not readable; generating without a cover\n' >&2
+        image_source=""
+      fi
+      ;;
+  esac
+
+  image_command=""
+  if command -v magick >/dev/null 2>&1; then
+    image_command=magick
+  elif command -v convert >/dev/null 2>&1; then
+    image_command=convert
+  fi
+
+  if [[ -n $image_source && -n $image_command ]]; then
+    if "$image_command" "$image_source" -auto-orient -resize '800x800>' -strip \
+      -quality 82 "$cover_file"; then
+      cover_ready=true
+    else
+      printf 'create-epub: warning: cover conversion failed; generating without a cover\n' >&2
+    fi
+  elif [[ -n $image_source ]]; then
+    printf 'create-epub: warning: ImageMagick is unavailable; generating without a cover\n' >&2
+  fi
+fi
+
+sanitize_title() {
+  printf '%s' "$1" | perl -pe 's{[/:\x00-\x1f]}{ }g; s/^\.+//; s/\s+/ /g; s/^\s+|\s+$//g'
+}
+
+if [[ -z $output ]]; then
+  output_dir=$PWD
+  if [[ -n ${HOME:-} && -d $HOME/Downloads && -w $HOME/Downloads ]]; then
+    output_dir=$HOME/Downloads
+  fi
+  filename=$(sanitize_title "$title")
+  filename=${filename:-video-takeaways}
+  output="$output_dir/$filename.epub"
+  suffix=2
+  while [[ -e $output ]]; do
+    output="$output_dir/$filename ($suffix).epub"
+    ((suffix += 1))
+  done
+elif [[ -e $output ]]; then
+  printf 'create-epub: output already exists: %s\n' "$output" >&2
+  exit 1
+fi
+
+output_dir=$(dirname "$output")
+if [[ ! -d $output_dir || ! -w $output_dir ]]; then
+  printf 'create-epub: output directory is not writable: %s\n' "$output_dir" >&2
+  exit 1
+fi
+
+pandoc_args=(
+  "$book_file"
+  --from=gfm
+  --to=epub3
+  --standalone
+  --toc
+  --metadata="title=$title"
+  --metadata="author=$author"
+  --metadata="lang=$language"
+  --output="$output"
+)
+if [[ $cover_ready == true ]]; then
+  pandoc_args+=(--epub-cover-image="$cover_file")
+fi
+
+pandoc "${pandoc_args[@]}"
+
+if [[ ! -s $output ]]; then
+  printf 'create-epub: pandoc did not create a non-empty EPUB\n' >&2
+  exit 1
+fi
+
+validation=skipped
+if command -v unzip >/dev/null 2>&1; then
+  if unzip -t "$output" >/dev/null; then
+    package_file="$work_dir/package.xml"
+    content_file="$work_dir/content.xhtml"
+    unzip -p "$output" 'EPUB/content.opf' >"$package_file"
+    unzip -p "$output" 'EPUB/text/*.xhtml' >"$content_file"
+    if ! grep -q '<dc:title' "$package_file" ||
+      ! grep -q '<dc:creator' "$package_file" ||
+      ! grep -q '<dc:language' "$package_file"; then
+      printf 'create-epub: EPUB metadata validation failed\n' >&2
+      exit 1
+    fi
+    if [[ $cover_ready == true ]] && ! grep -q 'cover-image' "$package_file"; then
+      printf 'create-epub: EPUB cover validation failed\n' >&2
+      exit 1
+    fi
+    expected_link=$(perl -ne 'if (/\]\((https?:\/\/[^)]+)\)/) { print $1; exit }' "$book_file")
+    if [[ -n $expected_link ]] && ! grep -Fq "$expected_link" "$content_file"; then
+      printf 'create-epub: EPUB link validation failed\n' >&2
+      exit 1
+    fi
+    expected_timestamp=$(perl -ne 'if (/[?&]t=(\d+s)/) { print $1; exit }' "$book_file")
+    if [[ -n $expected_timestamp ]] && ! grep -Fq "t=$expected_timestamp" "$content_file"; then
+      printf 'create-epub: EPUB timestamp-link validation failed\n' >&2
+      exit 1
+    fi
+    validation=passed
+  else
+    printf 'create-epub: EPUB ZIP validation failed\n' >&2
+    exit 1
+  fi
+fi
+
+output_path=$(cd "$output_dir" && pwd)/$(basename "$output")
+printf 'output=%s\n' "$output_path"
+printf 'size_bytes=%s\n' "$(wc -c <"$output" | tr -d ' ')"
+printf 'title=%s\n' "$title"
+printf 'author=%s\n' "$author"
+printf 'language=%s\n' "$language"
+if [[ $cover_ready == true ]]; then
+  cover_dimensions=$(
+    if command -v magick >/dev/null 2>&1; then
+      magick identify -format '%wx%h' "$cover_file"
+    else
+      identify -format '%wx%h' "$cover_file" 2>/dev/null || printf embedded
+    fi
+  )
+  printf 'cover=%s\n' "$cover_dimensions"
+else
+  printf 'cover=none\n'
+fi
+printf 'validation=%s\n' "$validation"

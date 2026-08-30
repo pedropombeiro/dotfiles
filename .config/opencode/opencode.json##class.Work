@@ -385,6 +385,8 @@
       "shellcheck *": "allow",
       "sleep *": "allow",
       "sort*": "allow",
+      "*/.agents/skills/*/scripts/*": "allow",
+      "*/.config/opencode/skills/*/scripts/*": "allow",
       "stat *": "allow",
       "strings *": "allow",
       "tail *": "allow",

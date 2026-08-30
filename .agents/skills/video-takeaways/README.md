@@ -2,8 +2,9 @@
 
 `video-takeaways` is an OpenCode skill that turns captioned videos into concise,
 actionable notes with links to the relevant timestamps. After you approve the
-notes, the skill can save them to [Memos](https://www.usememos.com/), create an
-EPUB (electronic publication) file for Kindle, or do both.
+notes, the skill can write a Markdown file, save them to
+[Memos](https://www.usememos.com/), create an EPUB (electronic publication) file
+for Kindle, or produce any combination of these outputs.
 
 ## Features
 
@@ -11,6 +12,7 @@ EPUB (electronic publication) file for Kindle, or do both.
 - Organizes takeaways by topic instead of transcript order.
 - Links every takeaway to the relevant point in the video.
 - Supports videos and output notes in different languages.
+- Writes standalone Markdown files without output-specific dependencies.
 - Saves approved notes to an optional Memos instance.
 - Creates reflowable EPUB 3 documents with an optional video-thumbnail cover.
 - Keeps Memos hosts, credentials, and output destinations configurable.
@@ -77,9 +79,9 @@ Summarize the actionable takeaways from this video and link each one to its
 timestamp: VIDEO_URL
 ```
 
-OpenCode drafts the notes for review. After approval, choose **Memo**, **EPUB**,
-or both. If you request an output in the initial prompt, the skill uses that
-choice without asking again.
+OpenCode drafts the notes for review. After approval, choose **Markdown**,
+**Memo**, **EPUB**, or any combination. If you request an output in the initial
+prompt, the skill uses that choice without asking again.
 
 You can also run the helpers directly:
 
@@ -93,6 +95,10 @@ Run any helper with `--help` for all options.
 
 ## Output behavior
 
+- Markdown files go to `$HOME/Downloads` when that directory is writable.
+  Otherwise, they go to the current directory.
+- Existing Markdown files aren't overwritten. Automatic filenames receive a
+  numeric suffix.
 - EPUB files go to `$HOME/Downloads` when that directory is writable. Otherwise,
   they go to the current directory.
 - Existing EPUB files aren't overwritten.

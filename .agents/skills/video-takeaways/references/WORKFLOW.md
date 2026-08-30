@@ -5,13 +5,21 @@ Use this workflow to turn caption cues into verifiable, actionable notes.
 ## Choose outputs after approval
 
 After the user approves the draft, use the `question` tool with multiple
-selection enabled and offer **Memo** and **EPUB**, unless the user already chose
-a destination explicitly.
+selection enabled and offer **Markdown**, **Memo**, and **EPUB**, unless the
+user already chose a destination explicitly.
 
+- For Markdown, write the approved draft directly to a local `.md` file.
 - For Memo only, consult tags and follow `MEMOS.md`.
 - For EPUB only, generate directly from the approved local Markdown draft.
-- For both, save the memo first, then generate the EPUB from the canonical
-  stored memo.
+- When Memo and EPUB are both selected, save the memo first, then generate the
+  EPUB from the canonical stored memo.
+
+For Markdown output, use `$HOME/Downloads` when it exists and is writable.
+Otherwise, use the current directory. Derive a readable filename from the H1
+title, remove path separators and filesystem control characters, and use
+`video-takeaways.md` if nothing remains. Never overwrite an existing file. Add
+` (2)`, ` (3)`, and so on before `.md` until the name is available. If the user
+specifies a path, use that path and ask before overwriting an existing file.
 
 Never upload or email an EPUB without a separate explicit request.
 

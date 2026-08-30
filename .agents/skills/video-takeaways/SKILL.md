@@ -1,6 +1,6 @@
 ---
 name: video-takeaways
-description: "Video URLs and YouTube links: extract actionable takeaways with timestamp hyperlinks, then save approved notes to Memos, create an EPUB for Kindle, or use another requested destination. Use when asked to summarize learnings, lessons, rules of thumb, practical advice, EPUBs, or Send to Kindle documents from a video, talk, tutorial, or interview."
+description: "Video URLs and YouTube links: extract actionable takeaways with timestamp hyperlinks, then save approved notes as Markdown, to Memos, as an EPUB for Kindle, or to another requested destination. Use when asked to summarize learnings, lessons, rules of thumb, practical advice, Markdown notes, EPUBs, or Send to Kindle documents from a video, talk, tutorial, or interview."
 version: 1.0.0
 license: MIT
 compatibility: opencode
@@ -38,12 +38,14 @@ default to English, even when the video uses another language.
 3. Draft the complete summary in the agreed language. Group advice by theme,
    use actionable language, and append a timestamp hyperlink to every takeaway.
 4. After approval, use the `question` tool with multiple selection enabled to
-   offer **Memo** and **EPUB**. Honor an explicit destination already chosen by
-   the user without asking again.
-5. For Memo output, consult existing tags once per session, then save and verify
+   offer **Markdown**, **Memo**, and **EPUB**. Honor an explicit destination
+   already chosen by the user without asking again.
+5. For Markdown output, write the approved draft to a local `.md` file and
+   verify it as described in [`references/WORKFLOW.md`](references/WORKFLOW.md).
+6. For Memo output, consult existing tags once per session, then save and verify
    the note using [`references/MEMOS.md`](references/MEMOS.md).
-6. For EPUB output, run [`scripts/create-epub`](scripts/create-epub) and follow
-   [`references/EPUB.md`](references/EPUB.md). When both outputs are selected,
+7. For EPUB output, run [`scripts/create-epub`](scripts/create-epub) and follow
+   [`references/EPUB.md`](references/EPUB.md). When Memo and EPUB are selected,
    save the memo first and create the EPUB from the canonical stored memo.
 
 ## Output contract
@@ -82,6 +84,8 @@ default to English, even when the video uses another language.
   for meaning rather than word for word.
 - Memos is an optional output adapter. Do not assume a host, token path,
   username, or visibility.
+- Markdown is an optional output adapter with no additional dependencies. Save
+  it only when selected, unless another output needs a temporary Markdown source.
 - EPUB is an optional output adapter. Generate it only when selected, and never
   upload or email it without separate explicit approval.
 - Honor an explicit request to use a local file, repository document, or other

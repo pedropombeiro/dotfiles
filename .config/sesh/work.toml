@@ -3,7 +3,7 @@
 [[session]]
 name = "Weekly log"
 path = "~/Developer/gitlab.com/pedropombeiro/weekly-log"
-startup_command = "opencode"
+startup_command = "opencode --agent=build --model=gitlab/duo-chat-gpt-5-6-sol"
 preview_command = "eza -TL=3 --almost-all --git --icons --reverse --color=always {}/{brain,logs}"
 
 [[session]]

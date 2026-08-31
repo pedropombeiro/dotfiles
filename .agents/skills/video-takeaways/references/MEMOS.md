@@ -20,17 +20,26 @@ The helper scripts reject empty tokens and tokens containing whitespace,
 quotes, or backslashes. These characters can split or alter a `curl` config
 directive. A normal trailing newline in the token file is accepted.
 
-## Discover commands
+## Discover tools
 
-Follow the required MCP sequence:
+Use the environment's configured `memos` MCP server. Do not assume that a
+specific MCP client or wrapper is installed. Inspect the available tools and
+their input schemas before invoking them.
 
-1. Call `lazy-mcp_list_commands` for the `memos` server.
-2. Call `lazy-mcp_describe_commands` for commands that have not already been
-   invoked successfully in the current session.
-3. Call `lazy-mcp_invoke_command` with the described parameter shape.
+When `lazy-mcp` is available, follow its discovery sequence:
 
-The relevant commands are usually `memo_create_memo`, `memo_update_memo`, and
-`memo_get_memo`.
+1. List commands for the `memos` server.
+2. Describe commands that have not already been invoked successfully in the
+   current session.
+3. Invoke the command with the described parameter shape.
+
+When the environment exposes Memos tools directly, use its native tool listing
+or schema inspection instead. If no `memos` server is configured, explain that
+Memo output is unavailable and offer Markdown or EPUB output instead.
+
+The relevant operations create, update, and retrieve a memo. Tool names vary by
+MCP client; names such as `memo_create_memo`, `memo_update_memo`, and
+`memo_get_memo` are examples, not commands to invoke without discovery.
 
 ## Create a memo
 

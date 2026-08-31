@@ -239,6 +239,10 @@ sanitize_title() {
   printf '%s' "$1" | perl -pe 's{[/:\x00-\x1f]}{ }g; s/^\.+//; s/\s+/ /g; s/^\s+|\s+$//g'
 }
 
+xml_escape() {
+  printf '%s' "$1" | perl -pe 's/&/&amp;/g; s/"/&quot;/g; s/</&lt;/g; s/>/&gt;/g'
+}
+
 if [[ -z $output ]]; then
   output_dir=$PWD
   if [[ -n ${HOME:-} && -d $HOME/Downloads && -w $HOME/Downloads ]]; then
@@ -303,6 +307,7 @@ if command -v unzip >/dev/null 2>&1; then
       exit 1
     fi
     expected_link=$(perl -ne 'if (/\]\((https?:\/\/[^)]+)\)/) { print $1; exit }' "$book_file")
+    expected_link=$(xml_escape "$expected_link")
     if [[ -n $expected_link ]] && ! grep -Fq "$expected_link" "$content_file"; then
       printf 'create-epub: EPUB link validation failed\n' >&2
       exit 1

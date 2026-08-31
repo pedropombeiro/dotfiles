@@ -111,7 +111,7 @@ Run any helper with `--help` for all options.
 
 ## Documentation
 
-- [`SKILL.md`](SKILL.md) defines when OpenCode loads the skill and how it behaves.
+- [`SKILL.md`](SKILL.md) defines when an agent loads the skill and how it behaves.
 - [`references/WORKFLOW.md`](references/WORKFLOW.md) describes transcript review
   and takeaway composition.
 - [`references/MEMOS.md`](references/MEMOS.md) describes the optional Memos

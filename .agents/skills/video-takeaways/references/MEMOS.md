@@ -16,6 +16,10 @@ Never accept a raw token as a command-line argument. Read it from a file and
 pass the authorization header to `curl --config -` through standard input so it
 does not appear in process arguments.
 
+The helper scripts reject empty tokens and tokens containing whitespace,
+quotes, or backslashes. These characters can split or alter a `curl` config
+directive. A normal trailing newline in the token file is accepted.
+
 ## Discover commands
 
 Follow the required MCP sequence:

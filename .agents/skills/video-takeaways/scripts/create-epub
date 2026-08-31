@@ -132,10 +132,16 @@ if [[ $fetch_memo == true ]]; then
     printf 'create-epub: token file is not readable: %s\n' "$token_file" >&2
     exit 1
   fi
+  token=$(<"$token_file")
+  if [[ -z $token || $token == *[[:space:]]* || $token == *\"* || $token == *\\* ]]; then
+    printf 'create-epub: token file contains an empty or invalid token\n' >&2
+    exit 1
+  fi
+  readonly token
 
   response_file="$work_dir/memo.json"
   http_status=$(
-    printf 'header = "Authorization: Bearer %s"\n' "$(<"$token_file")" |
+    printf 'header = "Authorization: Bearer %s"\n' "$token" |
       curl --config - --silent --show-error --output "$response_file" \
         --write-out '%{http_code}' "$base_url/api/v1/memos/$memo_id"
   )

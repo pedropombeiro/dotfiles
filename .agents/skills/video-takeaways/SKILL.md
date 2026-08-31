@@ -1,7 +1,7 @@
 ---
 name: video-takeaways
 description: "Video URLs and YouTube links: extract actionable takeaways with timestamp hyperlinks, then save approved notes as Markdown, to Memos, as an EPUB for Kindle, or to another requested destination. Use when asked to summarize learnings, lessons, rules of thumb, practical advice, Markdown notes, EPUBs, or Send to Kindle documents from a video, talk, tutorial, or interview."
-version: 1.0.0
+version: 1.0.1
 license: MIT
 compatibility: opencode
 metadata:

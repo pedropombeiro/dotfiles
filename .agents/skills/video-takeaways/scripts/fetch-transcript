@@ -179,7 +179,7 @@ fi
 transcript_file=$(mktemp "$temp_root/video-takeaways-transcript.XXXXXX")
 readonly transcript_file
 
-perl -ne '
+CAPTION_SOURCE=$caption_source perl -ne '
   if (/^(\d\d):(\d\d):(\d\d)\.\d+ --> /) {
     $seconds = ($1 * 3600) + ($2 * 60) + $3;
     $timestamp = sprintf("%02d:%02d:%02d", $1, $2, $3);
@@ -189,9 +189,34 @@ perl -ne '
   s/<[^>]*>//g;
   s/\r//g;
   chomp;
-  next if $_ eq "" || $_ eq $last;
-  $last = $_;
-  print "$seconds\t$timestamp\t$_\n";
+  s/^\s+|\s+$//g;
+  s/\s+/ /g;
+  next if $_ eq "";
+
+  my $current = $_;
+  my $output = $current;
+  if (defined $last) {
+    next if $current eq $last;
+    if ($ENV{CAPTION_SOURCE} eq "automatic") {
+      next if index(lc($last), lc($current)) >= 0;
+
+      my @previous = split / /, $last;
+      my @current = split / /, $current;
+      my $maximum = @previous < @current ? scalar @previous : scalar @current;
+      my $overlap = 0;
+      for my $length (reverse 1 .. $maximum) {
+        my $previous_suffix = join " ", @previous[@previous - $length .. $#previous];
+        my $current_prefix = join " ", @current[0 .. $length - 1];
+        if (lc($previous_suffix) eq lc($current_prefix)) {
+          $overlap = $length;
+          last;
+        }
+      }
+      $output = join " ", @current[$overlap .. $#current] if $overlap;
+    }
+  }
+  $last = $current;
+  print "$seconds\t$timestamp\t$output\n";
 ' "$vtt_file" >"$transcript_file"
 
 if [[ ! -s $transcript_file ]]; then

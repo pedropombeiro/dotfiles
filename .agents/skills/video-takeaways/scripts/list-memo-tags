@@ -70,6 +70,12 @@ if [[ ! -r $token_file ]]; then
   printf 'list-memo-tags: token file is not readable: %s\n' "$token_file" >&2
   exit 1
 fi
+token=$(<"$token_file")
+if [[ -z $token || $token == *[[:space:]]* || $token == *\"* || $token == *\\* ]]; then
+  printf 'list-memo-tags: token file contains an empty or invalid token\n' >&2
+  exit 1
+fi
+readonly token
 
 temp_root=${TMPDIR:-/tmp}
 temp_root=${temp_root%/}
@@ -96,7 +102,7 @@ while :; do
   fi
 
   http_status=$(
-    printf 'header = "Authorization: Bearer %s"\n' "$(<"$token_file")" |
+    printf 'header = "Authorization: Bearer %s"\n' "$token" |
       curl --config - --silent --show-error --output "$response_file" \
         --write-out '%{http_code}' "$request_url"
   )

@@ -161,7 +161,17 @@ bat cache --build # Ensure any custom themes and syntax definition files are com
 
 _update_step "npm"
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."
-(( $+commands[npm] )) && npm update -g
+if (( $+commands[npm] )); then
+  npm_output="$(npm update -g 2>&1)"
+  npm_status=$?
+  printf '%s\n' "${npm_output}"
+  (( npm_status == 0 )) || exit ${npm_status}
+
+  if [[ "${npm_output}" == *'install scripts blocked because they are not covered by allowScripts'* ]]; then
+    printf "${RED}%s${NC}\n" "npm blocked a global package install script. Allow the named package explicitly, then rerun the update."
+    exit 1
+  fi
+fi
 
 _update_step "opencode skills"
 printf "${YELLOW}%s${NC}\n" "Updating OpenCode skills..."

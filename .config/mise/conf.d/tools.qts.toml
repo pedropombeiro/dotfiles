@@ -4,8 +4,6 @@
 # GLIBC 2.29+. Force musl so asset selection stays strict.
 # See https://github.com/jdx/mise/pull/12093
 libc = "musl"
-# The Linux base declares jless, but its only Linux build requires glibc 2.34.
-disable_tools = ["jless"]
 
 [settings.python]
 precompiled_arch = "x86_64"

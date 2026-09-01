@@ -1,0 +1,4 @@
+[tools]
+# JSON viewer with less-like navigation. Its Linux build requires glibc 2.34,
+# so it cannot be part of the common Linux layer used by QTS.
+jless = "latest"

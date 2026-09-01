@@ -9,8 +9,8 @@ resolves to `config.toml##default`; on QTS to the `distro.qts` alt.
 
 Additional layered configs live in `~/.config/mise/conf.d/` (`global.toml`, `tasks.toml`,
 `tools.personal.toml`, `tools.work.toml`, `tools.linux.toml`, ...). The YADM-selected
-`~/.config/mise/miserc.toml` enables the machine-class environment and mise's automatic
-platform environments. File-based tasks live in `~/.config/mise/tasks/`.
+`~/.config/mise/miserc.toml` enables the machine-class or distribution environment and
+mise's automatic platform environments. File-based tasks live in `~/.config/mise/tasks/`.
 
 `conf.d/bootstrap.toml` declares repositories and user LaunchAgents that mise
 converges during YADM bootstrap. Bootstrap scripts invoke explicit `--only`
@@ -122,16 +122,17 @@ means the shared value always wins.
 ### Config Environments
 
 `~/.config/mise/miserc.toml` is a YADM alternative that enables `env_conf_d`,
-`auto_env`, and the explicit `personal`, `work`, or `qts` environment. Environment
-fragments use names such as `tools.personal.toml`, `tools.work.toml`, and
-`tools.qts.toml`; platform fragments such as `tools.linux.toml` load through
-`auto_env`.
+`auto_env`, and the explicit `personal`, `work`, `linux-standard`, or `qts`
+environment. Environment fragments use names such as `tools.personal.toml`,
+`tools.work.toml`, and `tools.qts.toml`; platform fragments such as
+`tools.linux.toml` load through `auto_env`.
 
 The explicit environment has higher precedence than automatic platform
 environments. On QTS, `tools.linux.toml` loads first and `tools.qts.toml` then
-overrides incompatible runtime versions and libc settings. Add inherited tools
-that cannot run on QTS to `settings.disable_tools` in `tools.qts.toml`; omitting
-them from the QTS fragment does not remove the Linux declaration.
+overrides incompatible runtime versions and libc settings. Standard Linux hosts
+also load `tools.linux-standard.toml` for tools that cannot run on QTS. Put tools
+that work on every Linux host in `tools.linux.toml`, and put tools that require a
+current Linux distribution in `tools.linux-standard.toml`.
 
 These early settings do not appear in `mise settings`; verify them through
 `mise config ls` and the resulting toolset instead.

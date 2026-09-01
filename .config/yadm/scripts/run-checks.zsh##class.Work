@@ -8,6 +8,7 @@ source "${YADM_SCRIPTS}/run-checks-common.zsh"
 
 check_app_running() {
   local app_name=${1}
+  local bundle_id=${2}
 
   print_op_stay "Checking if ${app_name} is running"
   if pgrep "${app_name}" >/dev/null; then
@@ -15,7 +16,18 @@ check_app_running() {
     return
   fi
 
-  open -a "${app_name}"
+  local launch_error
+  if [[ -n "${bundle_id}" ]]; then
+    launch_error=$(open -b "${bundle_id}" 2>&1)
+  else
+    launch_error=$(open -a "${app_name}" 2>&1)
+  fi
+  if (( $? != 0 )); then
+    print_failure "Failed to launch ${app_name}: ${launch_error}"
+    any_failed=1
+    return
+  fi
+
   sleep 1
   if pgrep "${app_name}" >/dev/null; then
     print_failure "${app_name} is not running (fixed)"
@@ -293,7 +305,7 @@ check_lefthook_local_overrides() {
 
 check_app_running 'Hammerspoon'
 check_hammerspoon_bluetooth
-check_app_running 'Stream Deck'
+check_app_running 'Stream Deck' 'com.elgato.StreamDeck'
 
 if uhubctl >/dev/null 2>&1; then
   check_stream_deck_usb

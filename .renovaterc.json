@@ -51,7 +51,7 @@
       "matchPackageNames": ["node", "nodejs"],
       "matchFileNames": [
         ".config/mise/config.toml##distro.qts,extension.toml",
-        ".config/mise/conf.d/distro-specific.toml##os.Linux,distro.qts"
+        ".config/mise/conf.d/tools.qts.toml"
       ],
       "allowedVersions": "23.7.x"
     },
@@ -68,7 +68,7 @@
       "description": "Pin Ruby on the work machine: `ruby` resolves through GitLab's asdf-gitlab-ruby plugin, whose versions.txt publishes no macos/arm64 build past 3.4.9. Newer pins fall back to a slow source compile, leaving ruby missing and silently degrading the gem: backend to system Ruby 2.6. Raise this once the manifest catches up.",
       "matchManagers": ["mise"],
       "matchPackageNames": ["ruby"],
-      "matchFileNames": [".config/mise/conf.d/work.toml##class.Work"],
+      "matchFileNames": [".config/mise/conf.d/tools.work.toml"],
       "allowedVersions": "3.4.9"
     },
     {

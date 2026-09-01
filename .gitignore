@@ -22,6 +22,7 @@ Thumbs.db
 .config/yazi/flavors/gruvbox-dark.yazi
 .config/lazy-mcp/memos-token
 
+
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
 .config/1Password/ssh/agent.toml
@@ -30,21 +31,18 @@ Thumbs.db
 .config/iterm2/config/com.googlecode.iterm2.plist
 .config/iterm2/icons/gitlab.ico
 .config/lazy-mcp/servers.json
-.config/mise/conf.d/distro-specific.toml
-.config/mise/conf.d/linux.toml
-.config/mise/conf.d/personal.toml
-.config/mise/conf.d/work.toml
 .config/mise/config.toml
+.config/mise/miserc.toml
 .config/mise/uv-overrides/homeassistant-cli.txt
 .config/nvim/lua/core/distro.lua
 .config/nvim/lua/core/gdk.lua
 .config/nvim/lua/plugins/image.lua
 .config/nvim/lua/plugins/lsp/mason-tool-installer.lua
-.config/opencode/env-protection.json
 .config/opencode-memory/config.toml
+.config/opencode/env-protection.json
 .config/opencode/opencode-homeassistant.json
-.config/opencode/opencode.json
 .config/opencode/opencode-notifier.json
+.config/opencode/opencode.json
 .config/opencode/plugins/deny-rm-rf.js
 .config/opencode/plugins/require-gpsup.js
 .config/opencode/tui.json
@@ -53,7 +51,6 @@ Thumbs.db
 .config/tmux/tmux.platform.conf
 .config/yadm/bootstrap.d/000-ensure-machine-class.sh
 .config/yadm/bootstrap.d/001-enable-touchid-on-terminal.sh
-.config/yadm/bootstrap.d/002-install-launch-agents.sh
 .config/yadm/bootstrap.d/003-install-launch-daemons.sh
 .config/yadm/bootstrap.d/005-software-install.sh
 .config/yadm/bootstrap.d/015-allow-ssh-in-firewall.sh

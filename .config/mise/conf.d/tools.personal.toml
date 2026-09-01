@@ -1,7 +1,7 @@
 [tools]
 # ── Runtimes ──────────────────────────────────────────────────────────
 # Ruby runtime. Declared here rather than in config.toml because the work
-# machine needs an older pin (see conf.d/work.toml##class.Work).
+# machine needs an older pin (see conf.d/tools.work.toml).
 ruby = "4.0.6"
 # ── Rust tooling ──────────────────────────────────────────────────────
 # Install Rust binaries without compiling from source

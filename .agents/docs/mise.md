@@ -8,8 +8,9 @@ Runtime versions and CLI tools management.
 resolves to `config.toml##default`; on QTS to the `distro.qts` alt.
 
 Additional layered configs live in `~/.config/mise/conf.d/` (`global.toml`, `tasks.toml`,
-`work.toml##class.Work`, `distro-specific.toml##os.Linux,distro.qts`, ...). File-based
-tasks live in `~/.config/mise/tasks/`.
+`tools.personal.toml`, `tools.work.toml`, `tools.linux.toml`, ...). The YADM-selected
+`~/.config/mise/miserc.toml` enables the machine-class environment and mise's automatic
+platform environments. File-based tasks live in `~/.config/mise/tasks/`.
 
 `conf.d/bootstrap.toml` declares repositories and user LaunchAgents that mise
 converges during YADM bootstrap. Bootstrap scripts invoke explicit `--only`
@@ -100,8 +101,8 @@ Two consequences:
   ```
 
 Because of this, `ruby` is declared per class rather than in `config.toml`:
-`conf.d/work.toml##class.Work` pins the newest version in the manifest, while
-`conf.d/personal.toml##class.Personal` uses `core:ruby` and can track upstream.
+`conf.d/tools.work.toml` pins the newest version in the manifest, while
+`conf.d/tools.personal.toml` uses `core:ruby` and can track upstream.
 A Renovate rule in `.renovaterc.json` holds the work pin.
 
 ### Config Precedence
@@ -111,12 +112,27 @@ is declared in both, editing the `conf.d` copy has no effect. Use
 `mise ls <tool>` to see which file mise credits for the active version:
 
 ```
-ruby  3.4.9   ~/.config/mise/conf.d/work.toml  3.4.9
+ruby  3.4.9   ~/.config/mise/conf.d/tools.work.toml  3.4.9
 ```
 
 To vary a tool per machine class, remove it from `config.toml` entirely and
-declare it only in the class-specific `conf.d` files. Leaving it in both means
-the shared value always wins.
+declare it only in the environment-specific `conf.d` files. Leaving it in both
+means the shared value always wins.
+
+### Config Environments
+
+`~/.config/mise/miserc.toml` is a YADM alternative that enables `env_conf_d`,
+`auto_env`, and the explicit `personal`, `work`, or `qts` environment. Environment
+fragments use names such as `tools.personal.toml`, `tools.work.toml`, and
+`tools.qts.toml`; platform fragments such as `tools.linux.toml` load through
+`auto_env`.
+
+The explicit environment has higher precedence than automatic platform
+environments. On QTS, `tools.linux.toml` loads first and `tools.qts.toml` then
+overrides incompatible runtime versions and libc settings.
+
+These early settings do not appear in `mise settings`; verify them through
+`mise config ls` and the resulting toolset instead.
 
 ### GitHub Credentials
 
@@ -212,7 +228,7 @@ re-tag by hand after rebasing onto upstream (see
 ## QNAP/QTS Compatibility
 
 The QTS environment has glibc 2.21 limitations. Distro-specific pins live in
-`~/.config/mise/conf.d/distro-specific.toml##os.Linux,distro.qts`.
+`~/.config/mise/conf.d/tools.qts.toml`.
 
 - **Python**: QTS has no musl loader, so precompiled binaries must use the gnu variant.
   Use `x86_64` (not `x86_64_v2`) for `precompiled_arch` — the v2 build embeds
@@ -291,6 +307,6 @@ Tools are auto-updated by Renovate bot via `~/.renovaterc.json`. Check PRs for p
 - For `npm:` install failures, identify which aube gate fired before adding an exception; use the per-tool option, not a global setting
 - When a `gem:` tool fails on a Ruby version constraint, check `mise ls ruby` for `(missing)` before debugging the gem
 - Before bumping `ruby` on the work machine, confirm the version appears in the asdf-gitlab-ruby `versions.txt`
-- To vary a tool per machine class, declare it only in `conf.d/*`, never alongside an entry in `config.toml`
+- To vary a tool per machine class, declare it only in the matching environment fragment, never alongside an entry in `config.toml`
 - Use `settings.github.credential_command` rather than `env._.source` for lazy GitHub authentication
 - Attach install-specific setup to the relevant tool with `postinstall`, not a global postinstall hook

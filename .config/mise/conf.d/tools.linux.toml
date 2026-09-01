@@ -3,6 +3,8 @@ uvx = true
 
 [tools]
 # ── Runtimes ──────────────────────────────────────────────────────────
+# JavaScript runtime
+node = "latest"
 # Fast Python package and project manager
 uv = "latest"
 # Go toolchain
@@ -22,6 +24,8 @@ if [ ! -f "$MISE_TOOL_INSTALL_PATH/fzf-tmux" ]; then
   mise reshim
 fi
 ''' }
+# JSON viewer with less-like navigation
+jless = "latest"
 # Smarter cd with frecency tracking
 zoxide = "latest"
 # Modern watch replacement with diff highlighting

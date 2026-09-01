@@ -223,7 +223,7 @@ Find a workspace's team ID in `~/Library/Application Support/Slack/storage/root-
 - `~/.config/opencode/notifier/notify.sh` — OpenCode notifier script that calls Hammerspoon's notify endpoint
 - `~/.config/yadm/config_templates/nginx/servers/localhost.conf` — nginx reverse proxy config
 - `~/.config/yadm/scripts/defaults.sh##os.Darwin` — Registers Hammerspoon as default HTTP/HTTPS handler via `duti` (for `urlrouter`)
-- `~/.config/mise/conf.d/work.toml##class.Work` — `system:fix` task (manual fallback with sudo powers)
+- `~/.config/mise/conf.d/tools.work.toml` — `system:fix` task (manual fallback with sudo powers)
 - `~/.config/yadm/scripts/run-checks.zsh##class.Work` — Health checks for Hammerspoon, nginx, Busylight, Stream Deck
 
 ## Debugging / Logs

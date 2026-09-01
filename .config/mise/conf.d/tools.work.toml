@@ -1,5 +1,5 @@
 [env]
-HISTIGNORE="*AWS_SECRET*:*AWS_ACCESS*:*glpat-*:*glrt-*:*gloas-*:*PRIVATE-TOKEN*:*CLIENT_SECRET*"
+HISTIGNORE = "*AWS_SECRET*:*AWS_ACCESS*:*glpat-*:*glrt-*:*gloas-*:*PRIVATE-TOKEN*:*CLIENT_SECRET*"
 # GitLab's asdf-gitlab-ruby plugin only downloads prebuilt binaries when this is
 # set, otherwise it compiles from source via ruby-build (slow, and slower still
 # with jobs = 1). The GDK sets it in its own mise.toml, but installs launched

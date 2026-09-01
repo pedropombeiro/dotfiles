@@ -47,6 +47,8 @@ brew update
 brew upgrade
 brew bundle --global
 brew bundle cleanup --global --force
+mise bootstrap --only packages --yes
+mise run mas:upgrade
 
 printf "${YELLOW}%s${NC}\n" "Updating mise plugins and upgrading mise"
 _update_step "mise plugins"
@@ -63,4 +65,3 @@ fi
 echo
 _update_step "brew dump"
 mise run brew:dump
-

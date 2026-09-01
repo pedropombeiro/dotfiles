@@ -96,6 +96,10 @@ run = "brew bundle dump --global --force --formula --cask --tap"
 description = "Remove packages not in Brewfile"
 run = "brew bundle cleanup --file ~/.Brewfile --force"
 
+[tasks."mas:upgrade"]
+description = "Upgrade Mac App Store apps"
+run = "mise bootstrap packages upgrade --manager mas --yes"
+
 # ── Network ───────────────────────────────────────────────────────────
 
 [tasks."network:wifi-traffic"]

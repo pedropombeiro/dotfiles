@@ -6,3 +6,20 @@ ruby = "4.0.6"
 # ── Rust tooling ──────────────────────────────────────────────────────
 # Install Rust binaries without compiling from source
 "aqua:cargo-bins/cargo-binstall" = "latest"
+
+[bootstrap.packages]
+# Mac App Store apps
+"mas:1569813296" = "latest" # 1Password for Safari
+"mas:937984704" = "latest"  # Amphetamine
+"mas:425264550" = "latest"  # Blackmagic Disk Speed Test
+"mas:1193539993" = "latest" # Brother iPrint&Scan
+"mas:640199958" = "latest"  # Developer
+"mas:1381004916" = "latest" # Discovery
+"mas:302584613" = "latest"  # Kindle
+"mas:430255202" = "latest"  # Mactracker
+"mas:1663665267" = "latest" # Paperparrot
+"mas:375589283" = "latest"  # Parcel
+"mas:1229416813" = "latest" # Router
+"mas:897118787" = "latest"  # Shazam
+"mas:1153157709" = "latest" # Speedtest
+"mas:1451685025" = "latest" # WireGuard

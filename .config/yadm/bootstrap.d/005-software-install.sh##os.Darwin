@@ -25,6 +25,9 @@ if [ -f "${HOME}/.Brewfile" ]; then
   brew bundle --global || printf "${RED}%s${NC}\n" "Failed to install packages"
 fi
 
+printf "${YELLOW}%s${NC}\n" "Installing Mac App Store apps"
+mise bootstrap --only packages --yes || printf "${RED}%s${NC}\n" "Failed to install Mac App Store apps"
+
 if [[ ! -f ${HOME}/.fzf.zsh ]]; then
   printf "${YELLOW}%s${NC}\n" "Installing FZF scripts"
   "$(brew --prefix fzf)"/install --no-update-rc --completion --key-bindings

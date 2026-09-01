@@ -187,12 +187,13 @@ Manual configuration steps:
 
 ### Package Sources
 
-The definitive list of packages lives in the Homebrew bundle file and App Store list:
+The definitive package lists live in the Homebrew bundle and mise configuration:
 
 - Homebrew brews and casks: `.Brewfile`
-- Mac App Store apps: `.Brewfile` (`mas` entries)
+- Mac App Store apps: `.config/mise/conf.d/tools.personal.toml` or
+  `.config/mise/conf.d/tools.work.toml` (`bootstrap.packages` entries)
 
-The README highlights key tooling, but the Brewfile is the source of truth.
+The README highlights key tooling, but those configuration files are the source of truth.
 
 ## Development Tools
 

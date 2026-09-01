@@ -160,6 +160,8 @@ printf "${YELLOW}%s${NC}\n" "Build bat theme"
 bat cache --build # Ensure any custom themes and syntax definition files are compiled
 
 _update_step "npm"
+# Tool upgrades can leave incremental shims pointing at removed plugin paths.
+mise reshim --force
 printf "${YELLOW}%s${NC}\n" "Updating npm global packages..."
 if (( $+commands[npm] )); then
   npm_output="$(npm update -g 2>&1)"

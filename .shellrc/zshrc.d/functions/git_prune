@@ -5,6 +5,15 @@
 
 local dry_run=false
 local argument
+local reset='' green='' yellow='' cyan='' bold=''
+
+if [[ -t 1 && -z $NO_COLOR ]]; then
+  reset=$'\e[0m'
+  green=$'\e[32m'
+  yellow=$'\e[33m'
+  cyan=$'\e[36m'
+  bold=$'\e[1m'
+fi
 
 for argument in "$@"; do
   case "$argument" in
@@ -44,7 +53,8 @@ current_branch=$(git branch --show-current) || return
 local -a branches candidates changed_paths
 local branch upstream upstream_remote upstream_track default_ref
 local remote_url remote_host remote_project encoded_branch merge_request_sha merge_base
-local work_landed
+local work_landed glab_auth_status
+local glab_auth_checked=false
 
 branches=("${(@f)$(git for-each-ref --format='%(refname:short)' refs/heads)}")
 for branch in "${branches[@]}"; do
@@ -58,12 +68,14 @@ for branch in "${branches[@]}"; do
 
   if [[ $upstream_track == *': gone]' ]]; then
     candidates+=("$branch|gone")
+    print -r -- "${yellow}🗑  $branch: gone${reset}"
     continue
   fi
 
   default_ref="$upstream_remote/$default_branch"
   if git show-ref --verify --quiet "refs/remotes/$default_ref" && git merge-base --is-ancestor "$branch" "$default_ref"; then
     candidates+=("$branch|merged")
+    print -r -- "${yellow}🗑  $branch: merged${reset}"
     continue
   fi
 
@@ -75,32 +87,46 @@ for branch in "${branches[@]}"; do
     work_landed=true
   fi
 
+  if [[ $work_landed != true ]]; then
+    print -r -- "${green}✓  $branch: active${reset}"
+    continue
+  fi
+
   remote_url=$(git remote get-url "$upstream_remote")
   remote_host=$(print -r -- "$remote_url" | sed -E 's|^[a-z+]+://||; s|^[^@]*@||; s|[:/].*$||')
   remote_project=$(print -r -- "$remote_url" | sed -E 's|^[a-z+]+://[^/]*/||; s|^[^:]*:||; s|\.git$||')
 
-  if glab auth status 2>&1 | grep -q "^[[:space:]]*$remote_host$"; then
+  if [[ $glab_auth_checked == false ]]; then
+    glab_auth_status=$(glab auth status 2>&1)
+    glab_auth_checked=true
+  fi
+
+  if print -r -- "$glab_auth_status" | grep -q "^[[:space:]]*$remote_host$"; then
     encoded_branch=${branch//\//%2F}
+    print -r -- "${cyan}🔎 $branch: checking merged MRs${reset}"
     merge_request_sha=$(glab api --hostname "$remote_host" \
       "projects/${remote_project//\//%2F}/merge_requests?source_branch=$encoded_branch&state=merged" 2>/dev/null |
       jq -r '.[0].sha // empty')
 
-    if [[ -n $merge_request_sha && $work_landed == true ]]; then
+    if [[ -n $merge_request_sha ]]; then
       candidates+=("$branch|mr-merged")
+      print -r -- "${yellow}🗑  $branch: mr-merged${reset}"
       continue
     fi
   fi
 
-  [[ $work_landed == true ]] && candidates+=("$branch|work-landed")
+  candidates+=("$branch|work-landed")
+  print -r -- "${yellow}🗑  $branch: work-landed${reset}"
 done
 
 if (( ! ${#candidates} )); then
-  print 'nothing to prune'
+  print -r -- "${green}✓  nothing to prune${reset}"
   return 0
 fi
 
+print -r -- "\n${bold}Branches to prune:${reset}"
 for argument in "${candidates[@]}"; do
-  print "${argument%%|*}: ${argument#*|}"
+  print -r -- "${yellow}🗑  ${argument%%|*}: ${argument#*|}${reset}"
 done
 
 if [[ $dry_run == true ]]; then

@@ -129,7 +129,9 @@ fragments use names such as `tools.personal.toml`, `tools.work.toml`, and
 
 The explicit environment has higher precedence than automatic platform
 environments. On QTS, `tools.linux.toml` loads first and `tools.qts.toml` then
-overrides incompatible runtime versions and libc settings.
+overrides incompatible runtime versions and libc settings. Add inherited tools
+that cannot run on QTS to `settings.disable_tools` in `tools.qts.toml`; omitting
+them from the QTS fragment does not remove the Linux declaration.
 
 These early settings do not appear in `mise settings`; verify them through
 `mise config ls` and the resulting toolset instead.

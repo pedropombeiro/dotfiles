@@ -3,3 +3,7 @@
 ## Docs preview
 
 - After pushing a change that touches `doc/**`, trigger the `review-docs-deploy` manual CI job on the MR's latest pipeline so the live docs preview reflects the update. The preview is NOT auto-deployed; each doc push needs a fresh trigger. Preview URL pattern: `https://docs.gitlab.com/upstream-review-mr-ee-<mr_iid>/<doc-path-without-.md>/`.
+
+## Duo review replies
+
+- Address `@GitLabDuo` explicitly when replying to its review findings so it can verify the evidence or updated branch; keep the discussion unresolved until it responds.

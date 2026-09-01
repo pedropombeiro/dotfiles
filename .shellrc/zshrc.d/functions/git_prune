@@ -41,9 +41,10 @@ default_branch=$(git_main_branch) || return
 local current_branch
 current_branch=$(git branch --show-current) || return
 
-local -a branches candidates
-local branch upstream upstream_remote upstream_track default_ref reason
-local remote_url remote_host remote_project encoded_branch merge_request_sha merge_base patch_id commit_count
+local -a branches candidates changed_paths
+local branch upstream upstream_remote upstream_track default_ref
+local remote_url remote_host remote_project encoded_branch merge_request_sha merge_base
+local work_landed
 
 branches=("${(@f)$(git for-each-ref --format='%(refname:short)' refs/heads)}")
 for branch in "${branches[@]}"; do
@@ -66,6 +67,14 @@ for branch in "${branches[@]}"; do
     continue
   fi
 
+  git show-ref --verify --quiet "refs/remotes/$default_ref" || continue
+  merge_base=$(git merge-base "$default_ref" "$branch") || continue
+  changed_paths=("${(@f)$(git diff --name-only "$merge_base" "$branch")}")
+  work_landed=false
+  if (( ${#changed_paths} )) && git diff --quiet "$default_ref" "$branch" -- "${changed_paths[@]}"; then
+    work_landed=true
+  fi
+
   remote_url=$(git remote get-url "$upstream_remote")
   remote_host=$(print -r -- "$remote_url" | sed -E 's|^[a-z+]+://||; s|^[^@]*@||; s|[:/].*$||')
   remote_project=$(print -r -- "$remote_url" | sed -E 's|^[a-z+]+://[^/]*/||; s|^[^:]*:||; s|\.git$||')
@@ -76,28 +85,13 @@ for branch in "${branches[@]}"; do
       "projects/${remote_project//\//%2F}/merge_requests?source_branch=$encoded_branch&state=merged" 2>/dev/null |
       jq -r '.[0].sha // empty')
 
-    if [[ -n $merge_request_sha ]] && git merge-base --is-ancestor "$branch" "$merge_request_sha"; then
+    if [[ -n $merge_request_sha && $work_landed == true ]]; then
       candidates+=("$branch|mr-merged")
       continue
     fi
   fi
 
-  git show-ref --verify --quiet "refs/remotes/$default_ref" || continue
-  merge_base=$(git merge-base "$default_ref" "$branch") || continue
-  commit_count=$(git rev-list --count "$merge_base..$default_ref") || continue
-
-  if (( commit_count > 5000 )); then
-    print -u2 "git_prune: skipping patch-id check for $branch ($commit_count commits since merge base)"
-    continue
-  fi
-
-  patch_id=$(git diff "$merge_base" "$branch" | git patch-id --stable | awk '{print $1}')
-  [[ -n $patch_id ]] || continue
-
-  if git rev-list "$merge_base..$default_ref" | git diff-tree -p --stdin --root | git patch-id --stable |
-      awk -v patch_id="$patch_id" '$1 == patch_id { found = 1; exit } END { exit !found }'; then
-    candidates+=("$branch|patch-id")
-  fi
+  [[ $work_landed == true ]] && candidates+=("$branch|work-landed")
 done
 
 if (( ! ${#candidates} )); then
@@ -105,9 +99,9 @@ if (( ! ${#candidates} )); then
   return 0
 fi
 
-print 'branch|reason'
-print -- '------|------'
-print -l -- "${candidates[@]}"
+for argument in "${candidates[@]}"; do
+  print "${argument%%|*}: ${argument#*|}"
+done
 
 if [[ $dry_run == true ]]; then
   return 0

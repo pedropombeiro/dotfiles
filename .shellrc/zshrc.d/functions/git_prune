@@ -1,0 +1,118 @@
+#!/usr/bin/env zsh
+
+# Delete local branches whose upstream disappeared or whose work has landed.
+# Branches prefixed with _ are intentionally retained.
+
+local dry_run=false
+local argument
+
+for argument in "$@"; do
+  case "$argument" in
+    -n|--dry-run)
+      dry_run=true
+      ;;
+    -h|--help)
+      print 'Usage: git_prune [-n|--dry-run]'
+      return 0
+      ;;
+    *)
+      print -u2 "git_prune: unknown option: $argument"
+      return 2
+      ;;
+  esac
+done
+
+local -a remotes
+local remote
+for remote in origin security; do
+  git remote get-url "$remote" >/dev/null 2>&1 && remotes+=("$remote")
+done
+
+(( ${#remotes} )) || {
+  print -u2 'git_prune: no origin or security remote configured'
+  return 1
+}
+
+git fetch --prune --multiple "${remotes[@]}" || return
+
+local default_branch
+default_branch=$(git_main_branch) || return
+
+local current_branch
+current_branch=$(git branch --show-current) || return
+
+local -a branches candidates
+local branch upstream upstream_remote upstream_track default_ref reason
+local remote_url remote_host remote_project encoded_branch merge_request_sha merge_base patch_id commit_count
+
+branches=("${(@f)$(git for-each-ref --format='%(refname:short)' refs/heads)}")
+for branch in "${branches[@]}"; do
+  [[ $branch == "$current_branch" || $branch == "$default_branch" || $branch == _* ]] && continue
+
+  upstream=$(git for-each-ref --format='%(upstream:short)' "refs/heads/$branch")
+  [[ -n $upstream ]] || continue
+
+  upstream_remote=${upstream%%/*}
+  upstream_track=$(git for-each-ref --format='%(upstream:track)' "refs/heads/$branch")
+
+  if [[ $upstream_track == *': gone]' ]]; then
+    candidates+=("$branch|gone")
+    continue
+  fi
+
+  default_ref="$upstream_remote/$default_branch"
+  if git show-ref --verify --quiet "refs/remotes/$default_ref" && git merge-base --is-ancestor "$branch" "$default_ref"; then
+    candidates+=("$branch|merged")
+    continue
+  fi
+
+  remote_url=$(git remote get-url "$upstream_remote")
+  remote_host=$(print -r -- "$remote_url" | sed -E 's|^[a-z+]+://||; s|^[^@]*@||; s|[:/].*$||')
+  remote_project=$(print -r -- "$remote_url" | sed -E 's|^[a-z+]+://[^/]*/||; s|^[^:]*:||; s|\.git$||')
+
+  if glab auth status 2>&1 | grep -q "^[[:space:]]*$remote_host$"; then
+    encoded_branch=${branch//\//%2F}
+    merge_request_sha=$(glab api --hostname "$remote_host" \
+      "projects/${remote_project//\//%2F}/merge_requests?source_branch=$encoded_branch&state=merged" 2>/dev/null |
+      jq -r '.[0].sha // empty')
+
+    if [[ -n $merge_request_sha ]] && git merge-base --is-ancestor "$branch" "$merge_request_sha"; then
+      candidates+=("$branch|mr-merged")
+      continue
+    fi
+  fi
+
+  git show-ref --verify --quiet "refs/remotes/$default_ref" || continue
+  merge_base=$(git merge-base "$default_ref" "$branch") || continue
+  commit_count=$(git rev-list --count "$merge_base..$default_ref") || continue
+
+  if (( commit_count > 5000 )); then
+    print -u2 "git_prune: skipping patch-id check for $branch ($commit_count commits since merge base)"
+    continue
+  fi
+
+  patch_id=$(git diff "$merge_base" "$branch" | git patch-id --stable | awk '{print $1}')
+  [[ -n $patch_id ]] || continue
+
+  if git rev-list "$merge_base..$default_ref" | git diff-tree -p --stdin --root | git patch-id --stable |
+      awk -v patch_id="$patch_id" '$1 == patch_id { found = 1; exit } END { exit !found }'; then
+    candidates+=("$branch|patch-id")
+  fi
+done
+
+if (( ! ${#candidates} )); then
+  print 'nothing to prune'
+  return 0
+fi
+
+print 'branch|reason'
+print -- '------|------'
+print -l -- "${candidates[@]}"
+
+if [[ $dry_run == true ]]; then
+  return 0
+fi
+
+for argument in "${candidates[@]}"; do
+  git branch -D "${argument%%|*}" || return
+done

@@ -289,7 +289,8 @@ cask "mediainfo"
 cask "microsoft-auto-update"
 # Multi-platform web browser
 cask "microsoft-edge"
-cask "mqtt-explorer"
+# Cross-platform MQTT 5.0 Desktop Client
+cask "mqttx"
 # Open-source music notation software
 cask "musescore"
 # Silence embarrassing notifications while screensharing

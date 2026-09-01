@@ -243,6 +243,7 @@
       "gh run list *": "allow",
       "gh run view *": "allow",
       "gh run watch *": "allow",
+      "gh search code *": "allow",
       "git add *": "allow",
       "git blame *": "allow",
       "git branch *": "allow",

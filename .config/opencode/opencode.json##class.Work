@@ -327,6 +327,7 @@
       "gh run list*": "allow",
       "gh run view*": "allow",
       "gh run watch *": "allow",
+      "gh search code *": "allow",
       "gem contents *": "allow",
       "gem list*": "allow",
       "gem which *": "allow",

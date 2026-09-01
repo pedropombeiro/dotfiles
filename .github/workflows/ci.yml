@@ -18,6 +18,9 @@ jobs:
   hk-check:
     name: hk check
     runs-on: ubuntu-latest
+    env:
+      MISE_ENV: linux,linux-standard
+      MISE_ENV_CONF_D: true
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 

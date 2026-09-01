@@ -1,0 +1,8 @@
+[bootstrap.repos]
+"~/.local/share/zinit/zinit.git" = { url = "https://github.com/zdharma-continuum/zinit.git" }
+"~/.tmux/plugins/tpm" = { url = "https://github.com/tmux-plugins/tpm" }
+
+[bootstrap.macos.launchd.agents."com.pedro.latest-hidden"]
+program = "/usr/bin/open"
+args = ["-gj", "/Applications/Latest.app"]
+run_at_load = true

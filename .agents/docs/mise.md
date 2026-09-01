@@ -11,6 +11,11 @@ Additional layered configs live in `~/.config/mise/conf.d/` (`global.toml`, `tas
 `work.toml##class.Work`, `distro-specific.toml##os.Linux,distro.qts`, ...). File-based
 tasks live in `~/.config/mise/tasks/`.
 
+`conf.d/bootstrap.toml` declares repositories and user LaunchAgents that mise
+converges during YADM bootstrap. Bootstrap scripts invoke explicit `--only`
+scopes. Do not run bare `mise bootstrap`, because mise's dotfile, macOS default,
+and user configuration overlap existing YADM workflows.
+
 ## Tool Categories
 
 ### Language Runtimes

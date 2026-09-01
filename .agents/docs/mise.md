@@ -113,6 +113,17 @@ To vary a tool per machine class, remove it from `config.toml` entirely and
 declare it only in the class-specific `conf.d` files. Leaving it in both means
 the shared value always wins.
 
+### GitHub Credentials
+
+Use `settings.github.credential_command = "gh auth token"` in the global config
+instead of sourcing a script that exports `MISE_GITHUB_TOKEN`. The credential
+command runs only when mise needs GitHub authentication, while `env._.source`
+runs during every environment refresh. mise ignores `github.credential_command`
+from project config for security reasons.
+
+The default `github.gh_cli_tokens = true` is not sufficient when `gh` stores its
+token in the macOS keychain and leaves no `oauth_token` value in `hosts.yml`.
+
 ### Backend Caveats (npm / aube)
 
 Since mise 2026.8.x, `npm:` tools install through mise's embedded `aube`
@@ -250,6 +261,17 @@ Example:
   glob is older than every `outputs` glob.
 - `run_windows` overrides `run` on Windows.
 
+## Tool Postinstall Hooks
+
+Use a tool-level `postinstall` option for setup that belongs to one installed
+tool. The hook runs only after that tool is installed or reinstalled and receives
+`MISE_TOOL_NAME`, `MISE_TOOL_VERSION`, and `MISE_TOOL_INSTALL_PATH`. This is
+preferable to a global `[hooks].postinstall` script that inspects
+`MISE_INSTALLED_TOOLS`.
+
+Safe mode (`MISE_SAFE=1`) blocks tool-level postinstall hooks because they execute
+configuration-provided code.
+
 ## Renovate Integration
 
 Tools are auto-updated by Renovate bot via `~/.renovaterc.json`. Check PRs for pending updates before manual upgrades.
@@ -265,3 +287,5 @@ Tools are auto-updated by Renovate bot via `~/.renovaterc.json`. Check PRs for p
 - When a `gem:` tool fails on a Ruby version constraint, check `mise ls ruby` for `(missing)` before debugging the gem
 - Before bumping `ruby` on the work machine, confirm the version appears in the asdf-gitlab-ruby `versions.txt`
 - To vary a tool per machine class, declare it only in `conf.d/*`, never alongside an entry in `config.toml`
+- Use `settings.github.credential_command` rather than `env._.source` for lazy GitHub authentication
+- Attach install-specific setup to the relevant tool with `postinstall`, not a global postinstall hook

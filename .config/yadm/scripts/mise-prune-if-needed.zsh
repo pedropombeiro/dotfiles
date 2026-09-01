@@ -4,7 +4,9 @@ YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )" &>/dev/null && pwd )
 
 source "${YADM_SCRIPTS}/colors.sh"
 
-threshold_gb=${MISE_PRUNE_THRESHOLD_GB:-5}
+# mise automatically removes versions replaced by upgrades after upgrade.prune_after.
+# This threshold handles older unreferenced installs that automatic pruning does not cover.
+threshold_gb=${MISE_PRUNE_THRESHOLD_GB:-2}
 threshold_kb=$((threshold_gb * 1024 * 1024))
 
 prunable_paths=$(mise ls --prunable --json | jq -r '.. | objects | .install_path? // empty' | sort -u)

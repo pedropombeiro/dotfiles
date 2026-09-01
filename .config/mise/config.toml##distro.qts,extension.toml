@@ -1,7 +1,6 @@
 redactions = ["*_API_KEY", "*_TOKEN"]
 
 [env]
-_.source = { path = ".github_token.sh", redact = true }
 TMPDIR = "/opt/tmp"
 TMP = "{{ env.TMPDIR }}"
 TEMP = "{{ env.TMPDIR }}"
@@ -12,6 +11,10 @@ jobs = 1
 node.mirror_url = "https://unofficial-builds.nodejs.org/download/release/"
 node.flavor = "glibc-217"
 experimental = true
+
+[settings.github]
+# Resolve the token only when a GitHub API request needs credentials.
+credential_command = "gh auth token"
 
 [tools]
 # ── Core ──────────────────────────────────────────────────────────────

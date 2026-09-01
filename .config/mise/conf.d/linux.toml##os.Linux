@@ -13,8 +13,15 @@ go = "latest"
 "aqua:sharkdp/bat" = "latest"
 # Modern ls replacement
 "aqua:eza-community/eza" = "latest"
-# fzf-tmux (used by sesh) is added via postinstall hook below
-"aqua:junegunn/fzf" = "latest"
+# The aqua backend only ships fzf. Add fzf-tmux for sesh's tmux popup picker.
+"aqua:junegunn/fzf" = { version = "latest", postinstall = '''
+if [ ! -f "$MISE_TOOL_INSTALL_PATH/fzf-tmux" ]; then
+  echo "Downloading fzf-tmux v${MISE_TOOL_VERSION}..."
+  curl -fsSL "https://raw.githubusercontent.com/junegunn/fzf/v${MISE_TOOL_VERSION}/bin/fzf-tmux" -o "$MISE_TOOL_INSTALL_PATH/fzf-tmux"
+  chmod +x "$MISE_TOOL_INSTALL_PATH/fzf-tmux"
+  mise reshim
+fi
+''' }
 # Smarter cd with frecency tracking
 zoxide = "latest"
 # Modern watch replacement with diff highlighting
@@ -87,18 +94,3 @@ btop = "latest"
 "pipx:mypy" = "latest"
 # Python virtual environment creator
 "pipx:virtualenv" = "latest"
-
-[hooks]
-# The aqua backend only ships the fzf binary, not fzf-tmux (needed by sesh's tmux popup picker).
-# This hook downloads fzf-tmux from the fzf repo after each fzf install/upgrade.
-postinstall = '''
-echo "$MISE_INSTALLED_TOOLS" | jq -r '.[] | select(.name | contains("fzf")) | .version' | while read -r version; do
-  install_dir="$(mise where aqua:junegunn/fzf 2>/dev/null)"
-  if [ -n "$install_dir" ] && [ ! -f "$install_dir/fzf-tmux" ]; then
-    echo "Downloading fzf-tmux v${version}..."
-    curl -fsSL "https://raw.githubusercontent.com/junegunn/fzf/v${version}/bin/fzf-tmux" -o "$install_dir/fzf-tmux"
-    chmod +x "$install_dir/fzf-tmux"
-    mise reshim
-  fi
-done
-'''

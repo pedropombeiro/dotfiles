@@ -1,11 +1,13 @@
 redactions = ["*_API_KEY", "*_TOKEN"]
 
-[env]
-_.source = { path = ".config/mise/.github_token.sh", redact = true }
-
 [settings]
 jobs = 1
 idiomatic_version_file_enable_tools = []
+
+[settings.github]
+# hosts.yml stores the token in the macOS keychain, so mise cannot read it
+# directly. Resolve it only when a GitHub API request needs credentials.
+credential_command = "gh auth token"
 
 [settings.pipx]
 uvx = true

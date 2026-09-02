@@ -101,10 +101,10 @@ return {
           ignore_focus = {
             "lazygit",
             "neotest-summary",
-            "opencode_terminal",
             "Outline",
             "snacks_picker_input",
             "snacks_picker_list",
+            "snacks_terminal",
           },
           disabled_filetypes = {
             statusline = { "snacks_dashboard", "Fm", "mason", "neotest-summary" },

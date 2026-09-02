@@ -75,12 +75,50 @@ end
 -- when running multiple sessions in parallel. Maps PID into the range 41000-65535.
 local opencode_port = 41000 + (vim.fn.getpid() % 24535)
 local opencode_cmd = "opencode --port " .. opencode_port
+local opencode_url = "http://localhost:" .. opencode_port
 
 local tmux_server = vim.env.TMUX and tmux_controller(opencode_cmd) or nil
 
 -- Cache PID for each snacks opencode terminal buffer so we can kill it
 -- reliably during VimLeavePre (when terminal_job_id is no longer available).
 local opencode_pids = {} -- buffer number -> PID
+
+--- Add the navigation keymaps that opencode.nvim no longer manages.
+---@param buf integer
+local function setup_terminal_keymaps(buf)
+  local opts = { buffer = buf }
+
+  vim.keymap.set(
+    "n",
+    "<C-u>",
+    function() require("opencode").command("session.half.page.up") end,
+    vim.tbl_extend("force", opts, { desc = "Scroll up half page" })
+  )
+  vim.keymap.set(
+    "n",
+    "<C-d>",
+    function() require("opencode").command("session.half.page.down") end,
+    vim.tbl_extend("force", opts, { desc = "Scroll down half page" })
+  )
+  vim.keymap.set(
+    "n",
+    "gg",
+    function() require("opencode").command("session.first") end,
+    vim.tbl_extend("force", opts, { desc = "Go to first message" })
+  )
+  vim.keymap.set(
+    "n",
+    "G",
+    function() require("opencode").command("session.last") end,
+    vim.tbl_extend("force", opts, { desc = "Go to last message" })
+  )
+  vim.keymap.set(
+    "n",
+    "<Esc>",
+    function() require("opencode").command("session.interrupt") end,
+    vim.tbl_extend("force", opts, { desc = "Interrupt current session" })
+  )
+end
 
 --- Find the first snacks opencode terminal matching a predicate.
 --- When no predicate is given, returns any opencode terminal.
@@ -93,9 +131,8 @@ local function find_opencode_term(predicate)
 end
 
 --- Build snacks.terminal opts for the opencode TUI.
---- Calls opencode.terminal.setup() for keymaps, then clears the
---- plugin's TermRequest autocmd that would steal focus back.
---- Eagerly caches the process PID in TermOpen for reliable cleanup.
+--- Adds terminal keymaps and eagerly caches the process PID in TermOpen
+--- for reliable cleanup.
 local function snacks_opts()
   return {
     cmd = opencode_cmd,
@@ -103,18 +140,13 @@ local function snacks_opts()
     win = {
       position = "right",
       on_win = function(win)
-        require("opencode.terminal").setup(win.win)
-        -- The plugin's setup() registers a TermRequest autocmd that steals focus
-        -- back to the previous window (startinsert | feedkeys C-\C-n C-w p).
-        -- Clear it so Snacks.terminal's own focus/insert handling works.
-        vim.schedule(function() pcall(vim.api.nvim_clear_autocmds, { event = "TermRequest", buffer = win.buf }) end)
-
         -- Eagerly cache the PID so we can kill it during VimLeavePre
         -- (by then terminal_job_id may no longer be available).
         vim.api.nvim_create_autocmd("TermOpen", {
           buffer = win.buf,
           once = true,
           callback = function()
+            setup_terminal_keymaps(win.buf)
             local job_id = vim.b[win.buf].terminal_job_id
             if job_id then
               local ok, pid = pcall(vim.fn.jobpid, job_id)
@@ -139,6 +171,46 @@ local function close_snacks_opencode()
   end
 end
 
+local function start_opencode()
+  if tmux_server then
+    tmux_server.start()
+    return
+  end
+
+  close_snacks_opencode()
+  local prev_win = vim.api.nvim_get_current_win()
+  Snacks.terminal.open(opencode_cmd, snacks_opts())
+  if vim.api.nvim_win_is_valid(prev_win) then vim.api.nvim_set_current_win(prev_win) end
+end
+
+local function stop_opencode()
+  if tmux_server then
+    tmux_server.stop()
+  else
+    close_snacks_opencode()
+  end
+end
+
+local function toggle_opencode()
+  if tmux_server then
+    tmux_server.toggle()
+    return
+  end
+
+  local visible = find_opencode_term(function(t) return t:win_valid() end)
+  if visible then
+    visible:hide()
+    return
+  end
+
+  local hidden = find_opencode_term(function(t) return t:buf_valid() end)
+  if hidden then
+    hidden:show()
+  else
+    Snacks.terminal.open(opencode_cmd, snacks_opts())
+  end
+end
+
 --- Focus the opencode terminal panel (show it if hidden).
 local function focus_opencode_term()
   if tmux_server then
@@ -149,54 +221,15 @@ local function focus_opencode_term()
   end
 end
 
---- Ensure the opencode server is responsive before calling `callback`.
---- Starts the server if needed, then polls the configured port every `interval`
---- until a successful connection or `timeout_ms` elapses.
----@param callback fun()
----@param timeout_ms? number Total time to wait (default 10000)
----@param interval_ms? number Polling interval (default 500)
-local function ensure_server(callback, timeout_ms, interval_ms)
-  timeout_ms = timeout_ms or 10000
-  interval_ms = interval_ms or 500
-
-  local Server = require("opencode.server")
-  local elapsed = 0
-
-  local function try_connect()
-    Server.new(opencode_port):next(function() vim.schedule(callback) end):catch(function()
-      elapsed = elapsed + interval_ms
-      if elapsed >= timeout_ms then
-        vim.schedule(
-          function()
-            vim.notify(
-              "opencode did not respond within " .. (timeout_ms / 1000) .. "s",
-              vim.log.levels.ERROR,
-              { title = "opencode" }
-            )
-          end
-        )
-      else
-        vim.defer_fn(try_connect, interval_ms)
-      end
-    end)
-  end
-
-  Server.new(opencode_port):next(function() vim.schedule(callback) end):catch(function()
-    local opts = require("opencode.config").opts.server or {}
-    if opts.start then pcall(opts.start) end
-    vim.defer_fn(try_connect, interval_ms)
-  end)
-end
-
 return {
   "NickvanDyke/opencode.nvim",
   dependencies = { "folke/snacks.nvim" },
   lazy = true,
-  cmd = "Opencode",
+  cmd = "OpenCode",
   keys = {
     {
       "<leader>ac",
-      function() require("opencode").toggle() end,
+      toggle_opencode,
       desc = "Toggle opencode terminal",
     },
     {
@@ -205,7 +238,7 @@ return {
         -- Resume the last opencode session.
         -- Stop any existing server first to avoid opening a second terminal,
         -- since the resume cmd differs from the regular cmd (different snacks identity).
-        require("opencode").stop()
+        stop_opencode()
         local resume_cmd = "opencode --continue --port " .. opencode_port
         if tmux_server then
           tmux_server.start(resume_cmd)
@@ -217,81 +250,48 @@ return {
     },
     {
       "<leader>aa",
-      function()
-        ensure_server(function()
-          require("opencode").ask("@this: ", { submit = false }):next(function() vim.schedule(focus_opencode_term) end)
-        end)
-      end,
+      function() require("opencode").ask("@this: ") end,
       mode = { "n", "x" },
       desc = "Ask opencode…",
     },
     {
       "<leader>as",
-      function()
-        ensure_server(function() require("opencode").select() end)
-      end,
+      function() require("opencode").select() end,
       mode = { "n", "x" },
       desc = "Select opencode action…",
     },
     {
       "<leader>ap",
-      function()
-        ensure_server(function() require("opencode").prompt("review") end)
-      end,
+      function() require("opencode").prompt(require("opencode.config").opts.select.prompts.review) end,
       mode = { "n", "x" },
       desc = "Review with opencode",
     },
   },
   config = function()
-    local server
-    if tmux_server then
-      server = {
-        start = tmux_server.start,
-        stop = tmux_server.stop,
-        toggle = tmux_server.toggle,
-      }
-    else
-      server = {
-        start = function()
-          close_snacks_opencode()
-          local prev_win = vim.api.nvim_get_current_win()
-          Snacks.terminal.open(opencode_cmd, snacks_opts())
-          -- Restore focus so that the plugin's retry of server.get()
-          -- (which fires after a 2s delay) can render the ask() popup
-          -- in the editor window rather than the terminal.
-          if vim.api.nvim_win_is_valid(prev_win) then vim.api.nvim_set_current_win(prev_win) end
-        end,
-        stop = close_snacks_opencode,
-        toggle = function()
-          -- If a visible opencode terminal exists, hide it (not close — close
-          -- kills the process and triggers "exited with code -1").
-          -- Otherwise show a hidden one, or open a new one.
-          local visible = find_opencode_term(function(t) return t:win_valid() end)
-          if visible then
-            visible:hide()
-            return
-          end
-          local hidden = find_opencode_term(function(t) return t:buf_valid() end)
-          if hidden then
-            hidden:show()
-          else
-            Snacks.terminal.open(opencode_cmd, snacks_opts())
-          end
-        end,
-      }
-    end
+    vim.api.nvim_create_user_command("OpenCode", toggle_opencode, { desc = "Toggle OpenCode terminal" })
 
     ---@type opencode.Opts
     vim.g.opencode_opts = vim.tbl_deep_extend("force", vim.g.opencode_opts or {}, {
-      server = vim.tbl_deep_extend("force", server, { port = opencode_port }),
+      server = {
+        url = opencode_url,
+        start = start_opencode,
+      },
     })
 
-    vim.o.autoread = true
+    vim.api.nvim_create_autocmd("User", {
+      group = vim.api.nvim_create_augroup("opencode_focus", { clear = true }),
+      pattern = "OpencodeEvent:tui.command.execute",
+      callback = function(args)
+        local event = args.data.event
+        if event.properties.command == "prompt.submit" then focus_opencode_term() end
+      end,
+      desc = "Focus OpenCode after submitting a prompt",
+    })
 
     -- Ensure the opencode process is stopped when Neovim exits to avoid zombie processes.
     vim.api.nvim_create_autocmd("VimLeavePre", {
       group = vim.api.nvim_create_augroup("opencode_terminal", { clear = true }),
-      callback = function() server.stop() end,
+      callback = stop_opencode,
     })
   end,
   specs = {

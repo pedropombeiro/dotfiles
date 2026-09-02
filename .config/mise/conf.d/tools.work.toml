@@ -17,7 +17,7 @@ USE_PRECOMPILED_RUBY = "true"
 # gem: backend to system Ruby 2.6.
 ruby = "4.0.6"
 # Go toolchain
-go = "1.27.0"
+go = "1.27.1"
 # OLAP database
 clickhouse = "25.12.11.4-stable"
 # Zero-trust infrastructure access (SSH/k8s/DB)

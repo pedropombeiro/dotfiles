@@ -51,6 +51,8 @@ Always start with:
 
 Load `.gitlab/duo/chat-rules.md` for testing, git workflow, or weekly-status/report tasks.
 
+For non-trivial repo exploration, load the `tool-routing` skill before choosing search or execution tools.
+
 Then route by task topic and load matching modules from `.ai/`. Load a matching `.ai/<topic>.local.md` file even when
 there is no base `.ai/<topic>.md` module. Known `.local.md`-only modules are `testing` and `code-style`; `git` and
 `merge-requests` have both base and local modules.
@@ -121,7 +123,7 @@ Expected shape:
 ```text
 Scope
 - Inferred task: testing
-- Loaded: AGENTS.md, CLAUDE.local.md, .ai/testing.md, .ai/testing.local.md, .gitlab/duo/chat-rules.md
+- Loaded: AGENTS.md, CLAUDE.local.md, .ai/testing.md, .ai/testing.local.md, .gitlab/duo/chat-rules.md, tool-routing
 
 Active rules
 - Run Ruby specs with `bundle exec rspec <file> --format documentation`.
@@ -131,6 +133,5 @@ Conflicts resolved
 - Repo rule preferring Knowledge Graph for broad exploration overrides generic Glob guidance.
 
 Load next
-- `tool-routing`
 - `run-in-tmux-pane` if the chosen command needs zsh or a TTY.
 ```

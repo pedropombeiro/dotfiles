@@ -232,7 +232,7 @@ return {
         end,
       },
     },
-    cmd = { "TSUpdate", "TSUpdateSync", "TSInstall", "TSLog", "TSUninstall" },
+    cmd = { "TSUpdate", "TSInstall", "TSLog", "TSUninstall" },
     ---@module "lazy"
     ---@type LazyKeysSpec[]
     keys = {

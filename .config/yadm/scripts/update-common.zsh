@@ -179,6 +179,11 @@ _update_step "opencode skills"
 printf "${YELLOW}%s${NC}\n" "Updating OpenCode skills..."
 (( $+commands[npx] )) && npx skills update
 
+_update_step "skill repositories"
+printf "${YELLOW}%s${NC}\n" "Updating skill repositories..."
+mise bootstrap repos update --yes --skip-dirty "${HOME}/Developer/github.com/pinchtab/pinchtab"
+"${YADM_SCRIPTS}/relink-dotfiles.zsh"
+
 _update_step "shell benchmark"
 printf "${YELLOW}%s${NC}\n" "Testing shell instantiation performance..."
 hf_file="$(mktemp)"

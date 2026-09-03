@@ -7,6 +7,16 @@ YADM_SCRIPTS=$(cd -- "$(dirname -- "${(%):-%x}")/../scripts" &>/dev/null && pwd)
 
 source "${YADM_SCRIPTS}/colors.sh"
 
+pinchtab_skill="${HOME}/Developer/github.com/pinchtab/pinchtab/skills/pinchtab"
+if [[ -d ${pinchtab_skill} ]]; then
+  printf "${YELLOW}%s${NC}\n" "Linking PinchTab skill..."
+  ln -sfn "${pinchtab_skill}" "${HOME}/.agents/skills/pinchtab"
+  if [[ ! -L ${HOME}/.claude/skills/pinchtab ]]; then
+    rm -rf "${HOME}/.claude/skills/pinchtab"
+  fi
+  ln -sfn "${HOME}/.agents/skills/pinchtab" "${HOME}/.claude/skills/pinchtab"
+fi
+
 printf "${YELLOW}%s${NC}\n" "Linking OpenCode skills..."
 if [[ -L ${HOME}/.config/opencode/skills/skills &&
       $(readlink "${HOME}/.config/opencode/skills/skills") == "${HOME}/.agents/skills" ]]; then

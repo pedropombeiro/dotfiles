@@ -16,5 +16,5 @@ fi
 tmp_file=$(mktemp)
 trap 'rm -f "${tmp_file}"' EXIT
 
-jq '.multiInstance.strategy = "on-demand"' "${pinchtab_config}" >"${tmp_file}"
+jq '.multiInstance.strategy = "simple"' "${pinchtab_config}" >"${tmp_file}"
 mv "${tmp_file}" "${pinchtab_config}"

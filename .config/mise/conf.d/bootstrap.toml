@@ -1,6 +1,7 @@
 [bootstrap.repos]
 "~/.local/share/zinit/zinit.git" = { url = "https://github.com/zdharma-continuum/zinit.git" }
 "~/.tmux/plugins/tpm" = { url = "https://github.com/tmux-plugins/tpm" }
+"~/Developer/github.com/pinchtab/pinchtab" = { url = "https://github.com/pinchtab/pinchtab.git" }
 
 [bootstrap.macos.launchd.agents."com.pedro.latest-hidden"]
 program = "/usr/bin/open"

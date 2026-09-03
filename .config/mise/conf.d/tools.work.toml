@@ -26,7 +26,7 @@ teleport-community = "17"
 # ── AI tooling ────────────────────────────────────────────────────
 
 # Browser control for AI agents
-"npm:pinchtab" = "latest"
+"github:pinchtab/pinchtab" = "latest"
 
 # ── GitLab tooling ────────────────────────────────────────────────────
 # GitLab CLI

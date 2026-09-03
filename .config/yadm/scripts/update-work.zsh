@@ -98,6 +98,10 @@ telemetry:
   username: 526355293c854a36885c7a8d6b61a336
 trusted_directories:
   - "${gdk_root}"
+vite:
+  enabled: true
+webpack:
+  enabled: false
 # Compile from source instead of downloading prebuilt binaries. A prebuilt binary
 # can lag the Rails checkout, and Rails rejects Workhorse JWTs that predate its
 # own 'iat' claim requirement ("JWT iat claim is missing" -> 403 on git clone).

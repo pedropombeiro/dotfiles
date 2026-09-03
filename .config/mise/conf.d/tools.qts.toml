@@ -17,7 +17,7 @@ CARGO_HOME = "/opt/share/cargo"
 # Packages pinned due to QTS glibc constraints (older than 2.31)
 python = "3.14"
 node = "23.7.0"
-rust = { version = "1.98.0", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
+rust = { version = "1.98.1", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
 # HA-CLI pins regex<2025, but that regex has no cp314 wheel and fails to build on Py3.14.
 # Override to a regex release with Python 3.14 support (built from source on this QTS NAS).
 "pipx:homeassistant-cli" = { version = "latest", install_env = { UV_OVERRIDE = "/share/homes/admin/.config/mise/uv-overrides/homeassistant-cli.txt" } }

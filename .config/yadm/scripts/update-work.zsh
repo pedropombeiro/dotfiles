@@ -322,6 +322,17 @@ write_opencode_config() {
   "formatter": {
     "standardrb": {
       "disabled": true
+    },
+    // The repo lints YAML with yamllint, not prettier. The built-in prettier applies
+    // .prettierrc singleQuote and reflows quotes file-wide on every edit-tool save of
+    // .gitlab/duo/mr-review-instructions.yaml, so drop .yaml/.yml from its list.
+    // "extensions" replaces the built-in list (remeda mergeDeep replaces arrays).
+    "prettier": {
+      "extensions": [
+        ".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx", ".mts", ".cts",
+        ".html", ".htm", ".css", ".scss", ".sass", ".less", ".vue", ".svelte",
+        ".json", ".jsonc", ".toml", ".xml", ".md", ".mdx", ".graphql", ".gql"
+      ]
     }
   },
   "provider": {

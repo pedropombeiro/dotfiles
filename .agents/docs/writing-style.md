@@ -48,6 +48,19 @@ the source of truth.
 
 ## MR Descriptions
 
+- Scale the description to the size and risk of the diff. A one-line config change needs a
+  sentence per section, not a page. Reviewers read the description to decide what to look at,
+  so a description that dwarfs its diff costs them time. Keep the template's sections and
+  write less inside them; do not delete sections to save space.
+- Rough ceiling: under ~150 words of body text for a small or mechanical change, and under
+  ~400 for a substantial feature. Treat these as a prompt to cut, not a quota to fill.
+- State a fact once. Do not repeat the same point in the summary, a bold-label bullet, and the
+  validation section.
+- Cut internal reasoning that the reviewer does not act on: rejected alternatives, tool
+  internals, line-referenced walkthroughs of unchanged code, and restatements of the diff.
+  Link to an issue or a code reference instead of reproducing its content.
+- Prefer a claim a reviewer can check over one they must take on faith. Vague prose invites a
+  reviewing agent to invent specifics about it, so if a check was not run, do not imply it was.
 - Highly structured - follow a consistent template:
   - `## What does this MR do and why?`
   - `## References`

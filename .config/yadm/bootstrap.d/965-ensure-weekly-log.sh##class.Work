@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Ensures the personal weekly-log repo is cloned at the path opencode-memory's
+# Ensures the personal weekly-log repo is cloned at the standard developer path.
 # config.toml##class.Work watches for second-brain files
 # (ingestion.watch_paths -> .../weekly-log/brain). Idempotent: safe to re-run,
 # never touches an existing worktree's branch or history.

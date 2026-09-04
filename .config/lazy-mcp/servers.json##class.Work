@@ -7,14 +7,6 @@
       "type": "remote"
     },
     {
-      "name": "memory",
-      "description": "opencode-memory: persistent semantic memory + GitLab workflow tools",
-      "type": "local",
-      "command": [
-        "/Users/pedropombeiro/.local/share/opencode-memory-install/scripts/memory-mcp.sh"
-      ]
-    },
-    {
       "name": "gitlab-knowledge-graph",
       "description": "GitLab repository knowledge graph and code analysis",
       "command": [

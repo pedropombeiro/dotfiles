@@ -23,26 +23,6 @@
           }
         ]
       }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 /Users/pedropombeiro/.local/share/opencode-memory-install/claude-code/hooks/session_start.py"
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 /Users/pedropombeiro/.local/share/opencode-memory-install/claude-code/hooks/user_prompt_submit.py"
-          }
-        ]
-      }
     ]
   },
   "statusLine": {

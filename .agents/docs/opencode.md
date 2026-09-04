@@ -2,20 +2,13 @@
 
 ## Secret Protection
 
-Two layers exist:
+`~/.config/opencode/plugins/env-protection.js` is a plain tracked file, so it is active on
+every machine. It blocks direct access to configured credential files, redacts values read
+through shell commands, detects common structured tokens, scrubs replayed message history,
+and refuses to persist literal secrets through file, shell, or GitLab write tools.
 
-- `~/.config/opencode/plugins/env-protection.js` — a plain (non-alt) tracked file, so it
-  is active on **every** machine.
-- secret-guard, bundled with the opencode-memory plugin, loaded via the `plugin` array in
-  `opencode.json`.
-
-Both run concurrently on this Work machine. secret-guard redacts matches inline as
-`[[SG:learned:<hash>]]` when a file is **read**; the bytes on disk are unchanged. Do not
-mistake such a marker for file corruption — check with `od -c` before "fixing" it.
-
-> Earlier revisions of this doc described `env-protection.js##class.Personal` as
-> Personal-only and mutually exclusive with opencode-memory. That is no longer how it is
-> deployed.
+Redaction markers are transit-only. The plugin blocks rather than rewrites file-write content
+that contains a structured secret, so it cannot persist a marker over the original value.
 
 ## Plugin Version Pinning
 

@@ -68,5 +68,4 @@ fallback for when automatic injection fails.
   local overrides, and Vale checks
 - [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`
 - [Developer Directory](~/.agents/docs/developer-directory.md) - Repo clone path convention (`~/Developer/<forge>/<owner>/<repo>`)
-- [OpenCode Memory](~/.agents/docs/opencode-memory.md) - Long-term memory tools and installer caveats
 - [Tool Usage](~/.agents/docs/tool-usage.md) - Workarounds for tool-layer failures (large `write` truncation)

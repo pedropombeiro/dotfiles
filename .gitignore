@@ -37,7 +37,6 @@ Thumbs.db
 .config/nvim/lua/core/gdk.lua
 .config/nvim/lua/plugins/image.lua
 .config/nvim/lua/plugins/lsp/mason-tool-installer.lua
-.config/opencode-memory/config.toml
 .config/opencode/env-protection.json
 .config/opencode/opencode-homeassistant.json
 .config/opencode/opencode-notifier.json
@@ -68,7 +67,6 @@ Thumbs.db
 .config/yadm/bootstrap.d/950-install-gdk.sh
 .config/yadm/bootstrap.d/955-install-stream-deck-plugins.sh
 .config/yadm/bootstrap.d/965-ensure-weekly-log.sh
-.config/yadm/bootstrap.d/970-install-opencode-memory.sh
 .config/yadm/config_templates/LaunchDaemons/org.gitlab1.ifconfig.plist
 .config/yadm/scripts/defaults.sh
 .config/yadm/scripts/iterm2-setup.sh

@@ -28,6 +28,11 @@ user, and the active milestone — so nothing is hardcoded and the skill works a
 - The user says "start implementing issue X" / "let's pick up issue X".
 - The user wants an issue's status updated to reflect where its MRs are.
 - Tracking an issue through the dev → review → complete lifecycle as work progresses.
+- A merge request was just created, through `gpsup`, `glab mr create`, a
+  `merge_request.create` push option, or the `gitlab_create_merge_request` tool. The
+  `remind-issue-state` OpenCode plugin appends a reminder to the tool output in that case,
+  because GitLab never derives issue Status from MR state. Set
+  `OPENCODE_SKIP_ISSUE_STATE_REMINDER=1` to silence it.
 
 ## Status progression rules
 

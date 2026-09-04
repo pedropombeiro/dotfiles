@@ -42,6 +42,7 @@ Thumbs.db
 .config/opencode/opencode-notifier.json
 .config/opencode/opencode.json
 .config/opencode/plugins/deny-rm-rf.js
+.config/opencode/plugins/remind-issue-state.js
 .config/opencode/plugins/require-gpsup.js
 .config/opencode/tui.json
 .config/pgcli/config

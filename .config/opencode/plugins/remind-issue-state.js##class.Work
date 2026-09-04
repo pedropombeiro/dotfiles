@@ -1,0 +1,89 @@
+// After a merge request is created, remind the agent to sync the linked issue's
+// native Status. GitLab does not derive issue Status from MR state, so an issue
+// stays in its previous status (or none) until something sets it explicitly.
+//
+// This runs in `tool.execute.after` rather than `before`: the reminder is only
+// actionable once the MR exists, and failing the call would leave a created MR
+// behind. So it appends guidance instead of throwing.
+//
+// Covers every MR-creation path, not just `gpsup`:
+//   - `gpsup` (the sanctioned wrapper)
+//   - `glab mr create`
+//   - `git push -o merge_request.create` (and `--push-option=`)
+//   - the `gitlab_create_merge_request` MCP tool
+
+const MR_CREATION_COMMAND_PATTERNS = [
+  // Anchored to a command boundary so prose, greps, and paths mentioning
+  // `gpsup` do not trigger the reminder.
+  /(^|[;&|]\s*|\breval\s+)\s*gpsup\b/,
+  /(^|[;&|]\s*)\s*(?:op\s+plugin\s+run\s+--\s+)?glab\s+mr\s+create\b/,
+  /(^|[;&|]\s*)\s*git\s+push\b[^;&|]*(?:-o|--push-option[=\s])[^;&|]*merge_request\.create\b/,
+]
+
+const MR_CREATION_TOOLS = new Set([
+  "gitlab_create_merge_request",
+  "gitlab-create-merge-request",
+])
+
+// Confirms an MR actually came into existence. `gpsup --help`, a rejected push,
+// and a no-op re-push all skip the reminder because none of them emit a URL.
+const MR_URL_PATTERN = /https?:\/\/[^\s"'`]*\/-\/merge_requests\/(\d+)/
+
+const REMINDER = [
+  "",
+  "---",
+  "REMINDER (remind-issue-state): a merge request was just created. GitLab does not",
+  "derive an issue's Status from its merge requests, so the linked issue still holds",
+  "whatever Status it had before.",
+  "",
+  "Load the `issue-state` skill and run:",
+  "",
+  "    .opencode/skills/issue-state/scripts/sync-issue-state.sh <issue-url>",
+  "",
+  "Set the native Status, never the `workflow::*` label. Use `--dry-run` first to",
+  "preview the decision. If the issue has no assignee or milestone yet, use",
+  "`start-issue.sh` instead, which sets both and the Status in one step.",
+].join("\n")
+
+const isMrCreationCommand = (command) =>
+  MR_CREATION_COMMAND_PATTERNS.some((pattern) => pattern.test(command))
+
+export const RemindIssueState = async () => {
+  // Keyed by MR IID so retries and follow-up reads of the same MR stay quiet,
+  // while a second, genuinely different MR still gets its own reminder.
+  const reminded = new Set()
+
+  return {
+    "tool.execute.after": async (input, output) => {
+      if (process.env.OPENCODE_SKIP_ISSUE_STATE_REMINDER === "1") {
+        return
+      }
+
+      const isMrTool = MR_CREATION_TOOLS.has(input.tool)
+
+      if (input.tool !== "bash" && !isMrTool) {
+        return
+      }
+
+      if (!isMrTool && !isMrCreationCommand(input.args?.command ?? "")) {
+        return
+      }
+
+      const text = `${output.output ?? ""}\n${output.title ?? ""}`
+      const match = text.match(MR_URL_PATTERN)
+
+      if (!match) {
+        return
+      }
+
+      const key = `${input.sessionID}:${match[1]}`
+
+      if (reminded.has(key)) {
+        return
+      }
+
+      reminded.add(key)
+      output.output = `${output.output ?? ""}\n${REMINDER}`
+    },
+  }
+}

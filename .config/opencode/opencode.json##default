@@ -307,6 +307,7 @@
       "more *": "allow",
       "npm view *": "allow",
       "node --check *": "allow",
+      "od *": "allow",
       "opencode --version*": "allow",
       "opencode debug config*": "allow",
       "pgrep *": "allow",

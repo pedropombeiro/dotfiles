@@ -12,6 +12,9 @@
 #
 # Milestone selection uses the project's active milestones (including ancestor/group
 # milestones) and picks the one whose start_date..due_date window contains today.
+# Several milestones typically overlap today (release milestones alongside
+# team/OKR tracking ones), so release-numbered titles like "19.4" win; only if
+# none matches does it fall back to the soonest-ending milestone.
 
 set -Eeuo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -45,7 +48,9 @@ enc="$(enc_path "$PROJECT_PATH")"
 user_id="$(glab api user | jq -r '.id')"
 [[ -n "$user_id" && "$user_id" != "null" ]] || die "could not resolve current user id"
 
-put_args=(--method PUT "projects/${enc}/issues/${ISSUE_IID}" -f "assignee_ids[]=${user_id}")
+# `assignee_ids[]` must go in the query string: glab drops `-f 'assignee_ids[]=N'`
+# entirely, and GitLab then rejects the call as having no parameters at all.
+put_args=(--method PUT "projects/${enc}/issues/${ISSUE_IID}?assignee_ids[]=${user_id}")
 
 milestone_title=""
 if [[ "$set_milestone" -eq 1 ]]; then
@@ -55,7 +60,10 @@ if [[ "$set_milestone" -eq 1 ]]; then
       [ .[]
         | select(.start_date != null and .due_date != null)
         | select(.start_date <= $today and .due_date >= $today) ]
-      | sort_by(.due_date) | .[0] // empty')"
+      | sort_by(.due_date) as $current
+      | ( [ $current[] | select(.title | test("^[0-9]+\\.[0-9]+$")) ] | .[0] )
+        // ($current | .[0])
+        // empty')"
   if [[ -n "$milestone_json" ]]; then
     milestone_id="$(jq -r '.id' <<<"$milestone_json")"
     milestone_title="$(jq -r '.title' <<<"$milestone_json")"
@@ -65,7 +73,18 @@ if [[ "$set_milestone" -eq 1 ]]; then
   fi
 fi
 
-glab api "${put_args[@]}" >/dev/null
+# Verify against the response rather than the exit code: the API returns 200 for
+# a PUT that silently applied nothing, which previously reported false success.
+put_result="$(glab api "${put_args[@]}")"
+
+assigned="$(jq -r --arg id "$user_id" '[.assignees[]?.id | tostring] | index($id) != null' <<<"$put_result")"
+[[ "$assigned" == "true" ]] || die "assignee was not applied to ${PROJECT_PATH}#${ISSUE_IID} (API accepted the request but the issue is still unassigned)"
+
+if [[ -n "$milestone_title" ]]; then
+  applied_milestone="$(jq -r '.milestone.title // empty' <<<"$put_result")"
+  [[ "$applied_milestone" == "$milestone_title" ]] ||
+    die "milestone was not applied to ${PROJECT_PATH}#${ISSUE_IID} (wanted ${milestone_title}, got ${applied_milestone:-none})"
+fi
 
 echo "${PROJECT_PATH}#${ISSUE_IID} assigned to current user${milestone_title:+, milestone: ${milestone_title}}"
 

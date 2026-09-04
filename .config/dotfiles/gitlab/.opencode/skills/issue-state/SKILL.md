@@ -68,6 +68,12 @@ do not assume they are on `PATH`.
 Assigns the issue to the current user, sets the active milestone (the project/ancestor milestone
 whose date range contains today), and sets the status to *In dev*.
 
+Several milestones usually cover today, because release milestones overlap team and OKR tracking
+ones. A release-numbered title (`19.4`) therefore wins over any other match, and only when none
+looks like a release does the soonest-ending milestone apply. The script reads the assignee and
+milestone back from the API response and fails loudly when either did not take effect, since the
+issues endpoint answers `200` for a `PUT` that changed nothing.
+
 ```bash
 .opencode/skills/issue-state/scripts/start-issue.sh <issue-url>
 .opencode/skills/issue-state/scripts/start-issue.sh 123 -R gitlab-org/gitlab

@@ -7,6 +7,12 @@ startup_command = "opencode --agent=build --model=gitlab/duo-chat-gpt-5-6-sol"
 preview_command = "eza -TL=3 --almost-all --git --icons --reverse --color=always {}/{brain,logs}"
 
 [[session]]
+name = "FFP Report"
+path = "~/Developer/gitlab.com/gitlab-org/ci-cd/fix-pipeline-flow-report"
+startup_command = "opencode --agent=build --model=gitlab/duo-chat-gpt-5-6-sol"
+preview_command = "eza -TL=3 --almost-all --git --icons --reverse --color=always {}/public"
+
+[[session]]
 name = "Handbook"
 path = "~/Developer/gitlab.com/gitlab-com/content-sites/handbook"
 startup_command = "nvim"

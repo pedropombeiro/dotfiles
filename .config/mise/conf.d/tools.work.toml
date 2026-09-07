@@ -31,6 +31,10 @@ teleport-community = "17"
 # ── GitLab tooling ────────────────────────────────────────────────────
 # GitLab CLI
 glab = "latest"
+# Local Kubernetes environments for GitLab development
+"gitlab:gitlab-org/caproni" = "4.8.0"
+# Run local processes with Kubernetes network and filesystem context
+mirrord = "3.253.1"
 # Kubernetes terminal UI
 k9s = "latest"
 # GitLab Duo AI CLI

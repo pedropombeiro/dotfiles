@@ -305,6 +305,7 @@
       "mise tasks ls *": "allow",
       "mise tasks": "allow",
       "more *": "allow",
+      "nl*": "allow",
       "npm view *": "allow",
       "node --check *": "allow",
       "od *": "allow",

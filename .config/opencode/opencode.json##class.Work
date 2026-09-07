@@ -361,6 +361,7 @@
       "mise which *": "allow",
       "mkdir -p /private/tmp/*": "allow",
       "mkdir -p /tmp/*": "allow",
+      "nl*": "allow",
       "npx markdownlint-cli2 *": "allow",
       "npx prettier *": "allow",
       "npx --yes --package renovate*": "allow",

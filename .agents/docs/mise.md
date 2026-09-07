@@ -228,6 +228,71 @@ silently drop the fork's patches. Disable the package in `~/.renovaterc.json` an
 re-tag by hand after rebasing onto upstream (see
 `pedropombeiro/gopro-dashboard-overlay`).
 
+### Packslip backend
+
+[Packslip](https://packslip.dev) lets a vendor publish a signed release manifest
+that describes its binaries and version-matched resources. mise verifies the
+vendor's Sigstore signature and each artifact's checksum before installation.
+This avoids relying on mise's bundled aqua registry snapshot for release layout
+and verification metadata.
+
+Packslip support landed after mise 2026.9.1. Before adding a `packslip:` tool,
+verify the installed mise release exposes the backend rather than relying on a
+version assumption:
+
+```bash
+mise backends ls | rg '^packslip$'
+```
+
+Vendor adoption is currently limited. Of the tools in this configuration, only
+`jdx/hk` published `packslip.sigstore.json` when checked on 2026-09-07. The
+latest releases of `pkl`, `opencode`, `atuin`, `sesh`, `fd`, `jq`, `ripgrep`,
+`typos`, `shfmt`, `stylua`, `shellcheck`, `gh`, `gitleaks`, and mise did not.
+Check a release again with:
+
+```bash
+curl -fsSL https://api.github.com/repos/OWNER/REPO/releases/latest \
+  | jq '[.assets[].name] | map(select(test("packslip")))'
+```
+
+The hk v1.58.1 manifest declares its `usage` CLI specification but does not
+declare the repository's `hk-configure` or `hk-debug` skills. The announcement's
+annotated manifest is an example rather than the released manifest. Installing
+that release through Packslip would provide signed installation metadata and
+dynamic completions, but `mise skills ls` would not list hk skills.
+
+#### Completions and skills policy
+
+Packslip completions follow the active tool version through mise's shell
+activation. That provides little benefit while tools are configured globally as
+`latest`, without project-specific version divergence. Keep the existing static
+completion setup in `~/.shellrc/zshrc.d/configs/pre/060-generate-completions.zsh`
+until a Packslip tool needs version-specific completions.
+
+Leave `settings.skills.auto_sync` disabled. `~/.agents/skills` contains both
+yadm-tracked directories and manually managed links into local repositories.
+Automatic synchronization would let a tool upgrade change agent instructions
+without review. The related settings have these effects:
+
+| Setting            | Default          | Local policy                                      |
+| ------------------ | ---------------- | ------------------------------------------------- |
+| `skills.fetch`     | `true`           | Keep enabled; fetching does not activate a skill. |
+| `skills.dir`       | `.claude/skills` | Set explicitly only for a manual sync.            |
+| `skills.auto_sync` | `false`          | Keep disabled.                                    |
+| `skills.prune`     | `false`          | Use only with a reviewed manual sync.             |
+| `packslip.exec`    | `false`          | Keep disabled unless a resource requires it.      |
+
+When hk includes `hk-configure` and `hk-debug` in its signed manifest, review
+and adopt them alongside the local `hk` skill. Then reduce the local skill to
+the yadm-specific guidance: bare-repository support, `HK_STASH_UNTRACKED=false`,
+global-hook re-entry prevention, and `yadm enter hk ...` commands.
+
+Reconsider Packslip adoption when hk signs those skills or when a tool with real
+per-project version pins, such as `node`, `go`, `ruby`, or `uv`, publishes a
+manifest. Renovate does not currently understand Packslip, but `latest` entries
+do not require Renovate version updates and the existing backend grouping rule
+matches mise configuration by file path.
+
 ## QNAP/QTS Compatibility
 
 The QTS environment has glibc 2.21 limitations. Distro-specific pins live in
@@ -313,3 +378,4 @@ Tools are auto-updated by Renovate bot via `~/.renovaterc.json`. Check PRs for p
 - To vary a tool per machine class, declare it only in the matching environment fragment, never alongside an entry in `config.toml`
 - Use `settings.github.credential_command` rather than `env._.source` for lazy GitHub authentication
 - Attach install-specific setup to the relevant tool with `postinstall`, not a global postinstall hook
+- Prefer `packslip:` over `aqua:` or `github:` when the vendor publishes a signed manifest, but confirm the installed mise exposes the backend first and keep skill synchronization manual

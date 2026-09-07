@@ -1,0 +1,7 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Vendored npx skills contain documented placeholder credentials"
+targetRules = ["curl-auth-header"]
+paths = ['''^\.agents/skills/clickhouse-best-practices/''']

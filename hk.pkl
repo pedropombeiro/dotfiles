@@ -26,12 +26,23 @@ local binary_excludes = List(
 local fast_steps = new Mapping<String, Step> {
     // ── Tier 1: Universal ────────────────────────────────────────────────
     ["trailing-whitespace"] = (Builtins.trailing_whitespace) {
-        exclude = binary_excludes
+        exclude = binary_excludes + List(
+            ".agents/skills/clickhouse-best-practices/*",
+            ".agents/skills/hk/*"
+        )
     }
     ["newlines"] = (Builtins.newlines) {
-        exclude = binary_excludes
+        exclude = binary_excludes + List(
+            ".agents/skills/clickhouse-best-practices/*",
+            ".agents/skills/hk/*"
+        )
     }
-    ["check-merge-conflict"] = (Builtins.check_merge_conflict) {}
+    ["check-merge-conflict"] = (Builtins.check_merge_conflict) {
+        exclude = List(
+            ".agents/skills/clickhouse-best-practices/*",
+            ".agents/skills/hk/*"
+        )
+    }
 
     // ── Tier 2: Common tools ─────────────────────────────────────────────
     ["typos"] = (Builtins.typos) {
@@ -40,7 +51,11 @@ local fast_steps = new Mapping<String, Step> {
         // GitLab Rails concern and an abbreviated local variable there, the latter
         // silently breaking a subcommand. Examples are omitted on purpose: typos
         // rewrites them inside this comment too.
-        exclude = binary_excludes + List(".agents/skills/orbit/*")
+        exclude = binary_excludes + List(
+            ".agents/skills/clickhouse-best-practices/*",
+            ".agents/skills/hk/*",
+            ".agents/skills/orbit/*"
+        )
     }
     ["gitleaks"] {
         check = "gitleaks protect --staged --redact --no-banner"
@@ -54,6 +69,8 @@ local fast_steps = new Mapping<String, Step> {
             // this step walks the filesystem and follows the symlink into the clone.
             // Scoped to orbit rather than .agents/skills/*/scripts/* so the tracked
             // run-in-tmux-pane script keeps its coverage.
+            ".agents/skills/clickhouse-best-practices/*",
+            ".agents/skills/hk/*",
             ".agents/skills/orbit/*",
             "*.md"
         )
@@ -63,6 +80,7 @@ local fast_steps = new Mapping<String, Step> {
     ["shellcheck"] = (Builtins.shellcheck) {
         exclude = List(
             "*.zsh", "*.zsh##*", ".zlogin", ".zshenv",
+            ".agents/skills/hk/*",
             ".shellrc/zshrc.d/*"
         )
         batch = true
@@ -70,6 +88,7 @@ local fast_steps = new Mapping<String, Step> {
     ["shfmt"] = (Builtins.shfmt) {
         exclude = List(
             "*.zsh", "*.zsh##*",
+            ".agents/skills/hk/*",
             ".iterm2_shell_integration.*"
         )
         batch = true
@@ -98,7 +117,12 @@ local fast_steps = new Mapping<String, Step> {
     // ── JSON / Markdown / YAML formatting ────────────────────────────────
     ["prettier"] = (Builtins.prettier) {
         glob = List("*.json", "*.md", "*.yaml", "*.yml")
-        exclude = List(".agents/skills/opencode-refine/*")
+        // These directories are upstream snapshots managed by `npx skills`.
+        exclude = List(
+            ".agents/skills/clickhouse-best-practices/*",
+            ".agents/skills/hk/*",
+            ".agents/skills/opencode-refine/*"
+        )
     }
 
     // ── Ruby ─────────────────────────────────────────────────────────────

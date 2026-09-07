@@ -36,6 +36,14 @@ These commands only search files tracked by YADM, avoiding the slow traversal of
 Always favor searching using `yadm ls-files` and `yadm grep` over `glob`/`find` and `grep` tools, given the large
 amount of unrelated files present under a home directory.
 
+## Externally installed skills
+
+Treat skills installed by `npx skills` as vendored upstream snapshots. Track the
+skill directories and `.agents/.skill-lock.json` with YADM so updates appear in
+`yadm diff`, but keep `npx skills` as the update mechanism. Never reformat or
+hand-edit these files, and confirm ownership before treating an untracked skill
+as locally authored.
+
 ## Continuous Learning
 
 When the user corrects you about how something works, how a tool should be used, or how this environment is

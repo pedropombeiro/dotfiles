@@ -1,6 +1,26 @@
 {
   "version": 3,
-  "skills": {},
+  "skills": {
+    "hk": {
+      "source": "connorads/dotfiles",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/connorads/dotfiles.git",
+      "skillPath": "skills/hk/SKILL.md",
+      "skillFolderHash": "f29cf2cde1121805c5e1efa965382160dada7cfe",
+      "installedAt": "2026-09-07T08:02:56.768Z",
+      "updatedAt": "2026-09-07T08:02:56.768Z"
+    },
+    "clickhouse-best-practices": {
+      "source": "ClickHouse/agent-skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/ClickHouse/agent-skills.git",
+      "skillPath": "skills/clickhouse-best-practices/SKILL.md",
+      "skillFolderHash": "2a8db28b640349bec00c258b77840928ced7f187",
+      "pluginName": "clickhouse-best-practices",
+      "installedAt": "2026-09-07T08:03:05.918Z",
+      "updatedAt": "2026-09-07T08:03:05.918Z"
+    }
+  },
   "dismissed": {
     "findSkillsPrompt": true
   },

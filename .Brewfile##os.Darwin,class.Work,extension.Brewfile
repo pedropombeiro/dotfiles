@@ -26,6 +26,10 @@ brew "asciinema"
 brew "readline"
 # Bourne-Again SHell, a UNIX command interpreter
 brew "bash"
+# Cryptography and SSL/TLS Toolkit
+brew "openssl@3"
+# C library implementing the SSH2 protocol
+brew "libssh2"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
 # Get/set bluetooth power and discoverable state
@@ -154,6 +158,10 @@ brew "lazygit"
 brew "libiconv"
 # Postgres C API library
 brew "libpq", link: true
+# Library to render SVG files using Cairo
+brew "librsvg"
+# YAML Parser
+brew "libyaml"
 # Curses-based tool for viewing and analyzing log files
 brew "lnav"
 # Package manager for the Lua programming language

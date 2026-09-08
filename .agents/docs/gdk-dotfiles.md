@@ -29,7 +29,8 @@ canonical repo live in the private `gitlab.com/pedropombeiro/gitlab-dotfiles` re
 
 ## Bootstrap and updates
 
-The checkout is declared in mise under `[bootstrap.repos]`. On a fresh machine:
+The checkout is declared in the work-only mise configuration under `[bootstrap.repos]`, so personal
+machines do not clone it. On a fresh work machine:
 
 1. Clone the public YADM repository over HTTPS.
 2. Run `yadm bootstrap` to install 1Password and the remaining prerequisites.

@@ -1,0 +1,2 @@
+[bootstrap.repos]
+"~/.config/dotfiles/gitlab" = { url = "git@gitlab.com:pedropombeiro/gitlab-dotfiles.git" }

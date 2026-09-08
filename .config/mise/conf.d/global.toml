@@ -28,8 +28,6 @@ shfmt = "latest"
 stylua = "latest"
 # Spell checker for source code
 typos = "latest"
-# EditorConfig file format checker
-"aqua:editorconfig-checker/editorconfig-checker" = "latest"
 # JSON/Markdown/YAML formatter
 prettier = "latest"
 
@@ -39,3 +37,11 @@ prettier = "latest"
 # (gitlab.com/gitlab-org/ai/lazy-mcp, maintainer dgruzd@gitlab.com), niche by
 # design, so the popularity signal will never clear the threshold.
 "npm:lazy-mcp" = { version = "latest", allow_low_downloads = true }
+
+# EditorConfig file format checker. v4 renamed the binary, but hk still invokes `ec`.
+[tools."github:editorconfig-checker/editorconfig-checker"]
+version = "latest"
+rename_exe = { "editorconfig-checker" = "ec" }
+
+[tools."github:editorconfig-checker/editorconfig-checker".platforms]
+macos-arm64 = { asset_pattern = "editorconfig-checker-darwin-all.tar.gz" }

@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+#MISE description="Refresh a Caproni environment: rebase onto master, update repos, reconcile cluster"
+#USAGE arg "[work-item-id]" help="Work item IID, or --all for every environment. Defaults to the environment containing the current directory." default=""
+set -eu
+
+# mise defines usage_* variables from the #USAGE directives.
+# shellcheck disable=SC2154
+exec "$HOME/.agents/skills/caproni/scripts/update-env.sh" ${usage_work_item_id:+"$usage_work_item_id"}

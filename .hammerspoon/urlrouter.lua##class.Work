@@ -13,6 +13,11 @@ local routes = {
   },
   { url = "zoom.us/j/", bundle = "us.zoom.videomeetings", name = "Zoom" },
   { url = "zoom.us/my/", bundle = "us.zoom.videomeetings", name = "Zoom" },
+  -- Caproni rigs (gitlab.<id>.test) live on Colima VM IPs. Chrome's macOS Local
+  -- Network grant is bound to stale code-sign clone paths, so it drops those
+  -- connections as unreachable; Firefox is unaffected. Two-label hosts such as
+  -- gdk.test resolve to a loopback alias and stay in Chrome.
+  { host = "^[^.]+%.[^.]+%.test$", bundle = "org.mozilla.firefox", name = "Firefox (Caproni)" },
 }
 
 local slackTeams = {

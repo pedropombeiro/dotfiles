@@ -23,9 +23,9 @@ canonical repo live in the private `gitlab.com/pedropombeiro/gitlab-dotfiles` re
    steps 2–5 for each worktree under `$GDK_ROOT`. Worktree exclude entries go to
    `.git/worktrees/<name>/info/exclude`.
 
-> **Gotcha:** the `fd` call must include `--hidden` and `--exclude .git`. Without `--hidden`,
-> `fd` silently skips `.opencode/`, `.ai/`, and `.gitlab/`. Without `--exclude .git`, it syncs
-> private repository metadata into the GitLab worktree.
+> **Gotcha:** the `fd` call must include `--hidden` and exclude `.git`, `.gitignore`, and
+> `hk.pkl`. Without `--hidden`, `fd` silently skips `.opencode/`, `.ai/`, and `.gitlab/`.
+> Without the exclusions, it syncs private repository metadata into the GitLab worktree.
 
 ## Bootstrap and updates
 

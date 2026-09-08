@@ -297,6 +297,7 @@
       "ls *": "allow",
       "man *": "deny", // Context7 should be used instead
       "md5 *": "allow",
+      "mise --version": "allow",
       "mise ls *": "allow",
       "mise ls-remote *": "allow",
       "mise tasks --list": "allow",

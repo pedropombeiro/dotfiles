@@ -348,6 +348,7 @@
       "markdownlint *": "allow",
       "markdownlint-cli2 *": "allow",
       "md5 *": "allow",
+      "mise --version": "allow",
       "mise ls *": "allow",
       "mise x clickhouse *": "allow",
       "mise fmt --check*": "allow",

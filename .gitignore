@@ -21,6 +21,7 @@ Thumbs.db
 .zshrc
 .config/yazi/flavors/gruvbox-dark.yazi
 .config/lazy-mcp/memos-token
+.config/dotfiles/gitlab/
 
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile

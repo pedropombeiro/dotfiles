@@ -1,7 +1,7 @@
 # GDK Dotfiles Sync
 
 Personal files that should appear inside `$GDK_ROOT/gitlab/` but not be committed to the
-canonical repo live under a single well-known location in the dotfiles repo:
+canonical repo live in the private `gitlab.com/pedropombeiro/gitlab-dotfiles` repository, cloned to:
 
 ```
 ~/.config/dotfiles/gitlab/
@@ -23,9 +23,23 @@ canonical repo live under a single well-known location in the dotfiles repo:
    steps 2–5 for each worktree under `$GDK_ROOT`. Worktree exclude entries go to
    `.git/worktrees/<name>/info/exclude`.
 
-> **Gotcha:** the `fd` call must include `--hidden`; without it `fd` silently skips all
-> hidden directories (`.opencode/`, `.ai/`, `.gitlab/`, etc.) and none of those files get
-> synced.
+> **Gotcha:** the `fd` call must include `--hidden` and `--exclude .git`. Without `--hidden`,
+> `fd` silently skips `.opencode/`, `.ai/`, and `.gitlab/`. Without `--exclude .git`, it syncs
+> private repository metadata into the GitLab worktree.
+
+## Bootstrap and updates
+
+The checkout is declared in mise under `[bootstrap.repos]`. On a fresh machine:
+
+1. Clone the public YADM repository over HTTPS.
+2. Run `yadm bootstrap` to install 1Password and the remaining prerequisites.
+3. Sign in to 1Password and enable its SSH agent when prompted.
+4. Re-run `yadm bootstrap`. The existing repository bootstrap steps run `mise bootstrap repos apply` for every repository declared under `[bootstrap.repos]`.
+
+Configured repositories can use different Git hosts and authentication methods. The private GitLab
+checkout requires the 1Password SSH agent, while public HTTPS repositories do not.
+
+`mise run dotfiles:update` refreshes configured repositories with `mise bootstrap repos update --skip-dirty` before syncing files into the GDK worktrees. Dirty repositories are left untouched.
 
 ## Adding new files
 
@@ -33,7 +47,13 @@ Place the file under `~/.config/dotfiles/gitlab/` at the same relative path you 
 appear in the gitlab repo. No script changes are needed — `sync_dotfiles_to_gitlab()` picks
 it up automatically on the next `mise run dotfiles:update`.
 
-Track it with YADM: `yadm add ~/.config/dotfiles/gitlab/<path>`.
+Commit and push it from the private repository:
+
+```bash
+git -C ~/.config/dotfiles/gitlab add <path>
+git -C ~/.config/dotfiles/gitlab commit
+git -C ~/.config/dotfiles/gitlab push
+```
 
 ## Current contents
 

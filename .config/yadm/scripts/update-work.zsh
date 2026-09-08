@@ -268,7 +268,13 @@ sync_dotfiles_to_gitlab() {
   dotfiles_dir="${HOME}/.config/dotfiles/gitlab"
   gitlab_dir="${gdk_root}/gitlab"
 
-  [[ -d "${dotfiles_dir}" ]] || return 0
+  if [[ ! -d "${dotfiles_dir}/.git" ]]; then
+    echo "Warning: ${dotfiles_dir} is missing; run 'mise bootstrap repos apply' after enabling the 1Password SSH agent" >&2
+    return 0
+  fi
+
+  mise bootstrap repos update --skip-dirty >/dev/null ||
+    echo "Warning: failed to update configured repositories; syncing the existing GitLab dotfiles checkout" >&2
 
   # Sync to the main gitlab worktree
   exclude_file="${gitlab_dir}/.git/info/exclude"

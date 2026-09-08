@@ -200,7 +200,7 @@ _sync_dotfiles_to_worktree() {
 
   [[ -d "${target_dir}" ]] || return 0
 
-  for dotfiles_file in ${(f)"$(fd --hidden --type f . "${dotfiles_dir}")"}; do # (f) splits on newlines
+  for dotfiles_file in ${(f)"$(fd --hidden --type f --exclude .git . "${dotfiles_dir}")"}; do # (f) splits on newlines
     rel_path="${dotfiles_file#${dotfiles_dir}/}"
     target_file="${target_dir}/${rel_path}"
 

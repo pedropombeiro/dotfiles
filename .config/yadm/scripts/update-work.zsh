@@ -148,6 +148,9 @@ cleanup_gitlab_excludes() {
     sed -i '' '\|^/\.opencode/skills/glab/|d' "${gitlab_exclude_file}"
     # Malformed entries from an earlier sync that dropped the .opencode/skills prefix
     sed -i '' '\|^/glab/|d' "${gitlab_exclude_file}"
+    # Repository control files are not part of the GitLab worktree payload.
+    sed -i '' '/^\/\.gitignore$/d' "${gitlab_exclude_file}"
+    sed -i '' '/^\/hk\.pkl$/d' "${gitlab_exclude_file}"
   fi
 }
 

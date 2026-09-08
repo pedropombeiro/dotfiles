@@ -5,8 +5,10 @@
 ## Task Locations
 
 - **TOML tasks**: `~/.config/mise/conf.d/tasks.toml` (shared across all systems)
+- **TOML tasks (work)**: `~/.config/mise/conf.d/tools.work.toml`
 - **TOML tasks (macOS)**: `~/.config/mise/config.toml##default` (brew, network)
 - **File tasks**: `~/.config/mise/tasks/` (complex scripts)
+- **File tasks (work)**: `~/.config/mise/tasks-work/` (registered by `conf.d/work.toml`)
 
 ## Available Tasks
 

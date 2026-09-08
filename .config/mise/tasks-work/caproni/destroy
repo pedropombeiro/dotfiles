@@ -1,0 +1,15 @@
+#!/usr/bin/env sh
+#MISE description="Destroy a work-item-scoped Caproni environment"
+#MISE raw=true
+#USAGE arg "<work-item-id>" help="Numeric GitLab work item or issue IID"
+#USAGE flag "--keep-directory" help="Keep the Caproni checkout after destroying the cluster"
+set -eu
+
+# mise defines usage_* variables from the #USAGE directives.
+# shellcheck disable=SC2154
+set -- "$usage_work_item_id"
+# shellcheck disable=SC2154
+if [ "${usage_keep_directory:-false}" = "true" ]; then
+  set -- "$@" --keep-directory
+fi
+exec "$HOME/.agents/skills/caproni/scripts/destroy-env.sh" "$@"

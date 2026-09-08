@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+#MISE description="List work-item-scoped Caproni environments"
+set -eu
+
+exec "$HOME/.agents/skills/caproni/scripts/list-envs.sh"

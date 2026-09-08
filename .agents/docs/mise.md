@@ -344,6 +344,9 @@ Example:
 
 ## Task Semantics
 
+- `[task_config].includes` replaces mise's default file-task search paths. Include
+  `~/.config/mise/tasks` explicitly when adding another task directory. In a global
+  `conf.d` fragment, use home-relative paths rather than paths relative to the fragment.
 - `depends = [...]` runs the listed tasks **in parallel**. To force sequential
   execution, use a `run` array instead — its entries run in order.
 - `sources` / `outputs` enable caching: mise skips the task when every `sources`

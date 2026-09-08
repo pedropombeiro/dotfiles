@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+#MISE description="Create an isolated Caproni environment for a work item"
+#USAGE arg "<work-item-id>" help="Numeric GitLab work item or issue IID"
+#USAGE arg "[branch-description]" help="Short branch description" default="work"
+set -eu
+
+# mise defines usage_* variables from the #USAGE directives.
+# shellcheck disable=SC2154
+exec "$HOME/.agents/skills/caproni/scripts/create-env.sh" "$usage_work_item_id" "$usage_branch_description"

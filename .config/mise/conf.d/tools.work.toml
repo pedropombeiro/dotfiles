@@ -8,6 +8,9 @@ HISTIGNORE = "*AWS_SECRET*:*AWS_ACCESS*:*glpat-*:*glrt-*:*gloas-*:*PRIVATE-TOKEN
 # the prebuilt binary.
 USE_PRECOMPILED_RUBY = "true"
 
+[task_config]
+includes = ["~/.config/mise/tasks", "~/.config/mise/tasks-work"]
+
 [tools]
 # ── Runtimes & infra ──────────────────────────────────────────────────
 # Ruby runtime

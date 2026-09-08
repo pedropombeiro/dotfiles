@@ -1,2 +1,0 @@
-[task_config]
-includes = ["~/.config/mise/tasks", "~/.config/mise/tasks-work"]

@@ -50,9 +50,11 @@ default_branch=$(git_main_branch) || return
 local current_branch
 current_branch=$(git branch --show-current) || return
 
-local -a branches candidates changed_paths
+local -a branches candidates changed_paths mr_lines
 local branch upstream upstream_remote upstream_track default_ref
-local remote_url remote_host remote_project encoded_branch merge_request_sha merge_base
+local remote_url remote_host remote_project encoded_branch merge_base
+local mr_line mr_target landing_sha api_merge_base mr_merged
+local landing_candidates limit unpushed
 local work_landed glab_auth_status
 local glab_auth_checked=false
 
@@ -73,21 +75,28 @@ for branch in "${branches[@]}"; do
   fi
 
   default_ref="$upstream_remote/$default_branch"
-  if git show-ref --verify --quiet "refs/remotes/$default_ref" && git merge-base --is-ancestor "$branch" "$default_ref"; then
+  git show-ref --verify --quiet "refs/remotes/$default_ref" || continue
+
+  if git merge-base --is-ancestor "$branch" "$default_ref"; then
     candidates+=("$branch|merged")
     print -r -- "${yellow}🗑  $branch: merged${reset}"
     continue
   fi
 
-  git show-ref --verify --quiet "refs/remotes/$default_ref" || continue
-  merge_base=$(git merge-base "$default_ref" "$branch") || continue
-  changed_paths=("${(@f)$(git diff --name-only "$merge_base" "$branch")}")
-  work_landed=false
-  if (( ${#changed_paths} )) && git diff --quiet "$default_ref" "$branch" -- "${changed_paths[@]}"; then
-    work_landed=true
+  # The local ref may lag behind its upstream, so judge landing by the upstream.
+  if git merge-base --is-ancestor "$upstream" "$default_ref"; then
+    candidates+=("$branch|merged-upstream")
+    print -r -- "${yellow}🗑  $branch: merged-upstream${reset}"
+    continue
   fi
 
-  if [[ $work_landed != true ]]; then
+  merge_base=$(git merge-base "$default_ref" "$upstream") || continue
+  changed_paths=("${(@f)$(git diff --name-only "$merge_base" "$upstream")}")
+  (( ${#changed_paths} )) || continue
+
+  # If the default branch never touched these paths, the work cannot have landed.
+  landing_candidates=$(git rev-list --count "$merge_base..$default_ref" -- "${changed_paths[@]}")
+  if (( ! landing_candidates )); then
     print -r -- "${green}✓  $branch: active${reset}"
     continue
   fi
@@ -101,18 +110,58 @@ for branch in "${branches[@]}"; do
     glab_auth_checked=true
   fi
 
+  mr_merged=false
   if print -r -- "$glab_auth_status" | grep -q "^[[:space:]]*$remote_host$"; then
     encoded_branch=${branch//\//%2F}
     print -r -- "${cyan}🔎 $branch: checking merged MRs${reset}"
-    merge_request_sha=$(glab api --hostname "$remote_host" \
+    mr_lines=("${(@f)$(glab api --hostname "$remote_host" \
       "projects/${remote_project//\//%2F}/merge_requests?source_branch=$encoded_branch&state=merged" 2>/dev/null |
-      jq -r '.[0].sha // empty')
+      jq -r '.[] | [.target_branch, (.squash_commit_sha // ""), (.merge_commit_sha // "")] | @tsv')}")
 
-    if [[ -n $merge_request_sha ]]; then
-      candidates+=("$branch|mr-merged")
-      print -r -- "${yellow}🗑  $branch: mr-merged${reset}"
-      continue
-    fi
+    for mr_line in "${mr_lines[@]}"; do
+      [[ -n $mr_line ]] || continue
+      mr_target=${mr_line%%$'\t'*}
+      landing_sha=${${mr_line#*$'\t'}%%$'\t'*}
+      [[ -n $landing_sha ]] || landing_sha=${mr_line##*$'\t'}
+      [[ -n $mr_target && -n $landing_sha ]] || continue
+
+      # The MR target may have no local tracking ref, so fall back to the API.
+      if git show-ref --verify --quiet "refs/remotes/$upstream_remote/$mr_target"; then
+        git merge-base --is-ancestor "$landing_sha" "$upstream_remote/$mr_target" || continue
+      else
+        api_merge_base=$(glab api --hostname "$remote_host" \
+          "projects/${remote_project//\//%2F}/repository/merge_base?refs[]=$landing_sha&refs[]=${mr_target//\//%2F}" 2>/dev/null |
+          jq -r '.id // empty')
+        [[ $api_merge_base == "$landing_sha" ]] || continue
+      fi
+
+      mr_merged=true
+      break
+    done
+  fi
+
+  # Read-only mode judges the upstream, so never drop unpushed local commits.
+  limit=$(git merge-base "$default_ref" "$branch") || continue
+  unpushed=$(git cherry "$upstream" "$branch" "$limit" 2>/dev/null | grep -c '^+')
+  if (( unpushed )); then
+    print -r -- "${green}✓  $branch: active (unpushed local work)${reset}"
+    continue
+  fi
+
+  if [[ $mr_merged == true ]]; then
+    candidates+=("$branch|mr-merged")
+    print -r -- "${yellow}🗑  $branch: mr-merged${reset}"
+    continue
+  fi
+
+  work_landed=false
+  if git diff --quiet "$default_ref" "$upstream" -- "${changed_paths[@]}"; then
+    work_landed=true
+  fi
+
+  if [[ $work_landed != true ]]; then
+    print -r -- "${green}✓  $branch: active${reset}"
+    continue
   fi
 
   candidates+=("$branch|work-landed")

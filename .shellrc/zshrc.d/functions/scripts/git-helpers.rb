@@ -283,7 +283,7 @@ def rebase_mappings
     fork_point = nil
     if current_mr_seq_nr
       seq_map = mr_seq_branches[current_mr_id]
-      prev_seq_nr = seq_map.keys.sort.reverse.find { |s| s < current_mr_seq_nr }
+      prev_seq_nr = seq_map.keys.select { |seq| seq < current_mr_seq_nr }.max
       if prev_seq_nr
         prev_branch = seq_map[prev_seq_nr].first
         if branch_exists?(prev_branch)

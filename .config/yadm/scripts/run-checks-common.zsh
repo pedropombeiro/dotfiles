@@ -60,21 +60,66 @@ wakatime_project_from_heartbeat() {
   # to avoid GNU grep's "stray \ before /" warnings.
   local entity_re
   entity_re=$(printf '%s' "$entity" | sed 's/[][\\.^$*+?(){}|]/\\&/g')
-  # Only inspect the JSON heartbeat array line ('heartbeats: [{...}]') and
-  # restrict to objects matching our entity, so stale offline-queued
-  # heartbeats for other files/projects are ignored.
-  (cd "$HOME" && "$WAKATIME_CLI" --entity "$entity" --project-folder "$2" \
+  local output project rc
+  output=$(cd "$HOME" && "$WAKATIME_CLI" --entity "$entity" --project-folder "$2" \
     --heartbeat-rate-limit-seconds 0 --disable-offline \
-    --verbose --log-to-stdout 2>&1) \
+    --timeout 5 --sync-ai-disabled --verbose --log-to-stdout 2>&1)
+  rc=$?
+  if (( rc != 0 )); then
+    print -ru2 -- "WakaTime CLI failed (exit ${rc}) for ${entity}: ${output}"
+    return 1
+  fi
+  # Match only this entity, excluding unrelated queued heartbeats.
+  project=$(print -r -- "$output" \
       | grep -o 'heartbeats: \[.*\]' \
       | grep -o "{[^{}]*\\\\\"entity\\\\\":\\\\\"${entity_re}\\\\\"[^{}]*}" \
       | grep -o 'project\\":\\"[^\\]*\\"' \
-      | head -1 \
-      | sed 's/project\\":\\"//;s/\\"//'
+      | sed -n '1{s/project\\":\\"//;s/\\"//;p;}')
+  if [[ -z "$project" ]]; then
+    if [[ "$output" == *'heartbeats: ['* ]]; then
+      print -ru2 -- "WakaTime emitted heartbeats, but no project could be parsed for ${entity}"
+    else
+      print -ru2 -- "WakaTime emitted no heartbeat log for ${entity}"
+    fi
+    return 1
+  fi
+  print -r -- "$project"
+}
+
+# Use a tracked file whose resolved path stays inside the repository.
+# The GDK README is a symlink into dotfiles and is unsuitable for this probe.
+wakatime_probe_file() {
+  local repo=${1:A} rel candidate files
+  if ! files=$(cd "$repo" && git ls-files -z); then
+    print -ru2 -- "Cannot list tracked files in ${repo}"
+    return 2
+  fi
+  for rel in "${(@0)files}"; do
+    candidate="$repo/$rel"
+    if [[ -f "$candidate" && "${candidate:A}" == "$repo/"* ]]; then
+      printf '%s\n' "${candidate:A}"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Retry failed probes, preserving the final diagnostic for the caller.
+wakatime_project_from_heartbeat_retry() {
+  local entity=$1 folder=$2 result i
+  for i in 1 2 3; do
+    if result=$(wakatime_project_from_heartbeat "$entity" "$folder" 2>&1); then
+      printf '%s\n' "$result"
+      return 0
+    fi
+    (( i < 3 )) && sleep 1
+  done
+  print -ru2 -- "$result"
+  return 1
 }
 
   print_op_stay "Checking wakatime project detection for dotfiles"
-  wakatime_project=$(wakatime_project_from_heartbeat "$HOME/.zshrc" "$HOME")
+  wakatime_project=$(wakatime_project_from_heartbeat_retry "$HOME/.zshrc" "$HOME")
   if [[ "$wakatime_project" == "dotfiles" ]]; then
     print_ok "$wakatime_project"
   else
@@ -90,12 +135,22 @@ wakatime_project_from_heartbeat() {
     test_repo=${$(fd -td --hidden --no-ignore --max-depth 5 '^\.git$' "$HOME/Developer" -1 2>/dev/null)%/.git/}
   fi
   if [[ -n "$test_repo" ]]; then
-    wakatime_project=$(wakatime_project_from_heartbeat "$test_repo/README.md" "$test_repo")
-    if [[ -n "$wakatime_project" && "$wakatime_project" != "dotfiles" ]]; then
-      print_ok "$wakatime_project"
+    if test_entity=$(wakatime_probe_file "$test_repo"); then
+      wakatime_project=$(wakatime_project_from_heartbeat_retry "$test_entity" "$test_repo")
+      if [[ -n "$wakatime_project" && "$wakatime_project" != "dotfiles" ]]; then
+        print_ok "$wakatime_project"
+      else
+        print_failure "Expected a non-dotfiles project name for ${test_entity}, got '${wakatime_project:-<empty>}'"
+        any_failed=1
+      fi
     else
-      print_failure "Expected a non-dotfiles project name, got '${wakatime_project:-<empty>}'"
-      any_failed=1
+      probe_rc=$?
+      if (( probe_rc == 1 )); then
+        print_ok "(skipped, no tracked regular file resolves inside $test_repo)"
+      else
+        print_failure "Could not select a WakaTime probe in ${test_repo}"
+        any_failed=1
+      fi
     fi
   else
     print_ok "(skipped, no test repo found)"

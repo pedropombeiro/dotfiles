@@ -1,13 +1,12 @@
 local audio = require("audio")
+local busylight = require("busylight")
 local constants = require("constants")
-local usb = require("usb")
 local webcam = require("webcam")
 local log = hs.logger.new("meetings", "info")
 local spotifyWasPlaying = false
 local eqMacWasRunning = false
 local connectTask = nil
 local pollTimer = nil
-local waveTask = nil
 
 local M = {}
 
@@ -108,8 +107,8 @@ local function onMeetingEnd()
     log.i("Quit Camo Studio")
   end
 
-  waveTask = usb.power(constants.usbHub, constants.elgatoWavePort, "off", function() waveTask = nil end)
-  log.i("Powered off Elgato Wave USB")
+  -- Keep the shared USB hub powered; blank the light through its API.
+  busylight.off("onMeetingEnd")
 end
 
 M._watcher = hs.application.watcher.new(function(name, event)

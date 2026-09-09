@@ -54,6 +54,113 @@ check_stream_deck_usb() {
   any_failed=1
 }
 
+port_power_status() {
+  local hub=$1 port=$2
+  local output line
+  if [[ -z "$hub" || -z "$port" ]]; then
+    print -r -- "USB hub configuration is unavailable"
+    return 1
+  fi
+  if ! output=$(uhubctl --location "$hub" --port "$port" 2>&1); then
+    print -r -- "Cannot inspect hub ${hub} port ${port}: ${output}"
+    return 1
+  fi
+  for line in ${(f)output}; do
+    if [[ "$line" == *"Port ${port}: "* ]]; then
+      print -r -- "$line"
+      return 0
+    fi
+  done
+  print -r -- "No status returned for hub ${hub} port ${port}; check the dock connection and configured location"
+  return 1
+}
+
+check_usb_port_powered() {
+  local label=$1 hub=$2 port=$3
+
+  print_op_stay "Checking ${label} USB port power"
+  local port_status
+  if ! port_status=$(port_power_status "$hub" "$port"); then
+    echo
+    print_failure "${label}: ${port_status}"
+    any_failed=1
+    return
+  fi
+
+  if [[ " $port_status " == *" power "* ]]; then
+    print_ok
+    return
+  fi
+
+  echo
+  if [[ " $port_status " != *" off "* ]]; then
+    print_failure "${label}: unrecognized power state: ${port_status}"
+    any_failed=1
+    return
+  fi
+  local output
+  if ! output=$(uhubctl --action on --location "$hub" --port "$port" 2>&1); then
+    print_failure "${label}: failed to power on hub ${hub} port ${port}: ${output}"
+    any_failed=1
+    return
+  fi
+  sleep 2
+  if ! port_status=$(port_power_status "$hub" "$port"); then
+    print_failure "${label}: power-on verification failed: ${port_status}"
+    any_failed=1
+  elif [[ " $port_status " != *" power "* ]]; then
+    print_failure "${label}: power-on verification failed: ${port_status}"
+    any_failed=1
+  else
+    print_ok "${label}: restored power to hub ${hub} port ${port}"
+  fi
+}
+
+busylight_usb_present() {
+  local inventory
+  inventory=$(ioreg -p IOUSB -w0 -l 2>/dev/null) || return 2
+  print -r -- "$inventory" | grep -i '"USB Product Name" = "BUSYLIGHT"' >/dev/null
+}
+
+# NO_DEVICE only says BusylightHTTP has no light to talk to. Walk the chain from
+# the USB bus outwards so the check names the link that is actually broken.
+busylight_no_device_reason() {
+  local hub=$shared_hub port=$shared_port usb_rc
+  if busylight_usb_present; then
+    printf '%s\n' "device is visible on USB, but BusylightHTTP reports NO_DEVICE - try restarting BusylightHTTP"
+    return
+  else
+    usb_rc=$?
+  fi
+  if (( usb_rc != 1 )); then
+    print -r -- "USB inspection failed; device presence is unknown"
+    return
+  fi
+
+  if ! command -v uhubctl >/dev/null 2>&1; then
+    printf '%s\n' "device is not on the USB bus (uhubctl unavailable, cannot inspect hub power)"
+    return
+  fi
+
+  if [[ -z "$hub" || -z "$port" ]]; then
+    printf '%s\n' "device is not on the USB bus (could not read the hub location from Hammerspoon constants)"
+    return
+  fi
+
+  local port_status
+  if ! port_status=$(port_power_status "$hub" "$port"); then
+    printf '%s\n' "device is not visible on USB; ${port_status}"
+  elif [[ " $port_status " == *" off "* ]]; then
+    printf '%s\n' "hub ${hub} port ${port} is powered off - run: uhubctl --action on --location ${hub} --port ${port}"
+  elif [[ " $port_status " != *" power "* ]]; then
+    printf '%s\n' "device is not visible on USB; unrecognized port state: ${port_status}"
+  elif [[ " $port_status " != *" connect "* ]]; then
+    printf '%s\n' "hub ${hub} port ${port} is powered but empty - check the cable from the dock to the Busylight hub"
+  else
+    printf '%s\n' "hub ${hub} port ${port} has a device, but no BUSYLIGHT on the bus - check the light's own cable"
+  fi
+}
+
 probe_busylight_endpoint() {
   local url=$1
   local body http_code
@@ -79,7 +186,8 @@ check_busylight_local() {
   fi
 
   if [[ $rc -eq 0 && $http_code == 404 ]] && echo "$body" | grep -q NO_DEVICE; then
-    print_warn "Busylight device not connected"
+    echo
+    print_warn "Busylight unavailable: $(busylight_no_device_reason)"
     return
   fi
 
@@ -101,7 +209,7 @@ check_busylight_local() {
     body=${${(f)result}[3]}
     if [[ $rc -eq 0 && ($http_code == 200 || $http_code == 404) ]]; then
       if [[ $http_code == 404 ]] && echo "$body" | grep -q NO_DEVICE; then
-        print_warn "Busylight HTTP server restarted (no device connected)"
+        print_warn "Busylight HTTP server restarted, but unavailable: $(busylight_no_device_reason)"
       else
         print_ok "(restarted)"
       fi
@@ -147,7 +255,8 @@ check_busylight_proxy() {
   fi
 
   if [[ $rc -eq 0 && $http_code == 404 ]] && echo "$body" | grep -q NO_DEVICE; then
-    print_warn "Busylight device not connected"
+    # Proxy reaches the same daemon, so the direct check already explained why.
+    print_warn "Busylight device not connected (proxy itself is healthy)"
     return
   fi
 
@@ -284,12 +393,27 @@ check_app_running 'Hammerspoon'
 check_hammerspoon_bluetooth
 check_app_running 'Stream Deck' 'com.elgato.StreamDeck'
 
+shared_hub=""
+shared_port=""
 if uhubctl >/dev/null 2>&1; then
   check_stream_deck_usb
-  check_nginx
-  check_busylight_local
-  check_busylight_proxy
+
+  if shared_config=$(hs -c 'local c = require("constants"); return c.usbHub .. " " .. c.sharedPeripheralPort' 2>&1) &&
+      shared_config=$(print -r -- "$shared_config" | jq -Rer 'capture("^(?<hub>[0-9]+([.-][0-9]+)*) (?<port>[0-9]+)$") | .hub, .port' 2>&1) && [[ -n "$shared_config" ]]; then
+    shared_hub=${${(f)shared_config}[1]}
+    shared_port=${${(f)shared_config}[2]}
+    check_usb_port_powered 'Busylight hub' "$shared_hub" "$shared_port"
+  else
+    print_failure "Cannot read Busylight hub configuration from Hammerspoon: ${shared_config}"
+    any_failed=1
+  fi
+
 fi
+
+# The HTTP checks can diagnose service failures even when USB inspection fails.
+check_nginx
+check_busylight_local
+check_busylight_proxy
 
 check_app_running 'Home Assistant'
 check_glab_auth
@@ -299,7 +423,7 @@ check_lefthook_local_overrides
 
 if (( any_failed )); then
   printf "${YELLOW}%s${NC}\n" "⚠️  Checks finished with errors/warnings!"
-  (exit 1)
+  exit 1
 else
   printf "${GREEN}%s${NC}\n" "✅ Checks finished!"
 fi

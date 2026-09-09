@@ -44,6 +44,9 @@ function M.restoreServices()
   cycleStreamDeck()
   audio.setDockedAudioOutput()
 
+  -- Restore power if the Busylight's shared hub was left off.
+  usb.power(constants.usbHub, constants.sharedPeripheralPort, "on")
+
   task("/opt/homebrew/bin/brew", { "services", "restart", "nginx" })
   task("/usr/bin/open", { "-a", "BusylightHTTP" })
 

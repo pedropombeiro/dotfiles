@@ -1,0 +1,23 @@
+local constants = require("constants")
+local log = hs.logger.new("busylight", "info")
+
+local M = {}
+
+local function request(query, reason)
+  local url = constants.busylightUrl .. "?" .. query
+  hs.http.asyncGet(url, nil, function(status, body)
+    -- BusylightHTTP answers 404 with NO_DEVICE when the light is unplugged or
+    -- its hub is unpowered; that is expected, not an error worth warning about.
+    if status == 200 then
+      log.i("Busylight " .. query .. " [" .. reason .. "]")
+    elseif status == 404 and body and body:find("NO_DEVICE", 1, true) then
+      log.i("Busylight not connected, skipping " .. query .. " [" .. reason .. "]")
+    else
+      log.w("Busylight " .. query .. " failed (status " .. tostring(status) .. "): " .. tostring(body))
+    end
+  end)
+end
+
+function M.off(reason) request("action=off", reason or "M.off") end
+
+return M

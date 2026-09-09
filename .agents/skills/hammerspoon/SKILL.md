@@ -1,6 +1,6 @@
 ---
 name: hammerspoon
-description: "Hammerspoon macOS automation. Config in ~/.hammerspoon/. Modules: init.lua, spaces, sleepwake, urlrouter, httpserver, meetings, webcam. Keywords: hammerspoon, hs, lua, audiodevice, hotkey, caffeinate, httpserver, Stream Deck, Rectangle Pro, blueutil, AirPods, URL routing, webcam, uhubctl. Use when: editing ~/.hammerspoon/ files, debugging Hammerspoon modules, adding Hammerspoon features, checking Hammerspoon logs."
+description: "Hammerspoon macOS automation. Config in ~/.hammerspoon/. Modules: init.lua, spaces, sleepwake, urlrouter, httpserver, meetings, webcam, busylight. Keywords: hammerspoon, hs, lua, audiodevice, hotkey, caffeinate, httpserver, Stream Deck, Rectangle Pro, blueutil, AirPods, URL routing, webcam, uhubctl, Busylight. Use when: editing ~/.hammerspoon/ files, debugging Hammerspoon modules, adding Hammerspoon features, checking Hammerspoon logs."
 ---
 
 # Hammerspoon
@@ -10,11 +10,12 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 ## Architecture
 
 - `init.lua` — Module loader. Loads `hs.ipc` (enables the `hs` CLI to talk to the running instance), then conditionally loads modules that exist on disk (yadm alternates ensure class-gated modules are only present on matching machines).
-- `constants.lua` — Shared hardware and tool path constants used across modules (uhubctl, blueutil, USB hub/port assignments, AirPods address).
+- `constants.lua` — Shared hardware and tool path constants used across modules (uhubctl, blueutil, USB hub/port assignments, AirPods address, BusylightHTTP URL).
 - `spaces.lua##class.Work` — Applies the Rectangle Pro `External display` layout on every Space switch, unless an app in `layoutBlockingApps` is running.
 - `sleepwake.lua##class.Work` — Caffeinate watcher for sleep/wake/unlock events. Manages Stream Deck USB power, BusylightHTTP, nginx, and Elgato Control Center. On unlock, focuses the visible iTerm2 window on the current Space after the Rectangle Pro layout settles. Exports `displaysleep()` for use by other modules.
 - `urlrouter.lua##class.Work` — URL-based browser router (replaces Choosy). Hammerspoon is registered as the default HTTP/HTTPS handler via `duti`. Routes `zoom.us/j/` and `zoom.us/my/` links to Zoom.app, `*.slack.com` links to Slack.app, everything else to Chrome. Slack archive URLs are converted to `slack://channel` deep links (see Slack deep linking below) so the desktop app navigates to the message/thread instead of just focusing.
-- `meetings.lua##class.Work` — Auto-switches audio to AirPods when Zoom launches (connects via `blueutil` if needed), pauses Spotify, quits eqMac, powers on webcam USB. On Zoom exit: restores previous audio device, resumes Spotify, relaunches eqMac hidden, quits Camo Studio, powers off Elgato Wave USB port and webcam USB port. Uses a single `hs.application.watcher` (stored in `M._watcher` and `return M` so it isn't GC'd) keyed on `webcam.apps`; seeds `activeMeetings` from running apps on load so a reload mid-meeting doesn't fire a spurious start.
+- `meetings.lua##class.Work` — Auto-switches audio to AirPods when Zoom launches (connects via `blueutil` if needed), pauses Spotify, quits eqMac, powers on webcam USB. On Zoom exit: restores previous audio device, resumes Spotify, relaunches eqMac hidden, quits Camo Studio, blanks the Busylight via its HTTP API, powers off webcam USB port. Uses a single `hs.application.watcher` (stored in `M._watcher` and `return M` so it isn't GC'd) keyed on `webcam.apps`; seeds `activeMeetings` from running apps on load so a reload mid-meeting doesn't fire a spurious start.
+- `busylight.lua##class.Work` - Wraps the BusylightHTTP API (`constants.busylightUrl`). Exports `busylight.off()`. Treats `404 NO_DEVICE` as informational when the device is absent. Sends one off request when the last watched meeting application closes; other presence controllers can subsequently change the light.
 - `webcam.lua##class.Work` — Powers the YoloCam S3 USB port on/off via uhubctl. Exports `webcam.on()` and `webcam.off()`. Powers off on Hammerspoon load (unless Zoom is running). Called by `meetings.lua` and `sleepwake.lua`.
 - `httpserver/` — Modular HTTP server on `localhost:18990`. Sub-modules each return a table of `{ actionName = handlerFn }` that get merged into a single dispatch table.
   - `httpserver/init.lua` — Server skeleton. Parses query params via `hs.http.urlParts`, loads sub-modules, dispatches on `?action=`.
@@ -26,21 +27,21 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 
 ## Key behaviours
 
-| Event                              | Actions                                                                                                                                                                                                                                   |
-| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Space switch                       | Apply Rectangle Pro layout, unless an app in `layoutBlockingApps` is running                                                                                                                                                              |
-| `systemWillSleep`                  | Kill BusylightHTTP, power off Stream Deck USB                                                                                                                                                                                             |
-| `screensDidSleep`                  | Power off Stream Deck USB                                                                                                                                                                                                                 |
-| `screensDidUnlock`                 | Cycle Stream Deck (async), restart nginx, reopen BusylightHTTP, restart Elgato Control Center, apply Rectangle Pro layout (2s delay), focus a visible iTerm2 window on the current Space (3s delay); power off webcam if Zoom not running |
-| `hammerspoon://displaysleep` URL   | Power off Stream Deck, lock screen, sleep display after 2s                                                                                                                                                                                |
-| HTTP `?action=lock`                | Lock screen (Work only)                                                                                                                                                                                                                   |
-| HTTP `?action=sleep`               | Same as `displaysleep` URL handler (Work only)                                                                                                                                                                                            |
-| HTTP `?action=notify`              | Send native macOS notification with click-to-focus (all machines)                                                                                                                                                                         |
-| HTTP `?action=opencode-goto`       | Cycle to the next tmux OpenCode window waiting for input and activate its iTerm2 tab                                                                                                                                                      |
-| `fn+Tab` / `Caps Lock+L` in iTerm2 | Switch the frontmost tab's tmux client to its last session, mirroring `prefix + L` (all machines)                                                                                                                                         |
-| Any `http`/`https` URL opened      | Route to Zoom.app (meeting links) or Chrome (everything else) — replaces Choosy (Work only)                                                                                                                                               |
-| Zoom launched                      | Power on webcam USB, connect AirPods via blueutil, switch audio output, pause Spotify, quit eqMac (Work only)                                                                                                                             |
-| Zoom terminated                    | Power off webcam USB, restore previous audio output, resume Spotify, relaunch eqMac hidden, quit Camo Studio, power off Elgato Wave USB (Work only)                                                                                       |
+| Event                              | Actions                                                                                                                                                                                                                                                                                |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Space switch                       | Apply Rectangle Pro layout, unless an app in `layoutBlockingApps` is running                                                                                                                                                                                                           |
+| `systemWillSleep`                  | Kill BusylightHTTP, power off Stream Deck USB                                                                                                                                                                                                                                          |
+| `screensDidSleep`                  | Power off Stream Deck USB                                                                                                                                                                                                                                                              |
+| `screensDidUnlock`                 | Cycle Stream Deck (async), power **on** the shared Wave/Busylight port, restart nginx, reopen BusylightHTTP, restart Elgato Control Center, apply Rectangle Pro layout (2s delay), focus a visible iTerm2 window on the current Space (3s delay); power off webcam if Zoom not running |
+| `hammerspoon://displaysleep` URL   | Power off Stream Deck, lock screen, sleep display after 2s                                                                                                                                                                                                                             |
+| HTTP `?action=lock`                | Lock screen (Work only)                                                                                                                                                                                                                                                                |
+| HTTP `?action=sleep`               | Same as `displaysleep` URL handler (Work only)                                                                                                                                                                                                                                         |
+| HTTP `?action=notify`              | Send native macOS notification with click-to-focus (all machines)                                                                                                                                                                                                                      |
+| HTTP `?action=opencode-goto`       | Cycle to the next tmux OpenCode window waiting for input and activate its iTerm2 tab                                                                                                                                                                                                   |
+| `fn+Tab` / `Caps Lock+L` in iTerm2 | Switch the frontmost tab's tmux client to its last session, mirroring `prefix + L` (all machines)                                                                                                                                                                                      |
+| Any `http`/`https` URL opened      | Route to Zoom.app (meeting links) or Chrome (everything else) — replaces Choosy (Work only)                                                                                                                                                                                            |
+| Zoom launched                      | Power on webcam USB, connect AirPods via blueutil, switch audio output, pause Spotify, quit eqMac (Work only)                                                                                                                                                                          |
+| Zoom terminated                    | Power off webcam USB, restore audio, resume Spotify, relaunch eqMac hidden, quit Camo Studio, send a Busylight off request (Work only)                                                                                                                                                 |
 
 ## Notify action
 
@@ -176,12 +177,23 @@ The Stream Deck "lock" button should open the URL `hammerspoon://displaysleep` (
 
 Verify with: `uhubctl --location 2-1.1.2`
 
-| Port | Constant          | Device                |
-| ---- | ----------------- | --------------------- |
-| 1    | (Elgato Wave hub) | USB 2.0 Hub (ganged)  |
-| 2    | `streamDeckPort`  | Elgato Stream Deck XL |
+| Port | Constant               | Device                          |
+| ---- | ---------------------- | ------------------------------- |
+| 1    | `sharedPeripheralPort` | USB 2.0 Hub, ganged (1a40:0101) |
+| 2    | `streamDeckPort`       | Elgato Stream Deck XL           |
 
-The Elgato Wave microphone is on a sub-hub at port `1`.
+Port `1` is a generic 4-port sub-hub carrying **both the Elgato Wave microphone
+and the Busylight**. That sub-hub is _ganged_: it has no per-port power
+switching, so power is all-or-nothing for everything behind it. Treat
+`sharedPeripheralPort` as always-on and only ever power it **on**.
+
+Confirm what is actually enumerated with:
+
+```sh
+ioreg -p IOUSB -w0 -l | grep -o '"USB Product Name" = "[^"]*"' | sort -u
+```
+
+If `system_profiler SPUSBDataType` returns empty output, try `ioreg`.
 
 ### CalDigit TS4 USB3 hub (`M.usbHub3 = "2-2.4.1"`)
 
@@ -258,3 +270,5 @@ Use Context7 (`/hammerspoon/hammerspoon.github.io`) for Hammerspoon API referenc
 - `hs.timer.doUntil` checks the predicate **before** running the action — if the predicate is true immediately, the action never fires. Prefer `hs.timer.doEvery` with manual stop.
 - Hammerspoon needs explicit Bluetooth permission in System Settings > Privacy & Security > Bluetooth to use `blueutil` via `hs.task`.
 - Lua files are formatted by `stylua` via pre-commit. The hook uses `language: system`, so `stylua` must be available on PATH (e.g. via `mise use -g stylua`).
+- Call `busylight.off()` to blank the light. Keep the shared port powered as described in [USB hub locations](#usb-hub-locations); `sleepwake.restoreServices()` restores its power on unlock or `system:fix`.
+- Zsh reserves `status` as a read-only parameter for `$?`. Use names such as `port_status` or `http_status` for local variables. This error requires a runtime check; `zsh -n` does not catch it.

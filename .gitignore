@@ -79,6 +79,7 @@ Thumbs.db
 .config/yadm/scripts/update.zsh
 .default-gems
 .hammerspoon/audio.lua
+.hammerspoon/busylight.lua
 .hammerspoon/httpserver/triggers.lua
 .hammerspoon/meetings.lua
 .hammerspoon/sleepwake.lua

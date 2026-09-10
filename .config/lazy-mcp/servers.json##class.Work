@@ -7,13 +7,13 @@
       "type": "remote"
     },
     {
-      "name": "gitlab-knowledge-graph",
+      "name": "gitlab-orbit",
       "description": "GitLab repository knowledge graph and code analysis",
+      "type": "local",
       "command": [
         "npx",
-        "-y",
-        "mcp-remote@latest",
-        "http://localhost:27495/mcp"
+        "mcp-remote",
+        "https://gitlab.com/api/v4/orbit/mcp"
       ]
     },
     {

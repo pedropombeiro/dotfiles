@@ -7823,7 +7823,7 @@
 			<key>Custom Command</key>
 			<string>No</string>
 			<key>Custom Directory</key>
-			<string>Yes</string>
+			<string>No</string>
 			<key>Custom Icon Path</key>
 			<string>/Users/pedropombeiro/.config/iterm2/icons/database-cloud.png</string>
 			<key>Default Bookmark</key>
@@ -8230,7 +8230,7 @@
 			<key>Custom Command</key>
 			<string>No</string>
 			<key>Custom Directory</key>
-			<string>Yes</string>
+			<string>No</string>
 			<key>Custom Icon Path</key>
 			<string>/Users/pedropombeiro/.config/iterm2/icons/database-cloud.png</string>
 			<key>Default Bookmark</key>

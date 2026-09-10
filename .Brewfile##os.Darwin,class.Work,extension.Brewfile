@@ -412,8 +412,6 @@ cask "slack"
 cask "spotify"
 # Dictation tool including LLM reformatting
 cask "superwhisper"
-# Open-source code editor
-cask "visual-studio-code"
 # System tray app for automatic time tracking
 cask "wakatime"
 # Native desktop client for WhatsApp

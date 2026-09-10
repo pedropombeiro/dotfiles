@@ -296,6 +296,7 @@
       "git merge-tree *": "allow",
       "git name-rev *": "allow",
       "git push*": "ask",
+      "git range-diff *": "allow",
       "git reflog *": "allow",
       "git remote -v": "allow",
       "git rev-parse*": "allow",

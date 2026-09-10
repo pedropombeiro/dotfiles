@@ -151,6 +151,7 @@ cleanup_gitlab_excludes() {
     # Repository control files are not part of the GitLab worktree payload.
     sed -i '' '/^\/\.gitignore$/d' "${gitlab_exclude_file}"
     sed -i '' '/^\/hk\.pkl$/d' "${gitlab_exclude_file}"
+    sed -i '' '/^\/README\.md$/d' "${gitlab_exclude_file}"
   fi
 }
 
@@ -205,6 +206,7 @@ _sync_dotfiles_to_worktree() {
 
   for dotfiles_file in ${(f)"$(fd --hidden --type f --exclude .git --exclude .gitignore --exclude hk.pkl . "${dotfiles_dir}")"}; do # (f) splits on newlines
     rel_path="${dotfiles_file#${dotfiles_dir}/}"
+    [[ "${rel_path}" == README.md ]] && continue
     target_file="${target_dir}/${rel_path}"
 
     mkdir -p "${target_file:h}"

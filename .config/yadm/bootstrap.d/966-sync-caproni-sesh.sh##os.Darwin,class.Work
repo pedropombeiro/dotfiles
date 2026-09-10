@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -eu
+
+sync_script=${HOME}/.agents/skills/caproni/scripts/sync-sesh.sh
+config_dir=${HOME}/.config/sesh
+
+if [[ -x ${sync_script} ]]; then
+  exec "${sync_script}"
+fi
+
+# Keep sesh usable before the private Caproni scripts are cloned.
+mkdir -p "${config_dir}"
+if [[ ! -e ${config_dir}/caproni.toml ]]; then
+  printf '%s\n' '# Run mise run caproni:sesh-sync after cloning the Caproni scripts.' >"${config_dir}/caproni.toml"
+fi

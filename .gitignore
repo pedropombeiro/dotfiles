@@ -22,6 +22,7 @@ Thumbs.db
 .config/yazi/flavors/gruvbox-dark.yazi
 .config/lazy-mcp/memos-token
 .config/dotfiles/gitlab/
+.config/sesh/caproni.toml
 
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
@@ -69,6 +70,7 @@ Thumbs.db
 .config/yadm/bootstrap.d/950-install-gdk.sh
 .config/yadm/bootstrap.d/955-install-stream-deck-plugins.sh
 .config/yadm/bootstrap.d/965-ensure-weekly-log.sh
+.config/yadm/bootstrap.d/966-sync-caproni-sesh.sh
 .config/yadm/config_templates/LaunchDaemons/org.gitlab1.ifconfig.plist
 .config/yadm/scripts/defaults.sh
 .config/yadm/scripts/iterm2-setup.sh

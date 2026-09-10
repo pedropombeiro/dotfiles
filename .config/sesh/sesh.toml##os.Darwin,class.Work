@@ -4,6 +4,7 @@ import = [
     "~/.config/sesh/dotfiles.toml",
     "~/.config/sesh/darwin.toml",
     "~/.config/sesh/work.toml",
+    "~/.config/sesh/caproni.toml",
 ]
 
 [default_session]

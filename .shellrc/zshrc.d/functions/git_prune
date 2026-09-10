@@ -1,9 +1,10 @@
 #!/usr/bin/env zsh
 
-# Delete local branches whose upstream disappeared or whose work has landed.
+# Delete local branches and their worktrees when upstream disappeared or work landed.
 # Branches prefixed with _ are intentionally retained.
 
 local dry_run=false
+local force=false
 local argument
 local reset='' green='' yellow='' cyan='' bold=''
 
@@ -20,8 +21,11 @@ for argument in "$@"; do
     -n|--dry-run)
       dry_run=true
       ;;
+    -f|--force)
+      force=true
+      ;;
     -h|--help)
-      print 'Usage: git_prune [-n|--dry-run]'
+      print 'Usage: git_prune [-n|--dry-run] [-f|--force]'
       return 0
       ;;
     *)
@@ -44,11 +48,41 @@ done
 
 git fetch --prune --multiple "${remotes[@]}" || return
 
+local -a prune_options
+[[ $dry_run == true ]] && prune_options+=(--dry-run)
+git worktree prune --expire now "${prune_options[@]}" || return
+
 local default_branch
 default_branch=$(git_main_branch) || return
 
 local current_branch
 current_branch=$(git branch --show-current) || return
+
+local -A worktree_paths worktree_locked
+local worktree_path worktree_branch field main_worktree='' current_worktree
+local locked=false prunable=false
+current_worktree=$(git rev-parse --show-toplevel) || return
+# NUL-delimited fields preserve spaces and newlines in worktree paths.
+while IFS= read -r -d '' field; do
+  case "$field" in
+    'worktree '*)
+      worktree_path=${field#worktree }
+      [[ -n $main_worktree ]] || main_worktree=$worktree_path
+      ;;
+    'branch refs/heads/'*) worktree_branch=${field#branch refs/heads/} ;;
+    locked*) locked=true ;;
+    prunable*) prunable=true ;;
+    '')
+      if [[ -n $worktree_branch && ( $prunable != true || $locked == true ) ]]; then
+        worktree_paths[$worktree_branch]=$worktree_path
+        worktree_locked[$worktree_branch]=$locked
+      fi
+      worktree_branch=''
+      locked=false
+      prunable=false
+      ;;
+  esac
+done < <(git worktree list --porcelain -z)
 
 local -a branches candidates changed_paths mr_lines
 local branch upstream upstream_remote upstream_track default_ref
@@ -63,7 +97,13 @@ for branch in "${branches[@]}"; do
   [[ $branch == "$current_branch" || $branch == "$default_branch" || $branch == _* ]] && continue
 
   upstream=$(git for-each-ref --format='%(upstream:short)' "refs/heads/$branch")
-  [[ -n $upstream ]] || continue
+  if [[ -z $upstream ]]; then
+    if git merge-base --is-ancestor "$branch" "refs/heads/$default_branch"; then
+      candidates+=("$branch|merged-local")
+      print -r -- "${yellow}🗑  $branch: merged-local${reset}"
+    fi
+    continue
+  fi
 
   upstream_remote=${upstream%%/*}
   upstream_track=$(git for-each-ref --format='%(upstream:track)' "refs/heads/$branch")
@@ -174,14 +214,50 @@ if (( ! ${#candidates} )); then
 fi
 
 print -r -- "\n${bold}Branches to prune:${reset}"
+local -a deletions remove_options
+local worktree_status annotation
+local result=0
+[[ $force == true ]] && remove_options+=(--force)
 for argument in "${candidates[@]}"; do
-  print -r -- "${yellow}🗑  ${argument%%|*}: ${argument#*|}${reset}"
+  branch=${argument%%|*}
+  worktree_path=${worktree_paths[$branch]}
+  annotation=''
+  if [[ -n $worktree_path ]]; then
+    if [[ ${worktree_path:A} == ${main_worktree:A} || ${worktree_path:A} == ${current_worktree:A} || ${worktree_locked[$branch]} == true ]]; then
+      print -r -- "${yellow}⚠  $branch: main, current, or locked worktree at $worktree_path, skipping${reset}"
+      continue
+    fi
+    if ! worktree_status=$(cd -- "$worktree_path" && git status --porcelain --untracked-files=all); then
+      print -ru2 -- "${yellow}⚠  $branch: cannot inspect worktree at $worktree_path, skipping${reset}"
+      result=1
+      continue
+    fi
+    if [[ -n $worktree_status && $force != true ]]; then
+      print -r -- "${yellow}⚠  $branch: worktree dirty at $worktree_path, skipping${reset}"
+      continue
+    fi
+    annotation=" (worktree: $worktree_path)"
+  fi
+  deletions+=("$branch")
+  print -r -- "${yellow}🗑  $branch: ${argument#*|}$annotation${reset}"
 done
 
 if [[ $dry_run == true ]]; then
-  return 0
+  return $result
 fi
 
-for argument in "${candidates[@]}"; do
-  git branch -D "${argument%%|*}" || return
+for branch in "${deletions[@]}"; do
+  worktree_path=${worktree_paths[$branch]}
+  if [[ -n $worktree_path ]]; then
+    if ! git worktree remove "${remove_options[@]}" -- "$worktree_path"; then
+      print -ru2 -- "${yellow}⚠  $branch: could not remove worktree at $worktree_path, skipping${reset}"
+      result=1
+      continue
+    fi
+  fi
+  if ! git branch -D -- "$branch"; then
+    print -ru2 -- "${yellow}⚠  $branch: could not delete branch, continuing${reset}"
+    result=1
+  fi
 done
+return $result

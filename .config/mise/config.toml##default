@@ -90,6 +90,7 @@ yamllint = "latest"
 
 [tasks."brew:dump"]
 description = "Dump current Homebrew packages to Brewfile"
+raw = true
 run = "brew bundle dump --global --force --formula --cask --tap"
 
 [tasks."brew:cleanup"]
@@ -98,6 +99,7 @@ run = "brew bundle cleanup --file ~/.Brewfile --force"
 
 [tasks."mas:upgrade"]
 description = "Upgrade Mac App Store apps"
+raw = true
 run = "mise bootstrap packages upgrade --manager mas --yes"
 
 # ── Network ───────────────────────────────────────────────────────────

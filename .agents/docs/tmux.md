@@ -153,12 +153,12 @@ socket registrations. Instances running the older plugin retain window-level nav
 restarted. The same action is
 available at Hammerspoon's `?action=opencode-goto` endpoint.
 
-The session-aware plugin is currently installed as a local bundle at
-`~/.config/opencode/plugins/tmux-indicator.js`. Its source is in
+Both OpenCode configuration alternates pin `opencode-tmux-indicator@0.5.0`, which includes
+session-aware navigation. Its source is in
 `~/Developer/github.com/pedropombeiro/opencode-plugins/packages/tmux-indicator/`.
-Run `mise run install-local tmux-indicator` in that repository after source changes, then
-restart OpenCode. Both OpenCode configuration alternates omit the npm entry to avoid loading
-the indicator twice.
+Keep the npm pin in both alternates synchronized. Remove any local
+`~/.config/opencode/plugins/tmux-indicator.js` bundle when using the npm package to avoid
+loading the indicator twice, then restart OpenCode.
 
 ## Alt+Number Window Switching
 

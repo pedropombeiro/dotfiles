@@ -379,6 +379,7 @@
       "sed *": "allow",
       "sha256 *": "allow",
       "shellcheck *": "allow",
+      "shfmt *": "allow",
       "sleep *": "allow",
       "sort*": "allow",
       "*/.agents/skills/*/scripts/*": "allow",

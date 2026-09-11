@@ -1,9 +1,9 @@
 #!/bin/bash
-# Select the next tmux window whose OpenCode instance is waiting for input.
+# Select the next waiting OpenCode conversation and its tmux pane.
 
 set -o pipefail
 
-TMUX_BIN=/opt/homebrew/bin/tmux
+TMUX_BIN=${TMUX_BIN:-/opt/homebrew/bin/tmux}
 CURSOR_OPTION=@opencode-goto-cursor
 # Per-session option remembering which terminal tab last displayed a session, so a
 # detached session returns to its own tab rather than the frontmost one.
@@ -54,10 +54,32 @@ opencode_pane_in_window() {
 
 declare -a candidates=()
 while IFS='|' read -r window_id session_name window_index; do
-  if pane_id=$(opencode_pane_in_window "$window_id"); then
-    candidates+=("$window_id|$session_name|$window_index|$pane_id")
+  had_targets=false
+  window_waiting=false
+  while IFS= read -r pane_id; do
+    while read -r option _; do
+      [[ $option == @opencode-waiting-target-* ]] || continue
+      had_targets=true
+      socket=$("$TMUX_BIN" show-option -pqv -t "$pane_id" "$option" 2>/dev/null)
+      if sessions=$(curl --silent --show-error --fail --max-time 1 --unix-socket "$socket" \
+        http://localhost/waiting 2>/dev/null) &&
+        session_ids=$(jq -er 'if type == "array" and all(.[]; type == "string" and test("^ses[a-zA-Z0-9_-]+$")) then sort | .[] else error("Invalid sessions") end' <<<"$sessions"); then
+        while IFS= read -r session_id; do
+          candidates+=("$window_id|$session_name|$window_index|$pane_id|$socket|$session_id")
+          window_waiting=true
+        done <<<"$session_ids"
+      elif [[ $DRY_RUN == false ]]; then
+        "$TMUX_BIN" set-option -p -u -t "$pane_id" "$option" 2>/dev/null || true
+      fi
+    done < <("$TMUX_BIN" show-options -p -t "$pane_id" 2>/dev/null)
+  done < <("$TMUX_BIN" list-panes -t "$window_id" -F '#{pane_id}' 2>/dev/null)
+
+  if [[ $window_waiting == true ]]; then
+    continue
+  elif [[ $had_targets == false ]] && pane_id=$(opencode_pane_in_window "$window_id"); then
+    # Keep navigating instances that have not loaded the session-aware plugin yet.
+    candidates+=("$window_id|$session_name|$window_index|$pane_id||")
   elif [[ $DRY_RUN == false ]]; then
-    # A killed OpenCode process cannot clear its option; remove stale indicators.
     "$TMUX_BIN" set-option -w -u -t "$window_id" @opencode-waiting 2>/dev/null || true
   fi
 done < <(
@@ -94,13 +116,18 @@ cursor=$("$TMUX_BIN" show-option -gqv "$CURSOR_OPTION" 2>/dev/null || true)
 
 target_index=0
 for index in "${!candidates[@]}"; do
-  if [[ ${candidates[index]%%|*} == "$cursor" ]]; then
+  IFS='|' read -r window_id _ _ pane_id socket session_id <<<"${candidates[index]}"
+  candidate_cursor=${socket:+$socket:$session_id}
+  candidate_cursor=${candidate_cursor:-$window_id}
+  if [[ $candidate_cursor == "$cursor" ]]; then
     target_index=$(((index + 1) % ${#candidates[@]}))
     break
   fi
 done
 
-IFS='|' read -r target_window target_session target_index_in_session target_pane <<<"${candidates[target_index]}"
+IFS='|' read -r target_window target_session target_index_in_session target_pane target_socket target_session_id <<<"${candidates[target_index]}"
+target_cursor=${target_socket:+$target_socket:$target_session_id}
+target_cursor=${target_cursor:-$target_window}
 
 # Client priority:
 #   1. a client already displaying the target session (it is already in its tab)
@@ -131,14 +158,20 @@ client_tty=${client_tty:-${home_match:-$fallback_tty}}
 [[ -n $client_tty ]] || exit 4
 
 if [[ $DRY_RUN == true ]]; then
-  printf '%s|%s:%s|%s\n' "$client_tty" "$target_session" "$target_index_in_session" "$target_window"
+  printf '%s|%s:%s|%s|%s|%s\n' "$client_tty" "$target_session" "$target_index_in_session" "$target_window" "$target_pane" "$target_session_id"
   exit 0
 fi
 
-"$TMUX_BIN" switch-client -c "$client_tty" -t "$target_session"
-"$TMUX_BIN" select-window -t "$target_window"
-"$TMUX_BIN" select-pane -t "$target_pane"
-"$TMUX_BIN" set-option -g "$CURSOR_OPTION" "$target_window"
+if [[ -n $target_socket ]]; then
+  result=$(curl --silent --show-error --fail --max-time 4 --unix-socket "$target_socket" \
+    -X POST "http://localhost/select/$target_session_id") || exit 5
+  [[ $result == true ]] || exit 5
+fi
+
+"$TMUX_BIN" switch-client -c "$client_tty" -t "$target_session" || exit 5
+"$TMUX_BIN" select-window -t "$target_window" || exit 5
+"$TMUX_BIN" select-pane -t "$target_pane" || exit 5
+"$TMUX_BIN" set-option -g "$CURSOR_OPTION" "$target_cursor"
 "$TMUX_BIN" set-option -t "$target_session" "$HOME_TTY_OPTION" "$client_tty" 2>/dev/null || true
 
-printf '%s|%s:%s|%s\n' "$client_tty" "$target_session" "$target_index_in_session" "$target_window"
+printf '%s|%s:%s|%s|%s|%s\n' "$client_tty" "$target_session" "$target_index_in_session" "$target_window" "$target_pane" "$target_session_id"

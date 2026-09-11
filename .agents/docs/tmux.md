@@ -136,15 +136,29 @@ from forwarding to iTerm2 or overriding tab styling, `tmux.conf` sets `bell-acti
 `window-status-bell-style default`.
 
 `Hyper+A` (or `Caps Lock+A`) invokes `~/.local/bin/opencode-goto-waiting` through Hammerspoon.
-It cycles through waiting windows in a stable session/window order, including sessions that are
+It cycles through waiting OpenCode conversations in a stable tmux session/window/pane order,
+including multiple conversations in one instance and tmux sessions that are
 detached from every tmux client. Client selection prefers, in order: a client **already displaying
 the target session**; the tab that **last displayed** it (its home tab, remembered in the
 per-session `@opencode-home-tty` option); the frontmost tab; the most recently active client. This
 keeps a session in the tab where it usually lives instead of dragging it into the frontmost tab,
 including when the session is detached. Hammerspoon then activates iTerm2 and selects that tab.
-It stores its cycle cursor in tmux's global `@opencode-goto-cursor` option and clears stale
-waiting flags when their window no longer contains an `opencode` process. The same action is
+The plugin publishes per-pane `@opencode-waiting-target-*` options containing private Unix
+socket paths. The navigator queries `/waiting` and posts to `/select/SESSION_ID` to bring the
+conversation to the front through the plugin's SDK client. The window indicator stays set
+while any registered plugin instance in that window is waiting.
+
+It stores its cycle cursor in tmux's global `@opencode-goto-cursor` option and removes stale
+socket registrations. Instances running the older plugin retain window-level navigation until
+restarted. The same action is
 available at Hammerspoon's `?action=opencode-goto` endpoint.
+
+The session-aware plugin is currently installed as a local bundle at
+`~/.config/opencode/plugins/tmux-indicator.js`. Its source is in
+`~/Developer/github.com/pedropombeiro/opencode-plugins/packages/tmux-indicator/`.
+Run `mise run install-local tmux-indicator` in that repository after source changes, then
+restart OpenCode. Both OpenCode configuration alternates omit the npm entry to avoid loading
+the indicator twice.
 
 ## Alt+Number Window Switching
 

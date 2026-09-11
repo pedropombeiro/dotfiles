@@ -59,6 +59,13 @@ Create files in `~/.shellrc/zshrc.d/functions/`:
 - No file extension needed
 - Functions are autoloaded on first use
 
+### Context-Aware Bundler Helper
+
+The `be` function runs `bundle exec` in ordinary repositories. In a GitLab
+checkout nested below a Caproni environment, it runs
+`.gitlab/caproni/exec.sh bundle exec` instead so development commands use the
+cluster toolbox context through the Caproni execution wrapper.
+
 ## Plugin Load Order (zinit turbo)
 
 Plugins load in turbo priority order after the first prompt:

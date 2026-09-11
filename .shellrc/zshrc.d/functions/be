@@ -1,2 +1,15 @@
+local git_root context_dir
 
-bundle exec $@
+git_root=$(command git rev-parse --show-toplevel 2>/dev/null) || git_root=
+context_dir=$git_root
+
+while [[ -n $context_dir && $context_dir != / ]]; do
+  if [[ -f $context_dir/caproni.yaml && -x $git_root/.gitlab/caproni/exec.sh ]]; then
+    "$git_root/.gitlab/caproni/exec.sh" bundle exec "$@"
+    return
+  fi
+
+  context_dir=${context_dir:h}
+done
+
+command bundle exec "$@"

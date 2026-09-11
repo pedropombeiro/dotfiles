@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "lines": [
     [
       {
@@ -43,7 +43,7 @@
         "color": "magenta",
         "merge": true,
         "metadata": {
-          "hideNoGit": "true"
+          "hide": "no-git"
         }
       },
       {
@@ -51,7 +51,7 @@
         "type": "git-changes",
         "color": "yellow",
         "metadata": {
-          "hideNoGit": "true"
+          "hide": "no-git"
         }
       }
     ]

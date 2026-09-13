@@ -179,7 +179,7 @@ fi
 
 _update_step "opencode skills"
 printf "${YELLOW}%s${NC}\n" "Updating OpenCode skills..."
-(( $+commands[npx] )) && npx skills update --global --yes
+(( $+commands[npx] )) && npx --yes skills update --global --yes
 
 _update_step "skill repositories"
 printf "${YELLOW}%s${NC}\n" "Updating skill repositories..."

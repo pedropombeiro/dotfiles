@@ -199,6 +199,8 @@
       "bundle exec rubocop*": "allow",
       "base64 *": "allow",
       "bash -n *": "allow",
+      "brew bundle check *": "allow",
+      "brew info *": "allow",
       "cat *": "allow",
       "column *": "allow",
       "comm *": "allow",

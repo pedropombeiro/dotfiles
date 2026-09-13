@@ -236,6 +236,8 @@
     },
     "bash": {
       "*": "ask",
+      "brew bundle check *": "allow",
+      "brew info *": "allow",
       "bundle exec rspec*": "allow",
       "bundle exec rubocop*": "allow",
       "bundle exec danger *": "allow",

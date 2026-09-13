@@ -123,6 +123,8 @@ if [[ -f "${ZINIT_HOME}/zinit.zsh" ]]; then
   # completions (_atuin, _sesh, etc.) and not just zinit-managed ones.
   fpath=($HOME/.config/zsh/site-functions $fpath)
   source "${ZINIT_HOME}/zinit.zsh"
+  # Updates run through `script` without interactive input, so never invoke a pager.
+  ZINIT[NO_PAGER]=1
   zinit self-update
   zinit update --parallel
 

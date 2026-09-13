@@ -8,6 +8,8 @@ dua = "latest"
 "aqua:sharkdp/fd" = "latest"
 # Tmux session manager
 "aqua:joshmedeski/sesh" = "latest"
+# Timestamps each line of command output
+"github:zmwangx/ets" = "latest"
 
 # ── Developer workflow ────────────────────────────────────────────────
 # Git hook manager
@@ -16,6 +18,8 @@ hk = "latest"
 pkl = "latest"
 # Utilities for working with patches (filterdiff, etc.)
 "github:twaugh/patchutils" = "latest"
+# Docker image layer explorer
+"aqua:wagoodman/dive" = "latest"
 
 # ── Linting & formatting ──────────────────────────────────────────────
 # Secrets scanner for git repos
@@ -30,6 +34,8 @@ stylua = "latest"
 typos = "latest"
 # JSON/Markdown/YAML formatter
 prettier = "latest"
+# Python static type checker
+"pipx:mypy" = "latest"
 
 # ── AI tooling ────────────────────────────────────────────────────────
 # Lazy-loading MCP server proxy for AI tools

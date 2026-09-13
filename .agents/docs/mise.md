@@ -137,6 +137,21 @@ current Linux distribution in `tools.linux-standard.toml`.
 These early settings do not appear in `mise settings`; verify them through
 `mise config ls` and the resulting toolset instead.
 
+#### Inactive platform installs
+
+`mise prune` treats every tracked config as authoritative, including platform
+fragments that are inactive on the current host. A tool declared only in
+`tools.linux.toml` can therefore remain installed on macOS indefinitely. Its
+shim can shadow a Homebrew copy and add mise resolution overhead before falling
+through to the correct binary. If no fallback exists, the shim fails with `No
+version is set for shim`.
+
+Remove these inactive installs explicitly with `mise uninstall --all <tool>`,
+then run `mise reshim --force`. If another package manager does not provide the
+tool on the current platform, move its declaration to `conf.d/global.toml`
+instead. Confirm that the selected backend works on every target platform and
+does not depend on a platform-specific compiler toolchain.
+
 ### GitHub Credentials
 
 Use `settings.github.credential_command = "gh auth token"` in the global config
@@ -382,3 +397,4 @@ Tools are auto-updated by Renovate bot via `~/.renovaterc.json`. Check PRs for p
 - Use `settings.github.credential_command` rather than `env._.source` for lazy GitHub authentication
 - Attach install-specific setup to the relevant tool with `postinstall`, not a global postinstall hook
 - Prefer `packslip:` over `aqua:` or `github:` when the vendor publishes a signed manifest, but confirm the installed mise exposes the backend first and keep skill synchronization manual
+- Prefer `github:` or `aqua:` over compiler-backed backends for cross-platform tools when the vendor publishes suitable release artifacts

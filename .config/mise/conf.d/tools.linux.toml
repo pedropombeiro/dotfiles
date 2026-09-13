@@ -48,8 +48,6 @@ btop = "latest"
 "aqua:jesseduffield/lazygit" = "latest"
 # TUI for Docker management
 "aqua:jesseduffield/lazydocker" = "latest"
-# Docker image layer explorer
-"aqua:wagoodman/dive" = "latest"
 # GitHub CLI (gh)
 "aqua:cli/cli" = "latest"
 
@@ -71,10 +69,6 @@ btop = "latest"
 # Prose and documentation linter
 "npm:@ocular-d/vale-bin" = "latest"
 
-# ── go ────────────────────────────────────────────────────────────────
-# Timestamps each line of command output
-"go:github.com/zmwangx/ets" = "latest"
-
 # ── cargo ─────────────────────────────────────────────────────────────
 # Generic colourizer for terminal output
 "cargo:grc-rs" = "latest"
@@ -92,7 +86,5 @@ btop = "latest"
 "pipx:tldr" = "latest"
 # Open files in an existing Neovim instance
 "pipx:neovim-remote" = "latest"
-# Python static type checker
-"pipx:mypy" = "latest"
 # Python virtual environment creator
 "pipx:virtualenv" = "latest"

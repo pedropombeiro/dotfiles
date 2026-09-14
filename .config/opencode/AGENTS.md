@@ -3,16 +3,6 @@
 This file contains the global rules that apply across repositories. Load the linked docs only when
 the task needs them.
 
-## Session Context
-
-Session context (boot gates, blockers, reminders) is automatically injected at the start of each
-session and after compaction. Boot gates (⛔) are standing instructions - follow them when the
-relevant situation arises.
-
-**If you do not see boot context** (no boot gates, no blockers section, no reminders) in the system
-prompt after this AGENTS.md section, call `get_boot_context()` to load it manually. This is a
-fallback for when automatic injection fails.
-
 ## Core Rules
 
 - For library and framework documentation, use Context7 first.

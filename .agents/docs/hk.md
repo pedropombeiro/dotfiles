@@ -11,7 +11,7 @@ See [Packslip skills policy](mise.md#completions-and-skills-policy) for updates.
 
 ## Configuration
 
-**Main config**: `~/hk.pkl` (requires hk v1.44.1+ for yadm bare-repo support)
+**Main config**: `~/hk.pkl` (requires hk v2.0.0+)
 
 hk is installed globally via `hk install --global`, using Git 2.54+ config-based hooks. It runs as a
 silent no-op in repos without an `hk.pkl`.
@@ -24,12 +24,16 @@ Two settings in `hk.pkl` are needed to make hk work cleanly in the yadm context
 - **`env { ["HK_STASH_UNTRACKED"] = "false" }`** — prevents hk from running
   `git status --untracked-files=all` which would scan the entire home directory (~45s).
   See [jdx/hk#860](https://github.com/jdx/hk/discussions/860).
-- **`stash = "none"`** on pre-commit and fix hooks — avoids a recursive hook invocation.
+- **`stash = "none"`** on the pre-commit hook avoids a recursive hook invocation.
   `hk install --global` registers a hook on every git operation, so the internal `git stash push`
   hk runs during pre-commit would re-trigger hk and cause an infinite loop. Downside: if you have
   unstaged changes, auto-fixers may modify them alongside staged content.
+  Other hooks, including `fix`, default to no stashing in hk v2.
 
 ## Running Hooks Manually
+
+In hk v2, `hk fix` and `mise run dotfiles:fix` leave fixes unstaged for review.
+Use `yadm enter hk fix --stage` to stage fixes. Only `pre-commit` auto-stages by default.
 
 ```bash
 # Run all checks (all files)
@@ -89,16 +93,15 @@ Edit `~/hk.pkl`. Add to the `fast_steps` mapping — it is shared across `pre-co
 ## Version Management
 
 hk version is managed by mise (`hk = "latest"` in `~/.config/mise/conf.d/global.toml`).
-When upgrading, bump the `amends` and `import` URLs in `~/hk.pkl` to match the new version.
+When upgrading, bump the `amends` and `import` URLs and `min_hk_version` in `~/hk.pkl`
+to match the new version.
 
 Check current version: `hk --version`
 
-The `amends` and `import` URLs still pin v1.44.1. On 2026-09-14, hk 2.0.0's
-built-in Pkl evaluator rejected the configuration with
-`listing index amendment requires an Int index`. Standalone `pkl eval` and
-`yadm enter mise exec hk@1.58.1 -- hk validate` both passed. Use the installed
-hk 1.58.1 for targeted checks while investigating v2 compatibility. Global hooks
-still resolve hk 2.0.0 and encounter this error.
+Upgrade the binary and package pins together, then run `yadm enter hk validate`.
+The v1.44.1 package fails under hk 2.0.0 with
+`listing index amendment requires an Int index`. hk v2 uses its built-in Pkl
+evaluator and no longer requires the standalone `pkl` CLI.
 
 ## Caveats
 

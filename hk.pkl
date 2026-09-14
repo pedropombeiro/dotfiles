@@ -1,7 +1,9 @@
 // hk configuration — https://hk.jdx.dev/
 // Dotfiles (yadm) pre-commit hooks
-amends "package://github.com/jdx/hk/releases/download/v1.44.1/hk@1.44.1#/Config.pkl"
-import "package://github.com/jdx/hk/releases/download/v1.44.1/hk@1.44.1#/Builtins.pkl"
+amends "package://github.com/jdx/hk/releases/download/v2.0.0/hk@2.0.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.0.0/hk@2.0.0#/Builtins.pkl"
+
+min_hk_version = "2.0.0"
 
 // Matches the pre-commit global exclude: skip .config/ and .local/ which contain
 // mostly application config files that aren't part of the dotfiles source.
@@ -61,8 +63,8 @@ local fast_steps = new Mapping<String, Step> {
             ".agents/skills/orbit/*"
         )
     }
-    ["gitleaks"] {
-        check = "gitleaks protect --staged --redact --no-banner"
+    ["gitleaks"] = (Builtins.gitleaks) {
+        scan = "staged"
     }
     ["yamllint"] = (Builtins.yamllint) {}
     ["editorconfig-checker"] = (Builtins.editorconfig_checker) {
@@ -197,7 +199,6 @@ hooks {
     }
     ["fix"] {
         fix = true
-        stash = "none"
         steps = fast_steps
     }
     ["check"] {

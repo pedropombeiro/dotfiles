@@ -38,6 +38,8 @@ _timeout=${TMUX_PANE_TIMEOUT:-300}
 
 tmpfile=$(mktemp)
 pane_id=""
+# Called indirectly by the EXIT, INT, and TERM traps below.
+# shellcheck disable=SC2329
 cleanup() {
   # Kill the pane if the script is interrupted/terminated so a long-running
   # command (e.g. a git push) cannot keep running detached in the background.

@@ -14,8 +14,6 @@ dua = "latest"
 # ── Developer workflow ────────────────────────────────────────────────
 # Git hook manager
 hk = "latest"
-# Pkl configuration language (required by hk)
-pkl = "latest"
 # Utilities for working with patches (filterdiff, etc.)
 "github:twaugh/patchutils" = "latest"
 # Docker image layer explorer
@@ -44,10 +42,9 @@ prettier = "latest"
 # design, so the popularity signal will never clear the threshold.
 "npm:lazy-mcp" = { version = "latest", allow_low_downloads = true }
 
-# EditorConfig file format checker. v4 renamed the binary, but hk still invokes `ec`.
+# EditorConfig file format checker
 [tools."github:editorconfig-checker/editorconfig-checker"]
 version = "latest"
-rename_exe = { "editorconfig-checker" = "ec" }
 
 [tools."github:editorconfig-checker/editorconfig-checker".platforms]
 macos-arm64 = { asset_pattern = "editorconfig-checker-darwin-all.tar.gz" }

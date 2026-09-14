@@ -28,35 +28,35 @@ keep_vtt=false
 
 while (($# > 0)); do
   case "$1" in
-    --lang)
-      if (($# < 2)); then
-        printf 'fetch-transcript: --lang requires a value\n' >&2
-        usage >&2
-        exit 64
-      fi
-      language=$2
-      shift 2
-      ;;
-    --keep-vtt)
-      keep_vtt=true
-      shift
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    --)
-      shift
-      break
-      ;;
-    -*)
-      printf 'fetch-transcript: unknown option: %s\n' "$1" >&2
+  --lang)
+    if (($# < 2)); then
+      printf 'fetch-transcript: --lang requires a value\n' >&2
       usage >&2
       exit 64
-      ;;
-    *)
-      break
-      ;;
+    fi
+    language=$2
+    shift 2
+    ;;
+  --keep-vtt)
+    keep_vtt=true
+    shift
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  --)
+    shift
+    break
+    ;;
+  -*)
+    printf 'fetch-transcript: unknown option: %s\n' "$1" >&2
+    usage >&2
+    exit 64
+    ;;
+  *)
+    break
+    ;;
   esac
 done
 

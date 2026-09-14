@@ -13,10 +13,11 @@ These local rules take precedence over generic repository setup advice.
 
 - Use `yadm` for status and diffs, and `yadm enter hk ...` for commands that
   need Git context. `$HOME` is the work tree of YADM's bare repository. hk
-  requires v1.44.1 or later for this setup.
+  requires v2.0.0 or later for the current configuration.
 - Keep `HK_STASH_UNTRACKED=false` in `~/hk.pkl` to avoid scanning the entire
   home directory for untracked files.
-- Keep `stash = "none"` on the `pre-commit` and `fix` hooks. The global hooks
+- Keep `stash = "none"` on the `pre-commit` hook. Other hooks, including `fix`,
+  default to no stashing in hk v2. The global hooks
   can re-enter hk during its internal Git stash operations. Fixers can also
   affect unstaged content with stashing disabled, so inspect both diffs.
 - Preserve the existing global config-based hooks. Re-running

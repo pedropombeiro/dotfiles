@@ -32,42 +32,42 @@ no_cover=false
 
 while (($# > 0)); do
   case "$1" in
-    --base-url|--token-file|--output|--title|--author|--lang|--thumbnail)
-      if (($# < 2)); then
-        printf 'create-epub: %s requires a value\n' "$1" >&2
-        exit 64
-      fi
-      case "$1" in
-        --base-url) base_url=$2 ;;
-        --token-file) token_file=$2 ;;
-        --output) output=$2 ;;
-        --title) title=$2 ;;
-        --author) author=$2 ;;
-        --lang) language=$2 ;;
-        --thumbnail) thumbnail=$2 ;;
-      esac
-      shift 2
-      ;;
-    --no-cover)
-      no_cover=true
-      shift
-      ;;
-    -h|--help)
-      usage
-      exit 0
-      ;;
-    --)
-      shift
-      break
-      ;;
-    -*)
-      printf 'create-epub: unknown option: %s\n' "$1" >&2
-      usage >&2
+  --base-url | --token-file | --output | --title | --author | --lang | --thumbnail)
+    if (($# < 2)); then
+      printf 'create-epub: %s requires a value\n' "$1" >&2
       exit 64
-      ;;
-    *)
-      break
-      ;;
+    fi
+    case "$1" in
+    --base-url) base_url=$2 ;;
+    --token-file) token_file=$2 ;;
+    --output) output=$2 ;;
+    --title) title=$2 ;;
+    --author) author=$2 ;;
+    --lang) language=$2 ;;
+    --thumbnail) thumbnail=$2 ;;
+    esac
+    shift 2
+    ;;
+  --no-cover)
+    no_cover=true
+    shift
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  --)
+    shift
+    break
+    ;;
+  -*)
+    printf 'create-epub: unknown option: %s\n' "$1" >&2
+    usage >&2
+    exit 64
+    ;;
+  *)
+    break
+    ;;
   esac
 done
 
@@ -101,17 +101,17 @@ trap cleanup EXIT
 fetch_memo=false
 memo_id=""
 case "$input" in
-  http://*/memos/*|https://*/memos/*)
-    fetch_memo=true
-    inferred_base_url=${input%%/memos/*}
-    memo_id=${input#*/memos/}
-    memo_id=${memo_id%%[/?#]*}
-    [[ -n $base_url ]] || base_url=$inferred_base_url
-    ;;
-  memos/*)
-    fetch_memo=true
-    memo_id=${input#memos/}
-    ;;
+http://*/memos/* | https://*/memos/*)
+  fetch_memo=true
+  inferred_base_url=${input%%/memos/*}
+  memo_id=${input#*/memos/}
+  memo_id=${memo_id%%[/?#]*}
+  [[ -n $base_url ]] || base_url=$inferred_base_url
+  ;;
+memos/*)
+  fetch_memo=true
+  memo_id=${input#memos/}
+  ;;
 esac
 
 if [[ $fetch_memo == true ]]; then
@@ -194,26 +194,26 @@ cover_ready=false
 if [[ $no_cover == false && -n $thumbnail ]]; then
   image_source=$thumbnail
   case "$thumbnail" in
-    http://*|https://*)
-      if ! command -v curl >/dev/null 2>&1; then
-        printf 'create-epub: warning: curl is unavailable; generating without a cover\n' >&2
-        image_source=""
+  http://* | https://*)
+    if ! command -v curl >/dev/null 2>&1; then
+      printf 'create-epub: warning: curl is unavailable; generating without a cover\n' >&2
+      image_source=""
+    else
+      downloaded_image="$work_dir/thumbnail"
+      if curl --fail --location --silent --show-error "$thumbnail" --output "$downloaded_image"; then
+        image_source=$downloaded_image
       else
-        downloaded_image="$work_dir/thumbnail"
-        if curl --fail --location --silent --show-error "$thumbnail" --output "$downloaded_image"; then
-          image_source=$downloaded_image
-        else
-          printf 'create-epub: warning: thumbnail download failed; generating without a cover\n' >&2
-          image_source=""
-        fi
-      fi
-      ;;
-    *)
-      if [[ ! -r $thumbnail ]]; then
-        printf 'create-epub: warning: thumbnail is not readable; generating without a cover\n' >&2
+        printf 'create-epub: warning: thumbnail download failed; generating without a cover\n' >&2
         image_source=""
       fi
-      ;;
+    fi
+    ;;
+  *)
+    if [[ ! -r $thumbnail ]]; then
+      printf 'create-epub: warning: thumbnail is not readable; generating without a cover\n' >&2
+      image_source=""
+    fi
+    ;;
   esac
 
   image_command=""

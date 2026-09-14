@@ -92,9 +92,12 @@ Edit `~/hk.pkl`. Add to the `fast_steps` mapping — it is shared across `pre-co
 
 ## Version Management
 
-hk version is managed by mise (`hk = "latest"` in `~/.config/mise/conf.d/global.toml`).
+hk version is pinned in `~/.config/mise/conf.d/global.toml`.
 When upgrading, bump the `amends` and `import` URLs and `min_hk_version` in `~/hk.pkl`
 to match the new version.
+
+Keep the mise pin aligned with these values. `mise install` can reuse an older
+cached installation for `latest`, including in CI.
 
 Check current version: `hk --version`
 

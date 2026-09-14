@@ -12,8 +12,8 @@ dua = "latest"
 "github:zmwangx/ets" = "latest"
 
 # ── Developer workflow ────────────────────────────────────────────────
-# Git hook manager
-hk = "latest"
+# Git hook manager; keep in sync with the package URLs and min_hk_version in ~/hk.pkl
+hk = "2.0.0"
 # Utilities for working with patches (filterdiff, etc.)
 "github:twaugh/patchutils" = "latest"
 # Docker image layer explorer

@@ -2,6 +2,13 @@
 
 Git hooks and code quality checks for the yadm dotfiles repo.
 
+## Agent skills
+
+Use the hk release's `hk-configure` and `hk-debug` skills for general setup and
+diagnosis. Use the local `hk-yadm` skill alongside them for dotfiles work.
+The bundled skills were reviewed at hk v2.0.0 and linked manually through mise.
+See [Packslip skills policy](mise.md#completions-and-skills-policy) for updates.
+
 ## Configuration
 
 **Main config**: `~/hk.pkl` (requires hk v1.44.1+ for yadm bare-repo support)
@@ -86,9 +93,12 @@ When upgrading, bump the `amends` and `import` URLs in `~/hk.pkl` to match the n
 
 Check current version: `hk --version`
 
-> **Known drift:** the binary is well ahead of the `amends`/`import` pins in `hk.pkl`
-> (v1.44.1). `yadm enter hk validate` still passes, so this is not urgent — but the pins
-> are what the pkl schema is resolved against, so bump them when adopting new features.
+The `amends` and `import` URLs still pin v1.44.1. On 2026-09-14, hk 2.0.0's
+built-in Pkl evaluator rejected the configuration with
+`listing index amendment requires an Int index`. Standalone `pkl eval` and
+`yadm enter mise exec hk@1.58.1 -- hk validate` both passed. Use the installed
+hk 1.58.1 for targeted checks while investigating v2 compatibility. Global hooks
+still resolve hk 2.0.0 and encounter this error.
 
 ## Caveats
 

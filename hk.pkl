@@ -28,19 +28,22 @@ local fast_steps = new Mapping<String, Step> {
     ["trailing-whitespace"] = (Builtins.trailing_whitespace) {
         exclude = binary_excludes + List(
             ".agents/skills/clickhouse-best-practices/*",
-            ".agents/skills/hk/*"
+            ".agents/skills/hk-configure/*",
+            ".agents/skills/hk-debug/*"
         )
     }
     ["newlines"] = (Builtins.newlines) {
         exclude = binary_excludes + List(
             ".agents/skills/clickhouse-best-practices/*",
-            ".agents/skills/hk/*"
+            ".agents/skills/hk-configure/*",
+            ".agents/skills/hk-debug/*"
         )
     }
     ["check-merge-conflict"] = (Builtins.check_merge_conflict) {
         exclude = List(
             ".agents/skills/clickhouse-best-practices/*",
-            ".agents/skills/hk/*"
+            ".agents/skills/hk-configure/*",
+            ".agents/skills/hk-debug/*"
         )
     }
 
@@ -53,7 +56,8 @@ local fast_steps = new Mapping<String, Step> {
         // rewrites them inside this comment too.
         exclude = binary_excludes + List(
             ".agents/skills/clickhouse-best-practices/*",
-            ".agents/skills/hk/*",
+            ".agents/skills/hk-configure/*",
+            ".agents/skills/hk-debug/*",
             ".agents/skills/orbit/*"
         )
     }
@@ -70,7 +74,8 @@ local fast_steps = new Mapping<String, Step> {
             // Scoped to orbit rather than .agents/skills/*/scripts/* so the tracked
             // run-in-tmux-pane script keeps its coverage.
             ".agents/skills/clickhouse-best-practices/*",
-            ".agents/skills/hk/*",
+            ".agents/skills/hk-configure/*",
+            ".agents/skills/hk-debug/*",
             ".agents/skills/orbit/*",
             "*.md"
         )
@@ -80,7 +85,8 @@ local fast_steps = new Mapping<String, Step> {
     ["shellcheck"] = (Builtins.shellcheck) {
         exclude = List(
             "*.zsh", "*.zsh##*", ".zlogin", ".zshenv",
-            ".agents/skills/hk/*",
+            ".agents/skills/hk-configure/*",
+            ".agents/skills/hk-debug/*",
             ".shellrc/zshrc.d/*"
         )
         batch = true
@@ -88,7 +94,8 @@ local fast_steps = new Mapping<String, Step> {
     ["shfmt"] = (Builtins.shfmt) {
         exclude = List(
             "*.zsh", "*.zsh##*",
-            ".agents/skills/hk/*",
+            ".agents/skills/hk-configure/*",
+            ".agents/skills/hk-debug/*",
             ".iterm2_shell_integration.*"
         )
         batch = true
@@ -117,10 +124,11 @@ local fast_steps = new Mapping<String, Step> {
     // ── JSON / Markdown / YAML formatting ────────────────────────────────
     ["prettier"] = (Builtins.prettier) {
         glob = List("*.json", "*.md", "*.yaml", "*.yml")
-        // These directories are upstream snapshots managed by `npx skills`.
+        // Upstream skills are managed by `npx skills` or linked from mise installs.
         exclude = List(
             ".agents/skills/clickhouse-best-practices/*",
-            ".agents/skills/hk/*",
+            ".agents/skills/hk-configure/*",
+            ".agents/skills/hk-debug/*",
             ".agents/skills/opencode-refine/*"
         )
     }

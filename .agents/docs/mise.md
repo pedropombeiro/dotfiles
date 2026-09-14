@@ -251,30 +251,49 @@ vendor's Sigstore signature and each artifact's checksum before installation.
 This avoids relying on mise's bundled aqua registry snapshot for release layout
 and verification metadata.
 
-Packslip support landed after mise 2026.9.1. Before adding a `packslip:` tool,
-verify the installed mise release exposes the backend rather than relying on a
-version assumption:
+mise 2026.9.7 exposes the Packslip backend, confirmed on 2026-09-14. On another
+machine, check backend availability and registry entries with:
 
 ```bash
 mise backends ls | rg '^packslip$'
+mise registry | rg 'packslip:'
 ```
 
-Vendor adoption is currently limited. Of the tools in this configuration, only
-`jdx/hk` published `packslip.sigstore.json` when checked on 2026-09-07. The
-latest releases of `pkl`, `opencode`, `atuin`, `sesh`, `fd`, `jq`, `ripgrep`,
-`typos`, `shfmt`, `stylua`, `shellcheck`, `gh`, `gitleaks`, and mise did not.
-Check a release again with:
+The 2026.9.7 registry lists eight Packslip entries, all jdx projects:
+
+| Tool           | Backend                                |
+| -------------- | -------------------------------------- |
+| `aube`         | `packslip:github.com/aubepkg/aube`     |
+| `communique`   | `packslip:github.com/jdx/communique`   |
+| `fnox`         | `packslip:github.com/jdx/fnox`         |
+| `hk`           | `packslip:github.com/jdx/hk`           |
+| `mr-boxington` | `packslip:github.com/jdx/mr-boxington` |
+| `packslip`     | `packslip:packslip.dev`                |
+| `pitchfork`    | `packslip:github.com/jdx/pitchfork`    |
+| `usage`        | `packslip:github.com/jdx/usage`        |
+
+Of the configured tools, only `hk` resolves to Packslip. Its registry entry
+prefers Packslip, so `hk = "latest"` in `~/.config/mise/conf.d/global.toml`
+already uses it without an explicit backend prefix. `mise tool hk` reports
+`Backend: packslip:github.com/jdx/hk`, `Security: packslip`, and active version
+`2.0.0`.
+
+The latest releases of `jdx/mise` and `jdx/usage` also publish
+`packslip.sigstore.json`. On 2026-09-14, the latest releases of `pkl`, `opencode`,
+`atuin`, `sesh`, `fd`, `jq`, `ripgrep`, `typos`, `shfmt`, `stylua`, `shellcheck`,
+`gh`, `gitleaks`, `uv`, `ruff`, `actionlint`, `dua-cli`, and `golangci-lint` did
+not. Check a release again with:
 
 ```bash
 curl -fsSL https://api.github.com/repos/OWNER/REPO/releases/latest \
   | jq '[.assets[].name] | map(select(test("packslip")))'
 ```
 
-The hk v1.58.1 manifest declares its `usage` CLI specification but does not
-declare the repository's `hk-configure` or `hk-debug` skills. The announcement's
-annotated manifest is an example rather than the released manifest. Installing
-that release through Packslip would provide signed installation metadata and
-dynamic completions, but `mise skills ls` would not list hk skills.
+The [hk v2.0.0 manifest](https://github.com/jdx/hk/releases/download/v2.0.0/packslip.sigstore.json)
+declares completions, its `usage` CLI specification, and two `skill` resources:
+`hk-configure` at `archive: skills/hk-configure` and `hk-debug` at
+`archive: skills/hk-debug`. `mise skills ls` lists both under
+`~/.local/share/mise/installs/hk/2.0.0/skills/`.
 
 #### Completions and skills policy
 
@@ -297,16 +316,30 @@ without review. The related settings have these effects:
 | `skills.prune`     | `false`          | Use only with a reviewed manual sync.             |
 | `packslip.exec`    | `false`          | Keep disabled unless a resource requires it.      |
 
-When hk includes `hk-configure` and `hk-debug` in its signed manifest, review
-and adopt them alongside the local `hk` skill. Then reduce the local skill to
-the yadm-specific guidance: bare-repository support, `HK_STASH_UNTRACKED=false`,
-global-hook re-entry prevention, and `yadm enter hk ...` commands.
+The hk v2.0.0 skills were reviewed and adopted on 2026-09-14. They replace the
+`connorads/dotfiles` hk snapshot, removed through
+`npx skills remove --global hk --yes`. The locally authored `hk-yadm` skill
+contains dotfiles-specific rules and links to [hk guidance](hk.md).
 
-Reconsider Packslip adoption when hk signs those skills or when a tool with real
-per-project version pins, such as `node`, `go`, `ruby`, or `uv`, publishes a
-manifest. Renovate does not currently understand Packslip, but `latest` entries
-do not require Renovate version updates and the existing backend grouping rule
-matches mise configuration by file path.
+To activate reviewed skills on another machine or after an hk upgrade:
+
+1. Run `mise skills ls` and review every listed skill at its installed path.
+2. Run `mise skills sync --dir "$HOME/.agents/skills"`. This syncs all listed
+   skills, not just hk's skills.
+3. Restart the agent so it discovers the new skills.
+
+The generated symlinks and `.mise-skills.json` are local installation state.
+Keep them untracked and repeat the review and manual sync after upgrades. The
+links point to a specific installed version, so retain that version until the
+links are updated. The
+`hk-configure` and `hk-debug` paths have narrow hk exclusions to prevent fixers
+from modifying the installed upstream files. The local `hk-yadm` skill receives
+normal checks.
+
+Recheck other vendors when a tool with per-project version pins, such as `node`,
+`go`, `ruby`, or `uv`, publishes a manifest. Renovate does not currently
+understand Packslip, but `latest` entries do not require Renovate version updates
+and the existing backend grouping rule matches mise configuration by file path.
 
 ## QNAP/QTS Compatibility
 
@@ -396,5 +429,5 @@ Tools are auto-updated by Renovate bot via `~/.renovaterc.json`. Check PRs for p
 - To vary a tool per machine class, declare it only in the matching environment fragment, never alongside an entry in `config.toml`
 - Use `settings.github.credential_command` rather than `env._.source` for lazy GitHub authentication
 - Attach install-specific setup to the relevant tool with `postinstall`, not a global postinstall hook
-- Prefer `packslip:` over `aqua:` or `github:` when the vendor publishes a signed manifest, but confirm the installed mise exposes the backend first and keep skill synchronization manual
+- Prefer Packslip when the vendor publishes a signed manifest; registry names such as `hk` already prefer it in mise 2026.9.7. Check resolution with `mise tool <name>` and keep skill synchronization manual
 - Prefer `github:` or `aqua:` over compiler-backed backends for cross-platform tools when the vendor publishes suitable release artifacts

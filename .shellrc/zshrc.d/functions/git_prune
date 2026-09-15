@@ -108,7 +108,7 @@ for branch in "${branches[@]}"; do
   upstream_remote=${upstream%%/*}
   upstream_track=$(git for-each-ref --format='%(upstream:track)' "refs/heads/$branch")
 
-  if [[ $upstream_track == *': gone]' ]]; then
+  if [[ $upstream_track == '[gone]' ]]; then
     candidates+=("$branch|gone")
     print -r -- "${yellow}🗑  $branch: gone${reset}"
     continue
@@ -213,7 +213,7 @@ if (( ! ${#candidates} )); then
   return 0
 fi
 
-print -r -- "\n${bold}Branches to prune:${reset}"
+print -r -- $'\n'"${bold}Branches to prune:${reset}"
 local -a deletions remove_options
 local worktree_status annotation
 local result=0
@@ -227,7 +227,7 @@ for argument in "${candidates[@]}"; do
       print -r -- "${yellow}⚠  $branch: main, current, or locked worktree at $worktree_path, skipping${reset}"
       continue
     fi
-    if ! worktree_status=$(cd -- "$worktree_path" && git status --porcelain --untracked-files=all); then
+    if ! worktree_status=$(builtin cd -q -- "$worktree_path" && git status --porcelain --untracked-files=all); then
       print -ru2 -- "${yellow}⚠  $branch: cannot inspect worktree at $worktree_path, skipping${reset}"
       result=1
       continue

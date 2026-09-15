@@ -78,32 +78,46 @@ ERROR:  Error installing ruby-lsp:
 When a `gem:` tool fails on a version constraint, run `mise ls ruby` first and
 look for `(missing)`. The gem error is a symptom; the missing runtime is the cause.
 
-### Ruby Plugin Scope (work machine)
+### Ruby backend scope
 
-`~/gitlab-development-kit/gitlab/mise.toml` registers GitLab's
-[asdf-gitlab-ruby](https://gitlab.com/gitlab-org/quality/tooling/asdf-gitlab-ruby)
-plugin for `ruby`. Plugins register **machine-wide**, so this governs `ruby`
-everywhere on the work machine, not just inside the GDK. Confirm with
-`mise plugins ls`; `mise registry ruby` still reports `core:ruby`, which is
-misleading.
+Installed plugins register machine-wide. GitLab's `asdf-gitlab-ruby` plugin can
+override the `ruby` shorthand outside the GDK, making identical version pins
+behave differently on Work and Personal Macs. Inspect the effective backend
+with `mise tool ruby`, not `mise registry ruby`.
 
-Two consequences:
+`conf.d/tools.work.toml` explicitly selects the built-in backend globally and
+inside the GDK:
 
-- The plugin only fetches precompiled binaries when `USE_PRECOMPILED_RUBY=true`,
-  which the GDK sets in its own `mise.toml`. Outside the GDK it always compiles
-  from source, which is slow, especially with `jobs = 1`.
-- It can only install versions listed in the plugin's `versions.txt`. Check
-  before pinning:
+```toml
+[tool_alias]
+ruby = "core:ruby"
 
-  ```bash
-  curl -fsSL https://gitlab.com/gitlab-org/quality/tooling/asdf-gitlab-ruby/-/raw/main/versions.txt \
-    | grep ',macos,arm64,'
-  ```
+[settings.ruby]
+compile = false
+```
 
-Because of this, `ruby` is declared per class rather than in `config.toml`:
-`conf.d/tools.work.toml` pins the newest version in the manifest, while
-`conf.d/tools.personal.toml` uses `core:ruby` and can track upstream.
-A Renovate rule in `.renovaterc.json` holds the work pin.
+The built-in backend downloads binaries from `jdx/ruby`, including macOS Ruby
+4.0.7. `compile = false` requires a binary and fails promptly if none exists.
+The Personal profile uses the built-in backend by default. Both profiles declare
+their Ruby versions in their respective `conf.d/tools.*.toml` files, and Renovate
+can update both pins without a GitLab-manifest version restriction.
+
+The GDK keeps its `.tool-versions` selections. Existing installed Rubies remain
+available, and future installations use the built-in backend. The backend alias
+takes precedence over the GitLab checkout's `[plugins]` declaration.
+`USE_PRECOMPILED_RUBY` is specific to GitLab's plugin and is unnecessary in the
+global configuration.
+
+In mise 2026.9.9, a global backend alias wins over a project-local alias,
+contrary to the expected configuration hierarchy. Avoid relying on local aliases
+to undo this policy. An exported `MISE_BACKENDS_RUBY` overrides alias selection,
+so inspect that variable if a shell selects an unexpected backend.
+
+If a source build stalls at `checking for ruby`, inspect the ruby-build log.
+`configure` can invoke the mise Ruby shim, which tries to install the same Ruby
+and waits for the parent install's lock. This is a deadlock, not slow compilation.
+Keep global Ruby on the built-in binary backend rather than adding a hard-coded
+bootstrap Ruby path.
 
 ### Config Precedence
 
@@ -400,7 +414,7 @@ Tools are auto-updated by Renovate bot via `~/.renovaterc.json`. Check PRs for p
 - Before using `uv:` backend, confirm it appears in `mise backends` — it requires a newer mise version
 - For `npm:` install failures, identify which aube gate fired before adding an exception; use the per-tool option, not a global setting
 - When a `gem:` tool fails on a Ruby version constraint, check `mise ls ruby` for `(missing)` before debugging the gem
-- Before bumping `ruby` on the work machine, confirm the version appears in the asdf-gitlab-ruby `versions.txt`
+- Use `mise tool ruby` to verify `core:ruby` selection both globally and inside the GDK
 - To vary a tool per machine class, declare it only in the matching environment fragment, never alongside an entry in `config.toml`
 - Use `settings.github.credential_command` rather than `env._.source` for lazy GitHub authentication
 - Attach install-specific setup to the relevant tool with `postinstall`, not a global postinstall hook

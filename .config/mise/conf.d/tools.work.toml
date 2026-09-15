@@ -1,23 +1,21 @@
 [env]
 HISTIGNORE = "*AWS_SECRET*:*AWS_ACCESS*:*glpat-*:*glrt-*:*gloas-*:*PRIVATE-TOKEN*:*CLIENT_SECRET*"
-# GitLab's asdf-gitlab-ruby plugin only downloads prebuilt binaries when this is
-# set, otherwise it compiles from source via ruby-build (slow, and slower still
-# with jobs = 1). The GDK sets it in its own mise.toml, but installs launched
-# from anywhere else (notably `mise install --yes` in yadm's update.zsh) would
-# rebuild Ruby from scratch. Set it here so every install on this machine uses
-# the prebuilt binary.
-USE_PRECOMPILED_RUBY = "true"
+
+[tool_alias]
+# Use mise's precompiled Ruby globally and in the GDK, even when GitLab's
+# machine-wide Ruby plugin is installed. Project version pins still apply.
+ruby = "core:ruby"
+
+[settings.ruby]
+# Fail promptly if a binary is unavailable instead of starting a source build.
+compile = false
 
 [task_config]
 includes = ["~/.config/mise/tasks", "~/.config/mise/tasks-work"]
 
 [tools]
 # ── Runtimes & infra ──────────────────────────────────────────────────
-# Ruby runtime
-# Pinned to 3.4.9: global ruby resolves through GitLab's asdf-gitlab-ruby plugin,
-# whose versions.txt has no macos/arm64 build past 3.4.9. Newer pins fall back to
-# a slow source compile, which leaves ruby missing and silently degrades the
-# gem: backend to system Ruby 2.6.
+# Global Ruby runtime, installed from mise's precompiled binaries.
 ruby = "4.0.7"
 # Go toolchain
 go = "1.27.1"

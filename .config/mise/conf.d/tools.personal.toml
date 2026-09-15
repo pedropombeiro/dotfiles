@@ -1,7 +1,6 @@
 [tools]
 # ── Runtimes ──────────────────────────────────────────────────────────
-# Ruby runtime. Declared here rather than in config.toml because the work
-# machine needs an older pin (see conf.d/tools.work.toml).
+# Ruby runtime. The Work profile declares its own backend policy and version.
 ruby = "4.0.7"
 # ── Rust tooling ──────────────────────────────────────────────────────
 # Install Rust binaries without compiling from source

@@ -18,7 +18,7 @@ includes = ["~/.config/mise/tasks", "~/.config/mise/tasks-work"]
 # whose versions.txt has no macos/arm64 build past 3.4.9. Newer pins fall back to
 # a slow source compile, which leaves ruby missing and silently degrades the
 # gem: backend to system Ruby 2.6.
-ruby = "4.0.6"
+ruby = "4.0.7"
 # Go toolchain
 go = "1.27.1"
 # OLAP database

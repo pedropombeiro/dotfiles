@@ -278,8 +278,8 @@ sync_dotfiles_to_gitlab() {
     return 0
   fi
 
-  mise bootstrap repos update --skip-dirty >/dev/null ||
-    echo "Warning: failed to update configured repositories; syncing the existing GitLab dotfiles checkout" >&2
+  mise bootstrap repos update --yes --skip-dirty "${dotfiles_dir}" >/dev/null ||
+    echo "Warning: failed to update GitLab dotfiles; syncing the existing checkout" >&2
 
   # Sync to the main gitlab worktree
   exclude_file="${gitlab_dir}/.git/info/exclude"

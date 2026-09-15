@@ -1,4 +1,4 @@
-# GDK Dotfiles Sync
+# GDK dotfiles sync
 
 Personal files that should appear inside `$GDK_ROOT/gitlab/` but not be committed to the
 canonical repo live in the private `gitlab.com/pedropombeiro/gitlab-dotfiles` repository, cloned to:
@@ -20,7 +20,7 @@ canonical repo live in the private `gitlab.com/pedropombeiro/gitlab-dotfiles` re
 4. Ensures the target is a symlink pointing to the dotfiles source.
 5. Appends `/<rel_path>` to `$GDK_ROOT/gitlab/.git/info/exclude` (deduped) so git ignores it.
 6. Discovers additional git worktrees via `git worktree list --porcelain` and repeats
-   steps 2–5 for each worktree under `$GDK_ROOT`. Worktree exclude entries go to
+   steps 2 through 5 for each worktree under `$GDK_ROOT`. Worktree exclude entries go to
    `.git/worktrees/<name>/info/exclude`.
 
 > **Gotcha:** the `fd` call must include `--hidden` and exclude `.git`, `.gitignore`, and
@@ -40,12 +40,19 @@ machines do not clone it. On a fresh work machine:
 Configured repositories can use different Git hosts and authentication methods. The private GitLab
 checkout requires the 1Password SSH agent, while public HTTPS repositories do not.
 
-`mise run dotfiles:update` refreshes configured repositories with `mise bootstrap repos update --skip-dirty` before syncing files into the GDK worktrees. Dirty repositories are left untouched.
+`mise run dotfiles:update` refreshes the GitLab dotfiles checkout before syncing files into the GDK
+worktrees:
+
+```bash
+mise bootstrap repos update --yes --skip-dirty "${HOME}/.config/dotfiles/gitlab"
+```
+
+The update runs without a confirmation prompt and skips the checkout if it has local changes.
 
 ## Adding new files
 
 Place the file under `~/.config/dotfiles/gitlab/` at the same relative path you want it to
-appear in the gitlab repo. No script changes are needed — `sync_dotfiles_to_gitlab()` picks
+appear in the gitlab repo. No script changes are needed. `sync_dotfiles_to_gitlab()` picks
 it up automatically on the next `mise run dotfiles:update`.
 
 Commit and push it from the private repository:
@@ -58,7 +65,7 @@ git -C ~/.config/dotfiles/gitlab push
 
 ## Current contents
 
-Do not hand-maintain an inventory here — it drifts. List ground truth with:
+Do not hand-maintain an inventory here because it drifts. List ground truth with:
 
 ```bash
 fd --hidden --type f . ~/.config/dotfiles/gitlab/
@@ -73,7 +80,7 @@ Broadly: `CLAUDE.local.md`, `lefthook-local.yml`, the `.ai/*.local.md` lesson fi
 
 ## Why not `##class.Work` alternates?
 
-Previously, Work-class skills and commands used YADM alternate files (e.g.,
+Previously, Work-class skills and commands used YADM alternate files (for example,
 `SKILL.md##class.Work`) in their global locations (`~/.agents/skills/`, `~/.config/opencode/commands/`).
 This made them active globally rather than only inside the gitlab repo. Moving them to
 `~/.config/dotfiles/gitlab/` and symlinking via `update-work.zsh` scopes them to the

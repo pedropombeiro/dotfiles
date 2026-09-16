@@ -3,6 +3,11 @@
 Workarounds for observed tool-layer failures. These are mitigations, not diagnoses — prefer the
 mitigation even when the underlying cause is unconfirmed.
 
+## PinchTab browser
+
+PinchTab requires Google Chrome. If Chrome is unavailable, resolve its installation
+or configuration rather than substituting another browser.
+
 ## Large file writes truncate
 
 **Symptom:** a `write` call fails with a JSON parse error whose echoed payload is cut off

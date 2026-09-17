@@ -257,6 +257,8 @@ cask "fork"
 cask "garmin-express"
 # Free and open-source image editor
 cask "gimp"
+# Web browser
+cask "google-chrome"
 # Virtual globe
 cask "google-earth-pro"
 # Video stabilization using gyroscope data

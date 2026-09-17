@@ -58,6 +58,8 @@ yamllint = "latest"
   "re2",
 ] }
 
+"github:pinchtab/pinchtab" = "0.15.2"
+
 # ── GitHub releases ───────────────────────────────────────────────────
 # Terminal file manager
 "github:sxyazi/yazi" = "26.8.15"

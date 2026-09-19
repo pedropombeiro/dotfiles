@@ -52,7 +52,7 @@ yamllint = "latest"
 # also makes regex validation less accurate than the real run in CI/Docker.
 # re2 is a Google-maintained binding built from source here; no postinstall
 # beyond the compile step.
-"npm:renovate" = { version = "44.33.2", trust_policy_excludes = [
+"npm:renovate" = { version = "44.103.1", trust_policy_excludes = [
   "@yarnpkg/libzip@3.2.2",
 ], allow_builds = [
   "re2",
@@ -62,7 +62,7 @@ yamllint = "latest"
 
 # ── GitHub releases ───────────────────────────────────────────────────
 # Terminal file manager
-"github:sxyazi/yazi" = "26.8.15"
+"github:sxyazi/yazi" = "26.9.1"
 
 # ── Ruby gems ─────────────────────────────────────────────────────────
 # Ruby provider for Neovim plugins

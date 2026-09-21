@@ -262,6 +262,7 @@
       "docker images*": "allow",
       "docker info*": "allow",
       "docker inspect *": "allow",
+      "docker manifest inspect *": "allow",
       "docker network inspect *": "allow",
       "docker network ls *": "allow",
       "docker ps*": "allow",

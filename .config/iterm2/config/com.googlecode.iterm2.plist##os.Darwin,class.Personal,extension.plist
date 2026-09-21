@@ -2353,7 +2353,7 @@ The script should do this: \(ai.prompt)</string>
 			<key>Columns</key>
 			<integer>132</integer>
 			<key>Command</key>
-			<string>ssh nas</string>
+			<string>zsh -ic 'ssh_persist nas'</string>
 			<key>Cursor Color</key>
 			<dict>
 				<key>Alpha Component</key>

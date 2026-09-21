@@ -1,0 +1,17 @@
+local attempt=0
+local delay=1
+local exit_status
+
+while true; do
+  ssh "$@"
+  exit_status=$?
+
+  # 255 identifies an SSH transport failure. Other codes are remote-command exits.
+  (( exit_status == 255 )) || return "$exit_status"
+
+  (( attempt++ ))
+  (( delay = delay < 15 ? delay : 15 ))
+  print -u2 "SSH connection lost; reconnecting in ${delay}s (attempt ${attempt})."
+  sleep "$delay" || return 130
+  (( delay *= 2 ))
+done

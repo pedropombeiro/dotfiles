@@ -5,6 +5,7 @@ This file contains core instructions applicable to most tasks. For specialized t
 ## Specialized Topics
 
 - [Shell](~/.agents/docs/shell.md) - Zsh configuration, zinit plugins, functions
+- [SSH](~/.agents/docs/ssh.md) - Persistent NAS SSH sessions after macOS sleep
 - [Bootstrap](~/.agents/docs/bootstrap.md) - YADM bootstrap scripts for system setup
 - [Tmux](~/.agents/docs/tmux.md) - Configuration structure, plugins, and shell integration
 - [OpenCode](~/.agents/docs/opencode.md) - Policy overrides and runtime behaviors

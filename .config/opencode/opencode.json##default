@@ -307,6 +307,7 @@
       "go vet*": "allow",
       "golangci-lint run*": "allow",
       "grep *": "allow",
+      "hass-cli raw post /api/services/rest/reload --json '{}'": "allow",
       "head *": "allow",
       "hk check *": "allow",
       "hostname": "allow",

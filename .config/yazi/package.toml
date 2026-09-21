@@ -9,11 +9,6 @@ rev = "f570b77"
 hash = "244048d1c3e7c557796f372c5c01de5d"
 
 [[plugin.deps]]
-use = "dedukun/bookmarks"
-rev = "9ef1254"
-hash = "92fbb5483657fa7976cdf4e0104e18e0"
-
-[[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
 rev = "f703392"
 hash = "187cc58ba7ac3befd49c342129e6f1b6"
@@ -22,11 +17,6 @@ hash = "187cc58ba7ac3befd49c342129e6f1b6"
 use = "yazi-rs/plugins:toggle-pane"
 rev = "f703392"
 hash = "5b2fbef7d1513ce38ff72623a071a5e"
-
-[[plugin.deps]]
-use = "dedukun/relative-motions"
-rev = "a603d9e"
-hash = "e02a788e5b8ae0fb47fd0193dda589cc"
 
 [[plugin.deps]]
 use = "Lil-Dank/lazygit"
@@ -87,6 +77,16 @@ hash = "2f76b82244c113bbd61553f37a6b52d8"
 use = "imsi32/yatline"
 rev = "c5d4b48"
 hash = "e6e98d12b1648d1894c2b560d85eeaa7"
+
+[[plugin.deps]]
+use = "qw457812/bookmarks"
+rev = "b00a2a6"
+hash = "fbc4573d146d2c6da46d6d9798236a65"
+
+[[plugin.deps]]
+use = "shafayetejaman/relative-motions"
+rev = "fbf1231"
+hash = "4563f3536e1d08650cb3706213f645dc"
 
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"

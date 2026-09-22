@@ -73,7 +73,7 @@ gruvbox_theme.untracked_color = "#427b58"
 require("yatline"):setup({
   theme = gruvbox_theme,
   show_background = true,
-  display_header_line = false,
+  display_header_line = true,
   display_status_line = true,
 
   section_separator = { open = " ", close = " " },

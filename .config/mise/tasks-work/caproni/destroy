@@ -12,4 +12,4 @@ set -- "$usage_work_item_id"
 if [ "${usage_keep_directory:-false}" = "true" ]; then
   set -- "$@" --keep-directory
 fi
-exec "$HOME/.agents/skills/caproni/scripts/destroy-env.sh" "$@"
+exec "$HOME/.agents/skills.work/caproni/scripts/destroy-env.sh" "$@"

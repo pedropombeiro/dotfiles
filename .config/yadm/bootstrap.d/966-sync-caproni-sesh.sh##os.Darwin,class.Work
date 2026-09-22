@@ -2,7 +2,7 @@
 
 set -eu
 
-sync_script=${HOME}/.agents/skills/caproni/scripts/sync-sesh.sh
+sync_script=${HOME}/.agents/skills.work/caproni/scripts/sync-sesh.sh
 config_dir=${HOME}/.config/sesh
 
 if [[ -x ${sync_script} ]]; then

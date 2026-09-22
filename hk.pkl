@@ -29,21 +29,21 @@ local fast_steps = new Mapping<String, Step> {
     // ── Tier 1: Universal ────────────────────────────────────────────────
     ["trailing-whitespace"] = (Builtins.trailing_whitespace) {
         exclude = binary_excludes + List(
-            ".agents/skills/clickhouse-best-practices/*",
+            ".agents/skills.work/clickhouse-best-practices/*",
             ".agents/skills/hk-configure/*",
             ".agents/skills/hk-debug/*"
         )
     }
     ["newlines"] = (Builtins.newlines) {
         exclude = binary_excludes + List(
-            ".agents/skills/clickhouse-best-practices/*",
+            ".agents/skills.work/clickhouse-best-practices/*",
             ".agents/skills/hk-configure/*",
             ".agents/skills/hk-debug/*"
         )
     }
     ["check-merge-conflict"] = (Builtins.check_merge_conflict) {
         exclude = List(
-            ".agents/skills/clickhouse-best-practices/*",
+            ".agents/skills.work/clickhouse-best-practices/*",
             ".agents/skills/hk-configure/*",
             ".agents/skills/hk-debug/*"
         )
@@ -57,10 +57,10 @@ local fast_steps = new Mapping<String, Step> {
         // silently breaking a subcommand. Examples are omitted on purpose: typos
         // rewrites them inside this comment too.
         exclude = binary_excludes + List(
-            ".agents/skills/clickhouse-best-practices/*",
+            ".agents/skills.work/clickhouse-best-practices/*",
             ".agents/skills/hk-configure/*",
             ".agents/skills/hk-debug/*",
-            ".agents/skills/orbit/*"
+            ".agents/skills.work/orbit/*"
         )
     }
     ["gitleaks"] = (Builtins.gitleaks) {
@@ -75,10 +75,10 @@ local fast_steps = new Mapping<String, Step> {
             // this step walks the filesystem and follows the symlink into the clone.
             // Scoped to orbit rather than .agents/skills/*/scripts/* so the tracked
             // run-in-tmux-pane script keeps its coverage.
-            ".agents/skills/clickhouse-best-practices/*",
+            ".agents/skills.work/clickhouse-best-practices/*",
             ".agents/skills/hk-configure/*",
             ".agents/skills/hk-debug/*",
-            ".agents/skills/orbit/*",
+            ".agents/skills.work/orbit/*",
             "*.md"
         )
     }
@@ -128,7 +128,7 @@ local fast_steps = new Mapping<String, Step> {
         glob = List("*.json", "*.md", "*.yaml", "*.yml")
         // Upstream skills are managed by `npx skills` or linked from mise installs.
         exclude = List(
-            ".agents/skills/clickhouse-best-practices/*",
+            ".agents/skills.work/clickhouse-best-practices/*",
             ".agents/skills/hk-configure/*",
             ".agents/skills/hk-debug/*",
             ".agents/skills/opencode-refine/*"

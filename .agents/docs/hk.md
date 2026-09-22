@@ -130,7 +130,7 @@ files keep coverage.
 
 ```pkl
 ["typos"] = (Builtins.typos) {
-    exclude = binary_excludes + List(".agents/skills/orbit/*")
+    exclude = binary_excludes + List(".agents/skills.work/orbit/*")
 }
 ```
 

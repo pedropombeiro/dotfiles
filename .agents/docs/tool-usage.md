@@ -3,6 +3,10 @@
 Workarounds for observed tool-layer failures. These are mitigations, not diagnoses — prefer the
 mitigation even when the underlying cause is unconfirmed.
 
+## MCP server names
+
+- When a server name is unknown, discover it with `lazy-mcp_list_servers` rather than guessing from the product name.
+
 ## PinchTab browser
 
 PinchTab requires Google Chrome. If Chrome is unavailable, resolve its installation

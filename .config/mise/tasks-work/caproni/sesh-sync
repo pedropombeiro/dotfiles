@@ -2,4 +2,4 @@
 #MISE description="Regenerate the sesh session list from ~/cap-* environments"
 set -eu
 
-exec "$HOME/.agents/skills/caproni/scripts/sync-sesh.sh"
+exec "$HOME/.agents/skills.work/caproni/scripts/sync-sesh.sh"

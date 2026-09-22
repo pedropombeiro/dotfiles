@@ -50,14 +50,15 @@ macOS arrangement and are not present there.
 
 ## Global agent skills
 
-Skills under `~/.agents/skills/` are symlinks into clones here, so `git pull` in the
-clone upgrades the skill and nothing needs vendoring into the dotfiles repo:
+Some skills link into clones here. Updating the clone updates those skills.
+Shared skills live in `~/.agents/skills`; work-only skills live in
+`~/.agents/skills.work` and load only through the Work configuration.
 
-| Clone                                         | Provides                                                                                 |
-| --------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `gitlab.com/gitlab-org/ai/skills`             | `handoff`, `write-large-file`, `glab-glql`, `gitlab-babysit-mr`, `gitlab-pipeline-watch` |
-| `gitlab.com/gitlab-org/orbit/knowledge-graph` | `orbit` (canonical home per the skill's own `references/maintaining.md`)                 |
-| `github.com/pinchtab/pinchtab`                | `pinchtab`                                                                               |
+- `gitlab.com/gitlab-org/ai/skills`: shared `write-large-file`, plus work-only
+  `glab-glql`, `gitlab-babysit-mr`, and `gitlab-pipeline-watch`.
+- `gitlab.com/gitlab-org/orbit/knowledge-graph`: work-only `orbit`.
+- `github.com/pinchtab/pinchtab`: shared `pinchtab`.
 
-The symlinks themselves are deliberately left untracked by YADM — the upstream clone is
-the source of truth. Only genuinely local skills get tracked.
+Upstream repository links are generally untracked. Locally maintained skills,
+including the generic `handoff`, and installer-managed snapshots are tracked by
+YADM. See [skill loading](opencode.md#skill-loading) for setup and updates.

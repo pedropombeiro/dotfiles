@@ -1,5 +1,26 @@
 # OpenCode Policies
 
+## Skill loading
+
+- Shared skills live in `~/.agents/skills`. OpenCode's global `skills` directory
+  links there. OpenCode also discovers `~/.claude/skills` automatically.
+- Work-only skills live in `~/.agents/skills.work`. Only
+  `opencode.json##class.Work` adds that directory through `skills.paths` and loads
+  `~/.agents/docs/work.md` through `instructions`.
+- Keep work-only skills out of all shared discovery directories. The
+  `sync-work-skills.zsh` helper relocates legacy installations, creates available
+  work-repository links on Work machines, and runs from the relink workflow.
+- Use `~/.config/yadm/scripts/sync-work-skills.zsh --update` for upstream skill
+  updates. It skips work-only updates on personal machines and relocates snapshots
+  recreated by the installer. The ClickHouse snapshot and its lock entry remain
+  managed by `npx skills`.
+- `handoff` is a locally maintained, platform-neutral skill tracked by YADM.
+  Do not replace it with a link to the work repository.
+
+Restart OpenCode after changing skill locations or configuration. Check discovery
+outside a project with `opencode --pure debug skill`; project-local skills remain
+scoped to their repository. Permission `allow` entries do not form an allowlist.
+
 ## Secret Protection
 
 `~/.config/opencode/plugins/env-protection.js` is a plain tracked file, so it is active on

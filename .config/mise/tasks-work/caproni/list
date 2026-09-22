@@ -2,4 +2,4 @@
 #MISE description="List work-item-scoped Caproni environments"
 set -eu
 
-exec "$HOME/.agents/skills/caproni/scripts/list-envs.sh"
+exec "$HOME/.agents/skills.work/caproni/scripts/list-envs.sh"

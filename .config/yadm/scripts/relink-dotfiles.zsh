@@ -7,6 +7,8 @@ YADM_SCRIPTS=$(cd -- "$(dirname -- "${(%):-%x}")/../scripts" &>/dev/null && pwd)
 
 source "${YADM_SCRIPTS}/colors.sh"
 
+"${YADM_SCRIPTS}/sync-work-skills.zsh" || exit $?
+
 pinchtab_skill="${HOME}/Developer/github.com/pinchtab/pinchtab/skills/pinchtab"
 if [[ -d ${pinchtab_skill} ]]; then
   printf "${YELLOW}%s${NC}\n" "Linking PinchTab skill..."

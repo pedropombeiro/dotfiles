@@ -1,5 +1,9 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "instructions": ["~/.agents/docs/work.md"],
+  "skills": {
+    "paths": ["~/.agents/skills.work"]
+  },
   "agent": {
     "plan": {
       "model": "gitlab/duo-chat-opus-5"
@@ -450,6 +454,7 @@
       "sleep *": "allow",
       "sort*": "allow",
       "*/.agents/skills/*/scripts/*": "allow",
+      "*/.agents/skills.work/*/scripts/*": "allow",
       "*/.config/opencode/skills/*/scripts/*": "allow",
       "stat *": "allow",
       "strings *": "allow",

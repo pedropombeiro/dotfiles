@@ -5,4 +5,4 @@ set -eu
 
 # mise defines usage_* variables from the #USAGE directives.
 # shellcheck disable=SC2154
-exec "$HOME/.agents/skills/caproni/scripts/update-env.sh" ${usage_work_item_id:+"$usage_work_item_id"}
+exec "$HOME/.agents/skills.work/caproni/scripts/update-env.sh" ${usage_work_item_id:+"$usage_work_item_id"}

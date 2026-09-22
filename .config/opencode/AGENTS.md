@@ -12,11 +12,10 @@ the task needs them.
 - In unfamiliar repos, read local `AGENTS.md`, `CLAUDE.md`, and task-index docs before broad exploration.
 - Prefer repo-local skills over rediscovering documented workflows.
 - Never post or reply to issues, MRs/PRs, comments, discussions, chat, or any external channel without explicit user approval. Draft the content and ask for confirmation first.
-- Before drafting or replying to any GitLab prose (MR descriptions, review comments, issue updates, team messages) or a multi-line commit message body, read `~/.agents/docs/writing-style.md` first.
+- Before drafting technical prose or a multi-line commit message body, read `~/.agents/docs/writing-style.md` first.
 
 ## Search Routing
 
-- For GitLab docs, runbooks, handbook content, or other company knowledge, use Glean first.
 - For Pedro's personal notes, memos, and saved snippets, use the `memos` MCP server.
 - For code or config in tracked git files, prefer `git ls-files` and `git grep`.
 - Use `Glob` and `Grep` only when untracked or ignored files matter.
@@ -56,6 +55,5 @@ the task needs them.
 - [Writing Style](~/.agents/docs/writing-style.md) - Pedro's tone, formatting, and MR conventions
 - [Google Developer Documentation Style](~/.agents/skills/google-dev-docs-style/SKILL.md) - Technical prose style,
   local overrides, and Vale checks
-- [GDK Dotfiles](~/.agents/docs/gdk-dotfiles.md) - Personal files synced into `$GDK_ROOT/gitlab`
 - [Developer Directory](~/.agents/docs/developer-directory.md) - Repo clone path convention (`~/Developer/<forge>/<owner>/<repo>`)
-- [Tool Usage](~/.agents/docs/tool-usage.md) - Workarounds for tool-layer failures (large `write` truncation)
+- [Tool Usage](~/.agents/docs/tool-usage.md) - MCP server names and workarounds for tool-layer failures

@@ -1,6 +1,6 @@
 ---
 name: run-in-tmux-pane
-description: "Run commands in a temporary tmux pane with full interactive zsh environment (login shell, shims, PATH, aliases, TTY)."
+description: "Use for commands that require an interactive shell, a TTY, or shell-only functions. Run them in a temporary tmux pane with the full zsh environment. Use Bash directly for ordinary non-interactive commands."
 version: 1.0.0
 license: MIT
 compatibility: opencode
@@ -47,7 +47,8 @@ transparently.
 
 ## When not to use
 
-- For simple non-interactive commands that work fine with the normal Bash tool
+- For simple non-interactive commands such as `pwd`, `git status`, and branch checks; use Bash directly
+- To preflight a later interactive command; use tmux only for the command that needs it
 - When you only need to read or edit files; use the dedicated file tools instead
 - When the command requires live stdin interaction after launch; the pane is not interactive once started
 

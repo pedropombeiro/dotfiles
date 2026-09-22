@@ -29,6 +29,16 @@ on = ["]", "]"]
 run = "plugin parent-arrow 1"
 
 [[mgr.prepend_keymap]]
+on = ["[", "t"]
+run = "tab_switch -1 --relative"
+desc = "Switch to the previous tab"
+
+[[mgr.prepend_keymap]]
+on = ["]", "t"]
+run = "tab_switch 1 --relative"
+desc = "Switch to the next tab"
+
+[[mgr.prepend_keymap]]
 on = "<C-p>"
 run = 'shell -- qlmanage -p "%s"'
 desc = "Open preview"
@@ -153,6 +163,51 @@ desc = "Create a tab and enter the hovered directory"
 on = ["t", "r"]
 run = "tab_rename --interactive"
 desc = "Rename the current tab"
+
+[[mgr.prepend_keymap]]
+on = ["t", "1"]
+run = "tab_switch 0"
+desc = "Switch to the 1st tab"
+
+[[mgr.prepend_keymap]]
+on = ["t", "2"]
+run = "tab_switch 1"
+desc = "Switch to the 2nd tab"
+
+[[mgr.prepend_keymap]]
+on = ["t", "3"]
+run = "tab_switch 2"
+desc = "Switch to the 3rd tab"
+
+[[mgr.prepend_keymap]]
+on = ["t", "4"]
+run = "tab_switch 3"
+desc = "Switch to the 4th tab"
+
+[[mgr.prepend_keymap]]
+on = ["t", "5"]
+run = "tab_switch 4"
+desc = "Switch to the 5th tab"
+
+[[mgr.prepend_keymap]]
+on = ["t", "6"]
+run = "tab_switch 5"
+desc = "Switch to the 6th tab"
+
+[[mgr.prepend_keymap]]
+on = ["t", "7"]
+run = "tab_switch 6"
+desc = "Switch to the 7th tab"
+
+[[mgr.prepend_keymap]]
+on = ["t", "8"]
+run = "tab_switch 7"
+desc = "Switch to the 8th tab"
+
+[[mgr.prepend_keymap]]
+on = ["t", "9"]
+run = "tab_switch 8"
+desc = "Switch to the 9th tab"
 
 # https://github.com/Lil-Dank/lazygit.yazi
 [[mgr.prepend_keymap]]

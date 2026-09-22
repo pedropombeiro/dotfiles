@@ -31,7 +31,7 @@ usage = "latest"
 # opencode build for old glibc (QTS)
 "github:pedropombeiro/opencode-legacy-glibc" = "latest"
 # Terminal file manager (aqua backend selects musl asset on Linux, works on old glibc)
-"aqua:sxyazi/yazi" = "26.8.15"
+"aqua:sxyazi/yazi" = "26.9.1"
 # Log file viewer and navigator
 "github:tstack/lnav" = "latest"
 
@@ -41,7 +41,7 @@ usage = "latest"
 # Network bandwidth monitor by process
 "github:imsnif/bandwhich" = "latest"
 # Ping with a real-time graph
-"github:orf/gping" = "gping-v1.20.4"
+"github:orf/gping" = "gping-v1.21.0"
 # Omitted on QTS: rustnet publishes only glibc 2.32+ builds and also needs
 # libpcap, so it has never run here.
 

@@ -71,6 +71,8 @@ hostname: gdk.test
 listen_address: 172.16.123.1
 mise:
   enabled: true
+nats:
+  enabled: true
 nginx:
   enabled: true
 port: 3000
@@ -89,6 +91,8 @@ runner:
   # Duo remote-flow evals run one CI job per row; the default of 1 serialises them
   # and a single hung flow starves the whole queue.
   concurrent: 32
+  enabled: true
+siphon:
   enabled: true
 snowplow_micro:
   enabled: false

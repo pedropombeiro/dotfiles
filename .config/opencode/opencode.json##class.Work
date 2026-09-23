@@ -72,7 +72,7 @@
       }
     },
     "gitlab": {
-      "npm": "gitlab-ai-provider@6.17.1",
+      "npm": "gitlab-ai-provider@6.18.0",
       "blacklist": [
         // Superseded by Fable 5.1, Opus 5.5, and Sonnet 5.
         "duo-chat-opus-5",
@@ -91,10 +91,7 @@
         "duo-chat-sonnet-4-5",
         "duo-chat-sonnet-4-6",
         "duo-workflow-sonnet-4-5",
-        "duo-workflow-sonnet-4-6",
-        // Remove these exclusions once the configured gitlab-ai-provider maps these IDs.
-        "duo-chat-gpt-6-sol",
-        "duo-chat-gpt-6-luna"
+        "duo-workflow-sonnet-4-6"
       ],
       "models": {
         "duo-chat-fable-5": {

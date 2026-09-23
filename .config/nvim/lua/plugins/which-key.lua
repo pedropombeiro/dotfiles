@@ -142,6 +142,7 @@ return {
       },
 
       { "<leader>g", group = "Git / Change action" },
+      { "<leader>m", group = "Atlas" },
 
       -- folke/persistence.nvim
       { "<leader>q", group = "Session management" },

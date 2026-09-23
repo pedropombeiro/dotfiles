@@ -13,11 +13,11 @@
       "model": "gitlab/duo-chat-opus-5-5"
     },
     "build": {
-      "model": "gitlab/duo-chat-gpt-5-6-terra"
+      "model": "gitlab/duo-chat-gpt-6-sol"
     }
   },
   "default_agent": "plan",
-  "small_model": "gitlab/duo-chat-gpt-5-6-luna",
+  "small_model": "gitlab/duo-chat-gpt-6-luna",
   "mcp": {
     "lazy-mcp": {
       "type": "local",

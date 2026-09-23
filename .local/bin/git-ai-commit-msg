@@ -40,7 +40,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-model="${OPENCODE_COMMIT_MODEL:-${OPENCODE_SMALL_MODEL:-${OPENCODE_MODEL:-gitlab/duo-chat-gpt-5-6-nano}}}"
+model="${OPENCODE_COMMIT_MODEL:-${OPENCODE_SMALL_MODEL:-${OPENCODE_MODEL:-gitlab/duo-chat-gpt-6-luna}}}"
 
 # Fall back to local model when offline
 _offline_model="${OPENCODE_OFFLINE_MODEL:-ollama/gemma4:e2b}"

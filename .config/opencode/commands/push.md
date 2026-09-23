@@ -1,6 +1,6 @@
 ---
 description: Commit changes in logical commits and push
-model: gitlab/duo-chat-gpt-5-6-nano
+model: gitlab/duo-chat-gpt-6-luna
 ---
 
 Commit all changes in discrete, logical commits and push to the remote.

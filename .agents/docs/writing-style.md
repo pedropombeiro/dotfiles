@@ -73,6 +73,9 @@ the source of truth.
   `- **Unified payload**: \`features.tracing\` both signals enablement and carries trace context - no separate boolean toggle needed`
 - Use tables for structured comparisons (field descriptions, test matrices).
 - Validation steps use numbered shell/Ruby console blocks with expected outputs as comments (`# => true`).
+- Focus MR validation on relevant end-to-end or live behavior that CI does not already check.
+  Distinguish suggested steps from checks actually run, and identify the tested revision.
+  Avoid boilerplate lists of lint and unit-test commands already covered by CI.
 - Proactively call out what's NOT applicable: "_Not applicable - backend service change only._"
 - Use **bold** for emphasis ("**This is an EE-only feature**"), not caps or exclamation marks.
 

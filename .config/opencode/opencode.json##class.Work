@@ -6,7 +6,7 @@
   },
   "agent": {
     "plan": {
-      "model": "gitlab/duo-chat-opus-5"
+      "model": "gitlab/duo-chat-opus-5-5"
     },
     "build": {
       "model": "gitlab/duo-chat-gpt-5-6-terra"
@@ -72,6 +72,30 @@
       }
     },
     "gitlab": {
+      "npm": "gitlab-ai-provider@6.17.1",
+      "blacklist": [
+        // Superseded by Fable 5.1, Opus 5.5, and Sonnet 5.
+        "duo-chat-opus-5",
+        "duo-chat-fable-5",
+        "duo-workflow-claude-fable-5",
+        "duo-chat-opus-4",
+        "duo-chat-opus-4-5",
+        "duo-chat-opus-4-6",
+        "duo-chat-opus-4-7",
+        "duo-chat-opus-4-8",
+        "duo-workflow-opus-4-5",
+        "duo-workflow-opus-4-6",
+        "duo-workflow-opus-4-7",
+        "duo-workflow-opus-4-8",
+        "duo-chat-sonnet-4",
+        "duo-chat-sonnet-4-5",
+        "duo-chat-sonnet-4-6",
+        "duo-workflow-sonnet-4-5",
+        "duo-workflow-sonnet-4-6",
+        // Remove these exclusions once the configured gitlab-ai-provider maps these IDs.
+        "duo-chat-gpt-6-sol",
+        "duo-chat-gpt-6-luna"
+      ],
       "models": {
         "duo-chat-fable-5": {
           "cost": {
@@ -113,16 +137,6 @@
             "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
           }
         },
-        "duo-workflow-opus-4-7": {
-          "cost": {
-            "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
-          }
-        },
-        "duo-chat-opus-4-7": {
-          "cost": {
-            "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
-          }
-        },
         "duo-workflow-claude-fable-5": {
           "cost": {
             "input": 10, "output": 50, "cache_read": 1, "cache_write": 12.5
@@ -133,34 +147,9 @@
             "input": 10, "output": 50, "cache_read": 0.25, "cache_write": 12.5
           }
         },
-        "duo-workflow-opus-4-6": {
-          "cost": {
-            "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
-          }
-        },
-        "duo-chat-opus-4-6": {
-          "cost": {
-            "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
-          }
-        },
-        "duo-chat-opus-4-5": {
-          "cost": {
-            "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
-          }
-        },
         "duo-chat-sonnet-5": {
           "cost": {
             "input": 2, "output": 10, "cache_read": 0.20, "cache_write": 2.50
-          }
-        },
-        "duo-chat-sonnet-4-6": {
-          "cost": {
-            "input": 3, "output": 15, "cache_read": 0.30, "cache_write": 3.75
-          }
-        },
-        "duo-chat-sonnet-4-5": {
-          "cost": {
-            "input": 3, "output": 15, "cache_read": 0.30, "cache_write": 3.75
           }
         },
         "duo-chat-sonnet-4": {

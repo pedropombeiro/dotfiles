@@ -33,10 +33,10 @@ teleport-community = "17"
 # GitLab CLI
 glab = "latest"
 # Local Kubernetes environments for GitLab development
-"gitlab:gitlab-org/caproni" = "v4.23.0"
+"gitlab:gitlab-org/caproni" = "v4.24.0"
 # VM and container runtime used by Caproni on macOS
 colima = "0.10.3"
-lima = "2.0.3"
+lima = "2.2.0"
 # Run local processes with Kubernetes network and filesystem context
 mirrord = "3.262.0"
 # Kubernetes terminal UI

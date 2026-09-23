@@ -37,7 +37,7 @@ glab = "latest"
 # VM and container runtime used by Caproni on macOS
 colima = "0.10.3"
 # Run local processes with Kubernetes network and filesystem context
-mirrord = "3.261.0"
+mirrord = "3.262.0"
 # Kubernetes terminal UI
 k9s = "latest"
 # GitLab Duo AI CLI

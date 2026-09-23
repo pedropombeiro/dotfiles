@@ -54,6 +54,20 @@ Both alternates must be updated together — `opencode.json##default` and
 To force a re-resolve of a stale `@latest` entry, delete its cache directory
 (use `trash`, not `rm -rf`).
 
+## Model availability
+
+`opencode models` includes config-defined entries, including models added only
+to override pricing. A listing alone does not confirm backend availability.
+Check the provider catalog separately and verify that the replacement works
+before changing defaults or retiring an existing model.
+
+For GitLab `duo-chat-*` models, also check `MODEL_MAPPINGS` in the
+`gitlab-ai-provider` version selected by the model's npm override, or the
+bundled version when no override applies.
+Catalog entries and pricing overrides do not register SDK mappings. Missing
+mappings cause `Unknown model ID` errors. Workflow models use a separate
+discovery path and require separate verification.
+
 ## Storage Layout
 
 When inspecting prior OpenCode sessions or tool results, verify the local storage

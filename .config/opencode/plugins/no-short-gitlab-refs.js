@@ -23,40 +23,49 @@ const findShortReference = (message) => {
   }
 }
 
-export const NoShortGitlabRefs = async () => {
-  return {
-    "tool.execute.before": async (input, output) => {
-      if (
-        input.tool !== "bash" ||
-        process.env.OPENCODE_ALLOW_SHORT_GITLAB_REFS === "1"
-      ) {
-        return
-      }
-
-      const command = output?.args?.command ?? ""
-      const commitOrTag = command.match(COMMIT_OR_TAG_PATTERN)
-
-      if (!commitOrTag || commitOrTag.index === undefined) {
-        return
-      }
-
-      // Scan from the commit/tag invocation to include quoted messages and heredocs.
-      const reference = findShortReference(
-        command.slice(commitOrTag.index + commitOrTag[0].length),
-      )
-
-      if (!reference) {
-        return
-      }
-
-      throw new Error(
-        `Commit messages must not contain shortened GitLab references. Found: \`${reference}\`. ` +
-          "Use the full canonical URL instead: `https://gitlab.com/<group>/<project>/-/issues/<iid>`, " +
-          "`https://gitlab.com/<group>/<project>/-/merge_requests/<iid>`, or " +
-          "`https://gitlab.com/groups/<group>/-/epics/<iid>`. Rewrite the message; DO NOT bypass " +
-          "this check with `--no-verify` or by writing the message to a file. A human may set " +
-          "`OPENCODE_ALLOW_SHORT_GITLAB_REFS=1` in OpenCode's environment for an explicit exception.",
-      )
-    },
+const check = (command = "") => {
+  if (process.env.OPENCODE_ALLOW_SHORT_GITLAB_REFS === "1") {
+    return
   }
+
+  const commitOrTag = command.match(COMMIT_OR_TAG_PATTERN)
+
+  if (!commitOrTag || commitOrTag.index === undefined) {
+    return
+  }
+
+  // Scan from the commit/tag invocation to include quoted messages and heredocs.
+  const reference = findShortReference(
+    command.slice(commitOrTag.index + commitOrTag[0].length),
+  )
+
+  if (!reference) {
+    return
+  }
+
+  throw new Error(
+    `Commit messages must not contain shortened GitLab references. Found: \`${reference}\`. ` +
+      "Use the full canonical URL instead: `https://gitlab.com/<group>/<project>/-/issues/<iid>`, " +
+      "`https://gitlab.com/<group>/<project>/-/merge_requests/<iid>`, or " +
+      "`https://gitlab.com/groups/<group>/-/epics/<iid>`. Rewrite the message; DO NOT bypass " +
+      "this check with `--no-verify` or by writing the message to a file. A human may set " +
+      "`OPENCODE_ALLOW_SHORT_GITLAB_REFS=1` in OpenCode's environment for an explicit exception.",
+  )
+}
+
+// OpenCode 2 calls `setup`; OpenCode 1 (still used on the NAS) calls `server`.
+export default {
+  id: "no-short-gitlab-refs",
+  async setup(ctx) {
+    await ctx.tool.hook("execute.before", (event) => {
+      if (event.tool === "shell") check(event.input?.command)
+    })
+  },
+  async server() {
+    return {
+      "tool.execute.before": async (input, output) => {
+        if (input.tool === "bash") check(output?.args?.command)
+      },
+    }
+  },
 }

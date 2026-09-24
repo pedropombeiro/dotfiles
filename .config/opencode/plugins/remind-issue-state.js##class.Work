@@ -2,7 +2,7 @@
 // native Status. GitLab does not derive issue Status from MR state, so an issue
 // stays in its previous status (or none) until something sets it explicitly.
 //
-// This runs in `tool.execute.after` rather than `before`: the reminder is only
+// This runs in the `execute.after` tool hook rather than `before`: the reminder is only
 // actionable once the MR exists, and failing the call would leave a created MR
 // behind. So it appends guidance instead of throwing.
 //
@@ -48,42 +48,96 @@ const REMINDER = [
 const isMrCreationCommand = (command) =>
   MR_CREATION_COMMAND_PATTERNS.some((pattern) => pattern.test(command))
 
-export const RemindIssueState = async () => {
+const resultText = (result) =>
+  [
+    ...(Array.isArray(result?.content) ? result.content : [])
+      .filter((part) => part?.type === "text")
+      .map((part) => part.text),
+    typeof result?.output === "string" ? result.output : result?.output?.output ?? "",
+  ].join("\n")
+
+// Returns the dedupe key when the call created an MR that has not been reminded yet.
+const createReminder = () => {
   // Keyed by MR IID so retries and follow-up reads of the same MR stay quiet,
   // while a second, genuinely different MR still gets its own reminder.
   const reminded = new Set()
 
-  return {
-    "tool.execute.after": async (input, output) => {
-      if (process.env.OPENCODE_SKIP_ISSUE_STATE_REMINDER === "1") {
-        return
-      }
+  return ({ sessionID, tool, shellTool, command, text }) => {
+    if (process.env.OPENCODE_SKIP_ISSUE_STATE_REMINDER === "1") {
+      return false
+    }
 
-      const isMrTool = MR_CREATION_TOOLS.has(input.tool)
+    const isMrTool = MR_CREATION_TOOLS.has(tool)
 
-      if (input.tool !== "bash" && !isMrTool) {
-        return
-      }
+    if (tool !== shellTool && !isMrTool) {
+      return false
+    }
 
-      if (!isMrTool && !isMrCreationCommand(input.args?.command ?? "")) {
-        return
-      }
+    if (!isMrTool && !isMrCreationCommand(command ?? "")) {
+      return false
+    }
 
-      const text = `${output.output ?? ""}\n${output.title ?? ""}`
-      const match = text.match(MR_URL_PATTERN)
+    const match = text.match(MR_URL_PATTERN)
 
-      if (!match) {
-        return
-      }
+    if (!match) {
+      return false
+    }
 
-      const key = `${input.sessionID}:${match[1]}`
+    const key = `${sessionID}:${match[1]}`
 
-      if (reminded.has(key)) {
-        return
-      }
+    if (reminded.has(key)) {
+      return false
+    }
 
-      reminded.add(key)
-      output.output = `${output.output ?? ""}\n${REMINDER}`
-    },
+    reminded.add(key)
+    return true
   }
+}
+
+// OpenCode 2 calls `setup`; OpenCode 1 (still used on the NAS) calls `server`.
+export default {
+  id: "remind-issue-state",
+  async setup(ctx) {
+    const shouldRemind = createReminder()
+
+    await ctx.tool.hook("execute.after", (event) => {
+      if (event.status !== "completed") {
+        return
+      }
+
+      const remind = shouldRemind({
+        sessionID: event.sessionID,
+        tool: event.tool,
+        shellTool: "shell",
+        command: event.input?.command,
+        text: resultText(event.result),
+      })
+
+      if (remind) {
+        event.result = {
+          ...event.result,
+          content: [...(event.result.content ?? []), { type: "text", text: REMINDER }],
+        }
+      }
+    })
+  },
+  async server() {
+    const shouldRemind = createReminder()
+
+    return {
+      "tool.execute.after": async (input, output) => {
+        const remind = shouldRemind({
+          sessionID: input.sessionID,
+          tool: input.tool,
+          shellTool: "bash",
+          command: input.args?.command,
+          text: `${output.output ?? ""}\n${output.title ?? ""}`,
+        })
+
+        if (remind) {
+          output.output = `${output.output ?? ""}\n${REMINDER}`
+        }
+      },
+    }
+  },
 }

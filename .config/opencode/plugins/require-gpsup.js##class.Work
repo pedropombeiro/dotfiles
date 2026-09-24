@@ -1,24 +1,31 @@
 const GIT_PUSH_SET_UPSTREAM_PATTERN = /(^|[;&|]\s*)\s*git\s+push\s+.*(-u\b|--set-upstream\b)/
 
-export const RequireGpsup = async () => {
-  return {
-    "tool.execute.before": async (input, output) => {
-      if (input.tool !== "bash") {
-        return
-      }
-
-      const command = output?.args?.command ?? ""
-
-      if (!GIT_PUSH_SET_UPSTREAM_PATTERN.test(command)) {
-        return
-      }
-
-      throw new Error(
-        "Do not use `git push -u` directly for GitLab.com remotes. " +
-        "Use `gpsup` instead — load the `mr-workflow` skill and " +
-        "follow the instructions in `~/.agents/docs/scm.md` § " +
-        "'Creating Merge Requests'."
-      )
-    }
+const check = (command = "") => {
+  if (!GIT_PUSH_SET_UPSTREAM_PATTERN.test(command)) {
+    return
   }
+
+  throw new Error(
+    "Do not use `git push -u` directly for GitLab.com remotes. " +
+    "Use `gpsup` instead — load the `mr-workflow` skill and " +
+    "follow the instructions in `~/.agents/docs/scm.md` § " +
+    "'Creating Merge Requests'."
+  )
+}
+
+// OpenCode 2 calls `setup`; OpenCode 1 (still used on the NAS) calls `server`.
+export default {
+  id: "require-gpsup",
+  async setup(ctx) {
+    await ctx.tool.hook("execute.before", (event) => {
+      if (event.tool === "shell") check(event.input?.command)
+    })
+  },
+  async server() {
+    return {
+      "tool.execute.before": async (input, output) => {
+        if (input.tool === "bash") check(output?.args?.command)
+      },
+    }
+  },
 }

@@ -1,17 +1,24 @@
 const RM_RF_PATTERN = /(^|[;&|]\s*)\s*(?:sudo\s+)?(?:command\s+)?rm\s+-(?:rf|fr)\b/
 
-export const DenyRmRf = async () => {
-  return {
-    "tool.execute.before": async (input, output) => {
-      if (input.tool !== "bash") {
-        return
-      }
-
-      const command = output?.args?.command ?? ""
-
-      if (RM_RF_PATTERN.test(command)) {
-        throw new Error("Refusing to run `rm -rf` without user supervision. YOU MUST use do it in a non-destructive way (such as `trash` on MacOS) or ask for permission. DO NOT attempt to work around this instruction.")
-      }
-    }
+const check = (command = "") => {
+  if (RM_RF_PATTERN.test(command)) {
+    throw new Error("Refusing to run `rm -rf` without user supervision. YOU MUST use do it in a non-destructive way (such as `trash` on MacOS) or ask for permission. DO NOT attempt to work around this instruction.")
   }
+}
+
+// OpenCode 2 calls `setup`; OpenCode 1 (still used on the NAS) calls `server`.
+export default {
+  id: "deny-rm-rf",
+  async setup(ctx) {
+    await ctx.tool.hook("execute.before", (event) => {
+      if (event.tool === "shell") check(event.input?.command)
+    })
+  },
+  async server() {
+    return {
+      "tool.execute.before": async (input, output) => {
+        if (input.tool === "bash") check(output?.args?.command)
+      },
+    }
+  },
 }

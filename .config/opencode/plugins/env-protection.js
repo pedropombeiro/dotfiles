@@ -85,13 +85,31 @@ const redactStructuredSecretsDeep = (value) => {
   return value;
 };
 
-export const EnvProtection = async ({ directory, worktree }) => {
-  delete process.env.MANPAGER;
-  delete process.env.VIMPAGER_VIM;
-  process.env.EDITOR = "cat";
-  process.env.VISUAL = "cat";
-  process.env.GIT_EDITOR = "cat";
+const SHELL_ENV_OVERRIDES = {
+  MANPAGER: undefined,
+  VIMPAGER_VIM: undefined,
+  EDITOR: "cat",
+  VISUAL: "cat",
+  GIT_EDITOR: "cat",
+};
 
+const applyProcessEnvOverrides = () => {
+  for (const [key, value] of Object.entries(SHELL_ENV_OVERRIDES)) {
+    if (value === undefined) delete process.env[key];
+    else process.env[key] = value;
+  }
+};
+
+const ERROR_MSG = "Access to protected credential files is not allowed";
+const EXPOSURE_ERROR_MSG =
+  "Refusing to persist or expose a literal secret; use an environment variable or file reference";
+const SHELL_EXPOSURE_PATTERN = /\b(?:echo|printf|print|tee)\b|\bcat\s*<</;
+
+const warningFor = (count) =>
+  `WARNING: env-protection redacted ${count} secret value(s). ` +
+  "Reference them via the file path or an environment variable, never the literal value.\n";
+
+const createGuards = ({ directory, worktree }) => {
   /**
    * Matches .env files and all variants:
    * .env, .env.local, .env.production, .env.development, .env.test, etc.
@@ -169,8 +187,6 @@ export const EnvProtection = async ({ directory, worktree }) => {
   };
 
   const isProtectedFile = (filePath) => isEnvFile(filePath) || inSecretDir(filePath);
-
-  const ERROR_MSG = "Access to protected credential files is not allowed";
 
   const envPathsInCommand = (command) => {
     if (!command) return [];
@@ -269,88 +285,159 @@ export const EnvProtection = async ({ directory, worktree }) => {
     return { value, count: 0 };
   };
 
-  return {
-    "tool.execute.before": async (input, output) => {
-      const tool = input.tool;
-      const args = output.args || {};
-
-      // Tools that have a direct filePath argument: read, edit, patch
-      if (["read", "edit", "patch"].includes(tool)) {
-        if (isProtectedFile(args.filePath)) {
-          throw new Error(ERROR_MSG);
-        }
+  // Throws when a tool call would read a protected file or expose a literal secret.
+  // `filePath` is the tool's file argument, which V1 calls `filePath` and V2 calls `path`.
+  const checkToolCall = ({ tool, shellTool, filePath, args }) => {
+    if (["read", "edit", "write", "patch", "apply_patch"].includes(tool)) {
+      if (isProtectedFile(filePath)) {
+        throw new Error(ERROR_MSG);
       }
+    }
 
-      // grep: block if targeting .env files via path or include pattern
-      if (tool === "grep") {
-        if (isProtectedFile(args.path) || containsEnvRef(args.include)) {
-          throw new Error(ERROR_MSG);
-        }
+    if (tool === "grep") {
+      if (isProtectedFile(args.path) || containsEnvRef(args.include) || containsEnvRef(args.glob)) {
+        throw new Error(ERROR_MSG);
       }
+    }
 
-      // glob: block if the pattern or path targets .env files
-      if (tool === "glob") {
-        if (containsEnvRef(args.pattern) || isProtectedFile(args.path)) {
-          throw new Error(ERROR_MSG);
-        }
+    if (tool === "glob") {
+      if (containsEnvRef(args.pattern) || isProtectedFile(args.path)) {
+        throw new Error(ERROR_MSG);
       }
+    }
 
-      const bashExposure =
-        tool === "bash" && /\b(?:echo|printf|print|tee)\b|\bcat\s*<</.test(args.command || "");
-      if ((EXPOSURE_TOOLS.has(tool) || bashExposure) && containsHighConfidenceSecret(args)) {
-        throw new Error("Refusing to persist or expose a literal secret; use an environment variable or file reference");
-      }
-    },
-    "tool.execute.after": async (input, output) => {
+    const shellExposure = tool === shellTool && SHELL_EXPOSURE_PATTERN.test(args.command || "");
+    if ((EXPOSURE_TOOLS.has(tool) || shellExposure) && containsHighConfidenceSecret(args)) {
+      throw new Error(EXPOSURE_ERROR_MSG);
+    }
+  };
+
+  // Secret values from protected files a shell command referenced, longest first.
+  const commandSecretValues = (command) =>
+    protectedPathsInCommand(command)
+      .map(resolveEnvPath)
+      .filter(Boolean)
+      .flatMap((filePath) =>
+        protectedFileValues(filePath).map((value) => ({
+          ...value,
+          source: basename(filePath),
+        })),
+      )
+      .filter(({ value, protectedFile }) => protectedFile || isSecretValue(value))
+      .sort((a, b) => b.value.length - a.value.length);
+
+  // Redacts file values and structured secrets from a string; returns the text and hit count.
+  const redactText = (text, values) => {
+    const redacted = redact(text, values);
+    const structured = redactStructuredSecrets(redacted.text);
+    return {
+      text: structured.text,
+      count: redacted.count + structured.hits.reduce((total, hit) => total + hit.count, 0),
+    };
+  };
+
+  // Redacts in place inside objects; returns the redacted value.
+  const redactValue = (value, values) => redactStructuredSecretsDeep(redactDeep(value, values).value);
+
+  return { checkToolCall, commandSecretValues, redactText, redactValue };
+};
+
+const textParts = (result) =>
+  Array.isArray(result?.content) ? result.content.filter((part) => part?.type === "text") : [];
+
+// OpenCode 2 calls `setup`; OpenCode 1 (still used on the NAS) calls `server`.
+export default {
+  id: "env-protection",
+  async setup(ctx) {
+    applyProcessEnvOverrides();
+    const guards = createGuards({
+      directory: ctx.location.directory,
+      worktree: ctx.location.project.directory,
+    });
+
+    await ctx.shell.hook("create.before", (event) => {
+      Object.assign(event.env, SHELL_ENV_OVERRIDES);
+    });
+
+    await ctx.tool.hook("execute.before", (event) => {
+      const args = event.input || {};
+      guards.checkToolCall({
+        tool: event.tool,
+        shellTool: "shell",
+        filePath: args.path ?? args.filePath,
+        args,
+      });
+    });
+
+    await ctx.tool.hook("execute.after", (event) => {
+      if (event.status !== "completed" || !event.result) return;
       try {
-        const values = input.tool === "bash" ? protectedPathsInCommand(input.args?.command)
-          .map(resolveEnvPath)
-          .filter(Boolean)
-          .flatMap((filePath) =>
-            protectedFileValues(filePath).map((value) => ({
-              ...value,
-              source: basename(filePath),
-            })),
-          )
-          .filter(({ value, protectedFile }) => protectedFile || isSecretValue(value))
-          .sort((a, b) => b.value.length - a.value.length) : [];
-
+        const values = event.tool === "shell" ? guards.commandSecretValues(event.input?.command) : [];
+        const result = event.result;
         let count = 0;
-        const result = redact(output.output, values);
-        output.output = result.text;
-        count += result.count;
 
-        const title = redact(output.title, values);
-        output.title = title.text;
-        count += title.count;
-
-        if (output.metadata && typeof output.metadata === "object") {
-          const metadata = redactDeep(output.metadata, values);
-          count += metadata.count;
+        for (const part of textParts(result)) {
+          const redacted = guards.redactText(part.text, values);
+          part.text = redacted.text;
+          count += redacted.count;
         }
 
-        const structuredOutput = redactStructuredSecrets(output.output);
-        output.output = structuredOutput.text;
-        count += structuredOutput.hits.reduce((total, hit) => total + hit.count, 0);
-        const structuredTitle = redactStructuredSecrets(output.title);
-        output.title = structuredTitle.text;
-        count += structuredTitle.hits.reduce((total, hit) => total + hit.count, 0);
-        if (output.metadata && typeof output.metadata === "object") {
-          redactStructuredSecretsDeep(output.metadata);
+        for (const key of ["output", "metadata"]) {
+          if (result[key] !== undefined) result[key] = guards.redactValue(result[key], values);
         }
 
         if (count > 0) {
-          output.output =
-            `WARNING: env-protection redacted ${count} secret value(s). ` +
-            "Reference them via the file path or an environment variable, never the literal value.\n" +
-            (output.output || "");
+          const [first] = textParts(result);
+          if (first) first.text = warningFor(count) + first.text;
+          else result.content = [{ type: "text", text: warningFor(count) }, ...(result.content ?? [])];
         }
+        event.result = result;
       } catch {
         // A redaction failure must never prevent the command from completing.
       }
-    },
-    "experimental.chat.messages.transform": async (_input, output) => {
-      if (Array.isArray(output.messages)) redactStructuredSecretsDeep(output.messages);
-    },
-  };
+    });
+
+    const redactRequest = (event) => {
+      if (Array.isArray(event.messages)) redactStructuredSecretsDeep(event.messages);
+    };
+    for (const name of ["context", "compaction", "generate", "title"]) {
+      await ctx.session.hook(name, redactRequest);
+    }
+  },
+  async server({ directory, worktree }) {
+    applyProcessEnvOverrides();
+    const guards = createGuards({ directory, worktree });
+
+    return {
+      "tool.execute.before": async (input, output) => {
+        const args = output.args || {};
+        guards.checkToolCall({ tool: input.tool, shellTool: "bash", filePath: args.filePath, args });
+      },
+      "tool.execute.after": async (input, output) => {
+        try {
+          const values = input.tool === "bash" ? guards.commandSecretValues(input.args?.command) : [];
+          let count = 0;
+
+          const redactedOutput = guards.redactText(output.output, values);
+          output.output = redactedOutput.text;
+          count += redactedOutput.count;
+
+          const redactedTitle = guards.redactText(output.title, values);
+          output.title = redactedTitle.text;
+          count += redactedTitle.count;
+
+          if (output.metadata && typeof output.metadata === "object") {
+            guards.redactValue(output.metadata, values);
+          }
+
+          if (count > 0) output.output = warningFor(count) + (output.output || "");
+        } catch {
+          // A redaction failure must never prevent the command from completing.
+        }
+      },
+      "experimental.chat.messages.transform": async (_input, output) => {
+        if (Array.isArray(output.messages)) redactStructuredSecretsDeep(output.messages);
+      },
+    };
+  },
 };

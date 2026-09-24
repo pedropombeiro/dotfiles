@@ -4,7 +4,7 @@
     "@nm156/opencode-notifier@0.3.1",
     "@nm156/opencode-wakatime@1.4.0",
     "opencode-atuin-history@1.0.1",
-    "opencode-homeassistant@1.0.1"
+    "opencode-homeassistant@1.0.2"
   ],
   // One model for every agent so `oc` can override it inline (OPENCODE_CONFIG_CONTENT);
   // OpenCode 2 ignores inline overrides of per-agent models.

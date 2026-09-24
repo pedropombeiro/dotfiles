@@ -4,11 +4,10 @@
 #
 # The generated completer (cached as ~/.config/zsh/site-functions/_opencode by
 # pre/060-generate-completions.zsh) knows `-s` takes a value but has no idea what
-# the valid session IDs are. OpenCode 2 generates a static zsh completer with
-# `--completions zsh`; OpenCode 1 (still used on the NAS) generates one that
-# delegates to yargs via `completion`. This wraps either one so the word after
-# `-s` offers real sessions (ID as the inserted value, title + timestamp as the
-# description) and every other completion context falls through unchanged.
+# the valid session IDs are (OpenCode generates it with `--completions zsh`).
+# This wraps it so the word after `-s` offers real sessions (ID as the inserted
+# value, title + timestamp as the description) and every other completion
+# context falls through unchanged.
 #
 # fzf-tab (loaded in common-plugins.zsh) turns the resulting `_describe` group
 # into the interactive fzf picker; no fzf call is made here directly, so the
@@ -61,13 +60,7 @@ _opencode_session_matches() {
   # leave a truncated cache that later reads would treat as an empty session list.
   if (( ! $#fresh )); then
     local tmp="${cache}.tmp.$$"
-    # OpenCode 1 needs --pure to skip loading external plugins (~14s vs ~0.6s in
-    # plugin-heavy projects); OpenCode 2 asks its background service and has no
-    # such flag. The loaded completer tells the versions apart without the
-    # ~0.2s cost of `opencode --version`.
-    local -a flags=()
-    (( $+functions[_opencode_yargs_completions] )) && flags=(--pure)
-    if opencode $flags session list -n $OPENCODE_COMPLETE_SESSION_COUNT --format json >$tmp 2>/dev/null \
+    if opencode session list -n $OPENCODE_COMPLETE_SESSION_COUNT --format json >$tmp 2>/dev/null \
       && [[ -s $tmp ]]; then
       mv -f $tmp $cache
     else
@@ -142,8 +135,6 @@ _opencode_complete() {
   # Everything else: hand back to the generated completer.
   if (( $+functions[_opencode_generated] )); then
     _opencode_generated "$@"
-  elif (( $+functions[_opencode_yargs_completions] )); then
-    _opencode_yargs_completions "$@"
   else
     _default
   fi
@@ -151,22 +142,18 @@ _opencode_complete() {
 
 # The generated _opencode is an autoload stub whose body is the whole upstream
 # script, which then registers a completer via compdef. Force-load it and run it
-# once so the real completer exists as a global function, then reclaim the
-# `opencode` binding for the wrapper above:
-# - OpenCode 2's script redefines _opencode (plus one helper per subcommand);
-#   keep a copy as _opencode_generated.
-# - OpenCode 1's script defines _opencode_yargs_completions instead.
-# Deferred to a zinit turbo slot after fzf-tab (wait'0a') so the compdef lands
+# once so the real completer exists as a global function (the script redefines
+# _opencode plus one helper per subcommand), keep a copy as _opencode_generated,
+# then reclaim the `opencode` binding for the wrapper above.
+# Deferred to a zinit turbo slot after fzf-tab (wait'0b') so the compdef lands
 # last and is not overwritten by fzf-tab's own completion setup.
 _opencode_install_completion() {
-  if (( ! $+functions[_opencode_generated] && ! $+functions[_opencode_yargs_completions] )); then
+  if (( ! $+functions[_opencode_generated] )); then
     autoload -Uz +X _opencode 2>/dev/null
     # Runs the else-branch of the upstream script (a compdef call), which is
     # harmless here and leaves the real completer defined globally.
     (( $+functions[_opencode] )) && _opencode 2>/dev/null
-    if (( ! $+functions[_opencode_yargs_completions] && $+functions[_opencode] )); then
-      functions[_opencode_generated]=$functions[_opencode]
-    fi
+    (( $+functions[_opencode] )) && functions[_opencode_generated]=$functions[_opencode]
   fi
 
   compdef _opencode_complete opencode

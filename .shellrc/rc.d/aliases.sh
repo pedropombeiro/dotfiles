@@ -23,14 +23,25 @@ alias docker_ip='docker inspect -f "{{range.NetworkSettings.Networks}}{{.IPAddre
 oc() {
   if [[ -z "$OPENCODE_MODEL" ]]; then
     opencode "$@"
-  elif [[ $(opencode --version 2>/dev/null) == "opencode v"* ]]; then
-    # OpenCode 2 has no interactive --model flag. The inline config overrides the
+    return
+  fi
+
+  case "$1" in
+  run)
+    shift
+    opencode run --model "$OPENCODE_MODEL" "$@"
+    ;;
+  upgrade | update | uninstall | acp | api | debug | auth | mcp | plugin | models | stats | mini | session | service | reload | pair | serve)
+    # --standalone is a root-only flag, so subcommands run unchanged.
+    opencode "$@"
+    ;;
+  *)
+    # The interactive TUI has no --model flag. The inline config overrides the
     # top-level model, and --standalone runs a private server that sees this
     # environment instead of the shared background service's.
     OPENCODE_CONFIG_CONTENT="{\"model\":\"$OPENCODE_MODEL\"}" opencode --standalone "$@"
-  else
-    opencode --model="$OPENCODE_MODEL" "$@"
-  fi
+    ;;
+  esac
 }
 
 # Include custom aliases

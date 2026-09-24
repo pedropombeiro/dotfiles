@@ -16,7 +16,7 @@
   "plugin": [
     "opencode-gitlab-dap@1.19.4",
     "opencode-gitlab-plugin@2.8.2",
-    "@mohak34/opencode-notifier@0.2.8",
+    "@mohak34/opencode-notifier@0.3.0",
     "opencode-atuin-history@0.2.0",
     "opencode-claude-prefill-fix@0.1.0",
     "opencode-forge-session-title@0.3.0",

@@ -5,8 +5,10 @@
 - Shared skills live in `~/.agents/skills`. OpenCode's global `skills` directory
   links there. OpenCode also discovers `~/.claude/skills` automatically.
 - Work-only skills live in `~/.agents/skills.work`. Only
-  `opencode.json##class.Work` adds that directory through `skills.paths` and loads
-  `~/.agents/docs/work.md` through `instructions`.
+  `opencode.json##class.Work` adds that directory through `skills.paths`.
+- `AGENTS.md##template` adds the instruction to read `~/.agents/docs/work.md`
+  only on Work machines, through a `{% if yadm.class == "Work" %}` block. OpenCode 2
+  accepts the `instructions` config field but does not load its entries.
 - Keep work-only skills out of all shared discovery directories. The
   `sync-work-skills.zsh` helper relocates legacy installations, creates available
   work-repository links on Work machines, and runs from the relink workflow.
@@ -32,6 +34,14 @@ Permission `allow` entries do not form an allowlist.
 every machine. It blocks direct access to configured credential files, redacts values read
 through shell commands, detects common structured tokens, scrubs replayed message history,
 and refuses to persist literal secrets through file, shell, or GitLab write tools.
+
+Home-directory path rules belong under `read` and `edit` in `permission`, never as
+top-level keys: a top-level key is an action name, so `"~/.ssh/*": "deny"` there matches
+nothing. OpenCode expands a leading `~` for `read`, `edit`, and `external_directory`
+resources, but not for `shell`, so these rules do not stop `cat ~/.ssh/...`. A `*` in a
+rule also matches nested paths. Reads under `~/.config/opencode/` ask instead of being
+denied, so an agent can inspect config or skills with approval. `opencode run` rejects
+such reads automatically.
 
 Redaction markers are transit-only. The plugin blocks rather than rewrites file-write content
 that contains a structured secret, so it cannot persist a marker over the original value.

@@ -194,7 +194,13 @@
       "*.env.*": "deny",
       "*.env.example": "allow",
       "/share/Container/secrets/**": "deny",
-      "/share/CACHEDEV1_DATA/Container/secrets/**": "deny"
+      "/share/CACHEDEV1_DATA/Container/secrets/**": "deny",
+      "~/.agents/docs/*": "allow",
+      "~/.aws/*": "deny",
+      "~/.config/opencode/*": "ask",
+      "~/.gnupg/*": "deny",
+      "~/.netrc": "deny",
+      "~/.ssh/*": "deny"
     },
     "bash": {
       "*": "ask",
@@ -434,17 +440,18 @@
     "lazy-mcp_list_commands": "allow",
     "lazy-mcp_list_servers": "allow",
     "doom_loop": "ask",
-    "edit": "ask",
+    "edit": {
+      "*": "ask",
+      "~/.aws/*": "deny",
+      "~/.config/opencode/*": "deny",
+      "~/.gnupg/*": "deny",
+      "~/.netrc": "deny",
+      "~/.ssh/*": "deny"
+    },
     "list": "allow",
     "todoread": "allow",
     "webfetch": "ask",
     "websearch": "ask",
-    "~/.agents/docs/*": "allow",
-    "~/.aws/*": "deny",
-    "~/.config/opencode/*": "deny",
-    "~/.gnupg/*": "deny",
-    "~/.netrc": "deny",
-    "~/.ssh/*": "deny",
     "skill": {
       "gh": "allow",
       "google-dev-docs-style": "allow",

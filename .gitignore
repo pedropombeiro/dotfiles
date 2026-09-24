@@ -44,6 +44,7 @@ Thumbs.db
 .config/nvim/lua/core/gdk.lua
 .config/nvim/lua/plugins/image.lua
 .config/nvim/lua/plugins/lsp/mason-tool-installer.lua
+.config/opencode/AGENTS.md
 .config/opencode/cli.json
 .config/opencode/env-protection.json
 .config/opencode/opencode-homeassistant.json
@@ -52,7 +53,6 @@ Thumbs.db
 .config/opencode/plugins/deny-rm-rf.js
 .config/opencode/plugins/remind-issue-state.js
 .config/opencode/plugins/require-gpsup.js
-.config/opencode/tui.json
 .config/pgcli/config
 .config/sesh/sesh.toml
 .config/tmux/tmux.platform.conf

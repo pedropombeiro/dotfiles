@@ -5,6 +5,9 @@ the task needs them.
 
 ## Core Rules
 
+{% if yadm.class == "Work" %}
+- Always read `~/.agents/docs/work.md` for Work-machine instructions.
+{% endif %}
 - For library and framework documentation, use Context7 first.
 - MCP call order is `lazy-mcp_list_commands` -> `lazy-mcp_describe_commands` -> `lazy-mcp_invoke_command`. Never pass a command name to `describe_commands` that `list_commands` did not return; guessing a plausible name is the most common cause of a failed schema lookup.
 - `describe_commands` appears batch-atomic: one invalid name can discard schemas for valid names in the same call. Skip it entirely for commands already invoked successfully in the current session.

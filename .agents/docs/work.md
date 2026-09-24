@@ -1,6 +1,6 @@
 # Work instructions
 
-These instructions load through the Work OpenCode configuration.
+OpenCode's Work-specific global `AGENTS.md` instructs the agent to read this file.
 
 - For GitLab documentation, runbooks, handbook content, or company knowledge,
   use Glean first. Prefer `chat` for synthesis and `search` for raw results.

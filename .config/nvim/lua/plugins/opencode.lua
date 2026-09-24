@@ -265,8 +265,20 @@ return {
     vim.api.nvim_create_autocmd("User", {
       group = vim.api.nvim_create_augroup("opencode_focus", { clear = true }),
       pattern = "OpencodeEvent:session.execution.started",
-      callback = focus_opencode_term,
-      desc = "Focus OpenCode when it starts working on a prompt",
+      callback = function(args)
+        local server = require("opencode.server").connected
+        local session_id = args.data.event.data.sessionID
+        if not server or server.url ~= args.data.url or not session_id then return end
+
+        local directory = vim.fn.getcwd()
+        server
+          :resolve_session()
+          :next(function(session)
+            if vim.fn.getcwd() == directory and session.id == session_id then focus_opencode_term() end
+          end)
+          :catch(function() end)
+      end,
+      desc = "Focus OpenCode when the current project session starts working",
     })
 
     -- Ensure the opencode process is stopped when Neovim exits to avoid zombie processes.

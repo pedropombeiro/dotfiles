@@ -4,25 +4,18 @@
   "skills": {
     "paths": ["~/.agents/skills.work"]
   },
-  "agent": {
-    "plan": {
-      "model": "gitlab/duo-chat-opus-5-5"
-    },
-    "build": {
-      "model": "gitlab/duo-chat-gpt-6-sol"
-    }
-  },
+  // One model for every agent so `oc` can override it inline (OPENCODE_CONFIG_CONTENT);
+  // OpenCode 2 ignores inline overrides of per-agent models.
+  "model": "gitlab/duo-chat-opus-5-5",
   "default_agent": "plan",
-  "plugin": [
+  "plugins": [
     "opencode-gitlab-dap@2.0.4",
     "opencode-gitlab-plugin@3.0.0",
     "@nm156/opencode-notifier@0.3.1",
     "@nm156/opencode-wakatime@1.4.0",
-    "opencode-atuin-history@0.2.0",
-    "opencode-forge-session-title@0.3.0",
-    "opencode-homeassistant@0.7.8",
-    "opencode-terminal-progress@0.5.1",
-    "opencode-tmux-indicator@0.5.0"
+    "opencode-atuin-history@1.0.1",
+    "opencode-forge-session-title@1.0.1",
+    "opencode-homeassistant@1.0.1"
   ],
   "mcp": {
     "lazy-mcp": {
@@ -72,28 +65,20 @@
     },
     "gitlab": {
       "npm": "gitlab-ai-provider@6.18.0",
-      "blacklist": [
-        // Superseded by Fable 5.1, Opus 5.5, and Sonnet 5.
-        "duo-chat-opus-5",
-        "duo-chat-fable-5",
-        "duo-workflow-claude-fable-5",
-        "duo-chat-opus-4",
-        "duo-chat-opus-4-5",
-        "duo-chat-opus-4-6",
-        "duo-chat-opus-4-7",
-        "duo-chat-opus-4-8",
-        "duo-workflow-opus-4-5",
-        "duo-workflow-opus-4-6",
-        "duo-workflow-opus-4-7",
-        "duo-workflow-opus-4-8",
-        "duo-chat-sonnet-4",
-        "duo-chat-sonnet-4-5",
-        "duo-chat-sonnet-4-6",
-        "duo-workflow-sonnet-4-5",
-        "duo-workflow-sonnet-4-6"
-      ],
       "models": {
+        // Superseded by Fable 5.1, Opus 5.5, and Sonnet 5.
+        "duo-chat-opus-4-5": { "status": "deprecated" },
+        "duo-chat-opus-4-6": { "status": "deprecated" },
+        "duo-chat-opus-4-7": { "status": "deprecated" },
+        "duo-workflow-opus-4-5": { "status": "deprecated" },
+        "duo-workflow-opus-4-6": { "status": "deprecated" },
+        "duo-workflow-opus-4-7": { "status": "deprecated" },
+        "duo-chat-sonnet-4-5": { "status": "deprecated" },
+        "duo-chat-sonnet-4-6": { "status": "deprecated" },
+        "duo-workflow-sonnet-4-5": { "status": "deprecated" },
+        "duo-workflow-sonnet-4-6": { "status": "deprecated" },
         "duo-chat-fable-5": {
+          "status": "deprecated",
           "cost": {
             "input": 10, "output": 50, "cache_read": 1, "cache_write": 12.5
           }
@@ -104,6 +89,7 @@
           }
         },
         "duo-chat-opus-5": {
+          "status": "deprecated",
           "cost": {
             "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
           }
@@ -124,16 +110,19 @@
           }
         },
         "duo-chat-opus-4-8": {
+          "status": "deprecated",
           "cost": {
             "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
           }
         },
         "duo-workflow-opus-4-8": {
+          "status": "deprecated",
           "cost": {
             "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
           }
         },
         "duo-workflow-claude-fable-5": {
+          "status": "deprecated",
           "cost": {
             "input": 10, "output": 50, "cache_read": 1, "cache_write": 12.5
           }
@@ -149,11 +138,13 @@
           }
         },
         "duo-chat-sonnet-4": {
+          "status": "deprecated",
           "cost": {
             "input": 3, "output": 15, "cache_read": 0.30, "cache_write": 3.75
           }
         },
         "duo-chat-opus-4": {
+          "status": "deprecated",
           "cost": {
             "input": 15, "output": 75, "cache_read": 1.50, "cache_write": 18.75
           }
@@ -242,10 +233,6 @@
   },
   "share": "disabled",
   "autoupdate": false,
-  "server": {
-    "hostname": "127.0.0.1",
-    "mdns": false
-  },
   "snapshot": false,
   "permission": {
     "*": "ask",

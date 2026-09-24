@@ -44,6 +44,7 @@ Thumbs.db
 .config/nvim/lua/core/gdk.lua
 .config/nvim/lua/plugins/image.lua
 .config/nvim/lua/plugins/lsp/mason-tool-installer.lua
+.config/opencode/cli.json
 .config/opencode/env-protection.json
 .config/opencode/opencode-homeassistant.json
 .config/opencode/opencode-notifier.json

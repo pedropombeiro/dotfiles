@@ -71,11 +71,10 @@ local function tmux_controller(cmd, opts)
   return { start = start, stop = stop, toggle = toggle, focus = focus }
 end
 
--- Derive a unique port per Neovim instance from its PID to avoid conflicts
--- when running multiple sessions in parallel. Maps PID into the range 41000-65535.
-local opencode_port = 41000 + (vim.fn.getpid() % 24535)
-local opencode_cmd = "opencode --port " .. opencode_port
-local opencode_url = "http://localhost:" .. opencode_port
+-- OpenCode 2 runs a shared background service that opencode.nvim discovers
+-- on its own, so the TUI no longer needs a per-instance `--port`.
+local opencode_cmd = "opencode"
+local opencode_resume_cmd = "opencode --continue"
 
 local tmux_server = vim.env.TMUX and tmux_controller(opencode_cmd) or nil
 
@@ -84,47 +83,34 @@ local tmux_server = vim.env.TMUX and tmux_controller(opencode_cmd) or nil
 local opencode_pids = {} -- buffer number -> PID
 
 --- Add the navigation keymaps that opencode.nvim no longer manages.
+--- OpenCode 2 removed the TUI control API, so each keymap sends the TUI's
+--- default binding for the command straight to the terminal job.
 ---@param buf integer
 local function setup_terminal_keymaps(buf)
-  local opts = { buffer = buf }
+  local function send(keys)
+    return function()
+      local job_id = vim.b[buf].terminal_job_id
+      if job_id then vim.api.nvim_chan_send(job_id, keys) end
+    end
+  end
 
-  vim.keymap.set(
-    "n",
-    "<C-u>",
-    function() require("opencode").command("session.half.page.up") end,
-    vim.tbl_extend("force", opts, { desc = "Scroll up half page" })
-  )
-  vim.keymap.set(
-    "n",
-    "<C-d>",
-    function() require("opencode").command("session.half.page.down") end,
-    vim.tbl_extend("force", opts, { desc = "Scroll down half page" })
-  )
-  vim.keymap.set(
-    "n",
-    "gg",
-    function() require("opencode").command("session.first") end,
-    vim.tbl_extend("force", opts, { desc = "Go to first message" })
-  )
-  vim.keymap.set(
-    "n",
-    "G",
-    function() require("opencode").command("session.last") end,
-    vim.tbl_extend("force", opts, { desc = "Go to last message" })
-  )
-  vim.keymap.set(
-    "n",
-    "<Esc>",
-    function() require("opencode").command("session.interrupt") end,
-    vim.tbl_extend("force", opts, { desc = "Interrupt current session" })
-  )
+  local keymaps = {
+    { "<C-u>", "\27\21", "Scroll up half page" }, -- session.half.page.up: ctrl+alt+u
+    { "<C-d>", "\27\4", "Scroll down half page" }, -- session.half.page.down: ctrl+alt+d
+    { "gg", "\7", "Go to first message" }, -- session.first: ctrl+g
+    { "G", "\27\7", "Go to last message" }, -- session.last: ctrl+alt+g
+    { "<Esc>", "\27", "Interrupt current session" }, -- session.interrupt: escape
+  }
+  for _, keymap in ipairs(keymaps) do
+    vim.keymap.set("n", keymap[1], send(keymap[2]), { buffer = buf, desc = keymap[3] })
+  end
 end
 
 --- Find the first snacks opencode terminal matching a predicate.
 --- When no predicate is given, returns any opencode terminal.
 local function find_opencode_term(predicate)
   for _, term in ipairs(Snacks.terminal.list()) do
-    if type(term.cmd) == "string" and term.cmd:match("^opencode ") and (not predicate or predicate(term)) then
+    if type(term.cmd) == "string" and term.cmd:match("^opencode%f[%s%z]") and (not predicate or predicate(term)) then
       return term
     end
   end
@@ -239,11 +225,10 @@ return {
         -- Stop any existing server first to avoid opening a second terminal,
         -- since the resume cmd differs from the regular cmd (different snacks identity).
         stop_opencode()
-        local resume_cmd = "opencode --continue --port " .. opencode_port
         if tmux_server then
-          tmux_server.start(resume_cmd)
+          tmux_server.start(opencode_resume_cmd)
         else
-          Snacks.terminal.open(resume_cmd, snacks_opts())
+          Snacks.terminal.open(opencode_resume_cmd, snacks_opts())
         end
       end,
       desc = "Resume last opencode session",
@@ -273,19 +258,15 @@ return {
     ---@type opencode.Opts
     vim.g.opencode_opts = vim.tbl_deep_extend("force", vim.g.opencode_opts or {}, {
       server = {
-        url = opencode_url,
         start = start_opencode,
       },
     })
 
     vim.api.nvim_create_autocmd("User", {
       group = vim.api.nvim_create_augroup("opencode_focus", { clear = true }),
-      pattern = "OpencodeEvent:tui.command.execute",
-      callback = function(args)
-        local event = args.data.event
-        if event.properties.command == "prompt.submit" then focus_opencode_term() end
-      end,
-      desc = "Focus OpenCode after submitting a prompt",
+      pattern = "OpencodeEvent:session.execution.started",
+      callback = focus_opencode_term,
+      desc = "Focus OpenCode when it starts working on a prompt",
     })
 
     -- Ensure the opencode process is stopped when Neovim exits to avoid zombie processes.

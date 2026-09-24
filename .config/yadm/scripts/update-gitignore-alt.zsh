@@ -29,10 +29,14 @@ if [[ -f "${GITIGNORE}" ]]; then
   if [[ "${content}" == *"${BEGIN_MARKER}"* ]]; then
     local before=${content%%${BEGIN_MARKER}*}
     local after=${content#*${END_MARKER}}
-    # Strip trailing/leading newlines at the seam
-    before=${before%$'\n'}
-    after=${after#$'\n'}
-    printf '%s\n\n%s\n%s\n' "${before}" "${alt_section}" "${after}" >"${GITIGNORE}"
+    # Strip all trailing/leading newlines at the seam so repeated runs are idempotent
+    while [[ "${before}" == *$'\n' ]]; do before=${before%$'\n'}; done
+    while [[ "${after}" == $'\n'* ]]; do after=${after#$'\n'}; done
+    if [[ -n "${after}" ]]; then
+      printf '%s\n\n%s\n\n%s\n' "${before}" "${alt_section}" "${after}" >"${GITIGNORE}"
+    else
+      printf '%s\n\n%s\n' "${before}" "${alt_section}" >"${GITIGNORE}"
+    fi
   else
     printf '\n%s\n' "${alt_section}" >>"${GITIGNORE}"
   fi

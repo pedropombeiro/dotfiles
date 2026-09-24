@@ -27,8 +27,13 @@ yamllint = "latest"
 
 # ── AI tooling ────────────────────────────────────────────────────
 
-# AI coding assistant CLI
-"opencode" = { version = "latest", no_app = true }
+# AI coding assistant CLI. OpenCode 2 ships only through npm (the aqua
+# `anomalyco/opencode` releases stop at 1.x). aube's age gate blocks it because
+# the `@opencode/cli` name was first published on 2026-09-02; it is the official
+# package from the OpenCode install script (https://opencode.ai/v2/install).
+# `allow_builds` lets its postinstall pick the platform binary; without it the
+# `opencode` shim only prints "postinstall script was not run".
+"npm:@opencode/cli" = { version = "latest", allow_low_downloads = true, allow_builds = ["@opencode/cli"] }
 # A CLI tool for tracking token usage
 "npm:tokscale" = "latest"
 

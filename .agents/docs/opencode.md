@@ -58,12 +58,28 @@ OpenCode 2 splits plugins by where they run:
 
 - Server plugins go in `plugins` in `opencode.json`. They run in the background service,
   which may not share the terminal's environment.
-- Terminal (CLI) plugins go in `plugins` in `cli.json`. Anything that talks to the terminal
-  or tmux (`opencode-terminal-progress`, `opencode-tmux-indicator`) belongs here.
+- Terminal (CLI) plugins go in `plugins` in `cli.base.json` (see
+  [Terminal config](#terminal-config)). Anything that talks to the terminal or tmux
+  (`opencode-terminal-progress`, `opencode-tmux-indicator`) belongs here.
 - Local plugins are files in `~/.config/opencode/plugins/` that default-export
   `{ id, setup(ctx) }`. The shell tool is named `shell`, and file tools take `path`.
   Tool hooks also fire for tools called through Code Mode (`execute`), with the inner
   tool's name.
+
+## Terminal config
+
+OpenCode rewrites `~/.config/opencode/cli.json` through a temp file and a rename whenever
+a setting changes in the UI, so a yadm alternate symlink there does not survive. The
+tracked terminal config (keybinds, scroll, CLI plugins) lives in `cli.base.json##default`
+and `cli.base.json##class.Work` instead. `~/.shellrc/rc.d/opencode.sh` exports it as
+`OPENCODE_CLI_CONFIG_CONTENT`, which overrides `cli.json` and is never written back.
+
+- `cli.json` is untracked and belongs to OpenCode; it holds UI choices such as theme and
+  sidebar. Do not track it or link it.
+- Keys set in `cli.base.json` win over the UI, and arrays such as `plugins` replace the
+  `cli.json` value instead of merging. Put settings there only when they must be the same
+  on every machine.
+- Open a new shell after editing `cli.base.json` so the environment variable picks it up.
 
 ## Models
 
@@ -76,18 +92,18 @@ the client's environment.
 
 ## Plugin Version Pinning
 
-npm plugins in `opencode.json` and `cli.json` are pinned to exact versions, not `@latest`.
+npm plugins in `opencode.json` and `cli.base.json` are pinned to exact versions, not `@latest`.
 
 OpenCode installs each entry into `~/.cache/opencode/npm/` and keeps exact versions
 pinned. Unpinned entries are only checked for updates; the installed copy does not change
 until you run `opencode plugin update`. Pinning makes upgrades explicit and reviewable.
 
 Renovate keeps the pins current via the `opencode npm plugins pinned in opencode.json
-(server) and cli.json (terminal)` custom manager in `~/.renovaterc.json` (grouped as
+(server) and cli.base.json (terminal)` custom manager in `~/.renovaterc.json` (grouped as
 `opencode plugins`).
 
-Both alternates of each file must be updated together — `opencode.json##default` and
-`opencode.json##class.Work` (and the matching `cli.json` pair) are self-contained and not
+Both alternates of each file must be updated together: `opencode.json##default` and
+`opencode.json##class.Work` (and the matching `cli.base.json` pair) are self-contained and not
 additive.
 
 To update an unpinned entry, run `opencode plugin update <package>`.

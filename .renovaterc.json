@@ -101,11 +101,11 @@
       "groupName": "mise shared opencode"
     },
     {
-      "description": "Group opencode npm plugin updates (after the mise opencode rule so it wins for opencode.json and cli.json)",
+      "description": "Group opencode npm plugin updates (after the mise opencode rule so it wins for opencode.json and cli.base.json)",
       "matchManagers": ["custom.regex"],
       "matchFileNames": [
         ".config/opencode/opencode.json##**",
-        ".config/opencode/cli.json##**"
+        ".config/opencode/cli.base.json##**"
       ],
       "groupName": "opencode plugins",
       "groupSlug": "opencode-plugins"
@@ -158,11 +158,11 @@
       "extractVersionTemplate": "^v?(?<version>.*)$"
     },
     {
-      "description": "opencode npm plugins pinned in opencode.json (server) and cli.json (terminal)",
+      "description": "opencode npm plugins pinned in opencode.json (server) and cli.base.json (terminal)",
       "customType": "regex",
       "managerFilePatterns": [
         "/(^|/)\\.config/opencode/opencode\\.json(##[^/]+)?$/",
-        "/(^|/)\\.config/opencode/cli\\.json(##[^/]+)?$/"
+        "/(^|/)\\.config/opencode/cli\\.base\\.json(##[^/]+)?$/"
       ],
       "matchStrings": [
         "\"(?<depName>(@[^\"/@]+/)?[^\"@/]+)@(?<currentValue>\\d+\\.\\d+\\.\\d+[^\"]*)\""

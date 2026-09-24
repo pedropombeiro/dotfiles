@@ -27,6 +27,16 @@ if [[ -L ${HOME}/.config/opencode/skills/skills &&
 fi
 ln -sfn "${HOME}/.agents/skills" "${HOME}/.config/opencode/skills"
 
+# yadm only prunes links whose target still has tracked alternates, so links to
+# the removed tui.json and cli.json alternates would dangle forever. cli.json is
+# now a regular file that OpenCode owns; only remove it while it is a symlink.
+for opencode_orphan in tui.json cli.json; do
+  if [[ -L ${HOME}/.config/opencode/${opencode_orphan} ]]; then
+    rm -f "${HOME}/.config/opencode/${opencode_orphan}"
+  fi
+done
+unset opencode_orphan
+
 printf "${YELLOW}%s${NC}\n" "Linking run-in-tmux-pane..."
 mkdir -p "${HOME}/.local/bin"
 ln -sfn "${HOME}/.agents/skills/run-in-tmux-pane/scripts/run-in-tmux-pane" "${HOME}/.local/bin/run-in-tmux-pane"

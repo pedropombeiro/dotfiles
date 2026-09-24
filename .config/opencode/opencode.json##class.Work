@@ -19,7 +19,6 @@
     "@nm156/opencode-notifier@0.3.1",
     "@nm156/opencode-wakatime@1.4.0",
     "opencode-atuin-history@0.2.0",
-    "opencode-claude-prefill-fix@0.1.0",
     "opencode-forge-session-title@0.3.0",
     "opencode-homeassistant@0.7.8",
     "opencode-terminal-progress@0.5.1",

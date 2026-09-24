@@ -90,6 +90,11 @@ Other subcommands run unchanged because `--standalone` is a root-only flag. Inli
 only overrides the top-level `model`, not per-agent models, and only a private server sees
 the client's environment.
 
+Set the default model in `opencode.json`, not in `$OPENCODE_MODEL`. When the variable is set,
+every `oc` launch uses a private server instead of the shared service, and it diverges from
+tools that run plain `opencode`, such as `opencode.nvim`. Reserve `$OPENCODE_MODEL` for
+per-project overrides in a project's mise config.
+
 ## Plugin Version Pinning
 
 npm plugins in `opencode.json` and `cli.base.json` are pinned to exact versions, not `@latest`.

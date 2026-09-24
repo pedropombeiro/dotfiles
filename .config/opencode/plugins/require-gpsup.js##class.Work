@@ -19,18 +19,18 @@ const commandDirectory = (command, workdir, fallback) => {
   return cd ? path.resolve(base, unquote(cd)) : base
 }
 
-const remoteUrl = (remote, cwd) => {
-  if (remote.includes(":") || remote.includes("/")) return remote
+const remoteUrls = (remote, cwd) => {
+  if (remote.includes(":") || remote.includes("/")) return [remote]
   try {
-    return execFileSync("git", ["remote", "get-url", remote], {
+    return execFileSync("git", ["remote", "get-url", "--push", "--all", remote], {
       cwd,
       encoding: "utf8",
       stdio: ["ignore", "pipe", "ignore"],
       timeout: 5000,
-    }).trim()
+    }).trim().split(/\r?\n/)
   } catch {
     // Unknown remote or not a repository: fail closed and keep enforcing gpsup.
-    return undefined
+    return [undefined]
   }
 }
 
@@ -41,8 +41,8 @@ const check = (command = "", workdir, fallback) => {
     return
   }
 
-  const url = remoteUrl(pushRemote(command), commandDirectory(command, workdir, fallback))
-  if (!isGitLabRemote(url)) {
+  const urls = remoteUrls(pushRemote(command), commandDirectory(command, workdir, fallback))
+  if (!urls.some(isGitLabRemote)) {
     return
   }
 

@@ -1,4 +1,5 @@
 {
+  "requestTimeout": 120000,
   "servers": [
     {
       "name": "gitlab",

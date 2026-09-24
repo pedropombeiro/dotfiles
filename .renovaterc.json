@@ -111,12 +111,6 @@
       "groupSlug": "opencode-plugins"
     },
     {
-      "description": "The NAS stays on OpenCode 1, so keep its opencode-plugins pins on the 0.x line (the opencode-v1 dist-tag); 1.x releases need OpenCode 2.",
-      "matchFileNames": [".config/opencode/opencode.json##distro.qts"],
-      "matchSourceUrls": ["https://github.com/pedropombeiro/opencode-plugins"],
-      "allowedVersions": "<1"
-    },
-    {
       "description": "Skip the security:minimumReleaseAgeNpm 3-day delay for opencode plugins published from pedropombeiro/opencode-plugins. The delay protects against third-party malware and unpublished versions; it does not apply to packages I author and release. Matching the source URL includes new monorepo packages automatically while third-party opencode plugins retain the delay.",
       "matchDatasources": ["npm"],
       "matchSourceUrls": ["https://github.com/pedropombeiro/opencode-plugins"],

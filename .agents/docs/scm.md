@@ -156,6 +156,10 @@ labels via GitLab push options — do not use `glab mr create` or manual push op
 For a temporary remote branch used only by server-side tests, where no MR should be
 created yet, use a direct `git push --set-upstream origin <branch>` instead of `gpsup`.
 
+The `require-gpsup` OpenCode plugin blocks `git push -u`/`--set-upstream` only when the
+target remote resolves to `gitlab.com`, or when the remote can't be resolved. Pushes to
+other forges, such as GitHub, use a plain `git push --set-upstream origin <branch>`.
+
 `gpsup` is a zsh autoloaded function — run it via
 [`run-in-tmux-pane`](tmux.md#running-commands-in-a-temporary-tmux-pane) (see the
 commands table there for the required timeout). Pass extra `git push` arguments

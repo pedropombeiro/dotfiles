@@ -14,8 +14,8 @@
   },
   "default_agent": "plan",
   "plugin": [
-    "opencode-gitlab-dap@1.19.4",
-    "opencode-gitlab-plugin@2.8.2",
+    "opencode-gitlab-dap@2.0.4",
+    "opencode-gitlab-plugin@3.0.0",
     "@nm156/opencode-notifier@0.3.1",
     "@nm156/opencode-wakatime@1.4.0",
     "opencode-atuin-history@0.2.0",

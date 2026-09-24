@@ -4,10 +4,7 @@ set -eu
 
 class=$(yadm config local.class || true)
 work_dir="${HOME}/.agents/skills.work"
-typeset -a work_skills=(
-  caproni clickhouse-best-practices fpf-report gitlab-babysit-mr
-  gitlab-pipeline-watch glab-glql orbit incident
-)
+source "${0:A:h}/work-skills.zsh"
 
 mkdir -p "${work_dir}"
 

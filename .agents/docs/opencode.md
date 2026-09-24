@@ -10,6 +10,8 @@
 - Keep work-only skills out of all shared discovery directories. The
   `sync-work-skills.zsh` helper relocates legacy installations, creates available
   work-repository links on Work machines, and runs from the relink workflow.
+- `~/.config/yadm/scripts/work-skills.zsh` is the single list of work-only skill
+  names, shared by `sync-work-skills.zsh` and the `run-checks` lock-file check.
 - Use `~/.config/yadm/scripts/sync-work-skills.zsh --update` for upstream skill
   updates. It skips work-only updates on personal machines and relocates snapshots
   recreated by the installer. The ClickHouse snapshot and its lock entry remain

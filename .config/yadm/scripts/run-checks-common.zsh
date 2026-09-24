@@ -222,7 +222,8 @@ function check_agent_doc_links() {
 }
 
 # A vendored skill removed from disk without updating .skill-lock.json gets
-# silently reinstalled on the next skill update.
+# silently reinstalled on the next skill update. Work-only skills live in
+# ~/.agents/skills.work and are expected to be absent on non-Work machines.
 function check_skill_lock_orphans() {
   print_op_stay "Checking .skill-lock.json entries have directories"
 
@@ -232,10 +233,20 @@ function check_skill_lock_orphans() {
     return
   fi
 
+  source "${YADM_SCRIPTS}/work-skills.zsh"
+  local class=$(yadm config local.class 2>/dev/null)
+
   local -a orphans
-  local s
+  local s dir
   for s in ${(f)"$(jq -r '.skills | keys[]' "$lock" 2>/dev/null)"}; do
-    [[ -n "$s" && ! -d "$HOME/.agents/skills/$s" ]] && orphans+=("$s")
+    [[ -z "$s" ]] && continue
+    if (( ${work_skills[(Ie)$s]} )); then
+      [[ "$class" == Work ]] || continue
+      dir="$HOME/.agents/skills.work/$s"
+    else
+      dir="$HOME/.agents/skills/$s"
+    fi
+    [[ -d "$dir" ]] || orphans+=("$s")
   done
 
   # The reverse (a directory with no lock entry) is normal: hand-authored

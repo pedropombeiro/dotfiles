@@ -22,6 +22,7 @@ const KEYWORD_SECRET_PATTERN =
 const EXPOSURE_TOOLS = new Set([
   "write",
   "edit",
+  "patch",
   "apply_patch",
   "gitlab_create_note",
   "gitlab_create_discussion",
@@ -291,6 +292,15 @@ const createGuards = ({ directory, worktree }) => {
     if (["read", "edit", "write", "patch", "apply_patch"].includes(tool)) {
       if (isProtectedFile(filePath)) {
         throw new Error(ERROR_MSG);
+      }
+    }
+
+    if (tool === "patch" || tool === "apply_patch") {
+      const patch = args.patchText ?? args.patch ?? "";
+      for (const match of patch.matchAll(/^\*\*\* (?:Add File|Update File|Delete File|Move to): (.+)\r?$/gm)) {
+        if (isProtectedFile(resolve(directory, match[1].trim()))) {
+          throw new Error(ERROR_MSG);
+        }
       }
     }
 

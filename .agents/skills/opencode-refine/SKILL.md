@@ -23,24 +23,27 @@ Use `opencode run` as a fast feedback loop to test and refine prompts, system in
 ## Core Command
 
 ```bash
-opencode run '<prompt>'
+opencode run --standalone '<prompt>'
 ```
 
 Runs a single non-interactive agent session. The agent executes, prints its response, and exits. No TUI, no interactive approval.
 
+`--standalone` starts a private server for the run. Without it, `opencode run` talks to the shared background service, which caches configuration until `opencode service restart`, so config and plugin edits would not take effect.
+
 **Important:** Make prompts self-contained and unambiguous. If the agent decides it needs to ask a clarifying question, `opencode run` will hang (see [Known Limitations](#known-limitations)).
 
-**Prerequisite:** Prompts that invoke shell commands (e.g. "run ls -al") require `bash` permission set to `"allow"` in your `opencode.json`. If set to `"ask"`, they will be auto-rejected in non-interactive mode.
+**Prerequisite:** Prompts that invoke shell commands (e.g. "run ls -al") require the shell permission (`bash` in V1-style config, `shell` in V2 `permissions`) to resolve to `allow`. If it resolves to `ask`, the request is auto-rejected in non-interactive mode unless you pass `--auto`, which approves everything that is not explicitly denied.
 
 ## Useful Flags
 
 | Flag | Purpose |
 |------|---------|
 | `-m <model>` | Override model (e.g. `-m gitlab/duo-chat-gpt-5-4-nano` for fast/cheap iterations) |
-| `--print-logs` | Show debug logs on stderr (permission checks, plugin hooks, config resolution) |
+| `--standalone` | Use a private server that reads fresh config (see Core Command) |
+| `--print-logs` | Show debug logs on stderr (permission checks, plugin hooks, config resolution); server logs need `--standalone` |
 | `-f <file> --` | Attach a file as context — **requires `--` separator before the prompt** |
 | `--format json` | Machine-readable event stream for scripting |
-| `--dir <path>` | Run the session in a specific directory (inherits that directory's config) |
+| `--auto` | Approve permission requests that are not explicitly denied |
 | `--continue` | Continue the last session (multi-turn refinement) |
 | `--session <id>` | Continue a specific session by ID |
 | `--title <name>` | Give the session a human-readable name |
@@ -50,7 +53,7 @@ Runs a single non-interactive agent session. The agent executes, prints its resp
 1. Write a self-contained prompt that exercises the behavior you want to refine
 2. Run `opencode run`, observe the result, and iterate quickly
 3. Use `--print-logs` when the issue is config, permissions, or plugin loading
-4. Use `--dir` when you need to validate repo-specific config behavior
+4. Run from the repository (`cd <repo> && opencode run --standalone ...`) when you need to validate repo-specific config behavior
 
 See `references/EXAMPLES.md` for concrete commands and patterns.
 
@@ -96,7 +99,7 @@ Without the `--`, the CLI parser treats the prompt as a second file path and err
 ## Tips
 
 - **Keep prompts self-contained**: Avoid vague prompts that might cause the agent to ask clarifying questions — that will hang the process (see Known Limitations).
-- **Config changes are instant**: No restart needed. Each `opencode run` invocation reads fresh config.
+- **Config changes need `--standalone`**: Each `opencode run --standalone` invocation reads fresh config. Plain `opencode run` reuses the background service's cached config.
 - **Cheap models for iteration**: Use `-m gitlab/duo-chat-gpt-5-4-nano` when testing infrastructure (permissions, plugins). Switch to your primary model for testing prompt/tone quality.
 - **Stderr for logs, stdout for output**: `--print-logs` writes to stderr, so you can `2>debug.log` and still see the agent's response on stdout.
 - **Stdin piping**: `echo "prompt" | opencode run` works — useful for multi-line prompts or scripted input.

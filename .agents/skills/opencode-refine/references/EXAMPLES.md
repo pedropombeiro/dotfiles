@@ -6,14 +6,16 @@ Use this reference for concrete `opencode run` testing patterns.
 
 ```bash
 # Edit the config, skill, or prompt
-opencode run 'your test prompt'
-opencode run -m gitlab/duo-chat-gpt-5-4-nano 'your test prompt'
+opencode run --standalone 'your test prompt'
+opencode run --standalone -m gitlab/duo-chat-gpt-5-4-nano 'your test prompt'
 ```
 
 ## Debug Config Loading
 
+Server logs only reach `--print-logs` with `--standalone`.
+
 ```bash
-opencode run --print-logs 'your test prompt' 2>debug.log
+opencode run --standalone --print-logs 'your test prompt' 2>debug.log
 ```
 
 Review debug logs for:
@@ -26,7 +28,7 @@ Review debug logs for:
 ## Test Project-Specific Config
 
 ```bash
-opencode run --dir ~/workspace/my-project 'run git status'
+(cd ~/workspace/my-project && opencode run --standalone 'run git status')
 ```
 
 ## Multi-Turn Refinement

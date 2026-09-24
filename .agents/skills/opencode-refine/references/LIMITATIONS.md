@@ -18,10 +18,10 @@ gtimeout 30 opencode run 'your prompt' || echo "Timed out — agent may have tri
 
 ## Permissions Depend on `opencode.json`
 
-The behavior of shell-invoking prompts depends on your actual `bash` permission configuration.
+The behavior of shell-invoking prompts depends on your actual shell permission configuration (`bash` in V1-style config, `shell` in V2 `permissions`).
 
 ```bash
-cat ~/.config/opencode/opencode.json | python3 -m json.tool
+opencode debug config | jq '.[].info.permissions'
 ```
 
 ## Config File Locations

@@ -11,7 +11,7 @@ metadata:
 
 # OpenCode Refine
 
-Use `opencode run` as a fast feedback loop to test and refine prompts, system instructions, skills, and agent behavior — without starting interactive sessions.
+Use `opencode run` as a fast feedback loop to test and refine prompts, system instructions, skills, and agent behavior without starting interactive sessions.
 
 ## When to Use
 
@@ -28,7 +28,7 @@ opencode run --standalone '<prompt>'
 
 Runs a single non-interactive agent session. The agent executes, prints its response, and exits. No TUI, no interactive approval.
 
-`--standalone` starts a private server for the run. Without it, `opencode run` talks to the shared background service, which caches configuration until `opencode service restart`, so config and plugin edits would not take effect.
+`--standalone` starts a private server for the run. Without it, `opencode run` talks to the shared background service. That service reloads watched config directories on its own, but it does not see your shell environment, and edits to unwatched plugin dependencies only apply after `opencode service restart`.
 
 **Important:** Make prompts self-contained and unambiguous. If the agent decides it needs to ask a clarifying question, `opencode run` will hang (see [Known Limitations](#known-limitations)).
 
@@ -41,7 +41,7 @@ Runs a single non-interactive agent session. The agent executes, prints its resp
 | `-m <model>` | Override model (e.g. `-m gitlab/duo-chat-gpt-5-4-nano` for fast/cheap iterations) |
 | `--standalone` | Use a private server that reads fresh config (see Core Command) |
 | `--print-logs` | Show debug logs on stderr (permission checks, plugin hooks, config resolution); server logs need `--standalone` |
-| `-f <file> --` | Attach a file as context — **requires `--` separator before the prompt** |
+| `-f <file>` | Attach a file as context (repeatable) |
 | `--format json` | Machine-readable event stream for scripting |
 | `--auto` | Approve permission requests that are not explicitly denied |
 | `--continue` | Continue the last session (multi-turn refinement) |
@@ -70,39 +70,36 @@ See `references/EXAMPLES.md` for concrete examples covering system-prompt refine
 
 ## Example: Nested opencode run
 
-Agents can invoke `opencode run` inside `opencode run` via the `bash` tool:
+Agents can invoke `opencode run` inside `opencode run` via the `shell` tool:
 
 ```bash
-opencode run 'use opencode run to test if date works: opencode run "run date and tell me the time"'
+opencode run --standalone 'use opencode run to test if date works: opencode run --standalone "run date and tell me the time"'
 ```
 
 **What happens:**
-- The inner `opencode run` is a subprocess called via the bash tool
+- The inner `opencode run` is a subprocess called via the shell tool
 - Each invocation starts a fresh session (no state shared)
 - Both sessions use the same `opencode.json`
-- Inner session output appears in the outer session's bash tool block
+- Inner session output appears in the outer session's shell tool block
 
-**Gotcha:** If the inner prompt triggers the `question` tool, the inner session will hang — and the outer session's bash tool will block waiting for it. Keep inner prompts self-contained.
+**Gotcha:** If the inner prompt triggers the `question` tool, the inner session hangs, and the outer session's shell tool will block waiting for it. Keep inner prompts self-contained.
 
 ## Example: Attaching Files
 
 ```bash
-# IMPORTANT: requires '--' separator before the prompt
-opencode run -f /path/to/file.md -- 'summarize this file'
+opencode run -f /path/to/file.md 'summarize this file'
 
 # Multiple files
-opencode run -f file1.md -f file2.md -- 'compare these files'
+opencode run -f file1.md -f file2.md 'compare these files'
 ```
-
-Without the `--`, the CLI parser treats the prompt as a second file path and errors.
 
 ## Tips
 
-- **Keep prompts self-contained**: Avoid vague prompts that might cause the agent to ask clarifying questions — that will hang the process (see Known Limitations).
-- **Config changes need `--standalone`**: Each `opencode run --standalone` invocation reads fresh config. Plain `opencode run` reuses the background service's cached config.
+- **Keep prompts self-contained**: Avoid vague prompts that might cause the agent to ask clarifying questions, which hangs the process (see Known Limitations).
+- **Use `--standalone` for isolated runs**: each `opencode run --standalone` invocation starts its own server with your current environment and config. Plain `opencode run` goes through the shared background service.
 - **Cheap models for iteration**: Use `-m gitlab/duo-chat-gpt-5-4-nano` when testing infrastructure (permissions, plugins). Switch to your primary model for testing prompt/tone quality.
 - **Stderr for logs, stdout for output**: `--print-logs` writes to stderr, so you can `2>debug.log` and still see the agent's response on stdout.
-- **Stdin piping**: `echo "prompt" | opencode run` works — useful for multi-line prompts or scripted input.
+- **Stdin piping**: `echo "prompt" | opencode run` works, which is useful for multi-line prompts or scripted input.
 
 ## Known Limitations
 

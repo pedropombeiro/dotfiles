@@ -15,7 +15,7 @@
     "@nm156/opencode-wakatime@1.4.0",
     "opencode-atuin-history@1.0.1",
     "opencode-forge-session-title@1.0.1",
-    "opencode-homeassistant@1.0.1"
+    "opencode-homeassistant@1.0.2"
   ],
   "mcp": {
     "lazy-mcp": {

@@ -53,19 +53,11 @@ const check = (command = "") => {
   )
 }
 
-// OpenCode 2 calls `setup`; OpenCode 1 (still used on the NAS) calls `server`.
 export default {
   id: "no-short-gitlab-refs",
   async setup(ctx) {
     await ctx.tool.hook("execute.before", (event) => {
       if (event.tool === "shell") check(event.input?.command)
     })
-  },
-  async server() {
-    return {
-      "tool.execute.before": async (input, output) => {
-        if (input.tool === "bash") check(output?.args?.command)
-      },
-    }
   },
 }

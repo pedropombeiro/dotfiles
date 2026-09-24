@@ -115,14 +115,12 @@ iterm2_progress -i
 # because zsh evaluates command-prefix assignments left-to-right.
 mise_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/mise"
 mise_data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/mise"
-# OpenCode 2: --standalone runs a private server, so the isolated XDG dirs never
-# start a second background service that would compete for the shared service
-# port. OpenCode 1 (still used on the NAS) runs in-process; --pure skips plugins.
-case "$(opencode --version 2>/dev/null)" in
-"opencode v"*) opencode_run_mode=--standalone ;;
-*) opencode_run_mode=--pure ;;
-esac
-msg=$(OPENCODE_TERMINAL_PROGRESS=0 XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" MISE_STATE_DIR="$mise_state_dir" MISE_DATA_DIR="$mise_data_dir" opencode run "$opencode_run_mode" -m "$model" --agent build "$prompt" -f "$statusfile" -f "$tmpfile")
+# --standalone runs a private server, so the isolated XDG dirs never start a
+# second background service that would compete for the shared service port.
+# The inline config disables every non-built-in plugin (`-*`, then `opencode.*`
+# re-enables the built-ins, which include the providers), so a commit message
+# does not load the GitLab, notifier, WakaTime, and local guard plugins.
+msg=$(OPENCODE_TERMINAL_PROGRESS=0 OPENCODE_CONFIG_CONTENT='{"plugins":["-*","opencode.*"]}' XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" MISE_STATE_DIR="$mise_state_dir" MISE_DATA_DIR="$mise_data_dir" opencode run --standalone -m "$model" --agent build "$prompt" -f "$statusfile" -f "$tmpfile")
 iterm2_progress -c
 rm -rf "$opencode_commit_data/opencode/log"
 

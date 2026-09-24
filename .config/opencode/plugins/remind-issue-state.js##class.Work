@@ -62,14 +62,14 @@ const createReminder = () => {
   // while a second, genuinely different MR still gets its own reminder.
   const reminded = new Set()
 
-  return ({ sessionID, tool, shellTool, command, text }) => {
+  return ({ sessionID, tool, command, text }) => {
     if (process.env.OPENCODE_SKIP_ISSUE_STATE_REMINDER === "1") {
       return false
     }
 
     const isMrTool = MR_CREATION_TOOLS.has(tool)
 
-    if (tool !== shellTool && !isMrTool) {
+    if (tool !== "shell" && !isMrTool) {
       return false
     }
 
@@ -94,7 +94,6 @@ const createReminder = () => {
   }
 }
 
-// OpenCode 2 calls `setup`; OpenCode 1 (still used on the NAS) calls `server`.
 export default {
   id: "remind-issue-state",
   async setup(ctx) {
@@ -108,7 +107,6 @@ export default {
       const remind = shouldRemind({
         sessionID: event.sessionID,
         tool: event.tool,
-        shellTool: "shell",
         command: event.input?.command,
         text: resultText(event.result),
       })
@@ -120,24 +118,5 @@ export default {
         }
       }
     })
-  },
-  async server() {
-    const shouldRemind = createReminder()
-
-    return {
-      "tool.execute.after": async (input, output) => {
-        const remind = shouldRemind({
-          sessionID: input.sessionID,
-          tool: input.tool,
-          shellTool: "bash",
-          command: input.args?.command,
-          text: `${output.output ?? ""}\n${output.title ?? ""}`,
-        })
-
-        if (remind) {
-          output.output = `${output.output ?? ""}\n${REMINDER}`
-        }
-      },
-    }
   },
 }

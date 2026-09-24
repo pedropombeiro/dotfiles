@@ -286,8 +286,8 @@ const createGuards = ({ directory, worktree }) => {
   };
 
   // Throws when a tool call would read a protected file or expose a literal secret.
-  // `filePath` is the tool's file argument, which V1 calls `filePath` and V2 calls `path`.
-  const checkToolCall = ({ tool, shellTool, filePath, args }) => {
+  // `filePath` is the tool's file argument (`path` on the OpenCode 2 file tools).
+  const checkToolCall = ({ tool, filePath, args }) => {
     if (["read", "edit", "write", "patch", "apply_patch"].includes(tool)) {
       if (isProtectedFile(filePath)) {
         throw new Error(ERROR_MSG);
@@ -306,7 +306,7 @@ const createGuards = ({ directory, worktree }) => {
       }
     }
 
-    const shellExposure = tool === shellTool && SHELL_EXPOSURE_PATTERN.test(args.command || "");
+    const shellExposure = tool === "shell" && SHELL_EXPOSURE_PATTERN.test(args.command || "");
     if ((EXPOSURE_TOOLS.has(tool) || shellExposure) && containsHighConfidenceSecret(args)) {
       throw new Error(EXPOSURE_ERROR_MSG);
     }
@@ -345,7 +345,6 @@ const createGuards = ({ directory, worktree }) => {
 const textParts = (result) =>
   Array.isArray(result?.content) ? result.content.filter((part) => part?.type === "text") : [];
 
-// OpenCode 2 calls `setup`; OpenCode 1 (still used on the NAS) calls `server`.
 export default {
   id: "env-protection",
   async setup(ctx) {
@@ -363,7 +362,6 @@ export default {
       const args = event.input || {};
       guards.checkToolCall({
         tool: event.tool,
-        shellTool: "shell",
         filePath: args.path ?? args.filePath,
         args,
       });
@@ -403,41 +401,5 @@ export default {
     for (const name of ["context", "compaction", "generate", "title"]) {
       await ctx.session.hook(name, redactRequest);
     }
-  },
-  async server({ directory, worktree }) {
-    applyProcessEnvOverrides();
-    const guards = createGuards({ directory, worktree });
-
-    return {
-      "tool.execute.before": async (input, output) => {
-        const args = output.args || {};
-        guards.checkToolCall({ tool: input.tool, shellTool: "bash", filePath: args.filePath, args });
-      },
-      "tool.execute.after": async (input, output) => {
-        try {
-          const values = input.tool === "bash" ? guards.commandSecretValues(input.args?.command) : [];
-          let count = 0;
-
-          const redactedOutput = guards.redactText(output.output, values);
-          output.output = redactedOutput.text;
-          count += redactedOutput.count;
-
-          const redactedTitle = guards.redactText(output.title, values);
-          output.title = redactedTitle.text;
-          count += redactedTitle.count;
-
-          if (output.metadata && typeof output.metadata === "object") {
-            guards.redactValue(output.metadata, values);
-          }
-
-          if (count > 0) output.output = warningFor(count) + (output.output || "");
-        } catch {
-          // A redaction failure must never prevent the command from completing.
-        }
-      },
-      "experimental.chat.messages.transform": async (_input, output) => {
-        if (Array.isArray(output.messages)) redactStructuredSecretsDeep(output.messages);
-      },
-    };
   },
 };

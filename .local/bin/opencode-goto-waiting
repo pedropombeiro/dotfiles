@@ -27,7 +27,10 @@ process_tree_has_opencode() {
     { parent[$1] = $2; name[$1] = $3 }
     END {
       for (pid in name) {
-        if (name[pid] != "opencode") continue
+        # OpenCode 2 runs as `.../bin/opencode.exe` behind the npm `opencode` shim.
+        base = name[pid]
+        sub(/.*\//, "", base)
+        if (base != "opencode" && base != "opencode.exe") continue
         current = pid
         while (current != root && current in parent) current = parent[current]
         if (current == root) exit 0
@@ -43,7 +46,7 @@ opencode_pane_in_window() {
   local pane_id pane_pid command
 
   while IFS='|' read -r pane_id pane_pid command; do
-    if [[ $command == "opencode" ]] || process_tree_has_opencode "$pane_pid"; then
+    if [[ $command == opencode || $command == opencode.exe ]] || process_tree_has_opencode "$pane_pid"; then
       printf '%s\n' "$pane_id"
       return 0
     fi

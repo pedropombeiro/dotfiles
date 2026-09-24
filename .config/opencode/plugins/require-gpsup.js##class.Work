@@ -1,7 +1,48 @@
-const GIT_PUSH_SET_UPSTREAM_PATTERN = /(^|[;&|]\s*)\s*git\s+push\s+.*(-u\b|--set-upstream\b)/
+import { execFileSync } from "node:child_process"
+import path from "node:path"
 
-const check = (command = "") => {
+const GIT_PUSH_SET_UPSTREAM_PATTERN = /(^|[;&|]\s*)\s*git\s+push\s+.*(-u\b|--set-upstream\b)/
+const GIT_PUSH_ARGS_PATTERN = /(?:^|[;&|]\s*)\s*git\s+push\s+([^;&|]*)/
+const CD_PREFIX_PATTERN = /^\s*cd\s+("[^"]+"|'[^']+'|\S+)\s*&&/
+
+const unquote = (value) => value.replace(/^(["'])(.*)\1$/, "$2")
+
+// The first positional argument of `git push` is the remote name or URL.
+const pushRemote = (command) => {
+  const args = command.match(GIT_PUSH_ARGS_PATTERN)?.[1]?.trim().split(/\s+/) ?? []
+  return args.find((arg) => arg && !arg.startsWith("-")) ?? "origin"
+}
+
+const commandDirectory = (command, workdir, fallback) => {
+  const base = path.resolve(fallback ?? process.cwd(), workdir ?? ".")
+  const cd = command.match(CD_PREFIX_PATTERN)?.[1]
+  return cd ? path.resolve(base, unquote(cd)) : base
+}
+
+const remoteUrl = (remote, cwd) => {
+  if (remote.includes(":") || remote.includes("/")) return remote
+  try {
+    return execFileSync("git", ["remote", "get-url", remote], {
+      cwd,
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+      timeout: 5000,
+    }).trim()
+  } catch {
+    // Unknown remote or not a repository: fail closed and keep enforcing gpsup.
+    return undefined
+  }
+}
+
+const isGitLabRemote = (url) => url === undefined || /(^|[@/.])gitlab\.com[:/]/.test(url)
+
+const check = (command = "", workdir, fallback) => {
   if (!GIT_PUSH_SET_UPSTREAM_PATTERN.test(command)) {
+    return
+  }
+
+  const url = remoteUrl(pushRemote(command), commandDirectory(command, workdir, fallback))
+  if (!isGitLabRemote(url)) {
     return
   }
 
@@ -13,19 +54,13 @@ const check = (command = "") => {
   )
 }
 
-// OpenCode 2 calls `setup`; OpenCode 1 (still used on the NAS) calls `server`.
 export default {
   id: "require-gpsup",
   async setup(ctx) {
     await ctx.tool.hook("execute.before", (event) => {
-      if (event.tool === "shell") check(event.input?.command)
+      if (event.tool === "shell") {
+        check(event.input?.command, event.input?.workdir, ctx.location?.directory)
+      }
     })
-  },
-  async server() {
-    return {
-      "tool.execute.before": async (input, output) => {
-        if (input.tool === "bash") check(output?.args?.command)
-      },
-    }
   },
 }

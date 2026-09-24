@@ -35,7 +35,10 @@ if (( $+commands[gh] )); then
 fi
 
 _generate_completion atuin 'atuin gen-completions --shell zsh'
-_generate_completion opencode 'opencode completion'
+# OpenCode 2 replaced the yargs `completion` subcommand with `--completions zsh`;
+# the NAS still runs OpenCode 1. The version check only runs when the file is
+# missing, and update-common.zsh drops a stale V1 completer after an upgrade.
+_generate_completion opencode 'if [[ $(opencode --version 2>/dev/null) == "opencode v"* ]]; then opencode --completions zsh; else opencode completion; fi'
 _generate_completion sesh 'sesh completion zsh'
 _generate_completion op 'op completion zsh'
 

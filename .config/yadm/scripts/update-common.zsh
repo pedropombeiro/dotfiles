@@ -181,6 +181,16 @@ _update_step "opencode skills"
 printf "${YELLOW}%s${NC}\n" "Updating OpenCode skills..."
 "${YADM_SCRIPTS}/sync-work-skills.zsh" --update || exit $?
 
+# After an upgrade to OpenCode 2, drop the cached OpenCode 1 (yargs) completer so
+# the next shell regenerates it with `opencode --completions zsh`. Shell startup
+# skips this check because `opencode --version` costs ~0.2s.
+opencode_completion="${HOME}/.config/zsh/site-functions/_opencode"
+if [[ -f ${opencode_completion} && $(<"${opencode_completion}") == *_opencode_yargs_completions* &&
+  $(opencode --version 2>/dev/null) == "opencode v"* ]]; then
+  rm -f "${opencode_completion}" "${HOME}"/.zcompdump*(N)
+fi
+unset opencode_completion
+
 _update_step "skill repositories"
 printf "${YELLOW}%s${NC}\n" "Updating skill repositories..."
 mise bootstrap repos update --yes --skip-dirty "${HOME}/Developer/github.com/pinchtab/pinchtab"

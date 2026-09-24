@@ -21,10 +21,15 @@ alias docker_ip='docker inspect -f "{{range.NetworkSettings.Networks}}{{.IPAddre
 
 # opencode with optional per-project model via mise env
 oc() {
-  if [[ -n "$OPENCODE_MODEL" ]]; then
-    opencode --model="$OPENCODE_MODEL" "$@"
-  else
+  if [[ -z "$OPENCODE_MODEL" ]]; then
     opencode "$@"
+  elif [[ $(opencode --version 2>/dev/null) == "opencode v"* ]]; then
+    # OpenCode 2 has no interactive --model flag. The inline config overrides the
+    # top-level model, and --standalone runs a private server that sees this
+    # environment instead of the shared background service's.
+    OPENCODE_CONFIG_CONTENT="{\"model\":\"$OPENCODE_MODEL\"}" opencode --standalone "$@"
+  else
+    opencode --model="$OPENCODE_MODEL" "$@"
   fi
 }
 

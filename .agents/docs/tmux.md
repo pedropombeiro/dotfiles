@@ -199,26 +199,26 @@ run-in-tmux-pane <command> [args...]
 
 **Rule of thumb:** if a command is a zsh autoloaded function (lives in
 `~/.shellrc/zshrc.d/functions/`) or needs the interactive shell environment,
-use `run-in-tmux-pane`. See the skill for the full Bash-vs-tmux decision rule
+use `run-in-tmux-pane`. See the skill for the full shell-tool-vs-tmux decision rule
 and quoting guidance.
 
 ### Commands that require `run-in-tmux-pane`
 
-| Command             | Why                                                | Bash `timeout`      | Docs                                                                                 |
+| Command             | Why                                                | Shell `timeout`     | Docs                                                                                 |
 | ------------------- | -------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------ |
 | `gpsup`             | Autoloaded zsh function, needs interactive shell   | 360000 ms (6 min)   | [SCM](scm.md#push-shortcuts)                                                         |
 | `fgdku`             | Autoloaded zsh function, long-running, interactive | 1800000 ms (30 min) | [GDK skill](~/.config/dotfiles/gitlab/.opencode/skills/gdk/SKILL.md)                 |
 | `test_mr`           | Autoloaded zsh function, runs rspec for branch     | 600000 ms (10 min)  | [MR workflow skill](~/.config/dotfiles/gitlab/.opencode/skills/mr-workflow/SKILL.md) |
 | `bundle exec rspec` | Long-running test suite                            | 600000 ms (10 min)  | —                                                                                    |
 
-> **Critical:** The Bash tool's `timeout` MUST exceed the script's own
-> `TMUX_PANE_TIMEOUT` (default **300 s**), or the Bash tool kills the call while
+> **Critical:** The shell tool's `timeout` MUST exceed the script's own
+> `TMUX_PANE_TIMEOUT` (default **300 s**), or the shell tool kills the call while
 > the pane is still legitimately running. You then get **partial output with no
 > exit code, and the command keeps running in the background** — easily mistaken
 > for a completed (or stalled) run, which is the usual cause of "the agent
 > stopped waiting after a few seconds".
 >
-> Formula (from the `run-in-tmux-pane` skill): `bash_timeout_ms =
+> Formula (from the `run-in-tmux-pane` skill): `shell_timeout_ms =
 (TMUX_PANE_TIMEOUT + 60) * 1000`. With the default 300 s pane timeout, the
 > floor is **360000 ms** — never set less, even for `gpsup`. `gpsup` pushes to
 > GitLab and waits on slow pre-push hooks (rubocop, danger, secrets-detection)

@@ -66,9 +66,9 @@ documentation.
 
 ## Decision rule
 
-- Use normal Bash first for standard non-interactive executables.
+- Use the normal shell tool first for standard non-interactive executables.
 - Use `run-in-tmux-pane` immediately for zsh functions, TTY-dependent tools, and commands that rely on login-shell state.
-- If Bash fails due to missing command, missing shell init, or TTY requirements, retry once with `run-in-tmux-pane`.
+- If the shell tool fails due to missing command, missing shell init, or TTY requirements, retry once with `run-in-tmux-pane`.
 
 Common GitLab examples:
 
@@ -84,9 +84,9 @@ Common GitLab examples:
 | `TMUX_PANE_TAIL_LINES` | `20`    | Number of trailing lines to keep when truncating successful output.                                |
 | `TMUX_PANE_TIMEOUT`    | `300`   | Maximum seconds to wait for the command to finish before killing the pane (exits with code 124).   |
 
-> **Set the Bash tool timeout higher than `TMUX_PANE_TIMEOUT`.** Use the formula
-> `bash_timeout_ms = (TMUX_PANE_TIMEOUT + 60) * 1000`. With the default
-> `TMUX_PANE_TIMEOUT=300`, pass at least `360000`. If the Bash tool times out
+> **Set the shell tool timeout higher than `TMUX_PANE_TIMEOUT`.** Use the formula
+> `shell_timeout_ms = (TMUX_PANE_TIMEOUT + 60) * 1000`. With the default
+> `TMUX_PANE_TIMEOUT=300`, pass at least `360000`. If the shell tool times out
 > first, the script is killed and its pane is torn down by the `cleanup` trap.
 
 ## Security considerations

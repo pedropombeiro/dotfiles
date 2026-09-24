@@ -1,6 +1,6 @@
 ---
 name: run-in-tmux-pane
-description: "Use for commands that require an interactive shell, a TTY, or shell-only functions. Run them in a temporary tmux pane with the full zsh environment. Use Bash directly for ordinary non-interactive commands."
+description: "Use for commands that require an interactive shell, a TTY, or shell-only functions. Run them in a temporary tmux pane with the full zsh environment. Use the shell tool directly for ordinary non-interactive commands."
 version: 1.0.0
 license: MIT
 compatibility: opencode
@@ -13,6 +13,9 @@ metadata:
 
 Run a command in a temporary tmux pane that has the user's full interactive zsh environment.
 The pane opens, runs the command, captures output, and closes automatically.
+
+"The shell tool" below means the agent's command tool: `shell` in OpenCode and `Bash` in
+Claude Code.
 
 ## Why use this skill
 
@@ -47,7 +50,7 @@ transparently.
 
 ## When not to use
 
-- For simple non-interactive commands such as `pwd`, `git status`, and branch checks; use Bash directly
+- For simple non-interactive commands such as `pwd`, `git status`, and branch checks; use the shell tool directly
 - To preflight a later interactive command; use tmux only for the command that needs it
 - When you only need to read or edit files; use the dedicated file tools instead
 - When the command requires live stdin interaction after launch; the pane is not interactive once started
@@ -92,10 +95,10 @@ See `references/USAGE.md` for concrete examples.
 | `TMUX_PANE_TAIL_LINES` | `20`    | Number of trailing lines to keep when truncating successful output.                                |
 | `TMUX_PANE_TIMEOUT`    | `300`   | Maximum seconds to wait for the command to finish before killing the pane (exits with code 124).   |
 
-## Important: Bash tool timeout must exceed `TMUX_PANE_TIMEOUT`
+## Important: shell tool timeout must exceed `TMUX_PANE_TIMEOUT`
 
-Always set the Bash tool's `timeout` parameter **higher** than `TMUX_PANE_TIMEOUT`
-(e.g. `timeout: 360000` for the default `TMUX_PANE_TIMEOUT=300`). If the Bash tool times out
+Always set the shell tool's `timeout` parameter **higher** than `TMUX_PANE_TIMEOUT`
+(e.g. `timeout: 360000` for the default `TMUX_PANE_TIMEOUT=300`). If the shell tool times out
 before the tmux pane finishes, you get partial output with no exit code — and the
 tmux command is still running in the background. This can be mistaken for a
 completed run, leading to unnecessary retries or incorrect assumptions about the
@@ -105,14 +108,14 @@ command's result.
 
 Use this decision order:
 
-1. Start with the normal Bash tool when the command should work in a non-interactive shell.
+1. Start with the normal shell tool when the command should work in a non-interactive shell.
 2. Use `run-in-tmux-pane` immediately when the command is a zsh function, requires a TTY, or is
    known to depend on login-shell state.
-3. If a normal Bash run fails because the command is missing, auth state is absent, shell init was
+3. If a normal shell-tool run fails because the command is missing, auth state is absent, shell init was
    skipped, or a TTY is required, retry once with `run-in-tmux-pane`.
 4. Do not invent shell workarounds when tmux is the correct execution path.
 
-See `references/USAGE.md` for the Bash-vs-tmux checklist and GitLab-specific examples.
+See `references/USAGE.md` for the shell-tool-vs-tmux checklist and GitLab-specific examples.
 
 ## Limitations
 

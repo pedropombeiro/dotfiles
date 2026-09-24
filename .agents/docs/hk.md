@@ -6,12 +6,12 @@ Git hooks and code quality checks for the yadm dotfiles repo.
 
 Use the hk release's `hk-configure` and `hk-debug` skills for general setup and
 diagnosis. Use the local `hk-yadm` skill alongside them for dotfiles work.
-The bundled skills were reviewed at hk v2.0.0 and linked manually through mise.
+The bundled skills were reviewed at hk v2.1.0 and linked manually through mise.
 See [Packslip skills policy](mise.md#completions-and-skills-policy) for updates.
 
 ## Configuration
 
-**Main config**: `~/hk.pkl` (requires hk v2.0.0+)
+**Main config**: `~/hk.pkl` (requires hk v2.1.0+)
 
 hk is installed globally via `hk install --global`, using Git 2.54+ config-based hooks. It runs as a
 silent no-op in repos without an `hk.pkl`.

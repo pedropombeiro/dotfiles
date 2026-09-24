@@ -42,13 +42,6 @@ return {
 - `:Lazy sync` - Install/update/clean plugins
 - `:Lazy update` - Update plugins
 
-## Common Operations
-
-- **Edit config:** Modify files in `~/.config/nvim/lua/`
-- **Edit plugin config:** Add/edit files in `~/.config/nvim/lua/plugins/`
-- **Edit core settings:** Modify files in `~/.config/nvim/lua/core/`
-- **Check plugin status:** Run `:Lazy` in Neovim
-
 ## YADM Integration
 
 The configuration includes special handling for YADM (dotfile manager) tracked files.
@@ -81,15 +74,6 @@ Three plugins coordinate to provide seamless YADM support:
 - `<leader>fgc` - Git/YADM log (auto-detects context)
 - `<leader>/` - Git/YADM grep (auto-detects context)
 - `<leader>tg` - LazyGit (opens with YADM args when appropriate)
-
-### How Detection Works
-
-When editing a file:
-
-1. `gitsigns-yadm.nvim` checks if file is YADM-tracked (not in a git repo but tracked by YADM)
-2. If YADM-tracked, sets `vim.b.yadm_tracked = true`
-3. Lualine checks this variable to show the YADM indicator
-4. Snacks picker operations check `is_yadm_repo(cwd)` to determine which git args to use
 
 ## LSP Schema Associations
 

@@ -28,14 +28,9 @@ Tmux automatically loads configuration from the XDG location `~/.config/tmux/tmu
      - Home/End key fixes
      - `default-terminal "tmux-256color"` with italics and RGB overrides
 
-3. **`~/.shellrc/zshrc.d/configs/tmux.zsh##distro.qts`** (Shell integration, QNAP only)
-   - Shell-side tmux configuration for auto-starting tmux on QNAP
-   - Sets environment variables for tmux behavior:
-     - `ZSH_TMUX_AUTOCONNECT=true`
-     - `ZSH_TMUX_AUTOSTART=true`
-     - `ZSH_TMUX_CONFIG` points to `~/.config/tmux/tmux.conf`
-     - `ZSH_TMUX_DEFAULT_SESSION_NAME` set to hostname
-   - Enables the oh-my-zsh tmux plugin
+3. **`~/.shellrc/zshrc.d/configs/tmux.zsh`** (Shared shell integration)
+   - Configures the oh-my-zsh tmux plugin, config path, and hostname-based session name
+   - `tmux.platform.zsh##distro.qts` enables automatic connection and startup on QNAP
 
 ### Plugins Configured
 
@@ -56,6 +51,8 @@ The configuration uses TPM (Tmux Plugin Manager) with these plugins:
 
 ### Related Files
 
+- `opencode.nvim` selects its tmux provider when `$TMUX` is set.
+
 - **`~/.config/nvim/lua/plugins/vim-tmux-navigator.lua`**
   - Neovim integration for tmux navigation (universal, works on all machines)
 
@@ -69,13 +66,6 @@ The configuration uses TPM (Tmux Plugin Manager) with these plugins:
 
 Plugins are expected to be installed in `~/.tmux/plugins/` directory via TPM.
 Installation command (within tmux): `prefix + I` (capital i)
-
-## Important Notes
-
-1. The main `tmux.conf` is universal — no yadm alternate suffix
-2. Only the platform override (`tmux.platform.conf`) and shell integration (`tmux.zsh`) use yadm alternates for QNAP
-3. Use `yadm` commands (not `git`) for version control
-4. The opencode.nvim Neovim plugin auto-detects tmux and uses the tmux provider when `$TMUX` is set
 
 ## Passthrough and iTerm2 OSC Sequences
 
@@ -149,16 +139,12 @@ conversation to the front through the plugin's SDK client. The window indicator 
 while any registered plugin instance in that window is waiting.
 
 It stores its cycle cursor in tmux's global `@opencode-goto-cursor` option and removes stale
-socket registrations. Instances running the older plugin retain window-level navigation until
-restarted. The same action is
-available at Hammerspoon's `?action=opencode-goto` endpoint.
+socket registrations. The same action is available at Hammerspoon's
+`?action=opencode-goto` endpoint.
 
-Both OpenCode configuration alternates pin `opencode-tmux-indicator@0.5.0`, which includes
-session-aware navigation. Its source is in
+Both `cli.base.json` alternates configure `opencode-tmux-indicator`. Follow the
+[plugin pinning policy](opencode.md#plugin-version-pinning) when updating it. Its source is in
 `~/Developer/github.com/pedropombeiro/opencode-plugins/packages/tmux-indicator/`.
-Keep the npm pin in both alternates synchronized. Remove any local
-`~/.config/opencode/plugins/tmux-indicator.js` bundle when using the npm package to avoid
-loading the indicator twice, then restart OpenCode.
 
 ## Alt+Number Window Switching
 
@@ -173,67 +159,9 @@ pass through to tmux.
 
 ## Running Commands in a Temporary Tmux Pane
 
-Use `run-in-tmux-pane` to run interactive or long-running commands in a
-temporary tmux pane. The pane opens, runs the command with full interactive
-zsh environment (autoloaded functions, aliases, completions), captures
-output to a temp file, and returns it along with the exit code.
-
-For agent execution workflow details, prefer the
-`run-in-tmux-pane` skill. This doc keeps the durable tmux-specific reference
-material and machine-specific command notes.
-
-### Temporary Files
-
-- Use `$TMPDIR` for temporary files and scripts
-- Do not hardcode `/tmp` or try to guess a repo- or host-specific temp directory
-- When documenting or generating commands, reference temp paths as `$TMPDIR/...`
-
-```bash
-run-in-tmux-pane <command> [args...]
-```
-
-> **Prerequisite:** `$TMUX` must be set (the agent session must be running
-> inside tmux).
-
-### When to use
-
-**Rule of thumb:** if a command is a zsh autoloaded function (lives in
-`~/.shellrc/zshrc.d/functions/`) or needs the interactive shell environment,
-use `run-in-tmux-pane`. See the skill for the full shell-tool-vs-tmux decision rule
-and quoting guidance.
-
-### Commands that require `run-in-tmux-pane`
-
-| Command             | Why                                                | Shell `timeout`     | Docs                                                                                 |
-| ------------------- | -------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------ |
-| `gpsup`             | Autoloaded zsh function, needs interactive shell   | 360000 ms (6 min)   | [SCM](scm.md#push-shortcuts)                                                         |
-| `fgdku`             | Autoloaded zsh function, long-running, interactive | 1800000 ms (30 min) | [GDK skill](~/.config/dotfiles/gitlab/.opencode/skills/gdk/SKILL.md)                 |
-| `test_mr`           | Autoloaded zsh function, runs rspec for branch     | 600000 ms (10 min)  | [MR workflow skill](~/.config/dotfiles/gitlab/.opencode/skills/mr-workflow/SKILL.md) |
-| `bundle exec rspec` | Long-running test suite                            | 600000 ms (10 min)  | —                                                                                    |
-
-> **Critical:** The shell tool's `timeout` MUST exceed the script's own
-> `TMUX_PANE_TIMEOUT` (default **300 s**), or the shell tool kills the call while
-> the pane is still legitimately running. You then get **partial output with no
-> exit code, and the command keeps running in the background** — easily mistaken
-> for a completed (or stalled) run, which is the usual cause of "the agent
-> stopped waiting after a few seconds".
->
-> Formula (from the `run-in-tmux-pane` skill): `shell_timeout_ms =
-(TMUX_PANE_TIMEOUT + 60) * 1000`. With the default 300 s pane timeout, the
-> floor is **360000 ms** — never set less, even for `gpsup`. `gpsup` pushes to
-> GitLab and waits on slow pre-push hooks (rubocop, danger, secrets-detection)
-> plus remote MR creation, which routinely exceeds 120 s, so the old 120 s
-> guidance was wrong.
->
-> Do not lower `TMUX_PANE_TIMEOUT` below the value implied by the table.
-
-### How it works
-
-1. Opens a vertical split pane (30% height, detached)
-2. Runs the command via `zsh -ic` so the full shell environment is loaded
-3. Tees stdout to a temp file
-4. Polls until the pane exits, then prints the captured output
-5. Exits with the command's exit code
+Use the [`run-in-tmux-pane` skill](../skills/run-in-tmux-pane/SKILL.md) for
+commands that need a TTY, zsh functions, or login-shell state. It owns the
+execution decision rules, timeout settings, and usage reference.
 
 ## Editing Configuration
 

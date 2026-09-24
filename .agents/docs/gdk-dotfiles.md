@@ -63,12 +63,13 @@ Place the file under `~/.config/dotfiles/gitlab/` at the same relative path you 
 appear in the gitlab repo. No script changes are needed. `sync_dotfiles_to_gitlab()` picks
 it up automatically on the next `mise run dotfiles:update`.
 
-Commit and push it from the private repository:
+Commit and push it using the shell tool's `workdir` set to
+`~/.config/dotfiles/gitlab/`:
 
 ```bash
-git -C ~/.config/dotfiles/gitlab add <path>
-git -C ~/.config/dotfiles/gitlab commit
-git -C ~/.config/dotfiles/gitlab push
+git add <path>
+git commit
+git push
 ```
 
 ## Current contents
@@ -79,20 +80,11 @@ Do not hand-maintain an inventory here because it drifts. List ground truth with
 fd --hidden --type f . ~/.config/dotfiles/gitlab/
 ```
 
-Broadly: `CLAUDE.local.md`, `lefthook-local.yml`, the `.ai/*.local.md` lesson files,
-`.gitlab/duo/chat-rules.md`, `.opencode/commands/`, and the `.opencode/skills/` tree.
+## Agent instruction scope
 
-> The `glab` skill used to live here too. It was a stale fork of the git-tracked
-> `.claude/skills/glab/` (which is the SSOT, synced to `gitlab-org/ai/skills`) and was
-> shadowed by it at load time, so it was removed.
-
-## Why not `##class.Work` alternates?
-
-Previously, Work-class skills and commands used YADM alternate files (for example,
-`SKILL.md##class.Work`) in their global locations (`~/.agents/skills/`, `~/.config/opencode/commands/`).
-This made them active globally rather than only inside the gitlab repo. Moving them to
-`~/.config/dotfiles/gitlab/` and symlinking via `update-work.zsh` scopes them to the
-GDK gitlab project only, with no alternates needed.
+Keep GitLab-project skills and commands in this private repository so the sync
+scopes them to GDK worktrees. Machine-wide Work skills belong in
+`~/.agents/skills.work`; see [skill loading](opencode.md#skill-loading).
 
 ## Troubleshooting
 

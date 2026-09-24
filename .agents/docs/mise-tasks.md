@@ -12,8 +12,30 @@
 
 ## Available Tasks
 
-Do not mirror the task list here — it drifts. `mise tasks` prints the live set with
+Use `mise tasks` for the current task list with
 descriptions, and `mise run <task>` (alias `mise r`) runs one.
 
 Task descriptions come from the `#MISE description=` header (file tasks) or the
 `description` key (TOML tasks), so `mise tasks` is always ground truth.
+
+## Task usage headers
+
+Define file-task arguments with `#USAGE` directives. `#MISE usage=...` is
+unsupported and causes mise to reject the task file.
+
+```bash
+#!/usr/bin/env bash
+#MISE description="Build with sourcemaps"
+#USAGE arg "<package>" help="Package to build"
+```
+
+## Task semantics
+
+- `[task_config].includes` replaces the default file-task search paths. Include
+  `~/.config/mise/tasks` explicitly when adding a directory. In global `conf.d`
+  fragments, use home-relative paths.
+- `depends = [...]` runs dependencies in parallel. For sequential execution,
+  use a `run` array.
+- `sources` and `outputs` enable caching: mise skips a task when every source
+  glob is older than every output glob.
+- `run_windows` overrides `run` on Windows.

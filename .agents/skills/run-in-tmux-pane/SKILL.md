@@ -11,115 +11,64 @@ metadata:
 
 # run-in-tmux-pane
 
-Run a command in a temporary tmux pane that has the user's full interactive zsh environment.
-The pane opens, runs the command, captures output, and closes automatically.
+Run a command in a temporary tmux pane using `zsh -ilc`. The helper captures
+stdout and stderr, closes the pane, and returns the command's exit code.
+"Shell tool" means `shell` in OpenCode or `Bash` in Claude Code.
 
-"The shell tool" below means the agent's command tool: `shell` in OpenCode and `Bash` in
-Claude Code.
+## Choose the execution tool
 
-## Why use this skill
+1. Use the normal shell tool for commands that work non-interactively, including
+   standard Git commands and targeted tests that do not depend on shell startup.
+2. Use `run-in-tmux-pane` for zsh functions, commands requiring a TTY, or commands
+   known to depend on login-shell environment or authentication state.
+3. If the normal shell tool fails because of those requirements, retry once with
+   `run-in-tmux-pane`.
 
-**Agent tools run in a non-interactive shell.** Commands that rely on your login
-shell — autoloaded zsh functions, mise/asdf shims, custom `PATH` entries, shell
-aliases — silently fail or are not found when invoked from a bare `bash -c`.
-This skill gives the agent access to your real shell environment without
-requiring the agent session itself to run inside zsh.
+Use tmux for the command that needs it. Use dedicated file tools for reads and
+edits, and avoid preflight tmux calls.
 
-**Long command output wastes tokens.** Successful commands often produce
-hundreds of lines the agent never needs. The script automatically truncates
-successful output to the last 20 lines, keeping token usage low while still
-returning the full output on failure so the agent can diagnose problems.
+## Requirements and setup
 
-**Granting broad shell permissions is risky.** Instead of allowing the agent to
-run arbitrary dangerous commands directly, you can wrap those commands in a
-script and grant the agent permission to call `run-in-tmux-pane <script>` only.
-The agent never needs direct access to the underlying tools — just to this
-single entry point.
+- The agent session must run inside tmux with `$TMUX` and `$TMUX_PANE` set.
+- The command must finish without further input; the agent cannot send stdin
+  after launch.
+- Commands start in the user's home directory. Include `cd` when needed.
 
-**Commands that need a TTY.** Some CLI tools (e.g. `claude`, interactive
-installers) refuse to run without a TTY. The tmux pane provides one
-transparently.
-
-## When to use
-
-- A command needs the user's full shell environment (PATH, shims, aliases, etc.)
-- Running interactive CLI tools that need a TTY (e.g. `claude -p`)
-- A tool is not found or misbehaves when run from a non-interactive shell
-- A command depends on environment variables or auth state that are present only in the interactive shell
-- The command is a zsh function such as `fgdku`, `gpsup`, or `test_mr`
-
-## When not to use
-
-- For simple non-interactive commands such as `pwd`, `git status`, and branch checks; use the shell tool directly
-- To preflight a later interactive command; use tmux only for the command that needs it
-- When you only need to read or edit files; use the dedicated file tools instead
-- When the command requires live stdin interaction after launch; the pane is not interactive once started
-
-## Setup
-
-The script is bundled at [scripts/run-in-tmux-pane](scripts/run-in-tmux-pane).
-To make it available system-wide, symlink it onto your PATH:
-
-```bash
-ln -s "$(pwd)/scripts/run-in-tmux-pane" ~/.local/bin/run-in-tmux-pane
-```
+The helper is [scripts/run-in-tmux-pane](scripts/run-in-tmux-pane). If it is not
+on `PATH`, link it from the installed skill directory to
+`~/.local/bin/run-in-tmux-pane`.
 
 ## Usage
 
-See `references/USAGE.md` for quoting rules, temp-file conventions, and examples.
+```bash
+run-in-tmux-pane <command> [args...]
+```
 
-## How it works
+See [the usage reference](references/USAGE.md) for quoting, temporary files, and
+command examples.
 
-1. Opens a tmux split-pane (30% height, detached)
-2. Runs the command inside `zsh -ilc` (interactive login shell)
-3. Waits for the pane to close
-4. Returns captured stdout and stderr with ANSI escape codes stripped
-5. Exits with the command's exit code
+## Configuration and output
 
-## Output behavior
+| Variable               | Default | Purpose                                                                        |
+| ---------------------- | ------- | ------------------------------------------------------------------------------ |
+| `TMUX_PANE_LINGER`     | `3`     | Seconds the pane stays visible after completion; use `0` to close immediately. |
+| `TMUX_PANE_TAIL_LINES` | `20`    | Trailing lines shown for long successful output; failures return full output.  |
+| `TMUX_PANE_TIMEOUT`    | `300`   | Seconds before the helper kills the pane and exits with code `124`.            |
 
-- If the command succeeds and output exceeds 20 lines, only the last 20 lines are shown
-  (with a truncation notice)
-- If the command fails, the full output is returned
-- ANSI escape sequences are stripped from the output
-- `TMUX_PANE_LINGER` controls how many seconds the tmux pane stays visible after the
-  command finishes (default: 3). Set to 0 to close immediately.
+The helper strips ANSI escape sequences from captured output.
 
-See `references/USAGE.md` for concrete examples.
+## Set both timeouts
 
-## Configuration
+Set the shell tool timeout to at least `(TMUX_PANE_TIMEOUT + 60) * 1000`
+milliseconds. For long commands, increase the pane timeout as well as the shell
+timeout. Use these minimum budgets for the shell functions below:
 
-| Variable               | Default | Description                                                                                        |
-| ---------------------- | ------- | -------------------------------------------------------------------------------------------------- |
-| `TMUX_PANE_LINGER`     | `3`     | Seconds to keep the tmux pane visible after the command finishes. Set to `0` to close immediately. |
-| `TMUX_PANE_TAIL_LINES` | `20`    | Number of trailing lines to keep when truncating successful output.                                |
-| `TMUX_PANE_TIMEOUT`    | `300`   | Maximum seconds to wait for the command to finish before killing the pane (exits with code 124).   |
+| Command        | `TMUX_PANE_TIMEOUT` (seconds) | Shell `timeout` (milliseconds) |
+| -------------- | ----------------------------- | ------------------------------ |
+| `gpsup`, `gpf` | `300`                         | `360000`                       |
+| `fgdku`        | `1740`                        | `1800000`                      |
+| `test_mr`      | `540`                         | `600000`                       |
 
-## Important: shell tool timeout must exceed `TMUX_PANE_TIMEOUT`
-
-Always set the shell tool's `timeout` parameter **higher** than `TMUX_PANE_TIMEOUT`
-(e.g. `timeout: 360000` for the default `TMUX_PANE_TIMEOUT=300`). If the shell tool times out
-before the tmux pane finishes, you get partial output with no exit code — and the
-tmux command is still running in the background. This can be mistaken for a
-completed run, leading to unnecessary retries or incorrect assumptions about the
-command's result.
-
-## Decision Rule
-
-Use this decision order:
-
-1. Start with the normal shell tool when the command should work in a non-interactive shell.
-2. Use `run-in-tmux-pane` immediately when the command is a zsh function, requires a TTY, or is
-   known to depend on login-shell state.
-3. If a normal shell-tool run fails because the command is missing, auth state is absent, shell init was
-   skipped, or a TTY is required, retry once with `run-in-tmux-pane`.
-4. Do not invent shell workarounds when tmux is the correct execution path.
-
-See `references/USAGE.md` for the shell-tool-vs-tmux checklist and GitLab-specific examples.
-
-## Limitations
-
-- Requires an active tmux session (`$TMUX` must be set)
-- Cannot interact with the command after launch (no stdin) — use only for commands that
-  run to completion on their own
-- The command runs in the user's home directory by default (zsh -ilc behavior)
+If the shell tool terminates the helper early, output can be incomplete. The
+helper's termination trap attempts to kill its pane; verify the command's result
+before retrying an operation with side effects.

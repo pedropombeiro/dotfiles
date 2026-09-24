@@ -9,8 +9,7 @@ the task needs them.
 - Always read `~/.agents/docs/work.md` for Work-machine instructions.
 {% endif %}
 - For library and framework documentation, use Context7 first.
-- MCP call order is `lazy-mcp_list_commands` -> `lazy-mcp_describe_commands` -> `lazy-mcp_invoke_command`. Never pass a command name to `describe_commands` that `list_commands` did not return; guessing a plausible name is the most common cause of a failed schema lookup.
-- `describe_commands` appears batch-atomic: one invalid name can discard schemas for valid names in the same call. Skip it entirely for commands already invoked successfully in the current session.
+- MCP call order is `lazy-mcp_list_commands` -> `lazy-mcp_describe_commands` -> `lazy-mcp_invoke_command`. Describe only command names returned by `list_commands`; skip description for commands already invoked successfully in the current session.
 - Do not preflight MCP servers unless you actually plan to use them.
 - In unfamiliar repos, read local `AGENTS.md`, `CLAUDE.md`, and task-index docs before broad exploration.
 - Prefer repo-local skills over rediscovering documented workflows.
@@ -44,8 +43,8 @@ the task needs them.
 ## Continuous Learning
 
 - When the user corrects tool usage or environment behavior, ask whether the rule should be documented in `~/.agents/docs/`.
-- Keep additions lean and principle-based.
-- If the correction is about routing work through existing repo docs or skills, use the relevant doc-learning workflow.
+- Prefer updating the relevant existing doc or skill. If a new topic doc is needed, link it from the relevant index.
+- Record the current rule and necessary rationale; omit resolved-incident narratives, duplicated guidance, and inventories available from configuration or commands.
 
 ## Specialized Topics
 

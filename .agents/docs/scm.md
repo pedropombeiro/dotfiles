@@ -73,12 +73,12 @@ When renaming or adding files:
 4. Validate with `yadm enter hk check --all` before committing (hooks also run automatically via hk on `yadm commit`)
 5. Commit with clear, descriptive messages
 
-## Conventional Commits
-
 ## Amending commits
 
 - Amend an unreviewed local commit when needed to correct its contents or commit message.
 - Do not amend a commit after its merge request has undergone review; create a follow-up commit instead.
+
+## Conventional Commits
 
 Use **scoped conventional commits** to organize changes logically.
 This improves clarity and makes history easier to navigate.
@@ -99,7 +99,7 @@ This improves clarity and makes history easier to navigate.
 - **Grouped commits**: Separate logical changes into distinct commits rather than combining unrelated changes
 - **Body prose**: Follow `~/.agents/docs/writing-style.md`, especially the AI writing patterns to avoid
 
-### Fast Heuristic for Smaller Agents
+### Choosing a type and scope
 
 If you are unsure which commit type to use, choose the most mechanical match:
 
@@ -109,20 +109,8 @@ If you are unsure which commit type to use, choose the most mechanical match:
 - `refactor` for structural changes that do not change behavior
 - `chore` for maintenance, renames, tooling, housekeeping, or config-only cleanup
 
-If you are unsure which scope to use:
-
-- use the smallest obvious area name from the changed files
-- prefer a stable repo- or domain-specific area name when one is obvious
-- if the change is entirely about agent docs/skills/instructions, `agents` may be the right scope
-
-If you are still unsure, use this fallback format:
-
-```text
-<type>(<smallest-obvious-scope>): <concise subject>
-```
-
-When choosing a fallback scope, prefer the narrowest stable area name rather than
-defaulting to a generic scope.
+Choose the narrowest stable repository or domain scope from the changed files.
+Use `agents` for changes entirely about agent docs, skills, or instructions.
 
 ### Enforcement
 
@@ -160,9 +148,9 @@ The `require-gpsup` OpenCode plugin blocks `git push -u`/`--set-upstream` only w
 target remote resolves to `gitlab.com`, or when the remote can't be resolved. Pushes to
 other forges, such as GitHub, use a plain `git push --set-upstream origin <branch>`.
 
-`gpsup` is a zsh autoloaded function — run it via
-[`run-in-tmux-pane`](tmux.md#running-commands-in-a-temporary-tmux-pane) (see the
-commands table there for the required timeout). Pass extra `git push` arguments
+`gpsup` is a zsh autoloaded function. Run it via the
+[`run-in-tmux-pane` skill](../skills/run-in-tmux-pane/SKILL.md), which defines the
+required timeouts. Pass extra `git push` arguments
 as trailing args (e.g., `run-in-tmux-pane gpsup --force-with-lease`).
 
 After `gpsup` creates the MR, open it and **fill in the MR description** using the
@@ -186,13 +174,6 @@ run-in-tmux-pane "cd <repo> && gpf"
 
 Use `gpf` (not `gpsup`) when the branch already tracks a remote and you just need to
 update it.
-
-> **History note:** `gpf` was previously only an oh-my-zsh git-plugin alias loaded
-> via zinit turbo (`zinit wait'0'`), which loads asynchronously _after_ the first
-> interactive prompt. Under `zsh -ilc "<cmd>"` the shell runs the command and exits
-> before turbo loading fires, so the alias was absent (`command not found`) even
-> though the synchronously-autoloaded `gpsup` function worked. It is now a dedicated
-> autoload function, matching the `gpsup` pattern, so this no longer applies.
 
 ## Commit/Push Behavior
 

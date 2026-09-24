@@ -127,6 +127,8 @@ atload'!_zsh_autosuggest_start; _fix_autosuggest_accept_line' zsh-users/zsh-auto
 
 `ZSH_AUTOSUGGEST_MANUAL_REBIND=1` ensures autosuggestions doesn't re-wrap on
 later precmds, so the wrapper stays outermost for the life of the shell.
+All widgets needing wrapping must exist before `_zsh_autosuggest_start` runs.
+History search widgets are registered early in `common-plugins.zsh` for this reason.
 
 **Wait suffix note:** zinit only accepts `wait'0'`, `wait'0a'`, `wait'0b'`,
 `wait'0c'`. `wait'0d'` and beyond emit `Warning: wait ice received invalid
@@ -160,12 +162,6 @@ new shell:
 ```zsh
 rm ~/.local/share/atuin/init.zsh
 ```
-
-### `ZSH_AUTOSUGGEST_MANUAL_REBIND=1`
-
-Set in `common-plugins.zsh` to skip O(n) widget re-wrapping on every precmd.
-Requires that all widgets needing wrapping exist before `_zsh_autosuggest_start`
-runs. History search widgets are registered early in the same file for this reason.
 
 ## Key Integrations
 

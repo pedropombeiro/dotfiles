@@ -138,7 +138,6 @@ the source of truth.
 - No emoji overuse.
 - No long-winded introductions or conclusions.
 - Never apologetic when providing technical corrections - state facts cleanly.
-- Never use double-hyphens (`--`) or the em-dash character (`—`, U+2014). Use a single dash (`-`) instead.
 
 ### AI writing patterns
 

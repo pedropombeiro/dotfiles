@@ -1,422 +1,149 @@
 # Mise
 
-Runtime versions and CLI tools management.
+Runtime versions and CLI tool management.
 
 ## Configuration
 
-**Main config**: `~/.config/mise/config.toml` — a YADM alt symlink. On this machine it
-resolves to `config.toml##default`; on QTS to the `distro.qts` alt.
+`~/.config/mise/config.toml` is a YADM alternate: `##default` on macOS and
+`##distro.qts` on QTS. Layered configs live in `~/.config/mise/conf.d/`.
+Use `mise config ls` to see active files and `mise ls <tool>` to find the source
+of a version selection. Read the configuration for current tool versions.
 
-Additional layered configs live in `~/.config/mise/conf.d/` (`global.toml`, `tasks.toml`,
-`tools.personal.toml`, `tools.work.toml`, `tools.linux.toml`, ...). The YADM-selected
-`~/.config/mise/miserc.toml` enables the machine-class or distribution environment and
-mise's automatic platform environments. File-based tasks live in `~/.config/mise/tasks/`.
+`conf.d/bootstrap.toml` declares repositories and user LaunchAgents. YADM
+bootstrap invokes explicit `--only` scopes; do not run bare `mise bootstrap`,
+because its dotfile, macOS default, and user configuration overlap YADM workflows.
 
-`conf.d/bootstrap.toml` declares repositories and user LaunchAgents that mise
-converges during YADM bootstrap. Bootstrap scripts invoke explicit `--only`
-scopes. Do not run bare `mise bootstrap`, because mise's dotfile, macOS default,
-and user configuration overlap existing YADM workflows.
+See [Mise tasks](mise-tasks.md) for task locations and authoring rules, and
+[backend troubleshooting](mise-backends.md) for install failures and backend policy.
 
-## Tool Categories
+### Config precedence
 
-### Language Runtimes
+`~/.config/mise/config.toml` outranks `conf.d/*`. To vary a tool per machine class,
+declare it only in the matching environment fragment. A duplicate declaration in
+`config.toml` overrides the fragment.
 
-```toml
-[tools]
-python = "3.14"
-go = "1.25.6"
-rust = "1.93.0"
-node = "23.7.0"
-```
+### Config environments
 
-### CLI Tools
+The YADM-selected `~/.config/mise/miserc.toml` enables `env_conf_d`, `auto_env`,
+and the explicit `personal`, `work`, `linux-standard`, or `qts` environment.
+Platform fragments such as `tools.linux.toml` load through `auto_env`.
 
-```toml
-[tools]
-bat = "latest"
-fd = "latest"
-ripgrep = "latest"
-```
-
-### Python Tools (via pipx backend)
-
-```toml
-[tools]
-"pipx:pre-commit" = "latest"
-"pipx:vale" = "latest"
-```
-
-### Backend Caveats (pipx / uv)
-
-The `pipx:` and `uv:` mise backends shell out to the real `pipx` / `uv` binary
-at install time. If a project uses these backends, the backend tool itself must
-also be present in the same mise context — otherwise install fails with:
-
-```
-pipx may be required but was not found.
-Failed to install pipx:<pkg>: pipx install <pkg>==<ver>: No such file or directory
-```
-
-This bites most often in CI when `MISE_TOOLS` is an explicit allow-list. Always
-include `pipx` (or `uv`) alongside any `pipx:foo` / `uv:foo` entry.
-
-Note: the `uv:` backend is only available as a built-in in newer mise versions.
-Check `mise backends` to confirm it is listed before using it; otherwise fall
-back to `pipx:` with an explicit `pipx` entry in `MISE_TOOLS`.
-
-### Backend Caveats (gem)
-
-The `gem:` backend falls back to the **system** `gem` when no mise-managed Ruby
-resolves. On macOS that is Ruby 2.6.10, so failures surface as unrelated gem
-dependency errors rather than "Ruby not installed":
-
-```
-ERROR:  Error installing ruby-lsp:
-	prism requires Ruby version >= 2.7.0. The current ruby version is 2.6.10.210.
-```
-
-When a `gem:` tool fails on a version constraint, run `mise ls ruby` first and
-look for `(missing)`. The gem error is a symptom; the missing runtime is the cause.
-
-### Ruby backend scope
-
-Installed plugins register machine-wide. GitLab's `asdf-gitlab-ruby` plugin can
-override the `ruby` shorthand outside the GDK, making identical version pins
-behave differently on Work and Personal Macs. Inspect the effective backend
-with `mise tool ruby`, not `mise registry ruby`.
-
-`conf.d/tools.work.toml` explicitly selects the built-in backend globally and
-inside the GDK:
-
-```toml
-[tool_alias]
-ruby = "core:ruby"
-
-[settings.ruby]
-compile = false
-```
-
-The built-in backend downloads binaries from `jdx/ruby`, including macOS Ruby
-4.0.7. `compile = false` requires a binary and fails promptly if none exists.
-The Personal profile uses the built-in backend by default. Both profiles declare
-their Ruby versions in their respective `conf.d/tools.*.toml` files, and Renovate
-can update both pins without a GitLab-manifest version restriction.
-
-The GDK keeps its `.tool-versions` selections. Existing installed Rubies remain
-available, and future installations use the built-in backend. The backend alias
-takes precedence over the GitLab checkout's `[plugins]` declaration.
-`USE_PRECOMPILED_RUBY` is specific to GitLab's plugin and is unnecessary in the
-global configuration.
-
-In mise 2026.9.9, a global backend alias wins over a project-local alias,
-contrary to the expected configuration hierarchy. Avoid relying on local aliases
-to undo this policy. An exported `MISE_BACKENDS_RUBY` overrides alias selection,
-so inspect that variable if a shell selects an unexpected backend.
-
-If a source build stalls at `checking for ruby`, inspect the ruby-build log.
-`configure` can invoke the mise Ruby shim, which tries to install the same Ruby
-and waits for the parent install's lock. This is a deadlock, not slow compilation.
-Keep global Ruby on the built-in binary backend rather than adding a hard-coded
-bootstrap Ruby path.
-
-### Config Precedence
-
-`~/.config/mise/config.toml` **outranks** `~/.config/mise/conf.d/*`. When a tool
-is declared in both, editing the `conf.d` copy has no effect. Use
-`mise ls <tool>` to see which file mise credits for the active version:
-
-```
-ruby  3.4.9   ~/.config/mise/conf.d/tools.work.toml  3.4.9
-```
-
-To vary a tool per machine class, remove it from `config.toml` entirely and
-declare it only in the environment-specific `conf.d` files. Leaving it in both
-means the shared value always wins.
-
-### Config Environments
-
-`~/.config/mise/miserc.toml` is a YADM alternative that enables `env_conf_d`,
-`auto_env`, and the explicit `personal`, `work`, `linux-standard`, or `qts`
-environment. Environment fragments use names such as `tools.personal.toml`,
-`tools.work.toml`, and `tools.qts.toml`; platform fragments such as
-`tools.linux.toml` load through `auto_env`.
-
-The explicit environment has higher precedence than automatic platform
-environments. On QTS, `tools.linux.toml` loads first and `tools.qts.toml` then
-overrides incompatible runtime versions and libc settings. Standard Linux hosts
-also load `tools.linux-standard.toml` for tools that cannot run on QTS. Put tools
-that work on every Linux host in `tools.linux.toml`, and put tools that require a
-current Linux distribution in `tools.linux-standard.toml`.
+Explicit environments outrank automatic platform environments. On QTS,
+`tools.qts.toml` overrides `tools.linux.toml` for incompatible runtimes and libc
+settings. Put tools that work on every Linux host in `tools.linux.toml`, and
+tools requiring a current distribution in `tools.linux-standard.toml`.
 
 These early settings do not appear in `mise settings`; verify them through
-`mise config ls` and the resulting toolset instead.
+`mise config ls` and the resulting toolset.
 
-#### Inactive platform installs
+### Inactive platform installs
 
-`mise prune` treats every tracked config as authoritative, including platform
-fragments that are inactive on the current host. A tool declared only in
-`tools.linux.toml` can therefore remain installed on macOS indefinitely. Its
-shim can shadow a Homebrew copy and add mise resolution overhead before falling
-through to the correct binary. If no fallback exists, the shim fails with `No
-version is set for shim`.
+`mise prune` treats tracked configs as authoritative even when their platform is
+inactive. An inactive tool's shim can shadow another installation or fail with
+`No version is set for shim`.
 
-Remove these inactive installs explicitly with `mise uninstall --all <tool>`,
-then run `mise reshim --force`. If another package manager does not provide the
-tool on the current platform, move its declaration to `conf.d/global.toml`
-instead. Confirm that the selected backend works on every target platform and
-does not depend on a platform-specific compiler toolchain.
+Remove inactive installs with `mise uninstall --all <tool>`, then run
+`mise reshim --force`. If no other package manager provides the tool on the current
+platform, move its declaration to `conf.d/global.toml`. Confirm that its backend
+works on every target platform without a platform-specific compiler toolchain.
 
-### GitHub Credentials
+### GitHub credentials
 
-Use `settings.github.credential_command = "gh auth token"` in the global config
-instead of sourcing a script that exports `MISE_GITHUB_TOKEN`. The credential
-command runs only when mise needs GitHub authentication, while `env._.source`
-runs during every environment refresh. mise ignores `github.credential_command`
-from project config for security reasons.
+Use global `settings.github.credential_command = "gh auth token"` for lazy
+authentication. `env._.source` runs on every environment refresh, and the default
+`github.gh_cli_tokens = true` cannot retrieve a token stored only in the macOS
+keychain. mise ignores `github.credential_command` in project config.
 
-The default `github.gh_cli_tokens = true` is not sufficient when `gh` stores its
-token in the macOS keychain and leaves no `oauth_token` value in `hosts.yml`.
+## Packslip backend
 
-### Backend Caveats (npm / aube)
+[Packslip](https://packslip.dev) supplies vendor-signed release manifests with
+binaries and version-matched resources. Prefer it when the vendor publishes a
+signed manifest. mise verifies the Sigstore signature and artifact checksums.
 
-Since mise 2026.8.x, `npm:` tools install through mise's embedded `aube`
-package manager, which applies supply-chain gates that npm does not. In
-non-interactive contexts (`mise run` auto-install, CI) aube's confirmation
-prompts cannot be answered, so they surface as an opaque abort:
+Check availability with `mise backends ls` and `mise registry`. Registry entries
+can select Packslip without an explicit prefix; use `mise tool <name>` to inspect
+the resolved backend and security metadata.
 
-```
-Failed to install npm:<pkg>@latest: aube install failed: user aborted `mise add <pkg>`
-```
-
-To see the real prompt, force a TTY:
-
-```bash
-script -qfec "mise install npm:<pkg>@latest" /dev/null
-```
-
-Fix with the narrowly scoped tool option, never a global override:
-
-| aube gate                            | Symptom                                           | Tool option                           |
-| ------------------------------------ | ------------------------------------------------- | ------------------------------------- |
-| `lowDownloadThreshold` (1000 weekly) | "looks suspicious: N downloads last week"         | `allow_low_downloads = true`          |
-| `trustPolicy=no-downgrade`           | version lost provenance versus an earlier release | `trust_policy_excludes = ["pkg@ver"]` |
-| build-script approval                | dependency needs a lifecycle script               | `allow_builds = ["esbuild"]`          |
-
-Do **not** set `npm.shell_out=true` or `lowDownloadThreshold: 0`: both disable
-aube's checks for every package. Prefer version-scoped exceptions over bare
-package names, and record why in a comment (see `npm:renovate`).
-
-#### Warnings that are expected, not misconfiguration
-
-Two aube install warnings have no per-tool fix and should be left alone:
-
-- `Unsupported engine <pkg>: wanted node ^X, got Y`. aube checks the package's
-  `engines.node` against the **global** mise node (`node = "latest"`). It is a
-  warning only (`engineStrict` defaults to false). There is no per-tool node pin
-  for the npm backend: `install_env` is not applied on the embedded-aube install
-  path, and aube's `nodeVersion` is validation-only and lives in an `.npmrc` that
-  mise owns and rewrites. If a specific step genuinely needs a matching runtime,
-  scope it at the call site with `mise x node@24 npm:<pkg> -- <cmd>`.
-- `N transitive packages have deprecation warnings`. aube's
-  `deprecationWarnings` defaults to `direct`, which prints a count for
-  transitives. These belong to the package's own dependency tree, so there is
-  nothing to fix locally, and the only levers (`AUBE_DEPRECATION_WARNINGS`,
-  `allowedDeprecatedVersions`) are global or in the mise-owned `.npmrc`.
-
-Conversely, `RE2 not usable, falling back to RegExp` from `npm:renovate` **is**
-actionable: `re2` is an optional native dep whose build aube denies by default,
-so it needs `allow_builds = ["re2"]`.
-
-### Backend Caveats (pipx git sources)
-
-For `pipx:git+https://github.com/<owner>/<repo>.git`, mise resolves versions
-from that repo's **GitHub releases only**, never tags and never branches. A repo
-with tags but no releases lists zero versions.
-
-A branch pin therefore makes every `mise upgrade` warn:
-
-```
-Error getting latest version for pipx:git+https://…: no latest version found
-```
-
-The pin still installs correctly. Only "what is latest?" fails. Fixes, best
-first: cut a GitHub release in the fork and pin that tag, or pass
-`mise upgrade --exclude '<full backend spec>'`. The short tool name does not
-match, and `minimum_release_age_excludes` does not help, since it is a different
-code path.
-
-A newly published release stays hidden for 24h under the default
-`minimum_release_age`, so the same warning persists until the window passes.
-Confirm that is the only cause with `MISE_MINIMUM_RELEASE_AGE=0s mise upgrade --dry-run`.
-
-When pinning a fork tag, avoid a bare upstream-shaped version. A suffix such as
-`v0.134.0-whole-ride.1` keeps the tag from colliding with a future upstream
-`v0.134.0`. Note that semver reads that suffix as a _prerelease_ which sorts
-**below** plain `0.134.0`, so Renovate ranks any upstream tag higher and would
-silently drop the fork's patches. Disable the package in `~/.renovaterc.json` and
-re-tag by hand after rebasing onto upstream (see
-`pedropombeiro/gopro-dashboard-overlay`).
-
-### Packslip backend
-
-[Packslip](https://packslip.dev) lets a vendor publish a signed release manifest
-that describes its binaries and version-matched resources. mise verifies the
-vendor's Sigstore signature and each artifact's checksum before installation.
-This avoids relying on mise's bundled aqua registry snapshot for release layout
-and verification metadata.
-
-Check backend availability and current registry entries with:
-
-```bash
-mise backends ls | rg '^packslip$'
-mise registry | rg 'packslip:'
-```
-
-Registry entries can prefer Packslip without an explicit backend prefix in the
-tool configuration. Use `mise tool <name>` to inspect the resolved backend and
-security metadata.
-
-To check whether a GitHub release publishes a Packslip manifest, replace
-`OWNER/REPO` with the vendor's repository:
+To check a vendor release for a manifest:
 
 ```bash
 curl -fsSL https://api.github.com/repos/OWNER/REPO/releases/latest \
   | jq '[.assets[].name] | map(select(test("packslip")))'
 ```
 
-Use `mise skills ls` to discover skills supplied by active tool versions and
-their installed paths.
+Before pinning a Packslip version, check Renovate's support for the backend.
+`latest` entries do not need version updates; the existing backend grouping rule
+matches mise config by path.
 
-#### Completions and skills policy
+### Completions and skills policy
 
-Packslip completions follow the active tool version through mise's shell
-activation. That provides little benefit while tools are configured globally as
-`latest`, without project-specific version divergence. Keep the existing static
-completion setup in `~/.shellrc/zshrc.d/configs/pre/060-generate-completions.zsh`
-until a Packslip tool needs version-specific completions.
+Keep static completions in
+`~/.shellrc/zshrc.d/configs/pre/060-generate-completions.zsh` until a tool needs
+version-specific completions. Packslip completions follow the active version
+through shell activation.
 
-Leave `settings.skills.auto_sync` disabled. `~/.agents/skills` contains both
-yadm-tracked directories and manually managed links into local repositories.
-Automatic synchronization would let a tool upgrade change agent instructions
-without review. The related settings have these effects:
+Keep `skills.auto_sync` disabled so tool upgrades cannot change agent instructions
+without review. `~/.agents/skills` contains both YADM-tracked directories and
+manually managed links.
 
 | Setting            | Default          | Local policy                                      |
 | ------------------ | ---------------- | ------------------------------------------------- |
 | `skills.fetch`     | `true`           | Keep enabled; fetching does not activate a skill. |
-| `skills.dir`       | `.claude/skills` | Set explicitly only for a manual sync.            |
+| `skills.dir`       | `.claude/skills` | Set explicitly for a manual sync.                 |
 | `skills.auto_sync` | `false`          | Keep disabled.                                    |
 | `skills.prune`     | `false`          | Use only with a reviewed manual sync.             |
 | `packslip.exec`    | `false`          | Keep disabled unless a resource requires it.      |
 
-Use the bundled `hk-configure` and `hk-debug` skills for configuration and
-diagnosis. The local `hk-yadm` skill contains dotfiles-specific rules and links
-to [hk guidance](hk.md).
-
-To activate reviewed skills on another machine or after an hk upgrade:
+To activate reviewed skills on another machine or after an upgrade:
 
 1. Run `mise skills ls` and review every listed skill at its installed path.
 2. Run `mise skills sync --dir "$HOME/.agents/skills"`. This syncs all listed
-   skills, not just hk's skills.
+   skills, including those bundled with hk.
 3. Restart the agent so it discovers the new skills.
 
-The generated symlinks and `.mise-skills.json` are local installation state.
-Keep them untracked and repeat the review and manual sync after upgrades. The
-links point to a specific installed version, so retain that version until the
-links are updated. The `hk-configure` and `hk-debug` paths have narrow hk exclusions to prevent fixers
-from modifying the installed upstream files. The local `hk-yadm` skill receives
-normal checks.
+Generated symlinks and `.mise-skills.json` are untracked local installation state.
+Repeat review and manual sync after upgrades. Retain the old installed version
+until its skill links are updated. Keep narrow hk exclusions for linked upstream
+skills; locally maintained skills receive normal checks. See [hk guidance](hk.md)
+for skill selection.
 
-Before pinning a Packslip tool version, check Renovate's support for the backend.
-`latest` entries do not require Renovate version updates, and the existing
-backend grouping rule matches mise configuration by file path.
+## QNAP/QTS compatibility
 
-## QNAP/QTS Compatibility
-
-The QTS environment has glibc 2.21 limitations. Distro-specific pins live in
+QTS has glibc 2.21 limitations. Pins live in
 `~/.config/mise/conf.d/tools.qts.toml`.
 
-- **Python**: QTS has no musl loader, so precompiled binaries must use the gnu variant.
-  Use `x86_64` (not `x86_64_v2`) for `precompiled_arch` — the v2 build embeds
-  `-march=x86-64-v2` in Python's sysconfig CFLAGS, which breaks C extension compilation
-  with the system GCC 8.4 (only GCC 11+ supports that flag). Python and all Python CLI
-  tools are fully mise-managed — opkg python3/python3-pip are **not** installed.
-- **Node**: Uses unofficial builds with glibc-217 flavor.
+- Python requires GNU precompiled binaries because QTS has no musl loader.
+  Set `precompiled_arch = "x86_64"` and `precompiled_os = "unknown-linux-gnu"`.
+  The `x86_64_v2` build embeds compiler flags unsupported by GCC 8.4, breaking
+  C extensions. Python and its CLI tools are mise-managed; do not install opkg
+  `python3` or `python3-pip`.
+- Node uses `mirror_url = "https://unofficial-builds.nodejs.org/download/release/"`
+  and `flavor = "glibc-217"` under `[settings.node]`.
 
-```toml
-[settings.python]
-precompiled_arch = "x86_64"
-precompiled_os = "unknown-linux-gnu"
-
-[settings.node]
-mirror_url = "https://unofficial-builds.nodejs.org/download/release/"
-flavor = "glibc-217"
-
-[tools]
-python = "3.14"
-node = "23.7.0"
-```
-
-## Common Operations
+## Common operations
 
 ```bash
 mise install          # Install tools from config
-mise use <tool>       # Add a new tool
-mise upgrade          # Update all tools
+mise use <tool>       # Add a tool
+mise upgrade          # Update tools
 mise list             # List installed tools
 mise outdated         # Check for outdated tools
 ```
 
-## Task Usage Headers
+Prefer mise-managed tools over system packages. Use `latest` where appropriate
+and document QTS compatibility constraints. Prefer `github:` or `aqua:` over
+compiler-backed backends when suitable cross-platform release artifacts exist.
 
-For file-based tasks (e.g. `.mise/tasks/*`), define arguments using `#USAGE` directives.
-`#MISE usage=...` is not supported and will cause `mise` to reject the task file.
+## Tool postinstall hooks
 
-Example:
+Attach tool-specific setup to that tool's `postinstall` option. It runs after
+installation or reinstallation and receives `MISE_TOOL_NAME`, `MISE_TOOL_VERSION`,
+and `MISE_TOOL_INSTALL_PATH`. Avoid a global `[hooks].postinstall` script that
+inspects `MISE_INSTALLED_TOOLS` for setup belonging to one tool.
 
-```bash
-#!/usr/bin/env bash
-#MISE description="Build with sourcemaps"
-#USAGE arg "<package>" help="Package to build"
-```
+Safe mode (`MISE_SAFE=1`) blocks tool-level postinstall hooks.
 
-## Task Semantics
+## Renovate integration
 
-- `[task_config].includes` replaces mise's default file-task search paths. Include
-  `~/.config/mise/tasks` explicitly when adding another task directory. In a global
-  `conf.d` fragment, use home-relative paths rather than paths relative to the fragment.
-- `depends = [...]` runs the listed tasks **in parallel**. To force sequential
-  execution, use a `run` array instead — its entries run in order.
-- `sources` / `outputs` enable caching: mise skips the task when every `sources`
-  glob is older than every `outputs` glob.
-- `run_windows` overrides `run` on Windows.
-
-## Tool Postinstall Hooks
-
-Use a tool-level `postinstall` option for setup that belongs to one installed
-tool. The hook runs only after that tool is installed or reinstalled and receives
-`MISE_TOOL_NAME`, `MISE_TOOL_VERSION`, and `MISE_TOOL_INSTALL_PATH`. This is
-preferable to a global `[hooks].postinstall` script that inspects
-`MISE_INSTALLED_TOOLS`.
-
-Safe mode (`MISE_SAFE=1`) blocks tool-level postinstall hooks because they execute
-configuration-provided code.
-
-## Renovate Integration
-
-Tools are auto-updated by Renovate bot via `~/.renovaterc.json`. Check PRs for pending updates before manual upgrades.
-
-## Guidelines
-
-- Prefer mise-managed tools over system packages
-- Use `latest` version when appropriate
-- Document QNAP compatibility issues
-- Use `pipx:` backend for Python CLI tools; always include `pipx` itself in `MISE_TOOLS` when used in CI
-- Before using `uv:` backend, confirm it appears in `mise backends` — it requires a newer mise version
-- For `npm:` install failures, identify which aube gate fired before adding an exception; use the per-tool option, not a global setting
-- When a `gem:` tool fails on a Ruby version constraint, check `mise ls ruby` for `(missing)` before debugging the gem
-- Use `mise tool ruby` to verify `core:ruby` selection both globally and inside the GDK
-- To vary a tool per machine class, declare it only in the matching environment fragment, never alongside an entry in `config.toml`
-- Use `settings.github.credential_command` rather than `env._.source` for lazy GitHub authentication
-- Attach install-specific setup to the relevant tool with `postinstall`, not a global postinstall hook
-- Prefer Packslip when the vendor publishes a signed manifest. Check resolution with `mise tool <name>` and keep skill synchronization manual
-- Prefer `github:` or `aqua:` over compiler-backed backends for cross-platform tools when the vendor publishes suitable release artifacts
+Renovate updates tool pins through `~/.renovaterc.json`. Check pending PRs before
+manual upgrades. See [Renovate guidance](renovate.md) for rules and troubleshooting.

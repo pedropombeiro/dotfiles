@@ -101,10 +101,8 @@ cached installation for `latest`, including in CI.
 
 Check current version: `hk --version`
 
-Upgrade the binary and package pins together, then run `yadm enter hk validate`.
-The v1.44.1 package fails under hk 2.0.0 with
-`listing index amendment requires an Int index`. hk v2 uses its built-in Pkl
-evaluator and no longer requires the standalone `pkl` CLI.
+After upgrading, run `yadm enter hk validate`. hk v2 uses its built-in Pkl
+evaluator and does not require the standalone `pkl` CLI.
 
 ## Caveats
 
@@ -115,15 +113,6 @@ Several steps walk the **filesystem**, not the git index, so a symlink pointing 
 
 For fixer steps this is destructive: they write to a repo you did not intend to touch, and
 the edit lands silently because the file is untracked (`yadm status` stays clean).
-
-Observed with `~/.agents/skills/orbit`, a symlink into
-`~/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph`:
-
-- `editorconfig-checker` failed the commit on upstream Python whose continuation-line
-  indents it misreads. Noisy but harmless.
-- **`typos` rewrote files in the upstream clone**, renaming a real GitLab Rails concern and
-  an abbreviated local variable. The latter broke a subcommand, since the definition was
-  renamed but not every reference.
 
 Mitigation: exclude the symlinked path per step, scoped as narrowly as possible so sibling
 files keep coverage.

@@ -1,7 +1,8 @@
 {
   "$schema": "https://opencode.ai/v2/cli.json",
   "keybinds": {
-    "session.toggle.scrollbar": "ctrl+alt+t"
+    "session.toggle.scrollbar": "ctrl+alt+t",
+    "agent.cycle.reverse": "tab"
   },
   "scroll": {
     "speed": 3,

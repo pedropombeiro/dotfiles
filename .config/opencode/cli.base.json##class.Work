@@ -7,7 +7,8 @@
     "session.first": "ctrl+g",
     "session.last": "ctrl+alt+g",
     "input.buffer.home": "none",
-    "input.buffer.end": "none"
+    "input.buffer.end": "none",
+    "agent.cycle.reverse": "tab"
   },
   "scroll": {
     "speed": 3,

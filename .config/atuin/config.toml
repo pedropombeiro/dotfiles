@@ -216,6 +216,7 @@ common_subcommands = [
   "npm",
   "oc",
   "opencode",
+  "opencode.exe",
   "opkg",
   "pip",
   "rails",

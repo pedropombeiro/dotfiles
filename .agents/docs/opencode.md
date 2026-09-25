@@ -83,12 +83,12 @@ and `cli.base.json##class.Work` instead. `~/.shellrc/rc.d/opencode.sh` exports i
 
 ## Models
 
-`opencode.json` sets one top-level `model` instead of per-agent models. OpenCode 2 has no
-interactive `--model` flag, so the `oc` wrapper passes `$OPENCODE_MODEL` through
-`OPENCODE_CONFIG_CONTENT` with `--standalone` for the TUI, and `--model` for `oc run`.
-Other subcommands run unchanged because `--standalone` is a root-only flag. Inline config
-only overrides the top-level `model`, not per-agent models, and only a private server sees
-the client's environment.
+`opencode.json` pins per-agent models: `plan` uses Astra and `build` uses Opus 5.5. The
+top-level `model` covers other agents, and `small_model` covers maintenance tasks.
+Per-agent models take precedence over the top-level `model`, so the `oc` wrapper's inline
+`$OPENCODE_MODEL` override (`OPENCODE_CONFIG_CONTENT` with `--standalone`) no longer changes
+the model for `plan` or `build`. An explicit `opencode run --model` still wins over the
+agent's model, so `oc run` and `git-ai-commit-msg` (`$OPENCODE_COMMIT_MODEL`) are unaffected.
 
 Set the default model in `opencode.json`, not in `$OPENCODE_MODEL`. When the variable is set,
 every `oc` launch uses a private server instead of the shared service, and it diverges from

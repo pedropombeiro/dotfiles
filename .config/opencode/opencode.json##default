@@ -6,10 +6,14 @@
     "opencode-atuin-history@1.0.1",
     "opencode-homeassistant@1.0.2"
   ],
-  // One model for every agent so `oc` can override it inline (OPENCODE_CONFIG_CONTENT);
-  // OpenCode 2 ignores inline overrides of per-agent models.
+  // Per-agent models take precedence over the top-level model, so `oc`'s inline
+  // $OPENCODE_MODEL override (OPENCODE_CONFIG_CONTENT) does not apply to plan/build.
   "model": "gitlab/duo-chat-opus-5-5",
   "default_agent": "plan",
+  "agents": {
+    "plan": { "model": "gitlab/duo-chat-gpt-6-astra" },
+    "build": { "model": "gitlab/duo-chat-opus-5-5" }
+  },
   "small_model": "gitlab/duo-chat-gpt-6-luna",
   "mcp": {
     "lazy-mcp": {
@@ -147,7 +151,9 @@
             }
           }
         },
+        // Superseded by GPT 6 (Sol, Luna, Astra).
         "duo-chat-gpt-5-6-sol": {
+          "status": "deprecated",
           "cost": {
             "input": 5,
             "output": 30,
@@ -159,6 +165,7 @@
           }
         },
         "duo-chat-gpt-5-6-terra": {
+          "status": "deprecated",
           "cost": {
             "input": 2,
             "output": 12,
@@ -170,6 +177,7 @@
           }
         },
         "duo-chat-gpt-5-6-luna": {
+          "status": "deprecated",
           "cost": {
             "input": 0.20,
             "output": 1.20,

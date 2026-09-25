@@ -430,6 +430,7 @@
       "yamllint *": "allow",
       "zsh -n *": "allow",
     },
+    "execute": "allow",
     "external_directory": {
       "/private/tmp/**/*": "allow",
       "/private/tmp/*": "allow",
@@ -451,9 +452,7 @@
       "~/.ssh/*": "deny"
     },
     "list": "allow",
-    "todoread": "allow",
-    "webfetch": "ask",
-    "websearch": "ask",
+    "question": "allow",
     "skill": {
       "gh": "allow",
       "google-dev-docs-style": "allow",
@@ -464,6 +463,9 @@
       "general": "allow",
       "explore": "allow"
     },
-    "todowrite": "allow"
+    "todoread": "allow",
+    "todowrite": "allow",
+    "webfetch": "ask",
+    "websearch": "ask"
   }
 }

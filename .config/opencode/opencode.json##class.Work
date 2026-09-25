@@ -535,6 +535,7 @@
       "glab api *-f *": "ask",
       "glab api *-F *": "ask",
     },
+    "execute": "allow",
     "external_directory": {
       "~/.agents/docs/*": "allow",
       "/tmp": "allow",
@@ -566,9 +567,7 @@
       "~/.ssh/*": "deny"
     },
     "list": "allow",
-    "todoread": "allow",
-    "webfetch": "ask",
-    "websearch": "ask",
+    "question": "allow",
     "skill": {
       "clickhouse": "allow",
       "db-migrations": "allow",
@@ -610,6 +609,9 @@
       "workers-reviewer": "allow",
       "feature-flags-reviewer": "allow"
     },
-    "todowrite": "allow"
+    "todoread": "allow",
+    "todowrite": "allow",
+    "webfetch": "ask",
+    "websearch": "ask"
   }
 }

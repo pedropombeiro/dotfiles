@@ -68,6 +68,11 @@ When renaming or adding files:
 2. Verify with `yadm status` that only `##` files are staged, not bare symlinks
 3. If symlinks appear in staging, use `yadm reset HEAD <symlink>` to unstage them
 
+yadm doesn't remove a link after the last alternate for that name is renamed or
+deleted. The `post_alt` hook runs `prune-dangling-alt-links.zsh`, which deletes
+broken symlinks whose target name contains `##`, only in directories that hold
+tracked files. Run it with `--dry-run` to preview.
+
 ### Workflow
 
 1. Use `yadm ls-files` to find relevant files quickly

@@ -16,6 +16,11 @@ the task needs them.
 - Never post or reply to issues, MRs/PRs, comments, discussions, chat, or any external channel without explicit user approval. Draft the content and ask for confirmation first.
 - Before drafting technical prose or a multi-line commit message body, read `~/.agents/docs/writing-style.md` first.
 
+## Grilling Skill Override
+
+- When using the `grilling` skill, ask each round through the `question` tool. Batch independent questions in one call, number them, and put the recommended option first with `(Recommended)` in its label. Wait for answers before asking dependent questions. This overrides the skill's Markdown question format.
+- Phrase multiple-choice selections positively: ask which items to include or enable, and state what happens to unselected items.
+
 ## Search Routing
 
 - For Pedro's personal notes, memos, and saved snippets, use the `memos` MCP server.

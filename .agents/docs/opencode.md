@@ -32,8 +32,12 @@ Permission `allow` entries do not form an allowlist.
 
 `~/.config/opencode/plugins/env-protection.js` is a plain tracked file, so it is active on
 every machine. It blocks direct access to configured credential files, redacts values read
-through shell commands, detects common structured tokens, scrubs replayed message history,
-and refuses to persist literal secrets through file, shell, or GitLab write tools.
+through shell commands, detects common structured tokens, and scrubs replayed message
+history. It refuses any tool call whose input contains a literal structured secret, except
+`read`, `grep`, and `glob`, which stay local. That covers file writes, MCP calls through
+`lazy-mcp`, web search and fetch, and subagent prompts. Shell commands are checked only
+when they print or write text (`echo`, `printf`, `tee`, heredocs), because commands such as
+`curl -H` can legitimately pass a token.
 
 Home-directory path rules belong under `read` and `edit` in `permission`, never as
 top-level keys: a top-level key is an action name, so `"~/.ssh/*": "deny"` there matches
@@ -65,6 +69,22 @@ OpenCode 2 splits plugins by where they run:
   `{ id, setup(ctx) }`. The shell tool is named `shell`, and file tools take `path`.
   Tool hooks also fire for tools called through Code Mode (`execute`), with the inner
   tool's name.
+
+### Editing local plugins
+
+The background service reloads a local plugin as soon as its file changes, so every
+intermediate state of a multi-step edit goes live. A tool hook that throws blocks
+every tool call, including the edits that would fix it. A half-applied change to
+`env-protection.js` once left an agent unable to run any tool until a human repaired
+the file.
+
+- Change a local plugin in one complete write, never as a series of edits.
+- Test the new version before writing it: load a copy with `node`, appending
+  `export { check }` (or the relevant function) to the source, and run it against
+  test cases. Build test inputs such as fake tokens or `rm -rf` at runtime, so that
+  the live plugins don't block the test command itself.
+- If an agent is locked out, fix or revert the file from a terminal, for example
+  with `yadm checkout -- ~/.config/opencode/plugins/<plugin>.js`.
 
 ## Terminal config
 

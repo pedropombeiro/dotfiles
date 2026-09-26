@@ -64,6 +64,7 @@ Thumbs.db
 .config/yadm/bootstrap.d/020-disable-spotlight-indexing.sh
 .config/yadm/bootstrap.d/025-link-to-user-home-mise.toml.sh
 .config/yadm/bootstrap.d/035-add-gdk-to-etc-hosts.sh
+.config/yadm/bootstrap.d/040-sync-grc-rs-configs.sh
 .config/yadm/bootstrap.d/900-install-nginx.sh
 .config/yadm/bootstrap.d/901-configure-hammerspoon-firewall.sh
 .config/yadm/bootstrap.d/915-install-tmux-terminfo.sh

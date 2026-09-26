@@ -8,8 +8,8 @@ YADM bootstrap scripts for automated system setup.
 ~/.config/yadm/
 ├── bootstrap              # Main entry point
 └── bootstrap.d/           # Numbered scripts (run in order, 000-999)
-    ├── 000-099            # Early setup (machine class, touchid, launch agents, software install, zinit, firewall, spotlight, mise)
-    ├── 100-199            # Configuration (gitconfig, defaults, relink dotfiles)
+    ├── 000-099            # Early setup (machine class, touchid, launch agents, software install, zinit, firewall, spotlight, mise, grc-rs rules)
+    ├── 100-199            # Configuration (defaults, relink dotfiles)
     ├── 200-499            # (reserved for future use)
     ├── 500-699            # (reserved for future use)
     ├── 700-899            # (reserved for future use)

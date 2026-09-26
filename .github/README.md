@@ -11,6 +11,7 @@ featuring a carefully curated development environment with powerful CLI tools an
 - [Quick Start](#quick-start)
   - [macOS](#macos)
   - [Linux (Debian/Ubuntu)](#linux-debianubuntu)
+  - [Machine classes and alternates](#machine-classes-and-alternates)
 - [Post-Installation](#post-installation)
   - [Fresh Installation - macOS](#fresh-installation---macos)
   - [Fresh Installation - Linux](#fresh-installation---linux)
@@ -140,6 +141,19 @@ yadm config local.class Personal
 yadm bootstrap
 source ~/.zshrc.shared
 ```
+
+### Machine classes and alternates
+
+Every machine sets one class: `Personal`, `Work`, or `NAS`. Files that vary between machines use
+yadm alternates:
+
+- `##class.<NAME>` for what the machine is for, such as NAS services and hosts
+- `##os.<NAME>` for macOS and Linux differences
+- `##distro.qts` for QNAP QTS platform limits
+
+Shared content lives in a base file that includes a small per-machine file, or in a `##template`.
+A pre-commit check rejects alternates that share more than 50 lines. See
+[the layout rules](../.agents/docs/yadm-layout.md) for details.
 
 ## Post-Installation
 

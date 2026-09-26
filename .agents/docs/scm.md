@@ -25,12 +25,13 @@ editor, prefix with `GIT_EDITOR=true` to prevent the editor from blocking
 
 ### File Organization
 
-- **Alternate files**: Use suffixes for platform-specific configs
-  - `##distro.qts` - QNAP QTS platform differences
-  - `##class.NAS` - NAS role (services, hosts, aliases)
-  - `##os.Darwin` - macOS
-  - `##os.Linux` - Linux
-  - `##class.Work` - Work machines
+- **Alternate files**: Use suffixes for per-machine configs. See
+  [YADM Layout](yadm-layout.md) for when to use each condition, and for the
+  alternatives to full-copy alternates.
+  - `##class.Personal`, `##class.Work`, `##class.NAS` - Machine role
+  - `##os.Darwin`, `##os.Linux` - Operating system
+  - `##distro.qts` - QNAP QTS platform limits
+  - `##template` - Rendered by yadm with `yadm.class` and other variables
   - Combined: `##os.Darwin,class.Work`
 - **Agent docs**: `~/.agents/docs/` - Documentation for agents
 - **Bootstrap**: `~/.config/yadm/bootstrap.d/` - Setup scripts (000-999 numbering)
@@ -43,8 +44,9 @@ YADM automatically creates symlinks for alternate files (e.g., `foo.sh` -> `foo.
 **Alternate files are not additive.** Only the best-matching file is symlinked. For example, if
 both `foo.sh##os.Darwin` and `foo.sh##class.Work` exist, YADM will link only the best match for
 the current system. Each alternate file must be self-contained and not depend on other alternates
-being present. Do not split shared content across alternates expecting a merge or fallback; copy
-the full shared content into each alternate that needs it.
+being present. Do not split shared content across alternates expecting a merge or fallback. To
+share content, use a base file that includes a small alternate, conditions in a single file, or a
+template, as described in [YADM Layout](yadm-layout.md#varying-a-file-between-machines).
 
 Example:
 

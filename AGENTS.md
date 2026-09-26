@@ -25,6 +25,10 @@ Search tracked dotfiles with `yadm ls-files` and `yadm grep` to avoid traversing
 unrelated home-directory files. Use filesystem searches when untracked or ignored
 files matter.
 
+Before adding, moving, or adding per-machine variants of tracked files, read
+[YADM Layout](~/.agents/docs/yadm-layout.md) for the class, distro, and
+alternate-file rules.
+
 ## Externally installed skills
 
 Treat skills installed by `npx skills` as vendored upstream snapshots. Track the

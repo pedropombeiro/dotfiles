@@ -117,7 +117,6 @@ Thumbs.db
 .shellrc/zshrc.d/configs/pre/400-mise-arch.zsh
 .shellrc/zshrc.d/configs/pre/900-load-entware-profile.sh
 .shellrc/zshrc.d/configs/pre/gitlab/gdk.zsh
-.shellrc/zshrc.d/configs/pre/yadm.sh
 .shellrc/zshrc.d/configs/rails.zsh
 .shellrc/zshrc.d/configs/rust.zsh
 .shellrc/zshrc.d/configs/tmux.platform.zsh

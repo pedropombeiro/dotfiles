@@ -52,6 +52,22 @@ fi
 unset gopro_graphics
 
 class="$(yadm config local.class)"
+
+# Internal Work files that must not be in the public repo live under home/ in
+# the private gitlab-dotfiles checkout, at their path relative to $HOME.
+private_home="${HOME}/.config/dotfiles/gitlab/home"
+if [[ ${class} == 'Work' && -d ${private_home} ]]; then
+  printf "${YELLOW}%s${NC}\n" "Linking private Work files from ${private_home}..."
+  # N = nullglob, D = include dotfiles, . = regular files only
+  for file in "${private_home}"/**/*(ND.); do
+    target="${HOME}/${file#${private_home}/}"
+    mkdir -p "${target:h}"
+    ln -sfn "${file}" "${target}"
+  done
+  unset file target
+fi
+unset private_home
+
 if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then
   src_path="${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}"
   if [[ -d ${src_path} ]]; then

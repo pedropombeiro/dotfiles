@@ -206,6 +206,8 @@ _sync_dotfiles_to_worktree() {
   for dotfiles_file in ${(f)"$(fd --hidden --type f --exclude .git --exclude .gitignore --exclude hk.pkl . "${dotfiles_dir}")"}; do # (f) splits on newlines
     rel_path="${dotfiles_file#${dotfiles_dir}/}"
     [[ "${rel_path}" == README.md ]] && continue
+    # home/ holds private files for $HOME, linked by relink-dotfiles.zsh
+    [[ "${rel_path}" == home/* ]] && continue
     target_file="${target_dir}/${rel_path}"
 
     mkdir -p "${target_file:h}"

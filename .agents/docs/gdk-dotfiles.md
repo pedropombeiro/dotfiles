@@ -72,6 +72,17 @@ git commit
 git push
 ```
 
+## Private files for `$HOME`
+
+The `home/` directory holds Work files that must stay out of the public YADM
+repository, such as internal SSH hosts and staging access scripts. The GDK sync
+skips `home/`. On Work machines, `relink-dotfiles.zsh` symlinks each file under
+`home/` to the same path relative to `$HOME`. For example,
+`home/.ssh/config.d/gitlab_config` becomes `~/.ssh/config.d/gitlab_config`.
+
+Add a file there instead of tracking it in YADM when it names internal
+infrastructure. See [YADM Layout](yadm-layout.md#public-repository).
+
 ## Current contents
 
 Do not hand-maintain an inventory here because it drifts. List ground truth with:

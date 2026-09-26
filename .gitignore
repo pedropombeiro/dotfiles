@@ -83,8 +83,6 @@ Thumbs.db
 .config/yadm/scripts/iterm2-setup.sh
 .config/yadm/scripts/remap-mac-keys.sh
 .config/yadm/scripts/run-checks.zsh
-.config/yadm/scripts/staging-db-ro.sh
-.config/yadm/scripts/staging-rails-ro.sh
 .config/yadm/scripts/update.zsh
 .default-gems
 .hammerspoon/audio.lua

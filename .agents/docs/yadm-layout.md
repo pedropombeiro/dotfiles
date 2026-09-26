@@ -89,6 +89,17 @@ downloads a pinned grc release, and Renovate reads the pin from its
 Skills installed by `npx skills` are the exception. They stay tracked so
 upstream changes show up in `yadm diff`.
 
+## Public repository
+
+The repository is public on GitHub. Track a Work file only if its content would
+be acceptable in GitLab's public handbook. gitleaks catches credentials, but it
+doesn't catch internal host names, Teleport or bastion hosts, staging and
+production database names, internal-only projects, or private document links.
+Review Work-class changes for these by hand before committing.
+
+Put internal Work files under `home/` in the private `gitlab-dotfiles`
+checkout. See [GDK dotfiles sync](gdk-dotfiles.md#private-files-for-home).
+
 ## Secrets
 
 Never commit secrets, encrypted or not. Store them in 1Password and read them at

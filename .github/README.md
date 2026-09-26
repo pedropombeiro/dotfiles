@@ -280,4 +280,4 @@ This dotfiles configuration was inspired by and builds upon ideas from:
 
 ---
 
-**License:** See [LICENSE](LICENSE) file for details
+**License:** See [LICENSE](../LICENSE) file for details

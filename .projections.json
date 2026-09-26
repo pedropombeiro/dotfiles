@@ -20,7 +20,7 @@
   ".config/nvim/lua/config/init.lua": {
     "type": "config"
   },
-  "README.md": {
+  ".github/README.md": {
     "type": "doc"
   },
   ".config/yadm/bootstrap.d/*.sh": {

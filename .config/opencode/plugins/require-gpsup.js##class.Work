@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process"
 import path from "node:path"
 
-const GIT_PUSH_SET_UPSTREAM_PATTERN = /(^|[;&|]\s*)\s*git\s+push\s+.*(-u\b|--set-upstream\b)/
+const GIT_PUSH_SET_UPSTREAM_PATTERN = /(^|[;&|]\s*)\s*git\s+push\s+[^;&|]*(-u\b|--set-upstream\b)/
 const GIT_PUSH_ARGS_PATTERN = /(?:^|[;&|]\s*)\s*git\s+push\s+([^;&|]*)/
 const CD_PREFIX_PATTERN = /^\s*cd\s+("[^"]+"|'[^']+'|\S+)\s*&&/
 
@@ -36,7 +36,13 @@ const remoteUrls = (remote, cwd) => {
 
 const isGitLabRemote = (url) => url === undefined || /(^|[@/.])gitlab\.com[:/]/.test(url)
 
-const check = (command = "", workdir, fallback) => {
+// Join `\`-newline continuations and treat other newlines as command separators,
+// so a push on a later line of a multi-line command still matches the
+// command-boundary anchor.
+const normalize = (command) => command.replace(/\\\r?\n/g, " ").replace(/\r?\n/g, ";")
+
+const check = (rawCommand = "", workdir, fallback) => {
+  const command = normalize(rawCommand)
   if (!GIT_PUSH_SET_UPSTREAM_PATTERN.test(command)) {
     return
   }

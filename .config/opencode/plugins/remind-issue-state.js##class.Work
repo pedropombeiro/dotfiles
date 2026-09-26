@@ -45,8 +45,13 @@ const REMINDER = [
   "`start-issue.sh` instead, which sets both and the Status in one step.",
 ].join("\n")
 
+// Join `\`-newline continuations and treat other newlines as command separators,
+// so an MR command on a later line of a multi-line command still matches the
+// command-boundary anchors.
+const normalize = (command) => command.replace(/\\\r?\n/g, " ").replace(/\r?\n/g, ";")
+
 const isMrCreationCommand = (command) =>
-  MR_CREATION_COMMAND_PATTERNS.some((pattern) => pattern.test(command))
+  MR_CREATION_COMMAND_PATTERNS.some((pattern) => pattern.test(normalize(command)))
 
 const resultText = (result) =>
   [

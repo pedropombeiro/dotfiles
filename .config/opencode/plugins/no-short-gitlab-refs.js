@@ -23,11 +23,17 @@ const findShortReference = (message) => {
   }
 }
 
-const check = (command = "") => {
+// Join `\`-newline continuations and treat other newlines as command separators,
+// so a commit on a later line of a multi-line command still matches the
+// command-boundary anchor.
+const normalize = (command) => command.replace(/\\\r?\n/g, " ").replace(/\r?\n/g, ";")
+
+const check = (rawCommand = "") => {
   if (process.env.OPENCODE_ALLOW_SHORT_GITLAB_REFS === "1") {
     return
   }
 
+  const command = normalize(rawCommand)
   const commitOrTag = command.match(COMMIT_OR_TAG_PATTERN)
 
   if (!commitOrTag || commitOrTag.index === undefined) {

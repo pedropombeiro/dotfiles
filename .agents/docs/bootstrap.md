@@ -46,7 +46,7 @@ source "${YADM_SCRIPTS}/colors.sh"
 
 `yadm bootstrap` provisions a machine. Run it on first install and on demand,
 for example after a failure or after adding a script. Updates don't run it:
-`update.zsh` runs `mise bootstrap` for packages, repositories, and user
+on macOS, `update.zsh` runs `mise bootstrap` for packages, repositories, and user
 LaunchAgents. See [Mise](mise.md#configuration) for its scope.
 
 Put anything that must stay converged on every update in the mise

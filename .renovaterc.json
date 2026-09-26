@@ -128,6 +128,14 @@
       "matchManagers": ["mise"],
       "matchPackageNames": ["pedropombeiro/gopro-dashboard-overlay"],
       "enabled": false
+    },
+    {
+      "description": "Bump the CI mise pin and the min_version floor in global.toml together. mise tags releases as vX.Y.Z; both pins omit the prefix.",
+      "matchManagers": ["custom.regex"],
+      "matchPackageNames": ["jdx/mise"],
+      "extractVersion": "^v?(?<version>.*)$",
+      "groupName": "mise version pin",
+      "groupSlug": "mise-version-pin"
     }
   ],
   "mise": {
@@ -194,6 +202,14 @@
       ],
       "matchStrings": [
         "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\s*\\n[^\\n]*=\\s*\"(?<currentValue>[^\"]+)\""
+      ]
+    },
+    {
+      "description": "Versions pinned in GitHub workflows with a `# renovate: datasource=... depName=...` comment on the preceding line",
+      "customType": "regex",
+      "managerFilePatterns": ["/(^|/)\\.github/workflows/[^/]+\\.ya?ml$/"],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\s*\\n[^\\n]*:\\s*\"(?<currentValue>[^\"]+)\""
       ]
     }
   ]

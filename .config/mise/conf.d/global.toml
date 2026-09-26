@@ -1,3 +1,9 @@
+# Keep every machine at or above the mise version CI pins in
+# .github/workflows/ci.yml. Soft, so a lagging QTS install warns instead of
+# breaking shell activation. Renovate bumps both together.
+# renovate: datasource=github-releases depName=jdx/mise
+min_version = { soft = "2026.9.14" }
+
 [tools]
 # ── Shell UX ──────────────────────────────────────────────────────────
 # Shell history with sync and search

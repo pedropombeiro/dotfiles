@@ -264,6 +264,16 @@ function check_skill_lock_orphans() {
 check_agent_doc_links
 check_skill_lock_orphans
 
+print_op_stay "Checking yadm alternates for duplicated content"
+if alt_duplication=$("${YADM_SCRIPTS}/check-alt-duplication.zsh" 2>&1); then
+  print_ok
+else
+  echo
+  print_failure "${alt_duplication}"
+  any_failed=1
+fi
+unset alt_duplication
+
 # Runs in a subshell: the check defines its own print helpers and an allowlist
 # that must not leak into the shared namespace here.
 if [[ -x "${YADM_SCRIPTS}/check-glibc-compat.zsh" ]]; then

@@ -184,6 +184,15 @@ local fast_steps = new Mapping<String, Step> {
           "$script" {{files}}
           """
     }
+    ["no-duplicated-yadm-alts"] {
+        glob = List("**/*##*")
+        check = """
+          script="$HOME/.config/yadm/scripts/check-alt-duplication.zsh"
+          [ -x "$script" ] || exit 0
+          [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$HOME" ] || exit 0
+          "$script"
+          """
+    }
     ["mise-fmt"] = (Builtins.mise) {}
     ["renovate-config-validator"] {
         glob = List("*renovate*")

@@ -1,6 +1,9 @@
 {
+{% if yadm.class == "Work" %}
   "requestTimeout": 120000,
+{% endif %}
   "servers": [
+{% if yadm.class == "Work" %}
     {
       "name": "gitlab",
       "description": "GitLab MCP server",
@@ -11,42 +14,13 @@
       "name": "gitlab-orbit",
       "description": "GitLab repository knowledge graph and code analysis",
       "type": "local",
-      "command": [
-        "npx",
-        "mcp-remote",
-        "https://gitlab.com/api/v4/orbit/mcp"
-      ]
-    },
-    {
-      "name": "context7",
-      "description": "Library documentation and code examples",
-      "type": "local",
-      "command": [
-        "npx",
-        "-y",
-        "@upstash/context7-mcp"
-      ]
+      "command": ["npx", "mcp-remote", "https://gitlab.com/api/v4/orbit/mcp"]
     },
     {
       "name": "pinchtab",
       "description": "Browser control for AI agents via PinchTab",
       "type": "local",
-      "command": [
-        "pinchtab",
-        "mcp"
-      ]
-    },
-    {
-      "name": "websearch",
-      "description": "Web search via Exa AI",
-      "type": "remote",
-      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa,web_search_advanced_exa"
-    },
-    {
-      "name": "grep_app",
-      "description": "GitHub code search via grep.app",
-      "type": "remote",
-      "url": "https://mcp.grep.app"
+      "command": ["pinchtab", "mcp"]
     },
     {
       "name": "glean_default",
@@ -61,10 +35,21 @@
       "name": "incident_io",
       "description": "Gitlab.com incident management tool",
       "type": "local",
-      "command": [
-        "/Users/pedropombeiro/.incidentio/incident",
-        "mcp"
-      ]
+      "command": ["/Users/pedropombeiro/.incidentio/incident", "mcp"]
+    },
+{% endif %}
+{% if yadm.class != "NAS" %}
+    {
+      "name": "websearch",
+      "description": "Web search via Exa AI",
+      "type": "remote",
+      "url": "https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa,web_search_advanced_exa"
+    },
+    {
+      "name": "grep_app",
+      "description": "GitHub code search via grep.app",
+      "type": "remote",
+      "url": "https://mcp.grep.app"
     },
     {
       "name": "memos",
@@ -74,6 +59,13 @@
       "headers": {
         "Authorization": "Bearer {file:~/.config/lazy-mcp/memos-token}"
       }
+    },
+{% endif %}
+    {
+      "name": "context7",
+      "description": "Library documentation and code examples",
+      "type": "local",
+      "command": ["npx", "-y", "@upstash/context7-mcp"]
     }
   ]
 }

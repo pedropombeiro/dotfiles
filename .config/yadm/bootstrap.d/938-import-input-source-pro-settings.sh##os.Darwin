@@ -10,11 +10,14 @@ if [[ ! -f "${backup}" ]]; then
   exit 0
 fi
 
-# Re-import only when the backup changed, so a re-run doesn't overwrite
-# settings changed since the last import
-marker="${XDG_STATE_HOME:-${HOME}/.local/state}/yadm/input-source-pro-imported"
-if [[ -f "${marker}" && ! "${backup}" -nt "${marker}" ]]; then
-  echo "Skipping Input Source Pro import: backup unchanged since last import"
+# The marker holds the hash of the last backup confirmed as imported, so a
+# re-run doesn't overwrite settings changed since then. The import URL gives no
+# result, so only a confirmation at the prompt records it. Set
+# INPUT_SOURCE_PRO_FORCE_IMPORT=1 to import an unchanged backup again.
+marker="${XDG_STATE_HOME:-${HOME}/.local/state}/yadm/input-source-pro-imported.sha256"
+backup_hash="$(shasum -a 256 "${backup}" | cut -d' ' -f1)"
+if [[ ${INPUT_SOURCE_PRO_FORCE_IMPORT:-} != 1 && -f "${marker}" && "$(<"${marker}")" == "${backup_hash}" ]]; then
+  echo "Skipping Input Source Pro import: this backup was already imported (set INPUT_SOURCE_PRO_FORCE_IMPORT=1 to import it again)"
   exit 0
 fi
 
@@ -29,5 +32,16 @@ sleep 3
 
 echo "Importing Input Source Pro settings from ${backup}"
 open "inputsourcepro://import?path=${backup}"
-mkdir -p "${marker%/*}"
-touch "${marker}"
+
+if [[ ! -t 0 ]]; then
+  echo "No terminal to confirm the Input Source Pro import; it will be offered again on the next run"
+  exit 0
+fi
+
+read -r -p "Did Input Source Pro import the settings? [y/N] " answer
+if [[ ${answer} == [yY]* ]]; then
+  mkdir -p "${marker%/*}"
+  printf '%s\n' "${backup_hash}" >"${marker}"
+else
+  echo "Not recording the import; it will be offered again on the next run"
+fi

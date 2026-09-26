@@ -1,0 +1,7 @@
+[include]
+
+  path = "config-specific##default,extension..gitconfig"
+
+[user]
+
+  email = ppombeiro@gitlab.com

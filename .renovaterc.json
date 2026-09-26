@@ -184,6 +184,17 @@
       ],
       "depNameTemplate": "ipinfo/cli",
       "datasourceTemplate": "github-releases"
+    },
+    {
+      "description": "Versions pinned in mise config with a `# renovate: datasource=... depName=...` comment on the preceding line",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)\\.config/mise/config\\.toml(##[^/]+)?$/",
+        "/(^|/)\\.config/mise/conf\\.d/[^/]+\\.toml(##[^/]+)?$/"
+      ],
+      "matchStrings": [
+        "#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)\\s*\\n[^\\n]*=\\s*\"(?<currentValue>[^\"]+)\""
+      ]
     }
   ]
 }

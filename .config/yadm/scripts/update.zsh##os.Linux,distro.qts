@@ -56,6 +56,9 @@ export MISE_INSTALL_ARCH=x64-musl
 yes | mise self-update
 (cd ~ && mise plugin update && mise install --yes && mise upgrade)
 
+_update_step "grc-rs rules"
+(cd ~ && mise run grc-rs:sync)
+
 _update_step "tmux plugins"
 printf "${YELLOW}%s${NC}\n" "Updating tmux plugins..."
 ~/.tmux/plugins/tpm/bin/update_plugins all

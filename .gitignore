@@ -35,7 +35,6 @@ Thumbs.db
 .Brewfile
 .config/1Password/ssh/agent.toml
 .config/git/config-specific
-.config/grc-rs/grc-rs
 .config/iterm2/config/com.googlecode.iterm2.plist
 .config/iterm2/icons/gitlab.ico
 .config/lazy-mcp/servers.json
@@ -98,7 +97,6 @@ Thumbs.db
 .hammerspoon/webcam.lua
 .local/bin/run_mr_pipeline
 .local/bin/wait_for_mr_merge
-.local/share/grc-rs
 .pgsql_profile
 .profile
 .shellrc/login.d/brew.sh

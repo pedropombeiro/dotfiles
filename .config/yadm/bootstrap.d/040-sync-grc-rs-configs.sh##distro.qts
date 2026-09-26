@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
+
+# shellcheck source=../scripts/colors.sh
+source "${YADM_SCRIPTS}/colors.sh"
+
+printf "${YELLOW}%s${NC}\n" "Syncing grc colour rules for grc-rs..."
+(cd ~ && mise run grc-rs:sync)

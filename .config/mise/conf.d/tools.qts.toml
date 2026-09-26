@@ -21,3 +21,36 @@ rust = { version = "1.98.1", profile = "minimal", targets = "x86_64-unknown-linu
 # HA-CLI pins regex<2025, but that regex has no cp314 wheel and fails to build on Py3.14.
 # Override to a regex release with Python 3.14 support (built from source on this QTS NAS).
 "pipx:homeassistant-cli" = { version = "latest", install_env = { UV_OVERRIDE = "/share/homes/admin/.config/mise/uv-overrides/homeassistant-cli.txt" } }
+
+[tasks."grc-rs:sync"]
+description = "Fetch the grc colour rules that grc-rs reads"
+shell = "bash -c"
+# grc-rs ships no rules of its own; it reads the grc project's files.
+# renovate: datasource=github-tags depName=garabik/grc
+env = { GRC_VERSION = "v1.13" }
+run = """
+set -euo pipefail
+
+data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/grc-rs"
+conf="${XDG_CONFIG_HOME:-$HOME/.config}/grc-rs/grc-rs"
+stamp="${data_dir}/.grc-version"
+
+if [[ -f "${stamp}" && "$(<"${stamp}")" == "${GRC_VERSION}" && -f "${conf}" ]]; then
+  exit 0
+fi
+
+tmp=$(mktemp -d)
+trap 'rm -r "${tmp}"' EXIT
+curl -fsSL "https://github.com/garabik/grc/archive/refs/tags/${GRC_VERSION}.tar.gz" |
+  tar -xz -C "${tmp}" --strip-components=1
+
+# Replace the yadm symlinks left behind by the previously tracked copies
+[[ -L "${data_dir}" ]] && rm "${data_dir}"
+[[ -L "${conf}" ]] && rm "${conf}"
+mkdir -p "${data_dir}" "$(dirname "${conf}")"
+rm -f "${data_dir}"/conf.*
+cp "${tmp}"/colourfiles/conf.* "${data_dir}/"
+cp "${tmp}/grc.conf" "${conf}"
+printf '%s\\n' "${GRC_VERSION}" >"${stamp}"
+echo "Installed grc ${GRC_VERSION} colour rules for grc-rs"
+"""

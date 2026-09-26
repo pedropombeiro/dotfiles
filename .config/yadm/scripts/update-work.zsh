@@ -279,10 +279,8 @@ sync_dotfiles_to_gitlab() {
     return 0
   fi
 
-  mise bootstrap repos update --yes --skip-dirty "${dotfiles_dir}" >/dev/null ||
-    echo "Warning: failed to update GitLab dotfiles; syncing the existing checkout" >&2
-
-  # Sync to the main gitlab worktree
+  # Sync to the main gitlab worktree. The checkout was refreshed at the start
+  # of the main flow below.
   exclude_file="${gitlab_dir}/.git/info/exclude"
   _sync_gitlab_dotfiles_specs "${dotfiles_dir}" "${gitlab_dir}" "${exclude_file}"
 
@@ -385,6 +383,17 @@ write_wakatime_project() {
 }
 
 mise reshim
+
+# Refresh the private gitlab-dotfiles checkout, then link its home/ files, so
+# files added upstream are linked in this update, with or without GDK. The GDK
+# sync below reuses the refreshed checkout.
+gitlab_dotfiles_dir="${HOME}/.config/dotfiles/gitlab"
+if [[ -d "${gitlab_dotfiles_dir}/.git" ]]; then
+  mise bootstrap repos update --yes --skip-dirty "${gitlab_dotfiles_dir}" >/dev/null ||
+    echo "Warning: failed to update GitLab dotfiles; using the existing checkout" >&2
+fi
+unset gitlab_dotfiles_dir
+"${YADM_SCRIPTS}/link-private-work-files.zsh"
 
 if [[ -n ${GDK_ROOT} ]]; then
   local clickhouse_bin_path

@@ -17,8 +17,13 @@ source "${YADM_SCRIPTS}/colors.sh"
 dry_run=0
 [[ ${1:-} == --dry-run ]] && dry_run=1
 
+# Query the repo with plain git: yadm passthrough commands can trigger
+# auto-alt, which would change the links this script inspects, even with
+# --dry-run.
+repo=$(yadm introspect repo)
+
 # (f) splits on newlines; :h takes the dirname; (u) deduplicates
-local -a tracked=( "${(@f)$(yadm ls-files)}" )
+local -a tracked=( "${(@f)$(git -C "${HOME}" --git-dir="${repo}" --work-tree="${HOME}" ls-files)}" )
 local -a dirs=( "${(@u)tracked:h}" )
 
 local -i pruned=0

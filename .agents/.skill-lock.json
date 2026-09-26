@@ -10,6 +10,26 @@
       "pluginName": "clickhouse-best-practices",
       "installedAt": "2026-09-07T08:03:05.918Z",
       "updatedAt": "2026-09-07T08:03:05.918Z"
+    },
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "skills/productivity/grill-me/SKILL.md",
+      "skillFolderHash": "3df14e2d3a89459bf300614be9247e3ce74798f8",
+      "pluginName": "mattpocock-skills",
+      "installedAt": "2026-09-26T05:10:09.088Z",
+      "updatedAt": "2026-09-26T05:10:09.088Z"
+    },
+    "grilling": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "skills/productivity/grilling/SKILL.md",
+      "skillFolderHash": "f0732035b8b1b60ae39454e4191caef32fa91903",
+      "pluginName": "mattpocock-skills",
+      "installedAt": "2026-09-26T05:10:09.090Z",
+      "updatedAt": "2026-09-26T05:10:09.090Z"
     }
   },
   "dismissed": {

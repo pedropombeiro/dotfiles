@@ -41,6 +41,16 @@ printf "${YELLOW}%s${NC}\n" "Linking run-in-tmux-pane..."
 mkdir -p "${HOME}/.local/bin"
 ln -sfn "${HOME}/.agents/skills/run-in-tmux-pane/scripts/run-in-tmux-pane" "${HOME}/.local/bin/run-in-tmux-pane"
 
+gopro_graphics="${HOME}/Developer/github.com/pedropombeiro/gopro-graphics"
+if [[ -d ${gopro_graphics}/bin ]]; then
+  printf "${YELLOW}%s${NC}\n" "Linking gopro-graphics scripts..."
+  for script in "${gopro_graphics}"/bin/*(N-.x); do
+    ln -sfn "${script}" "${HOME}/.local/bin/${script:t}"
+  done
+  unset script
+fi
+unset gopro_graphics
+
 class="$(yadm config local.class)"
 if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then
   src_path="${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}"

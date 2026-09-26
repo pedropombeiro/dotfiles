@@ -16,6 +16,11 @@ if atuin status 2>/dev/null | grep -q 'Username:'; then
   exit 0
 fi
 
+if [[ ! -t 0 ]]; then
+  printf "${YELLOW}%s${NC}\n" "No terminal for the atuin login prompt; skipping. Run 'atuin login -u <username>' with the key from 'atuin key' on a synced machine."
+  exit 0
+fi
+
 printf "${YELLOW}%s${NC}\n" "Setting up atuin sync..."
 printf "%s\n" "Do you want to set up atuin sync? (r)egister new account, (l)ogin existing, (s)kip"
 read -r -p "> " choice

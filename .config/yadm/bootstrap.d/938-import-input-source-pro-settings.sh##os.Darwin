@@ -10,6 +10,14 @@ if [[ ! -f "${backup}" ]]; then
   exit 0
 fi
 
+# Re-import only when the backup changed, so a re-run doesn't overwrite
+# settings changed since the last import
+marker="${XDG_STATE_HOME:-${HOME}/.local/state}/yadm/input-source-pro-imported"
+if [[ -f "${marker}" && ! "${backup}" -nt "${marker}" ]]; then
+  echo "Skipping Input Source Pro import: backup unchanged since last import"
+  exit 0
+fi
+
 if ! osascript -e 'id of app "Input Source Pro"' &>/dev/null; then
   echo "Skipping Input Source Pro import: app not found"
   exit 0
@@ -21,3 +29,5 @@ sleep 3
 
 echo "Importing Input Source Pro settings from ${backup}"
 open "inputsourcepro://import?path=${backup}"
+mkdir -p "${marker%/*}"
+touch "${marker}"

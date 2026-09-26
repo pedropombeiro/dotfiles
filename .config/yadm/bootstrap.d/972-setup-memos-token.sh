@@ -43,4 +43,4 @@ fi
 # will return 401 until this file contains a personal access token.
 : >"${token_file}"
 chmod 600 "${token_file}"
-printf "${YELLOW}%s${NC}\n" "Created an empty Memos MCP token file; add a personal access token to ${token_file}"
+printf "${YELLOW}%s${NC}\n" "Created an empty Memos MCP token file. Copy the password of the '${op_item_title}' item in the Private 1Password vault into ${token_file}"

@@ -42,10 +42,21 @@ YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null 
 source "${YADM_SCRIPTS}/colors.sh"
 ```
 
+## When bootstrap runs
+
+`yadm bootstrap` provisions a machine. Run it on first install and on demand,
+for example after a failure or after adding a script. Updates don't run it:
+`update.zsh` runs `mise bootstrap`, which converges declarative state such as
+packages, repositories, and LaunchAgents.
+
+Put anything that must stay converged on every update in the mise
+`[bootstrap.*]` configuration instead of a `bootstrap.d` script. Keep
+`bootstrap.d` for imperative first-run steps.
+
 ## Guidelines
 
-- Scripts must be idempotent — bootstrap is re-run on every machine update, not just
-  on first install
+- Scripts must be safe to re-run. Guard one-time steps, such as restoring
+  settings or opening apps for the first time, with a check for their result.
 - Leave numbering gaps so later scripts can be inserted without renumbering
 
 ## 1Password Secrets
@@ -54,3 +65,14 @@ Use account and vault UUIDs for `op` calls in bootstrap scripts. Vault names suc
 as `Private` can exist in multiple 1Password accounts on the same machine.
 Use the vault UUID in the secret reference and pin the account with `--account`.
 Item titles remain readable unless their name is expected to change.
+
+### Machines without 1Password
+
+The NAS has no 1Password app or CLI session, so place its secrets by hand. A
+bootstrap script that can't read a secret prints a warning naming the file and
+the 1Password item, then skips that step.
+
+| File                             | Source                                                                        |
+| -------------------------------- | ----------------------------------------------------------------------------- |
+| `~/.config/lazy-mcp/memos-token` | Password of `Memos OpenCode API token` in `Private`                           |
+| atuin login                      | `atuin login -u <username>` with the key from `atuin key` on a synced machine |

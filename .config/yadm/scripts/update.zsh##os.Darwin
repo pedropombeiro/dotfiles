@@ -47,7 +47,10 @@ brew update
 brew upgrade --yes
 brew bundle --global
 brew bundle cleanup --global --force
-mise bootstrap --only packages --yes
+# Converge the declarative resources in conf.d/bootstrap*.toml. Keep the scope
+# explicit: dotfiles, macOS defaults, and user sections overlap YADM workflows.
+# The tools phase is covered by the mise step below.
+mise bootstrap --only packages,repos,macos-launchd-agents --skip-dirty --yes
 mise run mas:upgrade
 
 printf "${YELLOW}%s${NC}\n" "Updating mise plugins and upgrading mise"

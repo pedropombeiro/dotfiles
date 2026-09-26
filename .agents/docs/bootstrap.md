@@ -46,12 +46,25 @@ source "${YADM_SCRIPTS}/colors.sh"
 
 `yadm bootstrap` provisions a machine. Run it on first install and on demand,
 for example after a failure or after adding a script. Updates don't run it:
-`update.zsh` runs `mise bootstrap`, which converges declarative state such as
-packages, repositories, and LaunchAgents.
+`update.zsh` runs `mise bootstrap` for packages, repositories, and user
+LaunchAgents. See [Mise](mise.md#configuration) for its scope.
 
 Put anything that must stay converged on every update in the mise
 `[bootstrap.*]` configuration instead of a `bootstrap.d` script. Keep
-`bootstrap.d` for imperative first-run steps.
+`bootstrap.d` for imperative first-run steps, and for macOS state that mise
+can't declare:
+
+- System LaunchDaemons in `/Library/LaunchDaemons`. mise manages user
+  LaunchAgents only.
+- Application Firewall rules (`socketfilterfw`). mise's firewall support is
+  Linux-only.
+- Lines in root-owned files such as `/etc/hosts`. mise's `[dotfiles] line`
+  edits don't use sudo.
+- System `defaults` domains, `nvram`, `pmset`, `systemsetup`, and `duti`.
+
+User-domain `defaults write` calls fit `[bootstrap.macos.defaults]`, but they
+stay in `defaults.sh`. Under mise they would be re-applied on every update and
+undo changes made in System Settings.
 
 ## Guidelines
 

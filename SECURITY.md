@@ -15,7 +15,7 @@ This repository **never** stores secrets directly. Sensitive data is managed thr
 - **1Password CLI** (`op`) for credentials, API tokens, and SSH keys
 - **YADM alternate files** with the `##class.Work` suffix to isolate
   work-specific configuration from the public repository
-- **Global gitignore** (`.config/dotfiles/git/gitignore-global`) to
+- **Global gitignore** (`.config/git/ignore`) to
   prevent accidental commits of sensitive file types
 - **GPG** for commit signing
 

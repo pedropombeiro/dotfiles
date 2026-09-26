@@ -7,8 +7,8 @@
 
 [include]
 
-  path = ~/.config/dotfiles/git/gitconfig-specific
-  path = ~/.config/dotfiles/git/colors/tomorrow-night-eighties.config
+  path = ~/.config/git/config-specific
+  path = ~/.config/git/colors/tomorrow-night-eighties.config
 
 [apply]
 
@@ -25,8 +25,6 @@
 
   # Repaint the screen, discarding any buffered input.  Useful if the file is changing while it is being viewed.
   pager = delta
-
-  excludesfile = ~/.config/dotfiles/git/gitignore-global
 
   # Treat spaces before tabs and all kinds of trailing whitespace as an error
   # [default] trailing-space: looks for spaces at the end of a line
@@ -55,7 +53,7 @@
 
 [commit]
 
-  template = ~/.config/dotfiles/git/git_commit_msg.txt
+  template = ~/.config/git/commit-template.txt
   verbose = true
 
 [column]

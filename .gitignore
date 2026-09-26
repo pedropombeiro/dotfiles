@@ -34,7 +34,7 @@ Thumbs.db
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
 .config/1Password/ssh/agent.toml
-.config/dotfiles/git/gitconfig-specific
+.config/git/config-specific
 .config/grc-rs/grc-rs
 .config/iterm2/config/com.googlecode.iterm2.plist
 .config/iterm2/icons/gitlab.ico

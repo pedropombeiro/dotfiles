@@ -42,10 +42,10 @@ Thumbs.db
 .config/mise/config.toml
 .config/mise/miserc.toml
 .config/mise/uv-overrides/homeassistant-cli.txt
+.config/nvim/lua/core/class.lua
 .config/nvim/lua/core/distro.lua
 .config/nvim/lua/core/gdk.lua
 .config/nvim/lua/plugins/image.lua
-.config/nvim/lua/plugins/lsp/mason-tool-installer.lua
 .config/opencode/AGENTS.md
 .config/opencode/cli.base.json
 .config/opencode/env-protection.json

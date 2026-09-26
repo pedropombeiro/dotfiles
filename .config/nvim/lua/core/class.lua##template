@@ -1,0 +1,2 @@
+-- Machine class from `yadm config local.class`, rendered by yadm
+vim.g.yadm_class = "{{ yadm.class }}"

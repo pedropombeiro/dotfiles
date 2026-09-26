@@ -118,7 +118,7 @@ brew install yadm
 # Clone dotfiles repository
 yadm clone --no-bootstrap https://github.com/pedropombeiro/dotfiles.git
 
-# Set class configuration (Personal or Work)
+# Set class configuration (Personal, Work, or NAS)
 yadm config local.class Personal
 
 # Run bootstrap script to set up environment

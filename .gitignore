@@ -58,7 +58,6 @@ Thumbs.db
 .config/pgcli/config
 .config/sesh/sesh.toml
 .config/tmux/tmux.platform.conf
-.config/yadm/bootstrap.d/000-ensure-machine-class.sh
 .config/yadm/bootstrap.d/001-enable-touchid-on-terminal.sh
 .config/yadm/bootstrap.d/003-install-launch-daemons.sh
 .config/yadm/bootstrap.d/005-software-install.sh

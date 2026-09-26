@@ -19,21 +19,12 @@ const SECRET_RULES = [
 const KEYWORD_SECRET_PATTERN =
   /\b((?:[A-Za-z][A-Za-z0-9]*[_-]){0,5}(?:password|passwd|pwd|secret|api[_-]?key|access[_-]?key|client[_-]?secret|auth[_-]?token|access[_-]?token|token))\s*[:=]\s*["']?([^\s"'$<>{}]{6,})["']?/gi;
 
-const EXPOSURE_TOOLS = new Set([
-  "write",
-  "edit",
-  "patch",
-  "apply_patch",
-  "gitlab_create_note",
-  "gitlab_create_discussion",
-  "gitlab_create_issue",
-  "gitlab_create_merge_request",
-  "gitlab_update_merge_request",
-  "gitlab_create_epic",
-  "gitlab_update_epic",
-  "gitlab_create_work_item",
-  "gitlab_create_work_item_note",
-]);
+// Tools whose input stays on this machine and is never persisted. Every other
+// tool's input is scanned for literal secrets before it runs, because it is
+// written to a file or sent elsewhere: MCP calls (which reach this hook as
+// `lazy-mcp_invoke_command`, including from Code Mode), web search and fetch,
+// and subagent prompts. `shell` is handled separately below.
+const LOCAL_ONLY_TOOLS = new Set(["read", "grep", "glob"]);
 
 const redactStructuredSecrets = (text) => {
   if (typeof text !== "string") return { text, hits: [] };
@@ -316,8 +307,11 @@ const createGuards = ({ directory, worktree }) => {
       }
     }
 
-    const shellExposure = tool === "shell" && SHELL_EXPOSURE_PATTERN.test(args.command || "");
-    if ((EXPOSURE_TOOLS.has(tool) || shellExposure) && containsHighConfidenceSecret(args)) {
+    // Shell commands may legitimately pass a token (`curl -H ...`), so only
+    // commands that print or write text are checked.
+    const exposes =
+      tool === "shell" ? SHELL_EXPOSURE_PATTERN.test(args.command || "") : !LOCAL_ONLY_TOOLS.has(tool);
+    if (exposes && containsHighConfidenceSecret(args)) {
       throw new Error(EXPOSURE_ERROR_MSG);
     }
   };

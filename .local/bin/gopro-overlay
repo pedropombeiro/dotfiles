@@ -22,9 +22,9 @@
 #   gopro-overlay --overlay-only <input.mp4> <activity.fit>  # transparent overlay
 #   gopro-overlay <input.mp4> <activity.fit> -- --map-style osm   # passthrough
 #
-# --smooth-grade pre-processes the FIT via fit-smooth-grade to inject a smoothed
-# `grade` field, which gopro-dashboard's gradient widget prefers over its own
-# noisy rise/run computation. Produces <activity>_smoothed.fit and uses that.
+# --smooth-grade pre-processes the FIT via gopro-fit-smooth-grade to inject a
+# smoothed `grade` field, which gopro-dashboard's gradient widget prefers over
+# its own noisy rise/run computation. Produces <activity>_smoothed.fit and uses that.
 #
 # --overlay-only renders the gauges as a TRANSPARENT clip (lossless QuickTime
 # Animation / QTRLE with alpha, profile overlay-qtrle) instead of compositing
@@ -153,16 +153,16 @@ if ! command -v gopro-dashboard.py >/dev/null 2>&1; then
 fi
 
 if [ "$smooth_grade" -eq 1 ]; then
-  if ! command -v fit-smooth-grade >/dev/null 2>&1; then
-    echo "$prog: error: --smooth-grade requires fit-smooth-grade on PATH" >&2
+  if ! command -v gopro-fit-smooth-grade >/dev/null 2>&1; then
+    echo "$prog: error: --smooth-grade requires gopro-fit-smooth-grade on PATH" >&2
     exit 1
   fi
   fit_stem="${fit%.*}"
   smoothed_fit="${fit_stem}_smoothed.fit"
   if [ "$dry_run" -eq 1 ]; then
-    echo "$prog: would run: fit-smooth-grade -o $smoothed_fit $fit" >&2
+    echo "$prog: would run: gopro-fit-smooth-grade -o $smoothed_fit $fit" >&2
   else
-    fit-smooth-grade -o "$smoothed_fit" "$fit"
+    gopro-fit-smooth-grade -o "$smoothed_fit" "$fit"
   fi
   fit="$smoothed_fit"
 fi

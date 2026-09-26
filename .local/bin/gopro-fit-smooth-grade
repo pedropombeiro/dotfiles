@@ -33,11 +33,11 @@
 #                     climbs/descents. Does not affect the chart timing.
 #
 # Usage:
-#   fit-smooth-grade <input.fit>
-#   fit-smooth-grade -o out.fit <input.fit>
-#   fit-smooth-grade --window 20 --grade-window 60 <input.fit>
-#   fit-smooth-grade --source dem <input.fit>    # DEM/SRTM altitude (default)
-#   fit-smooth-grade --source baro <input.fit>   # keep recorded altitude
+#   gopro-fit-smooth-grade <input.fit>
+#   gopro-fit-smooth-grade -o out.fit <input.fit>
+#   gopro-fit-smooth-grade --window 20 --grade-window 60 <input.fit>
+#   gopro-fit-smooth-grade --source dem <input.fit>    # DEM/SRTM altitude (default)
+#   gopro-fit-smooth-grade --source baro <input.fit>   # keep recorded altitude
 #
 # --source dem looks up terrain elevation from NASA SRTM tiles (cached under
 # ~/.cache/srtm; needs network on first use for a new region).
@@ -172,7 +172,7 @@ with fitdecode.FitReader(src) as fit:
                 events.append(d)
 
 if not records:
-    sys.exit("fit-smooth-grade: no record messages found in input")
+    sys.exit("gopro-fit-smooth-grade: no record messages found in input")
 
 # Build parallel arrays for smoothing.
 def epoch(ts):
@@ -213,7 +213,7 @@ if source == "dem":
         else:
             alts[i] = last_good if last_good is not None else baro_alts[i]
     got = sum(1 for a in alts if valid_alt(a))
-    print(f"fit-smooth-grade: DEM elevation resolved for {got}/{n} points "
+    print(f"gopro-fit-smooth-grade: DEM elevation resolved for {got}/{n} points "
           f"({misses} SRTM voids filled)", file=sys.stderr)
 else:
     alts = baro_alts
@@ -395,7 +395,7 @@ fit_file = builder.build()
 fit_file.to_file(dst)
 
 grade_count = sum(1 for g in grade if g is not None)
-print(f"fit-smooth-grade: wrote {written} records ({grade_count} with grade), "
+print(f"gopro-fit-smooth-grade: wrote {written} records ({grade_count} with grade), "
       f"{gear_written} gear events -> {dst}", file=sys.stderr)
 PYEOF
 

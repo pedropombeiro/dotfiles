@@ -26,7 +26,8 @@ editor, prefix with `GIT_EDITOR=true` to prevent the editor from blocking
 ### File Organization
 
 - **Alternate files**: Use suffixes for platform-specific configs
-  - `##distro.qts` - QNAP QTS
+  - `##distro.qts` - QNAP QTS platform differences
+  - `##class.NAS` - NAS role (services, hosts, aliases)
   - `##os.Darwin` - macOS
   - `##os.Linux` - Linux
   - `##class.Work` - Work machines
@@ -49,11 +50,11 @@ Example:
 
 ```text
 ~/.config/sesh/sesh.toml##default
-~/.config/sesh/sesh.toml##distro.qts
+~/.config/sesh/sesh.toml##class.NAS
 ```
 
-On QTS, only `sesh.toml##distro.qts` is linked to `~/.config/sesh/sesh.toml`. The default file is
-ignored, so the QTS variant must include all shared config plus any QTS-specific overrides.
+On the NAS, only `sesh.toml##class.NAS` is linked to `~/.config/sesh/sesh.toml`. The default file
+is ignored, so the NAS variant must include all shared config plus any NAS-specific overrides.
 
 **New alternate files must be `yadm add`-ed before the symlink is created.** Writing a file
 with a `##` suffix is not enough — `yadm alt` only processes tracked files. After creating a

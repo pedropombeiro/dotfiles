@@ -25,17 +25,23 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4
+        with:
+          # Keep in sync with min_version in .config/mise/conf.d/global.toml
+          # renovate: datasource=github-releases depName=jdx/mise
+          version: "2026.9.14"
 
       # Install zsh for syntax checking
       - name: Install zsh
         run: sudo apt-get update && sudo apt-get install -y zsh
 
       # Run hk check on all files
-      # Skip steps that require tools not available in CI (ruby, renovate, yadm)
+      # Skip steps that require tools not available in CI (ruby, renovate).
+      # no-yadm-alt-symlinks is a no-op outside a yadm work tree; the
+      # yadm-render job runs it against a real one.
       - name: Run hk check
         run: hk check --all
         env:
-          HK_SKIP_STEPS: standardrb,renovate-config-validator,no-yadm-alt-symlinks
+          HK_SKIP_STEPS: standardrb,renovate-config-validator
 
   # Job 2: Luacheck for Neovim Lua files
   # Kept as a separate job because hk's global exclude hides .config/
@@ -119,7 +125,74 @@ jobs:
 
           exit $EXIT_CODE
 
-  # Job 5: Secret scanning
+  # Job 5: Render alternates and templates for each machine identity
+  # Clones the repo into a scratch HOME with yadm, overrides class/os/distro,
+  # runs `yadm alt`, then validates the result. Uses --yadm-dir outside the
+  # work tree so the repo's own hooks (relink, prune) don't run.
+  yadm-render:
+    name: yadm alt (${{ matrix.class }}, ${{ matrix.os }}${{ matrix.distro && format(', {0}', matrix.distro) || '' }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - class: Personal
+            os: Darwin
+          - class: Work
+            os: Darwin
+          - class: Personal
+            os: Linux
+          - class: NAS
+            os: Linux
+            distro: qts
+    env:
+      # renovate: datasource=github-tags depName=yadm-dev/yadm
+      YADM_VERSION: "3.5.0"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install zsh, Lua, and yadm
+        run: |
+          sudo apt-get update && sudo apt-get install -y zsh lua5.4
+          command -v luac >/dev/null || sudo ln -s "$(command -v luac5.4)" /usr/local/bin/luac
+          sudo curl -fsSL --retry 3 --retry-delay 5 -o /usr/local/bin/yadm \
+            "https://raw.githubusercontent.com/yadm-dev/yadm/${YADM_VERSION}/yadm"
+          sudo chmod +x /usr/local/bin/yadm
+          yadm version
+
+      - name: Clone into a scratch HOME
+        run: |
+          scratch="${RUNNER_TEMP}/yadm"
+          mkdir -p "${scratch}/home" "${scratch}/bin"
+          # Shim so every `yadm` call, including those in the check scripts,
+          # uses the scratch yadm dir and repo
+          printf '#!/bin/sh\nexec /usr/local/bin/yadm --yadm-dir "%s/dir" --yadm-data "%s/data" "$@"\n' \
+            "${scratch}" "${scratch}" >"${scratch}/bin/yadm"
+          chmod +x "${scratch}/bin/yadm"
+          echo "${scratch}/bin" >>"${GITHUB_PATH}"
+          echo "HOME=${scratch}/home" >>"${GITHUB_ENV}"
+          export HOME="${scratch}/home" PATH="${scratch}/bin:${PATH}"
+          yadm clone --no-bootstrap -w "${HOME}" "${GITHUB_WORKSPACE}"
+          # yadm clone can leave tracked files unrestored in a fresh work tree
+          yadm checkout -- "${HOME}"
+          test -z "$(yadm status --porcelain)"
+
+      - name: Render alternates
+        run: |
+          yadm config local.class "${{ matrix.class }}"
+          yadm config local.os "${{ matrix.os }}"
+          if [ -n "${{ matrix.distro }}" ]; then
+            yadm config local.distro "${{ matrix.distro }}"
+          fi
+          yadm alt
+
+      - name: Validate rendered files
+        run: zsh "${HOME}/.config/yadm/scripts/check-rendered-alts.zsh"
+
+      - name: No alt symlinks committed
+        run: yadm ls-files -z | xargs -0 zsh "${HOME}/.config/yadm/scripts/check-no-alt-symlinks.zsh"
+
+  # Job 6: Secret scanning
   secret-scanning:
     name: Secret scanning (Gitleaks)
     runs-on: ubuntu-latest

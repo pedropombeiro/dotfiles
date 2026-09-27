@@ -6,21 +6,6 @@
 # This ensures tools like git resolve to Homebrew (matching the _git
 # completion loaded via fpath) rather than Apple's system copy.
 
-# $commands is zsh's hash of executables in $PATH (faster than `command -v`);
-# fall back to the default install location for bootstrapping before mise is in PATH
-local mise_bin="${commands[mise]:-${HOME}/.local/bin/mise}"
-if [[ -x "$mise_bin" ]]; then
-  local cache_dir="${XDG_CACHE_HOME:-${HOME}/.cache}/mise"
-  local cache_file="${cache_dir}/activate.zsh"
-
-  if [[ ! -f "$cache_file" || "$cache_file" -ot "$mise_bin" ]]; then
-    mkdir -p "$cache_dir"
-    "$mise_bin" activate zsh | sed '/^_mise_hook$/d' >| "$cache_file"
-  fi
-
-  source "$cache_file"
-fi
-
 # typeset -gU deduplicates the path array (first occurrence wins).
 # -g is required because this file is sourced inside a function chain
 # (source_files → _load_settings); without it, typeset creates a local shadow.
@@ -33,9 +18,4 @@ path=(
   $path
 )
 
-if [[ -x "$mise_bin" ]]; then
-  # Eagerly run hook-env so that concrete installs land *ahead* of shims.
-  # This gives the correct priority from the very first command, including
-  # in subshells spawned by gdk update.
-  eval "$("$mise_bin" hook-env -s zsh 2>/dev/null)"
-fi
+# 110-mise.zsh activates concrete installs after completion initialization.

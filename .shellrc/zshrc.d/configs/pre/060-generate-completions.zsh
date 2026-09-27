@@ -4,36 +4,24 @@ _generate_completion() {
   local name=$1
   local cmd=$2
   local target=~/.config/zsh/site-functions/_${name}
+  local refresh=${3:-missing}
+  local tmp="${target}.tmp.$$"
+
+  (( $+commands[$name] )) || return
 
   # -s = exists and non-empty; regenerate if missing or empty (e.g. failed previous run)
-  if [[ ! -s $target ]] && (( $+commands[$name] )); then
-    eval "$cmd" >"$target" 2>/dev/null
-    if [[ ! -s $target ]]; then
-      rm -f "$target"
-      return
+  if [[ ! -s $target || ($refresh == binary && $target -ot $commands[$name]) ]]; then
+    # Preserve the last good completion if generation fails or a shell is interrupted.
+    if eval "$cmd" >"$tmp" 2>/dev/null && [[ -s $tmp ]]; then
+      mv -f -- "$tmp" "$target"
+    else
+      rm -f -- "$tmp"
     fi
-    rm -f ~/.zcompdump*(N) 2>/dev/null
   fi
 }
 
-if (( $+commands[mise] )); then
-  mise_bin=$commands[mise]
-  mise_completion=~/.config/zsh/site-functions/_mise
-  if [[ ! -f $mise_completion || $mise_completion -ot $mise_bin ]]; then
-    mise complete -s zsh >$mise_completion
-    rm -f ~/.zcompdump*(N) 2>/dev/null
-  fi
-fi
-
-if (( $+commands[gh] )); then
-  gh_bin=$commands[gh]
-  gh_completion=~/.config/zsh/site-functions/_gh
-  if [[ ! -f $gh_completion || $gh_completion -ot $gh_bin ]]; then
-    gh completion -s zsh >$gh_completion
-    rm -f ~/.zcompdump*(N) 2>/dev/null
-  fi
-fi
-
+_generate_completion mise 'mise complete -s zsh' binary
+_generate_completion gh 'gh completion -s zsh' binary
 _generate_completion atuin 'atuin gen-completions --shell zsh'
 _generate_completion opencode 'opencode --completions zsh'
 _generate_completion sesh 'sesh completion zsh'

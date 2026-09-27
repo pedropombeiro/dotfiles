@@ -38,6 +38,25 @@ binary:
 
 `mise installs` > `mise shims` > `~/.local/bin` > `Homebrew` > `system`
 
+### Completion and mise startup order
+
+`050-fix-path-ordering.zsh` sets the base path. Completion generation (`060` and
+`080`) and dump invalidation (`090`) run before `100-zinit.zsh` adds zinit's
+completion directories and initializes `compinit` once. `110-mise.zsh` then runs
+`mise activate zsh`, including its initial environment hook, so concrete tool
+paths are ready for the first command.
+
+Before activation, remove inherited paths under mise's installation directory
+and capture the remaining path as `__MISE_ORIG_PATH`. This lets mise select and
+order concrete installs in nested shells and tmux panes without dropping other
+inherited paths.
+
+Keep mise activation after `compinit`: mise's version-specific tool completions
+can otherwise trigger another initialization. Generate activation for each shell
+because its output embeds the current `PATH`. Preserve its `precmd` and `chpwd`
+hooks for project environment changes. Completion generators publish non-empty,
+successful output atomically and retain the previous file on failure.
+
 ## XDG Base Directories
 
 `~/.zshenv` exports `XDG_CONFIG_HOME=~/.config` so that macOS CLI tools using

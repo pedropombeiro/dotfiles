@@ -52,7 +52,7 @@ _load_settings() {
 
 _load_settings "$HOME/.shellrc/zshrc.d/configs"
 
-# Replay compdefs from turbo-loaded plugins (compinit already ran in 00-zinit.zsh)
+# Replay captured compdefs (compinit already ran in 100-zinit.zsh)
 zicdreplay
 
 # Load all files from .shell/rc.d directory

@@ -11,8 +11,9 @@ fi
 
 source "${ZINIT_HOME}/zinit.zsh"
 
-# Initialize compdef early so turbo-loaded plugins can use it
-# Use -C (cached) only when the dump exists; 020-site-functions.zsh removes stale dumps
+# Initialize once, after all completion files and zinit's fpath entries exist.
+# Mise's tool completions also need compdef, so activate mise after this file.
+# Use -C only when the dump exists; 090-completion-cache.zsh removes stale dumps.
 autoload -Uz compinit
 if [[ -f $HOME/.zcompdump ]]; then
   compinit -C -u

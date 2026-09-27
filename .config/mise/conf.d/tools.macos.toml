@@ -1,0 +1,11 @@
+[tools]
+# ── Video editing tools ────────────────────────────────────────────────
+# Programs to process GoPro MP4 & Generic GPX/FIT files and create video dashboards & maps.
+# Required by the gopro-graphics scripts, which bootstrap.macos.toml clones.
+# Personal fork adds whole-ride extent for the journey map & elevation chart
+# (journey_map extent="ride", chart range="ride"), now merged to the fork's main.
+# Pinned to a fork release, not a branch: mise's pipx git backend resolves
+# versions from GitHub *releases* only, so a branch pin makes `mise upgrade` warn
+# "no latest version found". Tags carry a -whole-ride.N suffix so they never
+# collide with a future upstream v0.134.0.
+"pipx:git+https://github.com/pedropombeiro/gopro-dashboard-overlay.git" = "v0.134.0-whole-ride.1"

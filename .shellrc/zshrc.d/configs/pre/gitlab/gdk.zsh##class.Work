@@ -1,4 +1,0 @@
-#!/usr/bin/env zsh
-
-GDK_ROOT="${HOME}/gitlab-development-kit"
-[[ -d ${GDK_ROOT} ]] && export GDK_ROOT

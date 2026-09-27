@@ -7,3 +7,8 @@ _saved_term="$TERM"
 source /opt/etc/profile
 [[ -n "$_saved_term" ]] && export TERM="$_saved_term"
 unset _saved_term
+
+# Establish NAS command paths before mise captures PATH. These shared snippets
+# also run later for bash/zsh and leave existing PATH entries in place.
+source "$HOME/.shellrc/rc.d/docker.sh"
+source "$HOME/.shellrc/rc.d/yadm.sh"

@@ -18,4 +18,4 @@ path=(
   $path
 )
 
-# 110-mise.zsh activates concrete installs after completion initialization.
+# 410-mise.zsh activates concrete installs after completion initialization.

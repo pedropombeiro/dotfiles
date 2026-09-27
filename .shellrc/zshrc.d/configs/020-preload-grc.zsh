@@ -2,7 +2,7 @@
 
 # Powerlevel10k Instant Prompt prevents grc.zsh from having a working tty,
 # so we need to make sure we source grc before kicking off Instant Prompt
-# (012-enable-instant-prompt.zsh). Requires HOMEBREW_PREFIX from 010-brew.sh.
+# (030-instant-prompt.zsh). Requires HOMEBREW_PREFIX from 010-brew.sh.
 if [[ -s "${HOMEBREW_PREFIX}/etc/grc.zsh" ]]; then
   source "${HOMEBREW_PREFIX}/etc/grc.zsh"
 elif [[ -s /etc/grc.zsh ]]; then

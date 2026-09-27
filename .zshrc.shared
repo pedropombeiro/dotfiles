@@ -25,7 +25,7 @@ function source_files() {
   done
 }
 
-# Load config files from pre/, main dir, then post/ (in sorted order)
+# Load numbered startup phases from one directory, in filename order.
 # Uses zsh globs instead of find for speed. Glob qualifiers:
 #   (N) = nullglob (no error if no matches)
 #   (-) = follow symlinks
@@ -36,23 +36,13 @@ _load_settings() {
   local _files
   [[ -d "$_dir" ]] || return
 
-  if [[ -d "$_dir/pre" ]]; then
-    _files=("$_dir"/pre/**/*.*sh(N-.))
-    (( ${#_files} )) && source_files ${(o)_files}
-  fi
-
-  _files=("$_dir"/*.*sh(N-.))
+  _files=("$_dir"/[0-9][0-9][0-9]-*.*sh(N-.))
   (( ${#_files} )) && source_files ${(o)_files}
-
-  if [[ -d "$_dir/post" ]]; then
-    _files=("$_dir"/post/**/*.*sh(N-.))
-    (( ${#_files} )) && source_files ${(o)_files}
-  fi
 }
 
 _load_settings "$HOME/.shellrc/zshrc.d/configs"
 
-# Replay captured compdefs (compinit already ran in 100-zinit.zsh)
+# Replay captured compdefs (compinit already ran in 350-zinit.zsh)
 zicdreplay
 
 # Load all files from .shell/rc.d directory

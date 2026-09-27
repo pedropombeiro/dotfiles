@@ -3,20 +3,20 @@
 # Session-ID completion for `opencode -s` / `--session`.
 #
 # The generated completer (cached as ~/.config/zsh/site-functions/_opencode by
-# pre/060-generate-completions.zsh) knows `-s` takes a value but has no idea what
+# 320-generate-completions.zsh) knows `-s` takes a value but has no idea what
 # the valid session IDs are (OpenCode generates it with `--completions zsh`).
 # This wraps it so the word after `-s` offers real sessions (ID as the inserted
 # value, title + timestamp as the description) and every other completion
 # context falls through unchanged.
 #
-# fzf-tab (loaded in common-plugins.zsh) turns the resulting `_describe` group
+# fzf-tab (loaded in 510-common-plugins.zsh) turns the resulting `_describe` group
 # into the interactive fzf picker; no fzf call is made here directly, so the
 # completion still works with a plain zsh menu if fzf-tab is absent.
 
-(( $+commands[opencode] )) || return
+(($+commands[opencode])) || return
 # jq parses the `--format json` output; without it, leave the generated
 # completion untouched rather than shipping a fragile table-scraping fallback.
-(( $+commands[jq] )) || return
+(($+commands[jq])) || return
 
 # $EPOCHSECONDS (used to render relative session ages) comes from this module and
 # is empty without it, which would silently break the jq invocation below.
@@ -54,14 +54,14 @@ _opencode_session_matches() {
   # (Nms-N) = exists and modified less than N seconds ago. This must be an array
   # assignment, not a [[ ]] test: [[ ]] never performs filename generation, so a
   # glob qualifier there silently evaluates as a literal string and always "matches".
-  local -a fresh=( ${cache}(Nms-${OPENCODE_COMPLETE_SESSION_TTL}) )
+  local -a fresh=(${cache}(Nms-${OPENCODE_COMPLETE_SESSION_TTL}))
 
   # Refresh on a miss, writing via a temp file so a killed or failed run cannot
   # leave a truncated cache that later reads would treat as an empty session list.
-  if (( ! $#fresh )); then
+  if ((! $#fresh)); then
     local tmp="${cache}.tmp.$$"
-    if opencode session list -n $OPENCODE_COMPLETE_SESSION_COUNT --format json >$tmp 2>/dev/null \
-      && [[ -s $tmp ]]; then
+    if opencode session list -n $OPENCODE_COMPLETE_SESSION_COUNT --format json >$tmp 2>/dev/null &&
+      [[ -s $tmp ]]; then
       mv -f $tmp $cache
     else
       rm -f $tmp
@@ -75,9 +75,9 @@ _opencode_session_matches() {
   # its " -- " list-separator, the timestamp column, and fzf's gutter/marker.
   # Capped at 52 (the p90 title length) so wide terminals do not strand the
   # timestamp column in a sea of padding, and floored so narrow ones stay usable.
-  local -i title_width=$(( ${COLUMNS:-80} - 30 - 4 - 9 - 6 ))
-  (( title_width > 52 )) && title_width=52
-  (( title_width >= 24 )) || title_width=24
+  local -i title_width=$((${COLUMNS:-80} - 30 - 4 - 9 - 6))
+  ((title_width > 52)) && title_width=52
+  ((title_width >= 24)) || title_width=24
 
   # `updated` is epoch milliseconds. Untitled sessions get a placeholder so the
   # description column is never empty. Colons are safe inside the description;
@@ -92,7 +92,7 @@ _opencode_session_matches() {
   # No ANSI colouring here: fzf runs with --ansi and strips escapes from the line
   # it prints, so a coloured display string would no longer match the key fzf-tab
   # stored in _ftb_compcap and selection would silently fail.
-  reply=( ${(f)"$(jq -r --argjson w $title_width --argjson now "$EPOCHSECONDS" '
+  reply=(${(f)"$(jq -r --argjson w $title_width --argjson now "$EPOCHSECONDS" '
     def pad($s; $n): if ($s | length) > $n
       then ($s[0:$n-1] + "…")
       else ($s + (" " * ($n - ($s | length)))) end;
@@ -106,9 +106,9 @@ _opencode_session_matches() {
     (.title // "" | gsub("\\s+"; " ") | sub("^ +"; "") | sub(" +$"; "")) as $title |
     (.updated / 1000 | floor) as $secs |
     "\(.id):\(pad(if $title == "" then "(untitled)" else $title end; $w))  \(rel($secs))"
-  ' $cache 2>/dev/null)"} )
+  ' $cache 2>/dev/null)"})
 
-  (( $#reply ))
+  (($#reply))
 }
 
 _opencode_complete_session() {
@@ -124,7 +124,7 @@ _opencode_complete_session() {
 
 _opencode_complete() {
   # Detect `-s <TAB>`, `--session <TAB>`, and `--session=<TAB>`.
-  local prev=${words[CURRENT-1]}
+  local prev=${words[CURRENT - 1]}
   if [[ $prev == (-s|--session) ]]; then
     _opencode_complete_session && return
   elif [[ ${words[CURRENT]} == --session=* ]]; then
@@ -133,7 +133,7 @@ _opencode_complete() {
   fi
 
   # Everything else: hand back to the generated completer.
-  if (( $+functions[_opencode_generated] )); then
+  if (($+functions[_opencode_generated])); then
     _opencode_generated "$@"
   else
     _default
@@ -148,17 +148,17 @@ _opencode_complete() {
 # Deferred to a zinit turbo slot after fzf-tab (wait'0b') so the compdef lands
 # last and is not overwritten by fzf-tab's own completion setup.
 _opencode_install_completion() {
-  if (( ! $+functions[_opencode_generated] )); then
+  if ((! $+functions[_opencode_generated])); then
     autoload -Uz +X _opencode 2>/dev/null
     # Runs the else-branch of the upstream script (a compdef call), which is
     # harmless here and leaves the real completer defined globally.
-    (( $+functions[_opencode] )) && _opencode 2>/dev/null
-    (( $+functions[_opencode] )) && functions[_opencode_generated]=$functions[_opencode]
+    (($+functions[_opencode])) && _opencode 2>/dev/null
+    (($+functions[_opencode])) && functions[_opencode_generated]=$functions[_opencode]
   fi
 
   compdef _opencode_complete opencode
   # `oc` is the model-aware opencode wrapper from ~/.shellrc/rc.d/aliases.sh.
-  (( $+functions[oc] )) && compdef _opencode_complete oc
+  (($+functions[oc])) && compdef _opencode_complete oc
 }
 
 # Session titles are long, so give fzf a tall window. --no-sort makes fzf

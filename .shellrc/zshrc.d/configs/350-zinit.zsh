@@ -13,7 +13,7 @@ source "${ZINIT_HOME}/zinit.zsh"
 
 # Initialize once, after all completion files and zinit's fpath entries exist.
 # Mise's tool completions also need compdef, so activate mise after this file.
-# Use -C only when the dump exists; 090-completion-cache.zsh removes stale dumps.
+# Use -C only when the dump exists; 340-completion-cache.zsh removes stale dumps.
 autoload -Uz compinit
 if [[ -f $HOME/.zcompdump ]]; then
   compinit -C -u

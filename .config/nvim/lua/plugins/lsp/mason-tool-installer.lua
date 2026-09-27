@@ -3,28 +3,20 @@
 --  Replaces mason-null-ls.nvim's ensure_installed functionality with a dedicated
 --  tool installer that runs on startup and handles concurrent installs correctly.
 
-local function has_cargo()
-  return vim.fn.executable("cargo") == 1
-end
+-- Tools not needed for the NAS role
+local function needed_for_role() return vim.g.yadm_class ~= "NAS" end
 
-local function has_go()
-  return vim.fn.executable("go") == 1
-end
+local function has_cargo() return needed_for_role() and vim.fn.executable("cargo") == 1 end
+
+local function has_go() return vim.fn.executable("go") == 1 end
 
 local function has_ruby()
   local p = vim.fn.exepath("ruby")
-  return p ~= "" and not p:find("/usr/bin/ruby")
+  return needed_for_role() and p ~= "" and not p:find("/usr/bin/ruby") and vim.fn.executable("gem") == 1
 end
 
 -- QTS ships an old glibc, so some prebuilt binaries install but fail to run
-local function runs_on_platform()
-  return vim.g.distro ~= "qts"
-end
-
--- Tools not needed for the NAS role
-local function needed_for_role()
-  return vim.g.yadm_class ~= "NAS"
-end
+local function runs_on_platform() return vim.g.distro ~= "qts" end
 
 return {
   "WhoIsSethDaniel/mason-tool-installer.nvim",

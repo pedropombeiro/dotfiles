@@ -123,6 +123,7 @@ history_filter = [
   "^export .*SECRET",
   "^export .*PASSWORD",
   "op://",
+  "/1PE",
 ]
 
 ## prevent commands run with cwd matching any of these regexes from being written

@@ -228,6 +228,18 @@ new shell:
 rm ~/.local/share/atuin/init.zsh
 ```
 
+## History exclusions
+
+Native history and Atuin exclude `op://`, encoded `/1PE` references, and configured
+`export` patterns containing `TOKEN`, `SECRET`, or `PASSWORD`. The native
+`zshaddhistory` hook prevents persistence and discards rejected entries after the
+next command. `HISTORY_IGNORE` also filters explicit history-file writes.
+Atuin retains its additional built-in secret filtering.
+
+Keep `SHARE_HISTORY` for cross-pane history. It already appends commands, so
+`INC_APPEND_HISTORY` is disabled. Verify the policy independently of shell
+startup with `zsh -df ~/.config/yadm/scripts/check-shell-history.zsh`.
+
 ## Key Integrations
 
 | Tool          | Purpose                        |

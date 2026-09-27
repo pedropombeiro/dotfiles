@@ -110,6 +110,7 @@ Thumbs.db
 .shellrc/zshrc.d/configs/post/gitlab/gdk.zsh
 .shellrc/zshrc.d/configs/post/grc-rs.zsh
 .shellrc/zshrc.d/configs/pre/010-brew.sh
+.shellrc/zshrc.d/configs/pre/105-nas-startup.zsh
 .shellrc/zshrc.d/configs/pre/400-mise-arch.zsh
 .shellrc/zshrc.d/configs/pre/900-load-entware-profile.sh
 .shellrc/zshrc.d/configs/pre/gitlab/gdk.zsh

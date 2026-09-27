@@ -28,7 +28,7 @@ Tmux automatically loads configuration from the XDG location `~/.config/tmux/tmu
      - Home/End key fixes
      - `default-terminal "tmux-256color"` with italics and RGB overrides
 
-3. **`~/.shellrc/zshrc.d/configs/tmux.zsh`** (Shared shell integration)
+3. **`~/.shellrc/zshrc.d/configs/560-tmux.zsh`** (Shared shell integration)
    - Configures the oh-my-zsh tmux plugin, config path, and hostname-based session name
    - `tmux.platform.zsh##distro.qts` enables automatic connection and startup on QNAP
 
@@ -81,7 +81,7 @@ to the system clipboard via `pbcopy`. Requires iTerm2 shell integration to be ac
 
 **Dependencies:**
 
-- `ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES` — set in `~/.shellrc/zshrc.d/configs/iterm2.zsh`
+- `ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES` - set in `~/.shellrc/zshrc.d/configs/640-iterm2.zsh`
   so the iTerm2 shell integration script emits OSC 133 markers (`A`=prompt start, `B`=prompt end,
   `C`=command output start, `D`=command end) even under tmux
 - `~/.iterm2_shell_integration.zsh` — sourced explicitly from the same file (iTerm2 only
@@ -106,7 +106,7 @@ level via a zle widget and works regardless of scrollback state.
 **Files:**
 
 - `~/.config/tmux/tmux.conf` — the `prefix + Y` binding (`send-keys Escape '[Y'`)
-- `~/.shellrc/zshrc.d/configs/post/common-bindings.zsh` — the zle widget and keybinding
+- `~/.shellrc/zshrc.d/configs/695-common-bindings.zsh` - the zle widget and keybinding
 
 **Notes:**
 
@@ -118,7 +118,7 @@ level via a zle widget and works regardless of scrollback state.
 The opencode plugin `opencode-tmux-indicator` sets a per-window user option
 `@opencode-waiting` when an opencode instance is waiting for user input (permission or question).
 The presentation is handled in `tmux.conf` via `#{?@opencode-waiting,...}` conditionals in
-`window-status-format`, which turns inactive tabs gruvbox green with a `● ` prefix.
+`window-status-format`, which turns inactive tabs gruvbox green with a `●` prefix.
 
 The plugin also writes a BEL to the pane TTY so tmux sets `window_bell_flag`, enabling
 `Prefix + M-n` (`next-window -a`) to jump to windows waiting for input. To prevent the bell

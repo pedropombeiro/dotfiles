@@ -86,7 +86,7 @@ matches mise config by path.
 ### Completions and skills policy
 
 Keep static completions in
-`~/.shellrc/zshrc.d/configs/pre/060-generate-completions.zsh` until a tool needs
+`~/.shellrc/zshrc.d/configs/320-generate-completions.zsh` until a tool needs
 version-specific completions. Packslip completions follow the active version
 through shell activation.
 

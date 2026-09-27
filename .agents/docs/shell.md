@@ -7,10 +7,7 @@ Zsh configuration with modular structure and zinit plugins.
 ```
 ~/.shellrc/
 ├── zshrc.d/
-│   ├── configs/
-│   │   ├── pre/          # Early-load (zinit, mise, brew)
-│   │   ├── [main]        # Core configs
-│   │   └── post/         # Late-load (keybindings, fzf)
+│   ├── configs/          # Numbered startup phases, loaded in filename order
 │   └── functions/        # Autoloaded shell functions
 └── rc.d/                 # Shared bash/zsh configs
 ```
@@ -19,20 +16,44 @@ Zsh configuration with modular structure and zinit plugins.
 
 - `~/.zshenv` - Environment variables for all zsh sessions (loads earliest)
 - `~/.zshrc.shared` - Main zsh entry point
-- `~/.shellrc/zshrc.d/configs/zinit.zsh` - Plugin manager setup
-- `~/.shellrc/zshrc.d/configs/post/keybindings.zsh` - Key mappings
+- `~/.shellrc/zshrc.d/configs/350-zinit.zsh` - Plugin manager and completion setup
+- `~/.shellrc/zshrc.d/configs/410-mise.zsh` - Tool environment activation
+- `~/.shellrc/zshrc.d/configs/695-common-bindings.zsh` - Shared key mappings
 
 ## Loading Order
 
-1. `~/.zshenv` loads first (env vars, before any interactive config)
-2. `pre/` configs load next (zinit, mise, brew)
-3. Main configs in `configs/` directory
-4. `post/` configs load last (keybindings, fzf integration)
+`~/.zshenv` loads first. `~/.zshrc.shared` then loads executable files matching
+`configs/[0-9][0-9][0-9]-*.*sh` in filename order. Reserve these ranges:
+
+| Range     | Phase                                | Examples                                                         |
+| --------- | ------------------------------------ | ---------------------------------------------------------------- |
+| `000–099` | Early bootstrap                      | Homebrew discovery, grc preload, instant prompt                  |
+| `100–199` | Platform environment and paths       | Entware, Rust, mise architecture, GDK environment, path ordering |
+| `200–299` | Startup directory                    | NAS directory selection                                          |
+| `300–399` | Completion infrastructure            | Site-functions, generators, cache checks, zinit, `compinit`      |
+| `400–499` | Tool environment activation          | Mise                                                             |
+| `500–599` | Integrations and plugin registration | Deferred-init helper, zoxide, Git, tmux, vi-mode, Atuin, fzf     |
+| `600–699` | Interactive configuration            | Aliases, history, terminal integration, prompt, keybindings      |
+| `700–999` | Reserved                             | Future phases                                                    |
+
+Use three digits and leave gaps for additions. Keep all startup files directly in
+`configs/`; subdirectories do not participate in loading. Unnumbered files such as
+`tmux.platform.zsh` are explicit includes. Preserve YADM suffixes when renaming files.
+
+Finish startup directory, `PATH`, and mise-setting changes before phase 400.
+Homebrew discovery stays in phase 000 because grc needs its prefix before instant
+prompt redirects the terminal. Completion setup must precede mise activation.
+Phase 500 registers deferred plugins; zinit's `wait` priorities still control
+their execution after the first prompt.
+
+After the numbered phases, the loader replays completion definitions, loads shared
+`rc.d/` snippets, and registers autoloaded functions. Shared platform path snippets
+also run in phase 100 so their later invocation leaves `PATH` unchanged.
 
 ## PATH Ordering (macOS)
 
 macOS `path_helper` (via `/etc/zprofile`) can push Homebrew and mise paths
-behind `/usr/bin`. `pre/050-fix-path-ordering.zsh` restores the intended
+behind `/usr/bin`. `190-path-ordering.zsh` restores the intended
 priority so completion scripts (like Homebrew's `_git`) match the selected
 binary:
 
@@ -40,9 +61,9 @@ binary:
 
 ### Completion and mise startup order
 
-`050-fix-path-ordering.zsh` sets the base path. Completion generation (`060` and
-`080`) and dump invalidation (`090`) run before `100-zinit.zsh` adds zinit's
-completion directories and initializes `compinit` once. `110-mise.zsh` then runs
+`190-path-ordering.zsh` sets the base path. Completion generation (`320` and
+`330`) and dump invalidation (`340`) run before `350-zinit.zsh` adds zinit's
+completion directories and initializes `compinit` once. `410-mise.zsh` then runs
 `mise activate zsh`, including its initial environment hook, so concrete tool
 paths are ready for the first command.
 
@@ -56,6 +77,13 @@ can otherwise trigger another initialization. Generate activation for each shell
 because its output embeds the current `PATH`. Preserve its `precmd` and `chpwd`
 hooks for project environment changes. Completion generators publish non-empty,
 successful output atomically and retain the previous file on failure.
+
+On QTS, load Entware and the Docker/yadm paths in `110-entware-profile.sh`,
+Rust paths in `120-rust-path.zsh`, and `MISE_INSTALL_ARCH` in `130-mise-arch.zsh`, before
+path ordering and mise activation. `210-nas-startup.zsh` selects the NAS startup
+directory before activation. Later changes to `PATH` or `MISE_*` variables make
+mise check the environment again at the first prompt. Keep platform path setup
+before activation so fresh and nested shells can use mise's first-prompt fast path.
 
 ## XDG Base Directories
 
@@ -89,14 +117,14 @@ cluster toolbox context through the Caproni execution wrapper.
 
 Plugins load in turbo priority order after the first prompt:
 
-| Priority               | Plugins                                                                        | Files                                                      |
-| ---------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------- |
-| `wait'0'` / `wait'0a'` | zoxide, OMZ libs, FSH, autosuggestions, fzf-tab, CLI completions, Git, vi-mode | pre/mise.zsh, common-plugins.zsh, git.zsh, zsh-vi-mode.zsh |
-| `wait'0b'`             | common-aliases, fzf, OpenCode completion                                       | common-aliases.zsh, post/fzf.zsh, post/opencode.zsh        |
-| `wait'0c'`             | git-extras, Atuin                                                              | git.zsh, post/atuin.zsh                                    |
+| Priority               | Plugins                                                                        | Files                                                                    |
+| ---------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| `wait'0'` / `wait'0a'` | zoxide, OMZ libs, FSH, autosuggestions, fzf-tab, CLI completions, Git, vi-mode | 505-zoxide.zsh, 510-common-plugins.zsh, 520-git.zsh, 570-zsh-vi-mode.zsh |
+| `wait'0b'`             | fzf, OpenCode completion, common-aliases                                       | 591-fzf.zsh, 594-opencode.zsh, 610-common-aliases.zsh                    |
+| `wait'0c'`             | git-extras, Atuin                                                              | 520-git.zsh, 590-atuin.zsh                                               |
 
 `wait'0'` and `wait'0a'` share the first priority group, in submission order.
-`pre/120-deferred-init.zsh` defines `_defer_shell_init`, which registers named
+`500-deferred-init.zsh` defines `_defer_shell_init`, which registers named
 local tasks such as `shell/atuin` and `shell/fzf`. Small OMZ libraries and
 the Git library/plugin share scheduler turns within their
 respective groups. Nested snippets still use zinit's normal tracking.
@@ -127,7 +155,7 @@ Two independent ghost-text bugs exist; each has its own fix.
 **Bug 1: rendering artifact on normal accept-line.** `_zsh_autosuggest_clear`
 sets `POSTDISPLAY=` but its `zle -R` redraw fires _after_ the inner
 `accept-line` commits the line, leaving suggestion text painted in default
-foreground on the committed prompt. Fix: `common-plugins.zsh` defines
+foreground on the committed prompt. Fix: `510-common-plugins.zsh` defines
 `_fix_autosuggest_accept_line`, an outer `accept-line` widget that clears
 `POSTDISPLAY` + `region_highlight` and calls `zle -R` _before_ delegating to
 `zle .accept-line` (the builtin).
@@ -139,7 +167,7 @@ a command from atuin's TUI and press Enter, atuin's widget sets
 Autosuggestions' bound `accept-line` checks
 `cursor == #BUFFER && #POSTDISPLAY > 0` (both true) and appends `POSTDISPLAY`
 to `BUFFER` — turning `atuin stats --help` into
-`atuin stats --help stats --help`. Fix: `post/atuin.zsh` wraps
+`atuin stats --help stats --help`. Fix: `590-atuin.zsh` wraps
 `atuin-search` and `atuin-search-viins` (the widgets bound to `^R` / vicmd
 `/` by `_atuin_rebind_ctrl_r`) with thin wrappers that clear `POSTDISPLAY=`
 before delegating to atuin's original functions. By the time atuin invokes
@@ -165,7 +193,7 @@ atload'!_zsh_autosuggest_start; _fix_autosuggest_accept_line' zsh-users/zsh-auto
 `ZSH_AUTOSUGGEST_MANUAL_REBIND=1` ensures autosuggestions doesn't re-wrap on
 later precmds, so the wrapper stays outermost for the life of the shell.
 All widgets needing wrapping must exist before `_zsh_autosuggest_start` runs.
-History search widgets are registered early in `common-plugins.zsh` for this reason.
+History search widgets are registered early in `510-common-plugins.zsh` for this reason.
 
 **Wait suffix note:** zinit only accepts `wait'0'`, `wait'0a'`, `wait'0b'`,
 `wait'0c'`. `wait'0d'` and beyond emit `Warning: wait ice received invalid
@@ -185,7 +213,7 @@ Two plugins try to claim `^R`:
 
 #### Cached init recovery
 
-`post/atuin.zsh` caches `atuin init zsh --disable-up-arrow` at
+`590-atuin.zsh` caches `atuin init zsh --disable-up-arrow` at
 `$XDG_DATA_HOME/atuin/init.zsh` (normally `~/.local/share/atuin/init.zsh`). A
 failed shell-out can otherwise truncate that cache, leaving `^R` bound to a
 wrapper that calls an undefined `_atuin_search`. Generate into a temporary
@@ -230,5 +258,5 @@ Shell helper scripts under `~/.shellrc/zshrc.d/functions/scripts/` may run via p
 
 ## File Permissions
 
-- **Config files** (`configs/`, `configs/pre/`, `configs/post/`): Must be executable (`chmod +x`)
+- **Numbered config files** (`configs/`): Must be executable (`chmod +x`). Explicit includes such as `tmux.platform.zsh` do not need the executable bit.
 - **Function files** (`functions/`): Should NOT be executable (autoloaded by zsh)

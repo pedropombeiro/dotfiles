@@ -67,8 +67,6 @@ zvm_after_init_commands+=(_atuin_rebind_ctrl_r)
 zvm_after_lazy_keybindings_commands+=(_atuin_rebind_ctrl_r)
 
 # Deferred load (wait'0c') so atuin binds after fzf (wait'0b') and zsh-vi-mode
-zinit wait'0c' lucid nocd light-mode for \
-  atload"_atuin_setup_keybindings $_atuin_init" \
-  zdharma-continuum/null
+_defer_shell_init 0c atuin "_atuin_setup_keybindings ${(q)_atuin_init}"
 
 unset _atuin_init

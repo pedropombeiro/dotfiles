@@ -2,9 +2,11 @@
 
 # Load git lib + plugin via turbo (provides git_current_branch, aliases, etc.)
 # Unalias OMZ git shortcuts that are replaced by custom functions in zshrc.d/functions/
-zinit wait'0' lucid for \
-  OMZL::git.zsh \
-  atload'unalias gf gfa gp gpf gpsup gswm 2>/dev/null' OMZP::git
+_defer_shell_init 0 git '
+  zinit snippet OMZL::git.zsh
+  zinit ice atload"unalias gf gfa gp gpf gpsup gswm 2>/dev/null"
+  zinit snippet OMZP::git
+'
 
 zinit ice wait'0c' lucid
 zinit snippet OMZP::git-extras

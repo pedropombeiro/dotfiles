@@ -12,8 +12,7 @@ if [[ ! -f "$_fzf_init" || "$_fzf_init" -ot "$commands[fzf]" || "$_fzf_init" -ot
 fi
 
 # Load fzf after turbo plugins to prevent keybinding conflicts
-zinit wait'0b' lucid nocd atload"source $_fzf_init" light-mode for \
-  zdharma-continuum/null
+_defer_shell_init 0b fzf "source ${(q)_fzf_init}"
 
 unset _fzf_init
 

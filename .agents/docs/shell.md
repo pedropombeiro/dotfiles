@@ -89,12 +89,30 @@ cluster toolbox context through the Caproni execution wrapper.
 
 Plugins load in turbo priority order after the first prompt:
 
-| Priority   | Plugins                                     | File               |
-| ---------- | ------------------------------------------- | ------------------ |
-| `wait'0'`  | OMZ libs, zsh-vi-mode, FSH, autosuggestions | common-plugins.zsh |
-| `wait'0a'` | fzf-tab, mise completions                   | common-plugins.zsh |
-| `wait'0b'` | fzf, common-aliases                         | fzf.zsh, aliases   |
-| `wait'0c'` | atuin, git-extras                           | atuin.zsh, git.zsh |
+| Priority               | Plugins                                                                        | Files                                                      |
+| ---------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| `wait'0'` / `wait'0a'` | zoxide, OMZ libs, FSH, autosuggestions, fzf-tab, CLI completions, Git, vi-mode | pre/mise.zsh, common-plugins.zsh, git.zsh, zsh-vi-mode.zsh |
+| `wait'0b'`             | common-aliases, fzf, OpenCode completion                                       | common-aliases.zsh, post/fzf.zsh, post/opencode.zsh        |
+| `wait'0c'`             | git-extras, Atuin                                                              | git.zsh, post/atuin.zsh                                    |
+
+`wait'0'` and `wait'0a'` share the first priority group, in submission order.
+`pre/120-deferred-init.zsh` defines `_defer_shell_init`, which registers named
+local tasks such as `shell/atuin` and `shell/fzf`. Small OMZ libraries and
+the Git library/plugin share scheduler turns within their
+respective groups. Nested snippets still use zinit's normal tracking.
+
+Use `zinit times` for load durations and `zinit times -m` for load completion
+moments relative to zinit's first prompt hook. Run these in a fresh interactive
+shell after turbo tasks finish. Group timings include nested snippet timings,
+so the printed total double-counts those snippets. Compare final loading moments
+and individual tasks rather than totals when evaluating grouped loads. The
+installed zinit rejects `times -a`; use the two commands separately.
+
+Zoxide's default initialization is cached at
+`${XDG_CACHE_HOME:-$HOME/.cache}/zoxide/init.zsh`. The cache tracks the executable
+path and the executable/configuration timestamps, and is written atomically.
+When `_ZO_*` customization variables are set, generate initialization for that
+shell instead. Keep Atuin's session ID generation per-session.
 
 ### FSH + autosuggestions ordering
 

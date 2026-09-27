@@ -4,12 +4,17 @@
 # settings (zstyles), directory helpers (aliases). All safe to defer since nothing
 # in the synchronous startup path depends on them.
 # OMZL::completion.zsh reads COMPLETION_WAITING_DOTS and clobbers WORDCHARS.
-zinit wait'0' lucid for \
-  OMZL::clipboard.zsh \
-  OMZL::compfix.zsh \
-  atinit'COMPLETION_WAITING_DOTS="true"; DISABLE_UNTRACKED_FILES_DIRTY="true"' \
-  atload"WORDCHARS='_'" OMZL::completion.zsh \
-  OMZL::directories.zsh
+# These small libraries share one scheduler turn, retaining zinit's tracking
+# and individual timings for each snippet.
+_defer_shell_init 0 omz-libs '
+  zinit snippet OMZL::clipboard.zsh
+  zinit snippet OMZL::compfix.zsh
+  COMPLETION_WAITING_DOTS="true"
+  DISABLE_UNTRACKED_FILES_DIRTY="true"
+  zinit snippet OMZL::completion.zsh
+  WORDCHARS="_"
+  zinit snippet OMZL::directories.zsh
+'
 
 # Skip autosuggestions' automatic widget re-binding on every precmd (O(n) in widget count).
 ZSH_AUTOSUGGEST_MANUAL_REBIND=1
@@ -70,14 +75,14 @@ zstyle ':fzf-tab:complete:git:*' fzf-preview \
   'w=${word%% }; base=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed "s@refs/remotes/@@"); log=$(git log --oneline --graph --color=always --date=short --pretty="format:%C(auto)%cd %h%d %s" ${base:+$base..}$w 2>/dev/null); [[ -n $log ]] && echo $log || git log --oneline --graph --color=always --date=short --pretty="format:%C(auto)%cd %h%d %s" -n 20 $w 2>/dev/null || git diff --color=always -- $w 2>/dev/null | head -100'
 
 # ipinfo uses bash-style `complete -C` for completions; bashcompinit bridges
-# that into zsh's completion system. Uses null plugin for deferred turbo load.
+# that into zsh's completion system.
 # autoload +X loads the function immediately (not lazily) so bashcompinit runs at source time.
-zinit wait lucid nocd for \
-  atinit'autoload -U +X bashcompinit && bashcompinit' \
-  atload'complete -o default -C /opt/homebrew/bin/ipinfo ipinfo' \
-  zdharma-continuum/null
+_defer_shell_init 0 ipinfo '
+  autoload -U +X bashcompinit && bashcompinit
+  complete -o default -C /opt/homebrew/bin/ipinfo ipinfo
+'
 
-# OMZ completions only (no aliases)
+# Keep completion-only loads in for-syntax, which registers their compdefs.
 zinit wait lucid as"completion" for \
   OMZP::yarn/_yarn \
   OMZP::redis-cli/_redis-cli

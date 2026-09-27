@@ -177,6 +177,4 @@ zstyle ':fzf-tab:complete:(opencode|oc):*' fzf-flags --no-sort --height=60% --re
 # offered in their natural definition order rather than alphabetically.
 zstyle ':completion:complete:(opencode|oc):*' sort false
 
-zinit wait'0b' lucid nocd light-mode for \
-  atload'_opencode_install_completion' \
-  zdharma-continuum/null
+_defer_shell_init 0b opencode-completion '_opencode_install_completion'

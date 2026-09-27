@@ -4,7 +4,6 @@
 # \e[5 q = blinking beam (matches zsh-vi-mode's insert-mode cursor)
 printf '\e[5 q'
 
-# Load zsh-vi-mode via zinit turbo. Loads ~10ms after prompt appears,
-# fast enough that vi bindings are ready before the user starts typing.
+# Load zsh-vi-mode in the first turbo group, before fzf and Atuin bindings.
 zinit ice wait'0' lucid depth=1
 zinit light jeffreytse/zsh-vi-mode

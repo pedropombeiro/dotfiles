@@ -11,5 +11,15 @@ if [[ -x "$mise_bin" ]]; then
   # leave them behind shims or preserve an inactive project's tool version.
   path=(${path:#${MISE_DATA_DIR:-$HOME/.local/share/mise}/installs/*})
   export __MISE_ORIG_PATH="$PATH"
-  eval "$("$mise_bin" activate zsh)"
+  # Resolve tools concurrently during startup without changing install/build jobs.
+  # The anonymous function restores MISE_JOBS, including its unset state.
+  () {
+    local -x MISE_JOBS=${MISE_JOBS:-4}
+    eval "$("$mise_bin" activate zsh)"
+  }
+  # Activation snapshots MISE_* for its first-prompt fast path. Record the
+  # restored environment so the temporary jobs override does not force a refresh.
+  if (($+functions[_mise_hook_env_state])); then
+    export __MISE_ZSH_ACTIVATE_ENV="$(_mise_hook_env_state)"
+  fi
 fi

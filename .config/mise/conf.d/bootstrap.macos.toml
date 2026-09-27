@@ -1,0 +1,3 @@
+[bootstrap.repos]
+# GoPro overlay scripts; relink-dotfiles.zsh links bin/* into ~/.local/bin.
+"~/Developer/github.com/pedropombeiro/gopro-graphics" = { url = "https://github.com/pedropombeiro/gopro-graphics.git" }

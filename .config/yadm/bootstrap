@@ -4,7 +4,7 @@
 # execute all executable files (excluding templates and editor backups) in the
 # ~/.config/yadm/bootstrap.d directory when run.
 
-set -eu
+set -euo pipefail
 
 # shellcheck source=./scripts/colors.sh
 source "${HOME}/.config/yadm/scripts/colors.sh"
@@ -19,22 +19,54 @@ if [[ ! -d "${BOOTSTRAP_D}" ]]; then
   exit 1
 fi
 
-declare -a bootstraps
+# Scripts install Homebrew and mise tools, so re-read their paths before each
+# script. mise shims give Bash scripts the tools that .zshenv adds for zsh.
+_bootstrap_load_path() {
+  local brew_bin
+  for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [[ -x ${brew_bin} ]]; then
+      eval "$("${brew_bin}" shellenv)"
+      break
+    fi
+  done
+  case ":${PATH}:" in
+  *":${HOME}/.local/share/mise/shims:"*) ;;
+  *) export PATH="${HOME}/.local/share/mise/shims:${PATH}" ;;
+  esac
+}
+
+# Use stock macOS tools: fd is only installed by the scripts found here.
+# Exclude alternate sources (##), editor backups (~$), and hidden files.
+if ! _bootstrap_list=$(find -L "${BOOTSTRAP_D}" -mindepth 1 -maxdepth 1 \
+  \( -type f -o -type l \) ! -name '*##*' ! -name '*~$*' ! -name '.*' | sort); then
+  echo "Error: failed to list bootstrap scripts in '${BOOTSTRAP_D}'" >&2
+  exit 1
+fi
+if [[ -z ${_bootstrap_list} ]]; then
+  echo "Error: no bootstrap scripts found in '${BOOTSTRAP_D}' - run 'yadm alt' first" >&2
+  exit 1
+fi
+
+declare -a bootstraps=()
 while IFS= read -r bootstrap; do
   bootstraps+=("$bootstrap")
-done < <(fd -L -tf -tl --exclude '*##*' --exclude '*~$*' . "${BOOTSTRAP_D}" | sort -n)
+done <<<"${_bootstrap_list}"
 
+# Plain assignments: ((n++)) returns 1 when n is 0, which exits under set -e.
 _bootstrap_total=0
 for bootstrap in "${bootstraps[@]}"; do
-  [[ -x "${bootstrap}" ]] && ((_bootstrap_total++))
+  if [[ -x "${bootstrap}" ]]; then
+    _bootstrap_total=$((_bootstrap_total + 1))
+  fi
 done
 _bootstrap_current=0
 
 _cleanup_done=0
 _bootstrap_cleanup() {
+  # Read the status first: any command before this line would replace it.
+  local rc=$?
   ((_cleanup_done)) && return
   _cleanup_done=1
-  local rc=$?
   if [[ $rc -ne 0 ]]; then
     iterm2_progress -e
     iterm2_badge "bootstrap: FAILED"
@@ -55,7 +87,8 @@ iterm2_progress -i
 
 for bootstrap in "${bootstraps[@]}"; do
   if [[ -x "${bootstrap}" ]]; then
-    ((_bootstrap_current++))
+    _bootstrap_current=$((_bootstrap_current + 1))
+    _bootstrap_load_path
     iterm2_progress "$((_bootstrap_current * 100 / _bootstrap_total))"
     iterm2_badge "bootstrap: $(basename "${bootstrap}")"
     printf "${YELLOW}%s${NC}\n" "Executing ${bootstrap} ..."

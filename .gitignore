@@ -59,6 +59,7 @@ Thumbs.db
 .config/yadm/bootstrap.d/001-enable-touchid-on-terminal.sh
 .config/yadm/bootstrap.d/003-install-launch-daemons.sh
 .config/yadm/bootstrap.d/005-software-install.sh
+.config/yadm/bootstrap.d/007-check-authentication.sh
 .config/yadm/bootstrap.d/015-allow-ssh-in-firewall.sh
 .config/yadm/bootstrap.d/020-disable-spotlight-indexing.sh
 .config/yadm/bootstrap.d/025-link-to-user-home-mise.toml.sh

@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+#
+# Wait for the authentication that later steps need: 010 clones private GitLab
+# repos through the 1Password SSH agent, mise resolves GitHub tokens with gh, and
+# Work health checks use glab. Each check can be skipped; steps that depend on a
+# skipped check report their own failure.
+
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
+
+# shellcheck source=../scripts/colors.sh
+source "${YADM_SCRIPTS}/colors.sh"
+
+agent_sock="${HOME}/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+class="$(yadm config --get local.class)"
+interactive=0
+[[ -t 0 ]] && interactive=1
+
+# ~/.ssh/config multiplexes GitLab connections through this directory, and ssh
+# can't connect while it is missing.
+mkdir -p "${HOME}/.ssh/controlmasters"
+chmod 700 "${HOME}/.ssh" "${HOME}/.ssh/controlmasters"
+
+# wait_for DESCRIPTION INSTRUCTIONS COMMAND...
+# Re-runs COMMAND until it succeeds, prompting between attempts.
+wait_for() {
+  local description=$1 instructions=$2 answer
+  shift 2
+  until "$@" >/dev/null 2>&1; do
+    if ((!interactive)); then
+      printf "${RED}%s${NC}\n" "${description} is not ready, and there is no terminal to wait on: ${instructions}"
+      return 1
+    fi
+    printf "${YELLOW}%s${NC}\n" "${description} is not ready. ${instructions}"
+    read -r -p "Press Enter to check again, or type 's' to skip: " answer
+    if [[ ${answer} == [sS]* ]]; then
+      printf "${YELLOW}%s${NC}\n" "Skipping: ${description}"
+      return 1
+    fi
+  done
+  printf "${GREEN}%s${NC}\n" "${description} is ready"
+}
+
+onepassword_ready() {
+  SSH_AUTH_SOCK="${agent_sock}" ssh-add -l && [[ -n $(op account list 2>/dev/null) ]]
+}
+
+gitlab_ssh_ready() {
+  ssh -T -o BatchMode=yes -o StrictHostKeyChecking=accept-new git@gitlab.com
+}
+
+# login_if_needed NAME STATUS_COMMAND LOGIN_COMMAND
+login_if_needed() {
+  local name=$1 status_cmd=$2 login_cmd=$3
+  if ! command -v "${name}" >/dev/null 2>&1; then
+    printf "${YELLOW}%s${NC}\n" "${name} is not installed; skipping its authentication"
+    return 0
+  fi
+  if ${status_cmd} >/dev/null 2>&1; then
+    printf "${GREEN}%s${NC}\n" "${name} is authenticated"
+  elif ((interactive)); then
+    ${login_cmd} || printf "${YELLOW}%s${NC}\n" "${name} login failed; run '${login_cmd}' later"
+  else
+    printf "${YELLOW}%s${NC}\n" "${name} is not authenticated; run '${login_cmd}'"
+  fi
+}
+
+if ((interactive)) && ! onepassword_ready; then
+  open -a 1Password 2>/dev/null || true
+fi
+wait_for "1Password SSH agent and CLI" \
+  "Sign in to 1Password, then turn on 'Use the SSH agent' and 'Integrate with 1Password CLI' in Settings > Developer." \
+  onepassword_ready
+
+if [[ ${class} == Work ]]; then
+  wait_for "GitLab SSH access" \
+    "Make sure 1Password offers the 'Work device SSH key' and that the key is added to your GitLab account." \
+    gitlab_ssh_ready
+fi
+
+login_if_needed gh "gh auth status" "gh auth login"
+if [[ ${class} == Work ]]; then
+  login_if_needed glab "glab auth status" "glab auth login --hostname gitlab.com"
+fi
+
+exit 0

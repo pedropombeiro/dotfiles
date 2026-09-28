@@ -8,7 +8,7 @@ YADM bootstrap scripts for automated system setup.
 ~/.config/yadm/
 ├── bootstrap              # Main entry point
 └── bootstrap.d/           # Numbered scripts (run in order, 000-999)
-    ├── 000-099            # Early setup (machine class, touchid, launch agents, software install, zinit, firewall, spotlight, mise, grc-rs rules)
+    ├── 000-099            # Early setup (machine class, touchid, launch agents, software install, authentication, zinit, firewall, spotlight, mise, grc-rs rules)
     ├── 100-199            # Configuration (defaults, relink dotfiles)
     ├── 200-499            # (reserved for future use)
     ├── 500-699            # (reserved for future use)
@@ -68,6 +68,11 @@ undo changes made in System Settings.
 
 ## Guidelines
 
+- A script that fails a required step must exit non-zero; bootstrap stops at
+  the first failing script. The entry point finds scripts with stock macOS
+  tools, so don't depend on Homebrew or mise tools before `005` installs them.
+- `007-check-authentication.sh` waits for the 1Password SSH agent and CLI, GitLab
+  SSH access, and `gh`/`glab` logins before `010` clones private repositories.
 - Scripts must be safe to re-run. Guard one-time steps, such as restoring
   settings or opening apps for the first time, with a check for their result.
 - Leave numbering gaps so later scripts can be inserted without renumbering

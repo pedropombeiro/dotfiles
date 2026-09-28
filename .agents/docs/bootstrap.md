@@ -84,6 +84,22 @@ undo changes made in System Settings.
   settings or opening apps for the first time, with a check for their result.
 - Leave numbering gaps so later scripts can be inserted without renumbering
 
+## Manual steps
+
+Bootstrap leaves these to you on purpose. Don't automate or flag them as gaps.
+`999-print-manual-steps.sh` lists them when bootstrap finishes.
+
+- **App Store sign-in:** `005` tries to install App Store apps, which fails until
+  you sign in. Rerun `mise bootstrap --only packages --yes` afterwards.
+- **macOS permissions:** grant Accessibility, Bluetooth, and similar permissions
+  when apps ask. Hammerspoon needs Accessibility and Bluetooth.
+- **BusylightHTTP (Work):** install it from a local installer file. `940` only
+  adds it as a login item.
+- **GDK configuration (Work):** `950` installs GDK, and `update-work.zsh`
+  configures it. A new machine doesn't need GDK right away, so run
+  `mise run dotfiles:update` from a new terminal after bootstrap. Shell startup
+  exports `GDK_ROOT` only when the GDK directory exists.
+
 ## 1Password Secrets
 
 Use account and vault UUIDs for `op` calls in bootstrap scripts. Vault names such

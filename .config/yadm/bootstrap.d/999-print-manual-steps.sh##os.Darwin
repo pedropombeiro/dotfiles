@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+#
+# List the setup that bootstrap leaves to you on purpose. See "Manual steps" in
+# ~/.agents/docs/bootstrap.md.
+
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
+
+# shellcheck source=../scripts/colors.sh
+source "${YADM_SCRIPTS}/colors.sh"
+
+class="$(yadm config --get local.class)"
+
+steps=(
+  "Sign in to the App Store, then run 'mise bootstrap --only packages --yes' to install the App Store apps."
+  "Grant macOS permissions as apps ask for them. Hammerspoon needs Accessibility and Bluetooth."
+)
+if [[ ${class} == Work ]]; then
+  steps+=(
+    "Install BusylightHTTP from its local installer file."
+    "Open a new terminal and run 'mise run dotfiles:update' to configure GDK and the remaining Work setup."
+  )
+fi
+
+printf "\n${CYAN}%s${NC}\n" "Bootstrap finished. Remaining manual steps:"
+for i in "${!steps[@]}"; do
+  printf "  %d. %s\n" "$((i + 1))" "${steps[i]}"
+done

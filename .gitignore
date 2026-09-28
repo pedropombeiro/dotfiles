@@ -79,6 +79,7 @@ Thumbs.db
 .config/yadm/bootstrap.d/955-install-stream-deck-plugins.sh
 .config/yadm/bootstrap.d/965-ensure-weekly-log.sh
 .config/yadm/bootstrap.d/966-sync-caproni-sesh.sh
+.config/yadm/bootstrap.d/999-print-manual-steps.sh
 .config/yadm/config_templates/LaunchDaemons/org.gitlab1.ifconfig.plist
 .config/yadm/scripts/defaults.sh
 .config/yadm/scripts/iterm2-setup.sh

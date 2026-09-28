@@ -273,6 +273,7 @@
       "cat *": "allow",
       "clickhouse client --port 9001 --query *": "allow",
       "column *": "allow",
+      "comm *": "allow",
       "cut *": "allow",
       "diff *": "allow",
       "colima status*": "allow",

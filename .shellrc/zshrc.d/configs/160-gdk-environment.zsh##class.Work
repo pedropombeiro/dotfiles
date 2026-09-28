@@ -1,9 +1,12 @@
 #!/usr/bin/env zsh
 
 GDK_ROOT="${HOME}/gitlab-development-kit"
+if [[ ! -d ${GDK_ROOT} && -d ${HOME}/gdk ]]; then
+  GDK_ROOT="${HOME}/gdk"
+fi
 [[ -d ${GDK_ROOT} ]] && export GDK_ROOT
 
 # Load project environment setup before mise selects tool versions.
-if [[ -d ${GDK_ROOT} ]]; then
+if [[ -d ${GDK_ROOT} && -f ${HOME}/.pgsql_profile ]]; then
   source ~/.pgsql_profile
 fi

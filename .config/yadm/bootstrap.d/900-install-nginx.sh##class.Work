@@ -9,4 +9,7 @@ if [[ -d "${NGINX_ETC_DIR}" ]]; then
   NGINX_PATH="$(realpath "$(which nginx)")"
   sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add "${NGINX_PATH}"
   sudo /usr/libexec/ApplicationFirewall/socketfilterfw --unblockapp "${NGINX_PATH}"
+
+  # brew bundle may already have started nginx with the default config.
+  nginx -t && brew services restart nginx
 fi

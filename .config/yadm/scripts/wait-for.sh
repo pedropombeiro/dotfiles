@@ -5,7 +5,7 @@
 # wait_for DESCRIPTION INSTRUCTIONS COMMAND...
 # Re-runs COMMAND until it succeeds, printing INSTRUCTIONS and prompting between
 # attempts. Returns 1 when the user skips the check, or when there is no
-# terminal to prompt on.
+# terminal to prompt on, or input reaches EOF.
 
 # shellcheck source=./colors.sh
 source "$(dirname -- "${BASH_SOURCE[0]}")/colors.sh"
@@ -19,7 +19,10 @@ wait_for() {
       return 1
     fi
     printf "${YELLOW}%s${NC}\n" "${description} is not ready. ${instructions}"
-    read -r -p "Press Enter to check again, or type 's' to skip: " answer
+    if ! read -r -p "Press Enter to check again, or type 's' to skip: " answer; then
+      printf "\n${YELLOW}%s${NC}\n" "Skipping: ${description} (could not read input)"
+      return 1
+    fi
     if [[ ${answer} == [sS]* ]]; then
       printf "${YELLOW}%s${NC}\n" "Skipping: ${description}"
       return 1

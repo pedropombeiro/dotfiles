@@ -9,7 +9,7 @@ printf "${YELLOW}%s${NC}\n" "Installing mise plugins..."
 (cd ~ && mise install --yes)
 
 printf "${YELLOW}%s${NC}\n" "Cloning configured repositories..."
-(cd ~ && mise bootstrap repos apply --yes)
+(cd ~ && mise bootstrap repos apply --skip-dirty --yes)
 
 if [[ $(uname -s) != 'Darwin' ]]; then
   if [[ ! -f ${HOME}/.fzf.zsh ]]; then

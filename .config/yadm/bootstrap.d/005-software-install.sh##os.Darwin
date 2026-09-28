@@ -5,11 +5,17 @@ YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null 
 # shellcheck source=../scripts/colors.sh
 source "${YADM_SCRIPTS}/colors.sh"
 
-sudo softwareupdate -i -a
-# The Xcode Command Line Tools includes git and make (not available on stock macOS)
-if ! command -v git >/dev/null; then
-  xcode-select --install
+# The Xcode Command Line Tools include git and make. /usr/bin/git exists as a
+# launcher before they are installed, so check the developer directory instead.
+if ! xcode-select -p >/dev/null 2>&1; then
+  printf "${YELLOW}%s${NC}\n" "Installing the Xcode Command Line Tools - finish the installer dialog to continue"
+  xcode-select --install || true
+  until xcode-select -p >/dev/null 2>&1; do
+    sleep 5
+  done
 fi
+
+sudo softwareupdate -i -a
 if [[ $(uname -m) == 'arm64' ]]; then
   sudo softwareupdate --install-rosetta --agree-to-license
 fi
@@ -17,12 +23,26 @@ fi
 # install homebrew if it's missing
 if ! command -v brew >/dev/null 2>&1; then
   printf "${YELLOW}%s${NC}\n" "Installing homebrew"
-  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || exit 1
+  for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    [[ -x ${brew_bin} ]] && eval "$("${brew_bin}" shellenv)" && break
+  done
+  command -v brew >/dev/null 2>&1 || {
+    printf "${RED}%s${NC}\n" "Homebrew installed, but brew is not on PATH"
+    exit 1
+  }
 fi
 
 if [ -f "${HOME}/.Brewfile" ]; then
   printf "${YELLOW}%s${NC}\n" "Updating homebrew bundle"
   brew bundle --global || printf "${RED}%s${NC}\n" "Failed to install packages"
+fi
+
+# 001 runs before Homebrew installs pam-reattach, so add it to sudo_local now.
+# Without it, Touch ID for sudo doesn't work inside tmux.
+if [[ -f /opt/homebrew/lib/pam/pam_reattach.so ]] &&
+  ! grep -q pam_reattach /etc/pam.d/sudo_local 2>/dev/null; then
+  "${YADM_SCRIPTS}/enable-touchid-on-terminal.sh"
 fi
 
 printf "${YELLOW}%s${NC}\n" "Installing Mac App Store apps"

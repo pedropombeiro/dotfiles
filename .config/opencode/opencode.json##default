@@ -378,6 +378,8 @@
       "mise version": "allow",
       "mise where *": "allow",
       "mise which *": "allow",
+      "mkdir -p /private/tmp/*": "allow",
+      "mkdir -p /private/var/folders/*": "allow",
       "more *": "allow",
       "nl*": "allow",
       "npm view *": "allow",

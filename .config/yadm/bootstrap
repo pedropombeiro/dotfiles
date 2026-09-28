@@ -22,17 +22,25 @@ fi
 # Scripts install Homebrew and mise tools, so re-read their paths before each
 # script. mise shims give Bash scripts the tools that .zshenv adds for zsh.
 _bootstrap_load_path() {
-  local brew_bin
+  local brew_bin path_entry normalized_path
+  local -a path_entries
   for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew; do
     if [[ -x ${brew_bin} ]]; then
       eval "$("${brew_bin}" shellenv)"
       break
     fi
   done
-  case ":${PATH}:" in
-  *":${HOME}/.local/share/mise/shims:"*) ;;
-  *) export PATH="${HOME}/.local/share/mise/shims:${PATH}" ;;
-  esac
+  # shellenv prepends Homebrew each time. Restore shim precedence and remove
+  # duplicates so repeated refreshes produce the same PATH.
+  normalized_path="${HOME}/.local/share/mise/shims"
+  IFS=: read -r -a path_entries <<<"${PATH}"
+  for path_entry in "${path_entries[@]}"; do
+    case ":${normalized_path}:" in
+    *":${path_entry}:"*) ;;
+    *) normalized_path+=":${path_entry}" ;;
+    esac
+  done
+  export PATH="${normalized_path}"
 }
 
 # Use stock macOS tools: fd is only installed by the scripts found here.

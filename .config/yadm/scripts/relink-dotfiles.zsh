@@ -60,11 +60,26 @@ if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then
   if [[ -d ${src_path} ]]; then
     printf "${YELLOW}%s${NC}\n" "Linking .dotfiles in ${src_path} to ${HOME}..."
     # N = nullglob (no error if no matches), -. = regular files following symlinks
-    # @ = symlinks only; skip files already symlinked into src_path
+    # Keep restored histories authoritative, preserving differing local copies
+    # outside src_path so the linking loop below won't pick up the backups.
+    history_backup_dir=""
     for file in ~/.*history(N-.); do
       [[ -L ${file} && $(readlink "${file}") == "${src_path}"/* ]] && continue
-      cp -Lf "${file}" "${src_path}/"
+      if [[ -e ${src_path}/${file:t} || -L ${src_path}/${file:t} ]]; then
+        if ! cmp -s "${file}" "${src_path}/${file:t}"; then
+          if [[ -z ${history_backup_dir} ]]; then
+            history_backup_root="${XDG_STATE_HOME:-${HOME}/.local/state}/yadm/history-backups"
+            (umask 077; mkdir -p "${history_backup_root}") || exit 1
+            history_backup_dir=$(mktemp -d "${history_backup_root}/restore.XXXXXX") || exit 1
+          fi
+          cp -pL "${file}" "${history_backup_dir}/" || exit 1
+          printf "${YELLOW}%s${NC}\n" "Saved local history to ${history_backup_dir}/${file:t}"
+        fi
+      else
+        cp -pL "${file}" "${src_path}/" || exit 1
+      fi
     done
+    unset history_backup_dir history_backup_root
     # ^ = negation (requires EXTENDED_GLOB), N = nullglob, . = regular files only
     for file in "${src_path}"/.^sync-conflict*(N.); do
       echo "> ${file}" && ln -sf "${file}" ~/

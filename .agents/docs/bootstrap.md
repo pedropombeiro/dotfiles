@@ -73,6 +73,13 @@ undo changes made in System Settings.
   tools, so don't depend on Homebrew or mise tools before `005` installs them.
 - `007-check-authentication.sh` waits for the 1Password SSH agent and CLI, GitLab
   SSH access, and `gh`/`glab` logins before `010` clones private repositories.
+- `100-wait-for-synced-data.sh` waits for `~/Sync/pedro` before `110`, `120`,
+  and `938` restore from it. Syncthing isn't allowed on Work machines, so copy
+  `~/Sync/pedro/.dotfiles/Home/MBP.Work` and
+  `~/Sync/pedro/Briefcase/Backups/MBP.Work` from the previous Work machine.
+  Don't add Syncthing to the Work Brewfile.
+- Checkpoints that wait for a manual step use `wait_for` from
+  `scripts/wait-for.sh`.
 - Scripts must be safe to re-run. Guard one-time steps, such as restoring
   settings or opening apps for the first time, with a check for their result.
 - Leave numbering gaps so later scripts can be inserted without renumbering

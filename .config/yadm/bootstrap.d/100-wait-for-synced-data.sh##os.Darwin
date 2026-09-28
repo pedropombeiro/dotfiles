@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#
+# Wait for ~/Sync/pedro before the steps that restore from it: 110 points iTerm2
+# and Dash at backups, 120 links shell histories and pgcli state, and 938 imports
+# Input Source Pro settings. Personal machines receive the folder through
+# Syncthing. Syncthing isn't allowed on Work machines, so copy it by hand.
+
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
+
+# shellcheck source=../scripts/wait-for.sh
+source "${YADM_SCRIPTS}/wait-for.sh"
+
+class="$(yadm config --get local.class)"
+sync_root="${HOME}/Sync/pedro"
+dotfiles_dir="${sync_root}/.dotfiles/Home/MBP.${class}"
+backups_dir="${sync_root}/Briefcase/Backups/MBP.${class}"
+
+synced_data_ready() {
+  [[ -d ${dotfiles_dir} && -d ${backups_dir} ]]
+}
+
+if [[ ${class} == Work ]]; then
+  instructions="Syncthing isn't allowed on Work machines. Copy ${dotfiles_dir} and ${backups_dir} from the previous Work machine."
+else
+  instructions="Set up Syncthing and wait for the ${sync_root} folder to finish syncing."
+fi
+
+# Skipping is fine: the restore steps skip what they can't find.
+wait_for "Synced data in ${sync_root}" "${instructions}" synced_data_ready || true

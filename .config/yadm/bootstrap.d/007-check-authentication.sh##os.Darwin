@@ -9,6 +9,8 @@ YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null 
 
 # shellcheck source=../scripts/colors.sh
 source "${YADM_SCRIPTS}/colors.sh"
+# shellcheck source=../scripts/wait-for.sh
+source "${YADM_SCRIPTS}/wait-for.sh"
 
 agent_sock="${HOME}/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 class="$(yadm config --get local.class)"
@@ -19,26 +21,6 @@ interactive=0
 # can't connect while it is missing.
 mkdir -p "${HOME}/.ssh/controlmasters"
 chmod 700 "${HOME}/.ssh" "${HOME}/.ssh/controlmasters"
-
-# wait_for DESCRIPTION INSTRUCTIONS COMMAND...
-# Re-runs COMMAND until it succeeds, prompting between attempts.
-wait_for() {
-  local description=$1 instructions=$2 answer
-  shift 2
-  until "$@" >/dev/null 2>&1; do
-    if ((!interactive)); then
-      printf "${RED}%s${NC}\n" "${description} is not ready, and there is no terminal to wait on: ${instructions}"
-      return 1
-    fi
-    printf "${YELLOW}%s${NC}\n" "${description} is not ready. ${instructions}"
-    read -r -p "Press Enter to check again, or type 's' to skip: " answer
-    if [[ ${answer} == [sS]* ]]; then
-      printf "${YELLOW}%s${NC}\n" "Skipping: ${description}"
-      return 1
-    fi
-  done
-  printf "${GREEN}%s${NC}\n" "${description} is ready"
-}
 
 onepassword_ready() {
   SSH_AUTH_SOCK="${agent_sock}" ssh-add -l && [[ -n $(op account list 2>/dev/null) ]]

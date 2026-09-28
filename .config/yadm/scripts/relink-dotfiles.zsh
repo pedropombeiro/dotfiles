@@ -69,11 +69,16 @@ if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then
     for file in "${src_path}"/.^sync-conflict*(N.); do
       echo "> ${file}" && ln -sf "${file}" ~/
     done
+  elif [[ ${class} == 'Work' ]]; then
+    # Syncthing isn't allowed on Work machines.
+    printf "${RED}%s${NC}\n" "${src_path} not found. Copy it from the previous Work machine."
   else
     printf "${RED}%s${NC}\n" "${src_path} not found. Please configure Syncthing and perform a sync run first."
   fi
 
-  if [[ -d ${HOME}/.config/pgcli ]]; then
+  # Only once the synced folder exists: seeding it would create a partial
+  # MBP.<class> tree that looks restored and conflicts with the real copy.
+  if [[ -d ${src_path} && -d ${HOME}/.config/pgcli ]]; then
     if [[ ! -d "${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}/.config/pgcli" ]]; then
       printf "${YELLOW}%s${NC}\n" "Copying pgcli config to Syncthing..."
       mkdir -p "${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}/.config/"

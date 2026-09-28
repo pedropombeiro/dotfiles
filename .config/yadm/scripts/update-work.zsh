@@ -395,6 +395,14 @@ fi
 unset gitlab_dotfiles_dir
 "${YADM_SCRIPTS}/link-private-work-files.zsh"
 
+# sync-work-skills.zsh links Work skills into these checkouts, so fast-forward
+# them to keep the skills current.
+mise bootstrap repos update --yes --skip-dirty \
+  "${HOME}/Developer/gitlab.com/gitlab-org/ai/skills" \
+  "${HOME}/Developer/gitlab.com/gitlab-org/ci-cd/fix-pipeline-flow-report" \
+  "${HOME}/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph" >/dev/null ||
+  echo "Warning: failed to update Work skill repos; using the existing checkouts" >&2
+
 if [[ -n ${GDK_ROOT} ]]; then
   local clickhouse_bin_path
 

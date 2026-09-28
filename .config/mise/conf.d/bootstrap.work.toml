@@ -1,2 +1,9 @@
 [bootstrap.repos]
 "~/.config/dotfiles/gitlab" = { url = "git@gitlab.com:pedropombeiro/gitlab-dotfiles.git" }
+"~/Developer/gitlab.com/gitlab-com/content-sites/handbook" = { url = "git@gitlab.com:gitlab-com/content-sites/handbook.git" }
+"~/Developer/gitlab.com/gitlab-com/www-gitlab-com" = { url = "git@gitlab.com:gitlab-com/www-gitlab-com.git" }
+"~/Developer/gitlab.com/gitlab-org/ai/skills" = { url = "git@gitlab.com:gitlab-org/ai/skills.git" }
+"~/Developer/gitlab.com/gitlab-org/ci-cd/fix-pipeline-flow-report" = { url = "git@gitlab.com:gitlab-org/ci-cd/fix-pipeline-flow-report.git" }
+"~/Developer/gitlab.com/gitlab-org/gitlab-runner" = { url = "git@gitlab.com:gitlab-org/gitlab-runner.git" }
+"~/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph" = { url = "git@gitlab.com:gitlab-org/orbit/knowledge-graph.git" }
+"~/Developer/gitlab.com/pedropombeiro/weekly-log" = { url = "git@gitlab.com:pedropombeiro/weekly-log.git" }

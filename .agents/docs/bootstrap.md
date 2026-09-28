@@ -75,9 +75,14 @@ undo changes made in System Settings.
   SSH access, and `gh`/`glab` logins before `010` clones private repositories.
 - `100-wait-for-synced-data.sh` waits for `~/Sync/pedro` before `110`, `120`,
   and `938` restore from it. Syncthing isn't allowed on Work machines, so copy
-  `~/Sync/pedro/.dotfiles/Home/MBP.Work` and
-  `~/Sync/pedro/Briefcase/Backups/MBP.Work` from the previous Work machine.
+  `~/Sync/pedro/.dotfiles/Home/MBP.Work`,
+  `~/Sync/pedro/Briefcase/Backups/MBP.Work`, and
+  `~/Sync/pedro/Briefcase/Backups/dash` from the previous Work machine.
   Don't add Syncthing to the Work Brewfile.
+- Relinking preserves restored histories. Differing local histories are saved in
+  `${XDG_STATE_HOME:-~/.local/state}/yadm/history-backups/restore.*` before linking.
+  If a history has no restored copy, relinking copies the local file into the
+  restored directory.
 - Checkpoints that wait for a manual step use `wait_for` from
   `scripts/wait-for.sh`.
 - Scripts must be safe to re-run. Guard one-time steps, such as restoring
@@ -98,7 +103,9 @@ Bootstrap leaves these to you on purpose. Don't automate or flag them as gaps.
 - **GDK configuration (Work):** `950` installs GDK, and `update-work.zsh`
   configures it. A new machine doesn't need GDK right away, so run
   `mise run dotfiles:update` from a new terminal after bootstrap. Shell startup
-  exports `GDK_ROOT` only when the GDK directory exists.
+  exports `GDK_ROOT` when `~/gitlab-development-kit` or `~/gdk` exists, preferring
+  `~/gitlab-development-kit` when both exist. If you choose another installation
+  directory, set `GDK_ROOT` to that directory before running the update.
 
 ## 1Password Secrets
 

@@ -16,16 +16,18 @@ local subtitles = {
   question = "Question",
 }
 
-local function onActivation(_, pane)
-  log.i("onActivation: pane=" .. tostring(pane))
-  require("opencode").activatePane(pane)
+local function onActivation(_, pane, socket, session)
+  log.i("onActivation: pane=" .. tostring(pane) .. " session=" .. tostring(session))
+  require("opencode").activateSession(pane, socket, session)
 end
 
 local function notify(params)
   local event = params.event or ""
   local pane = params.pane
+  local socket = params.socket
+  local session = params.session
 
-  local n = hs.notify.new(function(notification) onActivation(notification, pane) end, {
+  local n = hs.notify.new(function(notification) onActivation(notification, pane, socket, session) end, {
     title = params.title or "OpenCode",
     subTitle = subtitles[event] or "",
     informativeText = params.message or "",

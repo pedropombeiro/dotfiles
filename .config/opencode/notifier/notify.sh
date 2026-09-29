@@ -40,7 +40,9 @@ TITLE="${TITLE_OVERRIDE:-OpenCode}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ICON="$SCRIPT_DIR/icon.png"
 
-# Echoes the pane whose opencode-tmux-indicator socket lists the session as waiting.
+# Echoes "PANE SOCKET" for the first pane whose opencode-tmux-indicator socket lists the
+# session as waiting. Every TUI in a directory can host the session as a tab, so the
+# notification click selects the tab through the socket before focusing the pane.
 waiting_pane_for_session() {
   local session_id=$1 pane_id option socket
   while IFS= read -r pane_id; do
@@ -50,7 +52,7 @@ waiting_pane_for_session() {
       [[ -S $socket ]] || continue
       if curl --silent --fail --max-time 1 --unix-socket "$socket" http://localhost/waiting 2>/dev/null |
         grep -qF "\"$session_id\""; then
-        printf '%s\n' "$pane_id"
+        printf '%s %s\n' "$pane_id" "$socket"
         return 0
       fi
     done < <(tmux show-options -p -t "$pane_id" 2>/dev/null)
@@ -63,11 +65,13 @@ waiting_pane_for_session() {
 sleep "$GRACE_PERIOD"
 
 PANE="${TMUX_PANE:-}"
+SOCKET=""
 if [[ -n "$SESSION_ID" ]] && tmux list-sessions &>/dev/null; then
   # The OpenCode 2 server runs this script, so $TMUX_PANE is the pane that started the
   # server, not the pane showing this session. Notify only while the session is still
-  # waiting, and target the pane that shows it.
-  PANE=$(waiting_pane_for_session "$SESSION_ID") || exit 0
+  # waiting, and target a pane that hosts it.
+  TARGET=$(waiting_pane_for_session "$SESSION_ID") || exit 0
+  read -r PANE SOCKET <<<"$TARGET"
 elif [[ -n "$TMUX_PANE" ]]; then
   # No session ID: fall back to the pane-wide flag set by the opencode tmux integration.
   STILL_WAITING=$(tmux show-option -wqv -t "$TMUX_PANE" @opencode-waiting 2>/dev/null)
@@ -86,4 +90,4 @@ urlencode() {
   done < <(printf '%s' "$1")
 }
 
-curl -sf "http://localhost:${HAMMERSPOON_PORT}/?action=notify&event=${EVENT}&message=$(urlencode "$MESSAGE")&title=$(urlencode "$TITLE")&pane=$(urlencode "$PANE")&icon=$(urlencode "$ICON")"
+curl -sf "http://localhost:${HAMMERSPOON_PORT}/?action=notify&event=${EVENT}&message=$(urlencode "$MESSAGE")&title=$(urlencode "$TITLE")&pane=$(urlencode "$PANE")&socket=$(urlencode "$SOCKET")&session=$(urlencode "$SESSION_ID")&icon=$(urlencode "$ICON")"

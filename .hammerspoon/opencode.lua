@@ -79,6 +79,37 @@ function M.activatePane(pane)
   end)
 end
 
+-- Brings a session's tab forward through its opencode-tmux-indicator socket, then
+-- focuses the pane. Every TUI in a directory can host the same session as a tab, so
+-- focusing the pane alone may leave a different session in front.
+function M.activateSession(pane, socket, sessionID)
+  local validSession = type(sessionID) == "string" and sessionID:match("^ses[%w_-]+$") ~= nil
+  local validSocket = type(socket) == "string" and hs.fs.attributes(socket, "mode") == "socket"
+  if not (validSession and validSocket) then
+    M.activatePane(pane)
+    return
+  end
+
+  local started = run("/usr/bin/curl", {
+    "--silent",
+    "--fail",
+    "--max-time",
+    "2",
+    "--unix-socket",
+    socket,
+    "-X",
+    "POST",
+    "http://localhost/select/" .. sessionID,
+  }, function(exitCode, stdOut)
+    if exitCode ~= 0 or stdOut:gsub("%s+$", "") ~= "true" then
+      log.i("could not select session " .. sessionID .. " (exit " .. exitCode .. ")")
+    end
+    M.activatePane(pane)
+  end)
+
+  if not started then M.activatePane(pane) end
+end
+
 function M.selectWaiting()
   local started = run(navigator, nil, function(exitCode, stdOut, stdErr)
     if exitCode == 0 then

@@ -6,7 +6,7 @@
   "command": {
     "enabled": true,
     "path": "{{ env.HOME }}/.config/opencode/notifier/notify.sh",
-    "args": ["--event", "{event}", "--message", "{message}", "--title", "OpenCode ({projectName})"],
+    "args": ["--event", "{event}", "--message", "{message}", "--title", "OpenCode ({projectName})", "--session", "{sessionID}"],
     "minDuration": 10
   },
   "events": {

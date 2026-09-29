@@ -28,7 +28,7 @@ jobs:
         with:
           # Keep in sync with min_version in .config/mise/conf.d/global.toml
           # renovate: datasource=github-releases depName=jdx/mise
-          version: "2026.9.15"
+          version: "2026.9.16"
 
       # Install zsh for syntax checking
       - name: Install zsh

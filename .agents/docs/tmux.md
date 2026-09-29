@@ -183,6 +183,16 @@ Tmux integrates with `sesh` for session discovery and switching.
 - `fn + Tab` and `Caps Lock + L` (iTerm2 only) are alternatives to `prefix + L`, implemented in
   Hammerspoon. `Hyper + L` works too, via the same `hyperBind` registration.
 
+### OpenCode waiting indicator
+
+Both pickers (`prefix + T` and `Alt + s`) list sessions through `~/.local/bin/sesh-list-waiting`,
+which wraps `sesh list` and adds an orange `●` before any session with a window where
+`@opencode-waiting` is set (see [OpenCode Tmux Tab Indicator](#opencode-tmux-tab-indicator)).
+The wrapper emits `<sesh row>\t<session name>\t<display row>`, so fzf runs with
+`--delimiter '\t' --with-nth -1 --accept-nth 1`. `sesh connect` and `sesh preview` get
+field 1, and `tmux kill-session` gets field 2. The `ctrl-f` reload returns plain `fd` rows,
+which have a single field, so `-1` and `1` both resolve to the directory.
+
 ### fn+Tab and Caps Lock+L last-session shortcuts
 
 Both live in `~/.hammerspoon/hotkeys/sesh.lua`. They run

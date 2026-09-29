@@ -1,0 +1,44 @@
+#!/bin/bash
+# Wrap `sesh list` for fzf pickers, marking sessions with an OpenCode agent waiting for input.
+#
+# opencode-tmux-indicator sets the per-window `@opencode-waiting` option. A session is marked
+# when any of its windows has it set. Each output row has three tab-separated fields:
+#
+#   1. the original `sesh list` row, for `sesh connect` and `sesh preview`
+#   2. the bare session name, for tmux commands such as `kill-session`
+#   3. the display row, with an orange bullet for waiting sessions
+#
+# Pickers use `--delimiter '\t' --with-nth 3 --accept-nth 1`. All arguments pass through
+# to `sesh list`.
+
+set -o pipefail
+
+icons=false
+for arg in "$@"; do
+  case $arg in
+    -i | --icons) icons=true ;;
+  esac
+done
+
+# Passed through the environment because BSD awk rejects newlines in `-v` values.
+export SESH_WAITING=$(tmux list-windows -a -F '#{?@opencode-waiting,#{session_name},}' 2>/dev/null | sort -u)
+
+sesh list "$@" | awk -v icons="$icons" '
+  BEGIN {
+    n = split(ENVIRON["SESH_WAITING"], names, "\n")
+    for (i = 1; i <= n; i++) if (names[i] != "") is_waiting[names[i]] = 1
+    marker = "\033[38;5;214m●\033[39m "
+  }
+  {
+    # With icons, each row is "<colored icon> <name>"; the icon never contains a space.
+    if (icons == "true" && (pos = index($0, " ")) > 0) {
+      prefix = substr($0, 1, pos)
+      name = substr($0, pos + 1)
+    } else {
+      prefix = ""
+      name = $0
+    }
+    display = (name in is_waiting) ? prefix marker name : prefix "  " name
+    printf "%s\t%s\t%s\n", $0, name, display
+  }
+'

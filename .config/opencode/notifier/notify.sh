@@ -78,16 +78,13 @@ elif [[ -n "$TMUX_PANE" ]]; then
   [[ "$STILL_WAITING" != "1" ]] && exit 0
 fi
 
-# Percent-encode a string for use in query parameters (pure bash)
-urlencode() {
-  local LC_ALL=C char
-  while IFS= read -r -n1 char; do
-    case "$char" in
-    [a-zA-Z0-9.~_-]) printf '%s' "$char" ;;
-    '') printf '%%20' ;;
-    *) printf '%%%02X' "'$char" ;;
-    esac
-  done < <(printf '%s' "$1")
-}
-
-curl -sf "http://localhost:${HAMMERSPOON_PORT}/?action=notify&event=${EVENT}&message=$(urlencode "$MESSAGE")&title=$(urlencode "$TITLE")&pane=$(urlencode "$PANE")&socket=$(urlencode "$SOCKET")&session=$(urlencode "$SESSION_ID")&icon=$(urlencode "$ICON")"
+# curl percent-encodes each value as UTF-8 bytes, so emoji and accents survive.
+curl -sfG "http://localhost:${HAMMERSPOON_PORT}/" \
+  --data-urlencode "action=notify" \
+  --data-urlencode "event=${EVENT}" \
+  --data-urlencode "message=${MESSAGE}" \
+  --data-urlencode "title=${TITLE}" \
+  --data-urlencode "pane=${PANE}" \
+  --data-urlencode "socket=${SOCKET}" \
+  --data-urlencode "session=${SESSION_ID}" \
+  --data-urlencode "icon=${ICON}"

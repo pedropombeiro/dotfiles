@@ -173,7 +173,7 @@
         "/(^|/)\\.config/opencode/cli\\.base\\.json(##[^/]+)?$/"
       ],
       "matchStrings": [
-        "\"(?<depName>(@[^\"/@]+/)?[^\"@/]+)@(?<currentValue>\\d+\\.\\d+\\.\\d+[^\"]*)\""
+        "\"(?:aisdk:)?(?<depName>(@[^\"/@]+/)?[^\"@/]+)@(?<currentValue>\\d+\\.\\d+\\.\\d+[^\"]*)\""
       ],
       "datasourceTemplate": "npm",
       "versioningTemplate": "npm"

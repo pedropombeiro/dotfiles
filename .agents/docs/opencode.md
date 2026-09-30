@@ -5,7 +5,7 @@
 - Shared skills live in `~/.agents/skills`. OpenCode's global `skills` directory
   links there. OpenCode also discovers `~/.claude/skills` automatically.
 - Work-only skills live in `~/.agents/skills.work`. Only
-  `opencode.json##class.Work` adds that directory through `skills.paths`.
+  `opencode.json##class.Work` adds that directory through `skills`.
 - `AGENTS.md##template` adds the instruction to read `~/.agents/docs/work.md`
   only on Work machines, through a `{% if yadm.class == "Work" %}` block. OpenCode 2
   accepts the `instructions` config field but does not load its entries.
@@ -52,7 +52,11 @@ that contains a structured secret, so it cannot persist a marker over the origin
 
 ## OpenCode versions
 
-Every machine runs OpenCode 2. The NAS (`distro.qts`) gets it from the
+Every machine runs OpenCode 2. Both `opencode.json` alternates use the native V2 format:
+an ordered `permissions` array (last match wins), `providers`, `mcp.servers`, and
+`agents.title.model`. `enabled_providers` stays in V1 syntax until provider policies
+leave `experimental`. When migrating another config, compare `opencode debug config`
+output for the old and new files, loaded as project configs from scratch directories. The NAS (`distro.qts`) gets it from the
 `opencode-legacy-glibc` build and uses the `##default` config alternates. Do not add
 OpenCode 1 fallbacks (`plugin`, `tui.json`, `server()` plugin entrypoints, `--pure`).
 
@@ -104,7 +108,7 @@ and `cli.base.json##class.Work` instead. `~/.shellrc/rc.d/opencode.sh` exports i
 ## Models
 
 `opencode.json` pins per-agent models: `plan` uses Astra and `build` uses Opus 5.5. The
-top-level `model` covers other agents, and `small_model` covers maintenance tasks.
+top-level `model` covers other agents, and `agents.title.model` covers maintenance tasks.
 Per-agent models take precedence over the top-level `model`, so the `oc` wrapper's inline
 `$OPENCODE_MODEL` override (`OPENCODE_CONFIG_CONTENT` with `--standalone`) no longer changes
 the model for `plan` or `build`. An explicit `opencode run --model` still wins over the

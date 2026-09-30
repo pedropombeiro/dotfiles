@@ -1,13 +1,13 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "skills": {
-    "paths": ["~/.agents/skills.work"]
-  },
+  "skills": ["~/.agents/skills.work"],
   // Per-agent models take precedence over the top-level model, so `oc`'s inline
   // $OPENCODE_MODEL override (OPENCODE_CONFIG_CONTENT) does not apply to plan/build.
   "model": "gitlab/duo-chat-opus-5-5",
   "default_agent": "plan",
   "agents": {
+    // The built-in title agent handles maintenance tasks such as session titles.
+    "title": { "model": "gitlab/duo-chat-gpt-6-luna" },
     "plan": { "model": "gitlab/duo-chat-gpt-6-astra" },
     "build": { "model": "gitlab/duo-chat-opus-5-5" }
   },
@@ -20,37 +20,36 @@
     "opencode-homeassistant@1.0.2"
   ],
   "mcp": {
-    "lazy-mcp": {
-      "type": "local",
-      "command": [
-        "mise",
-        "x",
-        "npm:lazy-mcp",
-        "--",
-        "lazy-mcp",
-        "--config",
-        "~/.config/lazy-mcp/servers.json"
-      ],
-      "enabled": true
+    "servers": {
+      "lazy-mcp": {
+        "type": "local",
+        "command": [
+          "mise",
+          "x",
+          "npm:lazy-mcp",
+          "--",
+          "lazy-mcp",
+          "--config",
+          "~/.config/lazy-mcp/servers.json"
+        ]
+      }
     }
   },
+  // V1 field without a stable native equivalent; OpenCode turns it into provider policies.
   "enabled_providers": ["ollama", "gitlab", "anthropic", "google"],
-  "small_model": "gitlab/duo-chat-gpt-6-luna",
-  "provider": {
+  "providers": {
     "anthropic": {
       "models": {
         "claude-fable-5": {
           "name": "Fable 5",
-          "cost": {
-            "input": 10, "output": 50, "cache_read": 1, "cache_write": 12.5
-          }
+          "cost": [{ "input": 10, "output": 50, "cache": { "read": 1, "write": 12.5 } }]
         }
       }
     },
     "ollama": {
-      "npm": "@ai-sdk/openai-compatible",
       "name": "Ollama (local)",
-      "options": {
+      "package": "aisdk:@ai-sdk/openai-compatible",
+      "settings": {
         "baseURL": "http://localhost:11434/v1"
       },
       "models": {
@@ -66,538 +65,472 @@
       }
     },
     "gitlab": {
-      "npm": "gitlab-ai-provider@6.18.0",
-      "models": {
-        // Superseded by Fable 5.1, Opus 5.5, and Sonnet 5.
-        "duo-chat-opus-4-5": { "status": "deprecated" },
-        "duo-chat-opus-4-6": { "status": "deprecated" },
-        "duo-chat-opus-4-7": { "status": "deprecated" },
-        "duo-workflow-opus-4-5": { "status": "deprecated" },
-        "duo-workflow-opus-4-6": { "status": "deprecated" },
-        "duo-workflow-opus-4-7": { "status": "deprecated" },
-        "duo-chat-sonnet-4-5": { "status": "deprecated" },
-        "duo-chat-sonnet-4-6": { "status": "deprecated" },
-        "duo-workflow-sonnet-4-5": { "status": "deprecated" },
-        "duo-workflow-sonnet-4-6": { "status": "deprecated" },
-        "duo-chat-fable-5": {
-          "status": "deprecated",
-          "cost": {
-            "input": 10, "output": 50, "cache_read": 1, "cache_write": 12.5
-          }
-        },
-        "duo-chat-fable-5-1": {
-          "cost": {
-            "input": 10, "output": 50, "cache_read": 0.25, "cache_write": 12.5
-          }
-        },
-        "duo-chat-opus-5": {
-          "status": "deprecated",
-          "cost": {
-            "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
-          }
-        },
-        "duo-chat-opus-5-5": {
-          "cost": {
-            "input": 4, "output": 20, "cache_read": 0.20, "cache_write": 5
-          }
-        },
-        "duo-workflow-opus-5": {
-          "cost": {
-            "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
-          }
-        },
-        "duo-workflow-opus-5-5": {
-          "cost": {
-            "input": 4, "output": 20, "cache_read": 0.20, "cache_write": 5
-          }
-        },
-        "duo-chat-opus-4-8": {
-          "status": "deprecated",
-          "cost": {
-            "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
-          }
-        },
-        "duo-workflow-opus-4-8": {
-          "status": "deprecated",
-          "cost": {
-            "input": 5, "output": 25, "cache_read": 0.50, "cache_write": 6.25
-          }
-        },
-        "duo-workflow-claude-fable-5": {
-          "status": "deprecated",
-          "cost": {
-            "input": 10, "output": 50, "cache_read": 1, "cache_write": 12.5
-          }
-        },
-        "duo-workflow-claude-fable-5-1": {
-          "cost": {
-            "input": 10, "output": 50, "cache_read": 0.25, "cache_write": 12.5
-          }
-        },
-        "duo-chat-sonnet-5": {
-          "cost": {
-            "input": 2, "output": 10, "cache_read": 0.20, "cache_write": 2.50
-          }
-        },
-        "duo-chat-sonnet-4": {
-          "status": "deprecated",
-          "cost": {
-            "input": 3, "output": 15, "cache_read": 0.30, "cache_write": 3.75
-          }
-        },
-        "duo-chat-opus-4": {
-          "status": "deprecated",
-          "cost": {
-            "input": 15, "output": 75, "cache_read": 1.50, "cache_write": 18.75
-          }
-        },
-        "duo-workflow-haiku-4-5": {
-          "cost": { "input": 1, "output": 5, "cache_read": 0.10, "cache_write": 1.25 }
-        },
-        "duo-chat-haiku-4-5": {
-          "cost": { "input": 1, "output": 5, "cache_read": 0.10, "cache_write": 1.25 }
-        },
-        "duo-chat-gpt-6-astra": {
-          "cost": {
-            "input": 10,
-            "output": 50,
-            "cache_read": 1,
-            "cache_write": 12.5,
-            "context_over_200k": {
-              "input": 20, "output": 75, "cache_read": 2, "cache_write": 25
-            }
-          }
-        },
-        "duo-chat-gpt-6-sol": {
-          "cost": {
-            "input": 2,
-            "output": 10,
-            "cache_read": 0.20,
-            "cache_write": 2.50,
-            "context_over_200k": {
-              "input": 4, "output": 15, "cache_read": 0.40, "cache_write": 5
-            }
-          }
-        },
-        "duo-chat-gpt-6-luna": {
-          "cost": {
-            "input": 0.10,
-            "output": 0.50,
-            "cache_read": 0.01,
-            "cache_write": 0.125,
-            "context_over_200k": {
-              "input": 0.20, "output": 0.75, "cache_read": 0.02, "cache_write": 0.25
-            }
-          }
-        },
-        // Superseded by GPT 6 (Sol, Luna, Astra).
-        "duo-chat-gpt-5-6-sol": {
-          "status": "deprecated",
-          "cost": {
-            "input": 5,
-            "output": 30,
-            "cache_read": 0.50,
-            "cache_write": 6.25,
-            "context_over_200k": {
-              "input": 10, "output": 45, "cache_read": 1, "cache_write": 12.5
-            }
-          }
-        },
-        "duo-chat-gpt-5-6-terra": {
-          "status": "deprecated",
-          "cost": {
-            "input": 2,
-            "output": 12,
-            "cache_read": 0.20,
-            "cache_write": 2.50,
-            "context_over_200k": {
-              "input": 4, "output": 18, "cache_read": 0.40, "cache_write": 5
-            }
-          }
-        },
-        "duo-chat-gpt-5-6-luna": {
-          "status": "deprecated",
-          "cost": {
-            "input": 0.20,
-            "output": 1.20,
-            "cache_read": 0.02,
-            "cache_write": 0.25,
-            "context_over_200k": {
-              "input": 0.40, "output": 1.80, "cache_read": 0.04, "cache_write": 0.50
-            }
-          }
-        }
-      },
-      "options": {
+      "package": "aisdk:gitlab-ai-provider@6.18.0",
+      "settings": {
         "instanceUrl": "https://gitlab.com",
         "featureFlags": {
           "duo_agent_platform_agentic_chat": true,
           "duo_agent_platform": true
         }
+      },
+      "models": {
+        // Superseded by Fable 5.1, Opus 5.5, and Sonnet 5.
+        "duo-chat-opus-4-5": { "disabled": true },
+        "duo-chat-opus-4-6": { "disabled": true },
+        "duo-chat-opus-4-7": { "disabled": true },
+        "duo-workflow-opus-4-5": { "disabled": true },
+        "duo-workflow-opus-4-6": { "disabled": true },
+        "duo-workflow-opus-4-7": { "disabled": true },
+        "duo-chat-sonnet-4-5": { "disabled": true },
+        "duo-chat-sonnet-4-6": { "disabled": true },
+        "duo-workflow-sonnet-4-5": { "disabled": true },
+        "duo-workflow-sonnet-4-6": { "disabled": true },
+        "duo-chat-fable-5": {
+          "disabled": true,
+          "cost": [{ "input": 10, "output": 50, "cache": { "read": 1, "write": 12.5 } }]
+        },
+        "duo-chat-fable-5-1": {
+          "cost": [{ "input": 10, "output": 50, "cache": { "read": 0.25, "write": 12.5 } }]
+        },
+        "duo-chat-opus-5": {
+          "disabled": true,
+          "cost": [{ "input": 5, "output": 25, "cache": { "read": 0.50, "write": 6.25 } }]
+        },
+        "duo-chat-opus-5-5": {
+          "cost": [{ "input": 4, "output": 20, "cache": { "read": 0.20, "write": 5 } }]
+        },
+        "duo-workflow-opus-5": {
+          "cost": [{ "input": 5, "output": 25, "cache": { "read": 0.50, "write": 6.25 } }]
+        },
+        "duo-workflow-opus-5-5": {
+          "cost": [{ "input": 4, "output": 20, "cache": { "read": 0.20, "write": 5 } }]
+        },
+        "duo-chat-opus-4-8": {
+          "disabled": true,
+          "cost": [{ "input": 5, "output": 25, "cache": { "read": 0.50, "write": 6.25 } }]
+        },
+        "duo-workflow-opus-4-8": {
+          "disabled": true,
+          "cost": [{ "input": 5, "output": 25, "cache": { "read": 0.50, "write": 6.25 } }]
+        },
+        "duo-workflow-claude-fable-5": {
+          "disabled": true,
+          "cost": [{ "input": 10, "output": 50, "cache": { "read": 1, "write": 12.5 } }]
+        },
+        "duo-workflow-claude-fable-5-1": {
+          "cost": [{ "input": 10, "output": 50, "cache": { "read": 0.25, "write": 12.5 } }]
+        },
+        "duo-chat-sonnet-5": {
+          "cost": [{ "input": 2, "output": 10, "cache": { "read": 0.20, "write": 2.50 } }]
+        },
+        "duo-chat-sonnet-4": {
+          "disabled": true,
+          "cost": [{ "input": 3, "output": 15, "cache": { "read": 0.30, "write": 3.75 } }]
+        },
+        "duo-chat-opus-4": {
+          "disabled": true,
+          "cost": [{ "input": 15, "output": 75, "cache": { "read": 1.50, "write": 18.75 } }]
+        },
+        "duo-workflow-haiku-4-5": {
+          "cost": [{ "input": 1, "output": 5, "cache": { "read": 0.10, "write": 1.25 } }]
+        },
+        "duo-chat-haiku-4-5": {
+          "cost": [{ "input": 1, "output": 5, "cache": { "read": 0.10, "write": 1.25 } }]
+        },
+        "duo-chat-gpt-6-astra": {
+          "cost": [
+            { "input": 10, "output": 50, "cache": { "read": 1, "write": 12.5 } },
+            { "tier": { "type": "context", "size": 200000 }, "input": 20, "output": 75, "cache": { "read": 2, "write": 25 } }
+          ]
+        },
+        "duo-chat-gpt-6-sol": {
+          "cost": [
+            { "input": 2, "output": 10, "cache": { "read": 0.20, "write": 2.50 } },
+            { "tier": { "type": "context", "size": 200000 }, "input": 4, "output": 15, "cache": { "read": 0.40, "write": 5 } }
+          ]
+        },
+        "duo-chat-gpt-6-luna": {
+          "cost": [
+            { "input": 0.10, "output": 0.50, "cache": { "read": 0.01, "write": 0.125 } },
+            { "tier": { "type": "context", "size": 200000 }, "input": 0.20, "output": 0.75, "cache": { "read": 0.02, "write": 0.25 } }
+          ]
+        },
+        // Superseded by GPT 6 (Sol, Luna, Astra).
+        "duo-chat-gpt-5-6-sol": {
+          "disabled": true,
+          "cost": [
+            { "input": 5, "output": 30, "cache": { "read": 0.50, "write": 6.25 } },
+            { "tier": { "type": "context", "size": 200000 }, "input": 10, "output": 45, "cache": { "read": 1, "write": 12.5 } }
+          ]
+        },
+        "duo-chat-gpt-5-6-terra": {
+          "disabled": true,
+          "cost": [
+            { "input": 2, "output": 12, "cache": { "read": 0.20, "write": 2.50 } },
+            { "tier": { "type": "context", "size": 200000 }, "input": 4, "output": 18, "cache": { "read": 0.40, "write": 5 } }
+          ]
+        },
+        "duo-chat-gpt-5-6-luna": {
+          "disabled": true,
+          "cost": [
+            { "input": 0.20, "output": 1.20, "cache": { "read": 0.02, "write": 0.25 } },
+            { "tier": { "type": "context", "size": 200000 }, "input": 0.40, "output": 1.80, "cache": { "read": 0.04, "write": 0.50 } }
+          ]
+        }
       }
     }
   },
   "share": "disabled",
-  "autoupdate": false,
-  "snapshot": false,
-  "permission": {
-    "*": "ask",
-    "read": {
-      "*": "allow",
-      "*.env": "deny",
-      "*.env.*": "deny",
-      "*.env.example": "allow",
-      "~/.agents/docs/*": "allow",
-      "~/.aws/*": "deny",
-      "~/.config/opencode/*": "ask",
-      "~/.gnupg/*": "deny",
-      "~/.netrc": "deny",
-      "~/.ssh/*": "deny"
-    },
-    "bash": {
-      "*": "ask",
-      "brew bundle check *": "allow",
-      "brew info *": "allow",
-      "bundle exec rspec*": "allow",
-      "bundle exec rubocop*": "allow",
-      "bundle exec danger *": "allow",
-      "bundle exec rake -T": "allow",
-      "bundle exec bin/*": "allow",
-      "bundle install*": "allow",
-      "bundle list*": "allow",
-      "bundle info *": "allow",
-      "bundle show *": "allow",
-      "bundle config get *": "allow",
-      "caproni helmctl get *": "allow",
-      "cat *": "allow",
-      "clickhouse client --port 9001 --query *": "allow",
-      "column *": "allow",
-      "comm *": "allow",
-      "cut *": "allow",
-      "diff *": "allow",
-      "colima status*": "allow",
-      "docker container ls*": "allow",
-      "docker context ls*": "allow",
-      "docker context show*": "allow",
-      "docker image ls*": "allow",
-      "docker images*": "allow",
-      "docker info*": "allow",
-      "docker inspect *": "allow",
-      "docker manifest inspect *": "allow",
-      "docker network inspect *": "allow",
-      "docker network ls *": "allow",
-      "docker ps*": "allow",
-      "docker stats*": "allow",
-      "docker version*": "allow",
-      "docker volume ls *": "allow",
-      "du *": "allow",
-      "echo *": "allow",
-      "env *": "allow",
-      "file *": "allow",
-      "find *": "allow",
-      "date*": "allow",
-      "git add *": "allow",
-      "git blame *": "allow",
-      "git branch*": "allow",
-      "git cat-file *": "allow",
-      "git check-attr *": "allow",
-      "git check-ignore *": "allow",
-      "git commit*": "ask",
-      "git config --get*": "allow",
-      "git config --list*": "allow",
-      "git describe*": "allow",
-      "git diff*": "allow",
-      "git fetch *": "allow",
-      "git for-each-ref*": "allow",
-      "git grep*": "allow",
-      "git hash-object *": "allow",
-      "git log*": "allow",
-      "git ls-files*": "allow",
-      "git ls-remote *": "allow",
-      "git ls-tree*": "allow",
-      "git merge-base *": "allow",
-      "git merge-tree *": "allow",
-      "git name-rev *": "allow",
-      "git push*": "ask",
-      "git range-diff *": "allow",
-      "git reflog *": "allow",
-      "git remote -v": "allow",
-      "git rev-parse*": "allow",
-      "git rev-list *": "allow",
-      "git shortlog*": "allow",
-      "git show*": "allow",
-      "git show-ref*": "allow",
-      "git stash list*": "allow",
-      "git status*": "allow",
-      "git worktree list*": "allow",
-      "git --version": "allow",
-      "gdk config get *": "allow",
-      "gdk doctor*": "allow",
-      "gdk psql*": "allow",
-      "gdk status*": "allow",
-      "gdk version*": "allow",
-      ".opencode/skills/clickhouse/scripts/gdk-clickhouse *": "allow",
-      ".opencode/skills/issue-state/scripts/start-issue.sh *": "allow",
-      ".opencode/skills/issue-state/scripts/set-issue-status.sh *": "allow",
-      ".opencode/skills/issue-state/scripts/sync-issue-state.sh *": "allow",
-      "CLICKHOUSE_USER=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *": "allow",
-      "CLICKHOUSE_GDK_GITLAB_USER_PASSWORD=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *": "allow",
-      "CLICKHOUSE_USER=* CLICKHOUSE_GDK_GITLAB_USER_PASSWORD=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *": "allow",
-      "glab issue list *": "allow",
-      "glab issue view *": "allow",
-      "glab auth status*": "allow",
-      "glab api *": "allow",
-      "glab mr create *": "allow",
-      "glab mr diff *": "allow",
-      "glab mr list *": "allow",
-      "glab mr note list *": "allow",
-      "glab mr view *": "allow",
-      "go build*": "allow",
-      "go test*": "allow",
-      "go vet*": "allow",
-      "gh api *": "allow",
-      "gh api *--field*": "ask",
-      "gh api *--input*": "ask",
-      "gh api *--method*": "ask",
-      "gh api *--raw-field*": "ask",
-      "gh api *-F *": "ask",
-      "gh api *-X *": "ask",
-      "gh api *-f *": "ask",
-      "gh auth status*": "allow",
-      "gh auth token*": "allow",
-      "gh pr checks *": "allow",
-      "gh pr diff *": "allow",
-      "gh release view *": "allow",
-      "gh run list*": "allow",
-      "gh run view*": "allow",
-      "gh run watch *": "allow",
-      "gh search code *": "allow",
-      "gem contents *": "allow",
-      "gem list*": "allow",
-      "gem which *": "allow",
-      "golangci-lint run*": "allow",
-      "grep *": "allow",
-      "head *": "allow",
-      "helm get *": "allow",
-      "helm show values *": "allow",
-      "hk check *": "allow",
-      "hk run pre-commit *": "allow",
-      "hostname": "allow",
-      "jq *": "allow",
-      "ls *": "allow",
-      "man *": "deny", // Context7 should be used instead
-      "markdownlint *": "allow",
-      "markdownlint-cli2 *": "allow",
-      "md5 *": "allow",
-      "mise --version": "allow",
-      "mise *--help*": "allow",
-      "mise backends ls*": "allow",
-      "mise bin-paths*": "allow",
-      "mise cache dir*": "allow",
-      "mise cache path*": "allow",
-      "mise config --tracked-configs*": "allow",
-      "mise config get *": "allow",
-      "mise config ls*": "allow",
-      "mise deps --dry-run*": "allow",
-      "mise deps --list*": "allow",
-      "mise deps * --explain*": "allow",
-      "mise doctor*": "allow",
-      "mise fmt --check*": "allow",
-      "mise help*": "allow",
-      "mise latest *": "allow",
-      "mise ls*": "allow",
-      "mise ls-remote *": "allow",
-      "mise outdated*": "allow",
-      "mise plugins ls*": "allow",
-      "mise registry*": "allow",
-      "mise search *": "allow",
-      "mise settings": "allow",
-      "mise settings --all*": "allow",
-      "mise settings get *": "allow",
-      "mise settings ls*": "allow",
-      "mise skills ls*": "allow",
-      "mise tasks": "allow",
-      "mise tasks --list": "allow",
-      "mise tasks --silent": "allow",
-      "mise tasks deps*": "allow",
-      "mise tasks graph*": "allow",
-      "mise tasks info *": "allow",
-      "mise tasks ls *": "allow",
-      "mise tasks validate*": "allow",
-      "mise tool *": "allow",
-      "mise tool-alias get *": "allow",
-      "mise tool-alias ls*": "allow",
-      "mise trust --show*": "allow",
-      "mise version": "allow",
-      "mise where *": "allow",
-      "mise which *": "allow",
-      "mise x clickhouse *": "allow",
-      "mkdir -p /private/tmp/*": "allow",
-      "mkdir -p /private/var/folders/*": "allow",
-      "mkdir -p /tmp/*": "allow",
-      "nl*": "allow",
-      "npx markdownlint-cli2 *": "allow",
-      "npx prettier --check *": "allow",
-      "npx --yes --package renovate*": "allow",
-      "node --check *": "allow",
-      "od *": "allow",
-      "opencode --version*": "allow",
-      "opencode debug config*": "allow",
-      "pgrep *": "allow",
-      "pinchtab *": "allow",
-      "pre-commit *": "allow",
-      "prettier --check *": "allow",
-      "printenv *": "allow",
-      "printf *": "allow",
-      "ps *": "allow",
-      "pwd": "allow",
-      "RAILS_ENV=test bundle exec rspec*": "allow",
-      "RAILS_ENV=test bundle exec rubocop*": "allow",
-      "readlink *": "allow",
-      "redis-cli ping*": "allow",
-      "rm -rf *": "deny",
-      "run-in-tmux-pane bundle exec rspec*": "allow",
-      "run-in-tmux-pane fgdku*": "allow",
-      "run-in-tmux-pane gpsup*": "allow",
-      "run-in-tmux-pane test_mr*": "allow",
-      "rg *": "allow",
-      "ruby -c *": "allow",
-      "seq *": "allow",
-      "sed *": "allow",
-      "sha256 *": "allow",
-      "shellcheck *": "allow",
-      "shfmt *": "allow",
-      "sleep *": "allow",
-      "sort*": "allow",
-      "*/.agents/skills/*/scripts/*": "allow",
-      "*/.agents/skills.work/*/scripts/*": "allow",
-      "*/.config/opencode/skills/*/scripts/*": "allow",
-      "stat *": "allow",
-      "strings *": "allow",
-      "tail *": "allow",
-      "test *": "allow",
-      "tmux display-message *": "allow",
-      "tmux list-windows *": "allow",
-      "tmux show -s terminal-features": "allow",
-      "tmux show-options *": "allow",
-      "tr *": "allow",
-      "true": "allow",
-      "type *": "allow",
-      "uniq *": "allow",
-      "uv run ruff *": "allow",
-      "uv run pytest *": "allow",
-      "uv run vale *": "allow",
-      "uv run markdownlint-cli2 *": "allow",
-      "uv sync *": "allow",
-      "vale *": "allow",
-      "wc *": "allow",
-      "which *": "allow",
-      "curl *": "allow",
-      "curl *-d*": "ask",
-      "curl *--data*": "ask",
-      "curl *-F *": "ask",
-      "curl *--form*": "ask",
-      "curl *-T *": "ask",
-      "curl *--upload-file*": "ask",
-      "curl *--json*": "ask",
-      "curl *-X*": "ask",
-      "curl *--request*": "ask",
-      "curl *-X GET*": "allow",
-      "curl *-XGET*": "allow",
-      "curl *--request GET*": "allow",
-      "curl *--request=GET*": "allow",
-      "wget *": "allow",
-      "wget *--post-data*": "ask",
-      "wget *--post-file*": "ask",
-      "wget *--body-data*": "ask",
-      "wget *--body-file*": "ask",
-      "wget *--method*": "ask",
-      "wget *--method GET*": "allow",
-      "wget *--method=GET*": "allow",
-      "xxd *": "allow",
-      "yamllint *": "allow",
-      "yadm blame *": "allow",
-      "yadm check-ignore *": "allow",
-      "yadm config --get*": "allow",
-      "yadm diff*": "allow",
-      "yadm grep*": "allow",
-      "yadm log*": "allow",
-      "yadm ls-files*": "allow",
-      "yadm reflog *": "allow",
-      "yadm remote -v": "allow",
-      "yadm rev-parse*": "allow",
-      "yadm show*": "allow",
-      "yadm status*": "allow",
-      "zsh -n *": "allow",
-      "awk *": "allow",
-      "base64 *": "allow",
-      "bash -n *": "allow",
-      "chmod +x /private/tmp/*": "allow",
-      "chmod +x /tmp/*": "allow",
-      // Broad API reads, narrowed below so explicit mutation flags still require approval.
-      "glab api *--method*": "ask",
-      "glab api *--form*": "ask",
-      "glab api *--field*": "ask",
-      "glab api *--raw-field*": "ask",
-      "glab api *--input*": "ask",
-      "glab api *-X *": "ask",
-      "glab api *-f *": "ask",
-      "glab api *-F *": "ask",
-    },
-    "execute": "allow",
-    "external_directory": {
-      "~/.agents/docs/*": "allow",
-      "/tmp": "allow",
-      "/tmp/*": "allow",
-      "/private/tmp/**/*": "allow",
-      "/private/tmp/*": "allow",
-      "/private/tmp": "allow"
-    },
+  "update": "disable",
+  "snapshots": false,
+  // The last matching rule wins, so each broad default precedes its exceptions.
+  "permissions": [
+    { "action": "*", "resource": "*", "effect": "ask" },
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
+    { "action": "read", "resource": "*.env.*", "effect": "deny" },
+    { "action": "read", "resource": "*.env.example", "effect": "allow" },
+    { "action": "read", "resource": "~/.agents/docs/*", "effect": "allow" },
+    { "action": "read", "resource": "~/.aws/*", "effect": "deny" },
+    { "action": "read", "resource": "~/.config/opencode/*", "effect": "ask" },
+    { "action": "read", "resource": "~/.gnupg/*", "effect": "deny" },
+    { "action": "read", "resource": "~/.netrc", "effect": "deny" },
+    { "action": "read", "resource": "~/.ssh/*", "effect": "deny" },
+    { "action": "shell", "resource": "*", "effect": "ask" },
+    { "action": "shell", "resource": "brew bundle check *", "effect": "allow" },
+    { "action": "shell", "resource": "brew info *", "effect": "allow" },
+    { "action": "shell", "resource": "bundle exec rspec*", "effect": "allow" },
+    { "action": "shell", "resource": "bundle exec rubocop*", "effect": "allow" },
+    { "action": "shell", "resource": "bundle exec danger *", "effect": "allow" },
+    { "action": "shell", "resource": "bundle exec rake -T", "effect": "allow" },
+    { "action": "shell", "resource": "bundle exec bin/*", "effect": "allow" },
+    { "action": "shell", "resource": "bundle install*", "effect": "allow" },
+    { "action": "shell", "resource": "bundle list*", "effect": "allow" },
+    { "action": "shell", "resource": "bundle info *", "effect": "allow" },
+    { "action": "shell", "resource": "bundle show *", "effect": "allow" },
+    { "action": "shell", "resource": "bundle config get *", "effect": "allow" },
+    { "action": "shell", "resource": "caproni helmctl get *", "effect": "allow" },
+    { "action": "shell", "resource": "cat *", "effect": "allow" },
+    { "action": "shell", "resource": "clickhouse client --port 9001 --query *", "effect": "allow" },
+    { "action": "shell", "resource": "column *", "effect": "allow" },
+    { "action": "shell", "resource": "comm *", "effect": "allow" },
+    { "action": "shell", "resource": "cut *", "effect": "allow" },
+    { "action": "shell", "resource": "diff *", "effect": "allow" },
+    { "action": "shell", "resource": "colima status*", "effect": "allow" },
+    { "action": "shell", "resource": "docker container ls*", "effect": "allow" },
+    { "action": "shell", "resource": "docker context ls*", "effect": "allow" },
+    { "action": "shell", "resource": "docker context show*", "effect": "allow" },
+    { "action": "shell", "resource": "docker image ls*", "effect": "allow" },
+    { "action": "shell", "resource": "docker images*", "effect": "allow" },
+    { "action": "shell", "resource": "docker info*", "effect": "allow" },
+    { "action": "shell", "resource": "docker inspect *", "effect": "allow" },
+    { "action": "shell", "resource": "docker manifest inspect *", "effect": "allow" },
+    { "action": "shell", "resource": "docker network inspect *", "effect": "allow" },
+    { "action": "shell", "resource": "docker network ls *", "effect": "allow" },
+    { "action": "shell", "resource": "docker ps*", "effect": "allow" },
+    { "action": "shell", "resource": "docker stats*", "effect": "allow" },
+    { "action": "shell", "resource": "docker version*", "effect": "allow" },
+    { "action": "shell", "resource": "docker volume ls *", "effect": "allow" },
+    { "action": "shell", "resource": "du *", "effect": "allow" },
+    { "action": "shell", "resource": "echo *", "effect": "allow" },
+    { "action": "shell", "resource": "env *", "effect": "allow" },
+    { "action": "shell", "resource": "file *", "effect": "allow" },
+    { "action": "shell", "resource": "find *", "effect": "allow" },
+    { "action": "shell", "resource": "date*", "effect": "allow" },
+    { "action": "shell", "resource": "git add *", "effect": "allow" },
+    { "action": "shell", "resource": "git blame *", "effect": "allow" },
+    { "action": "shell", "resource": "git branch*", "effect": "allow" },
+    { "action": "shell", "resource": "git cat-file *", "effect": "allow" },
+    { "action": "shell", "resource": "git check-attr *", "effect": "allow" },
+    { "action": "shell", "resource": "git check-ignore *", "effect": "allow" },
+    { "action": "shell", "resource": "git commit*", "effect": "ask" },
+    { "action": "shell", "resource": "git config --get*", "effect": "allow" },
+    { "action": "shell", "resource": "git config --list*", "effect": "allow" },
+    { "action": "shell", "resource": "git describe*", "effect": "allow" },
+    { "action": "shell", "resource": "git diff*", "effect": "allow" },
+    { "action": "shell", "resource": "git fetch *", "effect": "allow" },
+    { "action": "shell", "resource": "git for-each-ref*", "effect": "allow" },
+    { "action": "shell", "resource": "git grep*", "effect": "allow" },
+    { "action": "shell", "resource": "git hash-object *", "effect": "allow" },
+    { "action": "shell", "resource": "git log*", "effect": "allow" },
+    { "action": "shell", "resource": "git ls-files*", "effect": "allow" },
+    { "action": "shell", "resource": "git ls-remote *", "effect": "allow" },
+    { "action": "shell", "resource": "git ls-tree*", "effect": "allow" },
+    { "action": "shell", "resource": "git merge-base *", "effect": "allow" },
+    { "action": "shell", "resource": "git merge-tree *", "effect": "allow" },
+    { "action": "shell", "resource": "git name-rev *", "effect": "allow" },
+    { "action": "shell", "resource": "git push*", "effect": "ask" },
+    { "action": "shell", "resource": "git range-diff *", "effect": "allow" },
+    { "action": "shell", "resource": "git reflog *", "effect": "allow" },
+    { "action": "shell", "resource": "git remote -v", "effect": "allow" },
+    { "action": "shell", "resource": "git rev-parse*", "effect": "allow" },
+    { "action": "shell", "resource": "git rev-list *", "effect": "allow" },
+    { "action": "shell", "resource": "git shortlog*", "effect": "allow" },
+    { "action": "shell", "resource": "git show*", "effect": "allow" },
+    { "action": "shell", "resource": "git show-ref*", "effect": "allow" },
+    { "action": "shell", "resource": "git stash list*", "effect": "allow" },
+    { "action": "shell", "resource": "git status*", "effect": "allow" },
+    { "action": "shell", "resource": "git worktree list*", "effect": "allow" },
+    { "action": "shell", "resource": "git --version", "effect": "allow" },
+    { "action": "shell", "resource": "gdk config get *", "effect": "allow" },
+    { "action": "shell", "resource": "gdk doctor*", "effect": "allow" },
+    { "action": "shell", "resource": "gdk psql*", "effect": "allow" },
+    { "action": "shell", "resource": "gdk status*", "effect": "allow" },
+    { "action": "shell", "resource": "gdk version*", "effect": "allow" },
+    { "action": "shell", "resource": ".opencode/skills/clickhouse/scripts/gdk-clickhouse *", "effect": "allow" },
+    { "action": "shell", "resource": ".opencode/skills/issue-state/scripts/start-issue.sh *", "effect": "allow" },
+    { "action": "shell", "resource": ".opencode/skills/issue-state/scripts/set-issue-status.sh *", "effect": "allow" },
+    { "action": "shell", "resource": ".opencode/skills/issue-state/scripts/sync-issue-state.sh *", "effect": "allow" },
+    { "action": "shell", "resource": "CLICKHOUSE_USER=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *", "effect": "allow" },
+    { "action": "shell", "resource": "CLICKHOUSE_GDK_GITLAB_USER_PASSWORD=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *", "effect": "allow" },
+    { "action": "shell", "resource": "CLICKHOUSE_USER=* CLICKHOUSE_GDK_GITLAB_USER_PASSWORD=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *", "effect": "allow" },
+    { "action": "shell", "resource": "glab issue list *", "effect": "allow" },
+    { "action": "shell", "resource": "glab issue view *", "effect": "allow" },
+    { "action": "shell", "resource": "glab auth status*", "effect": "allow" },
+    { "action": "shell", "resource": "glab api *", "effect": "allow" },
+    { "action": "shell", "resource": "glab mr create *", "effect": "allow" },
+    { "action": "shell", "resource": "glab mr diff *", "effect": "allow" },
+    { "action": "shell", "resource": "glab mr list *", "effect": "allow" },
+    { "action": "shell", "resource": "glab mr note list *", "effect": "allow" },
+    { "action": "shell", "resource": "glab mr view *", "effect": "allow" },
+    { "action": "shell", "resource": "go build*", "effect": "allow" },
+    { "action": "shell", "resource": "go test*", "effect": "allow" },
+    { "action": "shell", "resource": "go vet*", "effect": "allow" },
+    { "action": "shell", "resource": "gh api *", "effect": "allow" },
+    { "action": "shell", "resource": "gh api *--field*", "effect": "ask" },
+    { "action": "shell", "resource": "gh api *--input*", "effect": "ask" },
+    { "action": "shell", "resource": "gh api *--method*", "effect": "ask" },
+    { "action": "shell", "resource": "gh api *--raw-field*", "effect": "ask" },
+    { "action": "shell", "resource": "gh api *-F *", "effect": "ask" },
+    { "action": "shell", "resource": "gh api *-X *", "effect": "ask" },
+    { "action": "shell", "resource": "gh api *-f *", "effect": "ask" },
+    { "action": "shell", "resource": "gh auth status*", "effect": "allow" },
+    { "action": "shell", "resource": "gh auth token*", "effect": "allow" },
+    { "action": "shell", "resource": "gh pr checks *", "effect": "allow" },
+    { "action": "shell", "resource": "gh pr diff *", "effect": "allow" },
+    { "action": "shell", "resource": "gh release view *", "effect": "allow" },
+    { "action": "shell", "resource": "gh run list*", "effect": "allow" },
+    { "action": "shell", "resource": "gh run view*", "effect": "allow" },
+    { "action": "shell", "resource": "gh run watch *", "effect": "allow" },
+    { "action": "shell", "resource": "gh search code *", "effect": "allow" },
+    { "action": "shell", "resource": "gem contents *", "effect": "allow" },
+    { "action": "shell", "resource": "gem list*", "effect": "allow" },
+    { "action": "shell", "resource": "gem which *", "effect": "allow" },
+    { "action": "shell", "resource": "golangci-lint run*", "effect": "allow" },
+    { "action": "shell", "resource": "grep *", "effect": "allow" },
+    { "action": "shell", "resource": "head *", "effect": "allow" },
+    { "action": "shell", "resource": "helm get *", "effect": "allow" },
+    { "action": "shell", "resource": "helm show values *", "effect": "allow" },
+    { "action": "shell", "resource": "hk check *", "effect": "allow" },
+    { "action": "shell", "resource": "hk run pre-commit *", "effect": "allow" },
+    { "action": "shell", "resource": "hostname", "effect": "allow" },
+    { "action": "shell", "resource": "jq *", "effect": "allow" },
+    { "action": "shell", "resource": "ls *", "effect": "allow" },
+    { "action": "shell", "resource": "man *", "effect": "deny" }, // Context7 should be used instead
+    { "action": "shell", "resource": "markdownlint *", "effect": "allow" },
+    { "action": "shell", "resource": "markdownlint-cli2 *", "effect": "allow" },
+    { "action": "shell", "resource": "md5 *", "effect": "allow" },
+    { "action": "shell", "resource": "mise --version", "effect": "allow" },
+    { "action": "shell", "resource": "mise *--help*", "effect": "allow" },
+    { "action": "shell", "resource": "mise backends ls*", "effect": "allow" },
+    { "action": "shell", "resource": "mise bin-paths*", "effect": "allow" },
+    { "action": "shell", "resource": "mise cache dir*", "effect": "allow" },
+    { "action": "shell", "resource": "mise cache path*", "effect": "allow" },
+    { "action": "shell", "resource": "mise config --tracked-configs*", "effect": "allow" },
+    { "action": "shell", "resource": "mise config get *", "effect": "allow" },
+    { "action": "shell", "resource": "mise config ls*", "effect": "allow" },
+    { "action": "shell", "resource": "mise deps --dry-run*", "effect": "allow" },
+    { "action": "shell", "resource": "mise deps --list*", "effect": "allow" },
+    { "action": "shell", "resource": "mise deps * --explain*", "effect": "allow" },
+    { "action": "shell", "resource": "mise doctor*", "effect": "allow" },
+    { "action": "shell", "resource": "mise fmt --check*", "effect": "allow" },
+    { "action": "shell", "resource": "mise help*", "effect": "allow" },
+    { "action": "shell", "resource": "mise latest *", "effect": "allow" },
+    { "action": "shell", "resource": "mise ls*", "effect": "allow" },
+    { "action": "shell", "resource": "mise ls-remote *", "effect": "allow" },
+    { "action": "shell", "resource": "mise outdated*", "effect": "allow" },
+    { "action": "shell", "resource": "mise plugins ls*", "effect": "allow" },
+    { "action": "shell", "resource": "mise registry*", "effect": "allow" },
+    { "action": "shell", "resource": "mise search *", "effect": "allow" },
+    { "action": "shell", "resource": "mise settings", "effect": "allow" },
+    { "action": "shell", "resource": "mise settings --all*", "effect": "allow" },
+    { "action": "shell", "resource": "mise settings get *", "effect": "allow" },
+    { "action": "shell", "resource": "mise settings ls*", "effect": "allow" },
+    { "action": "shell", "resource": "mise skills ls*", "effect": "allow" },
+    { "action": "shell", "resource": "mise tasks", "effect": "allow" },
+    { "action": "shell", "resource": "mise tasks --list", "effect": "allow" },
+    { "action": "shell", "resource": "mise tasks --silent", "effect": "allow" },
+    { "action": "shell", "resource": "mise tasks deps*", "effect": "allow" },
+    { "action": "shell", "resource": "mise tasks graph*", "effect": "allow" },
+    { "action": "shell", "resource": "mise tasks info *", "effect": "allow" },
+    { "action": "shell", "resource": "mise tasks ls *", "effect": "allow" },
+    { "action": "shell", "resource": "mise tasks validate*", "effect": "allow" },
+    { "action": "shell", "resource": "mise tool *", "effect": "allow" },
+    { "action": "shell", "resource": "mise tool-alias get *", "effect": "allow" },
+    { "action": "shell", "resource": "mise tool-alias ls*", "effect": "allow" },
+    { "action": "shell", "resource": "mise trust --show*", "effect": "allow" },
+    { "action": "shell", "resource": "mise version", "effect": "allow" },
+    { "action": "shell", "resource": "mise where *", "effect": "allow" },
+    { "action": "shell", "resource": "mise which *", "effect": "allow" },
+    { "action": "shell", "resource": "mise x clickhouse *", "effect": "allow" },
+    { "action": "shell", "resource": "mkdir -p /private/tmp/*", "effect": "allow" },
+    { "action": "shell", "resource": "mkdir -p /private/var/folders/*", "effect": "allow" },
+    { "action": "shell", "resource": "mkdir -p /tmp/*", "effect": "allow" },
+    { "action": "shell", "resource": "nl*", "effect": "allow" },
+    { "action": "shell", "resource": "npx markdownlint-cli2 *", "effect": "allow" },
+    { "action": "shell", "resource": "npx prettier --check *", "effect": "allow" },
+    { "action": "shell", "resource": "npx --yes --package renovate*", "effect": "allow" },
+    { "action": "shell", "resource": "node --check *", "effect": "allow" },
+    { "action": "shell", "resource": "od *", "effect": "allow" },
+    { "action": "shell", "resource": "opencode --version*", "effect": "allow" },
+    { "action": "shell", "resource": "opencode debug config*", "effect": "allow" },
+    { "action": "shell", "resource": "pgrep *", "effect": "allow" },
+    { "action": "shell", "resource": "pinchtab *", "effect": "allow" },
+    { "action": "shell", "resource": "pre-commit *", "effect": "allow" },
+    { "action": "shell", "resource": "prettier --check *", "effect": "allow" },
+    { "action": "shell", "resource": "printenv *", "effect": "allow" },
+    { "action": "shell", "resource": "printf *", "effect": "allow" },
+    { "action": "shell", "resource": "ps *", "effect": "allow" },
+    { "action": "shell", "resource": "pwd", "effect": "allow" },
+    { "action": "shell", "resource": "RAILS_ENV=test bundle exec rspec*", "effect": "allow" },
+    { "action": "shell", "resource": "RAILS_ENV=test bundle exec rubocop*", "effect": "allow" },
+    { "action": "shell", "resource": "readlink *", "effect": "allow" },
+    { "action": "shell", "resource": "redis-cli ping*", "effect": "allow" },
+    { "action": "shell", "resource": "rm -rf *", "effect": "deny" },
+    { "action": "shell", "resource": "run-in-tmux-pane bundle exec rspec*", "effect": "allow" },
+    { "action": "shell", "resource": "run-in-tmux-pane fgdku*", "effect": "allow" },
+    { "action": "shell", "resource": "run-in-tmux-pane gpsup*", "effect": "allow" },
+    { "action": "shell", "resource": "run-in-tmux-pane test_mr*", "effect": "allow" },
+    { "action": "shell", "resource": "rg *", "effect": "allow" },
+    { "action": "shell", "resource": "ruby -c *", "effect": "allow" },
+    { "action": "shell", "resource": "seq *", "effect": "allow" },
+    { "action": "shell", "resource": "sed *", "effect": "allow" },
+    { "action": "shell", "resource": "sha256 *", "effect": "allow" },
+    { "action": "shell", "resource": "shellcheck *", "effect": "allow" },
+    { "action": "shell", "resource": "shfmt *", "effect": "allow" },
+    { "action": "shell", "resource": "sleep *", "effect": "allow" },
+    { "action": "shell", "resource": "sort*", "effect": "allow" },
+    { "action": "shell", "resource": "*/.agents/skills/*/scripts/*", "effect": "allow" },
+    { "action": "shell", "resource": "*/.agents/skills.work/*/scripts/*", "effect": "allow" },
+    { "action": "shell", "resource": "*/.config/opencode/skills/*/scripts/*", "effect": "allow" },
+    { "action": "shell", "resource": "stat *", "effect": "allow" },
+    { "action": "shell", "resource": "strings *", "effect": "allow" },
+    { "action": "shell", "resource": "tail *", "effect": "allow" },
+    { "action": "shell", "resource": "test *", "effect": "allow" },
+    { "action": "shell", "resource": "tmux display-message *", "effect": "allow" },
+    { "action": "shell", "resource": "tmux list-windows *", "effect": "allow" },
+    { "action": "shell", "resource": "tmux show -s terminal-features", "effect": "allow" },
+    { "action": "shell", "resource": "tmux show-options *", "effect": "allow" },
+    { "action": "shell", "resource": "tr *", "effect": "allow" },
+    { "action": "shell", "resource": "true", "effect": "allow" },
+    { "action": "shell", "resource": "type *", "effect": "allow" },
+    { "action": "shell", "resource": "uniq *", "effect": "allow" },
+    { "action": "shell", "resource": "uv run ruff *", "effect": "allow" },
+    { "action": "shell", "resource": "uv run pytest *", "effect": "allow" },
+    { "action": "shell", "resource": "uv run vale *", "effect": "allow" },
+    { "action": "shell", "resource": "uv run markdownlint-cli2 *", "effect": "allow" },
+    { "action": "shell", "resource": "uv sync *", "effect": "allow" },
+    { "action": "shell", "resource": "vale *", "effect": "allow" },
+    { "action": "shell", "resource": "wc *", "effect": "allow" },
+    { "action": "shell", "resource": "which *", "effect": "allow" },
+    { "action": "shell", "resource": "curl *", "effect": "allow" },
+    { "action": "shell", "resource": "curl *-d*", "effect": "ask" },
+    { "action": "shell", "resource": "curl *--data*", "effect": "ask" },
+    { "action": "shell", "resource": "curl *-F *", "effect": "ask" },
+    { "action": "shell", "resource": "curl *--form*", "effect": "ask" },
+    { "action": "shell", "resource": "curl *-T *", "effect": "ask" },
+    { "action": "shell", "resource": "curl *--upload-file*", "effect": "ask" },
+    { "action": "shell", "resource": "curl *--json*", "effect": "ask" },
+    { "action": "shell", "resource": "curl *-X*", "effect": "ask" },
+    { "action": "shell", "resource": "curl *--request*", "effect": "ask" },
+    { "action": "shell", "resource": "curl *-X GET*", "effect": "allow" },
+    { "action": "shell", "resource": "curl *-XGET*", "effect": "allow" },
+    { "action": "shell", "resource": "curl *--request GET*", "effect": "allow" },
+    { "action": "shell", "resource": "curl *--request=GET*", "effect": "allow" },
+    { "action": "shell", "resource": "wget *", "effect": "allow" },
+    { "action": "shell", "resource": "wget *--post-data*", "effect": "ask" },
+    { "action": "shell", "resource": "wget *--post-file*", "effect": "ask" },
+    { "action": "shell", "resource": "wget *--body-data*", "effect": "ask" },
+    { "action": "shell", "resource": "wget *--body-file*", "effect": "ask" },
+    { "action": "shell", "resource": "wget *--method*", "effect": "ask" },
+    { "action": "shell", "resource": "wget *--method GET*", "effect": "allow" },
+    { "action": "shell", "resource": "wget *--method=GET*", "effect": "allow" },
+    { "action": "shell", "resource": "xxd *", "effect": "allow" },
+    { "action": "shell", "resource": "yamllint *", "effect": "allow" },
+    { "action": "shell", "resource": "yadm blame *", "effect": "allow" },
+    { "action": "shell", "resource": "yadm check-ignore *", "effect": "allow" },
+    { "action": "shell", "resource": "yadm config --get*", "effect": "allow" },
+    { "action": "shell", "resource": "yadm diff*", "effect": "allow" },
+    { "action": "shell", "resource": "yadm grep*", "effect": "allow" },
+    { "action": "shell", "resource": "yadm log*", "effect": "allow" },
+    { "action": "shell", "resource": "yadm ls-files*", "effect": "allow" },
+    { "action": "shell", "resource": "yadm reflog *", "effect": "allow" },
+    { "action": "shell", "resource": "yadm remote -v", "effect": "allow" },
+    { "action": "shell", "resource": "yadm rev-parse*", "effect": "allow" },
+    { "action": "shell", "resource": "yadm show*", "effect": "allow" },
+    { "action": "shell", "resource": "yadm status*", "effect": "allow" },
+    { "action": "shell", "resource": "zsh -n *", "effect": "allow" },
+    { "action": "shell", "resource": "awk *", "effect": "allow" },
+    { "action": "shell", "resource": "base64 *", "effect": "allow" },
+    { "action": "shell", "resource": "bash -n *", "effect": "allow" },
+    { "action": "shell", "resource": "chmod +x /private/tmp/*", "effect": "allow" },
+    { "action": "shell", "resource": "chmod +x /tmp/*", "effect": "allow" },
+    // Broad API reads, narrowed below so explicit mutation flags still require approval.
+    { "action": "shell", "resource": "glab api *--method*", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *--form*", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *--field*", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *--raw-field*", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *--input*", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *-X *", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *-f *", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *-F *", "effect": "ask" },
+    { "action": "execute", "resource": "*", "effect": "allow" },
+    { "action": "external_directory", "resource": "~/.agents/docs/*", "effect": "allow" },
+    { "action": "external_directory", "resource": "/tmp", "effect": "allow" },
+    { "action": "external_directory", "resource": "/tmp/*", "effect": "allow" },
+    { "action": "external_directory", "resource": "/private/tmp/**/*", "effect": "allow" },
+    { "action": "external_directory", "resource": "/private/tmp/*", "effect": "allow" },
+    { "action": "external_directory", "resource": "/private/tmp", "effect": "allow" },
     // Denied: use Glean MCP instead (faster, more comprehensive, indexes more sources)
-    "gitlab_documentation_search": "deny",
-    "glob": "allow",
-    "grep": "allow",
-    "knowledge-graph_get_references": "allow",
-    "knowledge-graph_list_projects": "allow",
-    "knowledge-graph_read_definitions": "allow",
-    "knowledge-graph_repo_map": "allow",
-    "knowledge-graph_search_codebase_definitions": "allow",
-    "lazy-mcp_describe_commands": "allow",
-    "lazy-mcp_invoke_command": "allow",
-    "lazy-mcp_list_commands": "allow",
-    "lazy-mcp_list_servers": "allow",
-    "doom_loop": "ask",
-    "edit": {
-      "*": "ask",
-      "~/.aws/*": "deny",
-      "~/.config/opencode/*": "deny",
-      "~/.gnupg/*": "deny",
-      "~/.netrc": "deny",
-      "~/.ssh/*": "deny"
-    },
-    "list": "allow",
-    "question": "allow",
-    "skill": "allow",
-    "task": {
-      "general": "allow",
-      "explore": "allow",
-      "security-reviewer": "allow",
-      "database-reviewer": "allow",
-      "clickhouse-reviewer": "allow",
-      "performance-reviewer": "allow",
-      "qa-reviewer": "allow",
-      "frontend-reviewer": "allow",
-      "backend-reviewer": "allow",
-      "documentation-reviewer": "allow",
-      "analytics-reviewer": "allow",
-      "graphql-reviewer": "allow",
-      "rest-api-reviewer": "allow",
-      "workers-reviewer": "allow",
-      "feature-flags-reviewer": "allow"
-    },
-    "todoread": "allow",
-    "todowrite": "allow",
-    "webfetch": "ask",
-    "websearch": "ask"
-  }
+    { "action": "gitlab_documentation_search", "resource": "*", "effect": "deny" },
+    { "action": "glob", "resource": "*", "effect": "allow" },
+    { "action": "grep", "resource": "*", "effect": "allow" },
+    { "action": "knowledge-graph_get_references", "resource": "*", "effect": "allow" },
+    { "action": "knowledge-graph_list_projects", "resource": "*", "effect": "allow" },
+    { "action": "knowledge-graph_read_definitions", "resource": "*", "effect": "allow" },
+    { "action": "knowledge-graph_repo_map", "resource": "*", "effect": "allow" },
+    { "action": "knowledge-graph_search_codebase_definitions", "resource": "*", "effect": "allow" },
+    { "action": "lazy-mcp_describe_commands", "resource": "*", "effect": "allow" },
+    { "action": "lazy-mcp_invoke_command", "resource": "*", "effect": "allow" },
+    { "action": "lazy-mcp_list_commands", "resource": "*", "effect": "allow" },
+    { "action": "lazy-mcp_list_servers", "resource": "*", "effect": "allow" },
+    { "action": "edit", "resource": "*", "effect": "ask" },
+    { "action": "edit", "resource": "~/.aws/*", "effect": "deny" },
+    { "action": "edit", "resource": "~/.config/opencode/*", "effect": "deny" },
+    { "action": "edit", "resource": "~/.gnupg/*", "effect": "deny" },
+    { "action": "edit", "resource": "~/.netrc", "effect": "deny" },
+    { "action": "edit", "resource": "~/.ssh/*", "effect": "deny" },
+    { "action": "list", "resource": "*", "effect": "allow" },
+    { "action": "question", "resource": "*", "effect": "allow" },
+    { "action": "skill", "resource": "*", "effect": "allow" },
+    { "action": "subagent", "resource": "general", "effect": "allow" },
+    { "action": "subagent", "resource": "explore", "effect": "allow" },
+    { "action": "subagent", "resource": "security-reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "database-reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "clickhouse-reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "performance-reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "qa-reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "frontend-reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "backend-reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "documentation-reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "analytics-reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "graphql-reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "rest-api-reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "workers-reviewer", "effect": "allow" },
+    { "action": "subagent", "resource": "feature-flags-reviewer", "effect": "allow" },
+    { "action": "todoread", "resource": "*", "effect": "allow" },
+    { "action": "todowrite", "resource": "*", "effect": "allow" },
+    { "action": "webfetch", "resource": "*", "effect": "ask" },
+    { "action": "websearch", "resource": "*", "effect": "ask" }
+  ]
 }

@@ -81,6 +81,10 @@ tracked files. Run it with `--dry-run` to preview.
 4. Validate with `yadm enter hk check --all` before committing (hooks also run automatically via hk on `yadm commit`)
 5. Commit with clear, descriptive messages
 
+## Worktree output
+
+- Pipe worktree creation output through `tail` (`git worktree add … 2>&1 | tail`) to keep checkout progress out of the conversation. Enable `pipefail` so a failed checkout is not hidden by the pipe.
+
 ## Amending commits
 
 - Amend an unreviewed local commit when needed to correct its contents or commit message.

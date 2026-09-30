@@ -9,8 +9,68 @@ local M = {}
 local log = hs.logger.new("sleepwake", "info")
 local streamDeckPowered = true
 local iterm2BundleID = "com.googlecode.iterm2"
+local onePasswordBundleID = "com.1password.1password"
+local secureInputCheckDelay = 5
+local secureInputRestoreDelay = 0.5
+local secureInputRecheckDelay = 1
 
 local function task(path, args, callback) hs.task.new(path, callback, args):start() end
+
+local function cancelSecureInputRecovery()
+  for _, key in ipairs({ "_secureInputCheckTimer", "_secureInputRestoreTimer", "_secureInputRecheckTimer" }) do
+    if M[key] then
+      M[key]:stop()
+      M[key] = nil
+    end
+  end
+end
+
+-- 1Password can leave Secure Input enabled after unlock. Briefly focusing
+-- 1Password makes it release Secure Input; skip if 1Password is frontmost,
+-- because the user may be typing into it.
+local function recoverSecureInput(reason)
+  if not hs.eventtap.isSecureInputEnabled() then
+    log.i("Secure Input: disabled (" .. reason .. ")")
+    return
+  end
+
+  local onePassword = hs.application.get(onePasswordBundleID)
+  if not onePassword then
+    log.w("Secure Input: enabled but 1Password is not running (" .. reason .. ")")
+    return
+  end
+
+  local previous = hs.application.frontmostApplication()
+  if previous and previous:bundleID() == onePasswordBundleID then
+    log.i("Secure Input: enabled with 1Password frontmost, skipping (" .. reason .. ")")
+    return
+  end
+
+  log.i("Secure Input: enabled, cycling 1Password focus (" .. reason .. ")")
+  onePassword:activate()
+
+  M._secureInputRestoreTimer = hs.timer.doAfter(secureInputRestoreDelay, function()
+    M._secureInputRestoreTimer = nil
+    if previous then previous:activate() end
+
+    M._secureInputRecheckTimer = hs.timer.doAfter(secureInputRecheckDelay, function()
+      M._secureInputRecheckTimer = nil
+      if hs.eventtap.isSecureInputEnabled() then
+        log.w("Secure Input: still enabled after 1Password focus cycle (" .. reason .. ")")
+      else
+        log.i("Secure Input: cleared by 1Password focus cycle (" .. reason .. ")")
+      end
+    end)
+  end)
+end
+
+local function scheduleSecureInputRecovery(reason)
+  cancelSecureInputRecovery()
+  M._secureInputCheckTimer = hs.timer.doAfter(secureInputCheckDelay, function()
+    M._secureInputCheckTimer = nil
+    recoverSecureInput(reason)
+  end)
+end
 
 local function streamDeckOff()
   if not streamDeckPowered then return end
@@ -21,6 +81,7 @@ end
 
 local function onSleep()
   log.i("onSleep")
+  cancelSecureInputRecovery()
   task("/usr/bin/killall", { "Busylight_HTTP_Mac" })
   streamDeckOff()
 end
@@ -38,8 +99,9 @@ local function cycleStreamDeck()
   end)
 end
 
-function M.restoreServices()
-  log.i("restoreServices")
+function M.restoreServices(reason)
+  reason = reason or "manual"
+  log.i("restoreServices (" .. reason .. ")")
 
   cycleStreamDeck()
   audio.setDockedAudioOutput()
@@ -53,6 +115,7 @@ function M.restoreServices()
   if hs.application.find("Elgato Control Center") then task("/usr/bin/killall", { "Elgato Control Center" }) end
 
   hs.timer.doAfter(2, function() spaces.applyRectangleLayout() end)
+  scheduleSecureInputRecovery(reason)
 end
 
 -- Only focus iTerm2 when it is already visible on the unlocked Space.
@@ -79,7 +142,7 @@ end
 local function onUnlock()
   log.i("onUnlock")
   streamDeckPowered = true
-  M.restoreServices()
+  M.restoreServices("unlock")
   M._unlockFocusTimer = hs.timer.doAfter(3, function()
     M._unlockFocusTimer = nil
     focusITerm2()
@@ -123,7 +186,10 @@ M._caffeinateWatcher = hs.caffeinate.watcher.new(function(event)
   if event == hs.caffeinate.watcher.systemWillSleep then
     onSleep()
   elseif event == hs.caffeinate.watcher.screensDidSleep then
+    cancelSecureInputRecovery()
     streamDeckOff()
+  elseif event == hs.caffeinate.watcher.screensDidLock then
+    cancelSecureInputRecovery()
   elseif event == hs.caffeinate.watcher.screensDidUnlock then
     onUnlock()
   end

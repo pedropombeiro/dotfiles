@@ -12,6 +12,7 @@
     "build": { "model": "gitlab/duo-chat-opus-5-5" }
   },
   "plugins": [
+    "~/.config/opencode/plugins/orbit.js",
     "opencode-gitlab-plugin@3.0.0",
     "@nm156/opencode-notifier@0.4.0",
     "@nm156/opencode-wakatime@1.4.0",

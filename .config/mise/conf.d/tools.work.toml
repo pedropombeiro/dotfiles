@@ -43,6 +43,8 @@ mirrord = "3.264.0"
 k9s = "latest"
 # GitLab Duo AI CLI
 "npm:@gitlab/duo-cli" = "latest"
+# Postgres.ai CLI for Joe query plans on DBLab thin clones
+"npm:postgresai" = "latest"
 uv = "latest"
 
 [bootstrap.packages]

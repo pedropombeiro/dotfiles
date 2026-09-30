@@ -37,6 +37,16 @@
       "type": "local",
       "command": ["/Users/pedropombeiro/.incidentio/incident", "mcp"]
     },
+    {
+      "name": "gitlab-observability",
+      "description": "GitLab Observability metrics, logs, and traces (https://docs.gitlab.com/operations/observability/mcp_server/)",
+      "type": "remote",
+      "url": "https://9970.mcp.gitlab-o11y.com/mcp",
+      "oauth": false,
+      "headers": {
+        "SIGNOZ-API-KEY": "${GITLAB_OBSERVABILITY_API_KEY}"
+      }
+    },
 {% endif %}
 {% if yadm.class != "NAS" %}
     {

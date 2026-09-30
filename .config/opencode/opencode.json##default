@@ -463,12 +463,7 @@
     },
     "list": "allow",
     "question": "allow",
-    "skill": {
-      "gh": "allow",
-      "google-dev-docs-style": "allow",
-      "hammerspoon": "allow",
-      "video-takeaways": "allow"
-    },
+    "skill": "allow",
     "task": {
       "general": "allow",
       "explore": "allow"

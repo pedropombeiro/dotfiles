@@ -4,6 +4,7 @@ typeset -ga work_skills=(
   fpf-report
   gitlab-babysit-mr
   gitlab-pipeline-watch
+  gitlab-query-plans
   glab-glql
   incident
   orbit

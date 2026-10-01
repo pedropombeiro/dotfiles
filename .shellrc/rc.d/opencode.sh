@@ -11,3 +11,13 @@ if [[ -r "$opencode_cli_base" ]]; then
   export OPENCODE_CLI_CONFIG_CONTENT
 fi
 unset opencode_cli_base
+
+# Identifies this machine in telemetry from @devtheops/opencode-plugin-otel. The
+# background service inherits the environment of the client that starts it.
+# zsh sets HOST and bash sets HOSTNAME; drop any domain suffix.
+opencode_host="${HOST:-${HOSTNAME:-}}"
+if [[ -n "$opencode_host" ]]; then
+  OPENCODE_RESOURCE_ATTRIBUTES="host.name=${opencode_host%%.*}"
+  export OPENCODE_RESOURCE_ATTRIBUTES
+fi
+unset opencode_host

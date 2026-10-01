@@ -17,7 +17,20 @@
     "@nm156/opencode-wakatime@1.4.0",
     "opencode-atuin-history@1.0.1",
     "opencode-forge-session-title@1.1.0",
-    "opencode-homeassistant@1.0.2"
+    "opencode-homeassistant@1.0.2",
+    {
+      // Sends metrics only to Alloy on the NAS. Traces carry prompts, code, and
+      // tool output, and events carry commands and paths, so Work content stays
+      // off personal infrastructure. See ~/.agents/docs/opencode.md#telemetry.
+      "package": "@devtheops/opencode-plugin-otel@2.0.0",
+      "options": {
+        "enabled": true,
+        "endpoint": "https://otel.pombei.ro",
+        "protocol": "http/protobuf",
+        "logsEnabled": false,
+        "disabledTraces": ["all"]
+      }
+    }
   ],
   "mcp": {
     "servers": {

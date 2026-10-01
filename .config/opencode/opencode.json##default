@@ -8,7 +8,10 @@
     {
       // Sends metrics, events, and traces to Alloy on the NAS. otel.pombei.ro only
       // answers on the home network; see ~/.agents/docs/opencode.md#telemetry.
-      "package": "@devtheops/opencode-plugin-otel@2.0.0",
+      // Temporary: a fork build that records locally executed tools. Revert to
+      // "@devtheops/opencode-plugin-otel@2.0.0" once upstream releases the fix;
+      // Renovate bumps that string when a release ships.
+      "package": "github:pedropombeiro/opencode-plugin-otel#beaa8fca6876c861c5051a97c086aa53ac2b9902",
       "options": {
         "enabled": true,
         "endpoint": "https://otel.pombei.ro",

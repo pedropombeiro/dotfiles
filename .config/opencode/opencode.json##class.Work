@@ -22,7 +22,10 @@
       // Sends metrics only to Alloy on the NAS. Traces carry prompts, code, and
       // tool output, and events carry commands and paths, so Work content stays
       // off personal infrastructure. See ~/.agents/docs/opencode.md#telemetry.
-      "package": "@devtheops/opencode-plugin-otel@2.0.0",
+      // Temporary: a fork build that records locally executed tools. Revert to
+      // "@devtheops/opencode-plugin-otel@2.0.0" once upstream releases the fix;
+      // Renovate bumps that string when a release ships.
+      "package": "github:pedropombeiro/opencode-plugin-otel#beaa8fca6876c861c5051a97c086aa53ac2b9902",
       "options": {
         "enabled": true,
         "endpoint": "https://otel.pombei.ro",

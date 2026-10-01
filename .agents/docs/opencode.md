@@ -137,6 +137,23 @@ additive.
 
 To update an unpinned entry, run `opencode plugin update <package>`.
 
+## Telemetry
+
+`@devtheops/opencode-plugin-otel` exports OTLP/HTTP to `https://otel.pombei.ro`, which
+Alloy on the NAS routes to Prometheus, Loki, and Tempo. View the data in the **OpenCode**
+dashboard on `grafana.pombei.ro`. The route accepts requests only from the home network,
+so machines elsewhere drop telemetry after the exporter's retries.
+
+- `opencode.json##default` (Personal and NAS) exports metrics, events, and traces. Traces
+  include prompts, model output, tool arguments, and tool output.
+- `opencode.json##class.Work` exports metrics only. Traces carry content, and events carry
+  commands, paths, and error text, so keep Work content off personal infrastructure.
+- `~/.shellrc/rc.d/opencode.sh` sets `OPENCODE_RESOURCE_ATTRIBUTES` to the short host name.
+  The background service inherits it from the client that starts the service, so run
+  `opencode service restart` from a new shell after changing it.
+- Alloy drops `session.id` from metrics to keep Prometheus series bounded. Filter by
+  session in the dashboard's log and trace panels.
+
 ## Model availability
 
 `opencode models` includes config-defined entries, including models added only

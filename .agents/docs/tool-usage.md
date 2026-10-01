@@ -20,6 +20,14 @@ arguments, inspect the file before retrying. Split the operation at section
 boundaries using the available file-editing tool, then verify the complete result.
 Keep harness-specific workarounds here rather than copying them into project docs.
 
+## Formatter rewrites on edit
+
+OpenCode's edit and write tools run the configured formatter on save. In the GitLab
+repository, RuboCop autocorrect rewrites lines that `.rubocop_todo` exempts, so a
+one-line factory edit can reformat unrelated code. After editing Ruby files there,
+check `git diff --stat`. If unrelated lines changed, restore the file and apply the
+edit from the shell with an exact-match Ruby `sub!` that aborts when nothing matches.
+
 ## Preserve non-ASCII characters
 
 Use the available file-editing tool for replacements rather than `sed -i`.

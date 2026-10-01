@@ -281,6 +281,8 @@
     { "action": "shell", "resource": ".opencode/skills/issue-state/scripts/start-issue.sh *", "effect": "allow" },
     { "action": "shell", "resource": ".opencode/skills/issue-state/scripts/set-issue-status.sh *", "effect": "allow" },
     { "action": "shell", "resource": ".opencode/skills/issue-state/scripts/sync-issue-state.sh *", "effect": "allow" },
+    { "action": "shell", "resource": ".opencode/skills/gitlab-worktree/scripts/gitlab-worktree-idle*", "effect": "allow" },
+    { "action": "shell", "resource": ".opencode/skills/gitlab-worktree/scripts/gitlab-worktree-setup*", "effect": "allow" },
     { "action": "shell", "resource": "CLICKHOUSE_USER=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *", "effect": "allow" },
     { "action": "shell", "resource": "CLICKHOUSE_GDK_GITLAB_USER_PASSWORD=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *", "effect": "allow" },
     { "action": "shell", "resource": "CLICKHOUSE_USER=* CLICKHOUSE_GDK_GITLAB_USER_PASSWORD=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *", "effect": "allow" },

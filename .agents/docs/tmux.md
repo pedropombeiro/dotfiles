@@ -157,6 +157,26 @@ to prevent plugins from overwriting them.
 the keys before tmux sees them. Set that option to **"No Shortcut"** so the Alt+number keys
 pass through to tmux.
 
+## Local network access on macOS
+
+macOS Local Network Privacy blocks LAN connections from non-Apple programs
+running inside Homebrew's tmux, for example `node` or the OpenCode service
+exporting telemetry to the NAS. macOS can't attribute a process under the tmux
+server to a trusted app, because the server outlives its terminal and Homebrew's
+linker signature gives tmux no usable identity. The connection fails with
+`EHOSTUNREACH` ("No route to host"), while Apple's `curl` and `ssh` still work,
+and the same command works from Terminal.app or a window outside tmux.
+
+`~/.config/yadm/scripts/sign-tmux.zsh##os.Darwin` replaces the signature with a
+fresh ad-hoc one. `update.zsh##os.Darwin` runs it after Homebrew upgrades, and
+bootstrap step `005` runs it after the first install. It records the signed
+binary's CDHash in `~/.local/state/yadm/tmux-codesign.cdhash` and skips binaries
+it already signed.
+
+The new signature applies only to a new tmux server. After the script re-signs
+tmux, run `tmux kill-server`, which ends every session, then restart the
+OpenCode service from inside the new server.
+
 ## Running Commands in a Temporary Tmux Pane
 
 Use the [`run-in-tmux-pane` skill](../skills/run-in-tmux-pane/SKILL.md) for

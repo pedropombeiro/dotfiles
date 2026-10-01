@@ -153,6 +153,10 @@ so machines elsewhere drop telemetry after the exporter's retries.
   `opencode service restart` from a new shell after changing it.
 - Alloy drops `session.id` from metrics to keep Prometheus series bounded. Filter by
   session in the dashboard's log and trace panels.
+- On macOS, a service started inside tmux can't reach the NAS unless tmux is re-signed.
+  The plugin's exports then fail with `EHOSTUNREACH`, and the plugin logs only to the
+  console, which OpenCode discards. See
+  [Local network access on macOS](tmux.md#local-network-access-on-macos).
 
 ## Model availability
 

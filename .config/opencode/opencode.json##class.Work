@@ -286,6 +286,8 @@
     { "action": "shell", "resource": "CLICKHOUSE_USER=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *", "effect": "allow" },
     { "action": "shell", "resource": "CLICKHOUSE_GDK_GITLAB_USER_PASSWORD=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *", "effect": "allow" },
     { "action": "shell", "resource": "CLICKHOUSE_USER=* CLICKHOUSE_GDK_GITLAB_USER_PASSWORD=* .opencode/skills/clickhouse/scripts/gdk-clickhouse *", "effect": "allow" },
+    { "action": "shell", "resource": "scripts/lint-ai-principles-manifest.sh", "effect": "allow" },
+    { "action": "shell", "resource": "scripts/lint-duo-review-instructions.sh", "effect": "allow" },
     { "action": "shell", "resource": "glab issue list *", "effect": "allow" },
     { "action": "shell", "resource": "glab issue view *", "effect": "allow" },
     { "action": "shell", "resource": "glab auth status*", "effect": "allow" },

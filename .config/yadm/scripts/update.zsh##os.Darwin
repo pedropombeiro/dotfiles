@@ -47,6 +47,7 @@ brew update
 brew upgrade --yes
 brew bundle --global
 brew bundle cleanup --global --force
+"${YADM_SCRIPTS}/sign-tmux.zsh"
 # Converge the declarative resources in conf.d/bootstrap*.toml. Keep the scope
 # explicit: dotfiles, macOS defaults, and user sections overlap YADM workflows.
 # The tools phase is covered by the mise step below.

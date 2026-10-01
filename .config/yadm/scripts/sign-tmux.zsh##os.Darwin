@@ -1,0 +1,50 @@
+#!/usr/bin/env zsh
+
+# Re-signs Homebrew's tmux so that programs running inside tmux can reach hosts
+# on the local network. macOS Local Network Privacy can't attribute a process
+# under Homebrew's linker-signed tmux server to an app it trusts, so non-Apple
+# programs started in tmux (node, OpenCode) get EHOSTUNREACH ("No route to host")
+# for LAN addresses, while Apple's curl and ssh still work. A fresh ad-hoc
+# signature fixes this. Every `brew upgrade tmux` installs a binary with the
+# original signature again, so the update and bootstrap scripts call this after
+# Homebrew runs. See ~/.agents/docs/tmux.md#local-network-access-on-macos.
+
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${(%):-%x}")/../scripts" &>/dev/null && pwd)
+
+source "${YADM_SCRIPTS}/colors.sh"
+
+tmux_bin=$(whence -p tmux) || exit 0
+tmux_bin=${tmux_bin:A} # Resolve Homebrew's symlink to the Cellar binary
+
+state_file="${XDG_STATE_HOME:-${HOME}/.local/state}/yadm/tmux-codesign.cdhash"
+
+cdhash() {
+  codesign -dvvv "$1" 2>&1 | awk -F= '/^CDHash=/ { print $2 }'
+}
+
+current=$(cdhash "${tmux_bin}")
+if [[ -n ${current} && -r ${state_file} && $(<"${state_file}") == "${current}" ]]; then
+  exit 0
+fi
+
+printf "${YELLOW}%s${NC}\n" "Re-signing ${tmux_bin} for macOS Local Network access..."
+
+# Sign a copy and move it into place, so a running tmux server keeps its file.
+tmp="${tmux_bin:h}/.${tmux_bin:t}.signing.$$"
+mode=$(stat -f '%Lp' "${tmux_bin}")
+trap 'rm -f "${tmp}"' EXIT
+cp -p "${tmux_bin}" "${tmp}" &&
+  chmod u+w "${tmp}" &&
+  codesign --force --sign - --identifier tmux "${tmp}" &&
+  chmod "${mode}" "${tmp}" &&
+  mv -f "${tmp}" "${tmux_bin}" || {
+  printf "${RED}%s${NC}\n" "Failed to re-sign ${tmux_bin}"
+  exit 1
+}
+
+mkdir -p "${state_file:h}"
+cdhash "${tmux_bin}" >"${state_file}"
+
+if command tmux list-sessions &>/dev/null; then
+  printf "${YELLOW}%s${NC}\n" "Restart the tmux server to use the new signature: tmux kill-server"
+fi

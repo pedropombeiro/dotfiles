@@ -38,6 +38,9 @@ if [ -f "${HOME}/.Brewfile" ]; then
   brew bundle --global || printf "${RED}%s${NC}\n" "Failed to install packages"
 fi
 
+# Lets programs inside tmux reach the local network (macOS Local Network Privacy).
+"${YADM_SCRIPTS}/sign-tmux.zsh"
+
 # 001 runs before Homebrew installs pam-reattach, so add it to sudo_local now.
 # Without it, Touch ID for sudo doesn't work inside tmux.
 if [[ -f /opt/homebrew/lib/pam/pam_reattach.so ]] &&

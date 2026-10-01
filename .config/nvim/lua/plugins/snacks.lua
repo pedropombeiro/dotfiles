@@ -252,7 +252,9 @@ return {
             icon = " ",
             title = "Git Status",
             section = "terminal",
-            enabled = function() return Snacks.git.get_root() ~= nil end,
+            -- Check cwd, not the current buffer: the command runs in cwd, and the dashboard can re-render
+            -- while a buffer from another repo is current
+            enabled = function() return Snacks.git.get_root(vim.uv.cwd()) ~= nil end,
             cmd = "git --no-pager diff --stat -B -M -C",
             padding = 1,
             ttl = 5 * 60,

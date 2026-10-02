@@ -28,6 +28,26 @@ after changing environment variables or unwatched local plugin dependencies.
 the merged result. Project-local skills remain scoped to their repository.
 Permission `allow` entries do not form an allowlist.
 
+## Permission audits
+
+Before recommending a new permission rule from session history, confirm that the
+call actually prompted. A tool name without its own rule does not prove a prompt:
+
+- Wrapper tools check their own action. Every `lazy-mcp` downstream call checks
+  `lazy-mcp_invoke_command` with resource `*`, so a rule such as
+  `gitlab_get_merge_request` has no effect on a call routed through `lazy-mcp`.
+- `~/.config/opencode/plugins/lazy-mcp-permissions.js` adds per-command checks for
+  `lazy-mcp` calls. It re-evaluates the agent's `lazy-mcp_invoke_command` rules
+  against the resource `server/command`, so allow a read-only command in
+  `opencode.json` with a rule such as `"resource": "gitlab/get_*"`, placed after
+  the `"resource": "*"` ask rule. Add it to both alternates when both machines
+  have the server. **Allow always** saves an approval for the whole wrapper, which
+  the plugin ignores, so per-command approvals belong in `opencode.json`.
+- Saved **Allow always** approvals live in the `permission` table of
+  `~/.local/share/opencode/opencode.db` and apply on top of the config.
+- Session history stores calls in `session_message` (V2) and `part` (legacy). The
+  same calls can appear in both, so count from one table.
+
 ## Secret Protection
 
 `~/.config/opencode/plugins/env-protection.js` is a plain tracked file, so it is active on

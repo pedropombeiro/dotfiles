@@ -95,6 +95,14 @@ return {
 }
 ```
 
+## Tree-sitter parsers on QTS
+
+The real `tree-sitter` CLI fails on QTS, so `~/.local/bin/tree-sitter##distro.qts`
+replaces it with a wrapper that only supports `build`. It compiles each parser's
+generated `src/` files with `cc`, and doesn't depend on the grammar's Makefile.
+If a parser fails to install on the NAS, check whether its repository ships
+`src/parser.c`. The wrapper can't run `tree-sitter generate`.
+
 ## Guidelines
 
 - Follow existing code style and patterns in `lua/plugins/`

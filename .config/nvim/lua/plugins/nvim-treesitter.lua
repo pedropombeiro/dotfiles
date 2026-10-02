@@ -16,6 +16,7 @@ local ensure_installed = {
   "graphql",
   "html",
   "json",
+  "jsonnet",
   "lua",
   "make",
   "markdown",

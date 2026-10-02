@@ -97,6 +97,7 @@ Thumbs.db
 .hammerspoon/usb.lua
 .hammerspoon/webcam.lua
 .local/bin/run_mr_pipeline
+.local/bin/tree-sitter
 .local/bin/wait_for_mr_merge
 .pgsql_profile
 .profile

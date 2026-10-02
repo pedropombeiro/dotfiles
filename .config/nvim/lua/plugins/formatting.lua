@@ -51,6 +51,7 @@ return {
       javascript             = { "prettier" },
       javascriptreact        = { "prettier" },
       json                   = { "prettier", "fixjson", "jq", stop_after_first = true },
+      jsonnet                = { "jsonnetfmt" },
       lua                    = { "stylua" },
       markdown               = { "markdownlint-cli2" },
       nginx                  = { "nginx" },

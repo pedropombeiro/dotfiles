@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Minimal tree-sitter CLI for QTS that only supports `build`, which is what
+# nvim-treesitter calls to compile parsers.
+#
+# The real CLI fails on QTS because cc-rs can't detect the
+# x86_64-openwrt-linux-gnu target. Parser repositories ship the generated
+# sources in src/, so compile them directly, as `tree-sitter build` does.
+# Don't rely on each grammar's Makefile: some, such as tree-sitter-jsonnet,
+# run `tree-sitter generate` by default.
+
+set -euo pipefail
+
+build() {
+  local output="parser.so"
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --output | -o)
+        output=$2
+        shift 2
+        ;;
+      *) shift ;;
+    esac
+  done
+
+  if [[ ! -f src/parser.c ]]; then
+    echo "tree-sitter: src/parser.c not found in $PWD" >&2
+    exit 1
+  fi
+
+  local cflags=(-shared -fPIC -O2 -I src)
+  if [[ -f src/scanner.cc ]]; then
+    # Older grammars use a C++ external scanner
+    c++ "${cflags[@]}" -x c -std=c11 src/parser.c -x c++ src/scanner.cc -o "$output"
+  elif [[ -f src/scanner.c ]]; then
+    cc "${cflags[@]}" -std=c11 src/parser.c src/scanner.c -o "$output"
+  else
+    cc "${cflags[@]}" -std=c11 src/parser.c -o "$output"
+  fi
+}
+
+case "${1:-}" in
+  build)
+    shift
+    build "$@"
+    ;;
+  --version | -V)
+    # nvim-treesitter checks the CLI version before building
+    echo "tree-sitter 0.25.10 (QTS build-only wrapper)"
+    ;;
+  *)
+    echo "tree-sitter: command not supported by the QTS wrapper: ${1:-}" >&2
+    echo "Only 'build' is supported, for nvim-treesitter" >&2
+    exit 1
+    ;;
+esac

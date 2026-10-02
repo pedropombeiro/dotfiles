@@ -397,6 +397,7 @@
     { "action": "shell", "resource": "mkdir -p /private/var/folders/*", "effect": "allow" },
     { "action": "shell", "resource": "mkdir -p /tmp/*", "effect": "allow" },
     { "action": "shell", "resource": "nl*", "effect": "allow" },
+    { "action": "shell", "resource": "npm view *", "effect": "allow" },
     { "action": "shell", "resource": "npx markdownlint-cli2 *", "effect": "allow" },
     { "action": "shell", "resource": "npx prettier --check *", "effect": "allow" },
     { "action": "shell", "resource": "npx --yes --package renovate*", "effect": "allow" },

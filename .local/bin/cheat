@@ -1,13 +1,14 @@
 #!/bin/bash
 # Open a terminal cheat sheet from ~/.github/cheatsheets.
 #
-# Opens the sheet on GitHub, or shows the local file with bat when --local is given,
+# Opens the sheet on GitHub, or renders the local file with glow when --local is given,
 # the session is remote over SSH, or no browser opener is available. Without a name,
 # picks a sheet with fzf.
 
 set -o pipefail
 
 SHEETS_DIR=${CHEAT_SHEETS_DIR:-$HOME/.github/cheatsheets}
+GLOW_STYLE=$HOME/.config/glow/gruvbox.json
 REPO_URL=https://github.com/pedropombeiro/dotfiles/blob/master/.github/cheatsheets
 # Picker height. The tmux popup sets 100%, so the picker fills the popup.
 FZF_HEIGHT=${CHEAT_FZF_HEIGHT:-40%}
@@ -78,8 +79,8 @@ pick_sheet() {
   local selection
   selection=$(list_sheets | fzf --height "$FZF_HEIGHT" --reverse --border \
     --border-label ' cheat sheets ' --prompt 'cheat> ' \
-    --preview "bat --color=always --style=plain --language=markdown $(printf '%q' "$SHEETS_DIR")/\$( [ {} = index ] && echo README || echo {} ).md" \
-    --preview-window 'right:60%') || return 130
+    --preview "glow -s $(printf '%q' "$GLOW_STYLE") -w \"\${FZF_PREVIEW_COLUMNS:-80}\" $(printf '%q' "$SHEETS_DIR")/\$( [ {} = index ] && echo README || echo {} ).md" \
+    --preview-window 'right:80%') || return 130
   [[ -n $selection ]] || return 130
   printf '%s\n' "$selection"
 }
@@ -92,11 +93,7 @@ can_open_browser() {
 show_local() {
   local file
   file=$(sheet_file "$1")
-  if command -v bat >/dev/null 2>&1; then
-    bat --paging=always --style=plain --language=markdown "$file"
-  else
-    less "$file"
-  fi
+  glow -s "$GLOW_STYLE" -w "$(tput cols)" -p "$file"
 }
 
 open_sheet() {

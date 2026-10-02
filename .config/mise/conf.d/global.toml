@@ -8,6 +8,8 @@ min_version = { soft = "2026.9.14" }
 # ── Shell UX ──────────────────────────────────────────────────────────
 # Shell history with sync and search
 atuin = "latest"
+# Render Markdown cheat sheets in terminal popups
+"aqua:charmbracelet/glow" = "latest"
 # Interactive disk usage analyzer
 dua = "latest"
 # Fast alternative to find

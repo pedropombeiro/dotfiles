@@ -11,6 +11,9 @@ edit = [
   { run = "$EDITOR %s", block = true, for = "unix" },
   { run = "%EDITOR% %s", block = true, for = "windows" },
 ]
+read = [
+  { run = 'glow -p -w "$(tput cols)" "$1"', block = true, desc = "Read Markdown", for = "unix" },
+]
 extract = [
   { run = 'ya pub extract --list "$@"', desc = "Extract here", for = "unix" },
   { run = 'ya pub extract --list %*', desc = "Extract here", for = "windows" },
@@ -24,6 +27,8 @@ sqlite = [
 
 [open]
 prepend_rules = [
+	{ url = "*.md", use = ["edit", "read"] },
+	{ url = "*.markdown", use = ["edit", "read"] },
 	{ url = "*.csv", use = ["edit", "visidata"] },
 	{ url = "*.tsv", use = ["edit", "visidata"] },
 	{ url = "*.db", use = ["sqlite", "visidata"] },
@@ -39,6 +44,8 @@ prepend_fetchers = [
 ]
 
 prepend_previewers = [
+  { url = "*.md", run = 'piper -- glow -s "$HOME/.config/glow/gruvbox.json" -w "$w" "$1"' },
+  { url = "*.markdown", run = 'piper -- glow -s "$HOME/.config/glow/gruvbox.json" -w "$w" "$1"' },
   { url = "*.tar*", run = 'piper --format=url -- tar tf "$1"' },
   { url = "*.epub", run = 'piper -- epr -d "$1"' },
   { url = "*.yml.enc", run = 'piper -- bundle exec rails encrypted:show "$1" | bat --language yaml --force-colorization --paging=never --wrap=character --line-range :1000 --style=plain' },

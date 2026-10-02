@@ -64,7 +64,7 @@ zinit wait'0a' lucid light-mode for \
   Aloxaf/fzf-tab
 
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons $realpath'
-zstyle ':fzf-tab:complete:eza:*' fzf-preview '[[ -d $realpath ]] && eza -1 --color=always --icons $realpath || bat --color=always --style=numbers --line-range=:500 $realpath'
+zstyle ':fzf-tab:complete:eza:*' fzf-preview 'if [[ -d $realpath ]]; then eza -1 --color=always --icons "$realpath"; elif [[ ${realpath:l} == *.(md|markdown) ]]; then glow -s "$HOME/.config/glow/gruvbox.json" -w "${FZF_PREVIEW_COLUMNS:-80}" "$realpath"; else bat --color=always --style=numbers --line-range=:500 "$realpath"; fi'
 # Cache brew info output for 24h (86400s) to avoid slow network lookups on every tab
 zstyle ':fzf-tab:complete:brew-(install|info|upgrade):*' fzf-preview 'CACHE="/tmp/brew-info-$word"; [[ -f $CACHE && $((EPOCHSECONDS - $(stat -f%m $CACHE))) -lt 86400 ]] || HOMEBREW_COLOR=1 brew info $word 2>/dev/null >$CACHE; cat $CACHE'
 zstyle ':fzf-tab:complete:brew-(install|info|upgrade):*' fzf-flags --preview-window=right:50%:wrap:~3

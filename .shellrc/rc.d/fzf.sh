@@ -2,7 +2,7 @@
 
 ## FZF_DEFAULT_COLOR defined in ~/.shellrc/rc.d/_theme.sh
 # Preview is hidden by default; Ctrl+/ (sends ctrl-_ / ASCII 31) toggles it
-export FZF_DEFAULT_OPTS="--height 40% --inline-info --border --ansi --bind ctrl-_:toggle-preview ${FZF_DEFAULT_COLOR} --preview 'bat --color=always --style=header,grid --line-range :300 {}' --preview-window hidden"
+export FZF_DEFAULT_OPTS="--height 40% --inline-info --border --ansi --bind ctrl-_:toggle-preview ${FZF_DEFAULT_COLOR} --preview 'case {} in *.md|*.markdown|*.MD|*.MARKDOWN) glow -s \"\$HOME/.config/glow/gruvbox.json\" -w \"\${FZF_PREVIEW_COLUMNS:-80}\" {} ;; *) bat --color=always --style=header,grid --line-range :300 {} ;; esac' --preview-window hidden"
 
 export FZF_DEFAULT_COMMAND='fd --type file --color=always --hidden --exclude .git --exclude=~/go/pkg'
 if [[ "$(uname -s)" = "Darwin" ]]; then

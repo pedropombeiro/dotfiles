@@ -10,7 +10,8 @@ Configuration: [`~/.config/tmux/tmux.conf`](../../.config/tmux/tmux.conf).
 1. `Prefix z` zooms a pane, and `Prefix !` breaks it out into its own window.
 1. `Prefix M-n` jumps to the next window with an alert, such as an OpenCode
    agent waiting for input.
-1. `Prefix Space` opens the which-key menu when you forget a binding.
+1. `Prefix Space` opens the which-key menu when you forget a binding, and
+   `Prefix h` opens the cheat sheet for the app in the pane.
 
 ## Panes and windows
 
@@ -50,14 +51,15 @@ to copy it.
 
 ## Custom launchers
 
-| Goal                                     | Keys                     | Notes                            |
-| ---------------------------------------- | ------------------------ | -------------------------------- |
-| Copy the previous command's output       | `Prefix y`               | Uses OSC 133 prompt markers      |
-| Copy the command line you are typing     | `Prefix Y`               | Works without copy mode          |
-| Open LazyGit in a zoomed pane            | `Prefix l`               | Uses YADM in `~` and `~/.config` |
-| Open Yazi through `fm` in a zoomed pane  | `Prefix f`               | Starts in the pane's directory   |
-| Start or resume OpenCode in a side pane  | `Prefix o` or `Prefix O` |                                  |
-| Open the sesh picker or the last session | `Prefix T` or `Prefix L` | See the [sesh sheet](sesh.md)    |
+| Goal                                     | Keys                     | Notes                                         |
+| ---------------------------------------- | ------------------------ | --------------------------------------------- |
+| Copy the previous command's output       | `Prefix y`               | Uses OSC 133 prompt markers                   |
+| Copy the command line you are typing     | `Prefix Y`               | Works without copy mode                       |
+| Open LazyGit in a zoomed pane            | `Prefix l`               | Uses YADM in `~` and `~/.config`              |
+| Open Yazi through `fm` in a zoomed pane  | `Prefix f`               | Starts in the pane's directory                |
+| Start or resume OpenCode in a side pane  | `Prefix o` or `Prefix O` |                                               |
+| Open the sesh picker or the last session | `Prefix T` or `Prefix L` | See the [sesh sheet](sesh.md)                 |
+| Open the cheat sheet for the pane's app  | `Prefix h`               | Picker for shells; see the [index](README.md) |
 
 ## Recipes
 

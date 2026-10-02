@@ -17,6 +17,21 @@ configuration, so the sheets describe this setup rather than upstream defaults.
 | [zoxide](zoxide.md)   | Keyword jumps, interactive selection, integrations           |
 | [Zsh](zsh.md)         | Vi-mode editing, history expansion, custom functions         |
 
+## Open a sheet
+
+| Goal                                           | Command or keys      |
+| ---------------------------------------------- | -------------------- |
+| Open the sheet for the app in the current pane | `Prefix h`           |
+| Open a sheet by name on GitHub                 | `cheat yazi`         |
+| Pick a sheet with a preview                    | `cheat`              |
+| Read a sheet in the terminal                   | `cheat --local yazi` |
+| Open this index                                | `cheat index`        |
+
+`Prefix h` recognizes Neovim, Yazi, and LazyGit. In a shell or another program,
+it opens the picker in a popup. Over SSH, `cheat` shows the local file instead
+of opening a browser. GitHub shows the pushed version of each sheet, so use
+`--local` to read edits you haven't pushed yet.
+
 ## Key notation
 
 | Notation   | Meaning                                                   |

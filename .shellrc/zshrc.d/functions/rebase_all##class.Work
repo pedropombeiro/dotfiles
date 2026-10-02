@@ -7,6 +7,18 @@
 SCRIPT_DIR="${HOME}/.shellrc/zshrc.d/functions/scripts"
 source "${SCRIPT_DIR}/spring-binstubs.zsh"
 
+if ! command -v op >/dev/null 2>&1; then
+  print -u2 'rebase_all: 1Password CLI (op) is not available.'
+  return 1
+fi
+
+if ! op vault list --cache=false >/dev/null 2>&1; then
+  print 'Waiting for 1Password to unlock (Ctrl-C to cancel)...'
+  until op vault list --cache=false >/dev/null 2>&1; do
+    sleep 5
+  done
+fi
+
 spring_binstubs restore
 test -f db/structure.sql && git restore db/ package.json
 

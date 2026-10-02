@@ -49,8 +49,8 @@ Thumbs.db
 .config/opencode/cli.base.json
 .config/opencode/env-protection.json
 .config/opencode/opencode-homeassistant.json
-.config/opencode/opencode-notifier.json
 .config/opencode/opencode.json
+.config/opencode/opencode-notifier.json
 .config/opencode/plugins/remind-issue-state.js
 .config/opencode/plugins/require-gpsup.js
 .config/pgcli/config
@@ -85,6 +85,7 @@ Thumbs.db
 .config/yadm/scripts/iterm2-setup.sh
 .config/yadm/scripts/remap-mac-keys.sh
 .config/yadm/scripts/run-checks.zsh
+.config/yadm/scripts/sign-tmux.zsh
 .config/yadm/scripts/update.zsh
 .default-gems
 .hammerspoon/audio.lua

@@ -42,5 +42,3 @@ bindkey -s "^[On" "."
 bindkey -s "^[OR" "*"
 bindkey -s "^[OQ" "/"
 bindkey -s "^[OS" "-"
-
-bindkey ' ' magic-space # Auto-expand commands on pressing space

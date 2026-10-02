@@ -169,7 +169,7 @@ Autosuggestions' bound `accept-line` checks
 to `BUFFER` — turning `atuin stats --help` into
 `atuin stats --help stats --help`. Fix: `590-atuin.zsh` wraps
 `atuin-search` and `atuin-search-viins` (the widgets bound to `^R` / vicmd
-`/` by `_atuin_rebind_ctrl_r`) with thin wrappers that clear `POSTDISPLAY=`
+`/` by `_atuin_rebind_keys`) with thin wrappers that clear `POSTDISPLAY=`
 before delegating to atuin's original functions. By the time atuin invokes
 `accept-line`, the suggestion is gone.
 
@@ -210,6 +210,14 @@ Two plugins try to claim `^R`:
    when it (re)initialises keymaps (both eager and lazy). Fix: `atuin.zsh`
    hooks `zvm_after_init_commands` and `zvm_after_lazy_keybindings_commands`
    to rebind `^R` to atuin's widgets after every zvm keymap reset.
+
+The same hook binds the Up and Down arrows to prefix search. Always pass
+`-M KEYMAP` to `bindkey` in startup scripts. zsh-vi-mode loads deferred, so an
+unqualified `bindkey` lands in `emacs`, which is `main` at that point, and never
+reaches `viins`. Bind `viins` and `vicmd` explicitly, and use the zvm hooks for
+keys that zsh-vi-mode overrides. Use zsh-vi-mode's `vv` to edit the command line
+in `$EDITOR` instead of rebinding `v`, which zsh-vi-mode reclaims for visual
+mode on the first switch to normal mode.
 
 #### Cached init recovery
 

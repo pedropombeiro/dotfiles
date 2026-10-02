@@ -6,6 +6,11 @@ if [[ -t 0 ]] && (( $+commands[stty] )); then
   stty quit undef
 fi
 
+# Space: expand history references such as !! and !$ inline before running
+for keymap in viins emacs; do
+  bindkey -M $keymap ' ' magic-space
+done
+
 # Ctrl+Arrow: Word movement (in addition to Alt+Arrow)
 # Escape sequences: ^[[1;5C (Ctrl+Right), ^[[1;5D (Ctrl+Left)
 for keymap in viins vicmd emacs; do

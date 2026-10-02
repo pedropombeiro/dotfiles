@@ -45,7 +45,8 @@ The configuration uses TPM (Tmux Plugin Manager) with these plugins:
   - Right: `M-l`
   - Up: `M-k`
   - Down: `M-j`
-  - Previous: `M-\`
+  - Previous: `M-^`. Don't bind `M-\` in the root table: its `ESC \` bytes terminate
+    terminal responses, and intercepting them breaks Yazi's terminal probe.
 - `egel/tmux-gruvbox` - Gruvbox theme (dark256)
 - `MunifTanjim/tmux-mode-indicator` - Shows WAIT/COPY/SYNC/TMUX mode in status bar
 

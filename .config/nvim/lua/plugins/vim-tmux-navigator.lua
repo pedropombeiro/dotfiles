@@ -19,6 +19,6 @@ return {
     { "<M-j>", "<cmd>TmuxNavigateDown<cr>", desc = "Navigate down (tmux/vim)", mode = { "n", "t" } },
     { "<M-k>", "<cmd>TmuxNavigateUp<cr>", desc = "Navigate up (tmux/vim)", mode = { "n", "t" } },
     { "<M-l>", "<cmd>TmuxNavigateRight<cr>", desc = "Navigate right (tmux/vim)", mode = { "n", "t" } },
-    { "<M-\\>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Navigate to previous (tmux/vim)", mode = { "n", "t" } },
+    { "<M-^>", "<cmd>TmuxNavigatePrevious<cr>", desc = "Navigate to previous (tmux/vim)", mode = { "n", "t" } },
   },
 }

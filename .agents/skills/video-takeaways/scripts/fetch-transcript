@@ -10,7 +10,7 @@ Download the best available caption track and normalize it to TSV:
 SECONDS<TAB>HH:MM:SS<TAB>CAPTION_TEXT
 
 Options:
-  --lang LANGUAGE  Prefer this caption language, such as en or fr.
+  --lang LANGUAGE  Prefer this caption language, such as en, en-orig, or fr.
   --keep-vtt       Keep the downloaded VTT and print its path.
   -h, --help       Show this help.
 EOF
@@ -89,7 +89,17 @@ fi
 selection=$(jq -r --arg requested "$language" '
   def keys_or_empty(value): (value // {} | keys);
   def first_match(keys; wanted):
-    ([keys[] | select(. == wanted)] + [keys[] | select(startswith(wanted + "-"))] | first) // "";
+    if wanted == "" then ""
+    elif wanted | endswith("-orig") then
+      ([keys[] | select(. == wanted)] | first) // ""
+    else
+      (wanted | split("-")[0]) as $base |
+      ([wanted + "-orig", $base + "-orig"] +
+        [keys[] | select(startswith($base + "-") and endswith("-orig"))] +
+        [wanted, $base] +
+        [keys[] | select(startswith($base + "-"))]) |
+      map(. as $candidate | select(keys | index($candidate))) | first // ""
+    end;
 
   (keys_or_empty(.subtitles)) as $manual |
   (keys_or_empty(.automatic_captions)) as $automatic |
@@ -159,7 +169,22 @@ readonly subtitle_flag
 
 if ! yt-dlp --skip-download "$subtitle_flag" --sub-langs "$caption_language" \
   --sub-format vtt --output "$work_dir/source.%(ext)s" "$video_url" >/dev/null; then
-  printf 'fetch-transcript: yt-dlp could not download the selected captions\n' >&2
+  printf 'fetch-transcript: yt-dlp could not download the selected captions (%s, %s)\n' \
+    "$caption_source" "$caption_language" >&2
+  translation=$(jq -r --arg source "$caption_source" --arg language "$caption_language" '
+    (if $source == "manual" then .subtitles else .automatic_captions end) |
+    [.[$language][]? | select(.ext == "vtt")] | last | .url // "" |
+    if test("[?&]tlang=") then
+      capture("[?&]lang=(?<from>[^&]+)").from as $from |
+      capture("[?&]tlang=(?<to>[^&]+)").to as $to |
+      $from + " -> " + $to
+    else empty end
+  ' "$metadata_file")
+  if [[ -n $translation ]]; then
+    printf 'fetch-transcript: selected track requests auto-translation (%s); YouTube may return HTTP 429 for translated captions even when direct captions work\n' \
+      "$translation" >&2
+    printf 'fetch-transcript: inspect direct tracks with yt-dlp --list-subs and select one with --lang (for example, en-orig)\n' >&2
+  fi
   exit 1
 fi
 

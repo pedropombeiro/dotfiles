@@ -55,6 +55,10 @@ scripts/fetch-transcript VIDEO_URL
 
 Use `--lang LANGUAGE` when you need a specific caption track. For a selected
 language, the helper prefers human-authored captions to automatic captions.
+It matches regional codes such as `en-US` to base-language tracks when needed
+and prefers direct automatic captions such as `en-orig` over the generic `en`
+track, which can include translations from other audio languages. An explicit
+`--lang en-orig` selects only that track.
 Without `--lang`, it tries the video's original language, then English, then the
 first available track.
 
@@ -69,6 +73,13 @@ Treat `caption_source=automatic` as a warning that names, technical terms, and
 numbers may be incorrect.
 
 ## Handle missing captions
+
+If caption downloads return HTTP 429, check whether the selected track requests
+auto-translation. YouTube can reject translated captions while direct captions
+still work. List tracks with `yt-dlp --list-subs VIDEO_URL` and retry with the
+matching direct track, such as `scripts/fetch-transcript --lang en-orig VIDEO_URL`.
+Do not assume that a 429 means an IP-wide rate limit. Ask before selecting a
+different language.
 
 If the requested language is unavailable, the helper lists available manual
 and automatic caption languages. Show those options to the user and ask before

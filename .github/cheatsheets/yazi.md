@@ -14,17 +14,19 @@ Open Yazi with `fm`, which changes the shell directory on exit, or with
 
 ## Navigation and search
 
-| Goal                                         | Keys                 | Notes                                  |
-| -------------------------------------------- | -------------------- | -------------------------------------- |
-| Jump to the Git repository root              | `g r`                |                                        |
-| Browse Git-tracked or changed files          | `g /` or `g c`       | Flat lists across subdirectories       |
-| Move in the parent directory without leaving | `[ [` or `] ]`       | Steps to the previous or next sibling  |
-| Move by a relative count                     | `5 j`, `3 k`         | Relative numbers appear while counting |
-| Search names or contents recursively         | `s` (fd) or `S` (rg) | `C-s` cancels the search               |
-| Filter the current listing                   | `f`                  |                                        |
-| Go back or forward in directory history      | `H` or `L`           |                                        |
-| Follow the hovered symlink                   | `g f`                |                                        |
-| Type a path with completion                  | `g Space`            |                                        |
+| Goal                                         | Keys                       | Notes                                  |
+| -------------------------------------------- | -------------------------- | -------------------------------------- |
+| Jump to the Git repository root              | `g r`                      |                                        |
+| Browse Git-tracked or changed files          | `g /` or `g c`             | Flat lists across subdirectories       |
+| Move in the parent directory without leaving | `[ [` or `] ]`             | Steps to the previous or next sibling  |
+| Move by a relative count                     | `5 j`, `3 k`               | Relative numbers appear while counting |
+| Search names or contents recursively         | `s` (fd) or `S` (rg)       | `C-s` cancels the search               |
+| Filter the current listing                   | `f`                        |                                        |
+| Go back or forward in directory history      | `H` or `L`                 |                                        |
+| Follow the hovered symlink                   | `g f`                      |                                        |
+| Type a path with completion                  | `g Space`                  |                                        |
+| Go to `~/.config`                            | `g C`                      | `g c` lists Git changes instead        |
+| Show size, mtime, permissions, or owner      | `M s`, `M m`, `M p`, `M o` | `M n` hides it; `m` saves bookmarks    |
 
 ## Selection and file operations
 

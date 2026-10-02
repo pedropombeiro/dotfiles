@@ -8,8 +8,8 @@ pickers live in the [fzf sheet](fzf.md).
 ## Memorize first
 
 1. `Esc`, then `vv`, opens the command line in Neovim for long edits.
-1. `!$` reuses the last argument, and `histverify` shows the expansion before
-   running it.
+1. `!$` reuses the last argument, and `Space` expands it in place before you
+   run the command.
 1. `^old^new` reruns the previous command with a substitution.
 1. `M-s` opens the sesh picker, and `Prefix Y` in tmux copies the command line.
 1. `ci"`, `da(`, and `cs"'` edit quoted and bracketed arguments in normal mode.
@@ -29,13 +29,14 @@ Run these from normal mode.
 | Prefix-search older or newer commands          | `k` or `j`          | Matches what you typed before `Esc` |
 | Open the Atuin search                          | `/`                 | `C-r` works in insert mode          |
 
-In insert mode, `M-Backspace` deletes a word, and `M-Left` and `M-Right` move by
-word.
+In insert mode, `Up` and `Down` prefix-search history, `M-Backspace` deletes a
+word, and `M-Left` and `M-Right` move by word.
 
 ## History expansion
 
-`histverify` places the expanded command on the line, so press `Enter` once to
-review and again to run.
+Typing `Space` after an expansion replaces it in place. If you press `Enter`
+first, `histverify` places the expanded command on the line, so press `Enter`
+again to run it.
 
 | Expansion        | Result                                             |
 | ---------------- | -------------------------------------------------- |

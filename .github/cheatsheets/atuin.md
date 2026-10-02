@@ -6,9 +6,9 @@ and [`590-atuin.zsh`](../../.shellrc/zshrc.d/configs/590-atuin.zsh).
 ## How this setup behaves
 
 - `C-r` in insert mode, or `/` in Zsh normal mode, opens the Atuin search.
-- `Up` doesn't open Atuin. For prefix search through local history, type
-  `git re`, press `Esc`, and use `k` and `j` to cycle commands that start with
-  it. In insert mode, `Up` steps through plain history.
+- `Up` doesn't open Atuin. It runs Zsh prefix search through local history:
+  type `git re` and press `Up` or `Down` to cycle commands that start with it.
+  In normal mode, `k` and `j` do the same.
 - The search starts filtered to the **current host**, with fuzzy matching.
 - `Enter` runs the selected command immediately. `Tab` places it on the command
   line for editing.

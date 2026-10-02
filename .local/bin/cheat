@@ -1,0 +1,190 @@
+#!/bin/bash
+# Open a terminal cheat sheet from ~/.github/cheatsheets.
+#
+# Opens the sheet on GitHub, or shows the local file with bat when --local is given,
+# the session is remote over SSH, or no browser opener is available. Without a name,
+# picks a sheet with fzf.
+
+set -o pipefail
+
+SHEETS_DIR=${CHEAT_SHEETS_DIR:-$HOME/.github/cheatsheets}
+REPO_URL=https://github.com/pedropombeiro/dotfiles/blob/master/.github/cheatsheets
+
+usage() {
+  cat <<'EOF'
+Usage: cheat [--local] [NAME]
+       cheat --for-command COMMAND
+       cheat --list
+       cheat --completion zsh
+
+Open the cheat sheet NAME on GitHub. Without NAME, pick one with fzf.
+
+Options:
+  -l, --local              Show the local file in the terminal instead of the browser
+      --for-command CMD    Open the sheet for a running program, such as tmux's
+                           #{pane_current_command}; pick one if none matches
+      --list               List the available sheet names
+      --completion zsh     Print the zsh completion function
+  -h, --help               Show this help
+EOF
+}
+
+# Sheet names are the Markdown file names, with README exposed as "index".
+list_sheets() {
+  local file name
+  for file in "$SHEETS_DIR"/*.md; do
+    [[ -e $file ]] || continue
+    name=$(basename "$file" .md)
+    [[ $name == README ]] && name=index
+    printf '%s\n' "$name"
+  done
+}
+
+sheet_file() {
+  local name=$1
+  [[ $name == index ]] && name=README
+  printf '%s/%s.md' "$SHEETS_DIR" "$name"
+}
+
+# Map aliases and program names to sheet names.
+normalize() {
+  local name
+  name=$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]')
+  case $name in
+    nvim | vim | vi | view | nvimdiff) echo neovim ;;
+    lg) echo lazygit ;;
+    readme | help) echo index ;;
+    *) echo "$name" ;;
+  esac
+}
+
+# Sheets for programs that own the pane. Shells fall through to the picker,
+# because a shell prompt doesn't say which tool you need.
+sheet_for_command() {
+  local name
+  name=$(normalize "$1")
+  case $name in
+    neovim | yazi | lazygit | atuin | fzf | sesh) echo "$name" ;;
+    *) return 1 ;;
+  esac
+}
+
+pick_sheet() {
+  local selection
+  selection=$(list_sheets | fzf --height 40% --reverse --border \
+    --border-label ' cheat sheets ' --prompt 'cheat> ' \
+    --preview "bat --color=always --style=plain --language=markdown $(printf '%q' "$SHEETS_DIR")/\$( [ {} = index ] && echo README || echo {} ).md" \
+    --preview-window 'right:60%') || return 130
+  [[ -n $selection ]] || return 130
+  printf '%s\n' "$selection"
+}
+
+can_open_browser() {
+  [[ -z ${SSH_CONNECTION:-} ]] || return 1
+  command -v open >/dev/null 2>&1 || command -v xdg-open >/dev/null 2>&1
+}
+
+show_local() {
+  local file
+  file=$(sheet_file "$1")
+  if command -v bat >/dev/null 2>&1; then
+    bat --paging=always --style=plain --language=markdown "$file"
+  else
+    less "$file"
+  fi
+}
+
+open_sheet() {
+  local name=$1 local_view=$2 url file
+  file=$(sheet_file "$name")
+  if [[ ! -f $file ]]; then
+    printf 'cheat: no sheet named "%s". Available sheets:\n' "$name" >&2
+    list_sheets | sed 's/^/  /' >&2
+    return 1
+  fi
+
+  if [[ $local_view == true ]] || ! can_open_browser; then
+    show_local "$name"
+    return
+  fi
+
+  if [[ $name == index ]]; then
+    url=$REPO_URL
+    url=${url/\/blob\//\/tree\/}
+  else
+    url="$REPO_URL/$name.md"
+  fi
+
+  if command -v open >/dev/null 2>&1; then
+    open "$url"
+  else
+    xdg-open "$url" >/dev/null 2>&1
+  fi
+}
+
+completion_zsh() {
+  cat <<'EOF'
+#compdef cheat
+
+_cheat() {
+  _arguments \
+    '(- *)'{-h,--help}'[show help]' \
+    '(- *)--list[list the available sheets]' \
+    '(- *)--completion[print a completion function]:shell:(zsh)' \
+    '(- *)--for-command[open the sheet for a program]:command:' \
+    '(-l --local)'{-l,--local}'[show the local file instead of the browser]' \
+    '1:sheet:($(cheat --list 2>/dev/null))'
+}
+
+_cheat "$@"
+EOF
+}
+
+main() {
+  local local_view=false name=""
+
+  while (($# > 0)); do
+    case $1 in
+      -h | --help)
+        usage
+        return
+        ;;
+      -l | --local) local_view=true ;;
+      --list)
+        list_sheets
+        return
+        ;;
+      --completion)
+        [[ ${2:-} == zsh ]] || {
+          echo "cheat: only zsh completion is supported" >&2
+          return 1
+        }
+        completion_zsh
+        return
+        ;;
+      --for-command)
+        [[ $# -ge 2 ]] || {
+          echo "cheat: --for-command needs a program name" >&2
+          return 1
+        }
+        name=$(sheet_for_command "$2") || name=""
+        shift
+        ;;
+      -*)
+        printf 'cheat: unknown option %s\n' "$1" >&2
+        usage >&2
+        return 1
+        ;;
+      *) name=$(normalize "$1") ;;
+    esac
+    shift
+  done
+
+  if [[ -z $name ]]; then
+    name=$(pick_sheet) || return 0
+  fi
+
+  open_sheet "$name" "$local_view"
+}
+
+main "$@"

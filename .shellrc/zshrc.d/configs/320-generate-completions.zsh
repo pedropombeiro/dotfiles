@@ -26,5 +26,6 @@ _generate_completion atuin 'atuin gen-completions --shell zsh'
 _generate_completion opencode 'opencode --completions zsh'
 _generate_completion sesh 'sesh completion zsh'
 _generate_completion op 'op completion zsh'
+_generate_completion cheat 'cheat --completion zsh' binary
 
 unfunction _generate_completion

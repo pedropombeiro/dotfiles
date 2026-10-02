@@ -9,6 +9,8 @@ set -o pipefail
 
 SHEETS_DIR=${CHEAT_SHEETS_DIR:-$HOME/.github/cheatsheets}
 REPO_URL=https://github.com/pedropombeiro/dotfiles/blob/master/.github/cheatsheets
+# Picker height. The tmux popup sets 100%, so the picker fills the popup.
+FZF_HEIGHT=${CHEAT_FZF_HEIGHT:-40%}
 
 usage() {
   cat <<'EOF'
@@ -71,7 +73,7 @@ sheet_for_command() {
 
 pick_sheet() {
   local selection
-  selection=$(list_sheets | fzf --height 40% --reverse --border \
+  selection=$(list_sheets | fzf --height "$FZF_HEIGHT" --reverse --border \
     --border-label ' cheat sheets ' --prompt 'cheat> ' \
     --preview "bat --color=always --style=plain --language=markdown $(printf '%q' "$SHEETS_DIR")/\$( [ {} = index ] && echo README || echo {} ).md" \
     --preview-window 'right:60%') || return 130

@@ -15,7 +15,7 @@ FZF_HEIGHT=${CHEAT_FZF_HEIGHT:-40%}
 usage() {
   cat <<'EOF'
 Usage: cheat [--local] [NAME]
-       cheat --for-command COMMAND
+       cheat [--tmux] --for-command COMMAND
        cheat --list
        cheat --completion zsh
 
@@ -25,6 +25,9 @@ Options:
   -l, --local              Show the local file in the terminal instead of the browser
       --for-command CMD    Open the sheet for a running program, such as tmux's
                            #{pane_current_command}; pick one if none matches
+      --tmux               Run from a tmux key binding, which has no terminal:
+                           open the browser directly, and use a popup for the
+                           picker or the local view
       --list               List the available sheet names
       --completion zsh     Print the zsh completion function
   -h, --help               Show this help
@@ -135,6 +138,7 @@ _cheat() {
     '(- *)--completion[print a completion function]:shell:(zsh)' \
     '(- *)--for-command[open the sheet for a program]:command:' \
     '(-l --local)'{-l,--local}'[show the local file instead of the browser]' \
+    '--tmux[run from a tmux key binding]' \
     '1:sheet:($(cheat --list 2>/dev/null))'
 }
 
@@ -142,8 +146,15 @@ _cheat "$@"
 EOF
 }
 
+# Rerun cheat in a tmux popup, for steps that need a terminal.
+open_in_popup() {
+  local command
+  printf -v command '%q ' "$0" "$@"
+  tmux display-popup -E -w 70% -h 60% -d "$PWD" -e CHEAT_FZF_HEIGHT=100% "$command"
+}
+
 main() {
-  local local_view=false name=""
+  local local_view=false tmux_mode=false name=""
 
   while (($# > 0)); do
     case $1 in
@@ -152,6 +163,7 @@ main() {
         return
         ;;
       -l | --local) local_view=true ;;
+      --tmux) tmux_mode=true ;;
       --list)
         list_sheets
         return
@@ -181,6 +193,17 @@ main() {
     esac
     shift
   done
+
+  if [[ $tmux_mode == true ]]; then
+    if [[ -z $name ]]; then
+      open_in_popup
+      return
+    fi
+    if [[ $local_view == true ]] || ! can_open_browser; then
+      open_in_popup --local "$name"
+      return
+    fi
+  fi
 
   if [[ -z $name ]]; then
     name=$(pick_sheet) || return 0

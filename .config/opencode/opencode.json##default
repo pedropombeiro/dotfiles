@@ -97,6 +97,11 @@
         "duo-chat-sonnet-5": {
           "cost": [{ "input": 2, "output": 10, "cache": { "read": 0.20, "write": 2.50 } }]
         },
+        // Enable after gitlab-ai-provider ships the mappings in !49.
+        "duo-chat-sonnet-5-5": {
+          "disabled": true,
+          "cost": [{ "input": 2, "output": 10, "cache": { "read": 0.20, "write": 2.50 } }]
+        },
         "duo-chat-sonnet-4": {
           "disabled": true,
           "cost": [{ "input": 3, "output": 15, "cache": { "read": 0.30, "write": 3.75 } }]
@@ -121,6 +126,14 @@
           "cost": [
             { "input": 2, "output": 10, "cache": { "read": 0.20, "write": 2.50 } },
             { "tier": { "type": "context", "size": 200000 }, "input": 4, "output": 15, "cache": { "read": 0.40, "write": 5 } }
+          ]
+        },
+        // Enable after gitlab-ai-provider ships the mappings in !49.
+        "duo-chat-gpt-6-1-sol": {
+          "disabled": true,
+          "cost": [
+            { "input": 2, "output": 10, "cache": { "read": 0.10, "write": 2.50 } },
+            { "tier": { "type": "context", "size": 272000 }, "input": 4, "output": 15, "cache": { "read": 0.20, "write": 5 } }
           ]
         },
         "duo-chat-gpt-6-luna": {

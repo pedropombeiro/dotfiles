@@ -21,6 +21,9 @@ rust = { version = "1.99.0", profile = "minimal", targets = "x86_64-unknown-linu
 # HA-CLI pins regex<2025, but that regex has no cp314 wheel and fails to build on Py3.14.
 # Override to a regex release with Python 3.14 support (built from source on this QTS NAS).
 "pipx:homeassistant-cli" = { version = "latest", install_env = { UV_OVERRIDE = "/share/homes/admin/.config/mise/uv-overrides/homeassistant-cli.txt" } }
+# greenlet's wheels need glibc 2.24+, so it builds from source here. Entware GCC's
+# fallback limits.h sets MB_LEN_MAX=1; load the libc limits first to satisfy glibc.
+"pipx:neovim-remote" = { version = "latest", install_env = { CPPFLAGS = "-include /opt/include/limits.h" } }
 
 [tasks."grc-rs:sync"]
 description = "Fetch the grc colour rules that grc-rs reads"

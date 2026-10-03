@@ -249,6 +249,7 @@
     { "action": "shell", "resource": "clickhouse client --port 9001 --query *", "effect": "allow" },
     { "action": "shell", "resource": "column *", "effect": "allow" },
     { "action": "shell", "resource": "comm *", "effect": "allow" },
+    { "action": "shell", "resource": "command -v *", "effect": "allow" },
     { "action": "shell", "resource": "cut *", "effect": "allow" },
     { "action": "shell", "resource": "diff *", "effect": "allow" },
     { "action": "shell", "resource": "colima list *", "effect": "allow" },

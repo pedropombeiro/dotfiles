@@ -203,6 +203,7 @@
     { "action": "shell", "resource": "cat *", "effect": "allow" },
     { "action": "shell", "resource": "column *", "effect": "allow" },
     { "action": "shell", "resource": "comm *", "effect": "allow" },
+    { "action": "shell", "resource": "command -v *", "effect": "allow" },
     { "action": "shell", "resource": "cut *", "effect": "allow" },
     { "action": "shell", "resource": "curl *", "effect": "allow" },
     { "action": "shell", "resource": "curl *-d*", "effect": "ask" },

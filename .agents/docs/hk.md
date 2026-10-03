@@ -16,6 +16,35 @@ See [Packslip skills policy](mise.md#completions-and-skills-policy) for updates.
 hk is installed globally via `hk install --global`, using Git 2.54+ config-based hooks. It runs as a
 silent no-op in repos without an `hk.pkl`.
 
+On the NAS (`distro.qts`), the hooks are registered only in the yadm repository's config
+(`~/.local/share/yadm/repo.git/config`), because the NAS infrastructure repository registers its own
+hk hooks and global hooks would run hk twice there. Use `git config --file` to edit that file;
+`yadm enter` passes its arguments through `zsh -c`, which breaks the quoting of hook commands.
+
+### Pre-push check
+
+A `check-all` pre-push hook runs `hk check --all`, the same full check as CI, in under 15 seconds.
+A hook registered by hk itself would only check the files in the pushed commits, which misses files
+that a formatter or linter config change affects. Register it in the yadm repository's config, not
+globally, so pushes in other repositories with an `hk.pkl` are unaffected:
+
+```bash
+cfg=~/.local/share/yadm/repo.git/config
+git config --file "$cfg" hook.check-all.event pre-push
+git config --file "$cfg" hook.check-all.command \
+  'check_all() { [ "${HK:-1}" = "0" ] || ! command -v hk >/dev/null 2>&1 || hk check --all; }; check_all'
+```
+
+The function discards the remote arguments that Git passes to the hook, which `hk check --all`
+rejects. The name avoids the `hk-` prefix that `hk install` manages. On the NAS, the command also
+adds `standardrb` to `HK_SKIP_STEPS`, because Ruby is not installed there. The hook checks the working
+tree, not the pushed commits, so uncommitted changes can affect its result. Bypass it with
+`HK=0 yadm push`.
+
+After changing a formatter or linter config, such as `.editorconfig`, `.markdownlint.jsonc`, or a
+step's options in `hk.pkl`, run `yadm enter hk check --all` before committing. Commit hooks only
+check staged files, so they cannot see files that the new config reformats.
+
 ### yadm-specific settings
 
 Two settings in `hk.pkl` are needed to make hk work cleanly in the yadm context

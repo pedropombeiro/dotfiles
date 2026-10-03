@@ -37,10 +37,7 @@
       "description": "Delay GitHub-sourced mise updates for the 24-hour release-age gate plus a 2-day buffer for Packslip publication",
       "matchManagers": ["mise", "custom.regex"],
       "matchDatasources": ["github-releases", "github-tags"],
-      "matchFileNames": [
-        ".config/mise/config.toml**",
-        ".config/mise/conf.d/**"
-      ],
+      "matchFileNames": [".config/mise/config.toml**", ".config/mise/conf.d/**"],
       "minimumReleaseAge": "3 days",
       "minimumReleaseAgeBehaviour": "timestamp-required",
       "internalChecksFilter": "strict"
@@ -61,19 +58,13 @@
       "description": "Pin Node.js version for QTS (limited runtime support)",
       "matchManagers": ["mise"],
       "matchPackageNames": ["node", "nodejs"],
-      "matchFileNames": [
-        ".config/mise/config.toml##distro.qts,extension.toml",
-        ".config/mise/conf.d/tools.qts.toml"
-      ],
+      "matchFileNames": [".config/mise/config.toml##distro.qts,extension.toml", ".config/mise/conf.d/tools.qts.toml"],
       "allowedVersions": "23.7.x"
     },
     {
       "description": "Group mise github/aqua backend tools",
       "matchManagers": ["custom.regex", "mise"],
-      "matchFileNames": [
-        ".config/mise/config.toml**",
-        ".config/mise/conf.d/**"
-      ],
+      "matchFileNames": [".config/mise/config.toml**", ".config/mise/conf.d/**"],
       "groupName": "mise backend tools"
     },
     {
@@ -103,10 +94,7 @@
     {
       "description": "Group opencode npm plugin updates (after the mise opencode rule so it wins for opencode.json and cli.base.json)",
       "matchManagers": ["custom.regex"],
-      "matchFileNames": [
-        ".config/opencode/opencode.json##**",
-        ".config/opencode/cli.base.json##**"
-      ],
+      "matchFileNames": [".config/opencode/opencode.json##**", ".config/opencode/cli.base.json##**"],
       "groupName": "opencode plugins",
       "groupSlug": "opencode-plugins"
     },
@@ -172,9 +160,7 @@
         "/(^|/)\\.config/opencode/opencode\\.json(##[^/]+)?$/",
         "/(^|/)\\.config/opencode/cli\\.base\\.json(##[^/]+)?$/"
       ],
-      "matchStrings": [
-        "\"(?:aisdk:)?(?<depName>(@[^\"/@]+/)?[^\"@/]+)@(?<currentValue>\\d+\\.\\d+\\.\\d+[^\"]*)\""
-      ],
+      "matchStrings": ["\"(?:aisdk:)?(?<depName>(@[^\"/@]+/)?[^\"@/]+)@(?<currentValue>\\d+\\.\\d+\\.\\d+[^\"]*)\""],
       "datasourceTemplate": "npm",
       "versioningTemplate": "npm"
     },

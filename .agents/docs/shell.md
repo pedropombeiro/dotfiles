@@ -264,7 +264,7 @@ startup with `zsh -df ~/.config/yadm/scripts/check-shell-history.zsh`.
 - Use autoloaded functions for infrequently-used commands
 - Prefer zinit ice modifiers for plugin configuration
 - Document environment variables in comments
-- Source `~/.zshrc` to test changes
+- Test changes in a new shell; re-sourcing does not undo earlier definitions
 
 ## Standalone Ruby Helpers
 

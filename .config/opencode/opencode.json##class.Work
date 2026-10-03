@@ -13,7 +13,7 @@
   },
   "plugins": [
     "opencode-gitlab-plugin@3.0.0",
-    "@mohak34/opencode-notifier@0.5.0",
+    "@mohak34/opencode-notifier@0.6.0",
     "@nm156/opencode-wakatime@1.4.0",
     "opencode-atuin-history@1.0.1",
     "opencode-forge-session-title@1.2.0",

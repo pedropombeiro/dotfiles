@@ -13,12 +13,9 @@ featuring a carefully curated development environment with powerful CLI tools an
   - [Linux (Debian/Ubuntu)](#linux-debianubuntu)
   - [Machine classes and alternates](#machine-classes-and-alternates)
 - [Post-Installation](#post-installation)
-  - [Fresh Installation - macOS](#fresh-installation---macos)
-  - [Fresh Installation - Linux](#fresh-installation---linux)
 - [Configuration](#configuration)
   - [macOS Settings](#macos-settings)
   - [Package Sources](#package-sources)
-- [Development Tools](#development-tools)
 - [Maintenance](#maintenance)
   - [Profiling ZSH](#profiling-zsh)
   - [Checklist Before Reinstall](#checklist-before-reinstall)
@@ -66,8 +63,9 @@ This dotfiles setup includes:
   - VS Code settings sync
 
 - **🤖 Automation & Quality**
-  - Pre-commit hooks for shell, markdown, Ruby, Lua, and formatting checks
-  - CI validations (pre-commit, Neovim config load, luacheck, bootstrap lint, gitleaks)
+  - [hk](https://hk.jdx.dev/) git hooks for shell, Markdown, Ruby, Lua, and formatting checks
+  - CI validations (hk, Neovim config load, luacheck, bootstrap lint, alternate rendering per
+    machine class, gitleaks)
   - Update scripts for brew, mise, zinit, and Neovim plugin health
 
 - **🔧 Development Tools**
@@ -152,7 +150,7 @@ yadm alternates:
 - `##distro.qts` for QNAP QTS platform limits
 
 Shared content lives in a base file that includes a small per-machine file, or in a `##template`.
-A pre-commit check rejects alternates that share more than 50 lines. See
+An hk pre-commit check rejects alternates that share more than 50 lines. See
 [the layout rules](../.agents/docs/yadm-layout.md) for details.
 
 ## Post-Installation
@@ -163,23 +161,8 @@ After installing the dotfiles, ensure the Syncthing-managed config files are lin
 ~/.config/yadm/scripts/relink-dotfiles.zsh
 ```
 
-### Fresh Installation - macOS
-
-**After Factory Reset:**
-
-1. Install any available OS upgrades
-2. Install Xcode from the App Store and accept the T&C
-3. Run the quick start installation steps above
-4. Verify SSH connectivity:
-
-   ```shell
-   ssh -T git@github.com
-   ssh -T git@gitlab.com
-   ```
-
-### Fresh Installation - Linux
-
-Verify SSH connectivity to Git services:
+On a factory-reset Mac, install any available OS upgrades before the quick start steps. On
+every platform, verify SSH connectivity to the Git services afterwards:
 
 ```shell
 ssh -T git@github.com
@@ -192,7 +175,7 @@ ssh -T git@gitlab.com
 
 Manual configuration steps:
 
-- Change the computer name in System Preferences
+- Change the computer name in System Settings
 - Set default terminal font to 'MesloLGS NF'
 - [Disable notifications when screen is off](https://www.jeffgeerling.com/blog/2016/external-display-waking-disable-notifications-when-your-screen)
 - Disable Location Services (if desired)
@@ -208,18 +191,7 @@ The definitive package lists live in the Homebrew bundle and mise configuration:
   `.config/mise/conf.d/tools.work.toml` (`bootstrap.packages` entries)
 
 The README highlights key tooling, but those configuration files are the source of truth.
-
-## Development Tools
-
-Key tools included in this setup:
-
-- **Version Manager:** [mise](https://mise.jdx.dev/) for runtime installs and CLI tooling
-  (`node`, `ruby`, `go`, `redis`, plus linters and helpers)
-- **Languages:** Ruby, Go, Node.js (plus tooling like `ruby-lsp`, `neovim-remote`, `renovate`, `markdownlint`)
-- **Databases:** PostgreSQL (via `pgcli`, `pspg`, and `libpq`)
-- **Containerization:** Docker, plus lightweight tooling for container ops
-- **CLI Essentials:** ripgrep, fd, bat, eza, yazi, jq/yq, hyperfine, tealdeer
-- **Git Tooling:** gh, git-delta, git-extras, git-peek, lazygit
+Runtime versions and CLI tools are declared in `.config/mise/`.
 
 ## Maintenance
 
@@ -249,7 +221,7 @@ zprof
 
 ### Checklist After Install
 
-- [ ] Add Terminal, iTerm, VS Code, and IDEs to `System Preferences → Security & Privacy → Privacy → Developer Tools`
+- [ ] Add Terminal, iTerm, VS Code, and IDEs to `System Settings > Privacy & Security > Developer Tools`
       to avoid Apple notarization slowdowns
 - [ ] Configure [`$HOME/.git-peek`](https://awesomeopensource.com/project/Jarred-Sumner/git-peek#private-repositories--choosing-an-editor)
       for repository peeking

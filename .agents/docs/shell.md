@@ -4,7 +4,7 @@ Zsh configuration with modular structure and zinit plugins.
 
 ## Structure
 
-```
+```text
 ~/.shellrc/
 ├── zshrc.d/
 │   ├── configs/          # Numbered startup phases, loaded in filename order

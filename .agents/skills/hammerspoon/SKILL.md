@@ -145,7 +145,7 @@ needs no marker, no guard, and no changes to the shared `hyperBind` helper.
 
 Resolve the frontmost iTerm2 tab's tty with:
 
-```
+```applescript
 tell application "iTerm2" to return tty of current session of current tab of current window
 ```
 
@@ -158,7 +158,7 @@ force-releases held modifiers — verified: a synthesized `ctrl+b` under a held 
 
 ## Network topology (Home Assistant → laptop)
 
-```
+```text
 Home Assistant
   → http://gitlab-macbookpro:18989/trigger?action=lock   → nginx → Hammerspoon :18990
   → http://gitlab-macbookpro:18989/trigger?action=sleep   → nginx → Hammerspoon :18990
@@ -209,7 +209,7 @@ If the hub layout changes, update `constants.lua`.
 
 URL scheme is `rectangle-pro://` (not `rectanglepro://`). Layout is triggered via:
 
-```
+```bash
 open -g "rectangle-pro://execute-layout?name=External%20display"
 ```
 

@@ -3,7 +3,7 @@
 Personal files that should appear inside `$GDK_ROOT/gitlab/` but not be committed to the
 canonical repo live in the private `gitlab.com/pedropombeiro/gitlab-dotfiles` repository, cloned to:
 
-```
+```text
 ~/.config/dotfiles/gitlab/
 ```
 

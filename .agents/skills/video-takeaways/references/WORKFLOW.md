@@ -128,7 +128,7 @@ https://www.youtube.com/watch?v=VIDEO_ID&t=SECONDSs
 
 Display the human-readable cue time as the link text:
 
-```markdown
+```text
 ([13:40](https://www.youtube.com/watch?v=VIDEO_ID&t=820s))
 ```
 

@@ -20,7 +20,9 @@ Tools pinned to a bare version (`26.5.6`) cannot be compared against v-prefixed
 upstream tags without `extractVersionTemplate` on the custom manager:
 
 ```json
-"extractVersionTemplate": "^v?(?<version>.*)$"
+{
+  "extractVersionTemplate": "^v?(?<version>.*)$"
+}
 ```
 
 Tags with a non-`v` prefix need a per-package `extractVersion` rule instead —
@@ -39,7 +41,7 @@ Ticking the dashboard rebase checkbox only works if the branch still has an
 **open PR**. With no open PR, Renovate logs `dependencyDashboardCheck=undefined`
 and skips it; delete the remote ref instead and let the next run recreate it:
 
-```
+```bash
 gh api -X DELETE repos/<owner>/<repo>/git/refs/heads/renovate/<branch>
 ```
 

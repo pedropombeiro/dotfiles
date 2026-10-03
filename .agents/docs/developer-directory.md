@@ -2,7 +2,7 @@
 
 All cloned repositories live under `~/Developer` following a **go-style** path convention:
 
-```
+```text
 ~/Developer/<forge-host>/<owner>/<repo>
 ```
 
@@ -22,7 +22,7 @@ All cloned repositories live under `~/Developer` following a **go-style** path c
 
 To locate a cloned project, construct the path from the remote URL:
 
-```
+```text
 https://github.com/pedropombeiro/opencode-plugins
 → ~/Developer/github.com/pedropombeiro/opencode-plugins
 ```
@@ -38,7 +38,7 @@ ls ~/Developer/github.com/
 The NAS does not use `~/Developer` or the go-style nesting. Clones live **flat** under
 `~/opt`:
 
-```
+```text
 ~/opt/<repo>
 ```
 

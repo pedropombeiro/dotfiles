@@ -4,7 +4,7 @@ YADM bootstrap scripts for automated system setup.
 
 ## Structure
 
-```
+```text
 ~/.config/yadm/
 ├── bootstrap              # Main entry point
 └── bootstrap.d/           # Numbered scripts (run in order, 000-999)

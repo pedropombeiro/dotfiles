@@ -57,7 +57,7 @@ default to English, even when the video uses another language.
   constraints, exceptions, and warning signs from the source.
 - Append one or more timestamp links to every takeaway, for example:
 
-  ```markdown
+  ```text
   - Lower the saddle in 3-4 mm steps, then reassess. ([21:21](https://www.youtube.com/watch?v=VIDEO_ID&t=1281s))
   ```
 

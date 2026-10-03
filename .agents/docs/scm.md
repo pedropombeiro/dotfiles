@@ -97,7 +97,7 @@ This improves clarity and makes history easier to navigate.
 
 ### Format
 
-```
+```text
 <type>(<scope>): <subject>
 
 <body>

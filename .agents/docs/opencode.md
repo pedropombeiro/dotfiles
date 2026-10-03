@@ -94,6 +94,10 @@ OpenCode 2 splits plugins by where they run:
   `{ id, setup(ctx) }`. The shell tool is named `shell`, and file tools take `path`.
   Tool hooks also fire for tools called through Code Mode (`execute`), with the inner
   tool's name.
+- Plugin directories that need options live outside the discovery paths and load
+  through a path entry: `local-plugins/<name>/` from `opencode.json` (server, with an
+  optional `tui.tsx` that the CLI loads automatically), and `cli-plugins/<name>/` from
+  `cli.base.json` (CLI only). Run their tests with `bun test` from the plugin directory.
 
 ### Machine-specific CLI plugins
 
@@ -201,6 +205,12 @@ so machines elsewhere drop telemetry after the exporter's retries.
   The plugin's exports then fail with `EHOSTUNREACH`, and the plugin logs only to the
   console, which OpenCode discards. See
   [Local network access on macOS](tmux.md#local-network-access-on-macos).
+- `local-plugins/otel-status` sends an empty OTLP metrics export from the background
+  service every 60 seconds (the `intervalSeconds` option) and shows the result in the CLI footer as `● 🔭`, with a green
+  dot when the collector accepts it and a red one when not. `/otel` shows the last error
+  and runs a check. An accepted empty request doesn't prove that real exports succeed.
+  Its `endpoint` and `protocol` options must match the exporter's in both `opencode.json`
+  alternates.
 
 ## Model availability
 

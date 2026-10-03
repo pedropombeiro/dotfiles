@@ -33,6 +33,12 @@
         "logsEnabled": false,
         "disabledTraces": ["all"]
       }
+    },
+    {
+      // Shows whether the OTEL endpoint above accepts OTLP requests in the CLI
+      // footer. Keep the endpoint and protocol in sync with the exporter's.
+      "package": "./local-plugins/otel-status",
+      "options": { "endpoint": "https://otel.pombei.ro", "protocol": "http/protobuf" }
     }
   ],
   "mcp": {

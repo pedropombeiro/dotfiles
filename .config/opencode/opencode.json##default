@@ -17,6 +17,12 @@
         "endpoint": "https://otel.pombei.ro",
         "protocol": "http/protobuf"
       }
+    },
+    {
+      // Shows whether the OTEL endpoint above accepts OTLP requests in the CLI
+      // footer. Keep the endpoint and protocol in sync with the exporter's.
+      "package": "./local-plugins/otel-status",
+      "options": { "endpoint": "https://otel.pombei.ro", "protocol": "http/protobuf" }
     }
   ],
   // Per-agent models take precedence over the top-level model, so `oc`'s inline

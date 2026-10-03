@@ -1,0 +1,1 @@
+style: "{{ env.HOME }}/.config/glow/gruvbox.json"

@@ -35,6 +35,7 @@ Thumbs.db
 .Brewfile
 .config/1Password/ssh/agent.toml
 .config/git/config-specific
+.config/glow/glow.yml
 .config/iterm2/config/com.googlecode.iterm2.plist
 .config/iterm2/icons/gitlab.ico
 .config/lazy-mcp/servers.json

@@ -1,0 +1,173 @@
+import { describe, expect, test } from "bun:test"
+import type { Repository } from "./git"
+import { GitLabError, type MergeRequest } from "./gitlab"
+import { createStatusStore, type Lookup } from "./store"
+
+const repository = { head: "", branch: "b", sourceBranch: "b", source: { host: "h", path: "a/b" }, targets: [] } as Repository
+const found = (count = 1): Lookup => ({
+  kind: "found",
+  repository,
+  mergeRequests: Array.from({ length: count }, () => ({ iid: "1" }) as MergeRequest),
+})
+
+function harness(load: (directory: string) => Promise<Lookup>) {
+  let clock = 0
+  const timers = new Map<number, { at: number; callback: () => void }>()
+  let nextTimer = 0
+  let changes = 0
+  const store = createStatusStore({
+    load,
+    onChange: () => changes++,
+    now: () => clock,
+    setTimer: (callback, delay) => {
+      const id = ++nextTimer
+      timers.set(id, { at: clock + delay, callback })
+      return id
+    },
+    clearTimer: (id) => timers.delete(id as number),
+    interval: 100,
+    maxBackoff: 400,
+    minEventInterval: 10,
+  })
+  return {
+    store,
+    changes: () => changes,
+    pending: () => [...timers.values()].map((timer) => timer.at - clock),
+    async advance(ms: number) {
+      clock += ms
+      for (const [id, timer] of [...timers]) {
+        if (timer.at > clock) continue
+        timers.delete(id)
+        timer.callback()
+      }
+      await Bun.sleep(0)
+    },
+  }
+}
+
+describe("createStatusStore", () => {
+  test("deduplicates concurrent loads and polls while acquired", async () => {
+    let calls = 0
+    const { store, pending, advance } = harness(async () => {
+      calls++
+      return found()
+    })
+    const release = store.acquire("/a")
+    const second = store.acquire("/a")
+    await store.refresh("/a")
+    expect(calls).toBe(1)
+    expect(store.get("/a").lookup).toEqual(found())
+    expect(pending()).toEqual([100])
+
+    await advance(100)
+    expect(calls).toBe(2)
+    release()
+    expect(pending()).toEqual([100])
+    second()
+    expect(pending()).toEqual([])
+  })
+
+  test("reuses cached data when a session is shown again", async () => {
+    let calls = 0
+    const { store, pending, advance } = harness(async () => {
+      calls++
+      return found()
+    })
+    const hide = store.acquire("/a")
+    await store.refresh("/a")
+    hide()
+    await advance(40)
+    const hideAgain = store.acquire("/a")
+    expect(calls).toBe(1)
+    expect(pending()).toEqual([60])
+    hideAgain()
+    await advance(60)
+    store.acquire("/a")
+    await store.refresh("/a")
+    expect(calls).toBe(2)
+  })
+
+  test("does not retry a failed lookup on every switch", async () => {
+    let calls = 0
+    const { store, advance } = harness(async () => {
+      calls++
+      throw new GitLabError("auth", "GitLab authentication failed")
+    })
+    const hide = store.acquire("/a")
+    await store.refresh("/a")
+    hide()
+    store.acquire("/a")()
+    store.acquire("/a")()
+    expect(calls).toBe(1)
+    await advance(200)
+    store.acquire("/a")
+    await store.refresh("/a")
+    expect(calls).toBe(2)
+  })
+
+  test("does not poll without an MR", async () => {
+    const { store, pending } = harness(async () => found(0))
+    store.acquire("/a")
+    await store.refresh("/a")
+    expect(pending()).toEqual([])
+  })
+
+  test("keeps stale data on failure and backs off", async () => {
+    let fail = false
+    const { store, pending, advance } = harness(async () => {
+      if (fail) throw new GitLabError("rate-limit", "GitLab rate limit reached")
+      return found()
+    })
+    store.acquire("/a")
+    await store.refresh("/a")
+    fail = true
+    await advance(100)
+    await store.refresh("/a")
+    const snapshot = store.get("/a")
+    expect(snapshot.lookup).toEqual(found())
+    expect(snapshot.error).toMatchObject({ kind: "rate-limit" })
+    expect(pending()[0]).toBeGreaterThan(100)
+    await advance(pending()[0])
+    await store.refresh("/a")
+    expect(pending()).toEqual([400])
+  })
+
+  test("throttles event refreshes but not invalidations", async () => {
+    let calls = 0
+    const { store, advance } = harness(async () => {
+      calls++
+      return found()
+    })
+    store.acquire("/a")
+    await store.refresh("/a")
+    store.notify("/a")
+    expect(calls).toBe(1)
+    await advance(10)
+    store.notify("/a")
+    await store.refresh("/a")
+    expect(calls).toBe(2)
+    store.invalidate("/a")
+    await store.refresh("/a")
+    expect(calls).toBe(3)
+    store.notify("/b")
+    expect(calls).toBe(3)
+  })
+
+  test("reloads after an invalidation during a load", async () => {
+    let resolve: (lookup: Lookup) => void = () => {}
+    let calls = 0
+    const { store } = harness(() => {
+      calls++
+      return new Promise((done) => (resolve = done))
+    })
+    store.acquire("/a")
+    const first = store.refresh("/a")
+    store.invalidate("/a")
+    resolve(found())
+    await Bun.sleep(0)
+    expect(calls).toBe(2)
+    resolve({ kind: "none", reason: "Detached HEAD" })
+    await first
+    expect(store.get("/a").lookup).toEqual({ kind: "none", reason: "Detached HEAD" })
+  })
+})

@@ -2,6 +2,7 @@
   // Default state for all rules
   "default": true,
   "MD013": {
+    // Matches `max_line_length` in .editorconfig, which markdownlint does not read
     "line_length": 120,
     // Number of characters for headings
     "heading_line_length": 80,

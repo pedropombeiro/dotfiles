@@ -123,16 +123,37 @@ local fast_steps = new Mapping<String, Step> {
     // use Hammerspoon-specific conventions.
     ["stylua"] = (Builtins.stylua) {}
 
-    // ── JSON / Markdown / YAML formatting ────────────────────────────────
+    // ── JSON / YAML formatting ───────────────────────────────────────────
     ["prettier"] = (Builtins.prettier) {
-        glob = List("*.json", "*.md", "*.yaml", "*.yml")
+        glob = List("*.json", "*.yaml", "*.yml")
         // Upstream skills are managed by `npx skills` or linked from mise installs.
         exclude = List(
             ".agents/skills.work/clickhouse-best-practices/*",
             ".agents/skills/hk-configure/*",
             ".agents/skills/hk-debug/*",
-            ".agents/skills/opencode-refine/*"
+            ".agents/skills/opencode-refine/*",
+            ".agents/skills/grill-me/*",
+            ".agents/skills/grilling/*"
         )
+    }
+
+    // ── Markdown ─────────────────────────────────────────────────────────
+    // markdownlint owns Markdown, matching the Neovim formatter. Prettier would
+    // realign every table that fits the print width, while MD060 keeps each
+    // table's existing style.
+    ["markdownlint-cli2"] {
+        glob = List("*.md")
+        exclude = List(
+            ".agents/skills.work/clickhouse-best-practices/*",
+            ".agents/skills/hk-configure/*",
+            ".agents/skills/hk-debug/*",
+            ".agents/skills/opencode-refine/*",
+            // Tracked copies of mattpocock/skills, see .agents/.skill-lock.json
+            ".agents/skills/grill-me/*",
+            ".agents/skills/grilling/*"
+        )
+        check = "mise x npm:markdownlint-cli2 -- markdownlint-cli2 {{files}}"
+        fix = "mise x npm:markdownlint-cli2 -- markdownlint-cli2 --fix {{files}}"
     }
 
     // ── Ruby ─────────────────────────────────────────────────────────────

@@ -220,6 +220,7 @@ _update_step "neovim plugins"
 printf "${YELLOW}%s${NC}\n" "Updating neovim plugins..."
 nvim --headless '+Lazy! sync' +qa && \
   nvim --headless "+Lazy! build firenvim" +qa && \
+  nvim --headless '+MasonToolsUpdateSync' +qa && \
   printf "\n${GREEN}%s${NC}\n" "Done"
 
 _update_step "neovim benchmark"

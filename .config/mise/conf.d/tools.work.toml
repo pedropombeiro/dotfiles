@@ -71,7 +71,7 @@ description = "Run system fix actions manually"
 run = """
 set -eu
 
-hs -c 'require("sleepwake").restoreServices("system:fix")'
+hs -c 'require("sleepwake").restoreServices()'
 
 killall eqMac 2>/dev/null || true
 while pgrep -xq eqMac 2>/dev/null; do sleep 0.5; done

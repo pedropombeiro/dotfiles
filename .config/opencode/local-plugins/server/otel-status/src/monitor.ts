@@ -4,6 +4,7 @@ import type { OtelStatus } from "./status"
 export interface MonitorOptions {
   endpoint?: string
   protocol: Protocol
+  hostName?: string
   intervalMs: number
   timeoutMs: number
   probe?: Probe
@@ -25,7 +26,11 @@ export function createMonitor(options: MonitorOptions): Monitor {
   let inflight: Promise<OtelStatus> | undefined
   let disposed = false
 
-  const base = { intervalMs: options.intervalMs, protocol: options.protocol }
+  const base = {
+    intervalMs: options.intervalMs,
+    protocol: options.protocol,
+    ...(options.hostName ? { hostName: options.hostName } : {}),
+  }
   let status: OtelStatus = !options.endpoint
     ? { state: "disabled", ...base }
     : target
@@ -109,7 +114,13 @@ export function acquireMonitor(options: MonitorOptions): {
   monitor: Monitor
   release: () => void
 } {
-  const key = JSON.stringify([options.endpoint, options.protocol, options.intervalMs, options.timeoutMs])
+  const key = JSON.stringify([
+    options.endpoint,
+    options.protocol,
+    options.hostName,
+    options.intervalMs,
+    options.timeoutMs,
+  ])
   const monitors = registry()
   let entry = monitors.get(key)
   if (!entry) {

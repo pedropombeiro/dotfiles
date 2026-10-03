@@ -1,8 +1,15 @@
 import { expect, test } from "bun:test"
 import { acquireMonitor, createMonitor } from "./monitor"
 import type { ProbeResult } from "./probe"
-import { resolveOptions } from "../index"
-import { describeStatus, indicatorLabel, indicatorState } from "./status"
+import { hostNameFrom, resolveOptions } from "../index"
+import {
+  describeStatus,
+  hostWarning,
+  indicatorLabel,
+  indicatorState,
+  indicatorTone,
+  MISSING_HOST_WARNING,
+} from "./status"
 
 function deferred() {
   let resolve!: (result: ProbeResult) => void
@@ -146,6 +153,61 @@ test("resolves options from plugin options and the environment", () => {
       { OPENCODE_OTLP_ENDPOINT: "http://env:4318", OPENCODE_OTLP_PROTOCOL: "grpc" },
     ),
   ).toEqual({ endpoint: "https://otel.example.com", protocol: "http/protobuf", intervalMs: 2000, timeoutMs: 2000 })
+  expect(resolveOptions({}, { OPENCODE_RESOURCE_ATTRIBUTES: "host.name=laptop" }).hostName).toBe("laptop")
+})
+
+test("parses host.name from resource attributes", () => {
+  expect(hostNameFrom("host.name=laptop")).toBe("laptop")
+  expect(hostNameFrom("team=x, host.name = my%20box ,env=prod")).toBe("my box")
+  expect(hostNameFrom("host.name=bad%zz")).toBe("bad%zz")
+  expect(hostNameFrom("host.name=")).toBeUndefined()
+  expect(hostNameFrom("host.namespace=x,service.name=y")).toBeUndefined()
+  expect(hostNameFrom("")).toBeUndefined()
+  expect(hostNameFrom(undefined)).toBeUndefined()
+})
+
+test("carries the host name into every status and keeps separate monitors per host", async () => {
+  const options = { endpoint: "https://otel.example.com", protocol: "http/protobuf" as const, intervalMs: 60_000 }
+  const monitor = createMonitor({
+    ...options,
+    timeoutMs: 100,
+    hostName: "laptop",
+    probe: async () => ({ ok: true, latencyMs: 1 }),
+  })
+  expect(monitor.snapshot().hostName).toBe("laptop")
+  expect((await monitor.check()).hostName).toBe("laptop")
+  monitor.dispose()
+
+  const withHost = acquireMonitor({ ...options, timeoutMs: 100, hostName: "a", probe: () => new Promise(() => {}) })
+  const withoutHost = acquireMonitor({ ...options, timeoutMs: 100, probe: () => new Promise(() => {}) })
+  expect(withoutHost.monitor).not.toBe(withHost.monitor)
+  withHost.release()
+  withoutHost.release()
+})
+
+test("warns when the service has no host name", () => {
+  const reachable = {
+    state: "reachable" as const,
+    intervalMs: 60_000,
+    protocol: "http/protobuf",
+    endpoint: "https://otel.example.com",
+    checkedAt: 0,
+    latencyMs: 4,
+  }
+  const named = { ...reachable, hostName: "laptop" }
+  expect(hostWarning(named)).toBeUndefined()
+  expect(hostWarning(reachable)).toBe(MISSING_HOST_WARNING)
+  expect(hostWarning({ state: "disabled", intervalMs: 60_000, protocol: "grpc" })).toBeUndefined()
+  expect(hostWarning(undefined)).toBeUndefined()
+
+  expect(indicatorTone(named, 1000)).toBe("success")
+  expect(indicatorTone(reachable, 1000)).toBe("warning")
+  expect(indicatorTone({ ...reachable, state: "unreachable" }, 1000)).toBe("error")
+  expect(indicatorTone(reachable, 10_000_000)).toBe("muted")
+  expect(indicatorTone(undefined, 0)).toBe("muted")
+
+  expect(describeStatus(named, 1000)).toContain("Host: laptop")
+  expect(describeStatus(reachable, 1000)).toContain(`Warning: ${MISSING_HOST_WARNING}`)
 })
 
 test("marks stale results as unknown and formats details", () => {

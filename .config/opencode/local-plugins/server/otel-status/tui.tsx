@@ -6,15 +6,26 @@
 import { Plugin } from "@opencode/plugin/tui"
 import { createMemo, Show } from "solid-js"
 import { OtelStatusRpc } from "./src/rpc"
-import { describeStatus, indicatorLabel, indicatorState, type IndicatorState, type OtelStatus } from "./src/status"
+import {
+  describeStatus,
+  hostWarning,
+  indicatorLabel,
+  indicatorState,
+  indicatorTone,
+  type IndicatorState,
+  type OtelStatus,
+  type Tone,
+} from "./src/status"
 
 const REFRESH_MS = 30_000
+const WARNING_TOAST_MS = 15_000
 const TITLE = "OTEL collector"
 
 interface View {
   loaded: boolean
   status?: OtelStatus
   now: number
+  warned: boolean
 }
 
 function describeCheck(status: OtelStatus): string {
@@ -29,14 +40,24 @@ export default Plugin.define({
   setup(context) {
     const otel = context.client.rpc(OtelStatusRpc)
     const location = () => context.location ?? context.data.location.default()
-    const [view, update] = context.storage.memory<View>("view", { initial: { loaded: false, now: Date.now() } })
+    const [view, update] = context.storage.memory<View>("view", {
+      initial: { loaded: false, now: Date.now(), warned: false },
+    })
 
-    const apply = (status: OtelStatus | undefined) =>
+    // Memory storage survives plugin reloads, so the warning toast appears
+    // once per terminal session; the footer and /otel keep showing it.
+    const apply = (status: OtelStatus | undefined) => {
+      const warning = hostWarning(status)
+      const notify = warning !== undefined && !view.warned
       update((draft) => {
         draft.loaded = true
         draft.status = status
         draft.now = Date.now()
+        if (notify) draft.warned = true
       })
+      if (notify)
+        context.ui.toast.show({ title: TITLE, message: warning, variant: "warning", duration: WARNING_TOAST_MS })
+    }
 
     // A failed call means the server plugin is not loaded or not responding,
     // which the indicator shows as unknown.
@@ -50,18 +71,19 @@ export default Plugin.define({
 
     const current = (): IndicatorState => (view.loaded ? indicatorState(view.status, view.now) : "checking")
 
-    const color = (state: IndicatorState) => {
+    const tone = (): Tone => (view.loaded ? indicatorTone(view.status, view.now) : "muted")
+
+    const color = (value: Tone) => {
       const text = context.theme.text
-      if (state === "reachable") return text.feedback.success.base
-      if (state === "unreachable") return text.feedback.error.base
-      return text.muted
+      if (value === "muted") return text.muted
+      return text.feedback[value].base
     }
 
     function Indicator() {
       const state = createMemo(current)
       return (
         <Show when={state() !== "disabled"}>
-          <text wrapMode="none" flexShrink={0} fg={color(state())}>
+          <text wrapMode="none" flexShrink={0} fg={color(tone())}>
             {indicatorLabel(state())}
           </text>
         </Show>
@@ -75,7 +97,7 @@ export default Plugin.define({
         context.ui.toast.show({
           title: TITLE,
           message: describeCheck(status),
-          variant: status.state === "reachable" ? "success" : "error",
+          variant: status.state !== "reachable" ? "error" : hostWarning(status) ? "warning" : "success",
         })
       } catch (error) {
         apply(undefined)

@@ -4,6 +4,7 @@ export type OtelStatus = {
   state: OtelState
   intervalMs: number
   protocol: string
+  hostName?: string
   endpoint?: string
   checkedAt?: number
   latencyMs?: number
@@ -34,6 +35,24 @@ export function indicatorLabel(state: IndicatorState): string {
   }
 }
 
+export const MISSING_HOST_WARNING =
+  "The OpenCode service has no host.name in OPENCODE_RESOURCE_ATTRIBUTES, so its telemetry has no host. " +
+  "Run `opencode service restart` from a new shell."
+
+export function hostWarning(status: OtelStatus | undefined): string | undefined {
+  if (!status || status.state === "disabled" || status.hostName) return undefined
+  return MISSING_HOST_WARNING
+}
+
+export type Tone = "success" | "warning" | "error" | "muted"
+
+export function indicatorTone(status: OtelStatus | undefined, now: number): Tone {
+  const state = indicatorState(status, now)
+  if (state === "unreachable") return "error"
+  if (state === "reachable") return hostWarning(status) ? "warning" : "success"
+  return "muted"
+}
+
 function describeAge(ms: number): string {
   const seconds = Math.max(0, Math.round(ms / 1000))
   if (seconds < 60) return `${seconds}s ago`
@@ -56,6 +75,8 @@ export function describeStatus(status: OtelStatus | undefined, now: number): str
     lines.push(`${grpc ? "Connect" : "Response"} time: ${status.latencyMs}ms`)
   }
   if (status.state === "unreachable" && status.error) lines.push(`Error: ${status.error}`)
+  const warning = hostWarning(status)
+  lines.push(warning ? `Warning: ${warning}` : `Host: ${status.hostName}`)
   lines.push(
     "",
     grpc

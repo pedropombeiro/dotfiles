@@ -202,7 +202,9 @@ so machines elsewhere drop telemetry after the exporter's retries.
   commands, paths, and error text, so keep Work content off personal infrastructure.
 - `~/.shellrc/rc.d/opencode.sh` sets `OPENCODE_RESOURCE_ATTRIBUTES` to the short host name.
   The background service inherits it from the client that starts the service, so run
-  `opencode service restart` from a new shell after changing it.
+  `opencode service restart` from a new shell after changing it. Commands that tmux runs
+  directly use a non-interactive shell without it. A service started that way exports
+  telemetry with no host, which hides it from host-filtered dashboard panels.
 - Alloy drops `session.id` from metrics to keep Prometheus series bounded. Filter by
   session in the dashboard's log and trace panels.
 - On macOS, a service started inside tmux can't reach the NAS unless tmux is re-signed.
@@ -210,9 +212,12 @@ so machines elsewhere drop telemetry after the exporter's retries.
   console, which OpenCode discards. See
   [Local network access on macOS](tmux.md#local-network-access-on-macos).
 - `local-plugins/server/otel-status` sends an empty OTLP metrics export from the background
-  service every 60 seconds (the `intervalSeconds` option) and shows the result in the CLI footer as `● 🔭`, with a green
-  dot when the collector accepts it and a red one when not. `/otel` shows the last error
-  and runs a check. An accepted empty request doesn't prove that real exports succeed.
+  service every 60 seconds (the `intervalSeconds` option) and shows the result in the CLI
+  footer as `● 🔭`. The dot is green when the collector accepts it, red when not, and
+  yellow when the service has no `host.name` in `OPENCODE_RESOURCE_ATTRIBUTES`; the
+  last case also shows a warning toast once per terminal session. `/otel` shows the host
+  or warning and the last error, and runs a check. An accepted empty request doesn't
+  prove that real exports succeed.
   Its `endpoint` and `protocol` options must match the exporter's in both `opencode.json`
   alternates.
 

@@ -6,6 +6,7 @@ const statusSchema = {
     state: { type: "string", enum: ["checking", "reachable", "unreachable", "disabled"] },
     intervalMs: { type: "number" },
     protocol: { type: "string" },
+    hostName: { type: "string" },
     endpoint: { type: "string" },
     checkedAt: { type: "number" },
     latencyMs: { type: "number" },

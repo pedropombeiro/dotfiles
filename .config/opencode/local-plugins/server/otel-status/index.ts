@@ -23,6 +23,24 @@ function pickProtocol(value: unknown): Protocol | undefined {
   return PROTOCOLS.find((protocol) => protocol === value)
 }
 
+// Parses `host.name` from an OTEL resource attribute list (`k=v,k2=v2`, values
+// percent-encoded).
+export function hostNameFrom(attributes: string | undefined): string | undefined {
+  for (const pair of attributes?.split(",") ?? []) {
+    const separator = pair.indexOf("=")
+    if (separator < 0 || pair.slice(0, separator).trim() !== "host.name") continue
+    const raw = pair.slice(separator + 1).trim()
+    let value = raw
+    try {
+      value = decodeURIComponent(raw)
+    } catch {
+      value = raw
+    }
+    return value || undefined
+  }
+  return undefined
+}
+
 function positive(value: unknown, fallback: number): number {
   return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : fallback
 }
@@ -40,7 +58,11 @@ export function resolveOptions(
   const protocol = pickProtocol(options.protocol) ?? pickProtocol(env["OPENCODE_OTLP_PROTOCOL"]?.trim()) ?? "grpc"
   const intervalMs = positive(options.intervalSeconds, DEFAULT_INTERVAL_SECONDS) * 1000
   const timeoutMs = Math.min(positive(options.timeoutSeconds, DEFAULT_TIMEOUT_SECONDS) * 1000, intervalMs)
-  return { endpoint, protocol, intervalMs, timeoutMs }
+  // The exporter takes the host name only from this variable, read from the
+  // service environment when it loads, so a service started from a shell
+  // without it exports telemetry with no host.
+  const hostName = hostNameFrom(env["OPENCODE_RESOURCE_ATTRIBUTES"])
+  return { endpoint, protocol, intervalMs, timeoutMs, ...(hostName ? { hostName } : {}) }
 }
 
 export default {

@@ -105,15 +105,15 @@ is outside the discovery paths, so a plugin there loads only through a path entr
 - `local-plugins/server/<name>/`: listed in `plugins` in `opencode.json` as
   `./local-plugins/server/<name>`. Its `index.ts` runs in the background service, and an
   optional `tui.tsx` loads in the CLI automatically.
-- `local-plugins/cli/<name>/`: listed in `plugins` in `cli.base.json` as
-  `./local-plugins/cli/<name>`. It has only `tui.tsx`, which runs in the CLI.
+- `local-plugins/tui/<name>/`: listed in `plugins` in `cli.base.json` as
+  `./local-plugins/tui/<name>`. It has only `tui.tsx`, which runs in the CLI.
 
 OpenCode resolves these relative paths against `~/.config/opencode/`. Local `.tsx`
 plugins can import `solid-js`, `@opentui/solid`, and `@opencode/plugin/tui` without a
 `package.json`; OpenCode provides them at runtime. Run their tests with `bun test` from
 the plugin directory.
 
-`local-plugins/cli/gitlab-mr-status` (Work only) shows an MR's pipeline status, unresolved
+`local-plugins/tui/gitlab-mr-status` (Work only) shows an MR's pipeline status, unresolved
 thread count, conflicts, and approval in the prompt footer. It picks each session's MR
 in this order:
 

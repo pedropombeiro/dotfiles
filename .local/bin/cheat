@@ -143,11 +143,15 @@ _cheat "$@"
 EOF
 }
 
-# Rerun cheat in a tmux popup, for steps that need a terminal.
+# Rerun cheat in a tmux popup, for steps that need a terminal. The picker draws its
+# own fzf border, so its popup drops the tmux border (-B). The local view keeps it,
+# because bat draws none.
 open_in_popup() {
-  local command
+  local command border=(-B)
+  [[ ${1:-} == --local ]] && border=()
   printf -v command '%q ' "$0" "$@"
-  tmux display-popup -E -w 70% -h 60% -d "$PWD" -e CHEAT_FZF_HEIGHT=100% "$command"
+  tmux display-popup -E "${border[@]}" -w 70% -h 60% -d "$PWD" \
+    -e CHEAT_FZF_HEIGHT=100% "$command"
 }
 
 main() {

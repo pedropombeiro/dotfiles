@@ -94,22 +94,26 @@ OpenCode 2 splits plugins by where they run:
   `{ id, setup(ctx) }`. The shell tool is named `shell`, and file tools take `path`.
   Tool hooks also fire for tools called through Code Mode (`execute`), with the inner
   tool's name.
-- Plugin directories that need options live outside the discovery paths and load
-  through a path entry: `local-plugins/<name>/` from `opencode.json` (server, with an
-  optional `tui.tsx` that the CLI loads automatically), and `cli-plugins/<name>/` from
-  `cli.base.json` (CLI only). Run their tests with `bun test` from the plugin directory.
 
-### Machine-specific CLI plugins
+### Explicitly loaded plugin directories
 
-OpenCode discovers every plugin directory under `~/.config/opencode/plugins/`, so a
-tracked CLI plugin there loads on every machine. Keep a CLI plugin that should run only
-on some machines in `~/.config/opencode/cli-plugins/<name>/`, with its entry point at
-`<name>/tui.tsx`, and list it as `./cli-plugins/<name>` in the matching `cli.base.json`
-alternate. OpenCode resolves that relative path against `~/.config/opencode/`. Local
-`.tsx` plugins can import `solid-js`, `@opentui/solid`, and `@opencode/plugin/tui`
-without a `package.json`; OpenCode provides them at runtime.
+OpenCode discovers every plugin under `~/.config/opencode/plugins/` and can't pass it
+options. A plugin directory that needs options, or that a config alternate should load
+only on some machines, lives in `~/.config/opencode/local-plugins/` instead. That folder
+is outside the discovery paths, so a plugin there loads only through a path entry:
 
-`cli-plugins/gitlab-mr-status` (Work only) shows an MR's pipeline status, unresolved
+- `local-plugins/server/<name>/`: listed in `plugins` in `opencode.json` as
+  `./local-plugins/server/<name>`. Its `index.ts` runs in the background service, and an
+  optional `tui.tsx` loads in the CLI automatically.
+- `local-plugins/cli/<name>/`: listed in `plugins` in `cli.base.json` as
+  `./local-plugins/cli/<name>`. It has only `tui.tsx`, which runs in the CLI.
+
+OpenCode resolves these relative paths against `~/.config/opencode/`. Local `.tsx`
+plugins can import `solid-js`, `@opentui/solid`, and `@opencode/plugin/tui` without a
+`package.json`; OpenCode provides them at runtime. Run their tests with `bun test` from
+the plugin directory.
+
+`local-plugins/cli/gitlab-mr-status` (Work only) shows an MR's pipeline status, unresolved
 thread count, conflicts, and approval in the prompt footer. It picks each session's MR
 in this order:
 
@@ -205,7 +209,7 @@ so machines elsewhere drop telemetry after the exporter's retries.
   The plugin's exports then fail with `EHOSTUNREACH`, and the plugin logs only to the
   console, which OpenCode discards. See
   [Local network access on macOS](tmux.md#local-network-access-on-macos).
-- `local-plugins/otel-status` sends an empty OTLP metrics export from the background
+- `local-plugins/server/otel-status` sends an empty OTLP metrics export from the background
   service every 60 seconds (the `intervalSeconds` option) and shows the result in the CLI footer as `● 🔭`, with a green
   dot when the collector accepts it and a red one when not. `/otel` shows the last error
   and runs a check. An accepted empty request doesn't prove that real exports succeed.

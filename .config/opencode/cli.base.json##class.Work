@@ -17,6 +17,6 @@
   "plugins": [
     "opencode-terminal-progress@1.0.2",
     "opencode-tmux-indicator@1.0.2",
-    "./cli-plugins/gitlab-mr-status"
+    "./local-plugins/cli/gitlab-mr-status"
   ]
 }

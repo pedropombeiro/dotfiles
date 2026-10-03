@@ -10,7 +10,7 @@ import { detailsMessage, footerSegments, type Tone } from "./src/format"
 import { resolveProjects, resolveRepository, titleMergeRequest } from "./src/git"
 import { findMergeRequestByIid, findMergeRequests, glabGraphQL, type MergeRequest } from "./src/gitlab"
 import { createStatusStore, type Lookup } from "./src/store"
-import { ForgeSessionTitleRpc, parseMergeRequestUrl } from "./src/target"
+import { classifyTarget, ForgeSessionTitleRpc } from "./src/target"
 
 // Cache keys are per session, because sessions sharing a checkout can target
 // different MRs. The title's MR number is part of the key so a title change
@@ -38,8 +38,7 @@ export default Plugin.define({
     // with an opencode-forge-session-title release that predates it.
     async function rpcTarget(sessionID: string, directory: string) {
       try {
-        const output = (await forge.target({ sessionID }, { location: { directory } })) as { url?: unknown }
-        return parseMergeRequestUrl(output?.url)
+        return classifyTarget(await forge.target({ sessionID }, { location: { directory } }))
       } catch {
         return undefined
       }
@@ -56,9 +55,14 @@ export default Plugin.define({
         // Prefer the exact MR from set_session_target, then the MR number in the
         // session title, and finally the checked-out branch's open MR.
         const target = sessionID ? await rpcTarget(sessionID, directory) : undefined
+        // An explicit target that isn't an MR, such as an issue, means the
+        // session isn't about an MR, so the branch's MR would be misleading.
+        if (target?.kind === "other") {
+          return { kind: "none", reason: `The session target is not a merge request (${target.url})` }
+        }
         if (target) {
-          const project = { host: target.host, path: target.project }
-          const mr = await findMergeRequestByIid(graphql, [project], target.iid)
+          const project = { host: target.ref.host, path: target.ref.project }
+          const mr = await findMergeRequestByIid(graphql, [project], target.ref.iid)
           if (mr) return { kind: "found", sessionTarget: mr.url, mergeRequests: [mr] }
         }
         if (titleIid && !target) {

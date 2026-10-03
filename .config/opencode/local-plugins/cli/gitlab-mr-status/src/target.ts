@@ -37,6 +37,17 @@ export interface MergeRequestRef {
   iid: string
 }
 
+export type SessionTarget = { kind: "merge-request"; ref: MergeRequestRef } | { kind: "other"; url: string }
+
+// Classifies the `target` RPC output. Undefined means the session has no
+// explicit target; "other" is an explicit target that isn't an MR, such as an issue.
+export function classifyTarget(output: unknown): SessionTarget | undefined {
+  const url = (output as { url?: unknown } | undefined)?.url
+  if (typeof url !== "string" || !url) return undefined
+  const ref = parseMergeRequestUrl(url)
+  return ref ? { kind: "merge-request", ref } : { kind: "other", url }
+}
+
 export function parseMergeRequestUrl(value: unknown): MergeRequestRef | undefined {
   if (typeof value !== "string") return undefined
   let url: URL

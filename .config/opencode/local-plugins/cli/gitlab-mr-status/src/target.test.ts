@@ -1,5 +1,24 @@
 import { describe, expect, test } from "bun:test"
-import { parseMergeRequestUrl } from "./target"
+import { classifyTarget, parseMergeRequestUrl } from "./target"
+
+describe("classifyTarget", () => {
+  test("recognizes an MR target", () => {
+    expect(classifyTarget({ url: "https://gitlab.com/group/project/-/merge_requests/42" })).toEqual({
+      kind: "merge-request",
+      ref: { host: "gitlab.com", project: "group/project", iid: "42" },
+    })
+  })
+
+  test("marks an issue target as not an MR", () => {
+    const url = "https://gitlab.com/group/project/-/issues/7"
+    expect(classifyTarget({ url })).toEqual({ kind: "other", url })
+  })
+
+  test("treats a missing target as automatic", () => {
+    expect(classifyTarget({})).toBeUndefined()
+    expect(classifyTarget(undefined)).toBeUndefined()
+  })
+})
 
 describe("parseMergeRequestUrl", () => {
   test("parses a GitLab MR URL", () => {

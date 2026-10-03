@@ -278,5 +278,6 @@ Shell helper scripts under `~/.shellrc/zshrc.d/functions/scripts/` may run via p
 
 ## File Permissions
 
-- **Numbered config files** (`configs/`): Must be executable (`chmod +x`). Explicit includes such as `tmux.platform.zsh` do not need the executable bit.
+- **Numbered config files** (`configs/`): Must be executable (`chmod +x`). Explicit includes such as `tmux.platform.zsh`
+  do not need the executable bit.
 - **Function files** (`functions/`): Should NOT be executable (autoloaded by zsh)

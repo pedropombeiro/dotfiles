@@ -5,7 +5,8 @@ Use this reference for quoting, temporary files, and command examples. Follow
 
 ## Quoting Rule
 
-Only wrap the command in single quotes when it contains inner quotes or special shell characters (`"`, `'`, `$`, `` ` ``, `\`). For simple commands with no special characters, pass arguments directly.
+Only wrap the command in single quotes when it contains inner quotes or special shell characters (`"`, `'`, `$`,
+`` ` ``, `\`). For simple commands with no special characters, pass arguments directly.
 
 ```bash
 # Simple command

@@ -43,7 +43,8 @@ machines do not clone it. On a fresh work machine:
 1. Clone the public YADM repository over HTTPS.
 2. Run `yadm bootstrap` to install 1Password and the remaining prerequisites.
 3. Sign in to 1Password and enable its SSH agent when prompted.
-4. Re-run `yadm bootstrap`. The existing repository bootstrap steps run `mise bootstrap repos apply` for every repository declared under `[bootstrap.repos]`.
+4. Re-run `yadm bootstrap`. The existing repository bootstrap steps run `mise bootstrap repos apply` for every
+   repository declared under `[bootstrap.repos]`.
 
 Configured repositories can use different Git hosts and authentication methods. The private GitLab
 checkout requires the 1Password SSH agent, while public HTTPS repositories do not.

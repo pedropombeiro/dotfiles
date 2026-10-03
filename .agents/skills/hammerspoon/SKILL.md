@@ -9,21 +9,47 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 
 ## Architecture
 
-- `init.lua` — Module loader. Loads `hs.ipc` (enables the `hs` CLI to talk to the running instance), then conditionally loads modules that exist on disk (yadm alternates ensure class-gated modules are only present on matching machines).
-- `constants.lua` — Shared hardware and tool path constants used across modules (uhubctl, blueutil, USB hub/port assignments, AirPods address, BusylightHTTP URL).
-- `spaces.lua##class.Work` — Applies the Rectangle Pro `External display` layout on every Space switch, unless an app in `layoutBlockingApps` is running.
-- `sleepwake.lua##class.Work` — Caffeinate watcher for sleep/wake/unlock events. Manages Stream Deck USB power, BusylightHTTP, nginx, and Elgato Control Center. On unlock, focuses the visible iTerm2 window on the current Space after the Rectangle Pro layout settles. `restoreServices(reason)` (unlock and `system:fix`) also schedules a Secure Input check after 5s: if `hs.eventtap.isSecureInputEnabled()` is true and 1Password is running but not frontmost, it briefly activates 1Password and restores the previous app, which makes 1Password release a stuck Secure Input. The check cannot tell a stuck hold from legitimate password entry, so it logs before/after state (`Secure Input:` lines) with the trigger reason. Lock and sleep cancel a pending check. Exports `displaysleep()` for use by other modules.
-- `urlrouter.lua##class.Work` — URL-based browser router (replaces Choosy). Hammerspoon is registered as the default HTTP/HTTPS handler via `duti`. Routes `zoom.us/j/` and `zoom.us/my/` links to Zoom.app, `*.slack.com` links to Slack.app, everything else to Chrome. Slack archive URLs are converted to `slack://channel` deep links (see Slack deep linking below) so the desktop app navigates to the message/thread instead of just focusing.
-- `meetings.lua##class.Work` — Auto-switches audio to AirPods when Zoom launches (connects via `blueutil` if needed), pauses Spotify, quits eqMac, powers on webcam USB. On Zoom exit: restores previous audio device, resumes Spotify, relaunches eqMac hidden, quits Camo Studio, blanks the Busylight via its HTTP API, powers off webcam USB port. Uses a single `hs.application.watcher` (stored in `M._watcher` and `return M` so it isn't GC'd) keyed on `webcam.apps`; seeds `activeMeetings` from running apps on load so a reload mid-meeting doesn't fire a spurious start.
-- `busylight.lua##class.Work` - Wraps the BusylightHTTP API (`constants.busylightUrl`). Exports `busylight.off()`. Treats `404 NO_DEVICE` as informational when the device is absent. Sends one off request when the last watched meeting application closes; other presence controllers can subsequently change the light.
-- `webcam.lua##class.Work` — Powers the YoloCam S3 USB port on/off via uhubctl. Exports `webcam.on()` and `webcam.off()`. Powers off on Hammerspoon load (unless Zoom is running). Called by `meetings.lua` and `sleepwake.lua`.
-- `httpserver/` — Modular HTTP server on `localhost:18990`. Sub-modules each return a table of `{ actionName = handlerFn }` that get merged into a single dispatch table.
-  - `httpserver/init.lua` — Server skeleton. Parses query params via `hs.http.urlParts`, loads sub-modules, dispatches on `?action=`.
-  - `httpserver/triggers.lua##class.Work` — `lock` and `sleep` actions for Home Assistant (Work only, depends on `sleepwake`).
-  - `httpserver/notify.lua` — `notify` action for native macOS notifications via `hs.notify`. Maps event types to sounds/subtitles. Click callback focuses iTerm2 and selects the originating tmux pane.
+- `init.lua` — Module loader. Loads `hs.ipc` (enables the `hs` CLI to talk to the running instance), then conditionally
+  loads modules that exist on disk (yadm alternates ensure class-gated modules are only present on matching machines).
+- `constants.lua` — Shared hardware and tool path constants used across modules (uhubctl, blueutil, USB hub/port
+  assignments, AirPods address, BusylightHTTP URL).
+- `spaces.lua##class.Work` — Applies the Rectangle Pro `External display` layout on every Space switch, unless an app in
+  `layoutBlockingApps` is running.
+- `sleepwake.lua##class.Work` — Caffeinate watcher for sleep/wake/unlock events. Manages Stream Deck USB power,
+  BusylightHTTP, nginx, and Elgato Control Center. On unlock, focuses the visible iTerm2 window on the current Space
+  after the Rectangle Pro layout settles. `restoreServices(reason)` (unlock and `system:fix`) also schedules a Secure
+  Input check after 5s: if `hs.eventtap.isSecureInputEnabled()` is true and 1Password is running but not frontmost, it
+  briefly activates 1Password and restores the previous app, which makes 1Password release a stuck Secure Input. The
+  check cannot tell a stuck hold from legitimate password entry, so it logs before/after state (`Secure Input:` lines)
+  with the trigger reason. Lock and sleep cancel a pending check. Exports `displaysleep()` for use by other modules.
+- `urlrouter.lua##class.Work` — URL-based browser router (replaces Choosy). Hammerspoon is registered as the default
+  HTTP/HTTPS handler via `duti`. Routes `zoom.us/j/` and `zoom.us/my/` links to Zoom.app, `*.slack.com` links to
+  Slack.app, everything else to Chrome. Slack archive URLs are converted to `slack://channel` deep links (see Slack deep
+  linking below) so the desktop app navigates to the message/thread instead of just focusing.
+- `meetings.lua##class.Work` — Auto-switches audio to AirPods when Zoom launches (connects via `blueutil` if needed),
+  pauses Spotify, quits eqMac, powers on webcam USB. On Zoom exit: restores previous audio device, resumes Spotify,
+  relaunches eqMac hidden, quits Camo Studio, blanks the Busylight via its HTTP API, powers off webcam USB port. Uses a
+  single `hs.application.watcher` (stored in `M._watcher` and `return M` so it isn't GC'd) keyed on `webcam.apps`; seeds
+  `activeMeetings` from running apps on load so a reload mid-meeting doesn't fire a spurious start.
+- `busylight.lua##class.Work` - Wraps the BusylightHTTP API (`constants.busylightUrl`). Exports `busylight.off()`.
+  Treats `404 NO_DEVICE` as informational when the device is absent. Sends one off request when the last watched meeting
+  application closes; other presence controllers can subsequently change the light.
+- `webcam.lua##class.Work` — Powers the YoloCam S3 USB port on/off via uhubctl. Exports `webcam.on()` and
+  `webcam.off()`. Powers off on Hammerspoon load (unless Zoom is running). Called by `meetings.lua` and `sleepwake.lua`.
+- `httpserver/` — Modular HTTP server on `localhost:18990`. Sub-modules each return a table of
+  `{ actionName = handlerFn }` that get merged into a single dispatch table.
+  - `httpserver/init.lua` — Server skeleton. Parses query params via `hs.http.urlParts`, loads sub-modules, dispatches
+    on `?action=`.
+  - `httpserver/triggers.lua##class.Work` — `lock` and `sleep` actions for Home Assistant (Work only, depends on
+    `sleepwake`).
+  - `httpserver/notify.lua` — `notify` action for native macOS notifications via `hs.notify`. Maps event types to
+    sounds/subtitles. Click callback focuses iTerm2 and selects the originating tmux pane.
   - `httpserver/opencode.lua` — `opencode-goto` action for selecting the next OpenCode window waiting for input.
-- `opencode.lua` — Shared OpenCode navigation and iTerm2 tab-focus helper for the hotkey, HTTP action, and notification callback.
-- `hotkeys/sesh.lua` — `fn+Tab` and `Caps Lock+L` (also `Hyper+L`) in iTerm2 switch the frontmost tab's tmux client to its last session, mirroring `prefix + L`. See "fn as a modifier" and "Do not synthesize keystrokes from a hotkey" below.
+- `opencode.lua` — Shared OpenCode navigation and iTerm2 tab-focus helper for the hotkey, HTTP action, and notification
+  callback.
+- `hotkeys/sesh.lua` — `fn+Tab` and `Caps Lock+L` (also `Hyper+L`) in iTerm2 switch the frontmost tab's tmux client to
+  its last session, mirroring `prefix + L`. See "fn as a modifier" and "Do not synthesize keystrokes from a hotkey"
+  below.
 
 ## Key behaviours
 
@@ -45,7 +71,8 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 
 ## Notify action
 
-Used by `~/.config/opencode/notifier/notify.sh` to deliver OpenCode notifications. The shell script handles the grace period and tmux `@opencode-waiting` check, then delegates to Hammerspoon via `curl`.
+Used by `~/.config/opencode/notifier/notify.sh` to deliver OpenCode notifications. The shell script handles the grace
+period and tmux `@opencode-waiting` check, then delegates to Hammerspoon via `curl`.
 
 Query params: `event`, `message`, `title`, `pane` (tmux pane ID).
 
@@ -169,7 +196,8 @@ Home Assistant
 
 ## Stream Deck integration
 
-The Stream Deck "lock" button should open the URL `hammerspoon://displaysleep` (configured to open with Hammerspoon). This replaces the previous `Ctrl+Cmd+Q` + `pmset displaysleepnow` approach which had timing issues with USB wake events.
+The Stream Deck "lock" button should open the URL `hammerspoon://displaysleep` (configured to open with Hammerspoon).
+This replaces the previous `Ctrl+Cmd+Q` + `pmset displaysleepnow` approach which had timing issues with USB wake events.
 
 ## USB hub locations
 
@@ -213,28 +241,43 @@ URL scheme is `rectangle-pro://` (not `rectanglepro://`). Layout is triggered vi
 open -g "rectangle-pro://execute-layout?name=External%20display"
 ```
 
-`spaces.lua##class.Work` checks `layoutBlockingApps` before triggering Rectangle Pro. It contains Cap (`so.cap.desktop`): keeping Cap open suppresses layouts because rearranging windows is disruptive during screen recording. This guard also covers the unlock-triggered layout in `sleepwake.lua`, because it calls `spaces.applyRectangleLayout()`.
+`spaces.lua##class.Work` checks `layoutBlockingApps` before triggering Rectangle Pro. It contains Cap
+(`so.cap.desktop`): keeping Cap open suppresses layouts because rearranging windows is disruptive during screen
+recording. This guard also covers the unlock-triggered layout in `sleepwake.lua`, because it calls
+`spaces.applyRectangleLayout()`.
 
 ## Slack deep linking (urlrouter)
 
-Opening a Slack web archive URL (`https://<ws>.slack.com/archives/<CHANNEL>/p<TS>`) in the Slack desktop app via `openURLWithBundle` only **focuses** the app — it does not navigate to the message. Chrome works because Slack's web redirect page builds a proper `slack://` deep link server-side (it knows the team ID). `urlrouter.lua##slackDeepLink` reproduces this:
+Opening a Slack web archive URL (`https://<ws>.slack.com/archives/<CHANNEL>/p<TS>`) in the Slack desktop app via
+`openURLWithBundle` only **focuses** the app — it does not navigate to the message. Chrome works because Slack's web
+redirect page builds a proper `slack://` deep link server-side (it knows the team ID). `urlrouter.lua##slackDeepLink`
+reproduces this:
 
 - Parses subdomain, channel ID, and packed timestamp from the archive URL.
-- Converts the packed `p<TS>` to a message ts by inserting a `.` before the last 6 digits (`p1773236141113359` → `1773236141.113359`).
-- Maps the workspace subdomain to a team ID via the `slackTeams` table and appends `&team=<TEAM_ID>` — **required**; without `team`, Slack only focuses and does not navigate (verified). GitLab workspace (`gitlab`) team ID is `E03N1RJJX7C` (Enterprise Grid).
+- Converts the packed `p<TS>` to a message ts by inserting a `.` before the last 6 digits (`p1773236141113359` →
+  `1773236141.113359`).
+- Maps the workspace subdomain to a team ID via the `slackTeams` table and appends `&team=<TEAM_ID>` — **required**;
+  without `team`, Slack only focuses and does not navigate (verified). GitLab workspace (`gitlab`) team ID is
+  `E03N1RJJX7C` (Enterprise Grid).
 - Preserves `thread_ts` from the query string for threaded replies.
 - Produces `slack://channel?id=<CHANNEL>&message=<TS>&team=<TEAM>[&thread_ts=<TS>]`.
 
-Find a workspace's team ID in `~/Library/Application Support/Slack/storage/root-state.json` (`workspaces[*].team_id` → `domain`). Add new workspaces to the `slackTeams` map. Non-archive Slack URLs (sign-in, SSO — see `exclude`) fall through to the raw URL.
+Find a workspace's team ID in `~/Library/Application Support/Slack/storage/root-state.json` (`workspaces[*].team_id` →
+`domain`). Add new workspaces to the `slackTeams` map. Non-archive Slack URLs (sign-in, SSO — see `exclude`) fall
+through to the raw URL.
 
 ## Related files
 
-- `~/.config/yadm/bootstrap.d/901-configure-hammerspoon-firewall.sh##os.Darwin,class.Work` — Adds Hammerspoon to macOS firewall allowlist (Work only; Personal machines only use localhost)
-- `~/.config/yadm/bootstrap.d/941-open-hammerspoon-at-login.sh##os.Darwin` — Launches Hammerspoon at login (all Darwin machines)
-- `~/.config/yadm/bootstrap.d/940-open-apps-at-login.sh##os.Darwin,class.Work` — Other Work-only login items (Hammerspoon removed from here)
+- `~/.config/yadm/bootstrap.d/901-configure-hammerspoon-firewall.sh##os.Darwin,class.Work` — Adds Hammerspoon to macOS
+  firewall allowlist (Work only; Personal machines only use localhost)
+- `~/.config/yadm/bootstrap.d/941-open-hammerspoon-at-login.sh##os.Darwin` — Launches Hammerspoon at login (all Darwin
+  machines)
+- `~/.config/yadm/bootstrap.d/940-open-apps-at-login.sh##os.Darwin,class.Work` — Other Work-only login items
+  (Hammerspoon removed from here)
 - `~/.config/opencode/notifier/notify.sh` — OpenCode notifier script that calls Hammerspoon's notify endpoint
 - `~/.config/yadm/config_templates/nginx/servers/localhost.conf` — nginx reverse proxy config
-- `~/.config/yadm/scripts/defaults.sh##os.Darwin` — Registers Hammerspoon as default HTTP/HTTPS handler via `duti` (for `urlrouter`)
+- `~/.config/yadm/scripts/defaults.sh##os.Darwin` — Registers Hammerspoon as default HTTP/HTTPS handler via `duti` (for
+  `urlrouter`)
 - `~/.config/mise/conf.d/tools.work.toml` — `system:fix` task (manual fallback with sudo powers)
 - `~/.config/yadm/scripts/run-checks.zsh##class.Work` — Health checks for Hammerspoon, nginx, Busylight, Stream Deck
 
@@ -246,11 +289,14 @@ Hammerspoon logs to an in-memory console. Read it from the CLI with:
 hs -c "hs.console.getConsole()"
 ```
 
-This requires `hs.ipc` (loaded in `init.lua`). The output includes all `hs.logger` messages and extension load traces. There are no on-disk log files by default.
+This requires `hs.ipc` (loaded in `init.lua`). The output includes all `hs.logger` messages and extension load traces.
+There are no on-disk log files by default.
 
 ## API documentation
 
-Use Context7 (`/hammerspoon/hammerspoon.github.io`) for Hammerspoon API reference and guides — do not guess API signatures. It maps to the Hammerspoon docs site and has broader coverage than the repo entry. Fallback: https://www.hammerspoon.org/docs/
+Use Context7 (`/hammerspoon/hammerspoon.github.io`) for Hammerspoon API reference and guides — do not guess API
+signatures. It maps to the Hammerspoon docs site and has broader coverage than the repo entry. Fallback:
+<https://www.hammerspoon.org/docs/>
 
 ## Development workflow
 
@@ -262,13 +308,43 @@ Use Context7 (`/hammerspoon/hammerspoon.github.io`) for Hammerspoon API referenc
 
 ## Gotchas
 
-- `hs.task`, `hs.timer`, and `hs.*.watcher` objects are garbage-collected if **nothing reachable references them** — the underlying process/timer/watcher is then killed/disabled. In a side-effect-only module (no `return`), a top-level `local watcher = hs.application.watcher.new(...)` referenced by nothing is collected once the chunk finishes. Store such objects in a returned module table (e.g. `M._watcher`) and `return M`, mirroring `webcam.lua`. This was the root cause of `meetings.lua` silently not pausing/resuming Spotify on Zoom launch/quit — the `local watcher` was collected.
-  - Nuance (verified): a **running** `hs.timer` whose own callback closes over the timer variable (e.g. to call `timer:stop()`) **survives** GC even when assigned only to a function-local that has gone out of scope — Hammerspoon's C side strongly references active timers, and the self-referential closure keeps the Lua object alive. So `audio.lua`'s `setDockedAudioOutput` local-timer pattern is fine and does not need module-level retention.
-  - Debugging note: timer/watcher callbacks created ad-hoc via `hs -c` must log with `hs.logger`/`log.i` to appear in `hs.console.getConsole()`; bare `print()` from such callbacks is not reliably captured, which can falsely look like the timer was GC'd.
-- `webcam.apps` keys must be the app's **current localized name** as reported by `hs.application.watcher`/`hs.application.get`/`hs.application.runningApplications` (`a:name()`), not a bundle ID or an old name. The Zoom meeting app reports `Zoom` (bundle ID `us.zoom.xos`) — an earlier `zoom.us` key never matched, so the `meetings.lua` watcher's `if not webcam.apps[name] then return end` guard silently dropped every Zoom launch/quit event (no Spotify pause/resume, no webcam power). Match on the exact name `Zoom`, not a substring — `ESDZoom` (Stream Deck plugin, `com.elgato.zoom.sdPlugin`) and `Zoom Workspace Aomhost` (`us.zoom.aomhost`) also contain "zoom" and would cause false triggers. Verify a key with: `hs -c "for _,a in ipairs(hs.application.runningApplications()) do local n=a:name() if n:lower():find('zoom') then print(n, a:bundleID()) end end"`.
-- `meetings.lua` must derive meeting active-state **from the `launched`/`terminated` event itself** (`activeMeetings[name] = true` on launch, `= nil` on terminate), **not** by recomputing via `hs.application.get(appName)` on each event. `hs.application.get` races against process reaping: at the `terminated` event the dying app is often still enumerable, so a recompute keeps the state "active" and `onMeetingEnd` never fires; the subsequent `launched` then sees `previouslyActive == true` and skips `onMeetingStart` — so Spotify never pauses. The event is authoritative and race-free. Keep seeding `activeMeetings` from running apps **only** on module load (so a reload mid-meeting doesn't fire a spurious start). Verify by tailing `hs.console.getConsole()` for `meetings: Paused Spotify` after a full Zoom quit + relaunch.
-- `hs.timer.doUntil` checks the predicate **before** running the action — if the predicate is true immediately, the action never fires. Prefer `hs.timer.doEvery` with manual stop.
-- Hammerspoon needs explicit Bluetooth permission in System Settings > Privacy & Security > Bluetooth to use `blueutil` via `hs.task`.
-- Lua files are formatted by `stylua` via pre-commit. The hook uses `language: system`, so `stylua` must be available on PATH (e.g. via `mise use -g stylua`).
-- Call `busylight.off()` to blank the light. Keep the shared port powered as described in [USB hub locations](#usb-hub-locations); `sleepwake.restoreServices()` restores its power on unlock or `system:fix`.
-- Zsh reserves `status` as a read-only parameter for `$?`. Use names such as `port_status` or `http_status` for local variables. This error requires a runtime check; `zsh -n` does not catch it.
+- `hs.task`, `hs.timer`, and `hs.*.watcher` objects are garbage-collected if **nothing reachable references them** — the
+  underlying process/timer/watcher is then killed/disabled. In a side-effect-only module (no `return`), a top-level
+  `local watcher = hs.application.watcher.new(...)` referenced by nothing is collected once the chunk finishes. Store
+  such objects in a returned module table (e.g. `M._watcher`) and `return M`, mirroring `webcam.lua`. This was the root
+  cause of `meetings.lua` silently not pausing/resuming Spotify on Zoom launch/quit — the `local watcher` was collected.
+  - Nuance (verified): a **running** `hs.timer` whose own callback closes over the timer variable (e.g. to call
+    `timer:stop()`) **survives** GC even when assigned only to a function-local that has gone out of scope —
+    Hammerspoon's C side strongly references active timers, and the self-referential closure keeps the Lua object alive.
+    So `audio.lua`'s `setDockedAudioOutput` local-timer pattern is fine and does not need module-level retention.
+  - Debugging note: timer/watcher callbacks created ad-hoc via `hs -c` must log with `hs.logger`/`log.i` to appear in
+    `hs.console.getConsole()`; bare `print()` from such callbacks is not reliably captured, which can falsely look like
+    the timer was GC'd.
+- `webcam.apps` keys must be the app's **current localized name** as reported by
+  `hs.application.watcher`/`hs.application.get`/`hs.application.runningApplications` (`a:name()`), not a bundle ID or an
+  old name. The Zoom meeting app reports `Zoom` (bundle ID `us.zoom.xos`) — an earlier `zoom.us` key never matched, so
+  the `meetings.lua` watcher's `if not webcam.apps[name] then return end` guard silently dropped every Zoom launch/quit
+  event (no Spotify pause/resume, no webcam power). Match on the exact name `Zoom`, not a substring — `ESDZoom` (Stream
+  Deck plugin, `com.elgato.zoom.sdPlugin`) and `Zoom Workspace Aomhost` (`us.zoom.aomhost`) also contain "zoom" and
+  would cause false triggers. Verify a key with:
+  ```sh
+  hs -c "for _,a in ipairs(hs.application.runningApplications()) do local n=a:name() if n:lower():find('zoom') then print(n, a:bundleID()) end end"
+  ```
+- `meetings.lua` must derive meeting active-state **from the `launched`/`terminated` event itself**
+  (`activeMeetings[name] = true` on launch, `= nil` on terminate), **not** by recomputing via
+  `hs.application.get(appName)` on each event. `hs.application.get` races against process reaping: at the `terminated`
+  event the dying app is often still enumerable, so a recompute keeps the state "active" and `onMeetingEnd` never fires;
+  the subsequent `launched` then sees `previouslyActive == true` and skips `onMeetingStart` — so Spotify never pauses.
+  The event is authoritative and race-free. Keep seeding `activeMeetings` from running apps **only** on module load (so
+  a reload mid-meeting doesn't fire a spurious start). Verify by tailing `hs.console.getConsole()` for
+  `meetings: Paused Spotify` after a full Zoom quit + relaunch.
+- `hs.timer.doUntil` checks the predicate **before** running the action — if the predicate is true immediately, the
+  action never fires. Prefer `hs.timer.doEvery` with manual stop.
+- Hammerspoon needs explicit Bluetooth permission in System Settings > Privacy & Security > Bluetooth to use `blueutil`
+  via `hs.task`.
+- Lua files are formatted by `stylua` via pre-commit. The hook uses `language: system`, so `stylua` must be available on
+  PATH (e.g. via `mise use -g stylua`).
+- Call `busylight.off()` to blank the light. Keep the shared port powered as described in [USB hub
+  locations](#usb-hub-locations); `sleepwake.restoreServices()` restores its power on unlock or `system:fix`.
+- Zsh reserves `status` as a read-only parameter for `$?`. Use names such as `port_status` or `http_status` for local
+  variables. This error requires a runtime check; `zsh -n` does not catch it.

@@ -147,7 +147,10 @@ comments. See the Formatting Preferences section of
 - Check repository visibility first. Inline the snippet when the target is private.
 
 Recommended:
-`the [confidence criteria](https://gitlab.com/group/project/-/blob/b00832b9/path/prompt.jinja#L229-246) restrict this to two categories`
+
+```markdown
+the [confidence criteria](https://gitlab.com/group/project/-/blob/b00832b9/path/prompt.jinja#L229-246) restrict this to two categories
+```
 
 Not recommended: `the confidence criteria in prompt.jinja restrict this to two categories`
 

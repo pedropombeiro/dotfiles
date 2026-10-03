@@ -10,8 +10,8 @@
     "code_block_line_length": 280,
     // Include code blocks
     "code_blocks": true,
-    // Include tables
-    "tables": true,
+    // Exclude tables: aligned rows pad to the longest cell and cannot be wrapped
+    "tables": false,
     // Include headings
     "headings": true,
     // Include headings
@@ -20,6 +20,11 @@
     "strict": false,
     // Stern length checking
     "stern": false
+  },
+  // MD031/blanks-around-fences - Allow fences inside list items without blank
+  // lines, which would otherwise turn a tight list into a loose one
+  "MD031": {
+    "list_items": false
   },
   // MD007/ul-indent - Unordered list indentation
   "MD007": {

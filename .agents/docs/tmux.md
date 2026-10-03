@@ -2,7 +2,8 @@
 
 ## Overview
 
-The tmux configuration is managed through yadm. The main config is universal (works on all machines), with QNAP-specific terminal fixes in a local override file.
+The tmux configuration is managed through yadm. The main config is universal (works on all machines), with QNAP-specific
+terminal fixes in a local override file.
 
 ## Configuration Structure
 

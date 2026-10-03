@@ -83,7 +83,8 @@ tracked files. Run it with `--dry-run` to preview.
 
 ## Worktree output
 
-- Pipe worktree creation output through `tail` (`git worktree add … 2>&1 | tail`) to keep checkout progress out of the conversation. Enable `pipefail` so a failed checkout is not hidden by the pipe.
+- Pipe worktree creation output through `tail` (`git worktree add … 2>&1 | tail`) to keep checkout progress out of the
+  conversation. Enable `pipefail` so a failed checkout is not hidden by the pipe.
 
 ## Amending commits
 

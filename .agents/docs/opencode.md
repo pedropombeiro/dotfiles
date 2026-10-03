@@ -76,7 +76,8 @@ Every machine runs OpenCode 2. Both `opencode.json` alternates use the native V2
 an ordered `permissions` array (last match wins), `providers`, `mcp.servers`, and
 `agents.title.model`. `enabled_providers` stays in V1 syntax until provider policies
 leave `experimental`. When migrating another config, compare `opencode debug config`
-output for the old and new files, loaded as project configs from scratch directories. The NAS (`distro.qts`) gets it from the
+output for the old and new files, loaded as project configs from scratch directories. The NAS (`distro.qts`) gets it
+from the
 `opencode-legacy-glibc` build and uses the `##default` config alternates. Do not add
 OpenCode 1 fallbacks (`plugin`, `tui.json`, `server()` plugin entrypoints, `--pure`).
 
@@ -221,6 +222,6 @@ When a chained command is submitted using `&&`, `;`, `||`, or `|`:
 Your command contains multiple subcommands. I can run them one by one and ask
 you to approve each. Proceed with:
 
-1. <cmd1>
-2. <cmd2>
-3. <cmd3>
+1. `<cmd1>`
+2. `<cmd2>`
+3. `<cmd3>`

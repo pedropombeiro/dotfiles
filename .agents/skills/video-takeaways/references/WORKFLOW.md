@@ -17,8 +17,8 @@ user already chose a destination explicitly.
 For Markdown output, use `$HOME/Downloads` when it exists and is writable.
 Otherwise, use the current directory. Derive a readable filename from the H1
 title, remove path separators and filesystem control characters, and use
-`video-takeaways.md` if nothing remains. Never overwrite an existing file. Add
-` (2)`, ` (3)`, and so on before `.md` until the name is available. If the user
+`video-takeaways.md` if nothing remains. Never overwrite an existing file. Add a
+space and `(2)`, `(3)`, and so on before `.md` until the name is available. If the user
 specifies a path, use that path and ask before overwriting an existing file.
 
 Never upload or email an EPUB without a separate explicit request.

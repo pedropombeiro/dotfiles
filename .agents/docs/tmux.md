@@ -120,7 +120,7 @@ level via a zle widget and works regardless of scrollback state.
 The opencode plugin `opencode-tmux-indicator` sets a per-window user option
 `@opencode-waiting` when an opencode instance is waiting for user input (permission or question).
 The presentation is handled in `tmux.conf` via `#{?@opencode-waiting,...}` conditionals in
-`window-status-format`, which turns inactive tabs gruvbox green with a `●` prefix.
+`window-status-format`, which turns inactive tabs gruvbox orange (`colour214`) and prefixes waiting window names with `●`.
 
 The plugin also writes a BEL to the pane TTY so tmux sets `window_bell_flag`, enabling
 `Prefix + M-n` (`next-window -a`) to jump to windows waiting for input. To prevent the bell
@@ -150,9 +150,9 @@ Both `cli.base.json` alternates configure `opencode-tmux-indicator`. Follow the
 
 ## Alt+Number Window Switching
 
-`Alt+0` through `Alt+9` are bound in the root key table (`bind-key -n`) to jump directly to
-window `:0`–`:9` without the prefix key. These bindings are placed **after** the TPM `run` line
-to prevent plugins from overwriting them.
+`Alt+1` through `Alt+9` are bound in the root key table (`bind-key -n`) to jump directly to
+windows `:1` to `:9` without the prefix key, and `Alt+0` jumps to the last window. These
+bindings are placed **after** the TPM `run` line to prevent plugins from overwriting them.
 
 **iTerm2 caveat:** By default, iTerm2 maps `Alt+number` to its own split-pane navigation
 (Settings → Keys → Navigation Shortcuts → "Shortcut to choose a split pane"). This intercepts
@@ -220,21 +220,11 @@ which have a single field, so `-1` and `1` both resolve to the directory.
 Both live in `~/.hammerspoon/hotkeys/sesh.lua`. They run
 `tmux switch-client -c <frontmost iTerm2 tty> -l`, which is what `prefix + L` ends up doing.
 
-The `fn`/Globe modifier is consumed by macOS and never reaches the terminal as an escape
-sequence, so it **cannot** be bound in `tmux.conf`. `hs.hotkey.bind` also rejects `fn` as a
-modifier, so the module uses a raw `hs.eventtap` that inspects `event:getFlags()` on the Tab
-keycode. `Caps Lock + L` goes through the existing `hyperBind` helper in `hotkeys/hyperkey.lua`.
-
-Notes:
-
-- The `fn` tap matches `containExactly({ "fn" })`, so `cmd+fn+Tab` and similar pass through.
-- Both are scoped to the iTerm2 bundle ID, so the keys are untouched in other apps.
-- `-c <tty>` is required: each tmux client tracks its own `client_last_session`, so omitting it
-  switches the most recently active client rather than the tab in front of you.
-- `fn` only exists on Apple keyboards. On external non-Apple keyboards use `Caps Lock + L` or
-  `prefix + L`.
-- The shortcuts deliberately do **not** synthesize `prefix + L` keystrokes; see the Hammerspoon
-  skill for why that recurses.
+macOS consumes the `fn`/Globe modifier, so it **cannot** be bound in `tmux.conf`. Both
+shortcuts are scoped to iTerm2. `-c <tty>` is required because each tmux client tracks its own
+`client_last_session`. `fn` exists only on Apple keyboards; on other keyboards use
+`Caps Lock + L` or `prefix + L`. The Hammerspoon skill covers the event tap and why the
+shortcuts don't synthesize `prefix + L` keystrokes.
 
 ### Shell Integration
 

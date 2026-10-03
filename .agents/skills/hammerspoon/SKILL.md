@@ -65,7 +65,7 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 | HTTP `?action=notify`              | Send native macOS notification with click-to-focus (all machines)                                                                                                                                                                                                                                                                       |
 | HTTP `?action=opencode-goto`       | Cycle to the next tmux OpenCode window waiting for input and activate its iTerm2 tab                                                                                                                                                                                                                                                    |
 | `fn+Tab` / `Caps Lock+L` in iTerm2 | Switch the frontmost tab's tmux client to its last session, mirroring `prefix + L` (all machines)                                                                                                                                                                                                                                       |
-| Any `http`/`https` URL opened      | Route to Zoom.app (meeting links) or Chrome (everything else) — replaces Choosy (Work only)                                                                                                                                                                                                                                             |
+| Any `http`/`https` URL opened      | Route to Zoom.app (meeting links), Slack.app (`*.slack.com`), or Chrome (everything else) (Work only)                                                                                                                                                                                                                                   |
 | Zoom launched                      | Power on webcam USB, connect AirPods via blueutil, switch audio output, pause Spotify, quit eqMac (Work only)                                                                                                                                                                                                                           |
 | Zoom terminated                    | Power off webcam USB, restore audio, resume Spotify, relaunch eqMac hidden, quit Camo Studio, send a Busylight off request (Work only)                                                                                                                                                                                                  |
 
@@ -89,26 +89,9 @@ Event-to-sound mapping (in `httpserver/notify.lua`):
 ## OpenCode waiting-session navigation
 
 `Hyper+A` and `Caps Lock+A` call `~/.local/bin/opencode-goto-waiting` through the shared
-`opencode.lua` module. It finds tmux windows with `@opencode-waiting`, clears any stale flag
-whose window no longer has an `opencode` process, and cycles through the remaining windows.
-
-Client selection resolves the **target first**, then picks a client in this order:
-
-1. a client already displaying the target session,
-2. the session's **home tab** — the tab that last displayed it, stored in the per-session
-   `@opencode-home-tty` option and refreshed for every attached session on each run,
-3. the frontmost tab,
-4. the most recently active client.
-
-Steps 1–2 keep a session in the tab where it normally lives instead of pulling it into the
-frontmost tab. Step 2 matters for **detached** sessions: `#{client_last_session}` only holds one
-level of history and nothing at all for a detached session, so the affinity must be persisted.
-Session-scoped options survive detachment, need no name mangling, and expand in formats via
-`#{@opencode-home-tty}`.
-
-Cycling reads only the stored `@opencode-goto-cursor`: deriving the cursor from the frontmost tab
-stalls the rotation, because the frontmost tab no longer moves between invocations once sessions
-stay put.
+`opencode.lua` module. The script owns conversation discovery, cycling, and tmux client
+selection; see [OpenCode Tmux Tab Indicator](../../docs/tmux.md#opencode-tmux-tab-indicator).
+Hammerspoon then activates iTerm2 and selects the resolved tab.
 
 The HTTP equivalent is `http://localhost:18990/?action=opencode-goto`. A missing waiting session
 shows a brief Hammerspoon alert and plays `Tink`. The navigator task is stored in
@@ -153,18 +136,13 @@ Rules of thumb for such taps:
   (`fn+F1`, `fn+Delete`, arrows) are remapped by macOS and may not surface as the base key at
   all; `Tab` does surface, as plain Tab with the `fn` flag set.
 
-## Do not synthesize keystrokes from a hotkey — call the target directly
+## Call the target directly instead of synthesizing keystrokes
 
 A hotkey action that posts keystrokes has its own output caught by the tap that triggered it,
 because the physical modifier (F18/Caps Lock, or `fn`) is **still held** when the synthetic events
-are delivered. `hotkeys/sesh.lua` originally synthesized tmux `prefix + L`; under `Caps Lock+L`
-the emitted `Shift+L` re-entered the tap and emitted again — a runaway loop of 500+ events whose
-only visible symptom was "it types `l` and does not switch".
-
-A boolean re-entrancy guard **cannot** fix this: `hs.eventtap.keyStroke` and `event:post()` are
-asynchronous, so `emitting = false` runs before the synthetic events arrive and the flag is
-already clear when the tap sees them. Tagging events with `eventSourceUserData` does work (the
-property survives the round-trip), but it is a lot of plumbing for the wrong approach.
+are delivered. The result is a runaway loop. A boolean re-entrancy guard **cannot** fix this:
+`hs.eventtap.keyStroke` and `event:post()` are asynchronous, so the flag is already clear when the
+tap sees the synthetic events.
 
 **Prefer driving the underlying tool directly.** `sesh.lua` runs
 `tmux switch-client -c <tty> -l` via `hs.task`, which removes the recursion at its source and
@@ -301,7 +279,7 @@ signatures. It maps to the Hammerspoon docs site and has broader coverage than t
 ## Development workflow
 
 1. Edit Lua files in `~/.hammerspoon/`
-2. Run `stylua` to format (enforced by pre-commit)
+2. Run `stylua` to format (enforced by the hk pre-commit hook)
 3. Reload config: `hs -c "hs.reload()"` (or use run-in-tmux-pane if `hs` needs shell environment)
 4. Check logs: `hs -c "hs.console.getConsole()"`
 5. `hs.task` objects **must** be stored in module-level variables to prevent garbage collection
@@ -311,8 +289,7 @@ signatures. It maps to the Hammerspoon docs site and has broader coverage than t
 - `hs.task`, `hs.timer`, and `hs.*.watcher` objects are garbage-collected if **nothing reachable references them** — the
   underlying process/timer/watcher is then killed/disabled. In a side-effect-only module (no `return`), a top-level
   `local watcher = hs.application.watcher.new(...)` referenced by nothing is collected once the chunk finishes. Store
-  such objects in a returned module table (e.g. `M._watcher`) and `return M`, mirroring `webcam.lua`. This was the root
-  cause of `meetings.lua` silently not pausing/resuming Spotify on Zoom launch/quit — the `local watcher` was collected.
+  such objects in a returned module table (e.g. `M._watcher`) and `return M`, mirroring `webcam.lua`.
   - Nuance (verified): a **running** `hs.timer` whose own callback closes over the timer variable (e.g. to call
     `timer:stop()`) **survives** GC even when assigned only to a function-local that has gone out of scope —
     Hammerspoon's C side strongly references active timers, and the self-referential closure keeps the Lua object alive.
@@ -322,9 +299,8 @@ signatures. It maps to the Hammerspoon docs site and has broader coverage than t
     the timer was GC'd.
 - `webcam.apps` keys must be the app's **current localized name** as reported by
   `hs.application.watcher`/`hs.application.get`/`hs.application.runningApplications` (`a:name()`), not a bundle ID or an
-  old name. The Zoom meeting app reports `Zoom` (bundle ID `us.zoom.xos`) — an earlier `zoom.us` key never matched, so
-  the `meetings.lua` watcher's `if not webcam.apps[name] then return end` guard silently dropped every Zoom launch/quit
-  event (no Spotify pause/resume, no webcam power). Match on the exact name `Zoom`, not a substring — `ESDZoom` (Stream
+  old name. A key that doesn't match makes the `meetings.lua` watcher silently drop the app's events. The Zoom meeting
+  app reports `Zoom` (bundle ID `us.zoom.xos`). Match on the exact name `Zoom`, not a substring — `ESDZoom` (Stream
   Deck plugin, `com.elgato.zoom.sdPlugin`) and `Zoom Workspace Aomhost` (`us.zoom.aomhost`) also contain "zoom" and
   would cause false triggers. Verify a key with:
   ```sh
@@ -333,17 +309,15 @@ signatures. It maps to the Hammerspoon docs site and has broader coverage than t
 - `meetings.lua` must derive meeting active-state **from the `launched`/`terminated` event itself**
   (`activeMeetings[name] = true` on launch, `= nil` on terminate), **not** by recomputing via
   `hs.application.get(appName)` on each event. `hs.application.get` races against process reaping: at the `terminated`
-  event the dying app is often still enumerable, so a recompute keeps the state "active" and `onMeetingEnd` never fires;
-  the subsequent `launched` then sees `previouslyActive == true` and skips `onMeetingStart` — so Spotify never pauses.
-  The event is authoritative and race-free. Keep seeding `activeMeetings` from running apps **only** on module load (so
+  event the dying app is often still enumerable, so a recompute keeps the state "active" and the start and end handlers
+  stop firing. Keep seeding `activeMeetings` from running apps **only** on module load (so
   a reload mid-meeting doesn't fire a spurious start). Verify by tailing `hs.console.getConsole()` for
   `meetings: Paused Spotify` after a full Zoom quit + relaunch.
 - `hs.timer.doUntil` checks the predicate **before** running the action — if the predicate is true immediately, the
   action never fires. Prefer `hs.timer.doEvery` with manual stop.
 - Hammerspoon needs explicit Bluetooth permission in System Settings > Privacy & Security > Bluetooth to use `blueutil`
   via `hs.task`.
-- Lua files are formatted by `stylua` via pre-commit. The hook uses `language: system`, so `stylua` must be available on
-  PATH (e.g. via `mise use -g stylua`).
+- Lua files are formatted by the hk `stylua` step, which runs the mise-managed `stylua`.
 - Call `busylight.off()` to blank the light. Keep the shared port powered as described in [USB hub
   locations](#usb-hub-locations); `sleepwake.restoreServices()` restores its power on unlock or `system:fix`.
 - Zsh reserves `status` as a read-only parameter for `$?`. Use names such as `port_status` or `http_status` for local

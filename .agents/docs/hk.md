@@ -93,9 +93,11 @@ Do not mirror the step list here — it drifts from `hk.pkl`. List the live plan
 The `hk-check` job in `.github/workflows/ci.yml` runs `hk check --all` via `jdx/mise-action`,
 which installs all tools from the Linux mise config. Steps skipped in CI:
 
-- `standardrb` — requires Ruby gems not in CI
-- `renovate-config-validator` — requires npm:renovate
-- `no-yadm-alt-symlinks` — requires yadm
+- `standardrb`: requires Ruby gems not in CI
+- `renovate-config-validator`: requires npm:renovate
+
+`no-yadm-alt-symlinks` and `no-duplicated-yadm-alts` are no-ops outside a yadm work tree,
+so the `yadm-render` job runs the alternate checks against a real one.
 
 The separate `luacheck` job lints `.config/nvim/**/*.lua` since hk's global exclude
 hides `.config/` from scanning.

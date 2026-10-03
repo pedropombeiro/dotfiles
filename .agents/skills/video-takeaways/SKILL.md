@@ -65,14 +65,9 @@ default to English, even when the video uses another language.
   Do not present one person's advice as universal consensus.
 - If automatic captions make a term or number uncertain, omit it, qualify it,
   or retain the original-language term in parentheses.
-- End every Memos summary with `#video-takeaways` so all summaries are easy to
-  find.
-- Aim for 3-5 tags total, including `#video-takeaways`.
-- Prefer an existing tag whenever one fits, even when a more specific label
-  comes to mind. Propose a new tag only when no existing tag covers the topic,
-  and identify it as new when presenting the draft.
-- Use lowercase and hyphens for multi-word tags. Do not create a near-synonym
-  of an existing tag.
+- End every Memos summary with `#video-takeaways` and 2-4 subject tags. Follow
+  the tag rules in [`references/WORKFLOW.md`](references/WORKFLOW.md), which
+  prefer existing tags over new ones.
 - Put the video's thumbnail directly below the H1 as a linked Markdown image
   when the helper provides one. Link the image to the source video. Do not fail
   the summary when the source has no usable thumbnail.

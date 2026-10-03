@@ -69,10 +69,9 @@ Three plugins coordinate to provide seamless YADM support:
 
 ### Keybindings
 
-- `<leader>fgy` - YADM grep (search dotfiles content)
+- `<leader>/` or `<leader>fgg` - Git/YADM grep (auto-detects context)
 - `<leader>fgs` - Git/YADM status (auto-detects context)
 - `<leader>fgc` - Git/YADM log (auto-detects context)
-- `<leader>/` - Git/YADM grep (auto-detects context)
 - `<leader>tg` - LazyGit (opens with YADM args when appropriate)
 
 ## LSP Schema Associations

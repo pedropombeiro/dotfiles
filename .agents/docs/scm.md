@@ -62,11 +62,14 @@ is ignored, so the NAS variant must include all shared config plus any NAS-speci
 with a `##` suffix is not enough — `yadm alt` only processes tracked files. After creating a
 new alternate file, always run `yadm add <file>` then `yadm alt` to activate the symlink.
 
-When renaming or adding files:
+When renaming or adding alternates:
 
-1. Only use `yadm mv` or `yadm add` on files with `##` suffixes (the actual tracked files)
-2. Verify with `yadm status` that only `##` files are staged, not bare symlinks
-3. If symlinks appear in staging, use `yadm reset HEAD <symlink>` to unstage them
+1. Use `yadm mv` or `yadm add` on the `##`-suffixed source files, not on the links or
+   rendered files that yadm generates from them
+2. Verify with `yadm status` that no generated link or rendered file is staged
+3. If one is staged, use `yadm reset HEAD <path>` to unstage it
+
+Ordinary tracked files without alternates need no suffix.
 
 yadm doesn't remove a link after the last alternate for that name is renamed or
 deleted. The `post_alt` hook runs `prune-dangling-alt-links.zsh`, which deletes

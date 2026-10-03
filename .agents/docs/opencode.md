@@ -59,12 +59,12 @@ history. It refuses any tool call whose input contains a literal structured secr
 when they print or write text (`echo`, `printf`, `tee`, heredocs), because commands such as
 `curl -H` can legitimately pass a token.
 
-Home-directory path rules belong under `read` and `edit` in `permission`, never as
-top-level keys: a top-level key is an action name, so `"~/.ssh/*": "deny"` there matches
-nothing. OpenCode expands a leading `~` for `read`, `edit`, and `external_directory`
-resources, but not for `shell`, so these rules do not stop `cat ~/.ssh/...`. A `*` in a
-rule also matches nested paths. Reads under `~/.config/opencode/` ask instead of being
-denied, so an agent can inspect config or skills with approval. `opencode run` rejects
+Home-directory path rules are `permissions` entries with a `read` or `edit` action, for
+example `{ "action": "read", "resource": "~/.ssh/*", "effect": "deny" }`. OpenCode expands
+a leading `~` for `read`, `edit`, and `external_directory` resources, but not for `shell`,
+so these rules do not stop `cat ~/.ssh/...`. A `*` in a rule also matches nested paths.
+Reads under `~/.config/opencode/` ask instead of being denied, so an agent can inspect
+config or skills with approval. `opencode run` rejects
 such reads automatically.
 
 Redaction markers are transit-only. The plugin blocks rather than rewrites file-write content
@@ -99,9 +99,7 @@ OpenCode 2 splits plugins by where they run:
 
 The background service reloads a local plugin as soon as its file changes, so every
 intermediate state of a multi-step edit goes live. A tool hook that throws blocks
-every tool call, including the edits that would fix it. A half-applied change to
-`env-protection.js` once left an agent unable to run any tool until a human repaired
-the file.
+every tool call, including the edits that would fix it.
 
 - Change a local plugin in one complete write, never as a series of edits.
 - Test the new version before writing it: load a copy with `node`, appending

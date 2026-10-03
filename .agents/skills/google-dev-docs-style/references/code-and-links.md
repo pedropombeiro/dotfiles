@@ -135,16 +135,10 @@ Not recommended: `For more information, see [this document].`
 
 ## Code references in GitLab prose
 
-Pedro's convention, applied in issues, merge request descriptions, and review
-comments. See the Formatting Preferences section of
-[`writing-style.md`](../../../../.agents/docs/writing-style.md).
-
-- Hyperlink a file, function, config key, or line range rather than only naming it.
-- Pin the link to a commit SHA and include the line range, so it keeps pointing at
-  the same code after the file changes.
-- Link a branch only when the current state of that branch is the point.
-- State the SHA in the prose when a document carries several permalinks.
-- Check repository visibility first. Inline the snippet when the target is private.
+In issues, merge request descriptions, and review comments, follow the
+permalink rules in the Formatting Preferences section of
+[`writing-style.md`](../../../../.agents/docs/writing-style.md). In short, link code
+references to a SHA-pinned line range in a repository the reader can access.
 
 Recommended:
 

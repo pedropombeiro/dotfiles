@@ -110,6 +110,7 @@ Call `memo_get_memo` with the full resource name:
 }
 ```
 
-Confirm that the stored memo is private, contains the complete draft, retains
+Confirm that the stored memo has the requested visibility (`PRIVATE` by
+default), contains the complete draft, retains
 the timestamp links, exposes `video-takeaways` among the extracted tags, and
 contains the expected linked thumbnail when one was available.

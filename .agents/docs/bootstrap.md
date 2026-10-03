@@ -24,8 +24,8 @@ Scripts use YADM alternate files for platform targeting. See
 ## Running Bootstrap
 
 ```bash
-yadm bootstrap    # Run all bootstrap scripts
-mise run dotfiles:install  # Via mise tasks
+yadm bootstrap               # Run all bootstrap scripts
+mise run dotfiles:bootstrap  # Same, via mise tasks
 ```
 
 ## Script Template

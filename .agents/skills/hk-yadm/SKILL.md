@@ -14,19 +14,14 @@ These local rules take precedence over generic repository setup advice.
 - Use `yadm` for status and diffs, and `yadm enter hk ...` for commands that
   need Git context. `$HOME` is the work tree of YADM's bare repository. hk
   requires v2.1.0 or later for the current configuration.
-- Keep `HK_STASH_UNTRACKED=false` in `~/hk.pkl` to avoid scanning the entire
-  home directory for untracked files.
-- Keep `stash = "none"` on the `pre-commit` hook. Other hooks, including `fix`,
-  default to no stashing in hk v2. The global hooks
-  can re-enter hk during its internal Git stash operations. Fixers can also
-  affect unstaged content with stashing disabled, so inspect both diffs.
-- Preserve the existing global config-based hooks. Re-running
-  `hk install --global` overwrites the local command guards that allow Git to
-  run when hk is absent from `PATH`. See the repair procedure in the hk docs.
+- Keep `HK_STASH_UNTRACKED=false` and `stash = "none"` on the `pre-commit`
+  hook. With stashing disabled, fixers can touch unstaged content, so inspect
+  both diffs. The hk docs explain why both settings exist.
+- Don't re-run `hk install --global`; it removes the guards that let Git run
+  without hk on `PATH`. The hk docs contain the repair procedure.
 - Add shared checks to `fast_steps`. Preserve the Pkl package pins unless the
   task requires an upgrade or a newer schema feature.
-- Keep narrow exclusions for upstream skill directories and symlinks so
-  filesystem-walking fixers cannot modify their targets. Locally authored
+- Keep narrow exclusions for upstream skills and symlinks; locally authored
   skills, including this one, receive normal checks.
 
 ## Verify changes

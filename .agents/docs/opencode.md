@@ -95,6 +95,31 @@ OpenCode 2 splits plugins by where they run:
   Tool hooks also fire for tools called through Code Mode (`execute`), with the inner
   tool's name.
 
+### Machine-specific CLI plugins
+
+OpenCode discovers every plugin directory under `~/.config/opencode/plugins/`, so a
+tracked CLI plugin there loads on every machine. Keep a CLI plugin that should run only
+on some machines in `~/.config/opencode/cli-plugins/<name>/`, with its entry point at
+`<name>/tui.tsx`, and list it as `./cli-plugins/<name>` in the matching `cli.base.json`
+alternate. OpenCode resolves that relative path against `~/.config/opencode/`. Local
+`.tsx` plugins can import `solid-js`, `@opentui/solid`, and `@opencode/plugin/tui`
+without a `package.json`; OpenCode provides them at runtime.
+
+`cli-plugins/gitlab-mr-status` (Work only) shows an MR's pipeline status, unresolved
+thread count, conflicts, and approval in the prompt footer. It picks each session's MR
+in this order:
+
+1. The target stored by `set_session_target`, read through the RPC that
+   `opencode-forge-session-title` 1.3.0 and later registers.
+1. The MR number in the title prefix that plugin writes, such as `[#123, !456]`.
+1. The checked-out branch's open MR.
+
+The MR number and pipeline status are links. It adds `/mr-status` and `/mr-open`, and
+reads GitLab through `glab api graphql`, so it uses `glab`'s stored login. It caches each
+session's status and polls every 2 minutes while an open MR is shown, so switching tabs
+reuses cached data until the next poll is due. Run its tests with
+`mise exec bun@1.3.10 -- bun test` from the plugin directory.
+
 ### Editing local plugins
 
 The background service reloads a local plugin as soon as its file changes, so every

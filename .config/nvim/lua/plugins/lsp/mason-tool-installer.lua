@@ -8,7 +8,14 @@ local function needed_for_role() return vim.g.yadm_class ~= "NAS" end
 
 local function has_cargo() return needed_for_role() and vim.fn.executable("cargo") == 1 end
 
-local function has_go() return vim.fn.executable("go") == 1 end
+-- A mise shim is executable even when no Go version is active, so run it once
+local go_available
+local function has_go()
+  if go_available == nil then
+    go_available = vim.fn.executable("go") == 1 and vim.system({ "go", "version" }):wait().code == 0
+  end
+  return go_available
+end
 
 local function has_ruby()
   local p = vim.fn.exepath("ruby")

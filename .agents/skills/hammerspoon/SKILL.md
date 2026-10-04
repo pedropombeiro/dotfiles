@@ -171,7 +171,7 @@ Home Assistant
 ## Stream Deck integration
 
 The Stream Deck "lock" button should open the URL `hammerspoon://displaysleep` (configured to open with Hammerspoon).
-This replaces the previous `Ctrl+Cmd+Q` + `pmset displaysleepnow` approach which had timing issues with USB wake events.
+Don't replace it with `Ctrl+Cmd+Q` and `pmset displaysleepnow`, which race with USB wake events.
 
 ## USB hub locations
 
@@ -247,7 +247,6 @@ through to the raw URL.
 - `~/.config/yadm/bootstrap.d/941-open-hammerspoon-at-login.sh##os.Darwin` — Launches Hammerspoon at login (all Darwin
   machines)
 - `~/.config/yadm/bootstrap.d/940-open-apps-at-login.sh##os.Darwin,class.Work` — Other Work-only login items
-  (Hammerspoon removed from here)
 - `~/.config/opencode/notifier/notify.sh` — OpenCode notifier script that calls Hammerspoon's notify endpoint
 - `~/.config/yadm/config_templates/nginx/servers/localhost.conf` — nginx reverse proxy config
 - `~/.config/yadm/scripts/defaults.sh##os.Darwin` — Registers Hammerspoon as default HTTP/HTTPS handler via `duti` (for

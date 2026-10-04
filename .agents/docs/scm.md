@@ -23,44 +23,19 @@ When running `git rebase --continue` or any git/yadm command that opens an
 editor, prefix with `GIT_EDITOR=true` to prevent the editor from blocking
 (the non-interactive shell will SIGTERM nvim, causing a timeout).
 
-### File Organization
+### Alternate files
 
-- **Alternate files**: Use suffixes for per-machine configs. See
-  [YADM Layout](yadm-layout.md) for when to use each condition, and for the
-  alternatives to full-copy alternates.
-  - `##class.Personal`, `##class.Work`, `##class.NAS` - Machine role
-  - `##os.Darwin`, `##os.Linux` - Operating system
-  - `##distro.qts` - QNAP QTS platform limits
-  - `##template` - Rendered by yadm with `yadm.class` and other variables
-  - Combined: `##os.Darwin,class.Work`
-- **Agent docs**: `~/.agents/docs/` - Documentation for agents
-- **Bootstrap**: `~/.config/yadm/bootstrap.d/` - Setup scripts (000-999 numbering)
+[YADM Layout](yadm-layout.md) owns the alternate conditions (`##class.*`,
+`##os.*`, `##distro.qts`, `##template`) and how to share content between
+variants. Alternates are not additive: yadm links only the best match, so each
+variant must be self-contained.
 
-### Important: Symlinks
+YADM creates a symlink for each alternate (for example, `foo.sh` ->
+`foo.sh##os.Darwin`). **Never commit these symlinks**; commit only the files
+with `##` suffixes.
 
-YADM automatically creates symlinks for alternate files (e.g., `foo.sh` -> `foo.sh##os.Darwin`).
-**Never commit these symlinks** - only commit the actual files with `##` suffixes.
-
-**Alternate files are not additive.** Only the best-matching file is symlinked. For example, if
-both `foo.sh##os.Darwin` and `foo.sh##class.Work` exist, YADM will link only the best match for
-the current system. Each alternate file must be self-contained and not depend on other alternates
-being present. Do not split shared content across alternates expecting a merge or fallback. To
-share content, use a base file that includes a small alternate, conditions in a single file, or a
-template, as described in [YADM Layout](yadm-layout.md#varying-a-file-between-machines).
-
-Example:
-
-```text
-~/.config/sesh/sesh.toml##default
-~/.config/sesh/sesh.toml##class.NAS
-```
-
-On the NAS, only `sesh.toml##class.NAS` is linked to `~/.config/sesh/sesh.toml`. The default file
-is ignored, so the NAS variant must include all shared config plus any NAS-specific overrides.
-
-**New alternate files must be `yadm add`-ed before the symlink is created.** Writing a file
-with a `##` suffix is not enough — `yadm alt` only processes tracked files. After creating a
-new alternate file, always run `yadm add <file>` then `yadm alt` to activate the symlink.
+`yadm alt` only processes tracked files. After creating an alternate, run
+`yadm add <file>` and then `yadm alt` to activate its symlink.
 
 When renaming or adding alternates:
 

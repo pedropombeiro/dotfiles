@@ -38,16 +38,13 @@ overwrites `gdk.prev.yml` when replacing the configuration.
 ## Bootstrap and updates
 
 The checkout is declared in the work-only mise configuration under `[bootstrap.repos]`, so personal
-machines do not clone it. On a fresh work machine:
+machines do not clone it. On a fresh work machine, clone the public YADM repository over HTTPS and run
+`yadm bootstrap`. Step `007` waits until 1Password, its SSH agent, and GitLab SSH access are ready, and
+step `010` then clones every repository declared under `[bootstrap.repos]`. See
+[Bootstrap](bootstrap.md#guidelines). If bootstrap stops before the clone, fix the reported problem and
+run `yadm bootstrap` again.
 
-1. Clone the public YADM repository over HTTPS.
-2. Run `yadm bootstrap` to install 1Password and the remaining prerequisites.
-3. Sign in to 1Password and enable its SSH agent when prompted.
-4. Re-run `yadm bootstrap`. The existing repository bootstrap steps run `mise bootstrap repos apply` for every
-   repository declared under `[bootstrap.repos]`.
-
-Configured repositories can use different Git hosts and authentication methods. The private GitLab
-checkout requires the 1Password SSH agent, while public HTTPS repositories do not.
+The private GitLab checkout requires the 1Password SSH agent, while public HTTPS repositories do not.
 
 `mise run dotfiles:update` refreshes the GitLab dotfiles checkout before syncing files into the GDK
 worktrees:

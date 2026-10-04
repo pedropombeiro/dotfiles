@@ -19,7 +19,7 @@ YADM bootstrap scripts for automated system setup.
 ## Alternate File Syntax
 
 Scripts use YADM alternate files for platform targeting. See
-[SCM](scm.md#file-organization) for the suffix list.
+[YADM Layout](yadm-layout.md#machine-identity) for the conditions.
 
 ## Running Bootstrap
 

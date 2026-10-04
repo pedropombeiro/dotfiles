@@ -12,8 +12,7 @@ These local rules take precedence over generic repository setup advice.
 ## Preserve the dotfiles setup
 
 - Use `yadm` for status and diffs, and `yadm enter hk ...` for commands that
-  need Git context. `$HOME` is the work tree of YADM's bare repository. hk
-  requires v2.1.0 or later for the current configuration.
+  need Git context. `$HOME` is the work tree of YADM's bare repository.
 - Keep `HK_STASH_UNTRACKED=false` and `stash = "none"` on the `pre-commit`
   hook. With stashing disabled, fixers can touch unstaged content, so inspect
   both diffs. The hk docs explain why both settings exist.

@@ -95,7 +95,8 @@ Tools unaffected (use Rust `dirs` crate, ignores XDG on macOS): rtk, zoxide, neo
 
 ## Alternate Files
 
-Use platform-specific suffixes — see [SCM](scm.md#file-organization) for the list.
+Use platform-specific suffixes. See [YADM Layout](yadm-layout.md#machine-identity)
+for the conditions.
 
 ## Adding Functions
 
@@ -150,41 +151,26 @@ for zinit replay tracking).
 
 ### Autosuggestion ghost text fixes
 
-Two independent ghost-text bugs exist; each has its own fix.
+Two wrappers keep autosuggestion ghost text out of committed commands:
 
-**Bug 1: rendering artifact on normal accept-line.** `_zsh_autosuggest_clear`
-sets `POSTDISPLAY=` but its `zle -R` redraw fires _after_ the inner
-`accept-line` commits the line, leaving suggestion text painted in default
-foreground on the committed prompt. Fix: `510-common-plugins.zsh` defines
-`_fix_autosuggest_accept_line`, an outer `accept-line` widget that clears
-`POSTDISPLAY` + `region_highlight` and calls `zle -R` _before_ delegating to
-`zle .accept-line` (the builtin).
+- **Normal accept-line.** `_zsh_autosuggest_clear` redraws after the inner
+  `accept-line` commits the line, which leaves suggestion text on the committed
+  prompt. `_fix_autosuggest_accept_line` in `510-common-plugins.zsh` installs an
+  outer `accept-line` that clears `POSTDISPLAY` and `region_highlight` and runs
+  `zle -R` before `zle .accept-line`.
+- **Atuin accept.** Atuin's widget sets the buffer and calls `zle accept-line`
+  while `POSTDISPLAY` still holds the old suggestion, so autosuggestions appends
+  it to the command. `590-atuin.zsh` wraps `atuin-search` and
+  `atuin-search-viins` to clear `POSTDISPLAY` first.
 
-**Bug 2: autosuggestion appended to buffer on atuin accept.** When you select
-a command from atuin's TUI and press Enter, atuin's widget sets
-`LBUFFER=$output` / `RBUFFER=""`, then calls `zle accept-line`. At that point
-`POSTDISPLAY` still holds the suggestion text visible before the TUI opened.
-Autosuggestions' bound `accept-line` checks
-`cursor == #BUFFER && #POSTDISPLAY > 0` (both true) and appends `POSTDISPLAY`
-to `BUFFER` — turning `atuin stats --help` into
-`atuin stats --help stats --help`. Fix: `590-atuin.zsh` wraps
-`atuin-search` and `atuin-search-viins` (the widgets bound to `^R` / vicmd
-`/` by `_atuin_rebind_keys`) with thin wrappers that clear `POSTDISPLAY=`
-before delegating to atuin's original functions. By the time atuin invokes
-`accept-line`, the suggestion is gone.
+#### Chain the accept-line wrapper into autosuggestions' atload
 
-#### Why the outer wrapper must be chained into autosuggestions' atload
-
-The Bug 1 wrapper must install _after_ autosuggestions wraps `accept-line`,
-otherwise autosuggestions buries it. **Do not** install via a `precmd` hook
-or a separate `zinit wait'0*'` block: zinit loads turbo plugins
-asynchronously via `zle -F`, so any user wrapper installed by precmd runs
-_before_ autosuggestions' atload fires. Autosuggestions then wraps over the
-user wrapper, leaving the bound `accept-line` as
-`_zsh_autosuggest_bound_1_accept-line` with our wrapper hidden inside.
-
-The only mechanism that works: chain the install into autosuggestions' own
-`atload`, after `_zsh_autosuggest_start`:
+The accept-line wrapper must install _after_ autosuggestions wraps
+`accept-line`, otherwise autosuggestions buries it. Don't install it from a
+`precmd` hook or a separate `zinit wait'0*'` block: zinit loads turbo plugins
+asynchronously via `zle -F`, so those run before autosuggestions' atload.
+Chain the install into autosuggestions' own `atload`, after
+`_zsh_autosuggest_start`:
 
 ```zsh
 atload'!_zsh_autosuggest_start; _fix_autosuggest_accept_line' zsh-users/zsh-autosuggestions

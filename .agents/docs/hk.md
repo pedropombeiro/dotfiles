@@ -31,7 +31,7 @@ arguments through `zsh -c`, which breaks the quoting of hook commands.
 
 ### Pre-push check
 
-The `check-all` pre-push hook runs `hk check --all`, the same full check as CI, in under 15 seconds.
+The `check-all` pre-push hook runs `hk check --all`, the same full check as CI.
 A hook registered by hk itself would only check the files in the pushed commits, which misses files
 that a formatter or linter config change affects. It is registered in the yadm repository's config,
 not globally, so pushes in other repositories with an `hk.pkl` are unaffected.
@@ -91,7 +91,7 @@ Do not mirror the step list here — it drifts from `hk.pkl`. List the live plan
 ## CI Integration
 
 The `hk-check` job in `.github/workflows/ci.yml` runs `hk check --all` via `jdx/mise-action`,
-which installs all tools from the Linux mise config. Steps skipped in CI:
+with `MISE_ENV=ci` selecting the CI tool set. Steps skipped in CI through `HK_SKIP_STEPS`:
 
 - `standardrb`: requires Ruby gems not in CI
 - `renovate-config-validator`: requires npm:renovate

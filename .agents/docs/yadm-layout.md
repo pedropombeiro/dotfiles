@@ -57,9 +57,16 @@ Choose the first approach that fits:
    elsewhere, such as `~/.agents/skills.work/`.
 
 Don't template a file that its tool writes to. A full-copy alternate is a
-symlink, so the tool's writes land in the tracked file and appear in
+symlink, so writes through the link land in the tracked file and appear in
 `yadm diff`. A template renders a plain file, so the tool's writes stay
 untracked and yadm overwrites them on the next `yadm alt`.
+
+Some tools save by writing a temporary file and renaming it over the original,
+which replaces the symlink instead of writing through it. Neither approach
+works for those files. Keep the tool's file untracked and put the tracked
+settings in a file that the tool reads in addition, as
+[OpenCode's terminal config](opencode.md#terminal-config) does with
+`cli.base.json`.
 
 ## Duplication check
 

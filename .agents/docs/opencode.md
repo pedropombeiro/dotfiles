@@ -76,9 +76,9 @@ Every machine runs OpenCode 2. Both `opencode.json` alternates use the native V2
 an ordered `permissions` array (last match wins), `providers`, `mcp.servers`, and
 `agents.title.model`. `enabled_providers` stays in V1 syntax until provider policies
 leave `experimental`. When migrating another config, compare `opencode debug config`
-output for the old and new files, loaded as project configs from scratch directories. The NAS (`distro.qts`) gets it
-from the
-`opencode-legacy-glibc` build and uses the `##default` config alternates. Do not add
+output for the old and new files, loaded as project configs from scratch directories.
+The NAS (`distro.qts`) gets OpenCode 2 from the `opencode-legacy-glibc` build and uses
+the `##default` config alternates. Do not add
 OpenCode 1 fallbacks (`plugin`, `tui.json`, `server()` plugin entrypoints, `--pure`).
 
 ## Plugins

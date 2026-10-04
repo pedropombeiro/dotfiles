@@ -103,7 +103,7 @@ level via a zle widget and works regardless of scrollback state.
 
 1. `prefix + Y` in tmux sends the custom escape sequence `\e[Y` to the pane
 2. zsh has a `yank-buffer-to-clipboard` zle widget bound to `\e[Y` in both `viins` and `vicmd` keymaps
-3. The widget pipes `$BUFFER` to `pbcopy` and displays a confirmation message
+3. The widget pipes `$BUFFER` to `clipcopy` and displays a confirmation message
 
 **Files:**
 

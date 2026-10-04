@@ -237,7 +237,7 @@ printf "${YELLOW}%s${NC}\n" "Configuring dotfiles git hooks..."
 
   git config --file "${yadm_config}" hook.check-all.event pre-push
   git config --file "${yadm_config}" hook.check-all.command \
-    'check_all() { [ "${HK:-1}" = "0" ] || ! command -v hk >/dev/null 2>&1 || { command -v standardrb >/dev/null 2>&1 || export HK_SKIP_STEPS="${HK_SKIP_STEPS:+$HK_SKIP_STEPS,}standardrb"; hk check --all; }; }; check_all'
+    'check_all() { [ "${HK:-1}" = "0" ] || ! command -v hk >/dev/null 2>&1 || { command -v standardrb >/dev/null 2>&1 || export HK_SKIP_STEPS="${HK_SKIP_STEPS:+$HK_SKIP_STEPS,}standardrb"; cd "$(git rev-parse --show-toplevel)" && hk check --all; }; }; check_all'
 } && printf "\n${GREEN}%s${NC}\n" "Done"
 
 _update_step "neovim plugins"

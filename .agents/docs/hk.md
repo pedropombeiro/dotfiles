@@ -37,7 +37,11 @@ that a formatter or linter config change affects. It is registered in the yadm r
 not globally, so pushes in other repositories with an `hk.pkl` are unaffected.
 
 The hook command wraps the check in a shell function, which discards the remote arguments that Git
-passes to the hook. `hk check --all` rejects those arguments. The name avoids the `hk-` prefix that
+passes to the hook. `hk check --all` rejects those arguments. The function changes to the work tree
+before running hk. Git runs `pre-push` in the directory `yadm push` was run from, and hk loads the
+nearest `hk.pkl` above that directory. Pushing from another hk repository, such as `/share/Container`,
+would otherwise apply that repository's config to `$HOME`. Without the dotfiles excludes and
+`HK_STASH_UNTRACKED=false`, hk then scans over a million files. The name avoids the `hk-` prefix that
 `hk install` manages. The command adds `standardrb` to `HK_SKIP_STEPS` when it is not installed, as on
 the NAS. The hook checks the working tree, not the pushed commits, so uncommitted changes can affect
 its result. Bypass it with `HK=0 yadm push`.

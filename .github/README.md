@@ -16,6 +16,7 @@ featuring a carefully curated development environment with powerful CLI tools an
 - [Configuration](#configuration)
   - [macOS Settings](#macos-settings)
   - [Package Sources](#package-sources)
+- [Cheat sheets](#cheat-sheets)
 - [Maintenance](#maintenance)
   - [Profiling ZSH](#profiling-zsh)
   - [Checklist Before Reinstall](#checklist-before-reinstall)
@@ -92,7 +93,7 @@ This dotfiles setup includes:
 - **🔐 Security & Privacy** (see [SECURITY.md](SECURITY.md))
   - [1Password](https://1password.com/) with CLI integration
   - SSH configuration
-  - GPG setup
+  - SSH commit signing through the 1Password SSH agent
   - Secure credential management
 
 ## Quick Start
@@ -155,7 +156,10 @@ An hk pre-commit check rejects alternates that share more than 50 lines. See
 
 ## Post-Installation
 
-After installing the dotfiles, ensure the Syncthing-managed config files are linked:
+Bootstrap links restored files, such as shell histories, from
+`~/Sync/pedro/.dotfiles/Home/MBP.<class>`. Personal machines receive that directory through
+Syncthing. Work machines don't run Syncthing, so copy it from the previous Work machine. To
+relink after restoring files:
 
 ```shell
 ~/.config/yadm/scripts/relink-dotfiles.zsh
@@ -192,6 +196,11 @@ The definitive package lists live in the Homebrew bundle and mise configuration:
 
 The README highlights key tooling, but those configuration files are the source of truth.
 Runtime versions and CLI tools are declared in `.config/mise/`.
+
+## Cheat sheets
+
+[Terminal cheat sheets](cheatsheets/README.md) cover the high-value bindings for tmux, sesh,
+Yazi, Neovim, LazyGit, Atuin, fzf, zoxide, and Zsh in this setup.
 
 ## Maintenance
 

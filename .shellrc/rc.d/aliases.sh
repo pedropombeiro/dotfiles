@@ -9,6 +9,10 @@ alias vimdiff="vim -d"
 
 # Tool-specific aliases
 alias lzd='lazydocker'
+# doggo has its own flag syntax; use /usr/bin/dig or `command dig` for dig syntax
+if command -v doggo >/dev/null 2>&1; then
+  alias dig='doggo'
+fi
 
 # Format SQL from stdin via pg_format, wrap in a markdown code block, and copy to clipboard
 alias sqlformat='pg_format --nocomment - | xargs -0 printf "\`\`\`sql\n%s\`\`\`" | pbcopy'

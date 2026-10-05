@@ -58,9 +58,9 @@
       }
     },
     "gitlab": {
-      "package": "aisdk:gitlab-ai-provider@6.18.0",
+      "package": "aisdk:gitlab-ai-provider@6.19.0",
       "models": {
-        // Superseded by Fable 5.1, Opus 5.5, and Sonnet 5.
+        // Superseded by Fable 5.1, Opus 5.5, and Sonnet 5.5.
         "duo-workflow-claude-fable-5": { "disabled": true },
         "duo-chat-opus-4-5": { "disabled": true },
         "duo-chat-opus-4-6": { "disabled": true },
@@ -100,12 +100,12 @@
           "disabled": true,
           "cost": [{ "input": 5, "output": 25, "cache": { "read": 0.50, "write": 6.25 } }]
         },
+        // Superseded by Sonnet 5.5.
         "duo-chat-sonnet-5": {
+          "disabled": true,
           "cost": [{ "input": 2, "output": 10, "cache": { "read": 0.20, "write": 2.50 } }]
         },
-        // Enable after gitlab-ai-provider ships the mappings in !49.
         "duo-chat-sonnet-5-5": {
-          "disabled": true,
           "cost": [{ "input": 2, "output": 10, "cache": { "read": 0.20, "write": 2.50 } }]
         },
         "duo-chat-sonnet-4": {
@@ -128,15 +128,15 @@
             { "tier": { "type": "context", "size": 200000 }, "input": 20, "output": 75, "cache": { "read": 2, "write": 25 } }
           ]
         },
+        // Superseded by GPT 6.1 Sol.
         "duo-chat-gpt-6-sol": {
+          "disabled": true,
           "cost": [
             { "input": 2, "output": 10, "cache": { "read": 0.20, "write": 2.50 } },
             { "tier": { "type": "context", "size": 200000 }, "input": 4, "output": 15, "cache": { "read": 0.40, "write": 5 } }
           ]
         },
-        // Enable after gitlab-ai-provider ships the mappings in !49.
         "duo-chat-gpt-6-1-sol": {
-          "disabled": true,
           "cost": [
             { "input": 2, "output": 10, "cache": { "read": 0.10, "write": 2.50 } },
             { "tier": { "type": "context", "size": 272000 }, "input": 4, "output": 15, "cache": { "read": 0.20, "write": 5 } }
@@ -148,7 +148,7 @@
             { "tier": { "type": "context", "size": 200000 }, "input": 0.20, "output": 0.75, "cache": { "read": 0.02, "write": 0.25 } }
           ]
         },
-        // Superseded by GPT 6 (Sol, Luna, Astra).
+        // Superseded by GPT 6 (Luna, Astra) and GPT 6.1 Sol.
         "duo-chat-gpt-5-6-sol": {
           "disabled": true,
           "cost": [

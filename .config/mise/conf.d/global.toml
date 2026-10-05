@@ -2,7 +2,7 @@
 # .github/workflows/ci.yml. Soft, so a lagging QTS install warns instead of
 # breaking shell activation. Renovate bumps both together.
 # renovate: datasource=github-releases depName=jdx/mise
-min_version = { soft = "2026.9.14" }
+min_version = { soft = "2026.10.0" }
 
 [tools]
 # ── Shell UX ──────────────────────────────────────────────────────────

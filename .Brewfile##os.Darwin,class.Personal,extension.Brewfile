@@ -281,6 +281,8 @@ cask "ledger-wallet"
 cask "libreoffice"
 # Host-based application firewall
 cask "little-snitch@5"
+# Break time reminder app
+cask "lookaway"
 # Adaptive brightness for external displays
 cask "lunar"
 # File system integration

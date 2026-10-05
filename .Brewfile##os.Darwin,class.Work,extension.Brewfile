@@ -378,6 +378,8 @@ cask "brewforge/extras/keyviz", trusted: true
 cask "latest"
 # Free cross-platform office suite, fresh version
 cask "libreoffice"
+# Break time reminder app
+cask "lookaway"
 # Adaptive brightness for external displays
 cask "lunar"
 # Provides updates to various Microsoft products

@@ -38,7 +38,7 @@ glab = "latest"
 colima = "0.10.3"
 lima = "2.2.0"
 # Run local processes with Kubernetes network and filesystem context
-mirrord = "3.267.0"
+mirrord = "3.268.0"
 # Kubernetes terminal UI
 k9s = "latest"
 # GitLab Duo AI CLI

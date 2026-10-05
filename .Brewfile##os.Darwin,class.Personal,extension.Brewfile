@@ -44,8 +44,8 @@ brew "docker", link: false
 brew "docker-buildx"
 # Isolated development environments using Docker
 brew "docker-compose"
-# Command-line DNS client
-brew "dog"
+# Command-line DNS client for humans
+brew "doggo"
 # Disk Usage/Free Utility - a better 'df' alternative
 brew "duf"
 # More intuitive version of du in rust

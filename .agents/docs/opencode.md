@@ -128,6 +128,16 @@ session's status and polls every 2 minutes while an open MR is shown, so switchi
 reuses cached data until the next poll is due. Run its tests with
 `mise exec bun@1.3.10 -- bun test` from the plugin directory.
 
+`local-plugins/server/session-open` adds the `open_session` tool, which the
+`session-search` skill and the `/search-session` command use to open a past session.
+The tool accepts only sessions of the caller's project: the same project ID, or the same
+resolved directory for sessions outside a repository (project `global`). The service
+can't drive the terminal, so the tool emits an RPC event. Its `tui.tsx` handles the event
+only in the terminal that shows the calling session or one of its ancestors, focuses the
+target's tab (or navigates to it for child sessions or when tabs are off), and replies. The
+tool fails after 3 seconds without a reply. Run its tests with
+`mise exec bun@1.3.10 -- bun test` from the plugin directory.
+
 ### Editing local plugins
 
 The background service reloads a local plugin as soon as its file changes, so every

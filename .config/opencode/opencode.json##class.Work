@@ -39,7 +39,10 @@
       // footer. Keep the endpoint and protocol in sync with the exporter's.
       "package": "./local-plugins/server/otel-status",
       "options": { "endpoint": "https://otel.pombei.ro", "protocol": "http/protobuf" }
-    }
+    },
+    // Adds the open_session tool, which the session-search skill uses to focus a
+    // session of the current project in the terminal.
+    "./local-plugins/server/session-open"
   ],
   "mcp": {
     "servers": {

@@ -111,6 +111,11 @@ def parse_args():
         "User messages, assistant replies, compaction summaries, and titles are always searched.",
     )
     parser.add_argument("--directory", help="Only sessions whose directory starts with this path")
+    parser.add_argument(
+        "--current-project",
+        action="store_true",
+        help="Only sessions of the project of the session in $OPENCODE_SESSION_ID",
+    )
     parser.add_argument("--since", type=parse_date, help="Only matches on or after this date (YYYY-MM-DD)")
     parser.add_argument("--until", type=parse_date, help="Only matches before this date (YYYY-MM-DD)")
     parser.add_argument("--limit", type=int, default=10, help="Maximum sessions to return (default: 10)")
@@ -156,28 +161,59 @@ def find_session_table(db):
 def load_sessions(db, table, args):
     columns = {r[1] for r in db.execute(f"PRAGMA table_info({table})")}
     archived = "time_archived" if "time_archived" in columns else "NULL"
-    query = f"SELECT id, title, directory, parent_id, time_created, time_updated, {archived} AS time_archived FROM {table}"
+    project = "project_id" if "project_id" in columns else "NULL"
+    query = (
+        f"SELECT id, title, directory, parent_id, {project} AS project_id, time_created, time_updated, "
+        f"{archived} AS time_archived FROM {table}"
+    )
     params = []
     if args.directory:
         query += " WHERE directory = ? OR directory LIKE ? ESCAPE '\\'"
         directory = args.directory.rstrip("/")
         params = [directory, like_escape(directory) + "/%"]
-    current = None if args.include_current else os.environ.get("OPENCODE_SESSION_ID")
+    current_id = os.environ.get("OPENCODE_SESSION_ID")
+    excluded = None if args.include_current else current_id
+    current = None
+    if current_id:
+        current = db.execute(f"SELECT {project} AS project_id, directory FROM {table} WHERE id = ?", [current_id]).fetchone()
+    if args.current_project and (current is None or current["project_id"] is None):
+        sys.exit("search.py: --current-project needs $OPENCODE_SESSION_ID and a database with project IDs")
     sessions = {}
     for row in db.execute(query, params):
-        if row["id"] == current:
+        if row["id"] == excluded:
+            continue
+        same = same_project(row, current)
+        if args.current_project and not same:
             continue
         sessions[row["id"]] = {
             "id": row["id"],
             "title": row["title"] or "",
             "directory": row["directory"],
             "parent_id": row["parent_id"],
+            "project_id": row["project_id"],
+            "same_project": same,
             "archived": row["time_archived"] is not None,
             "created": iso(row["time_created"]),
             "created_ms": row["time_created"],
             "updated": iso(row["time_updated"]),
         }
     return sessions
+
+
+def same_project(row, current):
+    """Whether a session shares the current session's project, or None when unknown."""
+    if current is None or current["project_id"] is None or row["project_id"] is None:
+        return None
+    if row["project_id"] != current["project_id"]:
+        return False
+    # Every directory outside a repository shares the "global" project ID.
+    if row["project_id"] != "global":
+        return True
+    return resolve(row["directory"]) == resolve(current["directory"])
+
+
+def resolve(path):
+    return os.path.realpath(path) if path else path
 
 
 def candidate_messages(db, terms, args):

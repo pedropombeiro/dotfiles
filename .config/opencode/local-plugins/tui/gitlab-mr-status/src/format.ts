@@ -77,7 +77,8 @@ function describe(mr: MergeRequest, head: string): string[] {
     `Target: ${mr.targetProject} → ${mr.targetBranch}`,
     `Pipeline: ${mr.pipeline ? mr.pipeline.label : "none"}${mr.pipeline?.url ? ` (${mr.pipeline.url})` : ""}`,
     `Unresolved threads: ${mr.unresolvedThreads}${mr.threadsComplete ? "" : "+"}`,
-    `Draft: ${yesNo(mr.draft)} · Conflicts: ${yesNo(mr.conflicts)} · Approved: ${yesNo(mr.approved)}`,
+    `Draft: ${yesNo(mr.draft)} · Conflicts: ${yesNo(mr.conflicts)}`,
+    `Has approvals: ${yesNo(mr.hasApprovals)} · Approval requirements satisfied: ${mr.approvalRequirementsSatisfied === null ? "unknown" : yesNo(mr.approvalRequirementsSatisfied)}`,
   ]
   if (mr.mergeStatus) lines.push(`Merge status: ${mr.mergeStatus.toLowerCase().replace(/_/g, " ")}`)
   if (head && mr.headSha && head !== mr.headSha) {

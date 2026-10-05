@@ -20,6 +20,8 @@ const mr = (overrides: Partial<MergeRequest> = {}): MergeRequest => ({
   draft: false,
   conflicts: false,
   approved: false,
+  hasApprovals: false,
+  approvalRequirementsSatisfied: false,
   targetProject: "group/project",
   targetBranch: "main",
   headSha: "local",
@@ -85,6 +87,16 @@ describe("footerSegments", () => {
 })
 
 describe("detailsMessage", () => {
+  test("distinguishes actual approvals from satisfied requirements", () => {
+    const message = detailsMessage(snapshot([mr({ approvalRequirementsSatisfied: true })]))
+    expect(message).toContain("Has approvals: no · Approval requirements satisfied: yes")
+  })
+
+  test("reports unavailable approval requirements as unknown", () => {
+    const message = detailsMessage(snapshot([mr({ approvalRequirementsSatisfied: null })]))
+    expect(message).toContain("Approval requirements satisfied: unknown")
+  })
+
   test("includes the URL and head mismatch", () => {
     const message = detailsMessage(snapshot([mr({ headSha: "remote" })]))
     expect(message).toContain("https://gitlab.com/group/project/-/merge_requests/4281")

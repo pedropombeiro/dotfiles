@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import type { Exec } from "./exec"
 import type { Repository } from "./git"
+import { footerSegments } from "./format"
 import {
   classifyError,
   DISCUSSIONS_QUERY,
@@ -35,6 +36,7 @@ const node = (overrides: Record<string, unknown>) => ({
   draft: false,
   conflicts: false,
   approved: false,
+  approvedBy: { nodes: [] },
   detailedMergeStatus: "MERGEABLE",
   diffHeadSha: "abc",
   updatedAt: "2026-10-01T00:00:00Z",
@@ -111,6 +113,25 @@ describe("findMergeRequestByIid", () => {
     { host: "gitlab.com", path: "group/project" },
     { host: "gitlab.com", path: "security/project" },
   ]
+
+  test.each([
+    { requirements: true, approvers: [], approved: false },
+    { requirements: true, approvers: [{ id: "gid://gitlab/User/1" }], approved: true },
+    { requirements: false, approvers: [{ id: "gid://gitlab/User/1" }], approved: false },
+    { requirements: null, approvers: [{ id: "gid://gitlab/User/1" }], approved: false },
+  ])("requires actual approvals and satisfied requirements: %j", async ({ requirements, approvers, approved }) => {
+    const graphql: GraphQL = async () => ({
+      p0: { mergeRequest: node({ approved: requirements, approvedBy: { nodes: approvers } }) },
+    })
+    const mr = await findMergeRequestByIid(graphql, projects, "1")
+    expect(mr).toMatchObject({
+      approved,
+      hasApprovals: approvers.length > 0,
+      approvalRequirementsSatisfied: requirements,
+    })
+    const segments = footerSegments({ loading: false, lookup: { kind: "found", mergeRequests: [mr!] } })
+    expect(segments.some((segment) => segment.text === "approved")).toBe(approved)
+  })
 
   test("prefers the first project that has the MR", async () => {
     let seen: Record<string, string> = {}

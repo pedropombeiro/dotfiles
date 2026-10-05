@@ -16,6 +16,8 @@ export interface MergeRequest {
   draft: boolean
   conflicts: boolean
   approved: boolean
+  hasApprovals: boolean
+  approvalRequirementsSatisfied: boolean | null
   mergeStatus?: string
   targetProject: string
   targetBranch: string
@@ -51,6 +53,7 @@ interface MergeRequestNode {
   draft: boolean
   conflicts: boolean
   approved: boolean | null
+  approvedBy: { nodes: Array<{ id: string }> } | null
   detailedMergeStatus: string | null
   diffHeadSha: string | null
   updatedAt: string | null
@@ -67,6 +70,7 @@ export const MAX_DISCUSSION_PAGES = 50
 
 const MERGE_REQUEST_FIELDS = `
   iid title webUrl state draft conflicts approved detailedMergeStatus diffHeadSha updatedAt targetBranch
+  approvedBy(first: 1) { nodes { id } }
   sourceProject { fullPath }
   targetProject { fullPath }
   headPipeline { status path detailedStatus { label } }
@@ -199,6 +203,7 @@ export async function findMergeRequestByIid(
 async function toMergeRequest(graphql: GraphQL, host: string, node: MergeRequestNode): Promise<MergeRequest> {
   const threads = await unresolvedThreads(graphql, host, node)
   const pipeline = node.headPipeline
+  const hasApprovals = (node.approvedBy?.nodes.length ?? 0) > 0
   return {
     iid: node.iid,
     title: node.title,
@@ -206,7 +211,9 @@ async function toMergeRequest(graphql: GraphQL, host: string, node: MergeRequest
     state: node.state.toLowerCase(),
     draft: node.draft,
     conflicts: node.conflicts,
-    approved: node.approved === true,
+    approved: node.approved === true && hasApprovals,
+    hasApprovals,
+    approvalRequirementsSatisfied: node.approved,
     mergeStatus: node.detailedMergeStatus ?? undefined,
     targetProject: node.targetProject.fullPath,
     targetBranch: node.targetBranch,

@@ -90,7 +90,7 @@
       }
     },
     "gitlab": {
-      "package": "aisdk:gitlab-ai-provider@6.19.0",
+      "package": "aisdk:gitlab-ai-provider@6.19.1",
       "settings": {
         "instanceUrl": "https://gitlab.com",
         "featureFlags": {

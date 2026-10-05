@@ -61,7 +61,7 @@
       }
     },
     "gitlab": {
-      "package": "aisdk:gitlab-ai-provider@6.19.0",
+      "package": "aisdk:gitlab-ai-provider@6.19.1",
       "models": {
         // Superseded by Fable 5.1, Opus 5.5, and Sonnet 5.5.
         "duo-workflow-claude-fable-5": { "disabled": true },

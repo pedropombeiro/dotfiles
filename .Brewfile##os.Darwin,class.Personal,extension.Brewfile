@@ -150,8 +150,6 @@ brew "pspg"
 brew "pygments"
 # Easily download, build, install, upgrade, and uninstall Python packages
 brew "python-setuptools"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.12"
 # QR Code generation
 brew "qrencode"
 # Search tool like grep and The Silver Searcher
@@ -279,8 +277,6 @@ cask "latest"
 cask "ledger-wallet"
 # Free cross-platform office suite, fresh version
 cask "libreoffice"
-# Host-based application firewall
-cask "little-snitch@5"
 # Break time reminder app
 cask "lookaway"
 # Adaptive brightness for external displays

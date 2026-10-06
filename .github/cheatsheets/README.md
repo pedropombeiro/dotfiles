@@ -12,6 +12,9 @@ configuration, so the sheets describe this setup rather than upstream defaults.
 | [Yazi](yazi.md) | Git-aware browsing, bulk operations, bookmarks, archives |
 | [Neovim](neovim.md) | Pickers, LSP refactoring, quickfix, hunks, tests, OpenCode |
 | [LazyGit](lazygit.md) | Line staging, fixups, commit surgery, custom patches |
+| [LazyDocker](lazydocker.md) | Container inspection, logs, shells, Compose lifecycle, cleanup |
+| [lnav](lnav.md) | Time navigation, log filters, SQL analysis, bookmarks, export |
+| [jless](jless.md) | Structural JSON navigation, search, copying values and paths |
 | [Atuin](atuin.md) | Context filters, fuzzy operators, inspector, history cleanup |
 | [VisiData](visidata.md) | Row subsets, typed columns, aggregations, pivots, joins |
 | [fzf](fzf.md) | Shell widgets, fuzzy completion, query syntax |
@@ -28,8 +31,9 @@ configuration, so the sheets describe this setup rather than upstream defaults.
 | Read a sheet in the terminal                   | `cheat --local yazi` |
 | Open this index                                | `cheat index`        |
 
-`Prefix h` recognizes Neovim, Yazi, LazyGit, Atuin, fzf, sesh, and VisiData
-when tmux reports `vd` or `visidata`. The Homebrew VisiData installation on
+`Prefix h` recognizes Neovim, Yazi, LazyGit, LazyDocker, lnav, jless, Atuin,
+fzf, sesh, and VisiData when tmux reports `vd` or `visidata`.
+The Homebrew VisiData installation on
 macOS reports `Python`, so use the picker or `cheat vd` there. In a shell or
 another program, it opens the picker in a popup. Over SSH, `cheat` shows the
 local file instead of opening a browser. GitHub shows the pushed version of
@@ -53,6 +57,9 @@ each sheet, so use `--local` to read edits you haven't pushed yet.
   the private Memos copy tagged `#cheatsheet`.
 - VisiData: last verified on 2026-10-06 against version 3.4. Press `z C-h`
   to list commands and bindings for the current sheet.
+- LazyDocker, lnav, and jless: last checked on 2026-10-06 against versions
+  0.25.2, 0.14.1, and 0.9.0. Use `?` in LazyDocker or lnav, and `F1` in jless
+  for built-in help.
 - Last verified on 2026-10-02 against tmux 3.7c, sesh 2.31.0, Yazi 26.9.1,
   Neovim 0.12.5, LazyGit 0.65.1, Atuin 18.23.0, fzf 0.74.4, zoxide 0.10.0, and
   Zsh 5.9.

@@ -167,6 +167,16 @@ and `cli.base.json##class.Work` instead. `~/.shellrc/rc.d/opencode.sh` exports i
   on every machine.
 - Open a new shell after editing `cli.base.json` so the environment variable picks it up.
 
+`local-plugins/tui/permission-mode` binds Shift+Tab to toggle the global CLI permission
+preference between `prompt` and `autoaccept`. It also adds `/permission-mode` and a
+palette command. Both `cli.base.json` alternates disable `agent.cycle` to free the
+shortcut; Tab still cycles agents in reverse, and the agent picker remains available.
+The plugin preserves other settings in the untracked `cli.json` and replaces it
+atomically so OpenCode's config watcher reloads it. Other running TUIs also reload the
+preference. The plugin refuses to change it when `--auto` or an inline
+`session.permissions` setting overrides the file. Run its tests with
+`mise exec bun@1.3.10 -- bun test` from the plugin directory.
+
 ## Models
 
 `opencode.json` pins per-agent models: `plan` uses Astra and `build` uses Opus 5.5. The

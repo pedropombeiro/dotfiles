@@ -64,6 +64,9 @@ the source of truth.
 - Cut internal reasoning that the reviewer does not act on: rejected alternatives, tool
   internals, line-referenced walkthroughs of unchanged code, and restatements of the diff.
   Link to an issue or a code reference instead of reproducing its content.
+- Describe related MRs by their technical relationship and dependencies, not their
+  editing history. Explain what each contributes and whether they can merge independently;
+  omit narrative such as "split from" or "previously included in".
 - Prefer a claim a reviewer can check over one they must take on faith. Vague prose invites a
   reviewing agent to invent specifics about it, so if a check was not run, do not imply it was.
 - Highly structured - follow a consistent template:

@@ -147,6 +147,13 @@ as trailing args (e.g., `run-in-tmux-pane gpsup --force-with-lease`).
 After `gpsup` creates the MR, open it and **fill in the MR description** using the
 project's default template (`.gitlab/merge_request_templates/`).
 
+### Merge request type labels
+
+Use `type::maintenance` for internal tooling changes, including fixes to that
+tooling. Reserve `type::bug` for customer-visible product defects. A change that
+corrects internal tooling behavior does not qualify as a product bug merely
+because it fixes an error.
+
 ## Push Shortcuts
 
 | Command | Equivalent                                | When to use                          |

@@ -59,6 +59,7 @@ normalize() {
   case $name in
     nvim | vim | vi | view | nvimdiff) echo neovim ;;
     lg) echo lazygit ;;
+    vd) echo visidata ;;
     readme | help) echo index ;;
     *) echo "$name" ;;
   esac
@@ -70,7 +71,7 @@ sheet_for_command() {
   local name
   name=$(normalize "$1")
   case $name in
-    neovim | yazi | lazygit | atuin | fzf | sesh) echo "$name" ;;
+    neovim | yazi | lazygit | atuin | fzf | sesh | visidata) echo "$name" ;;
     *) return 1 ;;
   esac
 }

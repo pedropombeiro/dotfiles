@@ -75,8 +75,8 @@ hash = "2f76b82244c113bbd61553f37a6b52d8"
 
 [[plugin.deps]]
 use = "imsi32/yatline"
-rev = "c5d4b48"
-hash = "e6e98d12b1648d1894c2b560d85eeaa7"
+rev = "dc44b73"
+hash = "fa488655544e367e5439a9748d28519e"
 
 [[plugin.deps]]
 use = "qw457812/bookmarks"

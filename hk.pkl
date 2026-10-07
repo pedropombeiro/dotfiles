@@ -20,6 +20,13 @@ env {
     ["HK_STASH_UNTRACKED"] = "false"
 }
 
+// Declares a check as read-only. hk then takes read locks for it in fix hooks,
+// so read-only checks on the same files can run in parallel (hk v2.5.0+).
+local function readOnly(cmd: String): CommandSpec = new CommandSpec {
+    command = cmd
+    effect = "read"
+}
+
 local binary_excludes = List(
     "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.ico",
     "*.woff", "*.woff2", "*.ttf", "*.eot", "*.pdf", "*.zip"
@@ -114,7 +121,7 @@ local fast_steps = new Mapping<String, Step> {
         exclude = List(
             ".shellrc/zshrc.d/functions/scripts/*"
         )
-        check = "zsh -n {{files}}"
+        check = readOnly("zsh -n {{files}}")
     }
 
     // ── Lua ──────────────────────────────────────────────────────────────
@@ -166,20 +173,20 @@ local fast_steps = new Mapping<String, Step> {
     // ── Validation ───────────────────────────────────────────────────────
     ["check-json"] {
         glob = List("*.json")
-        check = "python3 -c 'import json,sys; [json.load(open(f)) for f in sys.argv[1:]]' {{files}}"
+        check = readOnly("python3 -c 'import json,sys; [json.load(open(f)) for f in sys.argv[1:]]' {{files}}")
     }
     ["check-executables-have-shebangs"] {
-        check = """
+        check = readOnly("""
           for f in {{files}}; do
             if [ -x "$f" ] && [ -f "$f" ] && ! head -c2 "$f" | grep -q '^#!'; then
               echo "$f: executable without shebang"
               exit 1
             fi
           done
-          """
+          """)
     }
     ["check-added-large-files"] {
-        check = """
+        check = readOnly("""
           max_kb=500
           for f in {{files}}; do
             if [ -f "$f" ]; then
@@ -190,7 +197,7 @@ local fast_steps = new Mapping<String, Step> {
               fi
             fi
           done
-          """
+          """)
     }
 
     // ── Dotfiles-specific ────────────────────────────────────────────────
@@ -198,26 +205,26 @@ local fast_steps = new Mapping<String, Step> {
     // so this global hk.pkl can be safely picked up by other repos under $HOME.
     ["no-yadm-alt-symlinks"] {
         glob = List("*")
-        check = """
+        check = readOnly("""
           script="$HOME/.config/yadm/scripts/check-no-alt-symlinks.zsh"
           [ -x "$script" ] || exit 0
           [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$HOME" ] || exit 0
           "$script" {{files}}
-          """
+          """)
     }
     ["no-duplicated-yadm-alts"] {
         glob = List("**/*##*")
-        check = """
+        check = readOnly("""
           script="$HOME/.config/yadm/scripts/check-alt-duplication.zsh"
           [ -x "$script" ] || exit 0
           [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$HOME" ] || exit 0
           "$script"
-          """
+          """)
     }
     ["mise-fmt"] = (Builtins.mise) {}
     ["renovate-config-validator"] {
         glob = List("*renovate*")
-        check = "mise x npm:renovate -- renovate-config-validator --strict"
+        check = readOnly("mise x npm:renovate -- renovate-config-validator --strict")
     }
 }
 

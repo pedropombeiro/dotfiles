@@ -126,6 +126,10 @@ yadm enter hk check --step stylua  # single step
 Edit `~/hk.pkl`. Add to the `fast_steps` mapping — it is shared across `pre-commit`, `fix`, and
 `check` hooks. Run `yadm enter hk validate` to verify syntax.
 
+Wrap the `check` command of a check-only custom step in `readOnly(...)` when it doesn't write
+files. hk then takes read locks for it in fix hooks, so it can run in parallel with other read-only
+checks. Confirm with `yadm enter hk fix --all --plan --json`, which reports each step's effect.
+
 ## Version Management
 
 hk version is pinned in `~/.config/mise/conf.d/global.toml`.

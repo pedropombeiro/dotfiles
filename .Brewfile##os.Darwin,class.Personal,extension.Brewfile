@@ -44,7 +44,7 @@ brew "docker", link: false
 brew "docker-buildx"
 # Isolated development environments using Docker
 brew "docker-compose"
-# Command-line DNS client for humans
+# Command-line DNS Client for Humans
 brew "doggo"
 # Disk Usage/Free Utility - a better 'df' alternative
 brew "duf"

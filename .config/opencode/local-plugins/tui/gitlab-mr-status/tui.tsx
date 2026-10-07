@@ -4,9 +4,10 @@
 // path entry in cli.base.json##class.Work; the parent directory is outside
 // OpenCode's plugin discovery paths.
 import { Plugin } from "@opencode/plugin/tui"
+import type { BoxRenderable } from "@opentui/core"
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js"
 import { exec } from "./src/exec"
-import { detailsMessage, footerSegments, type Tone } from "./src/format"
+import { detailsMessage, footerSegments, responsiveFooterSegments, segmentsWidth, type Tone } from "./src/format"
 import { resolveProjects, resolveRepository, titleMergeRequest } from "./src/git"
 import { findMergeRequestByIid, findMergeRequests, glabGraphQL, type MergeRequest } from "./src/gitlab"
 import { createStatusStore, type Lookup } from "./src/store"
@@ -132,14 +133,28 @@ export default Plugin.define({
         ),
       )
 
-      const segments = createMemo(() => {
+      const snapshot = createMemo(() => {
         version()
-        return footerSegments(store.get(key()))
+        return store.get(key())
       })
+      const fullWidth = createMemo(() => segmentsWidth(footerSegments(snapshot())))
+      const [availableWidth, setAvailableWidth] = createSignal(0)
+      const segments = createMemo(() => responsiveFooterSegments(snapshot(), availableWidth()))
 
       return (
-        <Show when={segments().length > 0}>
-          <box flexDirection="row" flexShrink={0}>
+        <Show when={fullWidth() > 0}>
+          <box
+            flexDirection="row"
+            width={fullWidth()}
+            flexShrink={1}
+            minWidth={0}
+            height={1}
+            overflow="hidden"
+            onSizeChange={function (this: BoxRenderable) {
+              const width = this.width
+              queueMicrotask(() => setAvailableWidth(width))
+            }}
+          >
             <For each={segments()}>
               {(segment, index) => (
                 <>

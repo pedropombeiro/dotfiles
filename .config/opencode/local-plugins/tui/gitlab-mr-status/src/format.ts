@@ -69,6 +69,37 @@ export function footerSegments(snapshot: Snapshot): Segment[] {
   return segments
 }
 
+export const segmentsWidth = (segments: Segment[]) => Bun.stringWidth(segments.map((segment) => segment.text).join(" · "))
+
+export function responsiveFooterSegments(snapshot: Snapshot, width: number): Segment[] {
+  const full = footerSegments(snapshot)
+  if (segmentsWidth(full) <= width) return full
+
+  const compact = full.map((segment): Segment => {
+    let text = segment.text
+    if (text.startsWith("CI ")) {
+      text = segment.tone === "success" ? "CI ✓" : segment.tone === "error" ? "CI ✗" : segment.tone === "warning" ? "CI …" : text
+    } else if (text === "no pipeline") text = "no CI"
+    else if (text.includes("unresolved thread")) text = text.replace("unresolved ", "")
+    else if (text === "🤖 reviewing") text = "🤖"
+    return { ...segment, text }
+  })
+  if (segmentsWidth(compact) <= width) return compact
+
+  const minimal = compact.filter((segment) =>
+    segment.text.startsWith("!") || ["🤖", "conflicts", "stale", "merged", "closed", "locked"].includes(segment.text),
+  )
+  if (segmentsWidth(minimal) <= width) return minimal
+
+  // Keep the MR link first, then add only complete indicators that fit.
+  if (minimal[0] && segmentsWidth([minimal[0]]) > width) return []
+  const fitted: Segment[] = []
+  for (const segment of minimal) {
+    if (segmentsWidth([...fitted, segment]) <= width) fitted.push(segment)
+  }
+  return fitted
+}
+
 const yesNo = (value: boolean) => (value ? "yes" : "no")
 const time = (value: number) => new Date(value).toLocaleTimeString()
 

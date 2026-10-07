@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { detailsMessage, footerSegments } from "./format"
+import { detailsMessage, footerSegments, responsiveFooterSegments, segmentsWidth } from "./format"
 import type { Repository } from "./git"
 import type { MergeRequest } from "./gitlab"
 import type { Snapshot } from "./store"
@@ -125,5 +125,55 @@ describe("detailsMessage", () => {
     expect(detailsMessage({ lookup: { kind: "none", reason: "Detached HEAD" }, loading: false })).toContain(
       "Detached HEAD",
     )
+  })
+})
+
+describe("responsiveFooterSegments", () => {
+  const value = snapshot([mr({
+    iid: "259389",
+    duoReviewState: "REVIEW_STARTED",
+    pipeline: { status: "SUCCESS", label: "passed", url: "https://gitlab.com/p/-/pipelines/1" },
+  })])
+  const responsiveText = (width: number) => responsiveFooterSegments(value, width).map((segment) => segment.text).join(" · ")
+
+  test("selects full, compact, and minimal formats", () => {
+    expect(responsiveText(100)).toBe("!259389 · CI passed · 2 unresolved threads · 🤖 reviewing")
+    expect(responsiveText(35)).toBe("!259389 · CI ✓ · 2 threads · 🤖")
+    expect(responsiveText(20)).toBe("!259389 · 🤖")
+    expect(responsiveText(7)).toBe("!259389")
+    expect(responsiveText(2)).toBe("")
+    expect(responsiveText(0)).toBe("")
+  })
+
+  test("measures emoji in terminal cells", () => {
+    expect(segmentsWidth([{ text: "🤖", tone: "warning" }])).toBe(2)
+    expect(responsiveText(12)).toBe("!259389 · 🤖")
+    expect(responsiveText(11)).toBe("!259389")
+  })
+
+  test("preserves links and tones in compact mode", () => {
+    const segments = responsiveFooterSegments(value, 35)
+    expect(segments[0].url).toBe(mr().url)
+    expect(segments[1]).toMatchObject({ text: "CI ✓", tone: "success", url: "https://gitlab.com/p/-/pipelines/1" })
+    expect(segments[3]).toMatchObject({ text: "🤖", tone: "warning" })
+  })
+
+  test("keeps conflict and stale warnings in minimal mode", () => {
+    const sample = snapshot([mr({ conflicts: true })], { error: { kind: "request", message: "timeout", at: 0 } })
+    expect(responsiveFooterSegments(sample, 28).map((segment) => segment.text).join(" · ")).toBe("!4281 · conflicts · stale")
+  })
+
+  test("never exceeds the allocated width", () => {
+    const samples = [value, snapshot([mr({ conflicts: true, approved: true })]), snapshot([mr({ threadsComplete: false })]), snapshot([mr(), mr({ iid: "9" })])]
+    for (const sample of samples) {
+      for (let width = 0; width < 100; width++) {
+        expect(segmentsWidth(responsiveFooterSegments(sample, width))).toBeLessThanOrEqual(width)
+      }
+    }
+  })
+
+  test("restores the full format when space increases", () => {
+    responsiveFooterSegments(value, 12)
+    expect(responsiveFooterSegments(value, 100)).toEqual(footerSegments(value))
   })
 })

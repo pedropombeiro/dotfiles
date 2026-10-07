@@ -24,6 +24,7 @@ export interface MergeRequest {
   headSha?: string
   updatedAt?: string
   pipeline?: Pipeline
+  duoReviewState?: string
   unresolvedThreads: number
   // False when more discussion pages exist than the plugin fetches.
   threadsComplete: boolean
@@ -62,6 +63,7 @@ interface MergeRequestNode {
   targetProject: { fullPath: string }
   headPipeline: { status: string; path: string | null; detailedStatus: { label: string | null } | null } | null
   discussions: DiscussionPage
+  reviewers?: { nodes: Array<{ type: string; mergeRequestInteraction: { reviewState: string | null } | null }> } | null
 }
 
 const DISCUSSIONS = "pageInfo { hasNextPage endCursor } nodes { resolvable resolved }"
@@ -74,6 +76,7 @@ const MERGE_REQUEST_FIELDS = `
   sourceProject { fullPath }
   targetProject { fullPath }
   headPipeline { status path detailedStatus { label } }
+  reviewers(first: 100) { nodes { type mergeRequestInteraction { reviewState } } }
   discussions(first: ${PAGE_SIZE}) { ${DISCUSSIONS} }
 `
 
@@ -228,5 +231,7 @@ async function toMergeRequest(graphql: GraphQL, host: string, node: MergeRequest
       : undefined,
     unresolvedThreads: threads.count,
     threadsComplete: threads.complete,
+    duoReviewState: node.reviewers?.nodes.find((reviewer) => reviewer.type === "DUO_CODE_REVIEW_BOT")
+      ?.mergeRequestInteraction?.reviewState ?? undefined,
   }
 }

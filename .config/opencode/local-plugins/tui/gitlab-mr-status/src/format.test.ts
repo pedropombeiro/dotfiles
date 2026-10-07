@@ -41,6 +41,19 @@ const snapshot = (mergeRequests: MergeRequest[], extra: Partial<Snapshot> = {}):
 const text = (value: Snapshot) => footerSegments(value).map((segment) => segment.text).join(" · ")
 
 describe("footerSegments", () => {
+  test("shows an active Duo review", () => {
+    expect(text(snapshot([mr({ duoReviewState: "REVIEW_STARTED" })]))).toBe(
+      "!4281 · CI failed · 2 unresolved threads · 🤖 reviewing",
+    )
+  })
+
+  test.each(["REVIEWED", "UNREVIEWED", "APPROVED", undefined])("omits inactive Duo reviews: %s", (duoReviewState) => {
+    expect(text(snapshot([mr({ duoReviewState })]))).not.toContain("🤖")
+  })
+
+  test("omits the Duo indicator on merged MRs", () => {
+    expect(text(snapshot([mr({ state: "merged", duoReviewState: "REVIEW_STARTED" })]))).toBe("!4281 · merged")
+  })
   test("shows the MR, pipeline, and threads", () => {
     expect(text(snapshot([mr()]))).toBe("!4281 · CI failed · 2 unresolved threads")
   })
@@ -87,6 +100,11 @@ describe("footerSegments", () => {
 })
 
 describe("detailsMessage", () => {
+  test("includes Duo's review state when available", () => {
+    expect(detailsMessage(snapshot([mr({ duoReviewState: "REVIEW_STARTED" })]))).toContain("Duo review: review started")
+    expect(detailsMessage(snapshot([mr({ duoReviewState: "REVIEWED" })]))).toContain("Duo review: reviewed")
+    expect(detailsMessage(snapshot([mr()]))).not.toContain("Duo review:")
+  })
   test("distinguishes actual approvals from satisfied requirements", () => {
     const message = detailsMessage(snapshot([mr({ approvalRequirementsSatisfied: true })]))
     expect(message).toContain("Has approvals: no · Approval requirements satisfied: yes")

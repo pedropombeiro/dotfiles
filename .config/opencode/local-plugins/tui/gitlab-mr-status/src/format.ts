@@ -61,6 +61,7 @@ export function footerSegments(snapshot: Snapshot): Segment[] {
       url: mr.pipeline?.url,
     })
     if (mr.unresolvedThreads > 0 || !mr.threadsComplete) segments.push({ text: threadsText(mr), tone: "warning" })
+    if (mr.duoReviewState === "REVIEW_STARTED") segments.push({ text: "🤖 reviewing", tone: "warning" })
     if (mr.conflicts) segments.push({ text: "conflicts", tone: "error" })
     if (mr.approved) segments.push({ text: "approved", tone: "success" })
   }
@@ -81,6 +82,7 @@ function describe(mr: MergeRequest, head: string): string[] {
     `Has approvals: ${yesNo(mr.hasApprovals)} · Approval requirements satisfied: ${mr.approvalRequirementsSatisfied === null ? "unknown" : yesNo(mr.approvalRequirementsSatisfied)}`,
   ]
   if (mr.mergeStatus) lines.push(`Merge status: ${mr.mergeStatus.toLowerCase().replace(/_/g, " ")}`)
+  if (mr.duoReviewState) lines.push(`Duo review: ${mr.duoReviewState.toLowerCase().replace(/_/g, " ")}`)
   if (head && mr.headSha && head !== mr.headSha) {
     lines.push("Local HEAD differs from the MR head commit (unpushed or not fetched)")
   }

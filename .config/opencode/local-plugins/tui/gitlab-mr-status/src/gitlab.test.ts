@@ -114,6 +114,42 @@ describe("findMergeRequestByIid", () => {
     { host: "gitlab.com", path: "security/project" },
   ]
 
+  test.each(["REVIEW_STARTED", "REVIEWED", "UNREVIEWED", "APPROVED", null])(
+    "reads Duo's review state: %s",
+    async (reviewState) => {
+      const graphql: GraphQL = async (_host, query) => {
+        expect(query).toContain("type mergeRequestInteraction { reviewState }")
+        return {
+          p0: { mergeRequest: node({ reviewers: { nodes: [
+            { type: "HUMAN", mergeRequestInteraction: { reviewState: "REVIEW_STARTED" } },
+            { type: "DUO_CODE_REVIEW_BOT", mergeRequestInteraction: { reviewState } },
+          ] } }) },
+        }
+      }
+      const mr = await findMergeRequestByIid(graphql, projects, "1")
+      expect(mr?.duoReviewState).toBe(reviewState ?? undefined)
+    },
+  )
+
+  test("does not report human or unrelated bot reviews as Duo", async () => {
+    const graphql: GraphQL = async () => ({
+      p0: { mergeRequest: node({ reviewers: { nodes: [
+        { type: "HUMAN", mergeRequestInteraction: { reviewState: "REVIEW_STARTED" } },
+        { type: "PROJECT_BOT", mergeRequestInteraction: { reviewState: "REVIEW_STARTED" } },
+      ] } }) },
+    })
+    expect((await findMergeRequestByIid(graphql, projects, "1"))?.duoReviewState).toBeUndefined()
+  })
+
+  test("handles a Duo reviewer with no interaction", async () => {
+    const graphql: GraphQL = async () => ({
+      p0: { mergeRequest: node({ reviewers: { nodes: [
+        { type: "DUO_CODE_REVIEW_BOT", mergeRequestInteraction: null },
+      ] } }) },
+    })
+    expect((await findMergeRequestByIid(graphql, projects, "1"))?.duoReviewState).toBeUndefined()
+  })
+
   test.each([
     { requirements: true, approvers: [], approved: false },
     { requirements: true, approvers: [{ id: "gid://gitlab/User/1" }], approved: true },

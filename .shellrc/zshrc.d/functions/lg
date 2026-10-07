@@ -1,9 +1,12 @@
 
 #
-# `lg` opens lazygit, invoking 'yadm enter' if needed
+# `lg` opens lazygit, invoking 'yadm enter' if needed.
+# A Git repository enclosing $PWD takes precedence over the yadm repository.
 #
 
-if [[ "$PWD" == "$HOME" || "$PWD" == "$HOME/.config"* ]]; then
+if git rev-parse --git-dir >/dev/null 2>&1; then
+  lazygit "$@"
+elif [[ "$PWD" == "$HOME" || "$PWD" == "$HOME/.config" || "$PWD" == "$HOME/.config/"* ]]; then
   GIT_DIR="$HOME/.local/share/yadm/repo.git" GIT_WORK_TREE="$HOME" lazygit "$@"
 else
   lazygit "$@"

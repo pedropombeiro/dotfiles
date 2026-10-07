@@ -87,6 +87,33 @@ if [[ -d ${HOME}/.cargo || -d ${HOME}/.rustup ]] && (( ${+commands[mise]} )); th
   fi
 fi
 
+# Colima, and Caproni after it, uses $XDG_CONFIG_HOME/colima only while
+# ~/.colima doesn't exist. VMs hold sockets by path, so only move it while no
+# VM runs. Starting a VM regenerates its Lima config with the new paths.
+if [[ -d ${HOME}/.colima && ! -L ${HOME}/.colima ]]; then
+  if pgrep -f 'limactl hostagent' &>/dev/null; then
+    printf "${YELLOW}%s${NC}\n" "Skipping ~/.colima while a VM is running. Stop every profile with 'colima stop --profile NAME'."
+  elif migrate_dir "${HOME}/.colima" "${config_home}/colima"; then
+    # Absolute symlinks into ~/.colima, such as the Lima disk locks
+    # (_disks/*/in_use_by), must follow. Lima only reuses a disk lock whose
+    # target matches the instance directory.
+    for link in "${config_home}"/colima/**/*(N@); do
+      target=$(readlink "${link}")
+      [[ ${target} == "${HOME}/.colima" || ${target} == "${HOME}/.colima/"* ]] || continue
+      ln -sfn "${config_home}/colima${target#${HOME}/.colima}" "${link}"
+    done
+    # colima creates its docker context once and never updates the endpoint.
+    if (( ${+commands[docker]} )); then
+      docker context ls --format '{{.Name}} {{.DockerEndpoint}}' 2>/dev/null |
+        while read -r context endpoint; do
+          [[ ${endpoint} == unix://${HOME}/.colima/* ]] || continue
+          docker context update "${context}" \
+            --docker "host=unix://${config_home}/colima/${endpoint#unix://${HOME}/.colima/}" >/dev/null
+        done
+    fi
+  fi
+fi
+
 if migrate_dir "${HOME}/.tmux/plugins" "${data_home}/tmux/plugins"; then
   rmdir "${HOME}/.tmux" 2>/dev/null
   # A running server still has the old plugin paths in its status line.

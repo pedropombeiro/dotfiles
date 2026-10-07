@@ -37,6 +37,39 @@ for opencode_orphan in tui.json cli.json; do
 done
 unset opencode_orphan
 
+# lnav prefers ~/.lnav over ~/.config/lnav whenever the former exists, so the
+# tracked config under ~/.config/lnav is ignored until the old directory is gone.
+# Move its untracked state (history, metadata, sessions) without overwriting.
+_merge_into_dir() {
+  local src=$1 dst=$2 entry
+  mkdir -p "${dst}" || return 1
+  # D = include dotfiles, N = nullglob
+  for entry in "${src}"/*(DN); do
+    if [[ ! -e ${dst}/${entry:t} && ! -L ${dst}/${entry:t} ]]; then
+      mv "${entry}" "${dst}/" || return 1
+    elif [[ -d ${entry} && ! -L ${entry} && -d ${dst}/${entry:t} ]]; then
+      _merge_into_dir "${entry}" "${dst}/${entry:t}" || return 1
+    fi
+  done
+  rmdir "${src}" 2>/dev/null
+  return 0
+}
+
+if [[ -d ${HOME}/.lnav && ! -L ${HOME}/.lnav ]]; then
+  printf "${YELLOW}%s${NC}\n" "Migrating ~/.lnav to ~/.config/lnav..."
+  if _merge_into_dir "${HOME}/.lnav" "${HOME}/.config/lnav" && [[ -d ${HOME}/.lnav ]]; then
+    lnav_backup="${XDG_STATE_HOME:-${HOME}/.local/state}/yadm/lnav-conflicts.$(date +%Y%m%d%H%M%S)"
+    mkdir -p "${lnav_backup:h}" && mv "${HOME}/.lnav" "${lnav_backup}" &&
+      printf "${YELLOW}%s${NC}\n" "Kept conflicting ~/.lnav entries in ${lnav_backup}"
+    unset lnav_backup
+  fi
+fi
+unfunction _merge_into_dir
+
+# highlight's config moved to ~/.config/highlight. yadm leaves the empty old
+# directories behind, and highlight --list-scripts aborts on the empty themes/.
+rmdir "${HOME}/.highlight/themes" "${HOME}/.highlight" 2>/dev/null
+
 printf "${YELLOW}%s${NC}\n" "Linking run-in-tmux-pane..."
 mkdir -p "${HOME}/.local/bin"
 ln -sfn "${HOME}/.agents/skills/run-in-tmux-pane/scripts/run-in-tmux-pane" "${HOME}/.local/bin/run-in-tmux-pane"

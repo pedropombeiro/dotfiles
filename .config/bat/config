@@ -32,6 +32,7 @@
 --map-syntax='*.mk:Makefile'
 --map-syntax='.Brewfile:Ruby'
 --map-syntax='.pryrc:Ruby'
+--map-syntax='**/pry/pryrc:Ruby'
 --map-syntax='.irb_history:Ruby'
 --map-syntax='*.ru:Ruby'
 --map-syntax='vi*rc:VimL'

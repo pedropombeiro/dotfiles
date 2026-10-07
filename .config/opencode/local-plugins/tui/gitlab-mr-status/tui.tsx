@@ -199,11 +199,108 @@ export default Plugin.define({
       return lookup?.kind === "found" ? lookup.mergeRequests : []
     }
 
-    async function showStatus() {
-      const snapshot = await store.refresh(currentKey())
-      const closed = context.ui.dialog.alert({ title: "Merge request status", message: detailsMessage(snapshot) })
-      context.ui.dialog.set({ size: "large" })
-      await closed
+    function StatusDialog(props: { statusKey: string }) {
+      const [terminalHeight, setTerminalHeight] = createSignal(context.renderer.height)
+      const onResize = () => setTerminalHeight(context.renderer.height)
+      context.renderer.on("resize", onResize)
+      onCleanup(() => context.renderer.off("resize", onResize))
+      // Leave room for the dialog host, title, gaps, footer, and padding.
+      // A maxHeight alone lets the scrollbox's content grow the dialog.
+      const contentHeight = createMemo(() => Math.max(1, Math.min(24, Math.floor(terminalHeight() * 0.6) - 5)))
+      const snapshot = createMemo(() => {
+        version()
+        return store.get(props.statusKey)
+      })
+      const refresh = () => {
+        if (!snapshot().loading) void store.refresh(props.statusKey)
+      }
+      const [activeAction, setActiveAction] = createSignal<"refresh" | "close">("refresh")
+      const moveAction = () =>
+        setActiveAction((action) => (action === "refresh" || snapshot().loading ? "close" : "refresh"))
+      const close = () => context.ui.dialog.clear()
+
+      context.keymap.layer(() => ({
+        mode: "modal",
+        commands: [
+          {
+            id: "gitlab.mr.status.refresh",
+            bind: "ctrl+r",
+            enabled: () => !snapshot().loading,
+            run: refresh,
+          },
+          { bind: "tab", title: "Next dialog action", run: moveAction },
+          { bind: "shift+tab", title: "Previous dialog action", run: moveAction },
+          { bind: "left", title: "Previous dialog action", run: moveAction },
+          { bind: "right", title: "Next dialog action", run: moveAction },
+          {
+            bind: "return",
+            title: "Activate dialog action",
+            run: () => {
+              if (activeAction() === "refresh") refresh()
+              else close()
+            },
+          },
+        ],
+      }))
+
+      return (
+        <box height={contentHeight() + 5} paddingLeft={2} paddingRight={2} paddingBottom={1} gap={1}>
+          <box height={1} flexShrink={0} flexDirection="row" justifyContent="space-between">
+            <text fg={context.theme.text.base}><b>Merge request status</b></text>
+            <text fg={context.theme.text.muted} onMouseUp={close}>esc</text>
+          </box>
+          <scrollbox
+            height={contentHeight()}
+            minHeight={1}
+            flexShrink={0}
+            scrollX={false}
+            contentOptions={{ flexShrink: 0 }}
+          >
+            <text fg={context.theme.text.base}>{detailsMessage(snapshot())}</text>
+          </scrollbox>
+          <box height={1} flexShrink={0} flexDirection="row" justifyContent="flex-end">
+            <For each={["close", "refresh"] as const}>
+              {(action) => {
+                const disabled = () => action === "refresh" && snapshot().loading
+                const active = () => activeAction() === action && !disabled()
+                return (
+                  <box
+                    paddingLeft={1}
+                    paddingRight={1}
+                    flexShrink={0}
+                    backgroundColor={active() ? context.theme.background.action.primary.focused : undefined}
+                    onMouseMove={() => {
+                      if (!disabled()) setActiveAction(action)
+                    }}
+                    onMouseUp={() => {
+                      if (disabled()) return
+                      setActiveAction(action)
+                      if (action === "refresh") refresh()
+                      else close()
+                    }}
+                  >
+                    <text
+                      wrapMode="none"
+                      fg={disabled()
+                        ? context.theme.text.action.primary.disabled
+                        : active() ? context.theme.text.action.primary.focused : context.theme.text.muted}
+                    >
+                      {action === "close" ? "Close" : snapshot().loading ? "Refreshing…" : "Refresh"}
+                    </text>
+                  </box>
+                )
+              }}
+            </For>
+          </box>
+        </box>
+      )
+    }
+
+    function showStatus() {
+      const key = currentKey()
+      void store.refresh(key)
+      context.ui.dialog.set({ size: "large", centered: true })
+      context.ui.dialog.show(() => <StatusDialog statusKey={key} />)
     }
 
     async function openMergeRequest() {

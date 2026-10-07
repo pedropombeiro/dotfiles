@@ -112,6 +112,48 @@ describe("createStatusStore", () => {
     expect(pending()).toEqual([])
   })
 
+  test("manual refresh bypasses the cache and updates subscribers while loading", async () => {
+    let complete: (lookup: Lookup) => void = () => {}
+    let calls = 0
+    const { store, changes } = harness(() => {
+      calls++
+      return new Promise((resolve) => (complete = resolve))
+    })
+    const initial = store.refresh("/a")
+    complete(found())
+    await initial
+    const previousChanges = changes()
+
+    const refresh = store.refresh("/a")
+    expect(calls).toBe(2)
+    expect(store.get("/a").loading).toBe(true)
+    expect(store.get("/a").lookup).toEqual(found())
+    expect(changes()).toBeGreaterThan(previousChanges)
+    expect(store.refresh("/a")).toBe(refresh)
+
+    complete(found(2))
+    await refresh
+    expect(store.get("/a").loading).toBe(false)
+    expect(store.get("/a").lookup).toEqual(found(2))
+    store.dispose()
+  })
+
+  test("manual refresh recovers from a failure without waiting for backoff", async () => {
+    let fail = true
+    const { store } = harness(async () => {
+      if (fail) throw new GitLabError("request", "GitLab unavailable")
+      return found()
+    })
+    await store.refresh("/a")
+    expect(store.get("/a").error?.message).toBe("GitLab unavailable")
+
+    fail = false
+    await store.refresh("/a")
+    expect(store.get("/a").error).toBeUndefined()
+    expect(store.get("/a").lookup).toEqual(found())
+    store.dispose()
+  })
+
   test("keeps stale data on failure and backs off", async () => {
     let fail = false
     const { store, pending, advance } = harness(async () => {

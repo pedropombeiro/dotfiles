@@ -93,6 +93,12 @@ instead of `~/Library/Application Support/`. This allows dotfile tracking via ya
 
 Tools unaffected (use Rust `dirs` crate, ignores XDG on macOS): rtk, zoxide, neovide (settings).
 
+`.shellrc/rc.d/_xdg.sh` sets the same default for bash. Prefer a tool's
+`~/.config` location over a file at the repository root. If a tool needs an
+environment variable to find it, export the variable from `.shellrc/rc.d/`, as
+`highlight.sh` does with `HIGHLIGHT_DATADIR`. GUI launchers such as Raycast
+don't load these files, so pass an explicit config path in their scripts.
+
 ## Alternate Files
 
 Use platform-specific suffixes. See [YADM Layout](yadm-layout.md#machine-identity)

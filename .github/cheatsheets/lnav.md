@@ -1,6 +1,6 @@
 # lnav cheat sheet
 
-Configuration: [`~/.lnav/config.json`](../../.lnav/config.json), with the
+Configuration: [`~/.config/lnav/config.json`](../../.config/lnav/config.json), with the
 Gruvbox theme and highlights for IP addresses, color literals, and XML.
 Open several logs with `lnav FILE1 FILE2`, or include rotations with
 `lnav -R FILE`. The file arguments are your input paths. Recognized logs merge
@@ -86,10 +86,11 @@ Named regex captures become columns. Change the pattern to match your messages
 and add units to your result name when you know them.
 
 The repository also tracks a [UniFi log format](../../.config/lnav/formats/installed/unifi_log.json)
-with fields such as `SRC`, `DST`, `PROTO`, and `DPT`. Its tracked path is under
-`~/.config/lnav`, while this installation reports `~/.lnav` as its configuration
-directory. Check `p` for recognition before assuming the `unifi_log` SQL table
-is available.
+with fields such as `SRC`, `DST`, `PROTO`, and `DPT`. lnav reads
+`~/.config/lnav` only while `~/.lnav` doesn't exist, so
+`relink-dotfiles.zsh` merges any leftover `~/.lnav` state into
+`~/.config/lnav` and removes the old directory. Check `p` for recognition
+before assuming the `unifi_log` SQL table is available.
 
 ## Bookmarks and export
 

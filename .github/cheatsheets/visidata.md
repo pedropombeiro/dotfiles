@@ -1,6 +1,6 @@
 # VisiData cheat sheet
 
-Configuration: [`~/.visidatarc`](../../.visidatarc). Open a file with
+Configuration: [`~/.config/visidata/config.py`](../../.config/visidata/config.py). Open a file with
 `vd FILE`, or pipe CSV data with `COMMAND | vd -f csv`. `FILE` is the input
 path, and `COMMAND` produces CSV. Open this sheet with `cheat vd` or
 `cheat --local vd`.

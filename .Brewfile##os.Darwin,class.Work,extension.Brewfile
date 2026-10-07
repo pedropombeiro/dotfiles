@@ -392,8 +392,6 @@ cask "muzzle"
 cask "neovide-app"
 # WiFi site survey software and WiFi scanner
 cask "netspot"
-# App to write, plan, collaborate, and get organised
-cask "notion"
 # Replacement for Docker Desktop
 cask "orbstack"
 # Visual client for Helix Core

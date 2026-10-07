@@ -5,6 +5,14 @@
 min_version = { soft = "2026.10.0" }
 
 [env]
+# Keep tool caches out of $HOME. Setting them here, rather than in a shell
+# file, means mise shims apply them even when a parent process passes a
+# reduced environment, as OpenCode does when it starts MCP servers.
+# Default: ~/.npm
+npm_config_cache = "{{env.HOME}}/.cache/npm"
+# Default: ~/.bundle/cache
+BUNDLE_USER_CACHE = "{{env.HOME}}/.cache/bundler"
+
 # Keep the Rust homes out of $HOME (defaults: ~/.cargo and ~/.rustup). An
 # explicit CARGO_HOME, as on QTS, takes precedence over MISE_CARGO_HOME.
 # migrate-legacy-dirs.zsh moves existing homes the first time this applies.

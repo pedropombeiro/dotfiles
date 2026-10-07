@@ -97,11 +97,14 @@ Tools unaffected (use Rust `dirs` crate, ignores XDG on macOS): rtk, zoxide, neo
 
 Prefer a tool's XDG location over a file or directory in `$HOME`: config in
 `~/.config`, caches in `~/.cache`, data in `~/.local/share`, and logs or history
-in `~/.local/state`. Put environment overrides that cache-writing tools need,
-such as `npm_config_cache`, in `_xdg.sh` so every zsh gets them. Settings that
-only interactive shells use can live in a tool-specific `rc.d` file, as
-`highlight.sh` does with `HIGHLIGHT_DATADIR`. GUI launchers such as Raycast
-don't load these files, so pass an explicit config path in their scripts.
+in `~/.local/state`. Put environment overrides for tools that write state, such
+as `npm_config_cache`, in the `[env]` section of
+`~/.config/mise/conf.d/global.toml`. mise shims apply that section even when a
+parent process passes a reduced environment, as OpenCode does when it starts MCP
+servers, so `npx` still finds the cache. Settings that only interactive shells
+use can live in a tool-specific `rc.d` file, as `highlight.sh` does with
+`HIGHLIGHT_DATADIR`. GUI launchers such as Raycast don't load these files, so
+pass an explicit config path in their scripts.
 
 When a location changes, add the move to
 `~/.config/yadm/scripts/migrate-legacy-dirs.zsh`. `relink-dotfiles.zsh` runs it

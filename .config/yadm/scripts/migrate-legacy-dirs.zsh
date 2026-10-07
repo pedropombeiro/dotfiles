@@ -66,6 +66,27 @@ rmdir "${HOME}/.bundle" 2>/dev/null
 migrate_dir "${HOME}/.atuin/logs" "${state_home}/atuin/logs"
 rmdir "${HOME}/.atuin" 2>/dev/null
 
+# Move a Rust home only when mise resolves it to the new location: QTS keeps
+# an explicit CARGO_HOME outside $HOME.
+if [[ -d ${HOME}/.cargo || -d ${HOME}/.rustup ]] && (( ${+commands[mise]} )); then
+  rust_env=$(mise env -C "${HOME}" -s bash 2>/dev/null)
+  cargo_home=${(Q)${(M)${(f)rust_env}:#export CARGO_HOME=*}#export CARGO_HOME=}
+  rustup_home=${(Q)${(M)${(f)rust_env}:#export RUSTUP_HOME=*}#export RUSTUP_HOME=}
+
+  if [[ ${rustup_home} == "${data_home}/rustup" ]]; then
+    migrate_dir "${HOME}/.rustup" "${rustup_home}"
+  fi
+  if [[ ${cargo_home} == "${data_home}/cargo" ]] &&
+    migrate_dir "${HOME}/.cargo" "${cargo_home}"; then
+    # mise installs Rust as links to the cargo bin directory. Re-point them.
+    for rust_install in "${MISE_DATA_DIR:-${data_home}/mise}"/installs/rust/*(N@); do
+      if [[ $(readlink "${rust_install}") == "${HOME}/.cargo/bin" ]]; then
+        ln -sfn "${cargo_home}/bin" "${rust_install}"
+      fi
+    done
+  fi
+fi
+
 if migrate_dir "${HOME}/.tmux/plugins" "${data_home}/tmux/plugins"; then
   rmdir "${HOME}/.tmux" 2>/dev/null
   # A running server still has the old plugin paths in its status line.

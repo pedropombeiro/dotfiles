@@ -4,6 +4,13 @@
 # renovate: datasource=github-releases depName=jdx/mise
 min_version = { soft = "2026.10.0" }
 
+[env]
+# Keep the Rust homes out of $HOME (defaults: ~/.cargo and ~/.rustup). An
+# explicit CARGO_HOME, as on QTS, takes precedence over MISE_CARGO_HOME.
+# migrate-legacy-dirs.zsh moves existing homes the first time this applies.
+MISE_CARGO_HOME = "{{env.HOME}}/.local/share/cargo"
+MISE_RUSTUP_HOME = "{{env.HOME}}/.local/share/rustup"
+
 [tools]
 # ── Shell UX ──────────────────────────────────────────────────────────
 # Shell history with sync and search

@@ -3,9 +3,11 @@
 # Copy cargo completions to site-functions from mise or rustup installs
 _cargo_dst="$HOME/.config/zsh/site-functions/_cargo"
 if [[ ! -s "$_cargo_dst" ]]; then
-  # Try mise installs first, then rustup
+  # Try mise installs first, then rustup. RUSTUP_HOME isn't set yet because
+  # mise activates later, so check its configured and legacy locations.
   _cargo_src=(
     ~/.local/share/mise/installs/rust/*/toolchains/*/share/zsh/site-functions/_cargo(N)
+    ~/.local/share/rustup/toolchains/*/share/zsh/site-functions/_cargo(N)
     ~/.rustup/toolchains/*/share/zsh/site-functions/_cargo(N)
   )
   # Sort paths by name, descending.

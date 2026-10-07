@@ -2,6 +2,10 @@
 
 All cloned repositories live under `~/Developer` following a **go-style** path convention:
 
+Use SSH URLs for clones and Git remotes, including both `origin` and `upstream`
+(for example, `git@github.com:pedropombeiro/models.dev.git`). SSH uses the
+machine's configured keys and avoids interactive HTTPS credential prompts.
+
 ```text
 ~/Developer/<forge-host>/<owner>/<repo>
 ```

@@ -11,7 +11,7 @@ See [Packslip skills policy](mise.md#completions-and-skills-policy) for updates.
 
 ## Configuration
 
-**Main config**: `~/hk.pkl` (requires hk v2.1.0+)
+**Main config**: `~/hk.pkl` (requires hk v2.5.0+)
 
 hk is installed globally via `hk install --global`, using Git 2.54+ config-based hooks. It runs as a
 silent no-op in repos without an `hk.pkl`.

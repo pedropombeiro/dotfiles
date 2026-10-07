@@ -13,6 +13,8 @@ class="$(yadm config --get local.class)"
 steps=(
   "Sign in to the App Store, then run 'mise bootstrap --only packages --yes' to install the App Store apps."
   "Grant macOS permissions as apps ask for them. Hammerspoon needs Accessibility and Bluetooth."
+  "In Zoom > Settings > Meetings & webinars > Display, enable 'Keep participant names visible' and 'Show participant profile pictures in chat'. These have no verified deployment keys."
+  "Restart Zoom when no meeting is active to load its single-window and meeting-timer defaults. These require Zoom's IT-admin installer."
 )
 if [[ ${class} == Work ]]; then
   steps+=(

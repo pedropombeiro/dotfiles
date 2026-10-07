@@ -313,6 +313,14 @@ fi
 # Add defaults to VS Code
 defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
 
+# Zoom: single meeting window and meeting timer. PackageRecommend keeps these
+# editable and -dict-add preserves other deployment defaults. Zoom's IT-admin
+# installer reads this system-wide configuration on launch.
+# https://support.zoom.com/hc/en/article?id=zm_kb&sysparm_article=KB0064957
+sudo defaults write /Library/Preferences/us.zoom.config PackageRecommend -dict-add \
+  ZDualMonitorOn -bool false \
+  ShowConnectedTime -bool true
+
 # Add defaults to Shottr
 defaults write cc.ffitch.shottr areaCaptureMode preview
 defaults write cc.ffitch.shottr afterGrabCopy -bool false

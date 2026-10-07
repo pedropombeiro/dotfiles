@@ -61,17 +61,11 @@
       "package": "aisdk:gitlab-ai-provider@6.19.1",
       "models": {
         // Superseded by Fable 5.1, Opus 5.5, and Sonnet 5.5.
-        "duo-workflow-claude-fable-5": { "disabled": true },
         "duo-chat-opus-4-5": { "disabled": true },
         "duo-chat-opus-4-6": { "disabled": true },
         "duo-chat-opus-4-7": { "disabled": true },
-        "duo-workflow-opus-4-5": { "disabled": true },
-        "duo-workflow-opus-4-6": { "disabled": true },
-        "duo-workflow-opus-4-7": { "disabled": true },
         "duo-chat-sonnet-4-5": { "disabled": true },
         "duo-chat-sonnet-4-6": { "disabled": true },
-        "duo-workflow-sonnet-4-5": { "disabled": true },
-        "duo-workflow-sonnet-4-6": { "disabled": true },
         "duo-chat-fable-5": {
           "disabled": true,
           "cost": [{ "input": 10, "output": 50, "cache": { "read": 1, "write": 12.5 } }]
@@ -85,16 +79,6 @@
         },
         "duo-chat-opus-5-5": {
           "cost": [{ "input": 4, "output": 20, "cache": { "read": 0.20, "write": 5 } }]
-        },
-        "duo-workflow-opus-5": {
-          "cost": [{ "input": 5, "output": 25, "cache": { "read": 0.50, "write": 6.25 } }]
-        },
-        "duo-workflow-opus-5-5": {
-          "cost": [{ "input": 4, "output": 20, "cache": { "read": 0.20, "write": 5 } }]
-        },
-        "duo-workflow-opus-4-8": {
-          "disabled": true,
-          "cost": [{ "input": 5, "output": 25, "cache": { "read": 0.50, "write": 6.25 } }]
         },
         "duo-chat-opus-4-8": {
           "disabled": true,
@@ -115,9 +99,6 @@
         "duo-chat-opus-4": {
           "disabled": true,
           "cost": [{ "input": 15, "output": 75, "cache": { "read": 1.50, "write": 18.75 } }]
-        },
-        "duo-workflow-haiku-4-5": {
-          "cost": [{ "input": 1, "output": 5, "cache": { "read": 0.10, "write": 1.25 } }]
         },
         "duo-chat-haiku-4-5": {
           "cost": [{ "input": 1, "output": 5, "cache": { "read": 0.10, "write": 1.25 } }]

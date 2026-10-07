@@ -2,34 +2,78 @@
 set -euo pipefail
 
 osascript <<'APPLESCRIPT'
+on tabWithProfile(targetWindow, profileName)
+  tell application "iTerm2"
+    repeat with candidateTab in tabs of targetWindow
+      repeat with candidateSession in sessions of candidateTab
+        if profile name of candidateSession is profileName then return get candidateTab
+      end repeat
+    end repeat
+  end tell
+  return missing value
+end tabWithProfile
+
+on ensureTab(targetWindow, profileName)
+  set matchingTab to my tabWithProfile(targetWindow, profileName)
+  if matchingTab is not missing value then return matchingTab
+  tell application "iTerm2"
+    tell targetWindow to return create tab with profile profileName
+  end tell
+end ensureTab
+
 tell application "iTerm2"
   activate
 
+  set workProfiles to {"GDK", "GDK rails console", "GDK development logs", "GDK Postgres console", "Clickhouse client"}
+  set targetWindow to missing value
+
+  -- Prefer a window that already contains the work setup.
+  repeat with candidateWindow in windows
+    repeat with candidateProfile in workProfiles
+      if my tabWithProfile(candidateWindow, candidateProfile as text) is not missing value then
+        set targetWindow to get candidateWindow
+        exit repeat
+      end if
+    end repeat
+    if targetWindow is not missing value then exit repeat
+  end repeat
+
+  if targetWindow is missing value then
+    repeat with candidateWindow in windows
+      if my tabWithProfile(candidateWindow, "Default") is not missing value then
+        set targetWindow to get candidateWindow
+        exit repeat
+      end if
+    end repeat
+  end if
+
   if (count of windows) = 0 then
-    create window with profile "Default"
-  else
-    tell current window
-      create tab with profile "Default"
+    set targetWindow to create window with profile "Default"
+  else if targetWindow is missing value then
+    set targetWindow to current window
+  end if
+
+  set firstTab to my ensureTab(targetWindow, "Default")
+  my ensureTab(targetWindow, "GDK")
+  set railsTab to my ensureTab(targetWindow, "GDK rails console")
+
+  -- Check the Rails tab itself so an existing logs split is not duplicated.
+  set hasLogsSplit to false
+  repeat with candidateSession in sessions of railsTab
+    if profile name of candidateSession is "GDK development logs" then set hasLogsSplit to true
+  end repeat
+  if not hasLogsSplit then
+    tell current session of railsTab
+      split horizontally with profile "GDK development logs"
     end tell
   end if
 
-  tell current window
-    set firstTab to current tab
+  my ensureTab(targetWindow, "GDK Postgres console")
+  my ensureTab(targetWindow, "Clickhouse client")
 
-    create tab with profile "GDK"
-
-    create tab with profile "GDK rails console"
-    tell current session of current tab
-      split horizontally with profile "GDK development logs"
-    end tell
-
-    create tab with profile "GDK Postgres console"
-    create tab with profile "Clickhouse client"
-
-    select firstTab
-  end tell
+  select targetWindow
+  select firstTab
 end tell
 APPLESCRIPT
 
 (cd "$HOME/gitlab-development-kit" && "$HOME/.local/share/mise/shims/gdk" start &)
-"$HOME/.local/bin/gkg" server start --register-mcp "$HOME/.gitlab/duo/mcp.json" --detached

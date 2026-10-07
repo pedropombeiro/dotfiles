@@ -61,8 +61,9 @@ _update_step "grc-rs rules"
 
 _update_step "tmux plugins"
 printf "${YELLOW}%s${NC}\n" "Updating tmux plugins..."
-~/.tmux/plugins/tpm/bin/update_plugins all
-~/.tmux/plugins/tpm/bin/clean_plugins
+tpm_bin="${XDG_DATA_HOME:-${HOME}/.local/share}/tmux/plugins/tpm/bin"
+"${tpm_bin}/update_plugins" all
+"${tpm_bin}/clean_plugins"
 
 _update_step "pre-commit"
 printf "${YELLOW}%s${NC}\n" "Installing /share/Container hk hooks..."

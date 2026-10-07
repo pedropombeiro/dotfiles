@@ -87,17 +87,27 @@ before activation so fresh and nested shells can use mise's first-prompt fast pa
 
 ## XDG Base Directories
 
-`~/.zshenv` exports `XDG_CONFIG_HOME=~/.config` so that macOS CLI tools using
-Go XDG libraries (`adrg/xdg`, `OpenPeeDeeP/xdg`) resolve config to `~/.config/`
-instead of `~/Library/Application Support/`. This allows dotfile tracking via yadm.
+`.shellrc/rc.d/_xdg.sh` exports `XDG_CONFIG_HOME=~/.config` so that macOS CLI
+tools using Go XDG libraries (`adrg/xdg`, `OpenPeeDeeP/xdg`) resolve config to
+`~/.config/` instead of `~/Library/Application Support/`. This allows dotfile
+tracking via yadm. `~/.zshenv` sources the file, so non-interactive zsh, such as
+agent shells, gets it too. Bash loads it with the other `rc.d` files.
 
 Tools unaffected (use Rust `dirs` crate, ignores XDG on macOS): rtk, zoxide, neovide (settings).
 
-`.shellrc/rc.d/_xdg.sh` sets the same default for bash. Prefer a tool's
-`~/.config` location over a file at the repository root. If a tool needs an
-environment variable to find it, export the variable from `.shellrc/rc.d/`, as
+Prefer a tool's XDG location over a file or directory in `$HOME`: config in
+`~/.config`, caches in `~/.cache`, data in `~/.local/share`, and logs or history
+in `~/.local/state`. Put environment overrides that cache-writing tools need,
+such as `npm_config_cache`, in `_xdg.sh` so every zsh gets them. Settings that
+only interactive shells use can live in a tool-specific `rc.d` file, as
 `highlight.sh` does with `HIGHLIGHT_DATADIR`. GUI launchers such as Raycast
 don't load these files, so pass an explicit config path in their scripts.
+
+When a location changes, add the move to
+`~/.config/yadm/scripts/migrate-legacy-dirs.zsh`. `relink-dotfiles.zsh` runs it
+after every yadm checkout, so each machine moves its existing state the first
+time it pulls the change. The script merges without overwriting and keeps
+conflicting entries under `~/.local/state/yadm/legacy-conflicts/`.
 
 ## Alternate Files
 

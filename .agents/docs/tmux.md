@@ -66,7 +66,8 @@ The configuration uses TPM (Tmux Plugin Manager) with these plugins:
 
 ## Plugin Installation
 
-Plugins are expected to be installed in `~/.tmux/plugins/` directory via TPM.
+TPM installs plugins in `~/.local/share/tmux/plugins/`, which `tmux.conf` and
+`.shellrc/rc.d/tmux.sh` both set as `TMUX_PLUGIN_MANAGER_PATH`.
 Installation command (within tmux): `prefix + I` (capital i)
 
 ## Passthrough and iTerm2 OSC Sequences

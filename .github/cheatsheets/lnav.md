@@ -88,7 +88,7 @@ and add units to your result name when you know them.
 The repository also tracks a [UniFi log format](../../.config/lnav/formats/installed/unifi_log.json)
 with fields such as `SRC`, `DST`, `PROTO`, and `DPT`. lnav reads
 `~/.config/lnav` only while `~/.lnav` doesn't exist, so
-`relink-dotfiles.zsh` merges any leftover `~/.lnav` state into
+`migrate-legacy-dirs.zsh` merges any leftover `~/.lnav` state into
 `~/.config/lnav` and removes the old directory. Check `p` for recognition
 before assuming the `unifi_log` SQL table is available.
 

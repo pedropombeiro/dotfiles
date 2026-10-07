@@ -1,3 +1,3 @@
 #!/bin/sh
 
-~/.tmux/plugins/tpm/bin/install_plugins
+"${XDG_DATA_HOME:-${HOME}/.local/share}/tmux/plugins/tpm/bin/install_plugins"

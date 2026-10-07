@@ -261,6 +261,10 @@ ignored_commands = [
 [sync]
 records = true
 
+[logs]
+## Directory for log files. The default is ~/.atuin/logs.
+dir = "~/.local/state/atuin/logs"
+
 [preview]
 ## which preview strategy to use to calculate the preview height (respects max_preview_height).
 ## possible values: auto, static

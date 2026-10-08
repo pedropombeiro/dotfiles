@@ -83,7 +83,7 @@ export default Plugin.define({
       const state = createMemo(current)
       return (
         <Show when={state() !== "disabled"}>
-          <text wrapMode="none" flexShrink={0} fg={color(tone())}>
+          <text wrapMode="none" flexShrink={0} fg={color(tone())} onMouseUp={() => void showDetails()}>
             {indicatorLabel(state())}
           </text>
         </Show>

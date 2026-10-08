@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test"
 import { acquireMonitor, createMonitor } from "./monitor"
 import type { ProbeResult } from "./probe"
-import { hostNameFrom, resolveOptions } from "../index"
+import { hostNameFrom, parseHeaders, resolveOptions } from "../index"
 import {
   describeStatus,
   hostWarning,
@@ -154,6 +154,54 @@ test("resolves options from plugin options and the environment", () => {
     ),
   ).toEqual({ endpoint: "https://otel.example.com", protocol: "http/protobuf", intervalMs: 2000, timeoutMs: 2000 })
   expect(resolveOptions({}, { OPENCODE_RESOURCE_ATTRIBUTES: "host.name=laptop" }).hostName).toBe("laptop")
+})
+
+test("parses OTLP headers like the exporter", () => {
+  // Built at runtime so the test file holds no literal credential.
+  const encoded = btoa("ab:c")
+  expect(encoded.endsWith("==")).toBe(true)
+  expect(parseHeaders(`Authorization=Basic ${encoded}`)).toEqual({ Authorization: `Basic ${encoded}` })
+  expect(parseHeaders(` a = 1 ,b=x=y,=skipped,novalue,c=`)).toEqual({ a: "1", b: "x=y", c: "" })
+  expect(parseHeaders("")).toEqual({})
+  expect(parseHeaders(undefined)).toEqual({})
+})
+
+test("reads headers from OPENCODE_OTLP_HEADERS only when set", () => {
+  const authorization = ["Basic", btoa("ab:c")].join(" ")
+  expect(resolveOptions({}, { OPENCODE_OTLP_HEADERS: `Authorization=${authorization}` }).headers).toEqual({
+    Authorization: authorization,
+  })
+  expect("headers" in resolveOptions({}, { OPENCODE_OTLP_HEADERS: "" })).toBe(false)
+  expect("headers" in resolveOptions({}, {})).toBe(false)
+})
+
+test("passes headers to the probe, keeps them out of statuses, and separates monitors by credential", async () => {
+  const encoded = btoa("ab:c")
+  const options = { endpoint: "https://otel.example.com", protocol: "http/protobuf" as const, intervalMs: 60_000 }
+  const seen: Array<Record<string, string>> = []
+  const monitor = createMonitor({
+    ...options,
+    timeoutMs: 100,
+    headers: { Authorization: `Basic ${encoded}` },
+    probe: async (target) => {
+      if (target.kind === "otlp-http") seen.push(target.headers)
+      return { ok: true, latencyMs: 1 }
+    },
+  })
+  const status = await monitor.check()
+  monitor.dispose()
+  expect(seen.at(-1)).toEqual({ Authorization: `Basic ${encoded}` })
+  expect(JSON.stringify(status)).not.toContain(encoded)
+
+  const never = () => new Promise<ProbeResult>(() => {})
+  const first = acquireMonitor({ ...options, timeoutMs: 100, headers: { Authorization: "a" }, probe: never })
+  const same = acquireMonitor({ ...options, timeoutMs: 100, headers: { Authorization: "a" } })
+  const other = acquireMonitor({ ...options, timeoutMs: 100, headers: { Authorization: "b" }, probe: never })
+  const none = acquireMonitor({ ...options, timeoutMs: 100, probe: never })
+  expect(same.monitor).toBe(first.monitor)
+  expect(other.monitor).not.toBe(first.monitor)
+  expect(none.monitor).not.toBe(first.monitor)
+  for (const lease of [first, same, other, none]) lease.release()
 })
 
 test("parses host.name from resource attributes", () => {

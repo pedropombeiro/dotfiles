@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto"
 import { probe as defaultProbe, resolveTarget, type Probe, type Protocol } from "./probe"
 import type { OtelStatus } from "./status"
 
@@ -5,6 +6,9 @@ export interface MonitorOptions {
   endpoint?: string
   protocol: Protocol
   hostName?: string
+  // HTTP request headers, such as `Authorization`. They stay in the service
+  // and never appear in a status.
+  headers?: Record<string, string>
   intervalMs: number
   timeoutMs: number
   probe?: Probe
@@ -21,7 +25,7 @@ export interface Monitor {
 export function createMonitor(options: MonitorOptions): Monitor {
   const probe = options.probe ?? defaultProbe
   const now = options.now ?? Date.now
-  const target = options.endpoint ? resolveTarget(options.endpoint, options.protocol) : undefined
+  const target = options.endpoint ? resolveTarget(options.endpoint, options.protocol, options.headers) : undefined
   const listeners = new Set<(status: OtelStatus) => void>()
   let inflight: Promise<OtelStatus> | undefined
   let disposed = false
@@ -110,6 +114,14 @@ function registry(): Map<string, SharedEntry> {
   return (store[SHARED_KEY] ??= new Map())
 }
 
+// Fingerprints the headers so monitors with different credentials stay
+// separate without keeping the credentials in the registry key.
+function headersFingerprint(headers: Record<string, string> | undefined): string | undefined {
+  const entries = Object.entries(headers ?? {}).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+  if (entries.length === 0) return undefined
+  return createHash("sha256").update(JSON.stringify(entries)).digest("hex")
+}
+
 export function acquireMonitor(options: MonitorOptions): {
   monitor: Monitor
   release: () => void
@@ -120,6 +132,7 @@ export function acquireMonitor(options: MonitorOptions): {
     options.hostName,
     options.intervalMs,
     options.timeoutMs,
+    headersFingerprint(options.headers),
   ])
   const monitors = registry()
   let entry = monitors.get(key)

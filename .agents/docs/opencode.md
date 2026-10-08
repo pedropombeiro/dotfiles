@@ -240,7 +240,8 @@ OTLP requests to Alloy.
   or warning and the last error, and runs a check. An accepted empty request doesn't
   prove that real exports succeed.
   Its `endpoint` and `protocol` options must match the exporter's in both `opencode.json`
-  alternates.
+  alternates. It sends the headers from `OPENCODE_OTLP_HEADERS`, parsed the same way as the
+  exporter, and keeps them out of the status, RPC responses, and `/otel`.
 
 ### Configure telemetry authentication
 
@@ -280,8 +281,9 @@ output or dump the service environment because it can expose the credential.
 Redaction does not mask `mise env`, `mise exec`, or tasks with `raw = true`.
 The work configuration must remain metrics-only.
 
-The `otel-status` probe currently does not send authentication headers, so its
-external checks can fail even when authenticated telemetry exports succeed.
+The `otel-status` probe sends the same headers, so an external `401` from `/otel`
+means the service has no credential or a rejected one. Restart the service as
+shown above to load a new credential.
 
 ## Model availability
 

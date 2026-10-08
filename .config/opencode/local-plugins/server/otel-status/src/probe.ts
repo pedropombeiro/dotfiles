@@ -9,7 +9,15 @@ interface Address {
 }
 
 export type ProbeTarget =
-  | ({ kind: "otlp-http"; url: string; contentType: string; body: string } & Address)
+  | ({
+      kind: "otlp-http"
+      url: string
+      contentType: string
+      body: string
+      // Sent with every request, for example `Authorization`. Never include
+      // these in a status or error message.
+      headers: Record<string, string>
+    } & Address)
   | ({ kind: "tcp" } & Address)
 
 export interface ProbeResult {
@@ -37,7 +45,11 @@ function signalUrl(url: URL, signal: string): string {
   return signalURL.toString()
 }
 
-export function resolveTarget(endpoint: string, protocol: Protocol): ProbeTarget | undefined {
+export function resolveTarget(
+  endpoint: string,
+  protocol: Protocol,
+  headers: Record<string, string> = {},
+): ProbeTarget | undefined {
   let url: URL
   try {
     url = new URL(endpoint)
@@ -51,7 +63,7 @@ export function resolveTarget(endpoint: string, protocol: Protocol): ProbeTarget
   }
   if (protocol === "grpc") return { kind: "tcp", ...address }
   if (url.protocol !== "http:" && url.protocol !== "https:") return undefined
-  return { kind: "otlp-http", url: signalUrl(url, "metrics"), ...EMPTY_REQUEST[protocol], ...address }
+  return { kind: "otlp-http", url: signalUrl(url, "metrics"), ...EMPTY_REQUEST[protocol], headers, ...address }
 }
 
 export function tcpProbe(target: Address, timeoutMs: number): Promise<ProbeResult> {
@@ -91,7 +103,14 @@ export async function otlpProbe(
   try {
     const response = await deps.fetch(target.url, {
       method: "POST",
-      headers: { "Content-Type": target.contentType },
+      // The content type must match the empty body, so configured headers
+      // can't override it.
+      headers: {
+        ...Object.fromEntries(
+          Object.entries(target.headers).filter(([name]) => name.toLowerCase() !== "content-type"),
+        ),
+        "Content-Type": target.contentType,
+      },
       body: target.body,
       redirect: "manual",
       signal: AbortSignal.timeout(timeoutMs),

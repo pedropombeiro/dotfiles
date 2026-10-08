@@ -41,6 +41,20 @@ export function hostNameFrom(attributes: string | undefined): string | undefined
   return undefined
 }
 
+// Parses an OTLP header list (`k=v,k2=v2`) the same way the exporter parses
+// OPENCODE_OTLP_HEADERS: split at the first `=`, so values such as
+// `Basic <base64>==` keep their spaces and padding.
+export function parseHeaders(raw: string | undefined): Record<string, string> {
+  const headers: Record<string, string> = {}
+  for (const pair of raw?.split(",") ?? []) {
+    const separator = pair.indexOf("=")
+    if (separator <= 0) continue
+    const name = pair.slice(0, separator).trim()
+    if (name) headers[name] = pair.slice(separator + 1).trim()
+  }
+  return headers
+}
+
 function positive(value: unknown, fallback: number): number {
   return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : fallback
 }
@@ -62,7 +76,17 @@ export function resolveOptions(
   // service environment when it loads, so a service started from a shell
   // without it exports telemetry with no host.
   const hostName = hostNameFrom(env["OPENCODE_RESOURCE_ATTRIBUTES"])
-  return { endpoint, protocol, intervalMs, timeoutMs, ...(hostName ? { hostName } : {}) }
+  // The exporter authenticates with these headers, so the probe sends them
+  // too. An empty or missing variable sends none, which suits LAN access.
+  const headers = parseHeaders(env["OPENCODE_OTLP_HEADERS"])
+  return {
+    endpoint,
+    protocol,
+    intervalMs,
+    timeoutMs,
+    ...(hostName ? { hostName } : {}),
+    ...(Object.keys(headers).length > 0 ? { headers } : {}),
+  }
 }
 
 export default {

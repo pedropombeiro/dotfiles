@@ -14,6 +14,7 @@ interface Received {
   method: string
   path: string
   contentType: string | null
+  authorization: string | null
   body: string
 }
 
@@ -27,6 +28,7 @@ function serve(respond: (request: Received) => Response | Promise<Response>) {
         method: request.method,
         path: new URL(request.url).pathname,
         contentType: request.headers.get("content-type"),
+        authorization: request.headers.get("authorization"),
         body: await request.text(),
       }
       received.push(entry)
@@ -37,8 +39,12 @@ function serve(respond: (request: Received) => Response | Promise<Response>) {
   return { endpoint: `http://127.0.0.1:${server.port}`, received }
 }
 
-function target(endpoint: string, protocol: "http/protobuf" | "http/json" = "http/protobuf"): HttpTarget {
-  const resolved = resolveTarget(endpoint, protocol)
+function target(
+  endpoint: string,
+  protocol: "http/protobuf" | "http/json" = "http/protobuf",
+  headers: Record<string, string> = {},
+): HttpTarget {
+  const resolved = resolveTarget(endpoint, protocol, headers)
   if (resolved?.kind !== "otlp-http") throw new Error(`unexpected target for ${endpoint}`)
   return resolved
 }
@@ -59,6 +65,7 @@ test("resolves HTTP targets to the metrics signal URL and gRPC to a TCP address"
     url: "https://otel.example.com/v1/metrics",
     contentType: "application/x-protobuf",
     body: "",
+    headers: {},
     host: "otel.example.com",
     port: 443,
   })
@@ -81,8 +88,28 @@ test("sends an empty protobuf export request and accepts a 2xx response", async 
   expect(result.ok).toBe(true)
   expect(result.error).toBeUndefined()
   expect(collector.received).toEqual([
-    { method: "POST", path: "/v1/metrics", contentType: "application/x-protobuf", body: "" },
+    { method: "POST", path: "/v1/metrics", contentType: "application/x-protobuf", authorization: null, body: "" },
   ])
+})
+
+test("sends configured headers without letting them override the content type", async () => {
+  // Built at runtime so the test file holds no literal credential.
+  const authorization = ["Basic", btoa("ab:c")].join(" ")
+  const collector = serve(() => new Response(null, { status: 200 }))
+  const result = await otlpProbe(
+    target(collector.endpoint, "http/protobuf", { Authorization: authorization, "content-type": "text/plain" }),
+    1000,
+  )
+  expect(result.ok).toBe(true)
+  expect(collector.received[0]).toMatchObject({ authorization, contentType: "application/x-protobuf" })
+})
+
+test("does not include headers in error messages", async () => {
+  const authorization = ["Basic", btoa("ab:c")].join(" ")
+  const collector = serve(() => new Response("no", { status: 401 }))
+  const result = await otlpProbe(target(collector.endpoint, "http/protobuf", { Authorization: authorization }), 1000)
+  expect(result).toMatchObject({ ok: false, error: "HTTP 401 from /v1/metrics" })
+  expect(JSON.stringify(result)).not.toContain(btoa("ab:c"))
 })
 
 test("sends an empty JSON export request for http/json", async () => {

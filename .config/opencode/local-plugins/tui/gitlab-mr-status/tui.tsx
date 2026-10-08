@@ -174,8 +174,12 @@ export default Plugin.define({
                     {(url) => (
                       // OSC 8 makes the text a terminal hyperlink where supported; the
                       // click handler covers terminals and multiplexers that drop it.
+                      // The underline marks the segment as a link, because terminals
+                      // don't style OSC 8 links consistently.
                       <text wrapMode="none" flexShrink={0} fg={color(segment.tone)} onMouseUp={() => openUrl(url())}>
-                        <a href={url()}>{segment.text}</a>
+                        <a href={url()}>
+                          <u>{segment.text}</u>
+                        </a>
                       </text>
                     )}
                   </Show>

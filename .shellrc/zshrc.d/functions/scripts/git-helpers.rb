@@ -253,6 +253,7 @@ def rebase_mappings
   end
 
   mr_seq_branches = {}
+  mr_unnumbered_branches = unnumbered_mr_branches(local_branches, mr_pattern, [seq_mr_pattern, backport_pattern])
 
   local_branches.each do |branch|
     seq_mr_match_data = seq_mr_pattern.match(branch)
@@ -299,6 +300,9 @@ def rebase_mappings
         else
           rebase_onto = default_branch
         end
+      elsif (base_branch = unnumbered_stack_base(branch, mr_unnumbered_branches[current_mr_id], default_branch))
+        fork_point = stacked_fork_point(base_branch, branch)
+        rebase_onto = base_branch
       else
         prev_seq_pattern = "#{user_name}/#{current_mr_id}/#{current_mr_seq_nr - 1}-"
         old_tip = deleted_branch_tip_from_reflog(prev_seq_pattern, branch)
@@ -340,6 +344,23 @@ def rebase_mappings
       fork_point: fork_point
     }
   end
+end
+
+def unnumbered_mr_branches(branches, mr_pattern, excluded_patterns)
+  branches.each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |branch, groups|
+    next if excluded_patterns.any? { |pattern| pattern.match?(branch) }
+
+    mr_match_data = mr_pattern.match(branch)
+    groups[mr_match_data[:mr_id]] << branch if mr_match_data
+  end
+end
+
+# The first numbered branch of a stack may sit on an unnumbered branch of the same MR,
+# because only stacked branches get a sequence prefix. Prefer the closest such ancestor.
+def unnumbered_stack_base(branch, candidates, default_branch)
+  candidates
+    .select { |candidate| branch_merged_into?(candidate, branch) && !branch_merged_into?(candidate, default_branch) }
+    .max_by { |candidate| branch_distance(candidate, default_branch) }
 end
 
 def branch_sort_key(branch_info)

@@ -82,7 +82,7 @@ pick_sheet() {
   selection=$(list_sheets | fzf --height "$FZF_HEIGHT" --reverse --border \
     --border-label ' cheat sheets ' --prompt 'cheat> ' \
     --preview "glow -s $(printf '%q' "$GLOW_STYLE") -w \"\${FZF_PREVIEW_COLUMNS:-80}\" $(printf '%q' "$SHEETS_DIR")/\$( [ {} = index ] && echo README || echo {} ).md" \
-    --preview-window 'right:80%') || return 130
+    --preview-window 'right:80%:nohidden') || return 130
   [[ -n $selection ]] || return 130
   printf '%s\n' "$selection"
 }

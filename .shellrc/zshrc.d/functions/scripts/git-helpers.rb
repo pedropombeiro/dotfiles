@@ -113,7 +113,7 @@ def rebase_all_per_capture_info(local_branch_info_hash)
 
     if fork_point
       puts "Rebasing ".brown + branch.cyan + " onto ".brown + parent_branch.green +
-        " (skipping already-merged commits)...".brown
+        " (replaying commits after #{fork_point.match?(/\A\h{40}\z/) ? fork_point[0, 12] : fork_point})...".brown
     else
       puts "Rebasing ".brown + branch.cyan + " onto ".brown + parent_branch.green + "...".brown
     end
@@ -292,6 +292,8 @@ def rebase_mappings
             fork_point = prev_branch unless branch_merged_into?(prev_branch, mb)
             rebase_onto = default_branch
           else
+            # Capture the old parent boundary now: a plain rebase replays rewritten parent commits.
+            fork_point = stacked_fork_point(prev_branch, branch)
             rebase_onto = prev_branch
           end
         else
@@ -443,6 +445,15 @@ def compute_fork_point(default_branch, branch)
 
   result = `git merge-base --fork-point #{default_branch} #{branch} 2>/dev/null`.strip
   @fork_point_cache[key] = {value: result, success: Process.last_status.success?}
+end
+
+def stacked_fork_point(parent_branch, branch)
+  result = compute_fork_point(parent_branch, branch)
+  value = result[:value]
+  return unless result[:success] && !value.empty?
+  return unless branch_merged_into?(value, branch)
+
+  value
 end
 
 def branch_merged_into?(branch, target)

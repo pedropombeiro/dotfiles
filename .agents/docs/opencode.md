@@ -213,8 +213,9 @@ To update an unpinned entry, run `opencode plugin update <package>`.
 
 `@devtheops/opencode-plugin-otel` exports OTLP/HTTP to `https://otel.pombei.ro`, which
 Alloy on the NAS routes to Prometheus, Loki, and Tempo. View the data in the **OpenCode**
-dashboard on `grafana.pombei.ro`. The route accepts requests only from the home network,
-so machines elsewhere drop telemetry after the exporter's retries.
+dashboard on `grafana.pombei.ro`. LAN access uses an IP allowlist. External access
+requires per-machine Basic Auth credentials, validated by Traefik before it forwards
+OTLP requests to Alloy.
 
 - `opencode.json##default` (Personal and NAS) exports metrics, events, and traces. Traces
   include prompts, model output, tool arguments, and tool output.
@@ -240,6 +241,47 @@ so machines elsewhere drop telemetry after the exporter's retries.
   prove that real exports succeed.
   Its `endpoint` and `protocol` options must match the exporter's in both `opencode.json`
   alternates.
+
+### Configure telemetry authentication
+
+`~/.config/mise/conf.d/opencode.toml` reads `OPENCODE_OTLP_HEADERS` from
+`~/.config/opencode/otel-headers`, respecting `XDG_CONFIG_HOME`. The credential
+file contains one `Authorization=Basic ...` line. Mise marks the variable with
+`redact = true` to mask it in captured task output. Treat it as a password because
+Base64 encoding does not encrypt credentials. Keep the file outside version control.
+If it is missing, mise sets the variable to an empty string and LAN exports still work.
+
+1. Transfer only this machine's `.headers` file over SSH or another secure channel
+   from `/share/Container/secrets/otel-clients/` on the NAS. Use `nas.headers` for
+   the NAS, `pedros-macbookair.headers` for the personal MacBook Air, or
+   `gitlab-macbookpro.headers` for the work MacBook Pro. Save it as
+   `~/.config/opencode/otel-headers`. The `.password` file is not needed on the client.
+2. Restrict access to the credential:
+
+   ```sh
+   chmod 600 ~/.config/opencode/otel-headers
+   ```
+
+3. Verify that mise provides the variable without displaying its value:
+
+   ```sh
+   mise exec -- sh -c 'test -n "$OPENCODE_OTLP_HEADERS" && echo "OTLP authentication is set"'
+   ```
+
+4. Restart the background service from a fresh interactive shell to retain
+   `OPENCODE_RESOURCE_ATTRIBUTES` and load the credential:
+
+   ```sh
+   mise exec -- opencode service restart
+   ```
+
+Repeat the restart after credential rotation. Do not share unfiltered `mise env`
+output or dump the service environment because it can expose the credential.
+Redaction does not mask `mise env`, `mise exec`, or tasks with `raw = true`.
+The work configuration must remain metrics-only.
+
+The `otel-status` probe currently does not send authentication headers, so its
+external checks can fail even when authenticated telemetry exports succeed.
 
 ## Model availability
 

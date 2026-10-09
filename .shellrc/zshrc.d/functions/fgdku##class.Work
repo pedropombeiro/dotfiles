@@ -22,7 +22,7 @@
 # - reinstalls bundle and regenerates spring binstubs
 # - runs a simple rspec test to bring up Gitaly
 # - runs pending ClickHouse migrations
-# - prunes local branches and their worktrees whose work has landed, or whose remote was deleted
+# - prunes local branches and their worktrees whose work has landed, or whose remote was deleted (skipped with -p/--no-prune)
 # - rebases all local branches, preserving branch dependencies (skipped with -n/--no-rebase)
 # - switches back to the original branch if it still exists
 # - runs gdk cleanup and truncates large log files
@@ -35,11 +35,12 @@
 source ~/.config/yadm/scripts/colors.sh
 source ~/.shellrc/zshrc.d/functions/scripts/spring-binstubs.zsh
 
-local _fgdku_rebase=1 _arg
+local _fgdku_rebase=1 _fgdku_prune=1 _arg
 for _arg in "$@"; do
   case "$_arg" in
     -n|--no-rebase) _fgdku_rebase=0 ;;
-    -h|--help) print 'Usage: fgdku [-n|--no-rebase]'; return 0 ;;
+    -p|--no-prune) _fgdku_prune=0 ;;
+    -h|--help) print 'Usage: fgdku [-n|--no-rebase] [-p|--no-prune]'; return 0 ;;
     *) printf "${RED}%s${NC}\n" "fgdku: unknown option: $_arg"; return 2 ;;
   esac
 done
@@ -208,9 +209,13 @@ _git_fsmonitor_stop
     bundle exec rake db:test:prepare
 
   _fgdku_step "pruning branches"
-  printf "${YELLOW}%s${NC}\n" 'Pruning local branches whose work has landed...'
-  git_prune || printf "${YELLOW}%s${NC}\n" 'git_prune reported errors, continuing...'
-  printf "${GREEN}%s${NC}\n" "Done."
+  if (( _fgdku_prune )); then
+    printf "${YELLOW}%s${NC}\n" 'Pruning local branches whose work has landed...'
+    git_prune || printf "${YELLOW}%s${NC}\n" 'git_prune reported errors, continuing...'
+    printf "${GREEN}%s${NC}\n" "Done."
+  else
+    printf "${YELLOW}%s${NC}\n" "Skipping branch pruning (--no-prune)."
+  fi
 
   _fgdku_step "rebasing branches"
   if (( _fgdku_rebase )); then

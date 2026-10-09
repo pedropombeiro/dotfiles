@@ -1,0 +1,6 @@
+#compdef git_prune
+
+_arguments \
+  '(-n --dry-run)'{-n,--dry-run}'[show what would be deleted]' \
+  '(-f --force)'{-f,--force}'[also remove worktrees with uncommitted changes]' \
+  '(- *)'{-h,--help}'[show usage]'

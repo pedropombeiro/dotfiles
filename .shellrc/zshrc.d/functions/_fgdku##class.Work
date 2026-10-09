@@ -1,0 +1,6 @@
+#compdef fgdku
+
+_arguments \
+  '(-n --no-rebase)'{-n,--no-rebase}'[skip rebasing local branches]' \
+  '(-p --no-prune)'{-p,--no-prune}'[skip pruning landed branches]' \
+  '(- *)'{-h,--help}'[show usage]'

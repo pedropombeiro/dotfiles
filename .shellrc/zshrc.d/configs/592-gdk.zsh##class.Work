@@ -11,3 +11,8 @@ if [[ -d ${GDK_ROOT} ]]; then
   unalias gswm 2>/dev/null
   unalias gpsup 2>/dev/null
 fi
+
+# Completers are autoloaded from zshrc.d/functions, which joins fpath after compinit
+compdef _fgdku fgdku
+compdef _git_parent git_parent
+compdef _git gpf=git-push gpsup=git-push gpif=git-push

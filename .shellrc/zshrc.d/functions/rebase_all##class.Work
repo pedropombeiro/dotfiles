@@ -23,5 +23,7 @@ spring_binstubs restore
 test -f db/structure.sql && git restore db/ package.json
 
 mise x ruby -- ruby -r "${SCRIPT_DIR}/git-helpers.rb" -e rebase_all
+local exit_code=$?
 
 spring_binstubs generate
+return $exit_code

@@ -111,6 +111,11 @@ def rebase_all_per_capture_info(local_branch_info_hash)
       next
     end
 
+    if info.is_a?(Hash) && info[:squash_merged]
+      puts "  Skipping ".brown + branch.cyan + " (already squash-merged into #{compute_default_branch})".brown
+      next
+    end
+
     if fork_point
       puts "Rebasing ".brown + branch.cyan + " onto ".brown + parent_branch.green +
         " (replaying commits after #{fork_point.match?(/\A\h{40}\z/) ? fork_point[0, 12] : fork_point})...".brown
@@ -147,30 +152,27 @@ def rebase_all_per_capture_info(local_branch_info_hash)
       "doc/api/openapi/openapi_v3.yaml" => %w[bundle exec rake gitlab:openapi:v3:generate]
     }
 
+    resolved = false
     loop do
-      status = `git status --short`
-      conflicting_files = status.lines.select { |line| line.start_with?("UU ") }.map { |line| line[3..].strip }
+      conflicting_files = unmerged_files
       auto_conflicting = conflicting_files.select { |file| auto_generated_files_hash.key?(file) }
-      manual_conflicting = conflicting_files - auto_conflicting
+      break if auto_conflicting.empty? || auto_conflicting.size < conflicting_files.size
 
-      break if auto_conflicting.empty?
-      break if manual_conflicting.any?
-
-      err = false
-      auto_conflicting.each do |file|
-        cmd = auto_generated_files_hash[file]
+      regenerated = auto_conflicting.all? do |file|
         puts "  Merge conflict in #{file.red}, regenerating...".brown
-        system(*(%w[mise x ruby --] + cmd))
-        err = true
+        next true if system(*(%w[mise x ruby --] + auto_generated_files_hash[file])) && system(*%W[git add #{file}])
 
-        system(*%W[git add #{file}])
-        break unless Process.last_status.success?
-
-        err = false
+        puts "  Failed to regenerate ".red + file.cyan
+        false
       end
+      break unless regenerated
 
-      break unless err || system({"GIT_EDITOR" => "true", "LEFTHOOK" => "0"}, *%w[git rebase --continue])
+      if system({"GIT_EDITOR" => "true", "LEFTHOOK" => "0"}, *%w[git rebase --continue])
+        resolved = true
+        break
+      end
     end
+    next if resolved
 
     # There is a merge conflict that needs to be resolved by the user, exit now
     system(%(hs -c 'hs.notify.new({title="rebase_all", informativeText="Failed with merge conflict. Please resolve merge conflicts!"}):send()'))
@@ -178,6 +180,14 @@ def rebase_all_per_capture_info(local_branch_info_hash)
   end
 
   system(*%W[git switch #{current_branch}])
+end
+
+UNMERGED_STATUSES = %w[DD AU UD UA DU AA UU].freeze
+
+def unmerged_files
+  `git status --short`.lines
+    .select { |line| UNMERGED_STATUSES.include?(line[0, 2]) }
+    .map { |line| line[3..].strip }
 end
 
 def rebase_mappings
@@ -210,7 +220,8 @@ def rebase_mappings
     Thread.new { branch_distance_map(default_branch, local_branches) },
     Thread.new { preload_merge_bases!(default_branch, local_branches) },
     Thread.new { preload_fork_points!(default_branch, local_branches) },
-    Thread.new { preload_parent_branches!(non_seq_branches) }
+    Thread.new { preload_parent_branches!(non_seq_branches) },
+    Thread.new { preload_squash_merged!(default_branch, local_branches) }
   ]
   preload_threads.each(&:join)
 
@@ -324,6 +335,14 @@ def rebase_mappings
       parent_branch = compute_parent_branch(branch)
     end
 
+    # A squash-merged parent is not an ancestor of the default branch, so replay only this branch's commits.
+    rebase_target = rebase_onto || parent_branch
+    if rebase_target != default_branch && branch_exists?(rebase_target) &&
+        branch_squash_merged_into?(rebase_target, default_branch)
+      fork_point ||= stacked_fork_point(rebase_target, branch) || resolve_ref(rebase_target)
+      rebase_onto = default_branch
+    end
+
     if fork_point.nil? && (rebase_onto || parent_branch) == default_branch
       fp_result = compute_fork_point(default_branch, branch)
       fp = fp_result[:value]
@@ -341,7 +360,8 @@ def rebase_mappings
       branch: branch,
       parent_branch: parent_branch,
       rebase_onto: rebase_onto || parent_branch,
-      fork_point: fork_point
+      fork_point: fork_point,
+      squash_merged: branch_squash_merged_into?(branch, default_branch)
     }
   end
 end
@@ -485,6 +505,29 @@ def branch_merged_into?(branch, target)
   @branch_merged_cache[key] = system(*%W[git merge-base --is-ancestor #{branch} #{target}])
 end
 
+def preload_squash_merged!(target, branches)
+  branches.map { |branch| Thread.new { branch_squash_merged_into?(branch, target) } }.each(&:join)
+end
+
+def branch_squash_merged_into?(branch, target)
+  @branch_squash_merged_cache ||= {}
+  key = "#{branch}:#{target}"
+  return @branch_squash_merged_cache[key] if @branch_squash_merged_cache.key?(key)
+
+  @branch_squash_merged_cache[key] = compute_branch_squash_merged(branch, target)
+end
+
+# Squash merges leave no ancestry link. Treat the branch as merged when merging it
+# cleanly into the target leaves the target tree unchanged.
+def compute_branch_squash_merged(branch, target)
+  return false if branch_merged_into?(branch, target)
+
+  merged_tree = IO.popen(%W[git merge-tree --write-tree --no-messages #{target} #{branch}], err: File::NULL, &:read)
+  return false unless Process.last_status.success?
+
+  merged_tree.lines.first&.strip == resolve_ref("#{target}^{tree}")
+end
+
 def deleted_branch_tip_from_reflog(branch_name_prefix, descendant_branch = nil)
   escaped = Regexp.escape(branch_name_prefix)
   patterns = [
@@ -551,7 +594,7 @@ def rebase_all
   default_branch = compute_default_branch
   mappings = rebase_mappings
     .sort_by { |b| [branch_distance(b[:branch], default_branch), branch_sort_key(b)] }
-    .to_h { |b| [b[:branch], {rebase_onto: b[:rebase_onto], fork_point: b[:fork_point]}] }
+    .to_h { |b| [b[:branch], b.slice(:rebase_onto, :fork_point, :squash_merged)] }
   exit(1) if rebase_all_per_capture_info(mappings) == false
 end
 

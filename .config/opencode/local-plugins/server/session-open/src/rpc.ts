@@ -9,9 +9,11 @@ const requestSchema = {
     // subagent still reaches the terminal that shows the root session.
     sourceSessionIDs: { type: "array", items: { type: "string" } },
     sessionID: { type: "string" },
+    rootSessionID: { type: "string" },
     root: { type: "boolean" },
+    closeSource: { type: "boolean" },
   },
-  required: ["requestID", "sourceSessionIDs", "sessionID", "root"],
+  required: ["requestID", "sourceSessionIDs", "sessionID", "rootSessionID", "root", "closeSource"],
   additionalProperties: false,
 } as const
 
@@ -41,5 +43,7 @@ export interface OpenRequest {
   requestID: string
   sourceSessionIDs: string[]
   sessionID: string
+  rootSessionID: string
   root: boolean
+  closeSource: boolean
 }

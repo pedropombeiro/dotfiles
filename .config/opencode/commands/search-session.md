@@ -27,11 +27,20 @@ Then act on the output:
       label. In the description, put the session ID, the date of the last
       match, `current project` when it applies, and a short excerpt. Skip this
       question when only one session was found.
-   1. **What should I do with it?** Offer **Open session**, recommended when a
-      shown session is in the current project, and **Summarize here**. Offer
+   1. **What should I do with it?** Offer **Switch and close search tab**,
+      recommended when a shown session is in the current project. Explain
+      that it keeps the search conversation in history. Also offer **Open
+      session**, which keeps the search tab open, and **Summarize here**. Offer
       **Show more matches** only when more sessions were found than shown.
 1. Act on my answers:
-   - **Open session**: call the `open_session` tool with the session ID. If the
+   - **Switch and close search tab**: call `open_session` with the session ID
+     and `close_source: true`. This closes the source tab after opening the
+     destination, without deleting history. With tabs disabled, it only
+     switches sessions. It keeps the tab open if both sessions share a root.
+     If the session belongs to another project, or the tool fails, show the
+     reason and tell me to reopen it with `opencode --session <id>`.
+   - **Open session**: call `open_session` with the session ID, omitting
+     `close_source` to keep the search tab open. If the
      session belongs to another project, or the tool fails, show the reason
      and tell me to reopen it with `opencode --session <id>`.
    - **Summarize here**: summarize what the session discussed about my query.

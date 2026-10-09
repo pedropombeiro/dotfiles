@@ -47,17 +47,25 @@ export default {
         name: "open_session",
         description:
           "Open another OpenCode session of the current project in the user's terminal, focusing its tab or switching to it. " +
-          "Only call it after the user chooses to open that session. It fails for sessions of other projects.",
+          "Optionally close the source tab after opening, preserving its conversation in history. " +
+          "Only call it after the user chooses that action. It fails for sessions of other projects.",
         input: {
           type: "object",
           properties: {
             session_id: { type: "string", pattern: "^ses", description: "ID of the session to open." },
+            close_source: {
+              type: "boolean",
+              description: "Close the source tab after opening the destination. Defaults to false. Does not delete history.",
+            },
           },
           required: ["session_id"],
           additionalProperties: false,
         },
         execute: async (input, { sessionID, signal }) => {
-          const targetID = (input as { session_id: string }).session_id
+          const { session_id: targetID, close_source: closeSource = false } = input as {
+            session_id: string
+            close_source?: boolean
+          }
           const source = await get({ sessionID })
           let target: Awaited<ReturnType<SessionGet>>
           try {
@@ -68,13 +76,17 @@ export default {
           const reason = rejectReason(source, target)
           if (reason) throw new Error(reason)
 
+          const sourceSessionIDs = await ancestry(get, source)
+          const targetSessionIDs = await ancestry(get, target)
           const requestID = randomUUID()
           const replied = waitForReply(requestID, REPLY_TIMEOUT_MS, signal)
           await rpc.events.emit("requested", {
             requestID,
-            sourceSessionIDs: await ancestry(get, source),
+            sourceSessionIDs,
             sessionID: target.id,
+            rootSessionID: targetSessionIDs[targetSessionIDs.length - 1],
             root: !target.parentID,
+            closeSource,
           })
           const action = await replied
           if (!action)

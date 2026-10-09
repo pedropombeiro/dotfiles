@@ -1,7 +1,7 @@
 ---
 name: session-search
 description: "Find previous OpenCode sessions that contain a keyword or sentence. Use when the user asks which earlier session discussed something, wants to find where a phrase, command, or decision came up, or wants to return to a past conversation."
-version: 1.2.0
+version: 1.3.0
 license: MIT
 compatibility: opencode
 metadata:
@@ -84,19 +84,27 @@ the same call:
 1. If several sessions match, ask which one to use. Label each option with the
    session title and put the session ID and date in its description.
 1. Ask what to do with the chosen session. Offer only the actions that apply:
-   - **Open session**: only when `same_project` is `true`. Recommend it first.
+   - **Switch and close search tab**: only when `same_project` is `true`.
+     Recommend it first. Close this tab after opening the destination, keeping
+     the search conversation in history.
+   - **Open session**: only when `same_project` is `true`. Keep this tab open.
    - **Summarize here**: rerun the search with `--session <id>`, more
      `--excerpts`, and a larger `--context`, and summarize the matches in this
      conversation.
    - **Show more matches**: only when `total_sessions` is larger than the
      number shown. Rerun the search with a larger `--limit`.
-1. To open a session, call the `open_session` tool with its ID. The tool
+1. To switch and close the search tab, call `open_session` with its ID and
+   `close_source: true`. For **Open session**, omit `close_source`. The tool
    focuses the session's tab, or switches to it, in the terminal that shows
    this session. If the tool is unavailable or fails, show its error and tell
    the user to reopen the session with `opencode --session <id>`.
    `open_session` comes from the `session-open` plugin in
    `~/.config/opencode/local-plugins/server/session-open`. See its
    `README.md`.
+
+Closing the search tab does not delete the session. When tabs are disabled,
+the tool switches sessions without closing a tab. It also keeps the tab open
+when the destination belongs to the same root session.
 
 For a session of another project, tell the user to reopen it with
 `opencode --session <id>`; `open_session` rejects it.

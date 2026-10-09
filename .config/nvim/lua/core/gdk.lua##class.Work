@@ -65,7 +65,7 @@ local cmd_prefix = "wincmd n | wincmd J | resize10 | setlocal nonumber | setloca
 vim.api.nvim_create_user_command(
   "Fgdku",
   cmd_prefix .. "call termopen('zsh -i -c \"fgdku <args>\"') | normal G",
-  { nargs = "?" }
+  { nargs = "*" }
 )
 vim.api.nvim_create_user_command("RebaseAll", cmd_prefix .. "call termopen('zsh -i -c rebase_all') | normal G", {})
 vim.api.nvim_create_user_command("Gsw", "Git switch <args>", { nargs = 1 })

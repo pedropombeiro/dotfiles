@@ -1,11 +1,11 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "plugins": [
-    "@mohak34/opencode-notifier@0.7.0",
-    "@nm156/opencode-wakatime@1.4.0",
-    "opencode-atuin-history@1.0.1",
-    "opencode-forge-session-title@1.3.0",
-    "opencode-homeassistant@1.0.2",
+    "@mohak34/opencode-notifier@0.7.0",   // System notifications and sounds for permissions, completion, and errors
+    "@nm156/opencode-wakatime@1.4.0",     // Tracks AI coding activity in WakaTime
+    "opencode-atuin-history@1.0.1",       // Records the agent's shell commands in Atuin history
+    "opencode-forge-session-title@1.3.0", // Prefixes session titles with issue and PR/MR references
+    "opencode-homeassistant@1.0.2",       // Sends agent status to Home Assistant and answers permissions from it
     {
       // Sends metrics, events, and traces to Alloy on the NAS. otel.pombei.ro only
       // answers on the home network; see ~/.agents/docs/opencode.md#telemetry.

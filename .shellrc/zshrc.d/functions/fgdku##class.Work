@@ -23,7 +23,7 @@
 # - runs a simple rspec test to bring up Gitaly
 # - runs pending ClickHouse migrations
 # - prunes local branches and their worktrees whose work has landed, or whose remote was deleted
-# - rebases all local branches, preserving branch dependencies
+# - rebases all local branches, preserving branch dependencies (skipped with -n/--no-rebase)
 # - switches back to the original branch if it still exists
 # - runs gdk cleanup and truncates large log files
 # - kills and restarts GDK, ensuring no orphaned sidekiq-cluster processes
@@ -34,6 +34,15 @@
 
 source ~/.config/yadm/scripts/colors.sh
 source ~/.shellrc/zshrc.d/functions/scripts/spring-binstubs.zsh
+
+local _fgdku_rebase=1 _arg
+for _arg in "$@"; do
+  case "$_arg" in
+    -n|--no-rebase) _fgdku_rebase=0 ;;
+    -h|--help) print 'Usage: fgdku [-n|--no-rebase]'; return 0 ;;
+    *) printf "${RED}%s${NC}\n" "fgdku: unknown option: $_arg"; return 2 ;;
+  esac
+done
 
 MAIN_BRANCH="$(git_main_branch)"
 
@@ -204,11 +213,15 @@ _git_fsmonitor_stop
   printf "${GREEN}%s${NC}\n" "Done."
 
   _fgdku_step "rebasing branches"
-  printf "${YELLOW}%s${NC}\n" "Rebasing local branches..."
-  git restore :/
-  rebase_all
-  git status --porcelain | grep '^UU ' >/dev/null && return 1
-  printf "${GREEN}%s${NC}\n" "Done."
+  if (( _fgdku_rebase )); then
+    printf "${YELLOW}%s${NC}\n" "Rebasing local branches..."
+    git restore :/
+    rebase_all
+    git status --porcelain | grep '^UU ' >/dev/null && return 1
+    printf "${GREEN}%s${NC}\n" "Done."
+  else
+    printf "${YELLOW}%s${NC}\n" "Skipping branch rebase (--no-rebase)."
+  fi
 
   if [[ "${ORIGINAL_BRANCH}" != "${MAIN_BRANCH}" ]]; then
     if git rev-parse --abbrev-ref "${ORIGINAL_BRANCH}" >/dev/null 2>&1; then

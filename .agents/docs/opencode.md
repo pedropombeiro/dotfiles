@@ -115,9 +115,9 @@ plugins can import `solid-js`, `@opentui/solid`, and `@opencode/plugin/tui` with
 
 Each local plugin documents its behavior, options, and tests in its own README:
 
-- [`gitlab-mr-status`](../../.config/opencode/local-plugins/tui/gitlab-mr-status/README.md)
-  (Work only): shows the session's MR status in the prompt footer and tells the agent
-  about new Duo and human review feedback.
+- [`gitlab-mr-status`](../../.config/opencode/local-plugins/tui/gitlab-mr-status/README.md):
+  shows GitHub PR or GitLab MR status on both machines. GitLab explicit targets also
+  notify the agent about Duo and human review feedback; GitHub is status-only.
 - [`permission-mode`](../../.config/opencode/local-plugins/tui/permission-mode/README.md):
   toggles the global permission preference with Shift+Tab.
 - [`queue-command`](../../.config/opencode/local-plugins/tui/queue-command/README.md):

@@ -1,19 +1,8 @@
 import { describe, expect, test } from "bun:test"
 import type { Exec } from "./exec"
-import { parseRemote, resolveProjects, resolveRepository, titleMergeRequest } from "./git"
+import { parseRemote, resolveProjects, resolveRepository } from "./git"
 
-describe("titleMergeRequest", () => {
-  test.each([
-    ["[#597600, !259332] Reviewing MRs", "259332"],
-    ["[!42] Title", "42"],
-    ["[#123] Issue only", undefined],
-    ["Fix !42 later", undefined],
-    ["[a!42] Not a reference", undefined],
-    [undefined, undefined],
-  ])("parses %p", (title, expected) => {
-    expect(titleMergeRequest(title)).toBe(expected)
-  })
-})
+const onGitLab = (host: string) => host === "gitlab.com"
 
 describe("resolveProjects", () => {
   test("lists GitLab remotes with origin first", async () => {
@@ -24,7 +13,7 @@ describe("resolveProjects", () => {
         "remote.origin.url git@gitlab.com:gitlab-org/gitlab.git",
       ].join("\n"),
     })
-    expect(await resolveProjects(run, "/repo", ["gitlab.com"])).toEqual({
+    expect(await resolveProjects(run, "/repo", onGitLab)).toEqual({
       kind: "projects",
       projects: [
         { host: "gitlab.com", path: "gitlab-org/gitlab" },
@@ -35,7 +24,7 @@ describe("resolveProjects", () => {
 
   test("reports a checkout without GitLab remotes", async () => {
     const run = fakeGit({ "config --get-regexp ^remote\\..*\\.url$": "remote.origin.url git@github.com:me/x.git" })
-    expect(await resolveProjects(run, "/repo", ["gitlab.com"])).toEqual({ kind: "none", reason: "Not a GitLab remote" })
+    expect(await resolveProjects(run, "/repo", onGitLab)).toEqual({ kind: "none", reason: "No matching forge remote" })
   })
 })
 
@@ -84,7 +73,7 @@ const base: Responses = {
 
 describe("resolveRepository", () => {
   test("uses the push branch and includes same-host remotes as targets", async () => {
-    const lookup = await resolveRepository(fakeGit(base), "/repo", ["gitlab.com"])
+    const lookup = await resolveRepository(fakeGit(base), "/repo", onGitLab)
     expect(lookup).toEqual({
       kind: "repository",
       repository: {
@@ -101,34 +90,34 @@ describe("resolveRepository", () => {
   })
 
   test("falls back to origin and the local branch name without tracking", async () => {
-    const lookup = await resolveRepository(fakeGit({ ...base, [REFS]: "\0\0\0" }), "/repo", ["gitlab.com"])
+    const lookup = await resolveRepository(fakeGit({ ...base, [REFS]: "\0\0\0" }), "/repo", onGitLab)
     expect(lookup.kind === "repository" && lookup.repository.sourceBranch).toBe("feature")
   })
 
   test("reports detached HEAD", async () => {
     const responses = { ...base, "symbolic-ref --quiet --short HEAD": undefined }
-    expect(await resolveRepository(fakeGit(responses), "/repo", ["gitlab.com"])).toEqual({
+    expect(await resolveRepository(fakeGit(responses), "/repo", onGitLab)).toEqual({
       kind: "none",
       reason: "Detached HEAD",
     })
   })
 
   test("reports a non-repository", async () => {
-    const lookup = await resolveRepository(fakeGit({}), "/tmp", ["gitlab.com"])
+    const lookup = await resolveRepository(fakeGit({}), "/tmp", onGitLab)
     expect(lookup).toEqual({ kind: "none", reason: "Not a Git repository" })
   })
 
   test("ignores branches whose source remote is not GitLab", async () => {
     const responses = { ...base, [REFS]: "github\0refs/heads/feature\0\0" }
-    expect(await resolveRepository(fakeGit(responses), "/repo", ["gitlab.com"])).toEqual({
+    expect(await resolveRepository(fakeGit(responses), "/repo", onGitLab)).toEqual({
       kind: "none",
-      reason: "Not a GitLab remote",
+      reason: "Not a supported forge remote",
     })
   })
 
   test("skips the remote's default branch", async () => {
     const responses = { ...base, [REFS]: "origin\0refs/heads/main\0\0" }
-    expect(await resolveRepository(fakeGit(responses), "/repo", ["gitlab.com"])).toEqual({
+    expect(await resolveRepository(fakeGit(responses), "/repo", onGitLab)).toEqual({
       kind: "none",
       reason: "Default branch",
     })

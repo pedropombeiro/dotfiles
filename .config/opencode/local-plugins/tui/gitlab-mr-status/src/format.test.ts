@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test"
 import { detailsMessage, footerSegments, responsiveFooterSegments, segmentsWidth } from "./format"
 import type { Repository } from "./git"
-import type { MergeRequest } from "./gitlab"
+import type { GitLabMergeRequest } from "./forge"
 import type { Snapshot } from "./store"
 
 const repository: Repository = {
@@ -12,7 +12,11 @@ const repository: Repository = {
   targets: [],
 }
 
-const mr = (overrides: Partial<MergeRequest> = {}): MergeRequest => ({
+const mr = (overrides: Partial<GitLabMergeRequest> = {}): GitLabMergeRequest => ({
+  forge: "gitlab",
+  conflictsKnown: true,
+  awaitingReviewers: [],
+  reviewersComplete: true,
   iid: "4281",
   title: "Add things",
   url: "https://gitlab.com/group/project/-/merge_requests/4281",
@@ -31,8 +35,8 @@ const mr = (overrides: Partial<MergeRequest> = {}): MergeRequest => ({
   ...overrides,
 })
 
-const snapshot = (mergeRequests: MergeRequest[], extra: Partial<Snapshot> = {}): Snapshot => ({
-  lookup: { kind: "found", repository, mergeRequests },
+const snapshot = (requests: GitLabMergeRequest[], extra: Partial<Snapshot> = {}): Snapshot => ({
+  lookup: { kind: "found", repository, requests },
   fetchedAt: 0,
   loading: false,
   ...extra,
@@ -83,7 +87,7 @@ describe("footerSegments", () => {
 
   test("distinguishes a failed lookup from no MR", () => {
     const error = { kind: "auth" as const, message: "GitLab authentication failed", at: 0 }
-    expect(text({ loading: false, error })).toBe("MR status unavailable")
+    expect(text({ loading: false, error })).toBe("PR/MR status unavailable")
     expect(text(snapshot([mr()], { error }))).toBe("!4281 · CI failed · 2 unresolved threads · stale")
   })
 
@@ -92,7 +96,7 @@ describe("footerSegments", () => {
   })
 
   test("shows only the state of a merged or closed session target", () => {
-    const merged = { lookup: { kind: "found" as const, sessionTarget: "!4281 (from the session title)", mergeRequests: [mr({ state: "merged" })] }, loading: false }
+    const merged = { lookup: { kind: "found" as const, sessionTarget: "!4281 (from the session title)", requests: [mr({ state: "merged" })] }, loading: false }
     expect(text(merged)).toBe("!4281 · merged")
     expect(detailsMessage(merged)).toContain("Session target: !4281")
   })

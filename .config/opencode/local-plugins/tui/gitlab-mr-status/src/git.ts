@@ -45,9 +45,8 @@ export function parseRemote(url: string): RemoteProject | undefined {
   return { host: host.toLowerCase(), path }
 }
 
-export function isGitLabHost(host: string, hosts: readonly string[]): boolean {
-  return hosts.includes(host) || /(^|\.)gitlab\./.test(host)
-}
+// Whether a remote host belongs to a forge the caller can look up.
+export type HostFilter = (host: string) => boolean
 
 const stripHeads = (ref: string) => ref.replace(/^refs\/heads\//, "")
 
@@ -59,7 +58,7 @@ async function git(run: Exec, directory: string, args: string[]) {
 export async function resolveRepository(
   run: Exec,
   directory: string,
-  hosts: readonly string[],
+  supported: HostFilter,
 ): Promise<RepositoryLookup> {
   const top = await git(run, directory, ["rev-parse", "--show-toplevel"])
   if (top === undefined) return { kind: "none", reason: "Not a Git repository" }
@@ -101,7 +100,7 @@ export async function resolveRepository(
   if (!sourceRemote) return { kind: "none", reason: "No remote for the current branch" }
 
   const source = parseRemote(remotes.get(sourceRemote)!)
-  if (!source || !isGitLabHost(source.host, hosts)) return { kind: "none", reason: "Not a GitLab remote" }
+  if (!source || !supported(source.host)) return { kind: "none", reason: "Not a supported forge remote" }
 
   const remoteHead = await git(run, directory, ["symbolic-ref", "--quiet", "--short", `refs/remotes/${sourceRemote}/HEAD`])
   if (remoteHead && remoteHead === `${sourceRemote}/${sourceBranch}`) {
@@ -121,12 +120,13 @@ export async function resolveRepository(
 
 export type ProjectsLookup = { kind: "projects"; projects: RemoteProject[] } | { kind: "none"; reason: string }
 
-// Lists the GitLab projects behind a checkout's remotes, `origin` first, for
-// looking up an MR by number regardless of the checked-out branch.
+// Lists the projects on accepted hosts behind a checkout's remotes, `origin`
+// first and all on one host, for looking up a PR/MR by number regardless of the
+// checked-out branch.
 export async function resolveProjects(
   run: Exec,
   directory: string,
-  hosts: readonly string[],
+  accepted: HostFilter,
 ): Promise<ProjectsLookup> {
   const remoteConfig = await git(run, directory, ["config", "--get-regexp", "^remote\\..*\\.url$"])
   if (remoteConfig === undefined) return { kind: "none", reason: "No Git remotes" }
@@ -141,17 +141,10 @@ export async function resolveProjects(
   const projects: RemoteProject[] = []
   for (const [, url] of remotes) {
     const project = parseRemote(url)
-    if (!project || !isGitLabHost(project.host, hosts)) continue
+    if (!project || !accepted(project.host)) continue
     if (projects.length > 0 && project.host !== projects[0].host) continue
     if (projects.some((known) => known.path.toLowerCase() === project.path.toLowerCase())) continue
     projects.push(project)
   }
-  return projects.length > 0 ? { kind: "projects", projects } : { kind: "none", reason: "Not a GitLab remote" }
-}
-
-// opencode-forge-session-title prefixes titles with the session's target, such
-// as `[#123, !456] Title` or `[!456] Title`.
-export function titleMergeRequest(title: string | undefined): string | undefined {
-  const prefix = title?.match(/^\[([^\]]*)\]/)?.[1]
-  return prefix?.match(/(?:^|[\s,])!([1-9]\d*)(?:$|[\s,])/)?.[1]
+  return projects.length > 0 ? { kind: "projects", projects } : { kind: "none", reason: "No matching forge remote" }
 }

@@ -1,24 +1,26 @@
 /** @jsxImportSource @opentui/solid */
 // OpenCode resolves a local plugin directory's CLI entry point as `<dir>/tui`,
 // so this file stays at the directory root. It is loaded only through the
-// path entry in cli.base.json##class.Work; the parent directory is outside
+// path entries in both cli.base.json alternates; the parent directory is outside
 // OpenCode's plugin discovery paths.
 import { Plugin } from "@opencode/plugin/tui"
 import type { BoxRenderable } from "@opentui/core"
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js"
 import {
-  createDuoWatcher,
+  automatedReview,
+  createAutomatedReviewWatcher,
   createNotificationClaim,
-  duoReviewMessage,
-  duoReviewOutcome,
-  isDuoReviewing,
+  isReviewRunning,
   recordNotification,
+  reviewMessage,
+  reviewOutcome,
+  reviewTitle,
   type NotifiedLog,
-} from "./src/duo-watch"
+} from "./src/automated-review-watch"
 import { exec } from "./src/exec"
 import { detailsMessage, footerSegments, responsiveFooterSegments, segmentsWidth, type Tone } from "./src/format"
-import { resolveProjects, resolveRepository, titleMergeRequest } from "./src/git"
-import { findMergeRequestByIid, findMergeRequests, glabGraphQL, type MergeRequest } from "./src/gitlab"
+import { titlePrefix, type ReviewComment, type ReviewRequest } from "./src/forge"
+import { Forges, reference, traitsOf } from "./src/forges"
 import {
   createFeedbackWatcher,
   feedbackMessage,
@@ -26,42 +28,46 @@ import {
   recordFeedback,
   type FeedbackLog,
 } from "./src/human-review-watch"
-import { fetchFeedback, type FeedbackNote } from "./src/review-feedback"
+import { locate } from "./src/locate"
 import { createSessionWatch } from "./src/session-watch"
 import { createStatusStore, type Lookup } from "./src/store"
-import { classifyTarget, ForgeSessionTitleRpc, parseMergeRequestUrl } from "./src/target"
+import { classifyTarget, ForgeSessionTitleRpc } from "./src/target"
 
 // Cache keys are per session, because sessions sharing a checkout can target
-// different MRs. The title's MR number is part of the key so a title change
-// triggers a new lookup.
+// different PRs/MRs. The title's managed prefix, which holds its references,
+// is part of the key so a reference change triggers a new lookup.
 interface Key {
   directory: string
   sessionID?: string
-  titleIid?: string
+  prefix?: string
 }
-const keyOf = (key: Key) => JSON.stringify([key.directory, key.sessionID ?? "", key.titleIid ?? ""])
+const keyOf = (key: Key) => JSON.stringify([key.directory, key.sessionID ?? "", key.prefix ?? ""])
 const parseKey = (key: string): Key => {
-  const [directory, sessionID, titleIid] = JSON.parse(key) as [string, string, string]
-  return { directory, sessionID: sessionID || undefined, titleIid: titleIid || undefined }
+  const [directory, sessionID, prefix] = JSON.parse(key) as [string, string, string]
+  return { directory, sessionID: sessionID || undefined, prefix: prefix || undefined }
 }
 
 export default Plugin.define({
   id: "pedropombeiro.gitlab-mr-status",
   setup(context) {
-    const hosts: string[] = Array.isArray(context.options.hosts) ? context.options.hosts : ["gitlab.com"]
+    const forges = new Forges(exec, {
+      gitlab: Array.isArray(context.options.hosts) ? context.options.hosts : ["gitlab.com"],
+      github: Array.isArray(context.options.githubHosts) ? context.options.githubHosts : ["github.com"],
+    })
     const pollSeconds = Number(context.options.pollSeconds) > 0 ? Number(context.options.pollSeconds) : 120
-    // Duo reviews poll faster so a finished review is noticed promptly.
+    // Running automated reviews poll faster so a finished review is noticed promptly.
     const reviewPollSeconds = Math.min(pollSeconds, 30)
-    const notifyDuoReview = context.options.notifyDuoReview !== false
+    // `notifyDuoReview` is the option's former name.
+    const notifyAutomatedReviews = (context.options.notifyAutomatedReviews ?? context.options.notifyDuoReview) !== false
     const notifyHumanReviews = context.options.notifyHumanReviews !== false
-    const forge = context.client.rpc(ForgeSessionTitleRpc)
+    const titles = context.client.rpc(ForgeSessionTitleRpc)
     // Shared across TUI instances, so only one of them notifies a session.
-    const [notified, updateNotified] = context.storage.store("duoReviewNotified", {
+    const [notified, updateNotified] = context.storage.store("automatedReviewNotified", {
       initial: { sent: {} } as NotifiedLog,
     })
     // Per session and MR, the baseline and announced comments. Renaming the
     // store discards old records, which only makes MRs start a new baseline.
-    const [feedbackLog, updateFeedbackLog] = context.storage.store("humanReviewFeedback.v2", {
+    const [feedbackLog, updateFeedbackLog] = context.storage.store("humanReviewFeedback.v3", {
       initial: { records: {} } as FeedbackLog,
     })
 
@@ -79,7 +85,7 @@ export default Plugin.define({
     // with an opencode-forge-session-title release that predates it.
     async function rpcTarget(sessionID: string, directory: string) {
       try {
-        return classifyTarget(await forge.target({ sessionID }, { location: { directory } }))
+        return classifyTarget(await titles.target({ sessionID }, { location: { directory } }))
       } catch {
         return undefined
       }
@@ -89,39 +95,14 @@ export default Plugin.define({
     const store = createStatusStore({
       interval: pollSeconds * 1000,
       activeInterval: reviewPollSeconds * 1000,
-      active: isDuoReviewing,
+      active: isReviewRunning,
       onChange: () => setVersion((value) => value + 1),
       onLoad: (key, _previous, next) => watch.onLoad(key, parseKey(key).sessionID, next),
       onLoadError: (error) => reportOnce("watch", "MR status watcher failed", error),
       async load(key): Promise<Lookup> {
-        const { directory, sessionID, titleIid } = parseKey(key)
-        const graphql = glabGraphQL(exec, directory)
-
-        // Prefer the exact MR from set_session_target, then the MR number in the
-        // session title, and finally the checked-out branch's open MR.
+        const { directory, sessionID, prefix } = parseKey(key)
         const target = sessionID ? await rpcTarget(sessionID, directory) : undefined
-        // An explicit target that isn't an MR, such as an issue, means the
-        // session isn't about an MR, so the branch's MR would be misleading.
-        if (target?.kind === "other") {
-          return { kind: "none", reason: `The session target is not a merge request (${target.url})` }
-        }
-        if (target) {
-          const project = { host: target.ref.host, path: target.ref.project }
-          const mr = await findMergeRequestByIid(graphql, [project], target.ref.iid)
-          if (mr) return { kind: "found", sessionTarget: mr.url, explicitTarget: true, mergeRequests: [mr] }
-        }
-        if (titleIid && !target) {
-          const projects = await resolveProjects(exec, directory, hosts)
-          if (projects.kind === "projects") {
-            const mr = await findMergeRequestByIid(graphql, projects.projects, titleIid)
-            if (mr) return { kind: "found", sessionTarget: `!${titleIid} (from the session title)`, mergeRequests: [mr] }
-          }
-        }
-
-        const lookup = await resolveRepository(exec, directory, hosts)
-        if (lookup.kind === "none") return lookup
-        const mergeRequests = await findMergeRequests(graphql, lookup.repository)
-        return { kind: "found", repository: lookup.repository, mergeRequests }
+        return locate(forges, { directory, target, title: prefix })
       },
     })
 
@@ -136,7 +117,7 @@ export default Plugin.define({
       keyOf({
         directory: directoryFor(sessionID),
         sessionID,
-        titleIid: sessionID ? titleMergeRequest(context.data.session.get(sessionID)?.title) : undefined,
+        prefix: sessionID ? titlePrefix(context.data.session.get(sessionID)?.title) : undefined,
       })
 
     const currentKey = () => {
@@ -153,8 +134,8 @@ export default Plugin.define({
       void Promise.resolve().then(write).catch(() => {})
     }
 
-    const duo = notifyDuoReview
-      ? createDuoWatcher({
+    const automated = notifyAutomatedReviews
+      ? createAutomatedReviewWatcher({
           // A recorded notification isn't retried, even if sending it fails.
           claim: createNotificationClaim({
             shared: () => notified,
@@ -169,10 +150,8 @@ export default Plugin.define({
           log: () => feedbackLog,
           persist: (key, change, at) =>
             persistLater(() => updateFeedbackLog((draft) => recordFeedback(draft, key, change, at))),
-          async fetch(sessionID, mr) {
-            const ref = parseMergeRequestUrl(mr.url)
-            if (!ref) return undefined
-            return fetchFeedback(glabGraphQL(exec, directoryFor(sessionID)), ref.host, ref.project, ref.iid)
+          async fetch(sessionID, request) {
+            return traitsOf(request).feedback?.fetch(exec, directoryFor(sessionID), request)
           },
           current: (sessionID, mr) => watch.isTarget(sessionID, mr),
           send: sendFeedback,
@@ -189,43 +168,44 @@ export default Plugin.define({
     const isCurrentKey = (key: string, sessionID: string) =>
       !context.data.session.get(sessionID) || keyFor(sessionID) === key
 
-    // Keeps a session's target MR polling while Duo reviews it or human
-    // feedback is watched, even when the session isn't on screen.
+    // Keeps a session's target PR/MR polling while an automated review runs or
+    // human feedback is watched, even when the session isn't on screen.
     const watch = createSessionWatch({
       acquire: (key) => store.acquire(key),
       isCurrent: isCurrentKey,
-      duo,
+      automated,
       human,
     })
 
-    async function sendFeedback(sessionID: string, mr: MergeRequest, notes: FeedbackNote[]) {
+    async function sendFeedback(sessionID: string, mr: ReviewRequest, comments: ReviewComment[]) {
       await context.client.session.synthetic({
         sessionID,
-        text: feedbackMessage(mr, notes),
-        description: `New review feedback on !${mr.iid}`,
+        text: feedbackMessage(mr, comments),
+        description: `New review feedback on ${reference(mr)}`,
         delivery: "queue",
         resume: true,
       })
-      context.ui.toast.show({ ...feedbackToast(mr, notes), variant: "info" })
+      context.ui.toast.show({ ...feedbackToast(mr, comments), variant: "info" })
     }
 
-    async function notifyFinishedReview(sessionID: string, mr: MergeRequest) {
+    async function notifyFinishedReview(sessionID: string, request: ReviewRequest) {
       try {
         await context.client.session.synthetic({
           sessionID,
-          text: duoReviewMessage(mr),
-          description: `Duo finished reviewing !${mr.iid}`,
+          text: reviewMessage(request),
+          description: reviewTitle(request),
           delivery: "queue",
           resume: true,
         })
         context.ui.toast.show({
-          title: `Duo finished reviewing !${mr.iid}`,
-          message: `${duoReviewOutcome(mr)}. Sent to the agent.`,
+          title: reviewTitle(request),
+          message: `${reviewOutcome(request)}. Sent to the agent.`,
           variant: "info",
         })
       } catch (error) {
         const reason = error instanceof Error ? error.message : String(error)
-        context.ui.toast.show({ message: `Could not tell the session about Duo's review: ${reason}`, variant: "error" })
+        const name = automatedReview(request)?.name ?? "the automated reviewer"
+        context.ui.toast.show({ message: `Could not tell the session about ${name}'s review: ${reason}`, variant: "error" })
       }
     }
 
@@ -323,9 +303,9 @@ export default Plugin.define({
       })
     }
 
-    const mergeRequestsFor = (key: string): MergeRequest[] => {
+    const requestsFor = (key: string): ReviewRequest[] => {
       const lookup = store.get(key).lookup
-      return lookup?.kind === "found" ? lookup.mergeRequests : []
+      return lookup?.kind === "found" ? lookup.requests : []
     }
 
     function StatusDialog(props: { statusKey: string }) {
@@ -375,7 +355,7 @@ export default Plugin.define({
       return (
         <box height={contentHeight() + 5} paddingLeft={2} paddingRight={2} paddingBottom={1} gap={1}>
           <box height={1} flexShrink={0} flexDirection="row" justifyContent="space-between">
-            <text fg={context.theme.text.base}><b>Merge request status</b></text>
+            <text fg={context.theme.text.base}><b>PR/MR status</b></text>
             <text fg={context.theme.text.muted} onMouseUp={close}>esc</text>
           </box>
           <scrollbox
@@ -432,21 +412,21 @@ export default Plugin.define({
       context.ui.dialog.show(() => <StatusDialog statusKey={key} />)
     }
 
-    async function openMergeRequest() {
+    async function openRequest() {
       const key = currentKey()
-      let requests = mergeRequestsFor(key)
+      let requests = requestsFor(key)
       if (requests.length === 0) {
         await store.refresh(key)
-        requests = mergeRequestsFor(key)
+        requests = requestsFor(key)
       }
       if (requests.length === 0) {
-        context.ui.toast.show({ message: "No merge request for this session or branch", variant: "info" })
+        context.ui.toast.show({ message: "No PR/MR for this session or branch", variant: "info" })
         return
       }
       if (requests.length === 1) return openUrl(requests[0].url)
       const url = await context.ui.dialog.select({
-        title: "Open merge request",
-        options: requests.map((mr) => ({ title: `!${mr.iid} ${mr.title}`, value: mr.url, description: mr.targetProject })),
+        title: "Open PR/MR",
+        options: requests.map((mr) => ({ title: `${reference(mr)} ${mr.title}`, value: mr.url, description: mr.targetProject })),
       })
       if (url) openUrl(url)
     }
@@ -464,19 +444,19 @@ export default Plugin.define({
           commands: [
             {
               id: "gitlab.mr.status",
-              title: "Show merge request status",
-              group: "GitLab",
+              title: "Show PR/MR status",
+              group: "Forge",
               palette: true,
-              slash: { name: "mr-status" },
+              slash: { name: "forge-status", aliases: ["mr-status", "pr-status"] },
               run: showStatus,
             },
             {
               id: "gitlab.mr.open",
-              title: "Open merge request in browser",
-              group: "GitLab",
+              title: "Open PR/MR in browser",
+              group: "Forge",
               palette: true,
-              slash: { name: "mr-open" },
-              run: openMergeRequest,
+              slash: { name: "forge-open", aliases: ["mr-open", "pr-open"] },
+              run: openRequest,
             },
           ],
         }))
@@ -498,7 +478,7 @@ export default Plugin.define({
       context.data.on("vcs.branch.updated", (event) => {
         if (event.location) forDirectory(event.location.directory, store.invalidate)
       }),
-      forge.events.on("targetChanged", (event) => {
+      titles.events.on("targetChanged", (event) => {
         const { sessionID } = event.data as { sessionID: string }
         for (const key of store.keys()) if (parseKey(key).sessionID === sessionID) store.invalidate(key)
       }),

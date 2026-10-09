@@ -13,6 +13,7 @@
     "./local-plugins/tui/permission-mode",
     "./local-plugins/tui/queue-command",
     "opencode-terminal-progress@1.0.2",
-    "opencode-tmux-indicator@1.0.2"
+    "opencode-tmux-indicator@1.0.2",
+    "./local-plugins/tui/gitlab-mr-status"
   ]
 }

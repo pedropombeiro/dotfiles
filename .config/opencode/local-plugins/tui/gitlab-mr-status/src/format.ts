@@ -1,13 +1,10 @@
-import type { MergeRequest, Pipeline } from "./gitlab"
+import { automatedReview } from "./automated-review-watch"
+import { yesNo, type Indicator, type Pipeline, type ReviewRequest, type Tone } from "./forge"
+import { reference, traitsOf } from "./forges"
 import type { Snapshot } from "./store"
 
-export type Tone = "muted" | "success" | "warning" | "error"
-
-export interface Segment {
-  text: string
-  tone: Tone
-  url?: string
-}
+export type { Tone }
+export type Segment = Indicator
 
 const RUNNING = new Set([
   "CREATED",
@@ -29,6 +26,8 @@ export function pipelineTone(pipeline: Pipeline | undefined): Tone {
 }
 
 const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? "" : "s"}`
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1)
+const COMPACT_CI: Partial<Record<Tone, string>> = { success: "CI ✓", error: "CI ✗", warning: "CI …" }
 
 // Names one or two reviewers and counts larger groups to keep the footer short.
 function awaitingText(reviewers: string[]) {
@@ -36,44 +35,53 @@ function awaitingText(reviewers: string[]) {
   return `awaiting ${reviewers.map((username) => `@${username}`).join(", ")}`
 }
 
-function threadsText(mr: MergeRequest) {
-  return `${mr.unresolvedThreads}${mr.threadsComplete ? "" : "+"} unresolved thread${mr.unresolvedThreads === 1 && mr.threadsComplete ? "" : "s"}`
+function threadsText(request: ReviewRequest) {
+  return `${request.unresolvedThreads}${request.threadsComplete ? "" : "+"} unresolved thread${request.unresolvedThreads === 1 && request.threadsComplete ? "" : "s"}`
+}
+
+const link = (request: ReviewRequest): Segment => ({ text: reference(request), tone: "muted", url: request.url, essential: true })
+
+function ci(request: ReviewRequest): Segment {
+  const tone = pipelineTone(request.pipeline)
+  if (!request.pipeline) return { text: `no ${traitsOf(request).ci}`, compact: "no CI", tone }
+  return { text: `CI ${request.pipeline.label}`, compact: COMPACT_CI[tone], tone, url: request.pipeline.url }
 }
 
 export function footerSegments(snapshot: Snapshot): Segment[] {
   const { lookup, error } = snapshot
-  if (!lookup || lookup.kind === "none") {
-    return error ? [{ text: "MR status unavailable", tone: "warning" }] : []
+  const stale: Segment[] = error ? [{ text: "stale", tone: "warning", essential: true }] : []
+  if (!lookup || lookup.kind === "none" || lookup.requests.length === 0) {
+    return error ? [{ text: "PR/MR status unavailable", tone: "warning" }] : []
   }
 
-  const requests = lookup.mergeRequests
-  if (requests.length === 0) return error ? [{ text: "MR status unavailable", tone: "warning" }] : []
-
-  const segments: Segment[] = []
+  const requests = lookup.requests
   if (requests.length > 1) {
-    for (const mr of requests) segments.push({ text: `!${mr.iid}`, tone: "muted", url: mr.url })
-    segments.push({ text: `${plural(requests.length, "open MR")}, run /mr-status`, tone: "warning" })
-  } else {
-    const [mr] = requests
-    segments.push({ text: `!${mr.iid}`, tone: "muted", url: mr.url })
-    if (mr.state !== "opened") {
-      segments.push({ text: mr.state, tone: mr.state === "merged" ? "success" : "muted" })
-      if (error) segments.push({ text: "stale", tone: "warning" })
-      return segments
-    }
-    segments.push({
-      text: mr.pipeline ? `CI ${mr.pipeline.label}` : "no pipeline",
-      tone: pipelineTone(mr.pipeline),
-      url: mr.pipeline?.url,
-    })
-    if (mr.unresolvedThreads > 0 || !mr.threadsComplete) segments.push({ text: threadsText(mr), tone: "warning" })
-    if (mr.duoReviewState === "REVIEW_STARTED") segments.push({ text: "🤖 reviewing", tone: "warning" })
-    if (mr.conflicts) segments.push({ text: "conflicts", tone: "error" })
-    if (mr.awaitingReviewers?.length) segments.push({ text: awaitingText(mr.awaitingReviewers), tone: "muted" })
-    else if (mr.approved) segments.push({ text: "approved", tone: "success" })
+    const noun = traitsOf(requests[0]).noun
+    return [
+      ...requests.map(link),
+      { text: `${plural(requests.length, `open ${noun}`)}, run /${noun.toLowerCase()}-status`, tone: "warning" },
+      ...stale,
+    ]
   }
-  if (error) segments.push({ text: "stale", tone: "warning" })
-  return segments
+
+  const [request] = requests
+  if (request.state !== "opened") {
+    return [link(request), { text: request.state, tone: request.state === "merged" ? "success" : "muted", essential: true }, ...stale]
+  }
+  const segments = [link(request), ci(request)]
+  if (request.unresolvedThreads > 0 || !request.threadsComplete) {
+    const text = threadsText(request)
+    segments.push({ text, compact: text.replace("unresolved ", ""), tone: "warning" })
+  }
+  if (automatedReview(request)?.state === "running") {
+    segments.push({ text: "🤖 reviewing", compact: "🤖", tone: "warning", essential: true })
+  }
+  segments.push(...traitsOf(request).indicators(request))
+  if (request.conflicts) segments.push({ text: "conflicts", tone: "error", essential: true })
+  if (!request.conflictsKnown) segments.push({ text: "mergeability unknown", tone: "muted" })
+  if (request.awaitingReviewers.length) segments.push({ text: awaitingText(request.awaitingReviewers), tone: "muted" })
+  else if (request.approved) segments.push({ text: "approved", tone: "success" })
+  return [...segments, ...stale]
 }
 
 export const segmentsWidth = (segments: Segment[]) => Bun.stringWidth(segments.map((segment) => segment.text).join(" · "))
@@ -82,23 +90,13 @@ export function responsiveFooterSegments(snapshot: Snapshot, width: number): Seg
   const full = footerSegments(snapshot)
   if (segmentsWidth(full) <= width) return full
 
-  const compact = full.map((segment): Segment => {
-    let text = segment.text
-    if (text.startsWith("CI ")) {
-      text = segment.tone === "success" ? "CI ✓" : segment.tone === "error" ? "CI ✗" : segment.tone === "warning" ? "CI …" : text
-    } else if (text === "no pipeline") text = "no CI"
-    else if (text.includes("unresolved thread")) text = text.replace("unresolved ", "")
-    else if (text === "🤖 reviewing") text = "🤖"
-    return { ...segment, text }
-  })
+  const compact = full.map((segment): Segment => ({ ...segment, text: segment.compact ?? segment.text }))
   if (segmentsWidth(compact) <= width) return compact
 
-  const minimal = compact.filter((segment) =>
-    segment.text.startsWith("!") || ["🤖", "conflicts", "stale", "merged", "closed", "locked"].includes(segment.text),
-  )
+  const minimal = compact.filter((segment) => segment.essential)
   if (segmentsWidth(minimal) <= width) return minimal
 
-  // Keep the MR link first, then add only complete indicators that fit.
+  // Keep the PR/MR link first, then add only complete indicators that fit.
   if (minimal[0] && segmentsWidth([minimal[0]]) > width) return []
   const fitted: Segment[] = []
   for (const segment of minimal) {
@@ -107,27 +105,28 @@ export function responsiveFooterSegments(snapshot: Snapshot, width: number): Seg
   return fitted
 }
 
-const yesNo = (value: boolean) => (value ? "yes" : "no")
 const time = (value: number) => new Date(value).toLocaleTimeString()
 
-function describe(mr: MergeRequest, head: string): string[] {
+function describe(request: ReviewRequest, head: string): string[] {
+  const traits = traitsOf(request)
   const lines = [
-    `!${mr.iid} ${mr.title}${mr.state === "opened" ? "" : ` (${mr.state})`}`,
-    `Target: ${mr.targetProject} → ${mr.targetBranch}`,
-    `Pipeline: ${mr.pipeline ? mr.pipeline.label : "none"}${mr.pipeline?.url ? ` (${mr.pipeline.url})` : ""}`,
-    `Unresolved threads: ${mr.unresolvedThreads}${mr.threadsComplete ? "" : "+"}`,
-    `Draft: ${yesNo(mr.draft)} · Conflicts: ${yesNo(mr.conflicts)}`,
-    `Human approvals: ${yesNo(mr.hasApprovals)} · Approval requirements satisfied: ${mr.approvalRequirementsSatisfied === null ? "unknown" : yesNo(mr.approvalRequirementsSatisfied)}`,
+    `${reference(request)} ${request.title}${request.state === "opened" ? "" : ` (${request.state})`}`,
+    `Target: ${request.targetProject} → ${request.targetBranch}`,
+    `${capitalize(traits.ci)}: ${request.pipeline ? request.pipeline.label : "none"}${request.pipeline?.url ? ` (${request.pipeline.url})` : ""}`,
+    `Unresolved threads: ${request.unresolvedThreads}${request.threadsComplete ? "" : "+"}`,
+    `Draft: ${yesNo(request.draft)} · Conflicts: ${request.conflictsKnown ? yesNo(request.conflicts) : "unknown"}`,
+    ...traits.details(request),
   ]
-  if (mr.awaitingReviewers?.length) {
-    lines.push(`Awaiting review: ${mr.awaitingReviewers.map((username) => `@${username}`).join(", ")}`)
+  const review = automatedReview(request)
+  if (review) lines.push(`${review.name} review: ${review.label}`)
+  if (request.awaitingReviewers.length) {
+    lines.push(`Awaiting review: ${request.awaitingReviewers.map((username) => `@${username}`).join(", ")}`)
   }
-  if (mr.mergeStatus) lines.push(`Merge status: ${mr.mergeStatus.toLowerCase().replace(/_/g, " ")}`)
-  if (mr.duoReviewState) lines.push(`Duo review: ${mr.duoReviewState.toLowerCase().replace(/_/g, " ")}`)
-  if (head && mr.headSha && head !== mr.headSha) {
-    lines.push("Local HEAD differs from the MR head commit (unpushed or not fetched)")
+  if (!request.reviewersComplete) lines.push("Reviewer list is partial")
+  if (head && request.headSha && head !== request.headSha) {
+    lines.push(`Local HEAD differs from the ${traits.noun} head commit (unpushed or not fetched)`)
   }
-  lines.push(mr.url)
+  lines.push(request.url)
   return lines
 }
 
@@ -136,22 +135,22 @@ export function detailsMessage(snapshot: Snapshot): string {
   const lines: string[] = []
 
   if (!lookup) {
-    lines.push(error ? "Could not look up the merge request." : "No data yet.")
+    lines.push(error ? "Could not look up the PR/MR." : "No data yet.")
   } else if (lookup.kind === "none") {
-    lines.push(`No merge request lookup: ${lookup.reason}.`)
+    lines.push(`No PR/MR lookup: ${lookup.reason}.`)
   } else {
-    const { repository, sessionTarget, mergeRequests } = lookup
+    const { repository, sessionTarget, requests } = lookup
     if (repository) {
       const branch =
         repository.branch === repository.sourceBranch
           ? repository.branch
           : `${repository.branch} (pushes to ${repository.sourceBranch})`
       lines.push(`Branch: ${branch} in ${repository.source.path}`)
-      if (mergeRequests.length === 0) lines.push("", "No open merge request for this branch.")
+      if (requests.length === 0) lines.push("", "No open PR/MR for this branch.")
     } else if (sessionTarget) {
       lines.push(`Session target: ${sessionTarget}`)
     }
-    for (const mr of mergeRequests) lines.push("", ...describe(mr, repository?.head ?? ""))
+    for (const request of requests) lines.push("", ...describe(request, repository?.head ?? ""))
   }
 
   if (error) lines.push("", `Last refresh failed at ${time(error.at)}: ${error.message}`)

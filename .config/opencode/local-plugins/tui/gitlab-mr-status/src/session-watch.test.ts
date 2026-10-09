@@ -1,19 +1,19 @@
 import { describe, expect, test } from "bun:test"
-import type { MergeRequest } from "./gitlab"
+import type { GitHubPullRequest, GitLabMergeRequest } from "./forge"
 import { createSessionWatch } from "./session-watch"
 import type { Lookup } from "./store"
 
-const mr = (overrides: Partial<MergeRequest> = {}): MergeRequest =>
-  ({ iid: "1", url: "https://gitlab.com/g/p/-/merge_requests/1", state: "opened", ...overrides }) as MergeRequest
+const mr = (overrides: Partial<GitLabMergeRequest> = {}): GitLabMergeRequest =>
+  ({ forge: "gitlab", iid: "1", url: "https://gitlab.com/g/p/-/merge_requests/1", state: "opened", ...overrides }) as GitLabMergeRequest
 
-const target = (overrides: Partial<MergeRequest> = {}): Lookup => ({
+const target = (overrides: Partial<GitLabMergeRequest> = {}): Lookup => ({
   kind: "found",
   explicitTarget: true,
-  mergeRequests: [mr(overrides)],
+  requests: [mr(overrides)],
 })
-const branch = (overrides: Partial<MergeRequest> = {}): Lookup => ({ kind: "found", mergeRequests: [mr(overrides)] })
+const branch = (overrides: Partial<GitLabMergeRequest> = {}): Lookup => ({ kind: "found", requests: [mr(overrides)] })
 
-function harness({ duo = true, human = true, current = (_key: string) => true } = {}) {
+function harness({ duo = true, human = true, current = (_key: string): boolean => true } = {}) {
   const counts = new Map<string, number>()
   const observed: Array<[Lookup | undefined, Lookup]> = []
   const checked: string[] = []
@@ -23,7 +23,7 @@ function harness({ duo = true, human = true, current = (_key: string) => true } 
       return () => counts.set(key, counts.get(key)! - 1)
     },
     isCurrent: (key) => current(key),
-    duo: duo ? { observe: (_sessionID, previous, next) => observed.push([previous, next]) } : undefined,
+    automated: duo ? { observe: (_sessionID, previous, next) => observed.push([previous, next]) } : undefined,
     human: human ? { check: (sessionID) => checked.push(sessionID) } : undefined,
   })
   const held = () => [...counts].filter(([, count]) => count > 0).map(([key]) => key)
@@ -31,6 +31,14 @@ function harness({ duo = true, human = true, current = (_key: string) => true } 
 }
 
 describe("createSessionWatch", () => {
+  test("skips notifications when the target's forge lacks the capabilities", () => {
+    const { watch, held, checked, observed } = harness()
+    const pull = { forge: "github", iid: "1", url: "https://github.com/o/r/pull/1", state: "opened" } as GitHubPullRequest
+    watch.onLoad("github", "ses_1", { kind: "found", explicitTarget: true, requests: [pull] })
+    expect(held()).toEqual([])
+    expect(checked).toEqual([])
+    expect(observed).toEqual([])
+  })
   test("holds an open explicit target for human feedback and checks it", () => {
     const { watch, held, checked } = harness({ duo: false })
     watch.onLoad("k1", "ses_1", target())

@@ -1,18 +1,18 @@
+import { ForgeError, type ErrorKind, type ReviewRequest } from "./forge"
 import type { Repository } from "./git"
-import { GitLabError, type ErrorKind, type MergeRequest } from "./gitlab"
 
 export type Lookup =
   | { kind: "none"; reason: string }
   // `repository` is set for branch lookups. A session target lookup sets
-  // `sessionTarget` instead, a display label for where the MR came from,
+  // `sessionTarget` instead, a display label for where the PR/MR came from,
   // because it ignores the checked-out branch.
-  // `explicitTarget` is set only for MRs that came from set_session_target.
+  // `explicitTarget` is set only for PRs/MRs that came from set_session_target.
   | {
       kind: "found"
       repository?: Repository
       sessionTarget?: string
       explicitTarget?: boolean
-      mergeRequests: MergeRequest[]
+      requests: ReviewRequest[]
     }
 
 export interface Snapshot {
@@ -92,9 +92,9 @@ export function createStatusStore(options: StoreOptions) {
     cancelTimer(value)
     if (disposed || value.refs === 0) return
     const lookup = value.snapshot.lookup
-    // Without an MR there is nothing to watch; turn ends, branch changes, and
+    // Without a PR/MR there is nothing to watch; turn ends, branch changes, and
     // the command still look again.
-    if (!value.snapshot.error && (lookup?.kind !== "found" || lookup.mergeRequests.length === 0)) return
+    if (!value.snapshot.error && (lookup?.kind !== "found" || lookup.requests.length === 0)) return
     value.timer = setTimer(() => {
       value.timer = undefined
       void refresh(directory)
@@ -102,6 +102,7 @@ export function createStatusStore(options: StoreOptions) {
   }
 
   function refresh(directory: string): Promise<Snapshot> {
+    if (disposed) return Promise.resolve({ loading: false })
     const value = entry(directory)
     if (value.inflight) return value.inflight
     update(value, { loading: true })
@@ -109,6 +110,7 @@ export function createStatusStore(options: StoreOptions) {
       .load(directory)
       .then(
         (lookup) => {
+          if (disposed) return
           const previous = value.snapshot.lookup
           value.failures = 0
           update(value, { lookup, fetchedAt: now(), error: undefined, loading: false })
@@ -122,8 +124,9 @@ export function createStatusStore(options: StoreOptions) {
           }
         },
         (error: unknown) => {
+          if (disposed) return
           value.failures++
-          const known = error instanceof GitLabError
+          const known = error instanceof ForgeError
           update(value, {
             loading: false,
             error: {
@@ -136,7 +139,7 @@ export function createStatusStore(options: StoreOptions) {
       )
       .then(() => {
         value.inflight = undefined
-        if (value.invalidated) {
+        if (value.invalidated && !disposed) {
           value.invalidated = false
           return refresh(directory)
         }

@@ -1,76 +1,81 @@
 import { describe, expect, test } from "bun:test"
 import {
-  createDuoWatcher,
+  automatedReview,
+  createAutomatedReviewWatcher,
   createNotificationClaim,
-  duoReviewMessage,
-  duoReviewOutcome,
-  finishedDuoReviews,
-  isDuoReviewing,
+  finishedReviews,
+  isReviewRunning,
   NOTIFY_WINDOW,
   notificationKey,
   recentlyNotified,
   recordNotification,
+  reviewMessage,
+  reviewOutcome,
+  reviewTitle,
   type NotifiedLog,
-} from "./duo-watch"
-import type { MergeRequest } from "./gitlab"
+} from "./automated-review-watch"
+import type { GitHubPullRequest, GitLabMergeRequest, ReviewRequest } from "./forge"
 import type { Lookup } from "./store"
 
-const mr = (duoReviewState?: string, iid = "4281"): MergeRequest =>
-  ({ iid, url: `https://gitlab.com/group/project/-/merge_requests/${iid}`, duoReviewState }) as MergeRequest
+const mr = (duoReviewState?: string, iid = "4281"): GitLabMergeRequest =>
+  ({ forge: "gitlab", iid, url: `https://gitlab.com/group/project/-/merge_requests/${iid}`, duoReviewState }) as GitLabMergeRequest
 
-const found = (...mergeRequests: MergeRequest[]): Lookup => ({ kind: "found", explicitTarget: true, mergeRequests })
+const found = (...requests: ReviewRequest[]): Lookup => ({ kind: "found", explicitTarget: true, requests })
 
-describe("isDuoReviewing", () => {
+describe("isReviewRunning", () => {
   test("detects a running review", () => {
-    expect(isDuoReviewing(found(mr("REVIEWED"), mr("REVIEW_STARTED", "2")))).toBe(true)
+    expect(isReviewRunning(found(mr("REVIEWED"), mr("REVIEW_STARTED", "2")))).toBe(true)
   })
 
   test.each([["REVIEWED"], ["APPROVED"], [undefined]])("ignores %s", (state) => {
-    expect(isDuoReviewing(found(mr(state)))).toBe(false)
+    expect(isReviewRunning(found(mr(state)))).toBe(false)
   })
 
   test("handles missing lookups", () => {
-    expect(isDuoReviewing(undefined)).toBe(false)
-    expect(isDuoReviewing({ kind: "none", reason: "Detached HEAD" })).toBe(false)
+    expect(isReviewRunning(undefined)).toBe(false)
+    expect(isReviewRunning({ kind: "none", reason: "Detached HEAD" })).toBe(false)
   })
 })
 
-describe("finishedDuoReviews", () => {
+describe("finishedReviews", () => {
   test.each(["REVIEWED", "REQUESTED_CHANGES"])("reports a review that finished as %s", (state) => {
-    expect(finishedDuoReviews(found(mr("REVIEW_STARTED")), found(mr(state)))).toEqual([mr(state)])
+    expect(finishedReviews(found(mr("REVIEW_STARTED")), found(mr(state)))).toEqual([mr(state)])
   })
 
   test.each(["APPROVED", "UNREVIEWED", "UNAPPROVED", "REVIEW_STARTED", undefined])(
     "ignores a review that ended as %s",
     (state) => {
-      expect(finishedDuoReviews(found(mr("REVIEW_STARTED")), found(mr(state)))).toEqual([])
+      expect(finishedReviews(found(mr("REVIEW_STARTED")), found(mr(state)))).toEqual([])
     },
   )
 
   test("ignores a review that was already finished on the first load", () => {
-    expect(finishedDuoReviews(undefined, found(mr("REVIEWED")))).toEqual([])
-    expect(finishedDuoReviews(found(mr("REVIEWED")), found(mr("REVIEWED")))).toEqual([])
+    expect(finishedReviews(undefined, found(mr("REVIEWED")))).toEqual([])
+    expect(finishedReviews(found(mr("REVIEWED")), found(mr("REVIEWED")))).toEqual([])
   })
 
   test("matches MRs by URL", () => {
-    expect(finishedDuoReviews(found(mr("REVIEW_STARTED", "1")), found(mr("REVIEWED", "2")))).toEqual([])
+    expect(finishedReviews(found(mr("REVIEW_STARTED", "1")), found(mr("REVIEWED", "2")))).toEqual([])
   })
 })
 
-describe("duoReviewMessage", () => {
-  test("names the MR and its final state", () => {
-    const message = duoReviewMessage(mr("REQUESTED_CHANGES"))
+describe("reviewMessage", () => {
+  test("names the reviewer, the MR, and its final state", () => {
+    const message = reviewMessage(mr("REQUESTED_CHANGES"))
+    expect(message).toStartWith("GitLab Duo finished reviewing !4281")
+    expect(message).toContain("GitLab Duo's new comments and discussion threads on the MR")
+    expect(reviewTitle(mr("REVIEWED"))).toBe("GitLab Duo finished reviewing !4281")
     expect(message).toContain("!4281 (https://gitlab.com/group/project/-/merge_requests/4281)")
     expect(message).toContain('"requested changes"')
   })
 })
 
-describe("duoReviewOutcome", () => {
+describe("reviewOutcome", () => {
   test.each([
     ["REVIEWED", "Reviewed"],
     ["REQUESTED_CHANGES", "Requested changes"],
   ])("formats %s", (state, outcome) => {
-    expect(duoReviewOutcome(mr(state))).toBe(outcome)
+    expect(reviewOutcome(mr(state))).toBe(outcome)
   })
 })
 
@@ -118,25 +123,41 @@ describe("createNotificationClaim", () => {
   })
 })
 
-describe("createDuoWatcher", () => {
+describe("createAutomatedReviewWatcher", () => {
   test("notifies once per claimed finished review", () => {
     const sent: Array<[string, string]> = []
     const claimed: string[] = []
-    const watcher = createDuoWatcher({
+    const watcher = createAutomatedReviewWatcher({
       claim: (key) => (claimed.push(key), claimed.length === 1),
-      send: (sessionID, mr) => sent.push([sessionID, mr.duoReviewState ?? ""]),
+      send: (sessionID, request) => sent.push([sessionID, automatedReview(request)?.label ?? ""]),
     })
     watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("REQUESTED_CHANGES")))
     watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("REQUESTED_CHANGES")))
     expect(claimed).toEqual([notificationKey("ses_1", mr()), notificationKey("ses_1", mr())])
-    expect(sent).toEqual([["ses_1", "REQUESTED_CHANGES"]])
+    expect(sent).toEqual([["ses_1", "requested changes"]])
   })
 
   test("ignores approvals and running reviews", () => {
     const sent: string[] = []
-    const watcher = createDuoWatcher({ claim: () => true, send: (sessionID) => sent.push(sessionID) })
+    const watcher = createAutomatedReviewWatcher({ claim: () => true, send: (sessionID) => sent.push(sessionID) })
     watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("APPROVED")))
     watcher.observe("ses_1", undefined, found(mr("REVIEW_STARTED")))
     expect(sent).toEqual([])
+  })
+})
+
+describe("automated review capability", () => {
+  test("maps GitLab Duo states", () => {
+    expect(automatedReview(mr("REVIEW_STARTED"))).toEqual({ name: "GitLab Duo", state: "running", label: "review started" })
+    expect(automatedReview(mr("REQUESTED_CHANGES"))?.state).toBe("feedback")
+    expect(automatedReview(mr("APPROVED"))?.state).toBe("settled")
+    expect(automatedReview(mr())).toBeUndefined()
+  })
+
+  test("ignores forges without the capability", () => {
+    const pull = { forge: "github", iid: "1", url: "https://github.com/o/r/pull/1" } as GitHubPullRequest
+    expect(automatedReview(pull)).toBeUndefined()
+    expect(isReviewRunning(found(pull))).toBe(false)
+    expect(finishedReviews(found(pull), found(pull))).toEqual([])
   })
 })

@@ -2,12 +2,11 @@ import { describe, expect, test } from "bun:test"
 import type { Exec } from "./exec"
 import type { Repository } from "./git"
 import { footerSegments } from "./format"
+import { ForgeError } from "./forge"
 import {
   classifyError,
   DISCUSSIONS_QUERY,
-  findMergeRequestByIid,
-  findMergeRequests,
-  GitLabError,
+  GitLabForge,
   glabGraphQL,
   type GraphQL,
 } from "./gitlab"
@@ -48,7 +47,7 @@ const node = (overrides: Record<string, unknown>) => ({
   ...overrides,
 })
 
-describe("findMergeRequests", () => {
+describe("GitLabForge.findByBranch", () => {
   test("counts unresolved threads across pages and filters other source projects", async () => {
     const calls: Array<Record<string, string>> = []
     const graphql: GraphQL = async (_host, query, variables) => {
@@ -79,7 +78,7 @@ describe("findMergeRequests", () => {
       }
     }
 
-    const result = await findMergeRequests(graphql, repository)
+    const result = await new GitLabForge(graphql).findByBranch(repository)
     expect(calls[0]).toEqual({ branch: "feature", p0: "me/project", p1: "group/project" })
     expect(result).toHaveLength(1)
     expect(result[0]).toMatchObject({
@@ -92,10 +91,10 @@ describe("findMergeRequests", () => {
 
   test("returns an empty list without an MR and handles a missing pipeline", async () => {
     const empty: GraphQL = async () => ({ p0: { mergeRequests: { nodes: [] } }, p1: null })
-    expect(await findMergeRequests(empty, repository)).toEqual([])
+    expect(await new GitLabForge(empty).findByBranch(repository)).toEqual([])
 
     const noPipeline: GraphQL = async () => ({ p0: { mergeRequests: { nodes: [node({ headPipeline: null, sourceProject: { fullPath: "Me/Project" } })] } } })
-    const [mr] = await findMergeRequests(noPipeline, repository)
+    const [mr] = await new GitLabForge(noPipeline).findByBranch(repository)
     expect(mr.pipeline).toBeUndefined()
   })
 
@@ -104,11 +103,11 @@ describe("findMergeRequests", () => {
       p0: { mergeRequests: { nodes: [node({ iid: "5", updatedAt: "2026-09-01T00:00:00Z" })] } },
       p1: { mergeRequests: { nodes: [node({ iid: "7", updatedAt: "2026-10-02T00:00:00Z" })] } },
     })
-    expect((await findMergeRequests(graphql, repository)).map((mr) => mr.iid)).toEqual(["7", "5"])
+    expect((await new GitLabForge(graphql).findByBranch(repository)).map((mr) => mr.iid)).toEqual(["7", "5"])
   })
 })
 
-describe("findMergeRequestByIid", () => {
+describe("GitLabForge.findByNumber", () => {
   const projects = [
     { host: "gitlab.com", path: "group/project" },
     { host: "gitlab.com", path: "security/project" },
@@ -126,7 +125,7 @@ describe("findMergeRequestByIid", () => {
           ] } }) },
         }
       }
-      const mr = await findMergeRequestByIid(graphql, projects, "1")
+      const mr = await new GitLabForge(graphql).findByNumber(projects, "1")
       expect(mr?.duoReviewState).toBe(reviewState ?? undefined)
     },
   )
@@ -138,7 +137,7 @@ describe("findMergeRequestByIid", () => {
         { type: "PROJECT_BOT", mergeRequestInteraction: { reviewState: "REVIEW_STARTED" } },
       ] } }) },
     })
-    expect((await findMergeRequestByIid(graphql, projects, "1"))?.duoReviewState).toBeUndefined()
+    expect((await new GitLabForge(graphql).findByNumber(projects, "1"))?.duoReviewState).toBeUndefined()
   })
 
   test("handles a Duo reviewer with no interaction", async () => {
@@ -147,7 +146,7 @@ describe("findMergeRequestByIid", () => {
         { type: "DUO_CODE_REVIEW_BOT", mergeRequestInteraction: null },
       ] } }) },
     })
-    expect((await findMergeRequestByIid(graphql, projects, "1"))?.duoReviewState).toBeUndefined()
+    expect((await new GitLabForge(graphql).findByNumber(projects, "1"))?.duoReviewState).toBeUndefined()
   })
 
   test.each([
@@ -159,13 +158,13 @@ describe("findMergeRequestByIid", () => {
     const graphql: GraphQL = async () => ({
       p0: { mergeRequest: node({ approved: requirements, approvedBy: { nodes: approvers } }) },
     })
-    const mr = await findMergeRequestByIid(graphql, projects, "1")
+    const mr = await new GitLabForge(graphql).findByNumber(projects, "1")
     expect(mr).toMatchObject({
       approved,
       hasApprovals: approvers.length > 0,
       approvalRequirementsSatisfied: requirements,
     })
-    const segments = footerSegments({ loading: false, lookup: { kind: "found", mergeRequests: [mr!] } })
+    const segments = footerSegments({ loading: false, lookup: { kind: "found", requests: [mr!] } })
     expect(segments.some((segment) => segment.text === "approved")).toBe(approved)
   })
 
@@ -183,7 +182,7 @@ describe("findMergeRequestByIid", () => {
     const graphql: GraphQL = async () => ({
       p0: { mergeRequest: node({ approved: true, approvedBy: { nodes: [{ id: "gid://gitlab/User/9", bot: true }] }, reviewers: { nodes: [duo] } }) },
     })
-    expect(await findMergeRequestByIid(graphql, projects, "1")).toMatchObject({ approved: false, hasApprovals: false, awaitingReviewers: [] })
+    expect(await new GitLabForge(graphql).findByNumber(projects, "1")).toMatchObject({ approved: false, hasApprovals: false, awaitingReviewers: [] })
   })
 
   test("waits for human reviewers who haven't approved", async () => {
@@ -196,9 +195,9 @@ describe("findMergeRequestByIid", () => {
         }),
       },
     })
-    const mr = await findMergeRequestByIid(graphql, projects, "1")
+    const mr = await new GitLabForge(graphql).findByNumber(projects, "1")
     expect(mr).toMatchObject({ approved: false, hasApprovals: true, awaitingReviewers: ["david", "erin"] })
-    const texts = footerSegments({ loading: false, lookup: { kind: "found", mergeRequests: [mr!] } }).map((segment) => segment.text)
+    const texts = footerSegments({ loading: false, lookup: { kind: "found", requests: [mr!] } }).map((segment) => segment.text)
     expect(texts).toContain("awaiting @david, @erin")
     expect(texts).not.toContain("approved")
   })
@@ -213,7 +212,7 @@ describe("findMergeRequestByIid", () => {
         }),
       },
     })
-    expect(await findMergeRequestByIid(graphql, projects, "1")).toMatchObject({ approved: true, awaitingReviewers: [] })
+    expect(await new GitLabForge(graphql).findByNumber(projects, "1")).toMatchObject({ approved: true, awaitingReviewers: [] })
   })
 
   test("prefers the first project that has the MR", async () => {
@@ -225,14 +224,14 @@ describe("findMergeRequestByIid", () => {
         p1: { mergeRequest: node({ iid: "42", title: "Security fix" }) },
       }
     }
-    const mr = await findMergeRequestByIid(graphql, projects, "42")
+    const mr = await new GitLabForge(graphql).findByNumber(projects, "42")
     expect(seen).toEqual({ iid: "42", p0: "group/project", p1: "security/project" })
     expect(mr).toMatchObject({ iid: "42", title: "Title", state: "merged" })
   })
 
   test("returns undefined when no project has the MR", async () => {
     const graphql: GraphQL = async () => ({ p0: { mergeRequest: null }, p1: null })
-    expect(await findMergeRequestByIid(graphql, projects, "42")).toBeUndefined()
+    expect(await new GitLabForge(graphql).findByNumber(projects, "42")).toBeUndefined()
   })
 })
 
@@ -257,7 +256,7 @@ describe("glabGraphQL", () => {
     expect((await fail(run("", "spawn glab ENOENT", -1))).kind).toBe("missing-glab")
     expect((await fail(run("", "glab: 429 Too Many Requests", 1))).kind).toBe("rate-limit")
     const graphqlError = await fail(run('{"errors":[{"message":"Field missing"}]}', "", 1))
-    expect(graphqlError).toBeInstanceOf(GitLabError)
+    expect(graphqlError).toBeInstanceOf(ForgeError)
     expect(graphqlError.message).toBe("Field missing")
   })
 

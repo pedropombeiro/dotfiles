@@ -1,13 +1,13 @@
 import { describe, expect, test } from "bun:test"
 import type { Repository } from "./git"
-import { GitLabError, type MergeRequest } from "./gitlab"
+import { ForgeError, type ReviewRequest } from "./forge"
 import { createStatusStore, type Lookup } from "./store"
 
 const repository = { head: "", branch: "b", sourceBranch: "b", source: { host: "h", path: "a/b" }, targets: [] } as Repository
 const found = (count = 1): Lookup => ({
   kind: "found",
   repository,
-  mergeRequests: Array.from({ length: count }, () => ({ iid: "1" }) as MergeRequest),
+  requests: Array.from({ length: count }, () => ({ iid: "1" }) as ReviewRequest),
 })
 
 function harness(
@@ -95,7 +95,7 @@ describe("createStatusStore", () => {
     let calls = 0
     const { store, advance } = harness(async () => {
       calls++
-      throw new GitLabError("auth", "GitLab authentication failed")
+      throw new ForgeError("auth", "GitLab authentication failed")
     })
     const hide = store.acquire("/a")
     await store.refresh("/a")
@@ -145,7 +145,7 @@ describe("createStatusStore", () => {
   test("manual refresh recovers from a failure without waiting for backoff", async () => {
     let fail = true
     const { store } = harness(async () => {
-      if (fail) throw new GitLabError("request", "GitLab unavailable")
+      if (fail) throw new ForgeError("request", "GitLab unavailable")
       return found()
     })
     await store.refresh("/a")
@@ -161,7 +161,7 @@ describe("createStatusStore", () => {
   test("keeps stale data on failure and backs off", async () => {
     let fail = false
     const { store, pending, advance } = harness(async () => {
-      if (fail) throw new GitLabError("rate-limit", "GitLab rate limit reached")
+      if (fail) throw new ForgeError("rate-limit", "GitLab rate limit reached")
       return found()
     })
     store.acquire("/a")

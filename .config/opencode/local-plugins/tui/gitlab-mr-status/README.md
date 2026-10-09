@@ -20,6 +20,16 @@ An explicit target that isn't an MR, such as an issue, shows no MR.
 The footer shows the MR's pipeline status, unresolved thread count, conflicts,
 approval, and a running Duo review. The MR number and pipeline status are links.
 
+The footer shows `approved` only when all of the following are true:
+
+- GitLab reports that the approval requirements are met.
+- At least one person approved. Bot approvals, such as Duo's, don't count, because
+  they can satisfy rules that require no approvals.
+- Every human reviewer approved.
+
+While human reviewers haven't approved, the footer shows `awaiting @username`
+instead, or `awaiting N reviewers` for more than two.
+
 - `/mr-status` opens a dialog with the full status and a refresh action.
 - `/mr-open` opens the MR in the browser.
 

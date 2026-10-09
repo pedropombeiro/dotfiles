@@ -118,7 +118,7 @@ describe("findMergeRequestByIid", () => {
     "reads Duo's review state: %s",
     async (reviewState) => {
       const graphql: GraphQL = async (_host, query) => {
-        expect(query).toContain("type mergeRequestInteraction { reviewState }")
+        expect(query).toContain("type username bot mergeRequestInteraction { reviewState approved }")
         return {
           p0: { mergeRequest: node({ reviewers: { nodes: [
             { type: "HUMAN", mergeRequestInteraction: { reviewState: "REVIEW_STARTED" } },
@@ -167,6 +167,53 @@ describe("findMergeRequestByIid", () => {
     })
     const segments = footerSegments({ loading: false, lookup: { kind: "found", mergeRequests: [mr!] } })
     expect(segments.some((segment) => segment.text === "approved")).toBe(approved)
+  })
+
+  // Mirrors gitlab-org/gitlab!260438: rules need no approvals, Duo approved,
+  // and the human reviewer hasn't reviewed yet.
+  const duo = { type: "DUO_CODE_REVIEW_BOT", username: "GitLabDuo", bot: true, mergeRequestInteraction: { reviewState: "APPROVED", approved: true } }
+  const human = (username: string, approved: boolean, reviewState = approved ? "APPROVED" : "UNREVIEWED") => ({
+    type: "HUMAN",
+    username,
+    bot: false,
+    mergeRequestInteraction: { reviewState, approved },
+  })
+
+  test("ignores a bot's approval", async () => {
+    const graphql: GraphQL = async () => ({
+      p0: { mergeRequest: node({ approved: true, approvedBy: { nodes: [{ id: "gid://gitlab/User/9", bot: true }] }, reviewers: { nodes: [duo] } }) },
+    })
+    expect(await findMergeRequestByIid(graphql, projects, "1")).toMatchObject({ approved: false, hasApprovals: false, awaitingReviewers: [] })
+  })
+
+  test("waits for human reviewers who haven't approved", async () => {
+    const graphql: GraphQL = async () => ({
+      p0: {
+        mergeRequest: node({
+          approved: true,
+          approvedBy: { nodes: [{ id: "gid://gitlab/User/9", bot: true }, { id: "gid://gitlab/User/1", bot: false }] },
+          reviewers: { nodes: [duo, human("alice", true), human("david", false), human("erin", false, "REVIEWED")] },
+        }),
+      },
+    })
+    const mr = await findMergeRequestByIid(graphql, projects, "1")
+    expect(mr).toMatchObject({ approved: false, hasApprovals: true, awaitingReviewers: ["david", "erin"] })
+    const texts = footerSegments({ loading: false, lookup: { kind: "found", mergeRequests: [mr!] } }).map((segment) => segment.text)
+    expect(texts).toContain("awaiting @david, @erin")
+    expect(texts).not.toContain("approved")
+  })
+
+  test("shows approved once every human reviewer approved", async () => {
+    const graphql: GraphQL = async () => ({
+      p0: {
+        mergeRequest: node({
+          approved: true,
+          approvedBy: { nodes: [{ id: "gid://gitlab/User/1", bot: false }] },
+          reviewers: { nodes: [duo, human("alice", true)] },
+        }),
+      },
+    })
+    expect(await findMergeRequestByIid(graphql, projects, "1")).toMatchObject({ approved: true, awaitingReviewers: [] })
   })
 
   test("prefers the first project that has the MR", async () => {

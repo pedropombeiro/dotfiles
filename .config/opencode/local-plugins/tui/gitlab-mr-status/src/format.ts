@@ -30,6 +30,12 @@ export function pipelineTone(pipeline: Pipeline | undefined): Tone {
 
 const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? "" : "s"}`
 
+// Names one or two reviewers and counts larger groups to keep the footer short.
+function awaitingText(reviewers: string[]) {
+  if (reviewers.length > 2) return `awaiting ${reviewers.length} reviewers`
+  return `awaiting ${reviewers.map((username) => `@${username}`).join(", ")}`
+}
+
 function threadsText(mr: MergeRequest) {
   return `${mr.unresolvedThreads}${mr.threadsComplete ? "" : "+"} unresolved thread${mr.unresolvedThreads === 1 && mr.threadsComplete ? "" : "s"}`
 }
@@ -63,7 +69,8 @@ export function footerSegments(snapshot: Snapshot): Segment[] {
     if (mr.unresolvedThreads > 0 || !mr.threadsComplete) segments.push({ text: threadsText(mr), tone: "warning" })
     if (mr.duoReviewState === "REVIEW_STARTED") segments.push({ text: "🤖 reviewing", tone: "warning" })
     if (mr.conflicts) segments.push({ text: "conflicts", tone: "error" })
-    if (mr.approved) segments.push({ text: "approved", tone: "success" })
+    if (mr.awaitingReviewers?.length) segments.push({ text: awaitingText(mr.awaitingReviewers), tone: "muted" })
+    else if (mr.approved) segments.push({ text: "approved", tone: "success" })
   }
   if (error) segments.push({ text: "stale", tone: "warning" })
   return segments
@@ -110,8 +117,11 @@ function describe(mr: MergeRequest, head: string): string[] {
     `Pipeline: ${mr.pipeline ? mr.pipeline.label : "none"}${mr.pipeline?.url ? ` (${mr.pipeline.url})` : ""}`,
     `Unresolved threads: ${mr.unresolvedThreads}${mr.threadsComplete ? "" : "+"}`,
     `Draft: ${yesNo(mr.draft)} · Conflicts: ${yesNo(mr.conflicts)}`,
-    `Has approvals: ${yesNo(mr.hasApprovals)} · Approval requirements satisfied: ${mr.approvalRequirementsSatisfied === null ? "unknown" : yesNo(mr.approvalRequirementsSatisfied)}`,
+    `Human approvals: ${yesNo(mr.hasApprovals)} · Approval requirements satisfied: ${mr.approvalRequirementsSatisfied === null ? "unknown" : yesNo(mr.approvalRequirementsSatisfied)}`,
   ]
+  if (mr.awaitingReviewers?.length) {
+    lines.push(`Awaiting review: ${mr.awaitingReviewers.map((username) => `@${username}`).join(", ")}`)
+  }
   if (mr.mergeStatus) lines.push(`Merge status: ${mr.mergeStatus.toLowerCase().replace(/_/g, " ")}`)
   if (mr.duoReviewState) lines.push(`Duo review: ${mr.duoReviewState.toLowerCase().replace(/_/g, " ")}`)
   if (head && mr.headSha && head !== mr.headSha) {

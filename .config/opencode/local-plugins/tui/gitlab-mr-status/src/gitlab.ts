@@ -15,9 +15,15 @@ export interface MergeRequest {
   state: string
   draft: boolean
   conflicts: boolean
+  // GitLab's requirements are met, a person (not a bot) approved, and no
+  // human reviewer is still pending.
   approved: boolean
+  // Approvals from people; bot approvals such as Duo's don't count.
   hasApprovals: boolean
   approvalRequirementsSatisfied: boolean | null
+  // Usernames of human reviewers who haven't approved. Optional so that
+  // snapshots cached before this field existed still render.
+  awaitingReviewers?: string[]
   mergeStatus?: string
   targetProject: string
   targetBranch: string
@@ -54,7 +60,7 @@ interface MergeRequestNode {
   draft: boolean
   conflicts: boolean
   approved: boolean | null
-  approvedBy: { nodes: Array<{ id: string }> } | null
+  approvedBy: { nodes: Array<{ id: string; bot?: boolean }> } | null
   detailedMergeStatus: string | null
   diffHeadSha: string | null
   updatedAt: string | null
@@ -63,7 +69,14 @@ interface MergeRequestNode {
   targetProject: { fullPath: string }
   headPipeline: { status: string; path: string | null; detailedStatus: { label: string | null } | null } | null
   discussions: DiscussionPage
-  reviewers?: { nodes: Array<{ type: string; mergeRequestInteraction: { reviewState: string | null } | null }> } | null
+  reviewers?: { nodes: ReviewerNode[] } | null
+}
+
+interface ReviewerNode {
+  type: string
+  username?: string
+  bot?: boolean
+  mergeRequestInteraction: { reviewState: string | null; approved?: boolean | null } | null
 }
 
 const DISCUSSIONS = "pageInfo { hasNextPage endCursor } nodes { resolvable resolved }"
@@ -72,11 +85,11 @@ export const MAX_DISCUSSION_PAGES = 50
 
 const MERGE_REQUEST_FIELDS = `
   iid title webUrl state draft conflicts approved detailedMergeStatus diffHeadSha updatedAt targetBranch
-  approvedBy(first: 1) { nodes { id } }
+  approvedBy(first: 100) { nodes { id bot } }
   sourceProject { fullPath }
   targetProject { fullPath }
   headPipeline { status path detailedStatus { label } }
-  reviewers(first: 100) { nodes { type mergeRequestInteraction { reviewState } } }
+  reviewers(first: 100) { nodes { type username bot mergeRequestInteraction { reviewState approved } } }
   discussions(first: ${PAGE_SIZE}) { ${DISCUSSIONS} }
 `
 
@@ -206,7 +219,12 @@ export async function findMergeRequestByIid(
 async function toMergeRequest(graphql: GraphQL, host: string, node: MergeRequestNode): Promise<MergeRequest> {
   const threads = await unresolvedThreads(graphql, host, node)
   const pipeline = node.headPipeline
-  const hasApprovals = (node.approvedBy?.nodes.length ?? 0) > 0
+  // A bot approval, such as Duo's when its review finds nothing, can satisfy
+  // rules that require no approvals, so only people's approvals count.
+  const hasApprovals = (node.approvedBy?.nodes ?? []).some((approver) => approver.bot !== true)
+  const awaitingReviewers = (node.reviewers?.nodes ?? [])
+    .filter((reviewer) => reviewer.bot !== true && reviewer.username && reviewer.mergeRequestInteraction?.approved !== true)
+    .map((reviewer) => reviewer.username!)
   return {
     iid: node.iid,
     title: node.title,
@@ -214,9 +232,10 @@ async function toMergeRequest(graphql: GraphQL, host: string, node: MergeRequest
     state: node.state.toLowerCase(),
     draft: node.draft,
     conflicts: node.conflicts,
-    approved: node.approved === true && hasApprovals,
+    approved: node.approved === true && hasApprovals && awaitingReviewers.length === 0,
     hasApprovals,
     approvalRequirementsSatisfied: node.approved,
+    awaitingReviewers,
     mergeStatus: node.detailedMergeStatus ?? undefined,
     targetProject: node.targetProject.fullPath,
     targetBranch: node.targetBranch,

@@ -63,6 +63,14 @@ describe("footerSegments", () => {
     expect(text(value)).toBe("!4281 · no pipeline · conflicts · approved")
   })
 
+  test("shows pending reviewers instead of approval", () => {
+    const base = { unresolvedThreads: 0, pipeline: undefined, approved: true }
+    expect(text(snapshot([mr({ ...base, awaitingReviewers: ["david"] })]))).toBe("!4281 · no pipeline · awaiting @david")
+    expect(text(snapshot([mr({ ...base, awaitingReviewers: ["a", "b"] })]))).toBe("!4281 · no pipeline · awaiting @a, @b")
+    expect(text(snapshot([mr({ ...base, awaitingReviewers: ["a", "b", "c"] })]))).toBe("!4281 · no pipeline · awaiting 3 reviewers")
+    expect(text(snapshot([mr({ ...base, awaitingReviewers: [] })]))).toBe("!4281 · no pipeline · approved")
+  })
+
   test("marks incomplete thread counts", () => {
     expect(text(snapshot([mr({ unresolvedThreads: 1, threadsComplete: false })]))).toContain("1+ unresolved threads")
   })
@@ -107,7 +115,12 @@ describe("detailsMessage", () => {
   })
   test("distinguishes actual approvals from satisfied requirements", () => {
     const message = detailsMessage(snapshot([mr({ approvalRequirementsSatisfied: true })]))
-    expect(message).toContain("Has approvals: no · Approval requirements satisfied: yes")
+    expect(message).toContain("Human approvals: no · Approval requirements satisfied: yes")
+  })
+
+  test("lists pending reviewers", () => {
+    expect(detailsMessage(snapshot([mr({ awaitingReviewers: ["david", "erin"] })]))).toContain("Awaiting review: @david, @erin")
+    expect(detailsMessage(snapshot([mr()]))).not.toContain("Awaiting review:")
   })
 
   test("reports unavailable approval requirements as unknown", () => {
@@ -164,7 +177,7 @@ describe("responsiveFooterSegments", () => {
   })
 
   test("never exceeds the allocated width", () => {
-    const samples = [value, snapshot([mr({ conflicts: true, approved: true })]), snapshot([mr({ threadsComplete: false })]), snapshot([mr(), mr({ iid: "9" })])]
+    const samples = [value, snapshot([mr({ conflicts: true, approved: true })]), snapshot([mr({ awaitingReviewers: ["david", "erin"] })]), snapshot([mr({ threadsComplete: false })]), snapshot([mr(), mr({ iid: "9" })])]
     for (const sample of samples) {
       for (let width = 0; width < 100; width++) {
         expect(segmentsWidth(responsiveFooterSegments(sample, width))).toBeLessThanOrEqual(width)

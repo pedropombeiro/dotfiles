@@ -6,6 +6,16 @@
 import { Plugin } from "@opencode/plugin/tui"
 import type { BoxRenderable } from "@opentui/core"
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js"
+import {
+  duoReviewMessage,
+  duoReviewOutcome,
+  finishedDuoReviews,
+  isDuoReviewing,
+  notificationKey,
+  recentlyNotified,
+  recordNotification,
+  type NotifiedLog,
+} from "./src/duo-watch"
 import { exec } from "./src/exec"
 import { detailsMessage, footerSegments, responsiveFooterSegments, segmentsWidth, type Tone } from "./src/format"
 import { resolveProjects, resolveRepository, titleMergeRequest } from "./src/git"
@@ -32,7 +42,14 @@ export default Plugin.define({
   setup(context) {
     const hosts: string[] = Array.isArray(context.options.hosts) ? context.options.hosts : ["gitlab.com"]
     const pollSeconds = Number(context.options.pollSeconds) > 0 ? Number(context.options.pollSeconds) : 120
+    // Duo reviews poll faster so a finished review is noticed promptly.
+    const reviewPollSeconds = Math.min(pollSeconds, 30)
+    const notifyDuoReview = context.options.notifyDuoReview !== false
     const forge = context.client.rpc(ForgeSessionTitleRpc)
+    // Shared across TUI instances, so only one of them notifies a session.
+    const [notified, updateNotified] = context.storage.store("duoReviewNotified", {
+      initial: { sent: {} } as NotifiedLog,
+    })
 
     // Reads the target stored by set_session_target. Returns undefined when the
     // session has no explicit target or the server lacks the RPC, for example
@@ -48,7 +65,10 @@ export default Plugin.define({
     const [version, setVersion] = createSignal(0)
     const store = createStatusStore({
       interval: pollSeconds * 1000,
+      activeInterval: reviewPollSeconds * 1000,
+      active: isDuoReviewing,
       onChange: () => setVersion((value) => value + 1),
+      onLoad: (key, previous, next) => watchDuoReview(key, previous, next),
       async load(key): Promise<Lookup> {
         const { directory, sessionID, titleIid } = parseKey(key)
         const graphql = glabGraphQL(exec, directory)
@@ -64,7 +84,7 @@ export default Plugin.define({
         if (target) {
           const project = { host: target.ref.host, path: target.ref.project }
           const mr = await findMergeRequestByIid(graphql, [project], target.ref.iid)
-          if (mr) return { kind: "found", sessionTarget: mr.url, mergeRequests: [mr] }
+          if (mr) return { kind: "found", sessionTarget: mr.url, explicitTarget: true, mergeRequests: [mr] }
         }
         if (titleIid && !target) {
           const projects = await resolveProjects(exec, directory, hosts)
@@ -102,6 +122,54 @@ export default Plugin.define({
 
     const forDirectory = (directory: string, action: (key: string) => void) => {
       for (const key of store.keys()) if (parseKey(key).directory === directory) action(key)
+    }
+
+    // Keeps a session's lookup polling while Duo reviews its target MR, even
+    // when the session isn't on screen.
+    const reviewHolds = new Map<string, () => void>()
+
+    function watchDuoReview(key: string, previous: Lookup | undefined, next: Lookup) {
+      const { sessionID } = parseKey(key)
+      const explicit = next.kind === "found" && next.explicitTarget === true
+      if (!notifyDuoReview || !sessionID || !explicit) {
+        reviewHolds.get(key)?.()
+        reviewHolds.delete(key)
+        return
+      }
+
+      if (isDuoReviewing(next)) {
+        if (!reviewHolds.has(key)) reviewHolds.set(key, store.acquire(key))
+      } else {
+        reviewHolds.get(key)?.()
+        reviewHolds.delete(key)
+      }
+
+      for (const mr of finishedDuoReviews(previous, next)) void notifyFinishedReview(sessionID, mr)
+    }
+
+    async function notifyFinishedReview(sessionID: string, mr: MergeRequest) {
+      const notificationID = notificationKey(sessionID, mr)
+      const now = Date.now()
+      if (recentlyNotified(notified, notificationID, now)) return
+      // Record before sending so a concurrent TUI skips it; a failed send isn't retried.
+      await updateNotified((draft) => recordNotification(draft, notificationID, now))
+      try {
+        await context.client.session.synthetic({
+          sessionID,
+          text: duoReviewMessage(mr),
+          description: `Duo finished reviewing !${mr.iid}`,
+          delivery: "queue",
+          resume: true,
+        })
+        context.ui.toast.show({
+          title: `Duo finished reviewing !${mr.iid}`,
+          message: `${duoReviewOutcome(mr)}. Sent to the agent.`,
+          variant: "info",
+        })
+      } catch (error) {
+        const reason = error instanceof Error ? error.message : String(error)
+        context.ui.toast.show({ message: `Could not tell the session about Duo's review: ${reason}`, variant: "error" })
+      }
     }
 
     const color = (tone: Tone) => {
@@ -381,6 +449,8 @@ export default Plugin.define({
 
     return () => {
       for (const stop of stops) stop()
+      for (const release of reviewHolds.values()) release()
+      reviewHolds.clear()
       store.dispose()
     }
   },

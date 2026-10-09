@@ -10,12 +10,16 @@ const found = (count = 1): Lookup => ({
   mergeRequests: Array.from({ length: count }, () => ({ iid: "1" }) as MergeRequest),
 })
 
-function harness(load: (directory: string) => Promise<Lookup>) {
+function harness(
+  load: (directory: string) => Promise<Lookup>,
+  extra: Partial<Parameters<typeof createStatusStore>[0]> = {},
+) {
   let clock = 0
   const timers = new Map<number, { at: number; callback: () => void }>()
   let nextTimer = 0
   let changes = 0
   const store = createStatusStore({
+    ...extra,
     load,
     onChange: () => changes++,
     now: () => clock,
@@ -193,6 +197,66 @@ describe("createStatusStore", () => {
     expect(calls).toBe(3)
     store.notify("/b")
     expect(calls).toBe(3)
+  })
+
+  test("polls active lookups at the active interval", async () => {
+    let active = true
+    const { store, pending, advance } = harness(async () => found(), {
+      active: () => active,
+      activeInterval: 30,
+    })
+    store.acquire("/a")
+    await store.refresh("/a")
+    expect(pending()).toEqual([30])
+    active = false
+    await advance(30)
+    expect(pending()).toEqual([100])
+  })
+
+  test("reports each load with the lookup it replaced", async () => {
+    const loads: Array<[string, Lookup | undefined, Lookup]> = []
+    let count = 1
+    const { store } = harness(async () => found(count++), {
+      onLoad: (directory, previous, next) => loads.push([directory, previous, next]),
+    })
+    await store.refresh("/a")
+    await store.refresh("/a")
+    expect(loads).toEqual([
+      ["/a", undefined, found(1)],
+      ["/a", found(1), found(2)],
+    ])
+  })
+
+  test("keeps polling a lookup acquired from its load callback", async () => {
+    let calls = 0
+    let release: (() => void) | undefined
+    const { store, pending, advance } = harness(
+      async () => {
+        calls++
+        return found()
+      },
+      { onLoad: (directory) => (release ??= store.acquire(directory)) },
+    )
+    const hide = store.acquire("/a")
+    await store.refresh("/a")
+    hide()
+    expect(pending()).toEqual([100])
+    await advance(100)
+    expect(calls).toBe(2)
+    release?.()
+    expect(pending()).toEqual([])
+  })
+
+  test("survives a failing load callback", async () => {
+    const { store } = harness(async () => found(), {
+      onLoad: () => {
+        throw new Error("boom")
+      },
+    })
+    await store.refresh("/a")
+    expect(store.get("/a").loading).toBe(false)
+    await store.refresh("/a")
+    expect(store.get("/a").lookup).toEqual(found())
   })
 
   test("reloads after an invalidation during a load", async () => {

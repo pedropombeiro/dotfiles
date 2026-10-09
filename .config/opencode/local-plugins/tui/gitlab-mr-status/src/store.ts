@@ -6,7 +6,15 @@ export type Lookup =
   // `repository` is set for branch lookups. A session target lookup sets
   // `sessionTarget` instead, a display label for where the MR came from,
   // because it ignores the checked-out branch.
-  | { kind: "found"; repository?: Repository; sessionTarget?: string; mergeRequests: MergeRequest[] }
+  // `explicitTarget` marks an MR that came from set_session_target rather than
+  // the session title.
+  | {
+      kind: "found"
+      repository?: Repository
+      sessionTarget?: string
+      explicitTarget?: boolean
+      mergeRequests: MergeRequest[]
+    }
 
 export interface Snapshot {
   lookup?: Lookup
@@ -18,6 +26,11 @@ export interface Snapshot {
 export interface StoreOptions {
   load: (directory: string) => Promise<Lookup>
   onChange: () => void
+  // Called after each successful load with the lookup it replaced.
+  onLoad?: (directory: string, previous: Lookup | undefined, next: Lookup) => void
+  // Lookups that match poll at `activeInterval` instead of `interval`.
+  active?: (lookup: Lookup | undefined) => boolean
+  activeInterval?: number
   now?: () => number
   setTimer?: (callback: () => void, delay: number) => unknown
   clearTimer?: (timer: unknown) => void
@@ -66,7 +79,9 @@ export function createStatusStore(options: StoreOptions) {
     value.timer = undefined
   }
 
-  const pollDelay = (value: Entry) => Math.min(interval * 2 ** value.failures, maxBackoff)
+  const baseInterval = (value: Entry) =>
+    options.active?.(value.snapshot.lookup) ? (options.activeInterval ?? interval) : interval
+  const pollDelay = (value: Entry) => Math.min(baseInterval(value) * 2 ** value.failures, maxBackoff)
 
   // The last load, successful or not, so failed lookups also wait out their backoff.
   const lastAttempt = (value: Entry) =>
@@ -93,8 +108,13 @@ export function createStatusStore(options: StoreOptions) {
       .load(directory)
       .then(
         (lookup) => {
+          const previous = value.snapshot.lookup
           value.failures = 0
           update(value, { lookup, fetchedAt: now(), error: undefined, loading: false })
+          // A failing callback must not leave the load in flight forever.
+          try {
+            if (!disposed) options.onLoad?.(directory, previous, lookup)
+          } catch {}
         },
         (error: unknown) => {
           value.failures++

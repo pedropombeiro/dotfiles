@@ -5,7 +5,7 @@ mock.module("@opencode/plugin/tui", () => ({ Plugin: { define: (value: unknown) 
 
 test("registers commands only after the app slot is rendered", async () => {
   const plugin = (await import("./tui")).default
-  const layers: Array<{ commands: Array<{ bind: string; slash: { name: string } }> }> = []
+  const layers: Array<{ mode: string; commands: Array<{ bind: string; slash: { name: string } }> }> = []
   let rendering = false
   let render: (() => null) | undefined
   const cleanup = () => {}
@@ -29,6 +29,7 @@ test("registers commands only after the app slot is rendered", async () => {
   rendering = true
   expect(render!()).toBeNull()
   expect(layers).toHaveLength(1)
+  expect(layers[0]!.mode).toBe("global")
   expect(layers[0]!.commands[0]!.bind).toBe("shift+tab")
   expect(layers[0]!.commands[0]!.slash.name).toBe("permission-mode")
 })

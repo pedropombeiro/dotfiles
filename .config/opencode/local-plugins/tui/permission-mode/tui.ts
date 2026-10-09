@@ -9,7 +9,10 @@ export default Plugin.define({
       append: "app",
       render: () => {
         // Register during rendering so v2.0.22 can resolve Keymap.Provider.
+        // Without a global mode, the layer lives in the base mode and the
+        // slash list, which shows only reachable commands, leaves it out.
         context.keymap.layer(() => ({
+          mode: "global",
           commands: [
             {
               id: "pedropombeiro.permissions.toggle",

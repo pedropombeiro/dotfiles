@@ -120,6 +120,9 @@ Each local plugin documents its behavior, options, and tests in its own README:
   about new Duo and human review feedback.
 - [`permission-mode`](../../.config/opencode/local-plugins/tui/permission-mode/README.md):
   toggles the global permission preference with Shift+Tab.
+- [`queue-command`](../../.config/opencode/local-plugins/tui/queue-command/README.md):
+  adds `/queue <message>`, which queues a message for the current session instead of
+  sending it right away.
 - [`session-open`](../../.config/opencode/local-plugins/server/session-open/README.md):
   adds the `open_session` tool, which focuses a past session of the current project.
 - [`otel-status`](../../.config/opencode/local-plugins/server/otel-status/README.md):

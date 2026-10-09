@@ -26,10 +26,10 @@ brew "asciinema"
 brew "readline"
 # Bourne-Again SHell, a UNIX command interpreter
 brew "bash"
-# Cryptography and SSL/TLS Toolkit
-brew "openssl@3"
 # C library implementing the SSH2 protocol
 brew "libssh2"
+# Cryptography and SSL/TLS Toolkit
+brew "openssl@3"
 # Clone of cat(1) with syntax highlighting and Git integration
 brew "bat"
 # Get/set bluetooth power and discoverable state

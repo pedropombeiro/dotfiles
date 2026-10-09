@@ -126,13 +126,28 @@ The MR number and pipeline status are links. It adds `/mr-status` and `/mr-open`
 reads GitLab through `glab api graphql`, so it uses `glab`'s stored login. It caches each
 session's status and polls every 2 minutes while an open MR is shown, so switching tabs
 reuses cached data until the next poll is due. While Duo reviews an MR, it polls every
-30 seconds. When the MR is the session's `set_session_target` target, it also keeps
-polling while the session is hidden, but only after the TUI has shown that session at
-least once since it started. When that review ends as `REVIEWED` or
-`REQUESTED_CHANGES` (not `APPROVED`), it queues a synthetic message that resumes the
-session so the agent reads Duo's feedback, then shows a toast. Set the plugin option
-`notifyDuoReview: false` to turn this off. Run its tests with
-`mise exec bun@1.3.10 -- bun test` from the plugin directory.
+30 seconds.
+
+For a session's open `set_session_target` MR, the plugin also tells the agent about
+reviews. It keeps polling while the session is hidden, but only after the TUI has shown
+that session at least once since it started. Each notification is a queued synthetic
+message that resumes the session, followed by a toast:
+
+- **Duo:** when Duo's review ends as `REVIEWED` or `REQUESTED_CHANGES` (not
+  `APPROVED`). Set the plugin option `notifyDuoReview: false` to turn this off.
+- **Humans:** when there are new comments or replies from people other than you and
+  bots, and none of their comments, new or already announced, has been added or edited
+  for 5 minutes. Any such activity restarts the wait for the whole batch, so expect one
+  message 5 to 7 minutes after the review goes quiet. Approving doesn't suppress them;
+  resolved threads are skipped and don't count as activity. It reads the newest 2,000
+  comments, so on busier MRs, edits to older comments don't count as activity. The first
+  look at an MR records its highest note ID as a baseline, and announced comment IDs are
+  stored per session and MR. Note IDs only grow, so older comments never count as new,
+  even when deletions shift them into the window, and a restart replays nothing but still
+  catches comments posted meanwhile. Two TUIs watching the same session can rarely both
+  notify. Set `notifyHumanReviews: false` to turn this off.
+
+Run its tests with `mise exec bun@1.3.10 -- bun test` from the plugin directory.
 
 `local-plugins/server/session-open` adds the `open_session` tool, which the
 `session-search` skill and the `/search-session` command use to open a past session.

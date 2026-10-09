@@ -19,8 +19,17 @@ import { exec } from "./src/exec"
 import { detailsMessage, footerSegments, responsiveFooterSegments, segmentsWidth, type Tone } from "./src/format"
 import { resolveProjects, resolveRepository, titleMergeRequest } from "./src/git"
 import { findMergeRequestByIid, findMergeRequests, glabGraphQL, type MergeRequest } from "./src/gitlab"
+import {
+  createFeedbackWatcher,
+  feedbackMessage,
+  feedbackToast,
+  recordFeedback,
+  type FeedbackLog,
+} from "./src/human-review-watch"
+import { fetchFeedback, type FeedbackNote } from "./src/review-feedback"
+import { createSessionWatch } from "./src/session-watch"
 import { createStatusStore, type Lookup } from "./src/store"
-import { classifyTarget, ForgeSessionTitleRpc } from "./src/target"
+import { classifyTarget, ForgeSessionTitleRpc, parseMergeRequestUrl } from "./src/target"
 
 // Cache keys are per session, because sessions sharing a checkout can target
 // different MRs. The title's MR number is part of the key so a title change
@@ -44,11 +53,26 @@ export default Plugin.define({
     // Duo reviews poll faster so a finished review is noticed promptly.
     const reviewPollSeconds = Math.min(pollSeconds, 30)
     const notifyDuoReview = context.options.notifyDuoReview !== false
+    const notifyHumanReviews = context.options.notifyHumanReviews !== false
     const forge = context.client.rpc(ForgeSessionTitleRpc)
     // Shared across TUI instances, so only one of them notifies a session.
     const [notified, updateNotified] = context.storage.store("duoReviewNotified", {
       initial: { sent: {} } as NotifiedLog,
     })
+    // Per session and MR, the baseline and announced comments. Renaming the
+    // store discards old records, which only makes MRs start a new baseline.
+    const [feedbackLog, updateFeedbackLog] = context.storage.store("humanReviewFeedback.v2", {
+      initial: { records: {} } as FeedbackLog,
+    })
+
+    // Reports a failure once per kind, so a persistent problem doesn't toast on every poll.
+    const reported = new Set<string>()
+    const reportOnce = (kind: string, prefix: string, error: unknown) => {
+      if (reported.has(kind)) return
+      reported.add(kind)
+      const reason = error instanceof Error ? error.message : String(error)
+      context.ui.toast.show({ message: `${prefix}: ${reason}`, variant: "error" })
+    }
 
     // Reads the target stored by set_session_target. Returns undefined when the
     // session has no explicit target or the server lacks the RPC, for example
@@ -62,20 +86,13 @@ export default Plugin.define({
     }
 
     const [version, setVersion] = createSignal(0)
-    let reportedLoadError = false
     const store = createStatusStore({
       interval: pollSeconds * 1000,
       activeInterval: reviewPollSeconds * 1000,
       active: isDuoReviewing,
       onChange: () => setVersion((value) => value + 1),
-      onLoad: (key, previous, next) => watcher.onLoad(key, parseKey(key).sessionID, previous, next),
-      onLoadError: (error) => {
-        // Report once, so a persistent bug doesn't toast on every poll.
-        if (reportedLoadError) return
-        reportedLoadError = true
-        const reason = error instanceof Error ? error.message : String(error)
-        context.ui.toast.show({ message: `MR status watcher failed: ${reason}`, variant: "error" })
-      },
+      onLoad: (key, _previous, next) => watch.onLoad(key, parseKey(key).sessionID, next),
+      onLoadError: (error) => reportOnce("watch", "MR status watcher failed", error),
       async load(key): Promise<Lookup> {
         const { directory, sessionID, titleIid } = parseKey(key)
         const graphql = glabGraphQL(exec, directory)
@@ -131,22 +148,66 @@ export default Plugin.define({
       for (const key of store.keys()) if (parseKey(key).directory === directory) action(key)
     }
 
-    // Keeps a session's lookup polling while Duo reviews its target MR, even
-    // when the session isn't on screen, and notifies the session when it ends.
-    const watcher = createDuoWatcher({
-      enabled: notifyDuoReview,
+    // Storage writes run in the background; a failed write only risks a repeat.
+    const persistLater = (write: () => unknown) => {
+      void Promise.resolve().then(write).catch(() => {})
+    }
+
+    const duo = notifyDuoReview
+      ? createDuoWatcher({
+          // A recorded notification isn't retried, even if sending it fails.
+          claim: createNotificationClaim({
+            shared: () => notified,
+            persist: (id, at) => persistLater(() => updateNotified((draft) => recordNotification(draft, id, at))),
+          }),
+          send: (sessionID, mr) => void notifyFinishedReview(sessionID, mr),
+        })
+      : undefined
+
+    const human = notifyHumanReviews
+      ? createFeedbackWatcher({
+          log: () => feedbackLog,
+          persist: (key, change, at) =>
+            persistLater(() => updateFeedbackLog((draft) => recordFeedback(draft, key, change, at))),
+          async fetch(sessionID, mr) {
+            const ref = parseMergeRequestUrl(mr.url)
+            if (!ref) return undefined
+            return fetchFeedback(glabGraphQL(exec, directoryFor(sessionID)), ref.host, ref.project, ref.iid)
+          },
+          current: (sessionID, mr) => watch.isTarget(sessionID, mr),
+          send: sendFeedback,
+          onFetchError: (error) => reportOnce("feedback-fetch", "Could not check MR review feedback", error),
+          onSendError: (error) => {
+            const reason = error instanceof Error ? error.message : String(error)
+            context.ui.toast.show({ message: `Could not tell the session about review feedback: ${reason}`, variant: "error" })
+          },
+        })
+      : undefined
+
+    // Loads of an older key, such as one from before a title change, are
+    // ignored. A session that isn't loaded can't be checked, so its key is trusted.
+    const isCurrentKey = (key: string, sessionID: string) =>
+      !context.data.session.get(sessionID) || keyFor(sessionID) === key
+
+    // Keeps a session's target MR polling while Duo reviews it or human
+    // feedback is watched, even when the session isn't on screen.
+    const watch = createSessionWatch({
       acquire: (key) => store.acquire(key),
-      // A recorded notification isn't retried, even if sending it fails.
-      claim: createNotificationClaim({
-        shared: () => notified,
-        persist: (id, at) => {
-          void Promise.resolve()
-            .then(() => updateNotified((draft) => recordNotification(draft, id, at)))
-            .catch(() => {})
-        },
-      }),
-      send: (sessionID, mr) => void notifyFinishedReview(sessionID, mr),
+      isCurrent: isCurrentKey,
+      duo,
+      human,
     })
+
+    async function sendFeedback(sessionID: string, mr: MergeRequest, notes: FeedbackNote[]) {
+      await context.client.session.synthetic({
+        sessionID,
+        text: feedbackMessage(mr, notes),
+        description: `New review feedback on !${mr.iid}`,
+        delivery: "queue",
+        resume: true,
+      })
+      context.ui.toast.show({ ...feedbackToast(mr, notes), variant: "info" })
+    }
 
     async function notifyFinishedReview(sessionID: string, mr: MergeRequest) {
       try {
@@ -445,7 +506,7 @@ export default Plugin.define({
 
     return () => {
       for (const stop of stops) stop()
-      watcher.dispose()
+      watch.dispose()
       store.dispose()
     }
   },

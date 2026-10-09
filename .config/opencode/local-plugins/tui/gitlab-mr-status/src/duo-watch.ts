@@ -82,45 +82,18 @@ export function createNotificationClaim(options: ClaimOptions) {
   }
 }
 
-export interface WatcherOptions {
-  enabled: boolean
-  // Keeps a status key polling; returns its release.
-  acquire: (key: string) => () => void
+export interface DuoWatcherOptions {
   claim: (key: string) => boolean
   send: (sessionID: string, mr: MergeRequest) => void
 }
 
-// Watches Duo reviews of sessions' set_session_target MRs. Each session holds
-// at most one status key, so a key change, such as a new title prefix, moves
-// the hold instead of polling both keys.
-export function createDuoWatcher(options: WatcherOptions) {
-  const holds = new Map<string, { key: string; release: () => void }>()
-  const release = (sessionID: string) => {
-    holds.get(sessionID)?.release()
-    holds.delete(sessionID)
-  }
-
+// Notifies a session when Duo finishes reviewing its target MR with feedback.
+export function createDuoWatcher(options: DuoWatcherOptions) {
   return {
-    onLoad(key: string, sessionID: string | undefined, previous: Lookup | undefined, next: Lookup) {
-      if (!sessionID) return
-      const watched = options.enabled && next.kind === "found" && next.explicitTarget === true
-      const hold = holds.get(sessionID)
-      if (watched && isDuoReviewing(next)) {
-        if (hold?.key !== key) {
-          release(sessionID)
-          holds.set(sessionID, { key, release: options.acquire(key) })
-        }
-      } else if (hold?.key === key) {
-        release(sessionID)
-      }
-      if (!watched) return
+    observe(sessionID: string, previous: Lookup | undefined, next: Lookup) {
       for (const mr of finishedDuoReviews(previous, next)) {
         if (options.claim(notificationKey(sessionID, mr))) options.send(sessionID, mr)
       }
-    },
-    heldKeys: () => [...holds.values()].map((hold) => hold.key),
-    dispose() {
-      for (const sessionID of [...holds.keys()]) release(sessionID)
     },
   }
 }

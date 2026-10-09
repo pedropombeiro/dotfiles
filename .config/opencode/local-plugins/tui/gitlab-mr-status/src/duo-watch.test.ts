@@ -119,106 +119,24 @@ describe("createNotificationClaim", () => {
 })
 
 describe("createDuoWatcher", () => {
-  function harness({ enabled = true, claim = () => true }: { enabled?: boolean; claim?: (key: string) => boolean } = {}) {
-    const held = new Map<string, number>()
+  test("notifies once per claimed finished review", () => {
     const sent: Array<[string, string]> = []
+    const claimed: string[] = []
     const watcher = createDuoWatcher({
-      enabled,
-      acquire: (key) => {
-        held.set(key, (held.get(key) ?? 0) + 1)
-        return () => held.set(key, held.get(key)! - 1)
-      },
-      claim,
+      claim: (key) => (claimed.push(key), claimed.length === 1),
       send: (sessionID, mr) => sent.push([sessionID, mr.duoReviewState ?? ""]),
     })
-    const holds = () => [...held].filter(([, count]) => count > 0).map(([key]) => key)
-    return { watcher, sent, holds }
-  }
-
-  const branch = (...mergeRequests: MergeRequest[]): Lookup => ({ kind: "found", mergeRequests })
-
-  test("holds a reviewing target and notifies when the review finishes", () => {
-    const { watcher, sent, holds } = harness()
-    watcher.onLoad("k1", "ses_1", undefined, found(mr("REVIEW_STARTED")))
-    expect(holds()).toEqual(["k1"])
-    watcher.onLoad("k1", "ses_1", found(mr("REVIEW_STARTED")), found(mr("REVIEW_STARTED")))
-    expect(holds()).toEqual(["k1"])
-    watcher.onLoad("k1", "ses_1", found(mr("REVIEW_STARTED")), found(mr("REQUESTED_CHANGES")))
-    expect(holds()).toEqual([])
+    watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("REQUESTED_CHANGES")))
+    watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("REQUESTED_CHANGES")))
+    expect(claimed).toEqual([notificationKey("ses_1", mr()), notificationKey("ses_1", mr())])
     expect(sent).toEqual([["ses_1", "REQUESTED_CHANGES"]])
   })
 
-  test("releases the hold without notifying on approval", () => {
-    const { watcher, sent, holds } = harness()
-    watcher.onLoad("k1", "ses_1", undefined, found(mr("REVIEW_STARTED")))
-    watcher.onLoad("k1", "ses_1", found(mr("REVIEW_STARTED")), found(mr("APPROVED")))
-    expect(holds()).toEqual([])
+  test("ignores approvals and running reviews", () => {
+    const sent: string[] = []
+    const watcher = createDuoWatcher({ claim: () => true, send: (sessionID) => sent.push(sessionID) })
+    watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("APPROVED")))
+    watcher.observe("ses_1", undefined, found(mr("REVIEW_STARTED")))
     expect(sent).toEqual([])
-  })
-
-  test("moves the hold when the session's key changes", () => {
-    const { watcher, sent, holds } = harness()
-    watcher.onLoad("k1", "ses_1", undefined, found(mr("REVIEW_STARTED")))
-    watcher.onLoad("k2", "ses_1", undefined, found(mr("REVIEW_STARTED")))
-    expect(holds()).toEqual(["k2"])
-    // A late load of the old key doesn't take the hold back or release the new one.
-    watcher.onLoad("k1", "ses_1", found(mr("REVIEW_STARTED")), found(mr("REVIEWED")))
-    expect(holds()).toEqual(["k2"])
-    expect(watcher.heldKeys()).toEqual(["k2"])
-    expect(sent).toEqual([["ses_1", "REVIEWED"]])
-  })
-
-  test("holds one key per session", () => {
-    const { watcher, holds } = harness()
-    watcher.onLoad("k1", "ses_1", undefined, found(mr("REVIEW_STARTED")))
-    watcher.onLoad("k2", "ses_2", undefined, found(mr("REVIEW_STARTED")))
-    expect(holds()).toEqual(["k1", "k2"])
-  })
-
-  test("ignores lookups that aren't the session's explicit target", () => {
-    const { watcher, sent, holds } = harness()
-    watcher.onLoad("k1", "ses_1", branch(mr("REVIEW_STARTED")), branch(mr("REVIEWED")))
-    watcher.onLoad("k1", "ses_1", undefined, branch(mr("REVIEW_STARTED")))
-    expect(holds()).toEqual([])
-    expect(sent).toEqual([])
-  })
-
-  test("releases the hold when the target stops being explicit", () => {
-    const { watcher, holds } = harness()
-    watcher.onLoad("k1", "ses_1", undefined, found(mr("REVIEW_STARTED")))
-    watcher.onLoad("k1", "ses_1", found(mr("REVIEW_STARTED")), { kind: "none", reason: "Not an MR" })
-    expect(holds()).toEqual([])
-  })
-
-  test("ignores keys without a session", () => {
-    const { watcher, sent, holds } = harness()
-    watcher.onLoad("k1", undefined, found(mr("REVIEW_STARTED")), found(mr("REVIEWED")))
-    watcher.onLoad("k1", undefined, undefined, found(mr("REVIEW_STARTED")))
-    expect(holds()).toEqual([])
-    expect(sent).toEqual([])
-  })
-
-  test("does nothing when disabled", () => {
-    const { watcher, sent, holds } = harness({ enabled: false })
-    watcher.onLoad("k1", "ses_1", undefined, found(mr("REVIEW_STARTED")))
-    watcher.onLoad("k1", "ses_1", found(mr("REVIEW_STARTED")), found(mr("REVIEWED")))
-    expect(holds()).toEqual([])
-    expect(sent).toEqual([])
-  })
-
-  test("skips notifications that were already claimed", () => {
-    const claimed: string[] = []
-    const { watcher, sent } = harness({ claim: (key) => (claimed.push(key), false) })
-    watcher.onLoad("k1", "ses_1", found(mr("REVIEW_STARTED")), found(mr("REVIEWED")))
-    expect(claimed).toEqual([notificationKey("ses_1", mr("REVIEWED"))])
-    expect(sent).toEqual([])
-  })
-
-  test("releases every hold on dispose", () => {
-    const { watcher, holds } = harness()
-    watcher.onLoad("k1", "ses_1", undefined, found(mr("REVIEW_STARTED")))
-    watcher.onLoad("k2", "ses_2", undefined, found(mr("REVIEW_STARTED")))
-    watcher.dispose()
-    expect(holds()).toEqual([])
   })
 })

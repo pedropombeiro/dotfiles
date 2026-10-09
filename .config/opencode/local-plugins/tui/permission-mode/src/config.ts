@@ -12,10 +12,42 @@ function object(value: unknown): Object {
   return value as Object
 }
 
+// OpenCode reads OPENCODE_CLI_CONFIG_CONTENT as JSONC, and cli.base.json carries
+// comments, so the inline value needs a tolerant parse. This drops line and block
+// comments and trailing commas, and copies strings through untouched so a value
+// such as "https://opencode.ai" survives. cli.json stays on strict JSON.parse
+// because toggle() rewrites it and would silently discard comments.
+export function parseJsonc(text: string): unknown {
+  let out = ""
+  let i = 0
+  while (i < text.length) {
+    const char = text[i]!
+    if (char === '"') {
+      let end = i + 1
+      while (end < text.length && text[end] !== '"') end += text[end] === "\\" ? 2 : 1
+      out += text.slice(i, end + 1)
+      i = end + 1
+    } else if (char === "/" && text[i + 1] === "/") {
+      while (i < text.length && text[i] !== "\n") i++
+    } else if (char === "/" && text[i + 1] === "*") {
+      const end = text.indexOf("*/", i + 2)
+      if (end < 0) throw new SyntaxError("Unterminated block comment")
+      out += " "
+      i = end + 2
+    } else {
+      // A comma left right before a closing bracket is a trailing comma.
+      if (char === "}" || char === "]") out = out.replace(/,\s*$/, "")
+      out += char
+      i++
+    }
+  }
+  return JSON.parse(out)
+}
+
 export function override(env: NodeJS.ProcessEnv, argv: string[]) {
   if (argv.includes("--auto")) return "Restart OpenCode without --auto to change permission mode"
   if (!env.OPENCODE_CLI_CONFIG_CONTENT) return
-  const config = object(JSON.parse(env.OPENCODE_CLI_CONFIG_CONTENT))
+  const config = object(parseJsonc(env.OPENCODE_CLI_CONFIG_CONTENT))
   if (config.session !== undefined && object(config.session).permissions !== undefined) {
     return "Remove session.permissions from OPENCODE_CLI_CONFIG_CONTENT to change permission mode"
   }

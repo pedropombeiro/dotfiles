@@ -17,6 +17,8 @@ see [Terminal config](../../../../../.agents/docs/opencode.md#terminal-config).
   file atomically, so OpenCode's config watcher reloads it. Other running TUIs also
   reload the preference.
 - It respects `XDG_CONFIG_HOME` when it locates `cli.json`.
+- It reads `OPENCODE_CLI_CONFIG_CONTENT` as JSONC, because `cli.base.json` carries comments.
+  `cli.json` stays strict JSON, because the plugin rewrites it and would drop comments.
 - It refuses to change the mode when one of these overrides the file:
   - OpenCode was started with `--auto`.
   - `OPENCODE_CLI_CONFIG_CONTENT` sets `session.permissions`.

@@ -159,6 +159,9 @@ and `cli.base.json##class.Work` instead. `~/.shellrc/rc.d/opencode.sh` exports i
   `cli.json` value instead of merging. Put settings there only when they must be the same
   on every machine.
 - Open a new shell after editing `cli.base.json` so the environment variable picks it up.
+- `cli.base.json` is JSONC: it carries comments, and OpenCode parses the variable with a
+  JSONC parser. Anything else that reads `OPENCODE_CLI_CONFIG_CONTENT` must parse JSONC
+  too, as `permission-mode` does. Plain `JSON.parse` fails on the first comment.
 
 Both `cli.base.json` alternates disable `agent.cycle`, so Shift+Tab is free for the
 [`permission-mode`](../../.config/opencode/local-plugins/tui/permission-mode/README.md)

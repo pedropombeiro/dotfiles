@@ -2,7 +2,7 @@ import { afterEach, describe, expect, test } from "bun:test"
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { configPath, override, toggle } from "./config"
+import { configPath, override, parseJsonc, toggle } from "./config"
 
 const directories: string[] = []
 
@@ -74,6 +74,21 @@ describe("overrides", () => {
     expect(override({ OPENCODE_CLI_CONFIG_CONTENT: '{"session":{"sidebar":"hide"}}' }, [])).toBeUndefined()
   })
 
+  test("accepts the commented JSONC that cli.base.json uses", () => {
+    const content = `{
+  // Comment with "quotes" and a trailing comma below.
+  "$schema": "https://opencode.ai/v2/cli.json",
+  "plugins": [
+    "./local-plugins/tui/permission-mode", // Shift+Tab toggles the preference
+    "./local-plugins/tui/session-metrics" /* block */,
+  ],
+}`
+    expect(override({ OPENCODE_CLI_CONFIG_CONTENT: content }, [])).toBeUndefined()
+    expect(override({ OPENCODE_CLI_CONFIG_CONTENT: content.replace('"plugins"', '"session": { "permissions": "prompt" },\n  "plugins"') }, [])).toContain(
+      "OPENCODE_CLI_CONFIG_CONTENT",
+    )
+  })
+
   test("rejects malformed inline configuration", () => {
     expect(() => override({ OPENCODE_CLI_CONFIG_CONTENT: "{" }, [])).toThrow()
   })
@@ -81,5 +96,29 @@ describe("overrides", () => {
   test("respects XDG_CONFIG_HOME", () => {
     expect(configPath({ XDG_CONFIG_HOME: "/custom/config" })).toBe("/custom/config/opencode/cli.json")
     expect(configPath({})).toEndWith("/.config/opencode/cli.json")
+  })
+})
+
+describe("parseJsonc", () => {
+  test("keeps comment markers and brackets inside strings", () => {
+    expect(parseJsonc('{"url":"https://example.com/a//b","text":"/* x */","list":["a,]","b,}"]}')).toEqual({
+      url: "https://example.com/a//b",
+      text: "/* x */",
+      list: ["a,]", "b,}"],
+    })
+  })
+
+  test("handles escaped quotes, comments, and trailing commas", () => {
+    expect(parseJsonc('{"a":"say \\"hi\\" // not a comment", // real comment\n "b":[1,2,], }')).toEqual({
+      a: 'say "hi" // not a comment',
+      b: [1, 2],
+    })
+    expect(parseJsonc("{ /* one */ \"a\": /* two */ 1 }")).toEqual({ a: 1 })
+  })
+
+  test("still rejects invalid input", () => {
+    expect(() => parseJsonc("{")).toThrow()
+    expect(() => parseJsonc('{"a": 1 /* open')).toThrow("Unterminated block comment")
+    expect(() => parseJsonc('{"a": nope}')).toThrow()
   })
 })

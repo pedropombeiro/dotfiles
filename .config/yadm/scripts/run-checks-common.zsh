@@ -28,6 +28,63 @@ function print_warn() {
 
 any_failed=0
 
+function check_tmux_local_network_identity() {
+  [[ "$(uname -s)" == Darwin ]] || return 0
+
+  local tmux_bin=$(whence -p tmux)
+  [[ -n "$tmux_bin" ]] || return 0
+  tmux_bin=${tmux_bin:A}
+  print_op_stay "Checking tmux identity for macOS Local Network access"
+
+  local state_file="${XDG_STATE_HOME:-${HOME}/.local/state}/yadm/tmux-codesign.cdhash"
+  local signature current saved
+  if ! signature=$(codesign -dvvv "$tmux_bin" 2>&1); then
+    echo
+    print_failure "Cannot inspect tmux signature: ${signature}"
+    any_failed=1
+    return
+  fi
+  current=$(print -r -- "$signature" | awk -F= '/^CDHash=/ { print $2 }')
+  [[ -r "$state_file" ]] && saved=$(<"$state_file")
+  if [[ -z "$current" || "$current" != "$saved" ]]; then
+    echo
+    print_failure "tmux needs re-signing: run zsh ~/.config/yadm/scripts/sign-tmux.zsh outside tmux"
+    print_warn "Then save work and restart the tmux server; tmux kill-server ends every session"
+    any_failed=1
+    return
+  fi
+
+  # list-sessions doesn't start a server. With TMUX set, these commands inspect
+  # the current socket rather than an unrelated default server.
+  if ! tmux list-sessions >/dev/null 2>&1; then
+    print_ok "(signed, no running server on this socket)"
+    return
+  fi
+
+  local server_pid started started_epoch signed_epoch
+  server_pid=$(tmux display-message -p '#{pid}' 2>/dev/null)
+  started=$(LC_ALL=C ps -p "$server_pid" -o lstart= 2>/dev/null)
+  started_epoch=$(LC_ALL=C date -j -f '%a %b %e %T %Y' "${started##[[:space:]]#}" '+%s' 2>/dev/null)
+  signed_epoch=$(stat -f '%m' "$state_file" 2>/dev/null)
+  if [[ "$started_epoch" != <-> || "$signed_epoch" != <-> ]]; then
+    echo
+    print_failure "Cannot compare tmux server start time with its signing record"
+    any_failed=1
+    return
+  fi
+  if (( started_epoch <= signed_epoch )); then
+    echo
+    print_failure "tmux server predates its signing record; LAN access from Bun or OpenCode may fail"
+    print_warn "Save work before running tmux kill-server outside tmux; this ends every session"
+    print_warn "Start a new tmux server, then run mise exec -- opencode service restart from an interactive shell"
+    any_failed=1
+  else
+    print_ok
+  fi
+}
+
+check_tmux_local_network_identity
+
 WAKATIME_CLI="$HOME/.wakatime/wakatime-cli"
 if [[ -x "$WAKATIME_CLI" ]]; then
   print_op_stay "Checking wakatime-cli import_cfg points to base cfg"

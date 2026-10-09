@@ -166,15 +166,24 @@ macOS Local Network Privacy blocks LAN connections from non-Apple programs
 running inside Homebrew's tmux, for example `node` or the OpenCode service
 exporting telemetry to the NAS. macOS can't attribute a process under the tmux
 server to a trusted app, because the server outlives its terminal and Homebrew's
-linker signature gives tmux no usable identity. The connection fails with
-`EHOSTUNREACH` ("No route to host"), while Apple's `curl` and `ssh` still work,
-and the same command works from Terminal.app or a window outside tmux.
+linker signature gives tmux no usable identity. The connection can fail with
+`EHOSTUNREACH` ("No route to host") or `ECONNREFUSED`, while Apple's `curl` and
+`ssh` still work. Compare the same Bun or Node connection test inside tmux and
+in a terminal window outside tmux. A failure only inside tmux identifies a
+launch-context restriction; a successful Apple `curl` test alone doesn't rule
+it out.
 
 `~/.config/yadm/scripts/sign-tmux.zsh##os.Darwin` replaces the signature with a
 fresh ad-hoc one. `update.zsh##os.Darwin` runs it after Homebrew upgrades, and
 bootstrap step `005` runs it after the first install. It records the signed
 binary's CDHash in `~/.local/state/yadm/tmux-codesign.cdhash` and skips binaries
 it already signed.
+
+`mise run dotfiles:checkhealth` checks the signature against this record on
+macOS and compares the server's start time with the record's modification time.
+It reports a binary that needs re-signing or a server started before signing.
+Inside tmux, it checks the current socket; outside tmux, it checks the default
+socket. It doesn't re-sign binaries or terminate sessions.
 
 The new signature applies only to a new tmux server. After the script re-signs
 tmux, run `tmux kill-server`, which ends every session, then restart the

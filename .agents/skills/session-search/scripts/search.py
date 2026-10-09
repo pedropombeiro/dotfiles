@@ -2,7 +2,7 @@
 """Search previous OpenCode sessions for a keyword or sentence.
 
 Reads the local OpenCode SQLite database in read-only mode and prints matching
-sessions as JSON, newest match first.
+sessions as JSON or text, newest match first.
 """
 
 import argparse
@@ -18,11 +18,8 @@ SOURCES = ("tools", "reasoning", "system")
 
 def main():
     args = parse_args()
-    db = connect(args.db)
-    session_table = find_session_table(db)
-    terms = [args.query] if not args.words else args.query.split()
-    terms = [t for t in terms if t]
-    if not terms:
+    query = (sys.stdin.read() if args.stdin else args.query or "").strip()
+    if not query:
         sys.exit("search.py: query is empty")
 
     include = set(args.include.split(",")) if args.include else set()
@@ -30,104 +27,76 @@ def main():
     if unknown:
         sys.exit(f"search.py: unknown --include value(s): {', '.join(sorted(unknown))}")
 
+    db = connect(args.db)
+    session_table = find_session_table(db)
     sessions = load_sessions(db, session_table, args)
-    hits = {}
-    for row in candidate_messages(db, terms, args):
-        session = sessions.get(row["session_id"])
-        if session is None:
-            continue
-        for source, text in extract(row["type"], row["data"], include):
-            for term in terms:
-                for excerpt in excerpts(text, term, args.context):
-                    hits.setdefault(row["session_id"], []).append(
-                        {
-                            "term": term,
-                            "time": iso(row["time_created"]),
-                            "time_ms": row["time_created"],
-                            "message_id": row["id"],
-                            "source": source,
-                            "excerpt": excerpt,
-                        }
-                    )
 
-    for session_id, session in sessions.items():
-        for term in terms:
-            if contains(session["title"], term):
-                hits.setdefault(session_id, []).append(
-                    {
-                        "term": term,
-                        "time": session["created"],
-                        "time_ms": session["created_ms"],
-                        "message_id": None,
-                        "source": "title",
-                        "excerpt": session["title"],
-                    }
-                )
-
+    searches = []
     results = []
-    for session_id, matches in hits.items():
-        if {m["term"] for m in matches} != set(terms):
-            continue
-        matches.sort(key=lambda m: m["time_ms"], reverse=True)
-        session = sessions[session_id]
-        results.append(
-            {
-                **{k: v for k, v in session.items() if not k.endswith("_ms")},
-                "match_count": len(matches),
-                "last_match": matches[0]["time"],
-                "last_match_ms": matches[0]["time_ms"],
-                "matches": [
-                    {k: v for k, v in m.items() if k != "time_ms" and (k != "term" or args.words)}
-                    for m in matches[: args.excerpts]
-                ],
-            }
+    for words, sources in attempts(query, args.words, include, args.no_fallback):
+        results = search(db, sessions, query, words, sources, args)
+        searches.append(
+            {"mode": "words" if words else "phrase", "include": sorted(sources), "total_sessions": len(results)}
         )
+        if results:
+            break
 
-    results.sort(key=lambda r: r["last_match_ms"], reverse=True)
-    for result in results:
-        del result["last_match_ms"]
-    json.dump(
-        {
-            "query": args.query,
-            "mode": "words" if args.words else "phrase",
-            "total_sessions": len(results),
-            "sessions": results[: args.limit],
-        },
-        sys.stdout,
-        ensure_ascii=False,
-        indent=2,
-    )
-    print()
+    output = {
+        "query": query,
+        "mode": searches[-1]["mode"],
+        "include": searches[-1]["include"],
+        "searches": searches,
+        "total_sessions": len(results),
+        "sessions": results[: args.limit],
+    }
+    if args.format == "text":
+        print_text(output)
+    else:
+        json.dump(output, sys.stdout, ensure_ascii=False, indent=2)
+        print()
 
 
 def parse_args():
     data_home = os.environ.get("XDG_DATA_HOME") or os.path.expanduser("~/.local/share")
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("query", help="Keyword or sentence to find (case-insensitive literal match)")
+    parser.add_argument("query", nargs="?", help="Keyword or sentence to find (case-insensitive literal match)")
+    parser.add_argument("--stdin", action="store_true", help="Read the query from standard input")
     parser.add_argument("--words", action="store_true", help="Match sessions containing every word, in any message")
     parser.add_argument(
         "--include",
         help=f"Extra sources to search, comma-separated: {','.join(SOURCES)}. "
         "User messages, assistant replies, compaction summaries, and titles are always searched.",
     )
+    parser.add_argument(
+        "--no-fallback",
+        action="store_true",
+        help="Run only the requested search. By default, a search that finds nothing is retried "
+        "with --words, then with tools included.",
+    )
+    parser.add_argument("--session", help="Only this session ID, for example to read more of its matches")
     parser.add_argument("--directory", help="Only sessions whose directory starts with this path")
     parser.add_argument(
         "--current-project",
         action="store_true",
-        help="Only sessions of the project of the session in $OPENCODE_SESSION_ID",
+        help="Only sessions of the current project: the project of $OPENCODE_SESSION_ID, "
+        "or of the working directory when it is unset",
     )
     parser.add_argument("--since", type=parse_date, help="Only matches on or after this date (YYYY-MM-DD)")
     parser.add_argument("--until", type=parse_date, help="Only matches before this date (YYYY-MM-DD)")
     parser.add_argument("--limit", type=int, default=10, help="Maximum sessions to return (default: 10)")
     parser.add_argument("--excerpts", type=int, default=3, help="Maximum excerpts per session (default: 3)")
     parser.add_argument("--context", type=int, default=100, help="Characters of context around a match (default: 100)")
+    parser.add_argument("--format", choices=("json", "text"), default="json", help="Output format (default: json)")
     parser.add_argument(
         "--include-current",
         action="store_true",
         help="Also search the session in $OPENCODE_SESSION_ID, which is excluded by default",
     )
     parser.add_argument("--db", default=os.path.join(data_home, "opencode", "opencode.db"), help="Database path")
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.stdin and args.query:
+        parser.error("pass the query as an argument or with --stdin, not both")
+    return args
 
 
 def parse_date(value):
@@ -136,6 +105,18 @@ def parse_date(value):
     except ValueError:
         raise argparse.ArgumentTypeError(f"invalid date {value!r}, expected YYYY-MM-DD")
     return int(day.timestamp() * 1000)
+
+
+def attempts(query, words, include, no_fallback):
+    """Yield the (words, sources) searches to try, in order, until one finds a session."""
+    yield words, include
+    if no_fallback:
+        return
+    multiword = len(query.split()) > 1
+    if multiword and not words:
+        yield True, include
+    if "tools" not in include:
+        yield words or multiword, include | {"tools"}
 
 
 def connect(path):
@@ -166,18 +147,25 @@ def load_sessions(db, table, args):
         f"SELECT id, title, directory, parent_id, {project} AS project_id, time_created, time_updated, "
         f"{archived} AS time_archived FROM {table}"
     )
+    conditions = []
     params = []
+    if args.session:
+        conditions.append("id = ?")
+        params.append(args.session)
     if args.directory:
-        query += " WHERE directory = ? OR directory LIKE ? ESCAPE '\\'"
+        conditions.append("(directory = ? OR directory LIKE ? ESCAPE '\\')")
         directory = args.directory.rstrip("/")
-        params = [directory, like_escape(directory) + "/%"]
+        params += [directory, like_escape(directory) + "/%"]
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
     current_id = os.environ.get("OPENCODE_SESSION_ID")
-    excluded = None if args.include_current else current_id
-    current = None
+    excluded = None if args.include_current or args.session else current_id
     if current_id:
         current = db.execute(f"SELECT {project} AS project_id, directory FROM {table} WHERE id = ?", [current_id]).fetchone()
+    else:
+        current = project_of_cwd(db) if project != "NULL" else None
     if args.current_project and (current is None or current["project_id"] is None):
-        sys.exit("search.py: --current-project needs $OPENCODE_SESSION_ID and a database with project IDs")
+        sys.exit("search.py: --current-project needs a database with project IDs")
     sessions = {}
     for row in db.execute(query, params):
         if row["id"] == excluded:
@@ -197,7 +185,37 @@ def load_sessions(db, table, args):
             "created_ms": row["time_created"],
             "updated": iso(row["time_updated"]),
         }
+    # Restrict the message scan to these sessions only when a filter removed
+    # some; otherwise the full scan is cheaper than an ID lookup per session.
+    args.session_filter = bool(args.session or args.directory or args.current_project)
     return sessions
+
+
+def project_of_cwd(db):
+    """The project of the working directory, for runs without $OPENCODE_SESSION_ID.
+
+    OpenCode command shell blocks run in the session's directory but don't
+    export the session ID. The project is the one whose worktree or sandbox
+    contains the directory; directories outside every project use "global".
+    """
+    cwd = os.path.realpath(os.getcwd())
+    best = None
+    try:
+        rows = db.execute("SELECT id, worktree, sandboxes FROM project").fetchall()
+    except sqlite3.Error:
+        return None
+    for row in rows:
+        try:
+            sandboxes = json.loads(row["sandboxes"] or "[]")
+        except json.JSONDecodeError:
+            sandboxes = []
+        for path in [row["worktree"], *sandboxes]:
+            if not isinstance(path, str) or path in ("", "/"):
+                continue
+            root = os.path.realpath(path)
+            if (cwd == root or cwd.startswith(root + "/")) and (best is None or len(root) > len(best[1])):
+                best = (row["id"], root)
+    return {"project_id": best[0] if best else "global", "directory": cwd}
 
 
 def same_project(row, current):
@@ -216,12 +234,95 @@ def resolve(path):
     return os.path.realpath(path) if path else path
 
 
-def candidate_messages(db, terms, args):
-    # Prefilter on the raw JSON with the JSON-escaped term. SQLite lower() folds
-    # ASCII only, so non-ASCII case variants are not matched.
-    clauses = " OR ".join("instr(lower(data), ?) > 0" for _ in terms)
-    params = [ascii_lower(json.dumps(t, ensure_ascii=False)[1:-1]) for t in terms]
-    query = f"SELECT id, session_id, type, time_created, data FROM session_message WHERE ({clauses})"
+def search(db, sessions, query, words, include, args):
+    terms = [t for t in (query.split() if words else [query]) if t]
+    # Each hit is (time_ms, message_id, source, term, text, start, end). The
+    # excerpt is built only for the hits that are printed.
+    hits = {}
+    for row in candidate_messages(db, sessions, terms, include, args):
+        for source, text in extract(row["type"], row["data"], include):
+            for term in terms:
+                for match in re.finditer(re.escape(term), text, re.IGNORECASE):
+                    hits.setdefault(row["session_id"], []).append(
+                        (row["time_created"], row["id"], source, term, text, match.start(), match.end())
+                    )
+
+    for session_id, session in sessions.items():
+        for term in terms:
+            if contains(session["title"], term):
+                hits.setdefault(session_id, []).append(
+                    (session["created_ms"], None, "title", term, session["title"], None, None)
+                )
+
+    results = []
+    for session_id, matches in hits.items():
+        if {m[3] for m in matches} != set(terms):
+            continue
+        matches.sort(key=lambda m: m[0], reverse=True)
+        session = sessions[session_id]
+        results.append(
+            {
+                **{k: v for k, v in session.items() if not k.endswith("_ms")},
+                "match_count": len(matches),
+                "last_match": iso(matches[0][0]),
+                "last_match_ms": matches[0][0],
+                "matches": [render_match(m, words, args.context) for m in matches[: args.excerpts]],
+            }
+        )
+
+    # Forked sessions share copied messages, so break ties on the session ID
+    # to keep the order stable.
+    results.sort(key=lambda r: (r["last_match_ms"], r["id"]), reverse=True)
+    for result in results:
+        del result["last_match_ms"]
+    return results
+
+
+def render_match(match, words, context):
+    time_ms, message_id, source, term, text, start, end = match
+    rendered = {
+        "term": term,
+        "time": iso(time_ms),
+        "message_id": message_id,
+        "source": source,
+        "excerpt": text if start is None else excerpt(text, start, end, context),
+    }
+    if not words:
+        del rendered["term"]
+    return rendered
+
+
+def candidate_messages(db, sessions, terms, include, args):
+    # Prefilter on the raw JSON with the JSON-escaped term. LIKE folds case for
+    # ASCII only, so non-ASCII case variants are not matched. It is much faster
+    # than instr(lower(data)), which copies every row.
+    types = ["user", "assistant", "compaction"]
+    if "tools" in include:
+        types += ["shell", "synthetic"]
+    if "system" in include:
+        types.append("system")
+    if "tools" in include:
+        data = "data"
+    else:
+        # Tool calls hold most of the stored text. Keep only the text and
+        # reasoning parts of assistant messages, so Python decodes far less.
+        parts = ["text"] + (["reasoning"] if "reasoning" in include else [])
+        data = (
+            "CASE WHEN type = 'assistant' THEN json_object('content', ("
+            "SELECT json_group_array(json(j.value)) FROM json_each(data, '$.content') AS j "
+            f"WHERE j.value ->> 'type' IN ({','.join('?' * len(parts))}))) ELSE data END"
+        )
+    params = [] if "tools" in include else list(parts)
+    clauses = " OR ".join("data LIKE ? ESCAPE '\\'" for _ in terms)
+    query = (
+        f"SELECT id, session_id, type, time_created, {data} AS data FROM session_message "
+        f"WHERE type IN ({','.join('?' * len(types))}) AND ({clauses})"
+    )
+    params += types
+    params += ["%" + like_escape(json.dumps(t, ensure_ascii=False)[1:-1]) + "%" for t in terms]
+    if args.session_filter:
+        query += " AND session_id IN (SELECT value FROM json_each(?))"
+        params.append(json.dumps(list(sessions)))
     if args.since:
         query += " AND time_created >= ?"
         params.append(args.since)
@@ -229,9 +330,11 @@ def candidate_messages(db, terms, args):
         query += " AND time_created < ?"
         params.append(args.until)
     for row in db.execute(query, params):
+        if row["session_id"] not in sessions:
+            continue
         try:
             data = json.loads(row["data"])
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, TypeError):
             continue
         yield {**dict(row), "data": data}
 
@@ -271,20 +374,37 @@ def extract(kind, data, include):
         yield "system", data.get("text") or ""
 
 
-def excerpts(text, term, context):
-    for match in re.finditer(re.escape(term), text, re.IGNORECASE):
-        start = max(0, match.start() - context)
-        end = min(len(text), match.end() + context)
-        snippet = " ".join(text[start:end].split())
-        yield ("…" if start > 0 else "") + snippet + ("…" if end < len(text) else "")
+def excerpt(text, start, end, context):
+    first = max(0, start - context)
+    last = min(len(text), end + context)
+    snippet = " ".join(text[first:last].split())
+    return ("…" if first > 0 else "") + snippet + ("…" if last < len(text) else "")
+
+
+def print_text(output):
+    tried = " → ".join(f"{s['mode']}{' +' + ','.join(s['include']) if s['include'] else ''}" for s in output["searches"])
+    shown = len(output["sessions"])
+    print(f"Query: {json.dumps(output['query'], ensure_ascii=False)}")
+    print(f"Searches: {tried}")
+    print(f"Sessions: {output['total_sessions']} found, {shown} shown")
+    for index, session in enumerate(output["sessions"], 1):
+        same = {True: "yes", False: "no", None: "unknown"}[session["same_project"]]
+        flags = " (archived)" if session["archived"] else ""
+        flags += " (subagent)" if session["parent_id"] else ""
+        print()
+        print(f"{index}. {session['title'] or '(untitled)'}{flags}")
+        print(
+            f"   id: {session['id']} | same project: {same} | last match: {session['last_match']}"
+            f" | matches: {session['match_count']}"
+        )
+        print(f"   directory: {session['directory']}")
+        for match in session["matches"]:
+            term = f" [{match['term']}]" if "term" in match else ""
+            print(f"   - {match['source']}{term} {match['time']}: {match['excerpt']}")
 
 
 def contains(text, term):
     return term.casefold() in text.casefold()
-
-
-def ascii_lower(value):
-    return "".join(c.lower() if c.isascii() else c for c in value)
 
 
 def like_escape(value):

@@ -1,7 +1,7 @@
 ---
 name: session-search
 description: "Find previous OpenCode sessions that contain a keyword or sentence. Use when the user asks which earlier session discussed something, wants to find where a phrase, command, or decision came up, or wants to return to a past conversation."
-version: 1.1.0
+version: 1.2.0
 license: MIT
 compatibility: opencode
 metadata:
@@ -14,7 +14,7 @@ metadata:
 Search past OpenCode sessions with
 [scripts/search.py](scripts/search.py). The script opens the local OpenCode
 database read-only, matches the query against message text, and prints JSON
-with the newest matches first.
+with the newest matches first. Add `--format text` for a compact listing.
 
 The OpenCode session-list API cannot do this. Its `search` parameter matches
 session titles only.
@@ -28,14 +28,22 @@ scripts allows it without a prompt:
 ~/.agents/skills/session-search/scripts/search.py "<keyword or sentence>"
 ```
 
-Pass the user's wording as one quoted argument. Matching is literal and
-case-insensitive, so don't add wildcards or regular expressions.
+Pass the user's wording as one quoted argument, or on standard input with
+`--stdin`. Matching is literal and case-insensitive, so don't add wildcards or
+regular expressions.
+
+When a search finds nothing, the script retries it in the same run: first with
+`--words` for a multi-word query, then with tool output included. The
+`searches` field lists each search it ran, and `mode` and `include` describe
+the one that produced the results.
 
 | Option | Use it when |
 | ------ | ----------- |
-| `--words` | A phrase search finds nothing. Matches sessions that contain every word, in any message. |
-| `--include tools` | The text could appear in a command, a file read, or tool output. |
+| `--words` | The words of the query may not appear together. Matches sessions that contain every word, in any message. |
+| `--include tools` | The text could appear in a command, a file read, or tool output. Searching tool output is several times slower. |
 | `--include reasoning,system` | The user asks about model reasoning or harness messages. |
+| `--no-fallback` | You need the results of exactly the search you requested. |
+| `--session <id>` | You need more matches from one session, for example to summarize it. |
 | `--directory <path>` | The user names a repository or project. Matches the path and its subdirectories. |
 | `--current-project` | The user asks about the current project. Matches every worktree of its repository. |
 | `--since YYYY-MM-DD`, `--until YYYY-MM-DD` | The user gives a time frame. `--until` excludes that day. |
@@ -44,6 +52,11 @@ case-insensitive, so don't add wildcards or regular expressions.
 
 User messages, assistant replies, compaction summaries, and session titles are
 always searched.
+
+The script reads the current session from `$OPENCODE_SESSION_ID`. Without it,
+the script takes the current project from the working directory and can't
+exclude the current session. Command shell blocks, such as the one in
+`/search-session`, don't set the variable.
 
 ## Present the results
 
@@ -54,21 +67,27 @@ always searched.
    `same_project` is `true` first, and mark them as part of the current
    project.
 1. Mention `total_sessions` when it's larger than the number shown.
+1. When the script fell back to tool output, which means `include` contains
+   `tools` and you didn't request it, say that nothing matched the conversation
+   text and the matches come from tool calls and their output.
 
-If nothing matches, retry with `--words`, then `--include tools`. Tell the user
-which searches you ran.
+If nothing matches, tell the user which searches the script ran, from the
+`searches` field.
 
 ## Act on a session
 
-When the user wants to return to a session, or the `/search-session` command
-invoked this skill, ask what to do with the `question` tool:
+The `/search-session` command runs the script before the agent starts and
+includes these steps in its prompt. When the user wants to return to a session
+in any other way, ask what to do with the `question` tool. Ask both questions in
+the same call:
 
 1. If several sessions match, ask which one to use. Label each option with the
    session title and put the session ID and date in its description.
 1. Ask what to do with the chosen session. Offer only the actions that apply:
    - **Open session**: only when `same_project` is `true`. Recommend it first.
-   - **Summarize here**: read the session's matching messages and summarize
-     them in this conversation.
+   - **Summarize here**: rerun the search with `--session <id>`, more
+     `--excerpts`, and a larger `--context`, and summarize the matches in this
+     conversation.
    - **Show more matches**: only when `total_sessions` is larger than the
      number shown. Rerun the search with a larger `--limit`.
 1. To open a session, call the `open_session` tool with its ID. The tool

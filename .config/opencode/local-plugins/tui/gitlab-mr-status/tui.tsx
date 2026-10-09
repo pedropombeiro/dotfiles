@@ -7,12 +7,11 @@ import { Plugin } from "@opencode/plugin/tui"
 import type { BoxRenderable } from "@opentui/core"
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js"
 import {
+  createDuoWatcher,
+  createNotificationClaim,
   duoReviewMessage,
   duoReviewOutcome,
-  finishedDuoReviews,
   isDuoReviewing,
-  notificationKey,
-  recentlyNotified,
   recordNotification,
   type NotifiedLog,
 } from "./src/duo-watch"
@@ -63,12 +62,20 @@ export default Plugin.define({
     }
 
     const [version, setVersion] = createSignal(0)
+    let reportedLoadError = false
     const store = createStatusStore({
       interval: pollSeconds * 1000,
       activeInterval: reviewPollSeconds * 1000,
       active: isDuoReviewing,
       onChange: () => setVersion((value) => value + 1),
-      onLoad: (key, previous, next) => watchDuoReview(key, previous, next),
+      onLoad: (key, previous, next) => watcher.onLoad(key, parseKey(key).sessionID, previous, next),
+      onLoadError: (error) => {
+        // Report once, so a persistent bug doesn't toast on every poll.
+        if (reportedLoadError) return
+        reportedLoadError = true
+        const reason = error instanceof Error ? error.message : String(error)
+        context.ui.toast.show({ message: `MR status watcher failed: ${reason}`, variant: "error" })
+      },
       async load(key): Promise<Lookup> {
         const { directory, sessionID, titleIid } = parseKey(key)
         const graphql = glabGraphQL(exec, directory)
@@ -125,34 +132,23 @@ export default Plugin.define({
     }
 
     // Keeps a session's lookup polling while Duo reviews its target MR, even
-    // when the session isn't on screen.
-    const reviewHolds = new Map<string, () => void>()
-
-    function watchDuoReview(key: string, previous: Lookup | undefined, next: Lookup) {
-      const { sessionID } = parseKey(key)
-      const explicit = next.kind === "found" && next.explicitTarget === true
-      if (!notifyDuoReview || !sessionID || !explicit) {
-        reviewHolds.get(key)?.()
-        reviewHolds.delete(key)
-        return
-      }
-
-      if (isDuoReviewing(next)) {
-        if (!reviewHolds.has(key)) reviewHolds.set(key, store.acquire(key))
-      } else {
-        reviewHolds.get(key)?.()
-        reviewHolds.delete(key)
-      }
-
-      for (const mr of finishedDuoReviews(previous, next)) void notifyFinishedReview(sessionID, mr)
-    }
+    // when the session isn't on screen, and notifies the session when it ends.
+    const watcher = createDuoWatcher({
+      enabled: notifyDuoReview,
+      acquire: (key) => store.acquire(key),
+      // A recorded notification isn't retried, even if sending it fails.
+      claim: createNotificationClaim({
+        shared: () => notified,
+        persist: (id, at) => {
+          void Promise.resolve()
+            .then(() => updateNotified((draft) => recordNotification(draft, id, at)))
+            .catch(() => {})
+        },
+      }),
+      send: (sessionID, mr) => void notifyFinishedReview(sessionID, mr),
+    })
 
     async function notifyFinishedReview(sessionID: string, mr: MergeRequest) {
-      const notificationID = notificationKey(sessionID, mr)
-      const now = Date.now()
-      if (recentlyNotified(notified, notificationID, now)) return
-      // Record before sending so a concurrent TUI skips it; a failed send isn't retried.
-      await updateNotified((draft) => recordNotification(draft, notificationID, now))
       try {
         await context.client.session.synthetic({
           sessionID,
@@ -449,8 +445,7 @@ export default Plugin.define({
 
     return () => {
       for (const stop of stops) stop()
-      for (const release of reviewHolds.values()) release()
-      reviewHolds.clear()
+      watcher.dispose()
       store.dispose()
     }
   },

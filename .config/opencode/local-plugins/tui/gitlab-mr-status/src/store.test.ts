@@ -247,16 +247,32 @@ describe("createStatusStore", () => {
     expect(pending()).toEqual([])
   })
 
-  test("survives a failing load callback", async () => {
+  test("reports a failing load callback and keeps loading", async () => {
+    const errors: unknown[] = []
     const { store } = harness(async () => found(), {
       onLoad: () => {
         throw new Error("boom")
       },
+      onLoadError: (error) => errors.push(error),
     })
     await store.refresh("/a")
     expect(store.get("/a").loading).toBe(false)
+    expect(errors).toEqual([new Error("boom")])
     await store.refresh("/a")
     expect(store.get("/a").lookup).toEqual(found())
+  })
+
+  test("survives a failing error callback", async () => {
+    const { store } = harness(async () => found(), {
+      onLoad: () => {
+        throw new Error("boom")
+      },
+      onLoadError: () => {
+        throw new Error("worse")
+      },
+    })
+    await store.refresh("/a")
+    expect(store.get("/a").loading).toBe(false)
   })
 
   test("reloads after an invalidation during a load", async () => {

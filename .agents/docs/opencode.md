@@ -127,7 +127,8 @@ reads GitLab through `glab api graphql`, so it uses `glab`'s stored login. It ca
 session's status and polls every 2 minutes while an open MR is shown, so switching tabs
 reuses cached data until the next poll is due. While Duo reviews an MR, it polls every
 30 seconds. When the MR is the session's `set_session_target` target, it also keeps
-polling while the session is hidden. When that review ends as `REVIEWED` or
+polling while the session is hidden, but only after the TUI has shown that session at
+least once since it started. When that review ends as `REVIEWED` or
 `REQUESTED_CHANGES` (not `APPROVED`), it queues a synthetic message that resumes the
 session so the agent reads Duo's feedback, then shows a toast. Set the plugin option
 `notifyDuoReview: false` to turn this off. Run its tests with

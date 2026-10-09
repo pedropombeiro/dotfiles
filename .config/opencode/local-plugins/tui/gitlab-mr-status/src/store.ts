@@ -6,8 +6,7 @@ export type Lookup =
   // `repository` is set for branch lookups. A session target lookup sets
   // `sessionTarget` instead, a display label for where the MR came from,
   // because it ignores the checked-out branch.
-  // `explicitTarget` marks an MR that came from set_session_target rather than
-  // the session title.
+  // `explicitTarget` is set only for MRs that came from set_session_target.
   | {
       kind: "found"
       repository?: Repository
@@ -28,6 +27,8 @@ export interface StoreOptions {
   onChange: () => void
   // Called after each successful load with the lookup it replaced.
   onLoad?: (directory: string, previous: Lookup | undefined, next: Lookup) => void
+  // Receives errors thrown by `onLoad`, which would otherwise be swallowed.
+  onLoadError?: (error: unknown) => void
   // Lookups that match poll at `activeInterval` instead of `interval`.
   active?: (lookup: Lookup | undefined) => boolean
   activeInterval?: number
@@ -114,7 +115,11 @@ export function createStatusStore(options: StoreOptions) {
           // A failing callback must not leave the load in flight forever.
           try {
             if (!disposed) options.onLoad?.(directory, previous, lookup)
-          } catch {}
+          } catch (error) {
+            try {
+              options.onLoadError?.(error)
+            } catch {}
+          }
         },
         (error: unknown) => {
           value.failures++

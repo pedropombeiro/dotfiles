@@ -60,3 +60,67 @@ export function recordNotification(log: NotifiedLog, key: string, now: number) {
   log.sent[key] = now
   for (const [entry, at] of Object.entries(log.sent)) if (now - at > RETENTION) delete log.sent[entry]
 }
+
+export interface ClaimOptions {
+  // The log shared with other TUI instances, which may lag behind local writes.
+  shared: () => NotifiedLog
+  persist: (key: string, now: number) => void
+  now?: () => number
+}
+
+// Returns a synchronous check-and-record, so two transitions in the same tick
+// can't both pass the check before either is recorded.
+export function createNotificationClaim(options: ClaimOptions) {
+  const now = options.now ?? Date.now
+  const local: NotifiedLog = { sent: {} }
+  return (key: string): boolean => {
+    const at = now()
+    if (recentlyNotified(local, key, at) || recentlyNotified(options.shared(), key, at)) return false
+    recordNotification(local, key, at)
+    options.persist(key, at)
+    return true
+  }
+}
+
+export interface WatcherOptions {
+  enabled: boolean
+  // Keeps a status key polling; returns its release.
+  acquire: (key: string) => () => void
+  claim: (key: string) => boolean
+  send: (sessionID: string, mr: MergeRequest) => void
+}
+
+// Watches Duo reviews of sessions' set_session_target MRs. Each session holds
+// at most one status key, so a key change, such as a new title prefix, moves
+// the hold instead of polling both keys.
+export function createDuoWatcher(options: WatcherOptions) {
+  const holds = new Map<string, { key: string; release: () => void }>()
+  const release = (sessionID: string) => {
+    holds.get(sessionID)?.release()
+    holds.delete(sessionID)
+  }
+
+  return {
+    onLoad(key: string, sessionID: string | undefined, previous: Lookup | undefined, next: Lookup) {
+      if (!sessionID) return
+      const watched = options.enabled && next.kind === "found" && next.explicitTarget === true
+      const hold = holds.get(sessionID)
+      if (watched && isDuoReviewing(next)) {
+        if (hold?.key !== key) {
+          release(sessionID)
+          holds.set(sessionID, { key, release: options.acquire(key) })
+        }
+      } else if (hold?.key === key) {
+        release(sessionID)
+      }
+      if (!watched) return
+      for (const mr of finishedDuoReviews(previous, next)) {
+        if (options.claim(notificationKey(sessionID, mr))) options.send(sessionID, mr)
+      }
+    },
+    heldKeys: () => [...holds.values()].map((hold) => hold.key),
+    dispose() {
+      for (const sessionID of [...holds.keys()]) release(sessionID)
+    },
+  }
+}

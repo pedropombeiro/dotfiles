@@ -12,6 +12,20 @@ cache, then compaction. The native context/cost and forge indicators take priori
 - `/compaction-history` selects a compaction summary with the keyboard.
 - Select a compaction row in the panel to read its summary.
 
+## Clicking an indicator
+
+Each indicator opens its own detail, in the sidebar and in the footer fallback:
+
+| Indicator | Opens |
+| --- | --- |
+| Compactions, `compact N`, `compacting` | The compaction history, where you pick a summary to read |
+| Cache | Cache reuse, read and write tokens, and input coverage, with a line per session |
+| Active, Model, tools | Timing for the session and its descendants, with a line per session |
+
+Every dialog has a Close button. Escape closes it too, and Enter activates the button.
+The session title and `/session-metrics` open the full panel. The footer indicators
+are separate click targets, and width-based hiding still drops whole indicators.
+
 The panel includes the selected session and recursively nested children by
 default. Ancestors and siblings are excluded. The sidebar compaction count refers
 only to the selected session. Completed, running, and failed compactions remain

@@ -40,6 +40,8 @@ names. The personal configuration works without the optional target RPC.
 
 The footer shows the MR's pipeline status, unresolved thread count, conflicts,
 approval, and a running Duo review. The MR number and pipeline status are links.
+Clicking a link opens it in the browser. Clicking any other indicator opens the
+PR/MR status dialog.
 
 The footer shows `approved` only when all of the following are true:
 

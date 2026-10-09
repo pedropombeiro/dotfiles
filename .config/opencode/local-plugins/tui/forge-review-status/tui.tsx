@@ -271,7 +271,9 @@ export default Plugin.define({
                   <Show
                     when={segment.url}
                     fallback={
-                      <text wrapMode="none" flexShrink={0} fg={color(segment.tone)}>
+                      // Segments without a link of their own open the status dialog,
+                      // which has the full detail behind the abbreviated indicator.
+                      <text wrapMode="none" flexShrink={0} fg={color(segment.tone)} onMouseUp={() => showStatus(key())}>
                         {segment.text}
                       </text>
                     }
@@ -405,8 +407,7 @@ export default Plugin.define({
       )
     }
 
-    function showStatus() {
-      const key = currentKey()
+    function showStatus(key = currentKey()) {
       void store.refresh(key)
       context.ui.dialog.set({ size: "large", centered: true })
       context.ui.dialog.show(() => <StatusDialog statusKey={key} />)
@@ -426,6 +427,7 @@ export default Plugin.define({
       if (requests.length === 1) return openUrl(requests[0].url)
       const url = await context.ui.dialog.select({
         title: "Open PR/MR",
+        actions: [{ bind: "ctrl+w", title: "Close", side: "right", selection: "none", onTrigger: () => context.ui.dialog.clear() }],
         options: requests.map((mr) => ({ title: `${reference(mr)} ${mr.title}`, value: mr.url, description: mr.targetProject })),
       })
       if (url) openUrl(url)
@@ -448,7 +450,7 @@ export default Plugin.define({
               group: "Forge",
               palette: true,
               slash: { name: "forge-status", aliases: ["mr-status", "pr-status"] },
-              run: showStatus,
+              run: () => showStatus(),
             },
             {
               id: "forge.review.open",

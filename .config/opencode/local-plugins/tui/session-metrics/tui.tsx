@@ -5,7 +5,7 @@ import type { BoxRenderable } from "@opentui/core"
 import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js"
 import { history } from "./src/history"
 import { aggregate, descendants, measure, type Message } from "./src/metrics"
-import { duration, fit, percent, segments } from "./src/format"
+import { CACHE_NOTE, cacheText, duration, fit, join, percent, segments, TIMING_NOTE, timingText, type Indicator } from "./src/format"
 
 export default Plugin.define({
   id: "pedropombeiro.session-metrics",
@@ -91,18 +91,18 @@ export default Plugin.define({
             <text fg={context.theme.text.muted}>{store.get(props.sessionID).loading ? "Loading history…" : "Partial history"}</text>
           </Show>
           <Show when={value().own.compactions.length}>
-            <text fg={context.theme.text.muted}>Compactions {value().own.completed.length} · {value().own.compactions.at(-1)?.status}</text>
+            <text fg={context.theme.text.muted} onMouseUp={() => openIndicator("compaction", id)}>Compactions {value().own.completed.length} · {value().own.compactions.at(-1)?.status}</text>
           </Show>
-          <Show when={value().own.completed.at(-1)}>{(compact) => <text fg={context.theme.text.muted}>Last started {duration(Math.max(0, now() - compact().time.created))} ago</text>}</Show>
+          <Show when={value().own.completed.at(-1)}>{(compact) => <text fg={context.theme.text.muted} onMouseUp={() => openIndicator("compaction", id)}>Last started {duration(Math.max(0, now() - compact().time.created))} ago</text>}</Show>
           <Show when={value().own.latest?.percent !== undefined}>
-            <text fg={context.theme.text.muted}>Cache {percent(value().own.latest?.percent)} · last request</text>
+            <text fg={context.theme.text.muted} onMouseUp={() => openIndicator("cache", id)}>Cache {percent(value().own.latest?.percent)} · last request</text>
           </Show>
           <Show when={value().total.cache.percent !== undefined}>
-            <text fg={context.theme.text.muted}>Cache {percent(value().total.cache.percent)} · incl. children</text>
+            <text fg={context.theme.text.muted} onMouseUp={() => openIndicator("cache", id)}>Cache {percent(value().total.cache.percent)} · incl. children</text>
           </Show>
           <Show when={value().total.active >= 1000}>
-            <text fg={context.theme.text.muted}>Active {duration(value().total.active)} · incl. children</text>
-            <text fg={context.theme.text.muted}>Model {duration(value().total.modelTime)} · tools {duration(value().total.toolTime)}</text>
+            <text fg={context.theme.text.muted} onMouseUp={() => openIndicator("timing", id)}>Active {duration(value().total.active)} · incl. children</text>
+            <text fg={context.theme.text.muted} onMouseUp={() => openIndicator("timing", id)}>Model {duration(value().total.modelTime)} · tools {duration(value().total.toolTime)}</text>
           </Show>
           <text fg={context.theme.text.muted} onMouseUp={() => context.ui.panel.open("metrics.details")}>/session-metrics</text>
         </box>
@@ -120,11 +120,14 @@ export default Plugin.define({
         if (!data) return []
         return segments(data.own, data.total.active)
       })
-      const desired = () => Bun.stringWidth(items().join(" · "))
+      const desired = () => Bun.stringWidth(join(items()))
       return <Show when={desired() > 0}>
-        <box width={desired()} flexShrink={100} minWidth={0} height={1} overflow="hidden"
+        <box width={desired()} flexShrink={100} minWidth={0} height={1} overflow="hidden" flexDirection="row"
           onSizeChange={function (this: BoxRenderable) { const size = this.width; queueMicrotask(() => resize(size)) }}>
-          <text wrapMode="none" fg={context.theme.text.muted}>{fit(items(), width())}</text>
+          <For each={fit(items(), width())}>{(item, index) => <>
+            <Show when={index() > 0}><text wrapMode="none" flexShrink={0} fg={context.theme.text.muted}>{" · "}</text></Show>
+            <text wrapMode="none" flexShrink={0} fg={context.theme.text.muted} onMouseUp={() => props.sessionID && openIndicator(item.kind, props.sessionID)}>{item.text}</text>
+          </>}</For>
         </box>
       </Show>
     }
@@ -146,10 +149,10 @@ export default Plugin.define({
         <text fg={context.theme.text.muted}>c scope · r refresh · f fullscreen · esc close</text>
         <scrollbox flexGrow={1} minHeight={0} scrollX={false}>
           <box gap={1} flexShrink={0}>
-            <text fg={context.theme.text.base}>Active wall time {duration(total().active)}{"\n"}Model wall time {duration(total().modelTime)}{"\n"}Tool wall time {duration(total().toolTime)}{"\n"}Delegation wait {duration(total().delegateTime)}{"\n"}Summed execution {duration(total().summed)}</text>
-            <text fg={context.theme.text.muted}>Recorded intervals, not billing time. Overlaps are merged for wall time. Summed execution excludes subagent delegation waits. Tool durations may include permission/question waits. Earlier retry attempts and compaction generation time may be absent.</text>
-            <text fg={context.theme.text.base}>Reported cache reuse {percent(total().cache.percent)}{"\n"}Read {total().cache.read.toLocaleString()} · write {total().cache.write.toLocaleString()} tokens{"\n"}Input coverage {total().cache.reported}/{total().cache.requests} completed requests</text>
-            <text fg={context.theme.text.muted}>Reuse = cache reads / (uncached input + cache reads + cache writes). Providers can omit cache counters, which OpenCode normalizes to zero. Zero-only histories are unavailable; mixed-provider totals may understate reuse.</text>
+            <text fg={context.theme.text.base}>{timingText(total())}</text>
+            <text fg={context.theme.text.muted}>{TIMING_NOTE}</text>
+            <text fg={context.theme.text.base}>{cacheText(total())}</text>
+            <text fg={context.theme.text.muted}>{CACHE_NOTE}</text>
             <For each={selected()}>{(value) => <box gap={0} flexShrink={0}>
               <text fg={context.theme.text.base}><b>{value.session.title ?? value.session.id}</b></text>
               <text fg={context.theme.text.muted}>Active {duration(value.active)} · model {duration(value.modelTime)} · tools {duration(value.toolTime)}{value.partial ? " · partial timing" : ""}</text>
@@ -164,13 +167,65 @@ export default Plugin.define({
         </scrollbox>
       </box>
     }
+    // A regular Close button for custom dialogs. Escape still closes them, and
+    // Enter activates the button, as in the forge status dialog.
+    function CloseRow(props: { hint?: string }) {
+      const close = () => context.ui.dialog.clear()
+      context.keymap.layer(() => ({ mode: "modal", commands: [{ bind: "return", title: "Close dialog", run: close }] }))
+      return <box height={1} flexShrink={0} flexDirection="row" justifyContent="space-between">
+        <text fg={context.theme.text.muted}>{props.hint ?? ""}</text>
+        <box paddingLeft={1} paddingRight={1} flexShrink={0} backgroundColor={context.theme.background.action.primary.focused} onMouseUp={close}>
+          <text wrapMode="none" fg={context.theme.text.action.primary.focused}>Close</text>
+        </box>
+      </box>
+    }
+
     function showCompaction(message: Message) {
       context.ui.dialog.set({ size: "large", centered: true })
       context.ui.dialog.show(() => <box padding={1} height={Math.max(8, Math.min(30, context.renderer.height - 6))} gap={1}>
         <text fg={context.theme.text.base}><b>{message.reason} compaction · {message.status}</b></text>
         <scrollbox flexGrow={1} minHeight={0} scrollX={false}><text fg={context.theme.text.base}>{message.summary ?? message.error?.message ?? "Compaction in progress"}</text></scrollbox>
-        <text fg={context.theme.text.muted}>esc close</text>
+        <CloseRow />
       </box>)
+    }
+
+    const closeAction = { bind: "ctrl+w", title: "Close", side: "right" as const, selection: "none" as const, onTrigger: () => context.ui.dialog.clear() }
+
+    async function showCompactionHistory(sessionID: string) {
+      const records = summary(sessionID)?.total.compactions ?? []
+      if (!records.length) return context.ui.toast.show({ message: "No compactions in this session yet", variant: "info" })
+      const message = await context.ui.dialog.select({ title: "Compaction history", actions: [closeAction], options: records.map((item) => ({ title: `${new Date(item.time.created).toLocaleString()} · ${item.reason} · ${item.status}`, value: item })) })
+      if (message) showCompaction(message)
+    }
+
+    function Detail(props: { kind: "cache" | "timing"; sessionID: string }) {
+      const data = createMemo(() => summary(props.sessionID))
+      createEffect(() => onCleanup(acquire(props.sessionID)))
+      const timing = props.kind === "timing"
+      return <box padding={1} height={Math.max(8, Math.min(24, context.renderer.height - 6))} gap={1}>
+        <text fg={context.theme.text.base}><b>{timing ? "Session timing" : "Cache reuse"}</b> · including descendants</text>
+        <scrollbox flexGrow={1} minHeight={0} scrollX={false}>
+          <Show when={data()} fallback={<text fg={context.theme.text.muted}>Loading…</text>}>{(value) => (
+            <box gap={1} flexShrink={0}>
+              <text fg={context.theme.text.base}>{timing ? timingText(value().total) : cacheText(value().total)}</text>
+              <text fg={context.theme.text.muted}>{timing ? TIMING_NOTE : CACHE_NOTE}</text>
+              <Show when={value().list.length > 1}>
+                <For each={value().list}>{(item) => <text fg={context.theme.text.muted}>
+                  {item.session.title ?? item.session.id} · {timing ? `active ${duration(item.active)} · model ${duration(item.modelTime)} · tools ${duration(item.toolTime)}` : `cache ${percent(item.cache.percent)}`}
+                </text>}</For>
+              </Show>
+              <Show when={value().partial}><text fg={context.theme.text.muted}>Partial history: some sessions are still loading or failed to load.</text></Show>
+            </box>
+          )}</Show>
+        </scrollbox>
+        <CloseRow hint="/session-metrics opens the full panel" />
+      </box>
+    }
+
+    function openIndicator(kind: Indicator, sessionID: string) {
+      if (kind === "compaction") return void showCompactionHistory(sessionID)
+      context.ui.dialog.set({ size: "large", centered: true })
+      context.ui.dialog.show(() => <Detail kind={kind} sessionID={sessionID} />)
     }
 
     context.ui.slot({ append: "sidebar.content", render: (props) => <Sidebar sessionID={props.sessionID} /> })
@@ -184,9 +239,7 @@ export default Plugin.define({
       { id: "metrics.compactions", title: "Show compaction history", group: "Session", palette: true, slash: { name: "compaction-history" }, run: async () => {
         const route = context.ui.router.current()
         if (route.type !== "session") return
-        const records = summary(route.sessionID)?.total.compactions ?? []
-        const message = await context.ui.dialog.select({ title: "Compaction history", options: records.map((item) => ({ title: `${new Date(item.time.created).toLocaleString()} · ${item.reason} · ${item.status}`, value: item })) })
-        if (message) showCompaction(message)
+        await showCompactionHistory(route.sessionID)
       } },
       ] }))
       return null

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import { aggregate, cache, descendants, measure, owned, union, type Message, type Session } from "./metrics"
-import { fit } from "./format"
+import { fit, join, segments, type Segment } from "./format"
 
 const session: Session = { id: "ses_parent", time: { created: 0 } }
 const assistant = (id: string, start: number, stop: number, read = 0): Message => ({
@@ -64,10 +64,17 @@ describe("session metrics", () => {
     expect(measure(session, records, 5000, false).completed).toHaveLength(1)
   })
   test("drops timing, cache, then compaction without exceeding width", () => {
-    const items = ["compact 2", "cache 84%", "active 18m"]
-    expect(fit(items, 21)).toBe("compact 2 · cache 84%")
-    expect(fit(items, 10)).toBe("compact 2")
-    expect(fit(items, 2)).toBe("")
-    for (let width = 0; width < 100; width++) expect(Bun.stringWidth(fit(items, width))).toBeLessThanOrEqual(width)
+    const items: Segment[] = [{ kind: "compaction", text: "compact 2" }, { kind: "cache", text: "cache 84%" }, { kind: "timing", text: "active 18m" }]
+    expect(join(fit(items, 21))).toBe("compact 2 · cache 84%")
+    expect(join(fit(items, 10))).toBe("compact 2")
+    expect(fit(items, 10).map((item) => item.kind)).toEqual(["compaction"])
+    expect(join(fit(items, 2))).toBe("")
+    for (let width = 0; width < 100; width++) expect(Bun.stringWidth(join(fit(items, width)))).toBeLessThanOrEqual(width)
+  })
+  test("tags each indicator with the detail view it opens", () => {
+    const records: Message[] = [{ id: "c", type: "compaction", status: "completed", reason: "auto", time: { created: 0 } }, assistant("a", 0, 100, 100)]
+    const value = measure(session, records, 5000, false)
+    expect(segments(value, 2000).map((item) => item.kind)).toEqual(["compaction", "cache", "timing"])
+    expect(segments(value, 500).some((item) => item.kind === "timing")).toBe(false)
   })
 })

@@ -48,7 +48,7 @@ const parseKey = (key: string): Key => {
 }
 
 export default Plugin.define({
-  id: "pedropombeiro.gitlab-mr-status",
+  id: "pedropombeiro.forge-review-status",
   setup(context) {
     const forges = new Forges(exec, {
       gitlab: Array.isArray(context.options.hosts) ? context.options.hosts : ["gitlab.com"],
@@ -332,7 +332,7 @@ export default Plugin.define({
         mode: "modal",
         commands: [
           {
-            id: "gitlab.mr.status.refresh",
+            id: "forge.review.status.refresh",
             bind: "ctrl+r",
             enabled: () => !snapshot().loading,
             run: refresh,
@@ -443,7 +443,7 @@ export default Plugin.define({
           mode: "global",
           commands: [
             {
-              id: "gitlab.mr.status",
+              id: "forge.review.status",
               title: "Show PR/MR status",
               group: "Forge",
               palette: true,
@@ -451,7 +451,7 @@ export default Plugin.define({
               run: showStatus,
             },
             {
-              id: "gitlab.mr.open",
+              id: "forge.review.open",
               title: "Open PR/MR in browser",
               group: "Forge",
               palette: true,

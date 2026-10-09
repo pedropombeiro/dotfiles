@@ -1,12 +1,12 @@
-# gitlab-mr-status
+# forge-review-status
 
 A CLI plugin that shows a session's GitHub PR or GitLab MR in the prompt footer.
 Both `cli.base.json` alternates load it, so the repository selects the forge on
 either machine. GitLab explicit targets retain review-feedback notifications.
 GitHub support is status-only and never resumes the agent.
 
-The directory and plugin ID remain `gitlab-mr-status` to preserve existing GitLab
-notification storage. GitHub uses `gh`'s stored login; GitLab uses `glab`'s.
+The plugin was named `gitlab-mr-status` before it supported GitHub. GitHub uses
+`gh`'s stored login; GitLab uses `glab`'s.
 
 ## Merge request selection
 
@@ -116,7 +116,7 @@ Set options with the object form of the `plugins` entry in `cli.base.json##class
 
 ```json
 {
-  "package": "./local-plugins/tui/gitlab-mr-status",
+  "package": "./local-plugins/tui/forge-review-status",
   "options": { "notifyHumanReviews": false }
 }
 ```

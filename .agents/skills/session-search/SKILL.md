@@ -76,8 +76,8 @@ invoked this skill, ask what to do with the `question` tool:
    this session. If the tool is unavailable or fails, show its error and tell
    the user to reopen the session with `opencode --session <id>`.
    `open_session` comes from the `session-open` plugin in
-   `~/.config/opencode/local-plugins/server/session-open`. See
-   `~/.agents/docs/opencode.md`.
+   `~/.config/opencode/local-plugins/server/session-open`. See its
+   `README.md`.
 
 For a session of another project, tell the user to reopen it with
 `opencode --session <id>`; `open_session` rejects it.

@@ -110,54 +110,20 @@ is outside the discovery paths, so a plugin there loads only through a path entr
 
 OpenCode resolves these relative paths against `~/.config/opencode/`. Local `.tsx`
 plugins can import `solid-js`, `@opentui/solid`, and `@opencode/plugin/tui` without a
-`package.json`; OpenCode provides them at runtime. Run their tests with `bun test` from
-the plugin directory.
+`package.json`; OpenCode provides them at runtime. Run a local plugin's tests with
+`mise exec bun@1.3.10 -- bun test` from its directory.
 
-`local-plugins/tui/gitlab-mr-status` (Work only) shows an MR's pipeline status, unresolved
-thread count, conflicts, and approval in the prompt footer. It picks each session's MR
-in this order:
+Each local plugin documents its behavior, options, and tests in its own README:
 
-1. The target stored by `set_session_target`, read through the RPC that
-   `opencode-forge-session-title` 1.3.0 and later registers.
-1. The MR number in the title prefix that plugin writes, such as `[#123, !456]`.
-1. The checked-out branch's open MR.
-
-The MR number and pipeline status are links. It adds `/mr-status` and `/mr-open`, and
-reads GitLab through `glab api graphql`, so it uses `glab`'s stored login. It caches each
-session's status and polls every 2 minutes while an open MR is shown, so switching tabs
-reuses cached data until the next poll is due. While Duo reviews an MR, it polls every
-30 seconds.
-
-For a session's open `set_session_target` MR, the plugin also tells the agent about
-reviews. It keeps polling while the session is hidden, but only after the TUI has shown
-that session at least once since it started. Each notification is a queued synthetic
-message that resumes the session, followed by a toast:
-
-- **Duo:** when Duo's review ends as `REVIEWED` or `REQUESTED_CHANGES` (not
-  `APPROVED`). Set the plugin option `notifyDuoReview: false` to turn this off.
-- **Humans:** when there are new comments or replies from people other than you and
-  bots, and none of their comments, new or already announced, has been added or edited
-  for 5 minutes. Any such activity restarts the wait for the whole batch, so expect one
-  message 5 to 7 minutes after the review goes quiet. Approving doesn't suppress them;
-  resolved threads are skipped and don't count as activity. It reads the newest 2,000
-  comments, so on busier MRs, edits to older comments don't count as activity. The first
-  look at an MR records its highest note ID as a baseline, and announced comment IDs are
-  stored per session and MR. Note IDs only grow, so older comments never count as new,
-  even when deletions shift them into the window, and a restart replays nothing but still
-  catches comments posted meanwhile. Two TUIs watching the same session can rarely both
-  notify. Set `notifyHumanReviews: false` to turn this off.
-
-Run its tests with `mise exec bun@1.3.10 -- bun test` from the plugin directory.
-
-`local-plugins/server/session-open` adds the `open_session` tool, which the
-`session-search` skill and the `/search-session` command use to open a past session.
-The tool accepts only sessions of the caller's project: the same project ID, or the same
-resolved directory for sessions outside a repository (project `global`). The service
-can't drive the terminal, so the tool emits an RPC event. Its `tui.tsx` handles the event
-only in the terminal that shows the calling session or one of its ancestors, focuses the
-target's tab (or navigates to it for child sessions or when tabs are off), and replies. The
-tool fails after 3 seconds without a reply. Run its tests with
-`mise exec bun@1.3.10 -- bun test` from the plugin directory.
+- [`gitlab-mr-status`](../../.config/opencode/local-plugins/tui/gitlab-mr-status/README.md)
+  (Work only): shows the session's MR status in the prompt footer and tells the agent
+  about new Duo and human review feedback.
+- [`permission-mode`](../../.config/opencode/local-plugins/tui/permission-mode/README.md):
+  toggles the global permission preference with Shift+Tab.
+- [`session-open`](../../.config/opencode/local-plugins/server/session-open/README.md):
+  adds the `open_session` tool, which focuses a past session of the current project.
+- [`otel-status`](../../.config/opencode/local-plugins/server/otel-status/README.md):
+  shows in the CLI footer whether the collector accepts OTLP requests.
 
 ### Editing local plugins
 
@@ -188,15 +154,9 @@ and `cli.base.json##class.Work` instead. `~/.shellrc/rc.d/opencode.sh` exports i
   on every machine.
 - Open a new shell after editing `cli.base.json` so the environment variable picks it up.
 
-`local-plugins/tui/permission-mode` binds Shift+Tab to toggle the global CLI permission
-preference between `prompt` and `autoaccept`. It also adds `/permission-mode` and a
-palette command. Both `cli.base.json` alternates disable `agent.cycle` to free the
-shortcut; Tab still cycles agents in reverse, and the agent picker remains available.
-The plugin preserves other settings in the untracked `cli.json` and replaces it
-atomically so OpenCode's config watcher reloads it. Other running TUIs also reload the
-preference. The plugin refuses to change it when `--auto` or an inline
-`session.permissions` setting overrides the file. Run its tests with
-`mise exec bun@1.3.10 -- bun test` from the plugin directory.
+Both `cli.base.json` alternates disable `agent.cycle`, so Shift+Tab is free for the
+[`permission-mode`](../../.config/opencode/local-plugins/tui/permission-mode/README.md)
+plugin. Tab still cycles agents in reverse, and the agent picker remains available.
 
 ## Models
 
@@ -253,16 +213,10 @@ OTLP requests to Alloy.
   The plugin's exports then fail with `EHOSTUNREACH`, and the plugin logs only to the
   console, which OpenCode discards. See
   [Local network access on macOS](tmux.md#local-network-access-on-macos).
-- `local-plugins/server/otel-status` sends an empty OTLP metrics export from the background
-  service every 60 seconds (the `intervalSeconds` option) and shows the result in the CLI
-  footer as `● 🔭`. The dot is green when the collector accepts it, red when not, and
-  yellow when the service has no `host.name` in `OPENCODE_RESOURCE_ATTRIBUTES`; the
-  last case also shows a warning toast once per terminal session. `/otel` shows the host
-  or warning and the last error, and runs a check. An accepted empty request doesn't
-  prove that real exports succeed.
-  Its `endpoint` and `protocol` options must match the exporter's in both `opencode.json`
-  alternates. It sends the headers from `OPENCODE_OTLP_HEADERS`, parsed the same way as the
-  exporter, and keeps them out of the status, RPC responses, and `/otel`.
+- The [`otel-status`](../../.config/opencode/local-plugins/server/otel-status/README.md)
+  plugin shows in the CLI footer whether the collector accepts OTLP requests. Its
+  `endpoint` and `protocol` options must match the exporter's in both `opencode.json`
+  alternates.
 
 ### Configure telemetry authentication
 

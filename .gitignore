@@ -21,6 +21,7 @@ Thumbs.db
 .zshrc
 .config/yazi/flavors/gruvbox-dark.yazi
 .config/lazy-mcp/memos-token
+.config/lazy-mcp/grafana-token
 .config/dotfiles/gitlab/
 .config/sesh/caproni.toml
 # OpenCode owns cli.json; the tracked terminal config is cli.base.json.

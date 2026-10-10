@@ -3,6 +3,24 @@
   "requestTimeout": 120000,
 {% endif %}
   "servers": [
+{% if yadm.class == "NAS" %}
+    {
+      "name": "grafana",
+      "description": "Read-only NAS Grafana dashboards, alerts, Prometheus metrics, Loki logs, and Tempo traces",
+      "type": "local",
+      "command": [
+        "mise", "x", "github:grafana/mcp-grafana", "--", "mcp-grafana",
+        "--transport=stdio", "--disable-write",
+        "--enabled-tools=search,datasource,prometheus,loki,tempo,alerting,dashboard,folder,navigation",
+        "--usage-stats=disabled"
+      ],
+      "env": {
+        "GRAFANA_URL": "https://grafana.pombei.ro",
+        "GRAFANA_SERVICE_ACCOUNT_TOKEN_FILE": "${HOME}/.config/lazy-mcp/grafana-token",
+        "GOMEMLIMIT": "192MiB"
+      }
+    },
+{% endif %}
 {% if yadm.class == "Work" %}
     {
       "name": "gitlab",

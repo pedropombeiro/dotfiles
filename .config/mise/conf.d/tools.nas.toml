@@ -1,0 +1,10 @@
+# Tools for the NAS role, independent of its operating system.
+[tools."github:grafana/mcp-grafana"]
+version = "2.0.2"
+lazy = true
+lazy_bins = ["mcp-grafana"]
+exe = "mcp-grafana"
+
+[tools."github:grafana/mcp-grafana".platforms]
+# Select the native CLI archive, not the similarly named MCP bundle assets.
+linux-x64 = { asset_pattern = "mcp-grafana_Linux_x86_64.tar.gz" }

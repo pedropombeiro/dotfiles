@@ -3,7 +3,7 @@ import type { Exec } from "./exec"
 import type { Forge, ReviewRef } from "./forge"
 import { traits, type ForgeCatalog } from "./forges"
 import type { Repository } from "./git"
-import { createTitleLookups } from "./lookups"
+import { createTitleLookups, NUMBER_TTL } from "./lookups"
 
 const repository: Repository = {
   head: "abc",
@@ -55,6 +55,24 @@ describe("createTitleLookups", () => {
     expect((await lookups.branch("/repo"))?.number).toBe("45")
     expect((await lookups.branch("/repo"))?.number).toBe("45")
     expect(calls).toHaveLength(3)
+  })
+
+  test("looks a found number up again once it expires, keeping it if that lookup fails", async () => {
+    let clock = 0
+    const { forges, calls } = catalog(["1", new Error("offline"), "2", undefined])
+    const lookups = createTitleLookups(forges, unused, () => clock)
+    expect((await lookups.branch("/repo"))?.number).toBe("1")
+    clock += NUMBER_TTL - 1
+    expect((await lookups.branch("/repo"))?.number).toBe("1")
+    expect(calls).toHaveLength(1)
+    clock += 1
+    expect((await lookups.branch("/repo"))?.number).toBe("1")
+    // A new PR/MR from the same branch replaces the old one.
+    expect((await lookups.branch("/repo"))?.number).toBe("2")
+    clock += NUMBER_TTL
+    // The forge reports no open PR/MR anymore.
+    expect((await lookups.branch("/repo"))?.number).toBeUndefined()
+    expect(calls).toHaveLength(4)
   })
 
   test("skips checkouts without a supported repository", async () => {

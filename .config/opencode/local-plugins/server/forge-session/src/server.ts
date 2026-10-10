@@ -1,10 +1,13 @@
 import type { Plugin } from "@opencode/plugin"
 import { CONCURRENCY, mapLimit } from "./limit"
 import type { TitleLookups } from "./lookups"
-import { cliOptions } from "./options"
+import { statusOptions } from "./options"
 import { ForgeSessionRpc } from "./rpc"
+import { setupStatus, type Status, type StatusDependencies } from "./status-server"
+import type { Snapshot } from "./store"
 import {
   applyTargetChange,
+  includesRequest,
   MAX_TARGETS,
   parseTargetChange,
   targetOutput,
@@ -49,31 +52,101 @@ function toolResult(targets: readonly Target[], missing: readonly string[]): str
   return lines.join("\n")
 }
 
-// Stores each root session's targets, keeps its title prefix current, and
-// serves the targets to the CLI over RPC.
-export async function setupServer(ctx: Plugin.Context, lookups: TitleLookups) {
+const DISABLED = { enabled: false, snapshot: { loading: false } }
+
+// How long cleanup waits for running title updates. They can't write once
+// cleanup starts, so this only bounds how long their lookups are kept.
+const DRAIN_TIME = 5_000
+
+async function drain(tasks: Promise<unknown>[], limit: number) {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  await Promise.race([
+    Promise.allSettled(tasks),
+    new Promise<void>((resolve) => (timer = setTimeout(resolve, limit))),
+  ])
+  clearTimeout(timer)
+}
+
+// RPC values must be JSON, which has no `undefined`, such as a cleared error.
+const json = (value: unknown) => JSON.parse(JSON.stringify(value)) as never
+
+// Stores each root session's targets, keeps its title prefix current, serves
+// the targets to the CLI over RPC, and, given `status`, watches the PRs/MRs
+// of the sessions that CLIs show.
+export async function setupServer(ctx: Plugin.Context, lookups: TitleLookups, status?: StatusDependencies) {
   const pending = new Map<string, Promise<void>>()
   const controller = new AbortController()
+  // Set when cleanup starts. No title update or target change starts after
+  // it, and one that is running stops before it writes, so it can't
+  // overwrite what the replacement instance stores.
+  let closing = false
+  // The last targets read or written per session, for checks that can't wait
+  // for storage, such as whether a PR/MR is still a target before notifying.
+  const known = new Map<string, Target[]>()
+  // Counts each session's target writes. A read that overlapped a write may
+  // return the old targets, so it doesn't update `known`.
+  const revisions = new Map<string, number>()
+  const revision = (sessionID: string) => revisions.get(sessionID) ?? 0
+  const bump = (sessionID: string) => revisions.set(sessionID, revision(sessionID) + 1)
 
   async function stateFor(sessionID: string): Promise<SessionState> {
+    const started = revision(sessionID)
     const stored = ((await ctx.storage.get(`sessions/${sessionID}`)) as StoredState | undefined) ?? {}
     const targets = Array.isArray(stored.targets) ? stored.targets : stored.target ? [stored.target] : []
+    if (revision(sessionID) === started) known.set(sessionID, targets)
     return { targets, ...(stored.prefix ? { prefix: stored.prefix } : {}) }
   }
 
-  const save = (sessionID: string, state: SessionState) =>
-    ctx.storage.set(`sessions/${sessionID}`, {
-      ...(state.targets.length ? { targets: state.targets } : {}),
-      ...(state.prefix ? { prefix: state.prefix } : {}),
-    })
+  // Bumps the revision before and after the write, so neither a read that
+  // started before it nor one that started while it ran updates `known`.
+  const save = async (sessionID: string, state: SessionState) => {
+    if (closing) throw new Error("The plugin is reloading. Try again.")
+    bump(sessionID)
+    known.set(sessionID, state.targets)
+    try {
+      await ctx.storage.set(`sessions/${sessionID}`, {
+        ...(state.targets.length ? { targets: state.targets } : {}),
+        ...(state.prefix ? { prefix: state.prefix } : {}),
+      })
+    } finally {
+      bump(sessionID)
+    }
+  }
 
+  let watcher: Status | undefined
   const rpc = await ctx.rpc.register(ForgeSessionRpc, {
     target: async (input) => {
       const { sessionID } = input as { sessionID: string }
       return targetOutput((await stateFor(sessionID)).targets)
     },
-    options: async () => cliOptions(ctx.options),
+    watch: async (input) => {
+      const { clientID, keys, visible } = input as { clientID: string; keys: string[]; visible?: string }
+      return watcher
+        ? { enabled: true, statuses: json(watcher.service.watch(clientID, keys, visible)) }
+        : { enabled: false, statuses: {} }
+    },
+    release: async (input) => {
+      watcher?.service.release((input as { clientID: string }).clientID)
+      return {}
+    },
+    refresh: async (input) => {
+      const { key } = input as { key: string }
+      return watcher ? { enabled: true, snapshot: json(await watcher.service.refresh(key)) } : DISABLED
+    },
   })
+
+  const settings = statusOptions(ctx.options)
+  if (status && settings.enabled) {
+    watcher = await setupStatus(ctx, settings, status, {
+      state: stateFor,
+      isTarget: (sessionID, url) => includesRequest(known.get(sessionID) ?? [], url),
+      publish: (key: string, snapshot: Snapshot) =>
+        void rpc.events
+          .emit("status", { directory: ctx.location.directory, key, snapshot: json(snapshot) })
+          .catch(() => {}),
+      notice: (notice) => void rpc.events.emit("notice", json(notice)).catch(() => {}),
+    })
+  }
 
   async function update(sessionID: string): Promise<void> {
     const session = await ctx.session.get({ sessionID })
@@ -94,6 +167,9 @@ export async function setupServer(ctx: Plugin.Context, lookups: TitleLookups) {
       }
     }
 
+    // A branch lookup can outlast cleanup. Its result must not reach the
+    // title or storage, which the replacement instance owns by then.
+    if (closing) return
     const title = reconcileTitle(session.title, prefix, state.prefix)
     if (title !== session.title) await ctx.session.update({ sessionID, title })
     await save(sessionID, { targets: state.targets, ...(prefix ? { prefix } : {}) })
@@ -102,6 +178,7 @@ export async function setupServer(ctx: Plugin.Context, lookups: TitleLookups) {
   // Runs one update at a time per session, so a target change and a turn
   // ending at once can't interleave their reads and writes.
   function schedule(sessionID: string, action = () => update(sessionID)): Promise<void> {
+    if (closing) return Promise.reject(new Error("The plugin is reloading. Try again."))
     const previous = pending.get(sessionID) ?? Promise.resolve()
     const next = previous.then(action)
     const settled = next.catch(() => {})
@@ -168,6 +245,7 @@ export async function setupServer(ctx: Plugin.Context, lookups: TitleLookups) {
           result = applyTargetChange(state.targets, change)
           await inferIssues(result.targets, state.targets)
           await save(sessionID, { targets: result.targets, ...(state.prefix ? { prefix: state.prefix } : {}) })
+          watcher?.targetsChanged(sessionID)
           await rpc.events.emit("targetChanged", { sessionID, ...targetOutput(result.targets) })
           await update(sessionID)
         })
@@ -191,14 +269,36 @@ export async function setupServer(ctx: Plugin.Context, lookups: TitleLookups) {
 
   void (async () => {
     for await (const event of ctx.event.subscribe({ signal: controller.signal })) {
-      if (event.type === "session.renamed" || event.type === "session.execution.succeeded") {
-        void schedule((event.data as { sessionID: string }).sessionID).catch(() => {})
+      const { type } = event as { type: string }
+      const sessionID = (event.data as { sessionID?: string } | undefined)?.sessionID
+      if ((type === "session.renamed" || type === "session.execution.succeeded") && sessionID) {
+        void schedule(sessionID).catch(() => {})
+      }
+      if (type === "session.renamed" && sessionID) void watcher?.titleChanged(sessionID).catch(() => {})
+      if (type === "session.moved" && sessionID) watcher?.sessionMoved(sessionID)
+      if (type === "session.execution.succeeded" || type === "session.execution.failed") watcher?.turnEnded()
+      if (type === "vcs.branch.updated") {
+        const location = (event as { location?: { directory?: string } }).location
+        if (!location?.directory || location.directory === ctx.location.directory) void watcher?.branchChanged().catch(() => {})
       }
     }
-  })().catch(() => {})
+  })().catch((error) => {
+    // Without events, titles and statuses stop following renames, turns, and
+    // branch switches until the plugin reloads.
+    if (controller.signal.aborted) return
+    const reason = error instanceof Error ? error.message : String(error)
+    void rpc.events
+      .emit("notice", { message: `Session title and PR/MR status updates stopped: ${reason}`, variant: "error" })
+      .catch(() => {})
+  })
 
+  // Stops new work, waits for running title updates and target changes, then
+  // stops the status watchers.
   return async () => {
+    closing = true
     controller.abort()
+    await drain([...pending.values()], DRAIN_TIME)
+    await watcher?.dispose()
     await tools.dispose()
     await rpc.dispose()
   }

@@ -21,7 +21,10 @@ function harness(
   const store = createStatusStore({
     ...extra,
     load,
-    onChange: () => changes++,
+    onChange: (key) => {
+      changes++
+      extra.onChange?.(key)
+    },
     now: () => clock,
     setTimer: (callback, delay) => {
       const id = ++nextTimer
@@ -273,6 +276,53 @@ describe("createStatusStore", () => {
     })
     await store.refresh("/a")
     expect(store.get("/a").loading).toBe(false)
+  })
+
+  test("discards a load that started before an invalidation, even when nothing polls", async () => {
+    const resolvers: Array<(lookup: Lookup) => void> = []
+    const loaded: Lookup[] = []
+    const { store } = harness(() => new Promise((done) => resolvers.push(done)), {
+      onLoad: (_key, _previous, next) => void loaded.push(next),
+    })
+    const first = store.refresh("/a")
+    store.invalidate("/a")
+    resolvers[0](found(2))
+    await Bun.sleep(0)
+    expect(loaded).toEqual([])
+    expect(store.get("/a").lookup).toBeUndefined()
+    resolvers[1](found())
+    await first
+    expect(loaded).toEqual([found()])
+  })
+
+  test("loads at once when acquired after an invalidation while nothing polled", async () => {
+    let calls = 0
+    const { store, advance } = harness(async () => (calls++, found()))
+    store.acquire("/a")()
+    await advance(0)
+    expect(calls).toBe(1)
+    store.invalidate("/a")
+    store.acquire("/a")
+    await advance(0)
+    expect(calls).toBe(2)
+  })
+
+  test("numbers every change, starting above any earlier store's revisions", async () => {
+    const { store } = harness(async () => found())
+    const loading = store.refresh("/a")
+    const first = store.get("/a").revision ?? 0
+    await loading
+    expect(store.get("/a").revision).toBeGreaterThan(first)
+    // The harness clock starts at 0. A store created a millisecond later
+    // starts at 1000, above this one's few changes.
+    expect(first).toBeLessThan(1000)
+  })
+
+  test("reports which key changed", async () => {
+    const keys: string[] = []
+    const { store } = harness(async () => found(), { onChange: (key) => void keys.push(key) })
+    await store.refresh("/a")
+    expect(new Set(keys)).toEqual(new Set(["/a"]))
   })
 
   test("reloads after an invalidation during a load", async () => {

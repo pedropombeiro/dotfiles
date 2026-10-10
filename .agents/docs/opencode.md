@@ -119,8 +119,10 @@ Each local plugin documents its behavior, options, and tests in its own README:
   tracks each session's issues or PRs/MRs on GitLab and GitHub, one or several at a time.
   It adds `set_session_target`, prefixes the title, and shows the PR/MR status in the CLI
   footer. GitLab explicit targets also notify the agent about Duo and human review
-  feedback. It merges `opencode-forge-session-title`, whose server IDs it keeps, and the
-  former `forge-review-status`. Never load it alongside either.
+  feedback. The server entry point does the lookups, polling, and notifications for the
+  sessions that CLIs show. The CLI renews leases on those sessions and renders their status.
+  It merges `opencode-forge-session-title`, whose server IDs it keeps, and the former
+  `forge-review-status`. Never load it alongside either.
 - [`session-metrics`](../../.config/opencode/local-plugins/tui/session-metrics/README.md):
   shows compactions, reported cache reuse, and recorded session/descendant timing in
   the sidebar, with a width-aware footer fallback and a details panel.

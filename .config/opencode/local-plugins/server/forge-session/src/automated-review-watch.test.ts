@@ -2,24 +2,28 @@ import { describe, expect, test } from "bun:test"
 import {
   automatedReview,
   createAutomatedReviewWatcher,
-  createNotificationClaim,
   finishedReviews,
   isReviewRunning,
-  NOTIFY_WINDOW,
   notificationKey,
-  recentlyNotified,
-  recordNotification,
   reviewMessage,
   reviewOutcome,
   reviewTitle,
   reviewToast,
-  type NotifiedLog,
+  RETRY_DELAY,
+  type PendingDeliveries,
+  type PendingDelivery,
 } from "./automated-review-watch"
 import type { GitHubPullRequest, GitLabMergeRequest, ReviewRequest } from "./forge"
 import type { Lookup } from "./store"
 
-const mr = (duoReviewState?: string, iid = "4281"): GitLabMergeRequest =>
-  ({ forge: "gitlab", iid, url: `https://gitlab.com/group/project/-/merge_requests/${iid}`, duoReviewState }) as GitLabMergeRequest
+const mr = (duoReviewState?: string, iid = "4281", state = "opened"): GitLabMergeRequest =>
+  ({
+    forge: "gitlab",
+    iid,
+    url: `https://gitlab.com/group/project/-/merge_requests/${iid}`,
+    state,
+    duoReviewState,
+  }) as GitLabMergeRequest
 
 const found = (...requests: ReviewRequest[]): Lookup => ({ kind: "found", explicitTarget: true, requests })
 
@@ -98,85 +102,141 @@ describe("reviewOutcome", () => {
   })
 })
 
-describe("notification log", () => {
-  test("suppresses repeats within the window", () => {
-    const log: NotifiedLog = { sent: {} }
-    const key = notificationKey("ses_1", mr("REVIEWED"))
-    expect(recentlyNotified(log, key, 1_000)).toBe(false)
-    recordNotification(log, key, 1_000)
-    expect(recentlyNotified(log, key, 1_000 + NOTIFY_WINDOW - 1)).toBe(true)
-    expect(recentlyNotified(log, key, 1_000 + NOTIFY_WINDOW)).toBe(false)
-    expect(recentlyNotified(log, notificationKey("ses_2", mr("REVIEWED")), 1_000)).toBe(false)
-  })
-
-  test("prunes old entries", () => {
-    const log: NotifiedLog = { sent: { old: 0 } }
-    recordNotification(log, "new", 2 * 24 * 60 * 60_000)
-    expect(Object.keys(log.sent)).toEqual(["new"])
-  })
-})
-
-describe("createNotificationClaim", () => {
-  test("claims a key once, even before the shared log catches up", () => {
-    const persisted: string[] = []
-    const claim = createNotificationClaim({
-      shared: () => ({ sent: {} }),
-      persist: (key) => persisted.push(key),
-      now: () => 1_000,
-    })
-    expect(claim("a")).toBe(true)
-    expect(claim("a")).toBe(false)
-    expect(claim("b")).toBe(true)
-    expect(persisted).toEqual(["a", "b"])
-  })
-
-  test("respects claims recorded by other TUI instances", () => {
-    const persisted: string[] = []
-    const claim = createNotificationClaim({
-      shared: () => ({ sent: { a: 900 } }),
-      persist: (key) => persisted.push(key),
-      now: () => 1_000,
-    })
-    expect(claim("a")).toBe(false)
-    expect(persisted).toEqual([])
-  })
-})
-
 describe("createAutomatedReviewWatcher", () => {
-  test("notifies once per claimed finished review", () => {
+  interface Options {
+    fail?: boolean
+    targets?: (url: string) => boolean
+    now?: () => number
+    pending?: PendingDeliveries
+  }
+
+  function harness({ fail = false, targets = () => true, now = () => 1_000, pending }: Options = {}) {
     const sent: Array<[string, string[]]> = []
-    const claimed: string[] = []
+    // Stored deliveries, by notification key.
+    const stored = new Map<string, PendingDelivery>(Object.entries(pending ?? {}))
+    const errors: string[] = []
+    const state = { fail }
     const watcher = createAutomatedReviewWatcher({
-      claim: (key) => (claimed.push(key), claimed.length === 1),
-      send: (sessionID, requests) => sent.push([sessionID, requests.map((request) => automatedReview(request)?.label ?? "")]),
+      isTarget: (_sessionID, url) => targets(url),
+      async send(sessionID, requests) {
+        if (state.fail) throw new Error("server busy")
+        sent.push([sessionID, requests.map((request) => `${request.iid} ${automatedReview(request)?.label}`)])
+      },
+      onSendError: (error) => errors.push((error as Error).message),
+      read: async (sessionID) =>
+        Object.fromEntries([...stored].filter(([, delivery]) => delivery.sessionID === sessionID)),
+      write: (sessionID, url, delivery) => {
+        const key = notificationKey(sessionID, { url })
+        if (delivery) stored.set(key, delivery)
+        else stored.delete(key)
+      },
+      now,
     })
-    watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("REQUESTED_CHANGES")))
-    watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("REQUESTED_CHANGES")))
-    expect(claimed).toEqual([notificationKey("ses_1", mr()), notificationKey("ses_1", mr())])
-    expect(sent).toEqual([["ses_1", ["requested changes"]]])
+    return { watcher, sent, stored, errors, state }
+  }
+
+  test("notifies about a review that finished with feedback", async () => {
+    const { watcher, sent } = harness()
+    await watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("REQUESTED_CHANGES")))
+    expect(sent).toEqual([["ses_1", ["4281 requested changes"]]])
+    // The same feedback without a new transition sends nothing.
+    await watcher.observe("ses_1", found(mr("REQUESTED_CHANGES")), found(mr("REQUESTED_CHANGES")))
+    expect(sent).toHaveLength(1)
   })
 
-  test("sends reviews of several targets that finished in one poll together", () => {
-    const sent: string[][] = []
-    const watcher = createAutomatedReviewWatcher({
-      claim: (key) => !key.endsWith("/3"),
-      send: (_sessionID, requests) => sent.push(requests.map((request) => request.iid)),
-    })
-    const before = found(mr("REVIEW_STARTED", "1"), mr("REVIEW_STARTED", "2"), mr("REVIEW_STARTED", "3"), mr("REVIEW_STARTED", "4"))
-    const after = found(mr("REVIEWED", "1"), mr("REVIEW_STARTED", "2"), mr("REVIEWED", "3"), mr("REQUESTED_CHANGES", "4"))
-    watcher.observe("ses_1", before, after)
-    // !2 is still running, and another CLI already claimed !3.
-    expect(sent).toEqual([["1", "4"]])
-    watcher.observe("ses_1", after, found(mr("REVIEWED", "1"), mr("REVIEWED", "2")))
-    expect(sent).toEqual([["1", "4"], ["2"]])
+  test("sends reviews of several targets that finished in one poll together", async () => {
+    const { watcher, sent } = harness()
+    const before = found(mr("REVIEW_STARTED", "1"), mr("REVIEW_STARTED", "2"), mr("REVIEW_STARTED", "3"))
+    const after = found(mr("REVIEWED", "1"), mr("REVIEW_STARTED", "2"), mr("REQUESTED_CHANGES", "3"))
+    await watcher.observe("ses_1", before, after)
+    expect(sent).toEqual([["ses_1", ["1 reviewed", "3 requested changes"]]])
+    await watcher.observe("ses_1", after, found(mr("REVIEWED", "1"), mr("REVIEWED", "2")))
+    expect(sent.at(-1)).toEqual(["ses_1", ["2 reviewed"]])
   })
 
-  test("ignores approvals and running reviews", () => {
-    const sent: string[] = []
-    const watcher = createAutomatedReviewWatcher({ claim: () => true, send: (sessionID) => sent.push(sessionID) })
-    watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("APPROVED")))
-    watcher.observe("ses_1", undefined, found(mr("REVIEW_STARTED")))
+  test("skips PRs/MRs that are no longer targets", async () => {
+    const { watcher, sent } = harness({ targets: (url) => !url.endsWith("/2") })
+    await watcher.observe("ses_1", found(mr("REVIEW_STARTED", "1"), mr("REVIEW_STARTED", "2")), found(mr("REVIEWED", "1"), mr("REVIEWED", "2")))
+    expect(sent).toEqual([["ses_1", ["1 reviewed"]]])
+  })
+
+  test("ignores approvals and running reviews", async () => {
+    const { watcher, sent } = harness()
+    await watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("APPROVED")))
+    await watcher.observe("ses_1", undefined, found(mr("REVIEW_STARTED")))
     expect(sent).toEqual([])
+  })
+
+  test("retries a failed send while the review still has feedback", async () => {
+    let clock = 1_000
+    const { watcher, sent, errors, stored, state } = harness({ fail: true, now: () => clock })
+    await watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("REVIEWED")))
+    expect(errors).toEqual(["server busy"])
+    expect(watcher.hasPending("ses_1")).toBe(true)
+    expect(stored.get(notificationKey("ses_1", mr()))).toMatchObject({ retryAt: 1_000 + RETRY_DELAY })
+
+    state.fail = false
+    clock += RETRY_DELAY - 1
+    await watcher.observe("ses_1", found(mr("REVIEWED")), found(mr("REVIEWED")))
+    expect(sent).toEqual([])
+    clock += 1
+    await watcher.observe("ses_1", found(mr("REVIEWED")), found(mr("REVIEWED")))
+    expect(sent).toEqual([["ses_1", ["4281 reviewed"]]])
+    expect(watcher.hasPending("ses_1")).toBe(false)
+    expect(stored.size).toBe(0)
+  })
+
+  test("drops a pending send once a new review starts or the PR/MR stops being a target", async () => {
+    const key = notificationKey("ses_1", mr())
+    const pending: PendingDeliveries = { [key]: { sessionID: "ses_1", url: mr().url, since: 1_000, retryAt: 0 } }
+    const restarted = harness({ pending })
+    await restarted.watcher.observe("ses_1", found(mr("REVIEWED")), found(mr("REVIEW_STARTED")))
+    expect(restarted.watcher.hasPending("ses_1")).toBe(false)
+    expect(restarted.sent).toEqual([])
+
+    const removed = harness({ pending, targets: () => false })
+    await removed.watcher.observe("ses_1", found(mr("REVIEWED")), found(mr("REVIEWED")))
+    expect(removed.watcher.hasPending("ses_1")).toBe(false)
+    expect(removed.sent).toEqual([])
+  })
+
+  test("ignores reviews of merged or closed PRs/MRs, and drops their pending sends", async () => {
+    const { watcher, sent } = harness()
+    await watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("REVIEWED", "4281", "merged")))
+    expect(sent).toEqual([])
+
+    const key = notificationKey("ses_1", mr())
+    const closed = harness({ pending: { [key]: { sessionID: "ses_1", url: mr().url, since: 1_000, retryAt: 0 } } })
+    await closed.watcher.observe("ses_1", undefined, found(mr("REVIEWED", "4281", "closed")))
+    expect(closed.sent).toEqual([])
+    expect(closed.stored.size).toBe(0)
+  })
+
+  test("reads a session's stored deliveries once, so a removal still queued isn't undone", async () => {
+    let reads = 0
+    const watcher = createAutomatedReviewWatcher({
+      isTarget: () => true,
+      send: async () => {},
+      read: async () => {
+        reads++
+        return {}
+      },
+      now: () => 1_000,
+    })
+    await watcher.observe("ses_1", undefined, found(mr("REVIEWED")))
+    await watcher.observe("ses_1", undefined, found(mr("REVIEWED")))
+    expect(reads).toBe(1)
+    // A session that moved away is read again if it comes back.
+    watcher.forget("ses_1")
+    await watcher.observe("ses_1", undefined, found(mr("REVIEWED")))
+    expect(reads).toBe(2)
+  })
+
+  test("sends a delivery that was pending before a restart", async () => {
+    const key = notificationKey("ses_1", mr())
+    const { watcher, sent } = harness({ pending: { [key]: { sessionID: "ses_1", url: mr().url, since: 1_000, retryAt: 0 } } })
+    await watcher.observe("ses_1", undefined, found(mr("REQUESTED_CHANGES")))
+    expect(sent).toEqual([["ses_1", ["4281 requested changes"]]])
   })
 })
 

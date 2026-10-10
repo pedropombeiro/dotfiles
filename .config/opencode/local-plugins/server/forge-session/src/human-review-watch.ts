@@ -39,14 +39,22 @@ export interface FeedbackLog {
 
 export const feedbackKey = (sessionID: string, request: ReviewRequest) => `${sessionID} ${request.url}`
 
-// Applies a change to a record, creating it if needed, and prunes stale records.
+// The record after a change, creating it if needed.
+export function applyFeedback(record: FeedbackRecord | undefined, change: FeedbackChange, now: number): FeedbackRecord {
+  const announced = [...(record?.announced ?? [])]
+  for (const id of change.announced ?? []) if (!announced.includes(id)) announced.push(id)
+  return { baseline: record?.baseline ?? change.baseline ?? 0, announced, seenAt: now }
+}
+
+// Whether a record is old enough to drop. The next observation starts a fresh
+// baseline, so old comments are never replayed.
+export const isExpired = (record: FeedbackRecord, now: number) => now - record.seenAt > RECORD_RETENTION
+
+// Applies a change to a record in a log, and prunes stale records.
 export function recordFeedback(log: FeedbackLog, key: string, change: FeedbackChange, now: number) {
-  const record = (log.records[key] ??= { baseline: change.baseline ?? 0, announced: [], seenAt: now })
-  const announced = new Set(record.announced)
-  for (const id of change.announced ?? []) if (!announced.has(id)) record.announced.push(id)
-  record.seenAt = now
+  log.records[key] = applyFeedback(log.records[key], change, now)
   for (const [entry, value] of Object.entries(log.records)) {
-    if (now - value.seenAt > RECORD_RETENTION) delete log.records[entry]
+    if (isExpired(value, now)) delete log.records[entry]
   }
 }
 
@@ -104,11 +112,12 @@ export function feedbackToast(request: ReviewRequest, comments: ReviewComment[])
 }
 
 export interface FeedbackWatcherOptions {
-  // The log shared with other TUI instances, which may lag behind local writes.
-  log: () => FeedbackLog
+  // The stored record of a `feedbackKey`, which may lag behind local writes.
+  record: (key: string) => Promise<FeedbackRecord | undefined>
   persist: (key: string, change: FeedbackChange, now: number) => void
   fetch: (sessionID: string, request: ReviewRequest) => Promise<FeedbackSnapshot | undefined>
-  // Whether the request is still the session's target, checked after each fetch.
+  // Whether the request is still the session's target, checked before and
+  // after each fetch.
   current: (sessionID: string, request: ReviewRequest) => boolean
   // Rejects when the session couldn't be told.
   send: (sessionID: string, request: ReviewRequest, comments: ReviewComment[]) => Promise<void>
@@ -119,16 +128,15 @@ export interface FeedbackWatcherOptions {
 
 export function createFeedbackWatcher(options: FeedbackWatcherOptions) {
   const now = options.now ?? Date.now
-  // Local copies of records, which the shared log may not reflect yet.
+  // Local copies of records, which storage may not reflect yet.
   const local = new Map<string, SeenComments>()
   const reserved = new Set<string>()
   const inflight = new Set<string>()
   const fetchedAt = new Map<string, number>()
   const retryAt = new Map<string, number>()
 
-  // Merges the shared and local records. The higher baseline is the safer one.
-  const seen = (key: string): SeenComments | undefined => {
-    const shared = options.log().records[key]
+  // Merges the stored and local records. The higher baseline is the safer one.
+  const seen = (key: string, shared: FeedbackRecord | undefined): SeenComments | undefined => {
     const mine = local.get(key)
     if (!shared && !mine) return undefined
     return {
@@ -147,14 +155,14 @@ export function createFeedbackWatcher(options: FeedbackWatcherOptions) {
   async function observe(sessionID: string, request: ReviewRequest, snapshot: FeedbackSnapshot) {
     if (!snapshot.complete) return
     const key = feedbackKey(sessionID, request)
+    const stored = await options.record(key)
     const at = now()
-    const previous = seen(key)
+    const previous = seen(key, stored)
     if (!previous) return remember(key, { baseline: baselineOf(snapshot) }, at)
     if (at < (retryAt.get(key) ?? 0)) return
     const comments = eligibleFeedback(snapshot, previous, at).filter((comment) => !reserved.has(`${key} ${comment.id}`))
     if (comments.length === 0) {
-      const record = options.log().records[key]
-      if (record && at - record.seenAt > TOUCH_INTERVAL) options.persist(key, {}, at)
+      if (stored && at - stored.seenAt > TOUCH_INTERVAL) options.persist(key, {}, at)
       return
     }
     const ids = comments.map((comment) => comment.id)
@@ -177,6 +185,7 @@ export function createFeedbackWatcher(options: FeedbackWatcherOptions) {
     async check(sessionID: string, request: ReviewRequest): Promise<void> {
       const key = feedbackKey(sessionID, request)
       if (inflight.has(key) || now() - (fetchedAt.get(key) ?? -Infinity) < FETCH_INTERVAL) return
+      if (!options.current(sessionID, request)) return
       inflight.add(key)
       fetchedAt.set(key, now())
       try {

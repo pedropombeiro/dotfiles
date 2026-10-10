@@ -18,7 +18,11 @@ export type Lookup =
       failed?: { url: string; reason: string }[]
     }
 
+// `revision` grows with every change, and across server reloads, so a client
+// that gets snapshots over several channels, such as RPC responses and
+// events, can keep the newest one.
 export interface Snapshot {
+  revision?: number
   lookup?: Lookup
   fetchedAt?: number
   error?: { kind: ErrorKind; message: string; at: number }
@@ -26,10 +30,11 @@ export interface Snapshot {
 }
 
 export interface StoreOptions {
-  load: (directory: string) => Promise<Lookup>
-  onChange: () => void
+  load: (key: string) => Promise<Lookup>
+  // Receives the key whose snapshot changed.
+  onChange: (key: string) => void
   // Called after each successful load with the lookup it replaced.
-  onLoad?: (directory: string, previous: Lookup | undefined, next: Lookup) => void
+  onLoad?: (key: string, previous: Lookup | undefined, next: Lookup) => void
   // Receives errors thrown by `onLoad`, which would otherwise be swallowed.
   onLoadError?: (error: unknown) => void
   // Lookups that match poll at `activeInterval` instead of `interval`.
@@ -49,7 +54,10 @@ interface Entry {
   refs: number
   failures: number
   inflight?: Promise<Snapshot>
+  // The running load started before a change, so its result is discarded.
   invalidated?: boolean
+  // A change happened while nothing polled, so the next acquire loads at once.
+  stale?: boolean
   timer?: unknown
 }
 
@@ -62,19 +70,22 @@ export function createStatusStore(options: StoreOptions) {
   const minEventInterval = options.minEventInterval ?? 15_000
   const entries = new Map<string, Entry>()
   let disposed = false
+  // Starts at the store's creation time in microseconds, so a store created
+  // later, such as after a reload, starts above every revision of this one.
+  let revision = now() * 1000
 
-  const entry = (directory: string) => {
-    let value = entries.get(directory)
+  const entry = (key: string) => {
+    let value = entries.get(key)
     if (!value) {
       value = { snapshot: { loading: false }, refs: 0, failures: 0 }
-      entries.set(directory, value)
+      entries.set(key, value)
     }
     return value
   }
 
-  const update = (value: Entry, patch: Partial<Snapshot>) => {
-    value.snapshot = { ...value.snapshot, ...patch }
-    if (!disposed) options.onChange()
+  const update = (key: string, value: Entry, patch: Partial<Snapshot>) => {
+    value.snapshot = { ...value.snapshot, ...patch, revision: ++revision }
+    if (!disposed) options.onChange(key)
   }
 
   const cancelTimer = (value: Entry) => {
@@ -91,7 +102,7 @@ export function createStatusStore(options: StoreOptions) {
   const lastAttempt = (value: Entry) =>
     Math.max(value.snapshot.fetchedAt ?? -Infinity, value.snapshot.error?.at ?? -Infinity)
 
-  const schedule = (directory: string, value: Entry, delay = pollDelay(value)) => {
+  const schedule = (key: string, value: Entry, delay = pollDelay(value)) => {
     cancelTimer(value)
     if (disposed || value.refs === 0) return
     const lookup = value.snapshot.lookup
@@ -100,26 +111,29 @@ export function createStatusStore(options: StoreOptions) {
     if (!value.snapshot.error && (lookup?.kind !== "found" || lookup.requests.length === 0)) return
     value.timer = setTimer(() => {
       value.timer = undefined
-      void refresh(directory)
+      void refresh(key)
     }, delay)
   }
 
-  function refresh(directory: string): Promise<Snapshot> {
+  function refresh(key: string): Promise<Snapshot> {
     if (disposed) return Promise.resolve({ loading: false })
-    const value = entry(directory)
+    const value = entry(key)
     if (value.inflight) return value.inflight
-    update(value, { loading: true })
+    value.stale = false
+    update(key, value, { loading: true })
     value.inflight = options
-      .load(directory)
+      .load(key)
       .then(
         (lookup) => {
-          if (disposed) return
+          // A load that started before a change, such as new session targets,
+          // describes the old state. It must not reach the watchers.
+          if (disposed || value.invalidated) return
           const previous = value.snapshot.lookup
           value.failures = 0
-          update(value, { lookup, fetchedAt: now(), error: undefined, loading: false })
+          update(key, value, { lookup, fetchedAt: now(), error: undefined, loading: false })
           // A failing callback must not leave the load in flight forever.
           try {
-            if (!disposed) options.onLoad?.(directory, previous, lookup)
+            if (!disposed) options.onLoad?.(key, previous, lookup)
           } catch (error) {
             try {
               options.onLoadError?.(error)
@@ -127,10 +141,10 @@ export function createStatusStore(options: StoreOptions) {
           }
         },
         (error: unknown) => {
-          if (disposed) return
+          if (disposed || value.invalidated) return
           value.failures++
           const known = error instanceof ForgeError
-          update(value, {
+          update(key, value, {
             loading: false,
             error: {
               kind: known ? error.kind : "request",
@@ -144,27 +158,27 @@ export function createStatusStore(options: StoreOptions) {
         value.inflight = undefined
         if (value.invalidated && !disposed) {
           value.invalidated = false
-          return refresh(directory)
+          return refresh(key)
         }
-        schedule(directory, value)
+        schedule(key, value)
         return value.snapshot
       })
     return value.inflight
   }
 
   return {
-    get(directory: string): Snapshot {
-      return entries.get(directory)?.snapshot ?? { loading: false }
+    get(key: string): Snapshot {
+      return entries.get(key)?.snapshot ?? { loading: false }
     },
-    acquire(directory: string): () => void {
-      const value = entry(directory)
+    acquire(key: string): () => void {
+      const value = entry(key)
       value.refs++
       // Showing a session again, such as on a tab switch, reuses cached data
       // until the next poll would have been due, and resumes that poll schedule.
       if (value.refs === 1 && !value.inflight) {
         const remaining = lastAttempt(value) + pollDelay(value) - now()
-        if (remaining <= 0) void refresh(directory)
-        else schedule(directory, value, remaining)
+        if (value.stale || remaining <= 0) void refresh(key)
+        else schedule(key, value, remaining)
       }
       let released = false
       return () => {
@@ -178,21 +192,23 @@ export function createStatusStore(options: StoreOptions) {
     keys(): string[] {
       return [...entries.keys()]
     },
-    // Refreshes a directory that is being displayed, unless it was fetched moments ago.
-    notify(directory: string) {
-      const value = entries.get(directory)
+    // Refreshes a key that something polls, unless it was fetched moments ago.
+    notify(key: string) {
+      const value = entries.get(key)
       if (!value || value.refs === 0 || value.inflight) return
       const last = Math.max(value.snapshot.fetchedAt ?? 0, value.snapshot.error?.at ?? 0)
       if (now() - last < minEventInterval) return
-      void refresh(directory)
+      void refresh(key)
     },
-    // Forces a refresh after a known state change, such as a branch switch.
-    invalidate(directory: string) {
-      const value = entries.get(directory)
-      if (!value || value.refs === 0) return
-      // A load that started before the change may describe the previous branch.
+    // Forces a refresh after a known state change, such as a branch switch or
+    // new session targets. A load that started before the change is discarded,
+    // even when nothing polls the key anymore.
+    invalidate(key: string) {
+      const value = entries.get(key)
+      if (!value) return
       if (value.inflight) value.invalidated = true
-      else void refresh(directory)
+      else if (value.refs > 0) void refresh(key)
+      else value.stale = true
     },
     dispose() {
       disposed = true

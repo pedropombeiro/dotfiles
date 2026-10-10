@@ -75,60 +75,109 @@ export function reviewToast(requests: ReviewRequest[]) {
   return { title: reviewTitle(requests), message: `${outcome}. Sent to the agent.` }
 }
 
-export interface NotifiedLog {
-  // Notification key to the time it was sent, in milliseconds.
-  sent: Record<string, number>
+// A failed send is retried after this long, while the review still has feedback.
+export const RETRY_DELAY = 10 * 60_000
+// A delivery that keeps failing is dropped after this long.
+const PENDING_RETENTION = 24 * 60 * 60_000
+
+export const notificationKey = (sessionID: string, request: { url: string }) => `${sessionID} ${request.url}`
+
+// A review that finished with feedback but couldn't be sent yet.
+export interface PendingDelivery {
+  sessionID: string
+  url: string
+  since: number
+  retryAt: number
 }
 
-// Other TUI instances watching the same session see the same transition, so a
-// recent notification for the session and request suppresses a repeat. The
-// window is shorter than a fresh review, so a later re-review still notifies.
-export const NOTIFY_WINDOW = 5 * 60_000
-const RETENTION = 24 * 60 * 60_000
+// Pending deliveries keyed by `notificationKey`.
+export type PendingDeliveries = Record<string, PendingDelivery>
 
-export const notificationKey = (sessionID: string, request: ReviewRequest) => `${sessionID} ${request.url}`
-
-export const recentlyNotified = (log: NotifiedLog, key: string, now: number) =>
-  now - (log.sent[key] ?? -Infinity) < NOTIFY_WINDOW
-
-export function recordNotification(log: NotifiedLog, key: string, now: number) {
-  log.sent[key] = now
-  for (const [entry, at] of Object.entries(log.sent)) if (now - at > RETENTION) delete log.sent[entry]
-}
-
-export interface ClaimOptions {
-  // The log shared with other TUI instances, which may lag behind local writes.
-  shared: () => NotifiedLog
-  persist: (key: string, now: number) => void
+export interface AutomatedReviewWatcherOptions {
+  // Whether the PR/MR is one of the session's targets right now.
+  isTarget: (sessionID: string, url: string) => boolean
+  // Rejects when the session couldn't be told.
+  send: (sessionID: string, requests: ReviewRequest[]) => Promise<void>
+  onSendError?: (error: unknown, sessionID: string, requests: ReviewRequest[]) => void
+  // The session's stored pending deliveries, read the first time this
+  // instance observes the session, which may have moved here from another
+  // checkout. From then on this instance is their only writer.
+  read?: (sessionID: string) => Promise<PendingDeliveries>
+  // Stores one delivery, or removes it when `delivery` is undefined. Each
+  // delivery is its own record, so instances that share storage never
+  // overwrite each other's.
+  write?: (sessionID: string, url: string, delivery: PendingDelivery | undefined) => void
   now?: () => number
 }
 
-// Returns a synchronous check-and-record, so two transitions in the same tick
-// can't both pass the check before either is recorded.
-export function createNotificationClaim(options: ClaimOptions) {
-  const now = options.now ?? Date.now
-  const local: NotifiedLog = { sent: {} }
-  return (key: string): boolean => {
-    const at = now()
-    if (recentlyNotified(local, key, at) || recentlyNotified(options.shared(), key, at)) return false
-    recordNotification(local, key, at)
-    options.persist(key, at)
-    return true
-  }
-}
+export type AutomatedReviewWatcher = ReturnType<typeof createAutomatedReviewWatcher>
 
-export interface AutomatedReviewWatcherOptions {
-  claim: (key: string) => boolean
-  // Receives every claimed review that finished in one poll.
-  send: (sessionID: string, requests: ReviewRequest[]) => void
-}
+const isOpen = (request: ReviewRequest) => request.state === "opened"
 
-// Notifies a session when automated reviews of its targets finish with feedback.
+// Notifies a session when automated reviews of its open targets finish with
+// feedback. Reviews that finish in the same poll share one message. A failed
+// send stays pending and is retried while the review still has feedback,
+// because the review won't finish again to trigger another notification.
 export function createAutomatedReviewWatcher(options: AutomatedReviewWatcherOptions) {
+  const now = options.now ?? Date.now
+  // The pending deliveries of each session this instance has observed.
+  const known = new Map<string, PendingDeliveries>()
+  const sending = new Set<string>()
+
+  const write = (sessionID: string, url: string, delivery?: PendingDelivery) => options.write?.(sessionID, url, delivery)
+
   return {
-    observe(sessionID: string, previous: Lookup | undefined, next: Lookup) {
-      const claimed = finishedReviews(previous, next).filter((request) => options.claim(notificationKey(sessionID, request)))
-      if (claimed.length) options.send(sessionID, claimed)
+    async observe(sessionID: string, previous: Lookup | undefined, next: Lookup): Promise<void> {
+      const pending = known.get(sessionID) ?? { ...(await options.read?.(sessionID)) }
+      known.set(sessionID, pending)
+      const at = now()
+      // Merged or closed PRs/MRs need no more work, even with feedback.
+      const targets = requests(next).filter((request) => isOpen(request) && options.isTarget(sessionID, request.url))
+
+      // A pending delivery ends once its PR/MR is no longer an open target,
+      // its review no longer has feedback, such as when a new review starts,
+      // or it has failed for too long.
+      for (const [key, entry] of Object.entries(pending)) {
+        const request = targets.find((target) => target.url === entry.url)
+        if (request && automatedReview(request)?.state === "feedback" && at - entry.since < PENDING_RETENTION) continue
+        if (sending.has(key)) continue
+        delete pending[key]
+        write(sessionID, entry.url)
+      }
+
+      const finished = finishedReviews(previous, next).filter(
+        (request) => isOpen(request) && options.isTarget(sessionID, request.url),
+      )
+      const due = targets.filter((request) => (pending[notificationKey(sessionID, request)]?.retryAt ?? Infinity) <= at)
+      const batch = [...new Map([...finished, ...due].map((request) => [request.url, request])).values()].filter(
+        (request) => !sending.has(notificationKey(sessionID, request)),
+      )
+      if (batch.length === 0) return
+
+      const keys = batch.map((request) => notificationKey(sessionID, request))
+      for (const key of keys) sending.add(key)
+      try {
+        await options.send(sessionID, batch)
+        batch.forEach((request, index) => {
+          delete pending[keys[index]]
+          write(sessionID, request.url)
+        })
+      } catch (error) {
+        const retryAt = now() + RETRY_DELAY
+        batch.forEach((request, index) => {
+          const key = keys[index]
+          pending[key] = { sessionID, url: request.url, since: pending[key]?.since ?? at, retryAt }
+          write(sessionID, request.url, pending[key])
+        })
+        options.onSendError?.(error, sessionID, batch)
+      } finally {
+        for (const key of keys) sending.delete(key)
+      }
     },
+    // Whether the session has a delivery to retry, so its status keeps polling.
+    hasPending: (sessionID: string) => Object.keys(known.get(sessionID) ?? {}).length > 0,
+    // Drops what this instance knows about a session that moved away, so its
+    // deliveries are read again if it comes back.
+    forget: (sessionID: string) => void known.delete(sessionID),
   }
 }

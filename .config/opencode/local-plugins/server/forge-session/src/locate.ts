@@ -1,14 +1,16 @@
-import type { ReviewRef, ReviewRequest } from "./forge"
+import type { ReviewRequest } from "./forge"
 import { parseUrl, traits, type ForgeCatalog } from "./forges"
 import { CONCURRENCY, mapLimit } from "./limit"
 import type { Lookup } from "./store"
-import type { SessionTarget } from "./target"
+import { sameRef, type SessionTarget } from "./target"
 
 export interface Hints {
   directory: string
   // The session's explicit targets, stored by set_session_target.
   targets?: SessionTarget[]
-  // The session title, or just its managed prefix, such as `[#12, !45]`.
+  // The session title without the prefix this plugin wrote, so only a
+  // reference that the user wrote, such as `[!45]`, counts. A branch prefix
+  // the plugin wrote would otherwise outlive the branch's PR/MR.
   title?: string
   // The session's previous lookup, which stands in for a target whose lookup
   // fails, so a passing error doesn't look like a change of review state.
@@ -16,9 +18,6 @@ export interface Hints {
 }
 
 const UNRESOLVED = "Explicit PR/MR target could not be resolved"
-
-const sameRef = (a: ReviewRef, b: ReviewRef) =>
-  a.forge === b.forge && a.host === b.host && a.iid === b.iid && a.project.toLowerCase() === b.project.toLowerCase()
 
 type Outcome = { request: ReviewRequest } | { missing: string } | { error: unknown }
 
@@ -50,8 +49,14 @@ async function locateTargets(forges: ForgeCatalog, directory: string, targets: S
   let error: unknown
   outcomes.forEach((outcome, index) => {
     const { ref, url } = requests[index]
-    if ("request" in outcome) return void found.push(outcome.request)
-    if ("missing" in outcome) return void failed.push({ url, reason: outcome.missing })
+    if ("request" in outcome) {
+      found.push(outcome.request)
+      return
+    }
+    if ("missing" in outcome) {
+      failed.push({ url, reason: outcome.missing })
+      return
+    }
     error ??= outcome.error
     const last = earlier.find((request) => {
       const parsed = parseUrl(request.url)

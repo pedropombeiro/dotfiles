@@ -115,21 +115,42 @@ export function classifyError(message: string, code: number): ForgeError {
   return new ForgeError("request", text.split("\n")[0])
 }
 
-export type GraphQL = (host: string, query: string, variables: Record<string, string>) => Promise<any>
+// The `data` of a GraphQL response. Each query casts its fields to the node
+// types it requested.
+export type GraphQLData = Record<string, any>
+
+export type GraphQL = (host: string, query: string, variables: Record<string, string>) => Promise<GraphQLData>
+
+interface GraphQLResponse {
+  data?: GraphQLData | null
+  errors?: { message?: unknown }[]
+}
+
+const isResponse = (body: unknown): body is GraphQLResponse =>
+  typeof body === "object" &&
+  body !== null &&
+  (!("errors" in body) || Array.isArray((body as GraphQLResponse).errors)) &&
+  (!("data" in body) || typeof (body as GraphQLResponse).data === "object")
 
 export function glabGraphQL(run: Exec, cwd: string): GraphQL {
   return async (host, query, variables) => {
     const args = ["api", "graphql", "--hostname", host, "-f", `query=${query}`]
     for (const [name, value] of Object.entries(variables)) args.push("-f", `${name}=${value}`)
     const result = await run("glab", args, cwd)
-    let body: any
+    let body: unknown
     try {
       body = JSON.parse(result.stdout)
     } catch {
       throw classifyError(result.stderr, result.code)
     }
-    if (body?.errors?.length && !body.data) throw classifyError(String(body.errors[0]?.message ?? ""), result.code)
-    if (result.code !== 0 && !body?.data) throw classifyError(result.stderr, result.code)
+    if (!isResponse(body)) throw classifyError(result.stderr || "Unexpected GitLab response", result.code)
+    // GitLab returns `null` for a field that failed, next to the error, and
+    // for a project or MR that doesn't exist, without one. Only the second is
+    // a missing PR/MR. Any error, or a failed command, fails the whole lookup,
+    // so a timeout is retried instead of reported as no MR.
+    if (body.errors?.length) throw classifyError(String(body.errors[0]?.message ?? ""), result.code)
+    if (result.code !== 0) throw classifyError(result.stderr, result.code)
+    if (!body.data) throw classifyError("GitLab returned no data", result.code)
     return body.data
   }
 }

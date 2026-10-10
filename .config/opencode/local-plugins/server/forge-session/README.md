@@ -9,12 +9,31 @@ It merges two plugins, which it replaces:
 
 - The published [`opencode-forge-session-title`](https://www.npmjs.com/package/opencode-forge-session-title)
   1.3.0, which became the server entry point, `index.ts`.
-- The local `forge-review-status`, which became the CLI entry point, `tui.tsx`.
+- The local `forge-review-status`, whose footer became the CLI entry point, `tui.tsx`. Its
+  lookups and review watchers moved to the server.
+
+The server entry point owns session targets, title prefixes, forge lookups, polling, and
+notification delivery. The CLI entry point holds its leases on the sessions it has shown,
+their latest snapshots, and each directory's settings. It renders the status that the server
+serves and shows its notices as toasts.
 
 Both `opencode.json` alternates load it as `./local-plugins/server/forge-session`. OpenCode
 then loads `tui.tsx` in the CLI, so `cli.base.json` has no entry for it. It is a local trial;
 once the design settles, it can be published from
 [`opencode-plugins`](https://github.com/pedropombeiro/opencode-plugins).
+
+## Requirements
+
+- [`glab`](https://gitlab.com/gitlab-org/cli) for GitLab and [`gh`](https://cli.github.com/)
+  for GitHub, on the `PATH` of the OpenCode server. Each is only needed for its forge.
+- Each CLI logged in to every host it's used for: `glab auth login --hostname <host>` and
+  `gh auth login --hostname <host>`. The plugin uses their credentials and has none of its
+  own.
+- For self-managed GitLab hosts not named `gitlab.*`, and for GitHub Enterprise, the
+  `hosts` and `githubHosts` [options](#options).
+
+Without a forge CLI, titles still follow targets and branches, and `/forge-status` reports
+what's missing, such as `glab is not installed`.
 
 ## Session targets
 
@@ -83,6 +102,10 @@ Without an explicit target, the title follows the checked-out branch:
 The title is reconciled after target changes, title changes, and successful agent runs.
 Text you add to the title, including your own bracketed prefixes, is kept.
 
+Branch names longer than 40 characters are shortened with an ellipsis in the prefix. Titles
+stay within 100 characters by shortening the text after the prefix, never the prefix
+itself, so the plugin can still find and replace its prefix later.
+
 The default branch and branches named `main`, `master`, `develop`, or `HEAD` get no prefix.
 
 The branch's remote, pushed branch name, and forge come from the same repository discovery
@@ -100,18 +123,28 @@ forks, and classifies hosts with the `hosts` and `githubHosts` options.
 
 ## Status footer
 
-The CLI picks each session's PR/MR in this order:
+The server picks each session's PRs/MRs in this order:
 
-1. The explicit targets, read from the server over RPC.
-1. A PR/MR number in the title prefix, such as `!456` in `[#123, !456]`.
+1. The explicit targets.
+1. A PR/MR number in a title prefix that you wrote, such as `!456` in `[!456] Review`.
 1. The checked-out branch's open PRs/MRs.
+
+A prefix that the plugin wrote from the branch doesn't count as a title reference, so the
+footer follows the branch when its PR/MR closes and another opens. The title prefix itself
+reuses a branch's PR/MR number for up to 10 minutes.
 
 Explicit targets that aren't PRs/MRs, such as issues, show no status. Unresolved explicit
 PRs/MRs never fall back to the branch.
 
-The CLI looks up several targets four at a time. When some lookups fail, the footer shows
-the others and counts the failures as `N unavailable`. A target whose lookup failed with an
-error keeps its previous status until a later poll succeeds.
+The server runs at most four `glab` or `gh` commands at once for status and review
+feedback, across all sessions. When some target lookups fail, the footer shows the others
+and counts the failures as `N unavailable`. A target whose lookup failed with an error
+keeps its previous status until a later poll succeeds. A GitLab response that reports an
+error counts as a failed lookup, never as a missing MR, so it's retried with backoff.
+
+When the CLI can't reach the server, such as while the server plugin reloads, the footer
+keeps the last status and marks it `stale`. The CLI never looks PRs/MRs up itself, so it
+can't show another project's PR/MR with the same number as a target.
 
 With several PR/MR targets, the footer shows counts instead of one PR/MR's status, such as
 `5 MRs · 🤖 2 reviewing · 1 CI failed · 1 conflict · 1 merged`. Clicking it opens the
@@ -133,15 +166,53 @@ opens the status dialog. These commands are also available from the command pale
   `/mr-status` and `/pr-status`.
 - `/forge-open` opens the PR/MR in the browser. Aliases: `/mr-open` and `/pr-open`.
 
-The CLI caches each session's status and polls every 2 minutes while an open PR/MR is
-shown, or every 30 seconds while an automated review runs.
+The server caches each session's status and polls every 2 minutes while a CLI shows an open
+PR/MR, or every 30 seconds while an automated review runs. Each change reaches the CLIs as
+an RPC event.
+
+### Which sessions the server watches
+
+The server watches only sessions that a CLI has shown since it started. The CLI renews a
+lease on each of them every minute, and a lease that isn't renewed for 3 minutes ends, such
+as after the CLI exits. A session keeps polling while it's on screen in any CLI. A hidden
+session with a lease keeps polling while it has a running automated review, human feedback
+to watch, or a notification to retry.
+
+A hidden session that the server hasn't looked up yet, such as after the server plugin
+reloads, is looked up once to find out whether it has reviews to watch. A target change
+also looks up a hidden session that isn't polling.
+
+Each checkout's server plugin instance watches only the sessions in that checkout. When a
+session moves to another worktree, the CLI moves its lease to that checkout's instance. The
+old instance stops watching the session, even if another CLI still leases it there. Before
+each notification, the server reads the session again, so a session that moved while a
+lookup or fetch ran is left to its new checkout. A review that finishes during the move can
+go unannounced, because the new instance never saw it running. If the session can't be
+read, the notification is retried later instead of being dropped.
+
+After that read, the server checks the targets again and writes the message for the
+PRs/MRs that are still targets. A target removed in the meantime isn't mentioned.
+
+When the server plugin stops, such as on a reload, no new lookup, fetch, notification,
+title update, or target change starts, and queued `glab` and `gh` commands don't run. A
+title update that is still looking up its branch doesn't rename the session or store
+anything, because the replacement instance owns the session's state by then. Notifications that were already
+being sent can finish and store their outcome, so the replacement instance doesn't send
+them again. Cleanup waits up to 5 seconds for them. One that takes longer may be sent again.
 
 ## Review notifications
 
-For each explicit target that is an open PR/MR, the CLI tells the agent about reviews. Each
-notification is a queued synthetic message that resumes the session, followed by a toast.
+For each explicit target that is an open PR/MR, the server tells the agent about reviews.
+A target that merges or closes gets no more notifications, and a notification waiting for a
+retry is dropped.
+Each notification is a queued synthetic message, followed by a toast in the CLIs that have
+shown the session. The message resumes the session unless `resumeSession` is `false`.
 Messages include the full URL of each PR/MR. PRs/MRs from the title or the branch don't get
 notifications.
+
+Before it sends a notification, the server checks that the PR/MR is still one of the
+session's targets. A lookup that started before the targets changed is discarded, so a
+removed target never triggers a notification.
 
 | Notification | GitLab | GitHub |
 | --- | --- | --- |
@@ -149,10 +220,10 @@ notifications.
 | New human review feedback | MR comments | Not supported |
 
 - **Automated reviews**: Duo's final state of `REVIEWED` or `REQUESTED_CHANGES` asks the
-  agent to read its comments. Other final states, such as `APPROVED`, send nothing. The CLI
-  notifies only when it sees a review go from running to finished, so a review that
-  finished before the CLI first saw it running isn't announced. Reviews that finish in the
-  same poll share one message.
+  agent to read its comments. Other final states, such as `APPROVED`, send nothing. The
+  server notifies only when it sees a review go from running to finished, so a review that
+  finished before the server first saw it running isn't announced. Reviews that finish in
+  the same poll share one message.
 - **Human reviews**: new comments and replies from people other than you and bots are
   announced once none of their unresolved comments has changed for 5 minutes. Expect one
   message 5 to 7 minutes after the review goes quiet. Resolved threads are skipped.
@@ -161,16 +232,16 @@ The first look at a PR/MR records its newest comment as a baseline, so older com
 count as new. Announced comments are stored per session and PR/MR, so a restart replays
 nothing but still catches comments posted in the meantime.
 
-Polling continues while the session is hidden, but only after the CLI has shown that session
-at least once since it started. It stops when every target PR/MR merges or closes, or the
-session's targets change.
+A failed send shows an error toast and is retried after 10 minutes. A failed automated
+review notification stays pending in the server's storage, so it's retried even after a
+restart, as long as the review still has feedback and the PR/MR is still an open target.
 
-Limitations:
+Every checkout's server plugin instance shares the plugin's storage, so each baseline and
+each pending notification has its own storage key. Instances never overwrite each other's
+records. A failed storage write shows an error toast once.
 
-- On GitLab, the CLI reads the newest 2,000 comments. On busier MRs, edits to older comments
-  don't count as activity.
-- Two CLIs that watch the same session can occasionally both send a notification.
-- A failed send shows an error toast and is retried after 10 minutes.
+On GitLab, the server reads the newest 2,000 comments. On busier MRs, edits to older
+comments don't count as activity.
 
 ## Options
 
@@ -183,19 +254,19 @@ Set options with the object form of the `plugins` entry in `opencode.json`:
 }
 ```
 
-| Option | Default | Used by | Description |
-| --- | --- | --- | --- |
-| `reviewStatus` | `true` | CLI | Show the PR/MR status and notify the agent about reviews. Set to `false` to keep only session targets and titles. |
-| `hosts` | `["gitlab.com"]` | Both | GitLab hosts whose remotes are recognized, besides hosts named `gitlab.*`. |
-| `githubHosts` | `["github.com"]` | Both | GitHub hosts, including GitHub Enterprise hosts. |
-| `pollSeconds` | `120` | CLI | Normal polling interval. Running automated reviews poll at 30 seconds or this value, whichever is lower. |
-| `notifyAutomatedReviews` | `true` | CLI | Tell the agent when an automated review finishes with feedback. The former name, `notifyDuoReview`, still works. |
-| `notifyHumanReviews` | `true` | CLI | Tell the agent about new human review feedback. |
+| Option | Default | Description |
+| --- | --- | --- |
+| `reviewStatus` | `true` | Show the PR/MR status and notify the agent about reviews. Set to `false` to keep only session targets and titles. |
+| `hosts` | `["gitlab.com"]` | GitLab hosts whose remotes are recognized, besides hosts named `gitlab.*`. |
+| `githubHosts` | `["github.com"]` | GitHub hosts, including GitHub Enterprise hosts. |
+| `pollSeconds` | `120` | Normal polling interval. Running automated reviews poll at 30 seconds or this value, whichever is lower. |
+| `notifyAutomatedReviews` | `true` | Tell the agent when an automated review finishes with feedback. The former name, `notifyDuoReview`, still works. |
+| `notifyHumanReviews` | `true` | Tell the agent about new human review feedback. |
+| `resumeSession` | `true` | Resume the session when telling the agent about a review. Set to `false` to queue the message for the session's next turn instead. |
 
-The CLI entry point reads its options from the server over RPC, because OpenCode passes
-the `opencode.json` options to the server entry point. It uses the options of the location
-the CLI started in, and reads them only when it loads, so restart the CLI after changing
-them. If the server doesn't answer, the CLI falls back to its own options and the defaults.
+The server entry point reads every option, so changing one takes effect when the server
+plugin reloads. The CLI has no options of its own. Each checkout's server reads the
+options for its location, so the CLI can show status in one project and not in another.
 
 ### Keep only session titles
 
@@ -209,8 +280,8 @@ To keep the behavior of `opencode-forge-session-title` alone, turn off review st
 ```
 
 The server still registers `set_session_target`, adds the agent guidance, and maintains the
-title prefix. The CLI entry point then registers nothing: no footer, no `/forge-status` or
-`/forge-open`, no polling, and no review notifications.
+title prefix. It doesn't poll or send review notifications, and the CLI shows no footer.
+`/forge-status` and `/forge-open` explain that the status is off.
 
 ## RPC
 
@@ -220,22 +291,35 @@ uses, defined in `src/rpc.ts`:
 - `target({ sessionID })` returns `{ url, issueUrl?, targets }` for explicit targets, and
   `{}` in branch mode. `targets` lists every target as `{ url, issueUrl? }`. `url` and
   `issueUrl` describe the first target, for callers that expect a single target.
-- `options({})` returns the CLI entry point's options from the `opencode.json` entry.
+- `watch({ clientID, keys, visible? })` renews the caller's leases on `keys` and returns
+  `{ enabled, statuses }`. A key is a session ID, or `""` for the checkout outside a
+  session. `visible` is the key on screen.
+- `release({ clientID })` drops the caller's leases.
+- `refresh({ key })` looks the key up now and returns `{ enabled, snapshot }`.
 - `targetChanged` fires after `set_session_target` runs, with the same fields as `target`
   and the `sessionID`. It has only the `sessionID` in branch mode.
+- `status` fires with `{ directory, key, snapshot }` when a key's status changes.
+- `notice` fires with `{ sessionID?, title?, message, variant }` for the CLIs to show as a
+  toast.
+
+Keys are relative to the location of the call or event, because each checkout's server
+plugin instance watches its own sessions.
 
 ## Migration from the separate plugins
 
 | Entry point | Plugin ID | Stored state |
 | --- | --- | --- |
-| Server | `opencode-forge-session-title` | Session targets and owned title prefixes, carried over |
-| CLI | `pedropombeiro.forge-session` | Notification records and human-review baselines |
+| Server | `opencode-forge-session-title` | Session targets, owned title prefixes, human-review baselines, and pending notifications |
+| CLI | `pedropombeiro.forge-session` | None |
 
 The server keeps `opencode-forge-session-title`'s plugin and RPC IDs, so stored targets
 carry over. It reads a session's single stored `target` as a list of one, and writes
-`targets` from the next change on. The CLI entry point has its own ID, so it started without
-`forge-review-status`'s records. Each MR it watches records a new baseline on first look,
-so comments posted before then aren't announced.
+`targets` from the next change on.
+
+Review records started over when the watchers moved to the server, and the CLI's former
+records are unused. The server's own first records, a single log per kind, are removed on
+setup in favor of one key per record. Each PR/MR the server watches records a new baseline on first look, so
+comments posted before then aren't announced.
 
 Never load this plugin together with either predecessor. The server would collide with
 `opencode-forge-session-title`'s IDs, and alongside `forge-review-status` the footer and
@@ -243,17 +327,20 @@ review notifications would appear twice.
 
 ## Code layout
 
-- `index.ts` wires the server: the forge catalog from the options, and title lookups.
+- `index.ts` wires the server: the forge catalogs from the options, with a shared
+  concurrency limit for status, and title lookups.
 - `src/server.ts` registers the tool, the agent guidance, title reconciliation, and the RPC.
-- `src/target.ts` parses, normalizes, changes, and formats session targets, and classifies
-  the RPC output for the CLI.
-- `src/limit.ts` bounds how many forge requests run at once for several targets.
+- `src/status-server.ts` connects the status service to sessions, storage, notifications,
+  and RPC events. `src/status-service.ts` holds the leases and decides which keys poll.
+- `src/target.ts` parses, normalizes, changes, and formats session targets, and matches
+  forge URLs against them.
+- `src/limit.ts` bounds how many forge requests run at once.
 - `src/title.ts` extracts branch issue numbers and reconciles title prefixes.
-- `src/options.ts` selects the CLI's options and resolves them through the RPC.
-- `src/lookups.ts` answers the server's forge questions through the shared catalog:
-  the branch's newest PR/MR number and a PR/MR's source branch.
-- `tui.tsx` reads its options, then connects the status store, watchers, footer, and
-  commands.
+- `src/options.ts` reads the plugin's status options.
+- `src/lookups.ts` answers the title's forge questions: the branch's newest PR/MR number
+  and a PR/MR's source branch.
+- `src/status-client.ts` holds the CLI's leases, snapshots, and per-directory settings.
+  `tui.tsx` connects it to the RPC and renders the footer, dialog, commands, and notices.
 - `src/forge.ts` defines the forge-neutral types, the `Forge` adapter interface, and
   `ForgeTraits` with its optional `automatedReview` and `feedback` capabilities.
 - `src/gitlab.ts` and `src/github.ts` provide each forge's adapter and traits. Adapters own
@@ -263,10 +350,11 @@ review notifications would appear twice.
 - `src/forges.ts` registers each forge's traits, classifies hosts, opens adapters, and
   parses URLs.
 - `src/git.ts` resolves a checkout's remotes, branch, and pushed branch name.
-- `src/locate.ts` picks the CLI's PRs/MRs. `src/store.ts` caches lookups, polls, and backs off
-  after failures. `src/format.ts` renders the footer and dialog.
-- `src/session-watch.ts`, `src/holds.ts`, `src/automated-review-watch.ts`,
-  `src/human-review-watch.ts`, and `src/gitlab-feedback.ts` decide when to notify the agent.
+- `src/locate.ts` picks each key's PRs/MRs. `src/store.ts` caches lookups, polls, backs off
+  after failures, and discards lookups that started before a change. `src/format.ts`
+  renders the footer and dialog.
+- `src/automated-review-watch.ts`, `src/human-review-watch.ts`, and
+  `src/gitlab-feedback.ts` decide when to notify the agent.
 
 Shared code never compares a forge against a specific name. It asks the forge's traits, or
 checks for a capability, instead. To add a forge, add its kind to `ForgeKind` and

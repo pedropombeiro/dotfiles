@@ -54,6 +54,20 @@ describe("reconcileTitle", () => {
     expect(reconcileTitle("New title", "[!456]", "[!456]")).toBe("[!456] New title")
   })
 
+  test("keeps a long branch prefix whole, so it can be removed later", () => {
+    const branch = "a-very-long-branch-name-that-describes-everything-it-changes-in-detail"
+    const prefix = branchPrefix(traits("gitlab"), branch, "45")
+    expect(prefix).toBe("[a-very-long-branch-name-that-describes-…, !45]")
+    const title = reconcileTitle(`Review ${"x".repeat(120)}`, prefix)
+    expect(title).toHaveLength(100)
+    expect(title.startsWith(`${prefix} Review`)).toBe(true)
+    // Back on the default branch, the stored prefix still matches the title.
+    expect(reconcileTitle(title, undefined, prefix).startsWith("Review")).toBe(true)
+    // A title that is only the prefix loses it entirely.
+    expect(reconcileTitle(prefix, undefined, prefix)).toBe("")
+    expect(reconcileTitle(prefix, "[!46]", prefix)).toBe("[!46]")
+  })
+
   test("truncates titles to 100 characters", () => {
     const result = reconcileTitle("x".repeat(120), "[#1, #2]")
     expect(result).toHaveLength(100)

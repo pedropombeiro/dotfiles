@@ -135,6 +135,21 @@ export function targetRequest(target: Target): ReviewRef | undefined {
   return issue ? undefined : ref
 }
 
+// Whether two references name the same PR/MR. Forges ignore the case of
+// project paths, so a forge's URL can differ from the target's.
+export const sameRef = (a: ReviewRef, b: ReviewRef) =>
+  a.forge === b.forge && a.host === b.host && a.iid === b.iid && a.project.toLowerCase() === b.project.toLowerCase()
+
+// Whether a PR/MR URL, as a forge reports it, is one of the targets.
+export function includesRequest(targets: readonly Target[], url: string): boolean {
+  const ref = parseUrl(url)
+  if (!ref) return false
+  return targets.some((target) => {
+    const request = targetRequest(target)
+    return request !== undefined && sameRef(request, ref)
+  })
+}
+
 // The target's own reference, such as `!45` or `#12`.
 function mainReference(target: Target): string {
   const { ref, issue } = parseTargetUrl(target.url)
@@ -145,15 +160,13 @@ function mainReference(target: Target): string {
 // The title prefix for a target, such as `[#12, !45]`.
 export function targetPrefix(target: Target): string {
   const { ref, issue } = parseTargetUrl(target.url)
-  const forge = traits(ref.forge)
-  const related = target.issueUrl
-    ? (() => {
-        const { ref: issueRef } = parseTargetUrl(target.issueUrl)
-        return traits(issueRef.forge).issueReference(issueRef.iid)
-      })()
-    : !issue && target.branchIssue
-      ? forge.issueReference(target.branchIssue)
-      : undefined
+  let related: string | undefined
+  if (target.issueUrl) {
+    const { ref: issueRef } = parseTargetUrl(target.issueUrl)
+    related = traits(issueRef.forge).issueReference(issueRef.iid)
+  } else if (!issue && target.branchIssue) {
+    related = traits(ref.forge).issueReference(target.branchIssue)
+  }
   return `[${related ? `${related}, ` : ""}${mainReference(target)}]`
 }
 

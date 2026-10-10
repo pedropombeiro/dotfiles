@@ -1,114 +1,34 @@
 /** @jsxImportSource @opentui/solid */
 // OpenCode loads this CLI entry point automatically because the server entry
-// point in index.ts is configured in opencode.json. It shows the PRs/MRs of the
-// targets that the server stores, and tells the agent about their reviews. It
-// reads its options from the server, and `reviewStatus: false` turns it off.
+// point in index.ts is configured in opencode.json. The server looks up and
+// watches the PRs/MRs; this entry point renders their status and shows the
+// server's notices as toasts. The server watches only sessions that a CLI has
+// shown, so this entry point renews a lease on each of them.
 import { Plugin } from "@opencode/plugin/tui"
 import type { BoxRenderable } from "@opentui/core"
-import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js"
-import {
-  automatedReview,
-  createAutomatedReviewWatcher,
-  createNotificationClaim,
-  isReviewRunning,
-  recordNotification,
-  reviewMessage,
-  reviewTitle,
-  reviewToast,
-  type NotifiedLog,
-} from "./src/automated-review-watch"
+import { createEffect, createMemo, createSignal, For, onCleanup, Show } from "solid-js"
 import { exec } from "./src/exec"
 import { detailsMessage, footerSegments, responsiveFooterSegments, segmentsWidth, type Tone } from "./src/format"
-import { titlePrefix, type ReviewComment, type ReviewRequest } from "./src/forge"
-import { Forges, hostsFrom, reference, traitsOf } from "./src/forges"
-import {
-  createFeedbackWatcher,
-  feedbackMessage,
-  feedbackToast,
-  recordFeedback,
-  type FeedbackLog,
-} from "./src/human-review-watch"
-import { locate } from "./src/locate"
-import { createSessionWatch } from "./src/session-watch"
-import { createStatusStore, type Lookup } from "./src/store"
-import { resolveCliOptions, reviewStatusEnabled } from "./src/options"
-import { ForgeSessionRpc } from "./src/rpc"
-import { classifyTargets } from "./src/target"
-
-// Cache keys are per session, because sessions sharing a checkout can target
-// different PRs/MRs. The title's managed prefix, which holds its references,
-// is part of the key so a reference change triggers a new lookup.
-interface Key {
-  directory: string
-  sessionID?: string
-  prefix?: string
-}
-const keyOf = (key: Key) => JSON.stringify([key.directory, key.sessionID ?? "", key.prefix ?? ""])
-const parseKey = (key: string): Key => {
-  const [directory, sessionID, prefix] = JSON.parse(key) as [string, string, string]
-  return { directory, sessionID: sessionID || undefined, prefix: prefix || undefined }
-}
+import type { ReviewRequest } from "./src/forge"
+import { reference } from "./src/forges"
+import { ForgeSessionRpc, HEARTBEAT, HOME, type Notice } from "./src/rpc"
+import { createStatusClient, samePlace, type Place } from "./src/status-client"
+import type { Snapshot } from "./src/store"
 
 export default Plugin.define({
   id: "pedropombeiro.forge-session",
   async setup(context) {
-    const titles = context.client.rpc(ForgeSessionRpc)
-    const location = context.location ?? context.data.location.default()
-    const options = await resolveCliOptions(context.options, () => titles.options({}, { location }))
-    // Without review status, the plugin keeps only the server's session
-    // targets and titles, so this entry point adds nothing.
-    if (!reviewStatusEnabled(options)) return
-
-    const forges = new Forges(exec, hostsFrom(options))
-    const pollSeconds = Number(options.pollSeconds) > 0 ? Number(options.pollSeconds) : 120
-    // Running automated reviews poll faster so a finished review is noticed promptly.
-    const reviewPollSeconds = Math.min(pollSeconds, 30)
-    // `notifyDuoReview` is the option's former name.
-    const notifyAutomatedReviews = (options.notifyAutomatedReviews ?? options.notifyDuoReview) !== false
-    const notifyHumanReviews = options.notifyHumanReviews !== false
-    // Shared across TUI instances, so only one of them notifies a session.
-    const [notified, updateNotified] = context.storage.store("automatedReviewNotified", {
-      initial: { sent: {} } as NotifiedLog,
-    })
-    // Per session and MR, the baseline and announced comments. Renaming the
-    // store discards old records, which only makes MRs start a new baseline.
-    const [feedbackLog, updateFeedbackLog] = context.storage.store("humanReviewFeedback.v3", {
-      initial: { records: {} } as FeedbackLog,
-    })
-
-    // Reports a failure once per kind, so a persistent problem doesn't toast on every poll.
-    const reported = new Set<string>()
-    const reportOnce = (kind: string, prefix: string, error: unknown) => {
-      if (reported.has(kind)) return
-      reported.add(kind)
-      const reason = error instanceof Error ? error.message : String(error)
-      context.ui.toast.show({ message: `${prefix}: ${reason}`, variant: "error" })
-    }
-
-    // Reads the targets stored by set_session_target. Returns undefined when the
-    // session has no explicit target or the RPC fails, for example while the
-    // server entry point reloads. Title references and the branch still apply.
-    async function rpcTargets(sessionID: string, directory: string) {
-      try {
-        return classifyTargets(await titles.target({ sessionID }, { location: { directory } }))
-      } catch {
-        return undefined
-      }
-    }
+    const rpc = context.client.rpc(ForgeSessionRpc)
 
     const [version, setVersion] = createSignal(0)
-    const store = createStatusStore({
-      interval: pollSeconds * 1000,
-      activeInterval: reviewPollSeconds * 1000,
-      active: isReviewRunning,
+    const client = createStatusClient({
+      clientID: crypto.randomUUID(),
+      watch: async (directory, input) =>
+        (await rpc.watch(input, { location: { directory } })) as { enabled: boolean; statuses: Record<string, unknown> },
+      refresh: async (directory, key) =>
+        (await rpc.refresh({ key }, { location: { directory } })) as { enabled: boolean; snapshot: unknown },
+      release: (directory, clientID) => rpc.release({ clientID }, { location: { directory } }),
       onChange: () => setVersion((value) => value + 1),
-      onLoad: (key, _previous, next) => watch.onLoad(key, parseKey(key).sessionID, next),
-      onLoadError: (error) => reportOnce("watch", "MR status watcher failed", error),
-      async load(key): Promise<Lookup> {
-        const { directory, sessionID, prefix } = parseKey(key)
-        const targets = sessionID ? await rpcTargets(sessionID, directory) : undefined
-        return locate(forges, { directory, targets, title: prefix, previous: store.get(key).lookup })
-      },
     })
 
     // The displayed session can live in a different worktree than the one the
@@ -118,97 +38,27 @@ export default Plugin.define({
       context.location?.directory ??
       context.data.location.default().directory
 
-    const keyFor = (sessionID?: string) =>
-      keyOf({
-        directory: directoryFor(sessionID),
-        sessionID,
-        prefix: sessionID ? titlePrefix(context.data.session.get(sessionID)?.title) : undefined,
-      })
+    const placeFor = (sessionID?: string): Place => ({ directory: directoryFor(sessionID), key: sessionID ?? HOME })
 
-    const currentKey = () => {
+    const currentPlace = () => {
       const route = context.ui.router.current()
-      return keyFor(route.type === "session" ? route.sessionID : undefined)
+      return placeFor(route.type === "session" ? route.sessionID : undefined)
     }
 
-    const forDirectory = (directory: string, action: (key: string) => void) => {
-      for (const key of store.keys()) if (parseKey(key).directory === directory) action(key)
+    const snapshotOf = (place: Place): Snapshot => {
+      version()
+      return client.snapshot(place)
     }
 
-    // Storage writes run in the background; a failed write only risks a repeat.
-    const persistLater = (write: () => unknown) => {
-      void Promise.resolve().then(write).catch(() => {})
+    // `reviewStatus: false` on a directory's server turns its footer and
+    // commands off. Each directory has its own options.
+    const enabledFor = (directory: string) => {
+      version()
+      return client.enabled(directory)
     }
 
-    const automated = notifyAutomatedReviews
-      ? createAutomatedReviewWatcher({
-          // A recorded notification isn't retried, even if sending it fails.
-          claim: createNotificationClaim({
-            shared: () => notified,
-            persist: (id, at) => persistLater(() => updateNotified((draft) => recordNotification(draft, id, at))),
-          }),
-          send: (sessionID, requests) => void notifyFinishedReviews(sessionID, requests),
-        })
-      : undefined
-
-    const human = notifyHumanReviews
-      ? createFeedbackWatcher({
-          log: () => feedbackLog,
-          persist: (key, change, at) =>
-            persistLater(() => updateFeedbackLog((draft) => recordFeedback(draft, key, change, at))),
-          async fetch(sessionID, request) {
-            return traitsOf(request).feedback?.fetch(exec, directoryFor(sessionID), request)
-          },
-          current: (sessionID, mr) => watch.isTarget(sessionID, mr),
-          send: sendFeedback,
-          onFetchError: (error) => reportOnce("feedback-fetch", "Could not check MR review feedback", error),
-          onSendError: (error) => {
-            const reason = error instanceof Error ? error.message : String(error)
-            context.ui.toast.show({ message: `Could not tell the session about review feedback: ${reason}`, variant: "error" })
-          },
-        })
-      : undefined
-
-    // Loads of an older key, such as one from before a title change, are
-    // ignored. A session that isn't loaded can't be checked, so its key is trusted.
-    const isCurrentKey = (key: string, sessionID: string) =>
-      !context.data.session.get(sessionID) || keyFor(sessionID) === key
-
-    // Keeps a session's target PR/MR polling while an automated review runs or
-    // human feedback is watched, even when the session isn't on screen.
-    const watch = createSessionWatch({
-      acquire: (key) => store.acquire(key),
-      isCurrent: isCurrentKey,
-      automated,
-      human,
-    })
-
-    async function sendFeedback(sessionID: string, mr: ReviewRequest, comments: ReviewComment[]) {
-      await context.client.session.synthetic({
-        sessionID,
-        text: feedbackMessage(mr, comments),
-        description: `New review feedback on ${reference(mr)}`,
-        delivery: "queue",
-        resume: true,
-      })
-      context.ui.toast.show({ ...feedbackToast(mr, comments), variant: "info" })
-    }
-
-    async function notifyFinishedReviews(sessionID: string, requests: ReviewRequest[]) {
-      try {
-        await context.client.session.synthetic({
-          sessionID,
-          text: reviewMessage(requests),
-          description: reviewTitle(requests),
-          delivery: "queue",
-          resume: true,
-        })
-        context.ui.toast.show({ ...reviewToast(requests), variant: "info" })
-      } catch (error) {
-        const reason = error instanceof Error ? error.message : String(error)
-        const name = automatedReview(requests[0])?.name ?? "the automated reviewer"
-        context.ui.toast.show({ message: `Could not tell the session about ${name}'s review: ${reason}`, variant: "error" })
-      }
-    }
+    const refresh = (place: Place) => client.refresh(place)
+    const heartbeat = setInterval(() => client.heartbeat(), HEARTBEAT)
 
     const color = (tone: Tone) => {
       const feedback = context.theme.text.feedback
@@ -219,31 +69,21 @@ export default Plugin.define({
     }
 
     function Footer(props: { sessionID?: string }) {
-      const key = createMemo(() => keyFor(props.sessionID))
-      const directory = createMemo(() => parseKey(key()).directory)
-      const branch = createMemo(() => context.data.location.vcs.info({ directory: directory() })?.branch.current)
-
-      createEffect(() => onCleanup(store.acquire(key())))
+      const place = createMemo(() => placeFor(props.sessionID), undefined, { equals: samePlace })
 
       createEffect(() => {
-        context.data.location.vcs.sync({ directory: directory() }).catch(() => {})
+        const current = place()
+        client.show(current)
+        onCleanup(() => client.hide(current))
       })
 
-      createEffect(
-        on(
-          [key, branch],
-          ([current, currentBranch], previous) => {
-            if (previous && previous[0] === current && previous[1] !== currentBranch) store.invalidate(current)
-          },
-          { defer: true },
-        ),
-      )
-
-      const snapshot = createMemo(() => {
-        version()
-        return store.get(key())
+      // Keeps the checkout's branch watched, so a branch switch reaches the server.
+      createEffect(() => {
+        context.data.location.vcs.sync({ directory: place().directory }).catch(() => {})
       })
-      const fullWidth = createMemo(() => segmentsWidth(footerSegments(snapshot())))
+
+      const snapshot = createMemo(() => snapshotOf(place()))
+      const fullWidth = createMemo(() => (enabledFor(place().directory) ? segmentsWidth(footerSegments(snapshot())) : 0))
       const [availableWidth, setAvailableWidth] = createSignal(0)
       const segments = createMemo(() => responsiveFooterSegments(snapshot(), availableWidth()))
 
@@ -274,7 +114,7 @@ export default Plugin.define({
                     fallback={
                       // Segments without a link of their own open the status dialog,
                       // which has the full detail behind the abbreviated indicator.
-                      <text wrapMode="none" flexShrink={0} fg={color(segment.tone)} onMouseUp={() => showStatus(key())}>
+                      <text wrapMode="none" flexShrink={0} fg={color(segment.tone)} onMouseUp={() => showStatus(place())}>
                         {segment.text}
                       </text>
                     }
@@ -306,12 +146,19 @@ export default Plugin.define({
       })
     }
 
-    const requestsFor = (key: string): ReviewRequest[] => {
-      const lookup = store.get(key).lookup
+    const requestsFor = (place: Place): ReviewRequest[] => {
+      const lookup = snapshotOf(place).lookup
       return lookup?.kind === "found" ? lookup.requests : []
     }
 
-    function StatusDialog(props: { statusKey: string }) {
+    // Commands explain why nothing happens when the place's server has status off.
+    const statusOff = (place: Place) => {
+      if (enabledFor(place.directory)) return false
+      context.ui.toast.show({ message: "PR/MR status is off in the plugin's options (reviewStatus: false)", variant: "info" })
+      return true
+    }
+
+    function StatusDialog(props: { place: Place }) {
       const [terminalHeight, setTerminalHeight] = createSignal(context.renderer.height)
       const onResize = () => setTerminalHeight(context.renderer.height)
       context.renderer.on("resize", onResize)
@@ -319,12 +166,9 @@ export default Plugin.define({
       // Leave room for the dialog host, title, gaps, footer, and padding.
       // A maxHeight alone lets the scrollbox's content grow the dialog.
       const contentHeight = createMemo(() => Math.max(1, Math.min(24, Math.floor(terminalHeight() * 0.6) - 5)))
-      const snapshot = createMemo(() => {
-        version()
-        return store.get(props.statusKey)
-      })
-      const refresh = () => {
-        if (!snapshot().loading) void store.refresh(props.statusKey)
+      const snapshot = createMemo(() => snapshotOf(props.place))
+      const reload = () => {
+        if (!snapshot().loading) void refresh(props.place)
       }
       const [activeAction, setActiveAction] = createSignal<"refresh" | "close">("refresh")
       const moveAction = () =>
@@ -338,7 +182,7 @@ export default Plugin.define({
             id: "forge.review.status.refresh",
             bind: "ctrl+r",
             enabled: () => !snapshot().loading,
-            run: refresh,
+            run: reload,
           },
           { bind: "tab", title: "Next dialog action", run: moveAction },
           { bind: "shift+tab", title: "Previous dialog action", run: moveAction },
@@ -348,7 +192,7 @@ export default Plugin.define({
             bind: "return",
             title: "Activate dialog action",
             run: () => {
-              if (activeAction() === "refresh") refresh()
+              if (activeAction() === "refresh") reload()
               else close()
             },
           },
@@ -387,7 +231,7 @@ export default Plugin.define({
                     onMouseUp={() => {
                       if (disabled()) return
                       setActiveAction(action)
-                      if (action === "refresh") refresh()
+                      if (action === "refresh") reload()
                       else close()
                     }}
                   >
@@ -408,18 +252,20 @@ export default Plugin.define({
       )
     }
 
-    function showStatus(key = currentKey()) {
-      void store.refresh(key)
+    function showStatus(place = currentPlace()) {
+      if (statusOff(place)) return
+      void refresh(place)
       context.ui.dialog.set({ size: "large", centered: true })
-      context.ui.dialog.show(() => <StatusDialog statusKey={key} />)
+      context.ui.dialog.show(() => <StatusDialog place={place} />)
     }
 
     async function openRequest() {
-      const key = currentKey()
-      let requests = requestsFor(key)
+      const place = currentPlace()
+      if (statusOff(place)) return
+      let requests = requestsFor(place)
       if (requests.length === 0) {
-        await store.refresh(key)
-        requests = requestsFor(key)
+        await refresh(place)
+        requests = requestsFor(place)
       }
       if (requests.length === 0) {
         context.ui.toast.show({ message: "No PR/MR for this session or branch", variant: "info" })
@@ -467,30 +313,27 @@ export default Plugin.define({
       },
     })
 
-    const notifySession = (sessionID: string, directory?: string) => {
-      const dir = context.data.session.get(sessionID)?.location.directory ?? directory
-      if (dir) forDirectory(dir, store.notify)
-    }
     const stops = [
-      context.data.on("session.execution.succeeded", (event) =>
-        notifySession(event.data.sessionID, event.location?.directory),
-      ),
-      context.data.on("session.execution.failed", (event) =>
-        notifySession(event.data.sessionID, event.location?.directory),
-      ),
-      context.data.on("vcs.branch.updated", (event) => {
-        if (event.location) forDirectory(event.location.directory, store.invalidate)
+      rpc.events.on("status", (event) => {
+        const { directory, key, snapshot } = event.data as { directory: string; key: string; snapshot: Snapshot }
+        client.receive(directory, key, snapshot)
       }),
-      titles.events.on("targetChanged", (event) => {
-        const { sessionID } = event.data as { sessionID: string }
-        for (const key of store.keys()) if (parseKey(key).sessionID === sessionID) store.invalidate(key)
+      // Notices about a session go to the CLIs that have shown it.
+      rpc.events.on("notice", (event) => {
+        const notice = event.data as Notice
+        if (notice.sessionID && !client.hasShown(notice.sessionID)) return
+        context.ui.toast.show({
+          ...(notice.title ? { title: notice.title } : {}),
+          message: notice.message,
+          variant: notice.variant,
+        })
       }),
     ]
 
     return () => {
+      clearInterval(heartbeat)
       for (const stop of stops) stop()
-      watch.dispose()
-      store.dispose()
+      client.dispose()
     }
   },
 })

@@ -299,6 +299,20 @@ describe("glabGraphQL", () => {
     expect(graphqlError.message).toBe("Field missing")
   })
 
+  test("fails the lookup when a field errored, even next to data", async () => {
+    const fail = (exec: Exec) => glabGraphQL(exec, "/repo")("gitlab.com", "q", {}).catch((error) => error)
+    // A timed-out field is `null` next to its error, which isn't a missing MR.
+    const partial = '{"data":{"p0":null},"errors":[{"message":"request timed out","path":["p0"]}]}'
+    expect(await fail(run(partial))).toMatchObject({ kind: "request", message: "request timed out" })
+    expect(await fail(run('{"data":{"p0":null}}', "glab: connection reset", 1))).toMatchObject({
+      message: "connection reset",
+    })
+    expect(await fail(run('{"data":null}'))).toMatchObject({ message: "GitLab returned no data" })
+    expect(await fail(run("[1, 2]"))).toBeInstanceOf(ForgeError)
+    // A project or MR that doesn't exist is `null` without an error.
+    expect(await glabGraphQL(run('{"data":{"p0":null}}'), "/repo")("gitlab.com", "q", {})).toEqual({ p0: null })
+  })
+
   test("classifyError keeps the first line of unknown errors", () => {
     expect(classifyError("glab: dial tcp: timeout\nmore", 1)).toMatchObject({ kind: "request", message: "dial tcp: timeout" })
   })

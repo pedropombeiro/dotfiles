@@ -143,7 +143,7 @@ function harness(initial: FeedbackSnapshot | null = snapshot()) {
   const fetchErrors: unknown[] = []
   let fetches = 0
   const watcher = createFeedbackWatcher({
-    log: () => log,
+    record: async (key) => log.records[key],
     persist: (key, change, at) => recordFeedback(log, key, change, at),
     fetch: async () => {
       fetches++
@@ -177,6 +177,17 @@ function harness(initial: FeedbackSnapshot | null = snapshot()) {
 }
 
 describe("createFeedbackWatcher", () => {
+  test("doesn't fetch feedback for a PR/MR that is no longer a target", async () => {
+    const h = harness()
+    h.setCurrent(false)
+    await h.check()
+    expect(h.fetches()).toBe(0)
+    // The skipped check doesn't count against the fetch throttle.
+    h.setCurrent(true)
+    await h.check()
+    expect(h.fetches()).toBe(1)
+  })
+
   test("establishes a baseline on the first complete snapshot", async () => {
     const h = harness(snapshot(comment("1")))
     await h.check()
@@ -267,7 +278,7 @@ describe("createFeedbackWatcher", () => {
     h.tick(SETTLE_TIME)
     await h.check()
     const restarted = createFeedbackWatcher({
-      log: () => h.log,
+      record: async (key) => h.log.records[key],
       persist: (key, change, at) => recordFeedback(h.log, key, change, at),
       fetch: async () => snapshot(comment("1")),
       current: () => true,
@@ -282,7 +293,7 @@ describe("createFeedbackWatcher", () => {
     const h = harness()
     await h.check()
     const restarted = createFeedbackWatcher({
-      log: () => h.log,
+      record: async (key) => h.log.records[key],
       persist: (key, change, at) => recordFeedback(h.log, key, change, at),
       fetch: async () => snapshot(comment("1")),
       current: () => true,
@@ -316,7 +327,7 @@ describe("createFeedbackWatcher", () => {
     const sent: string[][] = []
     let clock = SETTLE_TIME
     const watcher = createFeedbackWatcher({
-      log: () => log,
+      record: async (key) => log.records[key],
       persist: (key, change, at) => recordFeedback(log, key, change, at),
       fetch: async () => snapshot(comment("1")),
       current: () => true,

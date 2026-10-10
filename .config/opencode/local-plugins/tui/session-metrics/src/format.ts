@@ -1,4 +1,4 @@
-import type { aggregate, measure } from "./metrics"
+import type { aggregate } from "./metrics"
 
 export const duration = (ms: number) => ms >= 3_600_000 ? `${(ms / 3_600_000).toFixed(1)}h` : ms >= 60_000 ? `${Math.floor(ms / 60_000)}m` : `${Math.floor(ms / 1000)}s`
 export const percent = (value: number | undefined) => value === undefined ? "unavailable" : `${value.toFixed(0)}%`
@@ -7,20 +7,14 @@ export const percent = (value: number | undefined) => value === undefined ? "una
 export type Indicator = "compaction" | "cache" | "timing"
 export interface Segment { kind: Indicator; text: string }
 
-export function segments(value: ReturnType<typeof measure>, active: number): Segment[] {
-  const compact = value.compactions.at(-1)
-  const items: Segment[] = []
-  if (compact?.status === "running") items.push({ kind: "compaction", text: "compacting" })
-  else if (compact?.status === "failed") items.push({ kind: "compaction", text: "compact failed" })
-  else if (value.completed.length) items.push({ kind: "compaction", text: `compact ${value.completed.length}` })
-  if (value.latest?.percent !== undefined) items.push({ kind: "cache", text: `cache ${percent(value.latest.percent)}` })
-  if (active >= 1000) items.push({ kind: "timing", text: `active ${duration(active)}` })
-  return items
+// The footer shows only timing; compaction and cache stay in the sidebar and details.
+export function segments(active: number): Segment[] {
+  return active >= 1000 ? [{ kind: "timing", text: `active ${duration(active)}` }] : []
 }
 
 export const join = (items: readonly Segment[]) => items.map((item) => item.text).join(" · ")
 
-// Drops trailing indicators until the rest fit, so timing goes first and compaction last.
+// Drops trailing indicators until the rest fit.
 export function fit(items: readonly Segment[], width: number): Segment[] {
   const output = [...items]
   while (output.length && Bun.stringWidth(join(output)) > width) output.pop()

@@ -117,7 +117,7 @@ Each local plugin documents its behavior, options, and tests in its own README:
 
 - [`session-metrics`](../../.config/opencode/local-plugins/tui/session-metrics/README.md):
   shows compactions, reported cache reuse, and recorded session/descendant timing in
-  the sidebar, with a width-aware footer fallback and a details panel.
+  the sidebar, with a timing-only footer fallback and a details panel.
 - [`permission-mode`](../../.config/opencode/local-plugins/tui/permission-mode/README.md):
   toggles the global permission preference with Shift+Tab.
 - [`queue-command`](../../.config/opencode/local-plugins/tui/queue-command/README.md):

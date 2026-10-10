@@ -118,7 +118,7 @@ export default Plugin.define({
         if (!props.sessionID || mounted()[props.sessionID] || context.options.footer === false) return []
         const data = summary(props.sessionID)
         if (!data) return []
-        return segments(data.own, data.total.active)
+        return segments(data.total.active)
       })
       const desired = () => Bun.stringWidth(join(items()))
       return <Show when={desired() > 0}>

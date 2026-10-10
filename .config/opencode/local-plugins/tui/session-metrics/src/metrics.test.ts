@@ -63,18 +63,14 @@ describe("session metrics", () => {
     const records = ["completed", "running", "failed"].map((status, i): Message => ({ id: String(i), type: "compaction", status, reason: "auto", time: { created: i } }))
     expect(measure(session, records, 5000, false).completed).toHaveLength(1)
   })
-  test("drops timing, cache, then compaction without exceeding width", () => {
-    const items: Segment[] = [{ kind: "compaction", text: "compact 2" }, { kind: "cache", text: "cache 84%" }, { kind: "timing", text: "active 18m" }]
-    expect(join(fit(items, 21))).toBe("compact 2 · cache 84%")
-    expect(join(fit(items, 10))).toBe("compact 2")
-    expect(fit(items, 10).map((item) => item.kind)).toEqual(["compaction"])
-    expect(join(fit(items, 2))).toBe("")
+  test("drops indicators without exceeding width", () => {
+    const items: Segment[] = segments(18 * 60_000)
+    expect(join(fit(items, 10))).toBe("active 18m")
+    expect(join(fit(items, 9))).toBe("")
     for (let width = 0; width < 100; width++) expect(Bun.stringWidth(join(fit(items, width)))).toBeLessThanOrEqual(width)
   })
-  test("tags each indicator with the detail view it opens", () => {
-    const records: Message[] = [{ id: "c", type: "compaction", status: "completed", reason: "auto", time: { created: 0 } }, assistant("a", 0, 100, 100)]
-    const value = measure(session, records, 5000, false)
-    expect(segments(value, 2000).map((item) => item.kind)).toEqual(["compaction", "cache", "timing"])
-    expect(segments(value, 500).some((item) => item.kind === "timing")).toBe(false)
+  test("footer shows only timing", () => {
+    expect(segments(2000).map((item) => item.kind)).toEqual(["timing"])
+    expect(segments(500)).toEqual([])
   })
 })

@@ -1,9 +1,10 @@
 # session-metrics
 
 A CLI plugin for OpenCode V2 that shows compaction, cache, and timing metrics in
-the sidebar. When the sidebar is hidden, a compact footer contribution shows
-complete indicators that fit its allocated space. Timing disappears first, then
-cache, then compaction. The native context/cost and forge indicators take priority.
+the sidebar. When the sidebar is hidden, a footer contribution shows only the
+active time, and only when it fits the allocated space. Compaction and cache
+metrics stay in the sidebar and the details panel. The native context/cost and
+forge indicators take priority.
 
 ## Commands
 
@@ -14,17 +15,16 @@ cache, then compaction. The native context/cost and forge indicators take priori
 
 ## Clicking an indicator
 
-Each indicator opens its own detail, in the sidebar and in the footer fallback:
+Each indicator opens its own detail:
 
 | Indicator | Opens |
 | --- | --- |
-| Compactions, `compact N`, `compacting` | The compaction history, where you pick a summary to read |
-| Cache | Cache reuse, read and write tokens, and input coverage, with a line per session |
-| Active, Model, tools | Timing for the session and its descendants, with a line per session |
+| Compactions (sidebar) | The compaction history, where you pick a summary to read |
+| Cache (sidebar) | Cache reuse, read and write tokens, and input coverage, with a line per session |
+| Active, Model, tools (sidebar), `active` (footer) | Timing for the session and its descendants, with a line per session |
 
 Every dialog has a Close button. Escape closes it too, and Enter activates the button.
-The session title and `/session-metrics` open the full panel. The footer indicators
-are separate click targets, and width-based hiding still drops whole indicators.
+The session title and `/session-metrics` open the full panel.
 
 The panel includes the selected session and recursively nested children by
 default. Ancestors and siblings are excluded. The sidebar compaction count refers

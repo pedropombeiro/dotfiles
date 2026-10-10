@@ -108,6 +108,23 @@ describe("createSessionWatch", () => {
     expect(watch.isTarget("ses_2", mr())).toBe(false)
   })
 
+  test("checks every open target, and holds while any of them needs it", () => {
+    const { watch, held, checked, observed } = harness()
+    const several = (...requests: GitLabMergeRequest[]): Lookup => ({ kind: "found", explicitTarget: true, requests })
+    const second = { url: "https://gitlab.com/g/p/-/merge_requests/2", iid: "2" }
+    watch.onLoad("k1", "ses_1", several(mr(), mr({ ...second, state: "merged" })))
+    expect(checked).toEqual(["ses_1"])
+    expect(held()).toEqual(["k1"])
+    expect(watch.isTarget("ses_1", mr())).toBe(true)
+    expect(watch.isTarget("ses_1", mr(second))).toBe(true)
+
+    watch.onLoad("k1", "ses_1", several(mr({ state: "merged" }), mr({ ...second, duoReviewState: "REVIEW_STARTED" })))
+    expect(checked).toEqual(["ses_1", "ses_1"])
+    expect(observed).toHaveLength(2)
+    watch.onLoad("k1", "ses_1", several(mr({ state: "merged" }), mr({ ...second, state: "merged" })))
+    expect(held()).toEqual([])
+  })
+
   test("ignores keys without a session and does nothing when both watchers are off", () => {
     const off = harness({ duo: false, human: false })
     off.watch.onLoad("k1", "ses_1", target({ duoReviewState: "REVIEW_STARTED" }))

@@ -1,6 +1,6 @@
 # forge-session
 
-A local plugin that tracks the issue or PR/MR a session works on. It prefixes the session
+A local plugin that tracks the issues or PRs/MRs a session works on. It prefixes the session
 title with its references, shows the PR/MR status in the prompt footer, and tells the agent
 about new review feedback. It supports GitLab and GitHub. The status and review
 notifications are optional; see [Keep only session titles](#keep-only-session-titles).
@@ -32,6 +32,40 @@ and takes the issue number from its name, so reviewing an MR from `321-fix-timeo
 Targets persist per session across plugin reloads. Calling `set_session_target` with
 `target: "branch"` returns to branch-based naming. Child sessions and untitled sessions are
 skipped.
+
+### Several targets
+
+A session can work on up to 50 issues and PRs/MRs at once, such as a set of related MRs
+under review. Pass their full URLs in `targets` instead of `target`, and choose how they
+change the current targets with `operation`:
+
+| `operation` | Effect |
+| --- | --- |
+| `replace` (default) | Sets exactly the given targets. |
+| `add` | Appends the given targets and keeps the current ones. |
+| `remove` | Drops the given targets. Removing the last one returns to branch-based naming. |
+
+```json
+{
+  "targets": [
+    "https://gitlab.com/group/project/-/merge_requests/101",
+    "https://gitlab.com/group/other/-/merge_requests/102"
+  ],
+  "operation": "add"
+}
+```
+
+The server normalizes and deduplicates the URLs, which can come from different projects.
+`issue_url` applies only to a single `target`.
+
+The agent guidance is generic. When you ask the agent to work on several issues or PRs/MRs,
+it sets all of them as targets. If you describe them instead of linking them, the agent
+finds them first, then sets them. After it creates a PR/MR for a task with several targets,
+it adds the new one instead of replacing the others.
+
+With several targets, the title prefix lists only their own references, such as
+`[!101, !102]`. More than four targets list the first three and count the rest, such as
+`[!101, !102, !103, +3]`.
 
 Target URLs can name a GitLab MR, issue, or work item on any host, or a GitHub PR or issue.
 GitHub URLs are accepted on any host that isn't recognizably GitLab, so GitHub Enterprise
@@ -68,12 +102,20 @@ forks, and classifies hosts with the `hosts` and `githubHosts` options.
 
 The CLI picks each session's PR/MR in this order:
 
-1. The explicit target, read from the server over RPC.
+1. The explicit targets, read from the server over RPC.
 1. A PR/MR number in the title prefix, such as `!456` in `[#123, !456]`.
 1. The checked-out branch's open PRs/MRs.
 
-An explicit target that isn't a PR/MR, such as an issue, shows none. An unresolved explicit
-PR/MR never falls back to the branch.
+Explicit targets that aren't PRs/MRs, such as issues, show no status. Unresolved explicit
+PRs/MRs never fall back to the branch.
+
+The CLI looks up several targets four at a time. When some lookups fail, the footer shows
+the others and counts the failures as `N unavailable`. A target whose lookup failed with an
+error keeps its previous status until a later poll succeeds.
+
+With several PR/MR targets, the footer shows counts instead of one PR/MR's status, such as
+`5 MRs · 🤖 2 reviewing · 1 CI failed · 1 conflict · 1 merged`. Clicking it opens the
+status dialog, which lists each PR/MR.
 
 The footer shows checks or the pipeline, unresolved threads, conflicts, approval, and a
 running GitLab Duo review. GitHub also shows a requested change. Unknown mergeability stays
@@ -96,9 +138,10 @@ shown, or every 30 seconds while an automated review runs.
 
 ## Review notifications
 
-For an explicit target that is an open PR/MR, the CLI tells the agent about reviews. Each
+For each explicit target that is an open PR/MR, the CLI tells the agent about reviews. Each
 notification is a queued synthetic message that resumes the session, followed by a toast.
-PRs/MRs from the title or the branch don't get notifications.
+Messages include the full URL of each PR/MR. PRs/MRs from the title or the branch don't get
+notifications.
 
 | Notification | GitLab | GitHub |
 | --- | --- | --- |
@@ -106,7 +149,10 @@ PRs/MRs from the title or the branch don't get notifications.
 | New human review feedback | MR comments | Not supported |
 
 - **Automated reviews**: Duo's final state of `REVIEWED` or `REQUESTED_CHANGES` asks the
-  agent to read its comments. Other final states, such as `APPROVED`, send nothing.
+  agent to read its comments. Other final states, such as `APPROVED`, send nothing. The CLI
+  notifies only when it sees a review go from running to finished, so a review that
+  finished before the CLI first saw it running isn't announced. Reviews that finish in the
+  same poll share one message.
 - **Human reviews**: new comments and replies from people other than you and bots are
   announced once none of their unresolved comments has changed for 5 minutes. Expect one
   message 5 to 7 minutes after the review goes quiet. Resolved threads are skipped.
@@ -116,8 +162,8 @@ count as new. Announced comments are stored per session and PR/MR, so a restart 
 nothing but still catches comments posted in the meantime.
 
 Polling continues while the session is hidden, but only after the CLI has shown that session
-at least once since it started. It stops when the PR/MR merges or closes, or the session's
-target changes.
+at least once since it started. It stops when every target PR/MR merges or closes, or the
+session's targets change.
 
 Limitations:
 
@@ -171,10 +217,12 @@ title prefix. The CLI entry point then registers nothing: no footer, no `/forge-
 The server registers an [RPC](https://opencode.ai/v2/docs/build/plugins/rpc) that the CLI
 uses, defined in `src/rpc.ts`:
 
-- `target({ sessionID })` returns `{ url, issueUrl? }` for an explicit target, and `{}` in
-  branch mode.
+- `target({ sessionID })` returns `{ url, issueUrl?, targets }` for explicit targets, and
+  `{}` in branch mode. `targets` lists every target as `{ url, issueUrl? }`. `url` and
+  `issueUrl` describe the first target, for callers that expect a single target.
 - `options({})` returns the CLI entry point's options from the `opencode.json` entry.
-- `targetChanged` fires after `set_session_target` runs. It omits `url` in branch mode.
+- `targetChanged` fires after `set_session_target` runs, with the same fields as `target`
+  and the `sessionID`. It has only the `sessionID` in branch mode.
 
 ## Migration from the separate plugins
 
@@ -184,7 +232,8 @@ uses, defined in `src/rpc.ts`:
 | CLI | `pedropombeiro.forge-session` | Notification records and human-review baselines |
 
 The server keeps `opencode-forge-session-title`'s plugin and RPC IDs, so stored targets
-carry over. The CLI entry point has its own ID, so it started without
+carry over. It reads a session's single stored `target` as a list of one, and writes
+`targets` from the next change on. The CLI entry point has its own ID, so it started without
 `forge-review-status`'s records. Each MR it watches records a new baseline on first look,
 so comments posted before then aren't announced.
 
@@ -196,8 +245,9 @@ review notifications would appear twice.
 
 - `index.ts` wires the server: the forge catalog from the options, and title lookups.
 - `src/server.ts` registers the tool, the agent guidance, title reconciliation, and the RPC.
-- `src/target.ts` parses, normalizes, and formats session targets, and classifies the RPC
-  output for the CLI.
+- `src/target.ts` parses, normalizes, changes, and formats session targets, and classifies
+  the RPC output for the CLI.
+- `src/limit.ts` bounds how many forge requests run at once for several targets.
 - `src/title.ts` extracts branch issue numbers and reconciles title prefixes.
 - `src/options.ts` selects the CLI's options and resolves them through the RPC.
 - `src/lookups.ts` answers the server's forge questions through the shared catalog:
@@ -213,7 +263,7 @@ review notifications would appear twice.
 - `src/forges.ts` registers each forge's traits, classifies hosts, opens adapters, and
   parses URLs.
 - `src/git.ts` resolves a checkout's remotes, branch, and pushed branch name.
-- `src/locate.ts` picks the CLI's PR/MR. `src/store.ts` caches lookups, polls, and backs off
+- `src/locate.ts` picks the CLI's PRs/MRs. `src/store.ts` caches lookups, polls, and backs off
   after failures. `src/format.ts` renders the footer and dialog.
 - `src/session-watch.ts`, `src/holds.ts`, `src/automated-review-watch.ts`,
   `src/human-review-watch.ts`, and `src/gitlab-feedback.ts` decide when to notify the agent.

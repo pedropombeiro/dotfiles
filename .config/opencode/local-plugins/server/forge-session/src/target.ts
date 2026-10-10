@@ -2,15 +2,21 @@ import type { ReviewRef } from "./forge"
 import { parseReference, parseUrl, traits } from "./forges"
 import type { TargetOutput } from "./rpc"
 
-// A session's explicit target, as set_session_target stores it. `branchIssue`
-// is the issue number in the PR/MR's source branch name, which the title shows
-// when no `issueUrl` was given.
+// One of a session's explicit targets, as set_session_target stores it.
+// `branchIssue` is the issue number in the PR/MR's source branch name, which
+// the title shows when no `issueUrl` was given.
 // A type alias rather than an interface, so it is assignable to plugin storage's JSON type.
 export type Target = {
   url: string
   issueUrl?: string
   branchIssue?: string
 }
+
+// The most targets a session can have, so that a runaway call can't make
+// every status poll query hundreds of PRs/MRs.
+export const MAX_TARGETS = 50
+// A title prefix with more targets lists the first few and counts the rest.
+const PREFIX_REFERENCES = 4
 
 interface Reference {
   url: string
@@ -38,7 +44,7 @@ function parseTargetUrl(value: string): Reference {
   return { url: url.href, ...parsed }
 }
 
-// Parses set_session_target's input. Undefined means automatic branch mode.
+// Parses a single `target` and its `issue_url`. Undefined means automatic branch mode.
 export function parseTarget(input: unknown): Target | undefined {
   if (!input || typeof input !== "object" || !("target" in input) || typeof input.target !== "string") {
     throw new Error('Provide a target URL or "branch".')
@@ -58,10 +64,82 @@ export function parseTarget(input: unknown): Target | undefined {
   return { url: target.url, issueUrl: issue.url }
 }
 
+export type Operation = "replace" | "add" | "remove"
+export type TargetChange = { operation: Operation; targets: Target[] } | { operation: "branch" }
+
+const OPERATIONS = new Set<unknown>(["replace", "add", "remove"])
+
+// Keeps the first position of each URL and its last details.
+const dedupe = (targets: Target[]) => [...new Map(targets.map((target) => [target.url, target])).values()]
+
+// Parses set_session_target's input: one `target` or several `targets`, and
+// how they change the session's current targets.
+export function parseTargetChange(input: unknown): TargetChange {
+  if (!input || typeof input !== "object") throw new Error('Provide a target URL, "branch", or a list of targets.')
+  const value = input as Record<string, unknown>
+  const operation = (value.operation ?? "replace") as Operation
+  if (!OPERATIONS.has(operation)) throw new Error('operation must be "replace", "add", or "remove".')
+
+  if (value.targets !== undefined) {
+    if (value.target !== undefined) throw new Error("Use either target or targets, not both.")
+    if (value.issue_url !== undefined) throw new Error("issue_url needs a single target.")
+    const urls = value.targets
+    if (!Array.isArray(urls) || urls.length === 0 || !urls.every((url) => typeof url === "string")) {
+      throw new Error("targets must be a non-empty list of full URLs.")
+    }
+    if (urls.includes("branch")) throw new Error('Use target: "branch" on its own to return to branch-based naming.')
+    if (urls.length > MAX_TARGETS) throw new Error(`A session can have at most ${MAX_TARGETS} targets.`)
+    return { operation, targets: dedupe(urls.map((url) => ({ url: parseTargetUrl(url).url }))) }
+  }
+
+  if (operation === "remove" && value.issue_url !== undefined) throw new Error("Removing a target does not accept issue_url.")
+  if (value.target === "branch" && operation !== "replace") throw new Error('"branch" replaces every target, so it takes no operation.')
+  const target = parseTarget(value)
+  return target ? { operation, targets: [target] } : { operation: "branch" }
+}
+
+// Applies a change to the session's targets. `missing` lists the URLs that a
+// removal named but the session didn't have.
+export function applyTargetChange(current: readonly Target[], change: TargetChange): { targets: Target[]; missing: string[] } {
+  if (change.operation === "branch") return { targets: [], missing: [] }
+  const known = new Map(current.map((target) => [target.url, target]))
+
+  if (change.operation === "remove") {
+    const removed = new Set(change.targets.map((target) => target.url))
+    return {
+      targets: current.filter((target) => !removed.has(target.url)),
+      missing: [...removed].filter((url) => !known.has(url)),
+    }
+  }
+
+  // A target that the session already has keeps its inferred issue, so its
+  // source branch isn't looked up again. Adding it again also keeps its
+  // explicit issue. An explicit issue in the change always wins.
+  const merge = (target: Target): Target => {
+    const existing = known.get(target.url)
+    if (!existing || target.issueUrl) return target
+    if (change.operation === "add") return { ...existing }
+    return { url: target.url, ...(existing.branchIssue ? { branchIssue: existing.branchIssue } : {}) }
+  }
+  const targets =
+    change.operation === "replace"
+      ? change.targets.map(merge)
+      : dedupe([...current.map((target) => ({ ...target })), ...change.targets.map(merge)])
+  if (targets.length > MAX_TARGETS) throw new Error(`A session can have at most ${MAX_TARGETS} targets.`)
+  return { targets, missing: [] }
+}
+
 // The PR/MR a target names, or undefined for an issue.
 export function targetRequest(target: Target): ReviewRef | undefined {
   const { ref, issue } = parseTargetUrl(target.url)
   return issue ? undefined : ref
+}
+
+// The target's own reference, such as `!45` or `#12`.
+function mainReference(target: Target): string {
+  const { ref, issue } = parseTargetUrl(target.url)
+  const forge = traits(ref.forge)
+  return issue ? forge.issueReference(ref.iid) : forge.reference(ref.iid)
 }
 
 // The title prefix for a target, such as `[#12, !45]`.
@@ -76,20 +154,43 @@ export function targetPrefix(target: Target): string {
     : !issue && target.branchIssue
       ? forge.issueReference(target.branchIssue)
       : undefined
-  const main = issue ? forge.issueReference(ref.iid) : forge.reference(ref.iid)
-  return `[${related ? `${related}, ` : ""}${main}]`
+  return `[${related ? `${related}, ` : ""}${mainReference(target)}]`
 }
 
-export const targetOutput = (target: Target | undefined): TargetOutput =>
-  target ? { url: target.url, ...(target.issueUrl ? { issueUrl: target.issueUrl } : {}) } : {}
+// The title prefix for a session's targets. Several targets list only their
+// own references, such as `[!45, !46]`, and long lists end with a count, such
+// as `[!45, !46, !47, +3]`.
+export function targetsPrefix(targets: readonly Target[]): string | undefined {
+  if (targets.length === 0) return undefined
+  if (targets.length === 1) return targetPrefix(targets[0])
+  const references = targets.map(mainReference)
+  const shown =
+    references.length > PREFIX_REFERENCES
+      ? [...references.slice(0, PREFIX_REFERENCES - 1), `+${references.length - PREFIX_REFERENCES + 1}`]
+      : references
+  return `[${shown.join(", ")}]`
+}
 
-export type SessionTarget = { kind: "merge-request"; ref: ReviewRef } | { kind: "other"; url: string }
+const urlsOf = (target: Target) => ({ url: target.url, ...(target.issueUrl ? { issueUrl: target.issueUrl } : {}) })
+
+// `url` and `issueUrl` describe the first target, for callers that expect one.
+export const targetOutput = (targets: readonly Target[] | undefined): TargetOutput =>
+  targets?.length ? { ...urlsOf(targets[0]), targets: targets.map(urlsOf) } : {}
+
+export type SessionTarget = { kind: "merge-request"; ref: ReviewRef; url: string } | { kind: "other"; url: string }
+
+const classify = (url: string): SessionTarget => {
+  const ref = parseUrl(url)
+  return ref ? { kind: "merge-request", ref, url } : { kind: "other", url }
+}
 
 // Classifies the `target` RPC output. Undefined means the session has no
-// explicit target; "other" is an explicit target that isn't a PR/MR, such as an issue.
-export function classifyTarget(output: unknown): SessionTarget | undefined {
-  const url = (output as { url?: unknown } | undefined)?.url
-  if (typeof url !== "string" || !url) return undefined
-  const ref = parseUrl(url)
-  return ref ? { kind: "merge-request", ref } : { kind: "other", url }
+// explicit target; "other" is an explicit target that isn't a PR/MR, such as
+// an issue. Output without `targets` comes from a server that predates them.
+export function classifyTargets(output: unknown): SessionTarget[] | undefined {
+  const value = output as { url?: unknown; targets?: unknown } | undefined
+  const urls = (Array.isArray(value?.targets) ? value.targets.map((target) => target?.url) : [value?.url]).filter(
+    (url): url is string => typeof url === "string" && url !== "",
+  )
+  return urls.length ? urls.map(classify) : undefined
 }

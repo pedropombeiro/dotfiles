@@ -95,6 +95,29 @@ describe("footerSegments", () => {
     expect(text(snapshot([mr(), mr({ iid: "9" })]))).toBe("!4281 · !9 · 2 open MRs, run /mr-status")
   })
 
+  test("summarizes several session targets", () => {
+    const targets = (requests: GitLabMergeRequest[], failed?: { url: string; reason: string }[]): Snapshot => ({
+      lookup: { kind: "found", explicitTarget: true, sessionTarget: "4 PRs/MRs set with set_session_target", requests, ...(failed ? { failed } : {}) },
+      loading: false,
+    })
+    const requests = [
+      mr({ iid: "1", duoReviewState: "REVIEW_STARTED" }),
+      mr({ iid: "2", duoReviewState: "REVIEW_STARTED", conflicts: true, pipeline: { status: "SUCCESS", label: "passed" } }),
+      mr({ iid: "3", approved: true, pipeline: undefined }),
+      mr({ iid: "4", state: "merged" }),
+      mr({ iid: "5", state: "closed" }),
+    ]
+    expect(text(targets(requests))).toBe("5 MRs · 🤖 2 reviewing · 1 CI failed · 1 conflict · 1 approved · 1 merged · 1 closed")
+    expect(footerSegments(targets(requests)).every((segment) => !segment.url)).toBe(true)
+
+    const failed = [{ url: "https://gitlab.com/group/project/-/merge_requests/6", reason: "GitLab request failed" }]
+    const partial = targets(requests.slice(2, 4), failed)
+    expect(text(partial)).toBe("2 MRs · 1 approved · 1 merged · 1 unavailable")
+    expect(detailsMessage(partial)).toContain("Unavailable: https://gitlab.com/group/project/-/merge_requests/6 (GitLab request failed)")
+    // One remaining target shows its full status, and still reports the others.
+    expect(text(targets([mr()], failed))).toBe("!4281 · CI failed · 2 unresolved threads · 1 unavailable")
+  })
+
   test("shows only the state of a merged or closed session target", () => {
     const merged = { lookup: { kind: "found" as const, sessionTarget: "!4281 (from the session title)", requests: [mr({ state: "merged" })] }, loading: false }
     expect(text(merged)).toBe("!4281 · merged")

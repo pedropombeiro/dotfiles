@@ -116,8 +116,8 @@ plugins can import `solid-js`, `@opentui/solid`, and `@opencode/plugin/tui` with
 Each local plugin documents its behavior, options, and tests in its own README:
 
 - [`forge-session`](../../.config/opencode/local-plugins/server/forge-session/README.md):
-  tracks each session's issue or PR/MR on GitLab and GitHub. It adds
-  `set_session_target`, prefixes the title, and shows the PR/MR status in the CLI
+  tracks each session's issues or PRs/MRs on GitLab and GitHub, one or several at a time.
+  It adds `set_session_target`, prefixes the title, and shows the PR/MR status in the CLI
   footer. GitLab explicit targets also notify the agent about Duo and human review
   feedback. It merges `opencode-forge-session-title`, whose server IDs it keeps, and the
   former `forge-review-status`. Never load it alongside either.
@@ -133,6 +133,17 @@ Each local plugin documents its behavior, options, and tests in its own README:
   adds the `open_session` tool, which focuses a past session of the current project.
 - [`otel-status`](../../.config/opencode/local-plugins/server/otel-status/README.md):
   shows in the CLI footer whether the collector accepts OTLP requests.
+
+### Plugins meant for publishing
+
+Some local plugins, such as `forge-session`, are trials of plugins that will be published
+from [`opencode-plugins`](https://github.com/pedropombeiro/opencode-plugins). Keep their
+agent guidance, tool descriptions, defaults, and READMEs generic, so they make sense to
+users outside GitLab and outside Pedro's workflows. Describe behavior that any workflow fits,
+such as "set every PR/MR the user asks to work on", and leave the workflow-specific part to
+the user's request or a skill. For example, the user asks to review the MRs that a recurring
+job created, and the agent finds them, then sets them as targets. Never name a
+company-specific workflow, project, or schedule in the plugin.
 
 ### Editing local plugins
 

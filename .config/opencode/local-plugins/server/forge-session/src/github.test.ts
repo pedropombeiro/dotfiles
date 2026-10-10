@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { checks, ghGraphQL, GitHubForge, type GraphQL } from "./github"
-import { classifyTarget } from "./target"
+import { classifyTargets } from "./target"
 import { detailsMessage, responsiveFooterSegments } from "./format"
 
 const pull = (number = 1) => ({
@@ -104,8 +104,8 @@ test("uses typed integer GraphQL variables and classifies missing gh", async () 
 })
 
 test("classifies PR targets separately from issues", () => {
-  expect(classifyTarget({ url: "https://github.com/owner/repo/pull/42" })).toMatchObject({ kind: "merge-request", ref: { forge: "github", iid: "42" } })
-  expect(classifyTarget({ url: "https://github.com/owner/repo/issues/42" })).toMatchObject({ kind: "other" })
+  expect(classifyTargets({ url: "https://github.com/owner/repo/pull/42" })).toMatchObject([{ kind: "merge-request", ref: { forge: "github", iid: "42" } }])
+  expect(classifyTargets({ url: "https://github.com/owner/repo/issues/42" })).toMatchObject([{ kind: "other" }])
 })
 
 test("loads subsequent unresolved-thread pages", async () => {

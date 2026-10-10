@@ -27,21 +27,52 @@ export function finishedReviews(previous: Lookup | undefined, next: Lookup): Rev
 
 const reviewer = (request: ReviewRequest) => automatedReview(request)?.name ?? "The automated reviewer"
 
+// The one value that every request shares, or `fallback` when they differ.
+const shared = (requests: ReviewRequest[], value: (request: ReviewRequest) => string, fallback: string) => {
+  const values = new Set(requests.map(value))
+  return values.size === 1 ? [...values][0] : fallback
+}
+
+const reviewers = (requests: ReviewRequest[]) => shared(requests, reviewer, "Automated reviewers")
+const nouns = (requests: ReviewRequest[]) => shared(requests, (request) => `${traitsOf(request).noun}s`, "PRs/MRs")
+
 // A short sentence-case outcome for notifications, such as "Requested changes".
 export function reviewOutcome(request: ReviewRequest): string {
   const label = automatedReview(request)?.label ?? ""
   return label.charAt(0).toUpperCase() + label.slice(1)
 }
 
-export const reviewTitle = (request: ReviewRequest) => `${reviewer(request)} finished reviewing ${reference(request)}`
+export function reviewTitle(requests: ReviewRequest[]): string {
+  if (requests.length === 1) return `${reviewer(requests[0])} finished reviewing ${reference(requests[0])}`
+  return `${reviewers(requests)} finished reviewing ${requests.length} ${nouns(requests)}`
+}
 
-export function reviewMessage(request: ReviewRequest): string {
-  const name = reviewer(request)
-  const noun = traitsOf(request).noun
+// Reviews that finish in the same poll share one message, so the agent
+// works through them in one turn.
+export function reviewMessage(requests: ReviewRequest[]): string {
+  const state = (request: ReviewRequest) => `the state "${automatedReview(request)?.label ?? ""}"`
+  if (requests.length === 1) {
+    const [request] = requests
+    const name = reviewer(request)
+    return [
+      `${name} finished reviewing ${reference(request)} (${request.url}) with ${state(request)}.`,
+      `Fetch ${name}'s new comments and discussion threads on the ${traitsOf(request).noun}, then work through its feedback.`,
+    ].join(" ")
+  }
+  const name = reviewers(requests)
   return [
-    `${name} finished reviewing ${reference(request)} (${request.url}) with the state "${automatedReview(request)?.label ?? ""}".`,
-    `Fetch ${name}'s new comments and discussion threads on the ${noun}, then work through its feedback.`,
-  ].join(" ")
+    `${name} finished reviewing ${requests.length} ${nouns(requests)}:`,
+    ...requests.map((request) => `- ${reference(request)} (${request.url}) with ${state(request)}`),
+    "For each one, fetch the reviewer's new comments and discussion threads, then work through its feedback.",
+  ].join("\n")
+}
+
+export function reviewToast(requests: ReviewRequest[]) {
+  const outcome =
+    requests.length === 1
+      ? reviewOutcome(requests[0])
+      : requests.map((request) => `${reference(request)}: ${automatedReview(request)?.label ?? ""}`).join(", ")
+  return { title: reviewTitle(requests), message: `${outcome}. Sent to the agent.` }
 }
 
 export interface NotifiedLog {
@@ -88,16 +119,16 @@ export function createNotificationClaim(options: ClaimOptions) {
 
 export interface AutomatedReviewWatcherOptions {
   claim: (key: string) => boolean
-  send: (sessionID: string, request: ReviewRequest) => void
+  // Receives every claimed review that finished in one poll.
+  send: (sessionID: string, requests: ReviewRequest[]) => void
 }
 
-// Notifies a session when an automated review of its target finishes with feedback.
+// Notifies a session when automated reviews of its targets finish with feedback.
 export function createAutomatedReviewWatcher(options: AutomatedReviewWatcherOptions) {
   return {
     observe(sessionID: string, previous: Lookup | undefined, next: Lookup) {
-      for (const request of finishedReviews(previous, next)) {
-        if (options.claim(notificationKey(sessionID, request))) options.send(sessionID, request)
-      }
+      const claimed = finishedReviews(previous, next).filter((request) => options.claim(notificationKey(sessionID, request)))
+      if (claimed.length) options.send(sessionID, claimed)
     },
   }
 }

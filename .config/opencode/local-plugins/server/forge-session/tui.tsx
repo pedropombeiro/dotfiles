@@ -1,7 +1,7 @@
 /** @jsxImportSource @opentui/solid */
 // OpenCode loads this CLI entry point automatically because the server entry
-// point in index.ts is configured in opencode.json. It shows the PR/MR of the
-// target that the server stores, and tells the agent about its reviews. It
+// point in index.ts is configured in opencode.json. It shows the PRs/MRs of the
+// targets that the server stores, and tells the agent about their reviews. It
 // reads its options from the server, and `reviewStatus: false` turns it off.
 import { Plugin } from "@opencode/plugin/tui"
 import type { BoxRenderable } from "@opentui/core"
@@ -13,8 +13,8 @@ import {
   isReviewRunning,
   recordNotification,
   reviewMessage,
-  reviewOutcome,
   reviewTitle,
+  reviewToast,
   type NotifiedLog,
 } from "./src/automated-review-watch"
 import { exec } from "./src/exec"
@@ -33,7 +33,7 @@ import { createSessionWatch } from "./src/session-watch"
 import { createStatusStore, type Lookup } from "./src/store"
 import { resolveCliOptions, reviewStatusEnabled } from "./src/options"
 import { ForgeSessionRpc } from "./src/rpc"
-import { classifyTarget } from "./src/target"
+import { classifyTargets } from "./src/target"
 
 // Cache keys are per session, because sessions sharing a checkout can target
 // different PRs/MRs. The title's managed prefix, which holds its references,
@@ -85,12 +85,12 @@ export default Plugin.define({
       context.ui.toast.show({ message: `${prefix}: ${reason}`, variant: "error" })
     }
 
-    // Reads the target stored by set_session_target. Returns undefined when the
+    // Reads the targets stored by set_session_target. Returns undefined when the
     // session has no explicit target or the RPC fails, for example while the
     // server entry point reloads. Title references and the branch still apply.
-    async function rpcTarget(sessionID: string, directory: string) {
+    async function rpcTargets(sessionID: string, directory: string) {
       try {
-        return classifyTarget(await titles.target({ sessionID }, { location: { directory } }))
+        return classifyTargets(await titles.target({ sessionID }, { location: { directory } }))
       } catch {
         return undefined
       }
@@ -106,8 +106,8 @@ export default Plugin.define({
       onLoadError: (error) => reportOnce("watch", "MR status watcher failed", error),
       async load(key): Promise<Lookup> {
         const { directory, sessionID, prefix } = parseKey(key)
-        const target = sessionID ? await rpcTarget(sessionID, directory) : undefined
-        return locate(forges, { directory, target, title: prefix })
+        const targets = sessionID ? await rpcTargets(sessionID, directory) : undefined
+        return locate(forges, { directory, targets, title: prefix, previous: store.get(key).lookup })
       },
     })
 
@@ -146,7 +146,7 @@ export default Plugin.define({
             shared: () => notified,
             persist: (id, at) => persistLater(() => updateNotified((draft) => recordNotification(draft, id, at))),
           }),
-          send: (sessionID, mr) => void notifyFinishedReview(sessionID, mr),
+          send: (sessionID, requests) => void notifyFinishedReviews(sessionID, requests),
         })
       : undefined
 
@@ -193,23 +193,19 @@ export default Plugin.define({
       context.ui.toast.show({ ...feedbackToast(mr, comments), variant: "info" })
     }
 
-    async function notifyFinishedReview(sessionID: string, request: ReviewRequest) {
+    async function notifyFinishedReviews(sessionID: string, requests: ReviewRequest[]) {
       try {
         await context.client.session.synthetic({
           sessionID,
-          text: reviewMessage(request),
-          description: reviewTitle(request),
+          text: reviewMessage(requests),
+          description: reviewTitle(requests),
           delivery: "queue",
           resume: true,
         })
-        context.ui.toast.show({
-          title: reviewTitle(request),
-          message: `${reviewOutcome(request)}. Sent to the agent.`,
-          variant: "info",
-        })
+        context.ui.toast.show({ ...reviewToast(requests), variant: "info" })
       } catch (error) {
         const reason = error instanceof Error ? error.message : String(error)
-        const name = automatedReview(request)?.name ?? "the automated reviewer"
+        const name = automatedReview(requests[0])?.name ?? "the automated reviewer"
         context.ui.toast.show({ message: `Could not tell the session about ${name}'s review: ${reason}`, variant: "error" })
       }
     }

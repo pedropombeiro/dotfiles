@@ -1,7 +1,16 @@
 import { describe, expect, test } from "bun:test"
 import { githubTraits } from "./github"
 import { gitlabTraits } from "./gitlab"
-import { classifyTarget, parseTarget, targetOutput, targetPrefix, targetRequest } from "./target"
+import {
+  applyTargetChange,
+  classifyTargets,
+  parseTarget,
+  parseTargetChange,
+  targetOutput,
+  targetPrefix,
+  targetRequest,
+  targetsPrefix,
+} from "./target"
 
 describe("parseTarget", () => {
   test.each([
@@ -81,36 +90,139 @@ describe("target requests and prefixes", () => {
     expect(targetPrefix({ url: "https://gitlab.com/group/project/-/issues/5", branchIssue: "123" })).toBe("[#5]")
   })
 
-  test("reports only the URLs over RPC", () => {
+  test("reports only the URLs over RPC, with the first target at the top level", () => {
     expect(targetOutput(undefined)).toEqual({})
-    expect(targetOutput({ url: "u", branchIssue: "1" })).toEqual({ url: "u" })
-    expect(targetOutput({ url: "u", issueUrl: "i" })).toEqual({ url: "u", issueUrl: "i" })
+    expect(targetOutput([])).toEqual({})
+    expect(targetOutput([{ url: "u", branchIssue: "1" }])).toEqual({ url: "u", targets: [{ url: "u" }] })
+    expect(targetOutput([{ url: "u", issueUrl: "i" }, { url: "v" }])).toEqual({
+      url: "u",
+      issueUrl: "i",
+      targets: [{ url: "u", issueUrl: "i" }, { url: "v" }],
+    })
+  })
+
+  const mr = (iid: number) => ({ url: `https://gitlab.com/group/project/-/merge_requests/${iid}`, branchIssue: "9" })
+
+  test("lists only the targets' own references for several targets", () => {
+    expect(targetsPrefix([])).toBeUndefined()
+    expect(targetsPrefix([mr(1)])).toBe("[#9, !1]")
+    expect(targetsPrefix([mr(1), { url: "https://github.com/o/r/pull/2" }, { url: "https://gitlab.com/g/p/-/issues/3" }])).toBe(
+      "[!1, #2, #3]",
+    )
+    expect(targetsPrefix([1, 2, 3, 4].map(mr))).toBe("[!1, !2, !3, !4]")
+    expect(targetsPrefix([1, 2, 3, 4, 5, 6].map(mr))).toBe("[!1, !2, !3, +3]")
   })
 })
 
-describe("classifyTarget", () => {
+const a = "https://gitlab.com/group/project/-/merge_requests/1"
+const b = "https://gitlab.com/group/project/-/merge_requests/2"
+const c = "https://gitlab.com/other/project/-/merge_requests/3"
+const issue = "https://gitlab.com/group/project/-/issues/9"
+
+describe("parseTargetChange", () => {
+  test("defaults to replacing with a single target or branch mode", () => {
+    expect(parseTargetChange({ target: a, issue_url: issue })).toEqual({ operation: "replace", targets: [{ url: a, issueUrl: issue }] })
+    expect(parseTargetChange({ target: "branch" })).toEqual({ operation: "branch" })
+    expect(parseTargetChange({ target: "branch", operation: "replace" })).toEqual({ operation: "branch" })
+  })
+
+  test("normalizes and deduplicates several targets", () => {
+    expect(parseTargetChange({ targets: [a, `${b}?tab=diffs`, `${a}/`], operation: "add" })).toEqual({
+      operation: "add",
+      targets: [{ url: a }, { url: b }],
+    })
+  })
+
+  test.each([
+    { targets: [] },
+    { targets: "https://gitlab.com/group/project/-/merge_requests/1" },
+    { targets: [a, 7] },
+    { targets: [a, "branch"] },
+    { targets: [a], target: b },
+    { targets: [a], issue_url: issue },
+    { targets: Array.from({ length: 51 }, (_, index) => `${a.slice(0, -1)}${index + 1}`) },
+    { target: a, operation: "merge" },
+    { target: a, operation: "remove", issue_url: issue },
+    { target: "branch", operation: "add" },
+    "nope",
+  ])("rejects %j", (input) => {
+    expect(() => parseTargetChange(input)).toThrow()
+  })
+})
+
+describe("applyTargetChange", () => {
+  const current = [{ url: a, branchIssue: "5" }, { url: b, issueUrl: issue }]
+
+  test("replaces the targets, keeping inferred issues of targets it keeps", () => {
+    expect(applyTargetChange(current, { operation: "replace", targets: [{ url: c }, { url: a }, { url: b }] })).toEqual({
+      targets: [{ url: c }, { url: a, branchIssue: "5" }, { url: b }],
+      missing: [],
+    })
+  })
+
+  test("adds targets after the current ones, keeping their details", () => {
+    expect(applyTargetChange(current, { operation: "add", targets: [{ url: b }, { url: c }] }).targets).toEqual([
+      { url: a, branchIssue: "5" },
+      { url: b, issueUrl: issue },
+      { url: c },
+    ])
+    expect(applyTargetChange(current, { operation: "add", targets: [{ url: a, issueUrl: issue }] }).targets[0]).toEqual({
+      url: a,
+      issueUrl: issue,
+    })
+  })
+
+  test("removes targets and reports the ones it didn't have", () => {
+    expect(applyTargetChange(current, { operation: "remove", targets: [{ url: a }, { url: c }] })).toEqual({
+      targets: [{ url: b, issueUrl: issue }],
+      missing: [c],
+    })
+  })
+
+  test("clears every target in branch mode", () => {
+    expect(applyTargetChange(current, { operation: "branch" })).toEqual({ targets: [], missing: [] })
+  })
+
+  test("limits how many targets a session can have", () => {
+    const many = Array.from({ length: 30 }, (_, index) => ({ url: `${a.slice(0, -1)}${index + 10}` }))
+    const more = Array.from({ length: 30 }, (_, index) => ({ url: `${c.slice(0, -1)}${index + 10}` }))
+    expect(() => applyTargetChange(many, { operation: "add", targets: more })).toThrow("at most 50")
+  })
+})
+
+describe("classifyTargets", () => {
   test("recognizes a PR or MR target on any forge", () => {
-    expect(classifyTarget({ url: "https://gitlab.com/group/project/-/merge_requests/42" })).toEqual({
-      kind: "merge-request",
-      ref: { forge: "gitlab", host: "gitlab.com", project: "group/project", iid: "42" },
-    })
-    expect(classifyTarget({ url: "https://github.com/owner/repo/pull/7" })).toEqual({
-      kind: "merge-request",
-      ref: { forge: "github", host: "github.com", project: "owner/repo", iid: "7" },
-    })
+    expect(classifyTargets({ url: "https://gitlab.com/group/project/-/merge_requests/42" })).toEqual([
+      {
+        kind: "merge-request",
+        ref: { forge: "gitlab", host: "gitlab.com", project: "group/project", iid: "42" },
+        url: "https://gitlab.com/group/project/-/merge_requests/42",
+      },
+    ])
+    expect(classifyTargets({ url: "https://github.com/owner/repo/pull/7" })).toMatchObject([
+      { kind: "merge-request", ref: { forge: "github", host: "github.com", project: "owner/repo", iid: "7" } },
+    ])
   })
 
   test.each(["https://gitlab.com/group/project/-/issues/7", "https://github.com/owner/repo/issues/7"])(
     "marks an issue target as not a PR/MR: %s",
     (url) => {
-      expect(classifyTarget({ url })).toEqual({ kind: "other", url })
+      expect(classifyTargets({ url })).toEqual([{ kind: "other", url }])
     },
   )
 
+  test("prefers the list of targets over the first target", () => {
+    expect(classifyTargets({ url: a, targets: [{ url: a }, { url: issue }] })).toMatchObject([
+      { kind: "merge-request", url: a },
+      { kind: "other", url: issue },
+    ])
+  })
+
   test("treats a missing target as automatic", () => {
-    expect(classifyTarget({})).toBeUndefined()
-    expect(classifyTarget({ url: 42 })).toBeUndefined()
-    expect(classifyTarget(undefined)).toBeUndefined()
+    expect(classifyTargets({})).toBeUndefined()
+    expect(classifyTargets({ targets: [] })).toBeUndefined()
+    expect(classifyTargets({ url: 42 })).toBeUndefined()
+    expect(classifyTargets(undefined)).toBeUndefined()
   })
 })
 

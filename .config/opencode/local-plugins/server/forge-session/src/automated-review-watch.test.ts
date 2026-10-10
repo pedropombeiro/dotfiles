@@ -12,6 +12,7 @@ import {
   reviewMessage,
   reviewOutcome,
   reviewTitle,
+  reviewToast,
   type NotifiedLog,
 } from "./automated-review-watch"
 import type { GitHubPullRequest, GitLabMergeRequest, ReviewRequest } from "./forge"
@@ -61,12 +62,30 @@ describe("finishedReviews", () => {
 
 describe("reviewMessage", () => {
   test("names the reviewer, the MR, and its final state", () => {
-    const message = reviewMessage(mr("REQUESTED_CHANGES"))
+    const message = reviewMessage([mr("REQUESTED_CHANGES")])
     expect(message).toStartWith("GitLab Duo finished reviewing !4281")
     expect(message).toContain("GitLab Duo's new comments and discussion threads on the MR")
-    expect(reviewTitle(mr("REVIEWED"))).toBe("GitLab Duo finished reviewing !4281")
+    expect(reviewTitle([mr("REVIEWED")])).toBe("GitLab Duo finished reviewing !4281")
     expect(message).toContain("!4281 (https://gitlab.com/group/project/-/merge_requests/4281)")
     expect(message).toContain('"requested changes"')
+  })
+
+  test("lists every review that finished together, with its URL and state", () => {
+    const requests = [mr("REVIEWED", "1"), mr("REQUESTED_CHANGES", "2")]
+    expect(reviewTitle(requests)).toBe("GitLab Duo finished reviewing 2 MRs")
+    expect(reviewMessage(requests)).toBe(
+      [
+        "GitLab Duo finished reviewing 2 MRs:",
+        '- !1 (https://gitlab.com/group/project/-/merge_requests/1) with the state "reviewed"',
+        '- !2 (https://gitlab.com/group/project/-/merge_requests/2) with the state "requested changes"',
+        "For each one, fetch the reviewer's new comments and discussion threads, then work through its feedback.",
+      ].join("\n"),
+    )
+    expect(reviewToast(requests)).toEqual({
+      title: "GitLab Duo finished reviewing 2 MRs",
+      message: "!1: reviewed, !2: requested changes. Sent to the agent.",
+    })
+    expect(reviewToast([mr("REVIEWED")]).message).toBe("Reviewed. Sent to the agent.")
   })
 })
 
@@ -125,16 +144,31 @@ describe("createNotificationClaim", () => {
 
 describe("createAutomatedReviewWatcher", () => {
   test("notifies once per claimed finished review", () => {
-    const sent: Array<[string, string]> = []
+    const sent: Array<[string, string[]]> = []
     const claimed: string[] = []
     const watcher = createAutomatedReviewWatcher({
       claim: (key) => (claimed.push(key), claimed.length === 1),
-      send: (sessionID, request) => sent.push([sessionID, automatedReview(request)?.label ?? ""]),
+      send: (sessionID, requests) => sent.push([sessionID, requests.map((request) => automatedReview(request)?.label ?? "")]),
     })
     watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("REQUESTED_CHANGES")))
     watcher.observe("ses_1", found(mr("REVIEW_STARTED")), found(mr("REQUESTED_CHANGES")))
     expect(claimed).toEqual([notificationKey("ses_1", mr()), notificationKey("ses_1", mr())])
-    expect(sent).toEqual([["ses_1", "requested changes"]])
+    expect(sent).toEqual([["ses_1", ["requested changes"]]])
+  })
+
+  test("sends reviews of several targets that finished in one poll together", () => {
+    const sent: string[][] = []
+    const watcher = createAutomatedReviewWatcher({
+      claim: (key) => !key.endsWith("/3"),
+      send: (_sessionID, requests) => sent.push(requests.map((request) => request.iid)),
+    })
+    const before = found(mr("REVIEW_STARTED", "1"), mr("REVIEW_STARTED", "2"), mr("REVIEW_STARTED", "3"), mr("REVIEW_STARTED", "4"))
+    const after = found(mr("REVIEWED", "1"), mr("REVIEW_STARTED", "2"), mr("REVIEWED", "3"), mr("REQUESTED_CHANGES", "4"))
+    watcher.observe("ses_1", before, after)
+    // !2 is still running, and another CLI already claimed !3.
+    expect(sent).toEqual([["1", "4"]])
+    watcher.observe("ses_1", after, found(mr("REVIEWED", "1"), mr("REVIEWED", "2")))
+    expect(sent).toEqual([["1", "4"], ["2"]])
   })
 
   test("ignores approvals and running reviews", () => {

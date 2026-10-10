@@ -189,12 +189,12 @@ describe("session targets", () => {
     const app = await harness({ storage })
     expect(await app.target()).toEqual({})
     await app.set({ target: mr, issue_url: issue })
-    expect(await app.target()).toEqual({ url: mr, issueUrl: issue })
+    expect(await app.target()).toEqual({ url: mr, issueUrl: issue, targets: [{ url: mr, issueUrl: issue }] })
     expect(await app.target("two")).toEqual({})
     await app.set({ target: "branch" })
     expect(await app.target()).toEqual({})
     expect(app.emitted).toEqual([
-      { name: "targetChanged", data: { sessionID: "one", url: mr, issueUrl: issue } },
+      { name: "targetChanged", data: { sessionID: "one", url: mr, issueUrl: issue, targets: [{ url: mr, issueUrl: issue }] } },
       { name: "targetChanged", data: { sessionID: "one" } },
     ])
     await app.cleanup()
@@ -202,8 +202,70 @@ describe("session targets", () => {
 
     const reloaded = await harness({ storage })
     await reloaded.set({ target: nextMr })
-    expect(await reloaded.target()).toEqual({ url: nextMr })
+    expect(await reloaded.target()).toEqual({ url: nextMr, targets: [{ url: nextMr }] })
     await reloaded.cleanup()
+  })
+
+  test("reads a single target stored before sessions could have several", async () => {
+    const storage = new Map<string, unknown>([["sessions/one", { target: { url: mr, branchIssue: "123" }, prefix: "[#123, !45]" }]])
+    const app = await harness({ storage, sourceBranches: new Map([["456", "999-other"]]) })
+    expect(await app.target()).toEqual({ url: mr, targets: [{ url: mr }] })
+    await app.set({ target: nextMr, operation: "add" })
+    // The stored target keeps its inferred issue, so only the new one is looked up.
+    expect(app.sourceLookups.map((ref) => ref.iid)).toEqual(["789"])
+    expect(storage.get("sessions/one")).toEqual({
+      targets: [{ url: mr, branchIssue: "123" }, { url: nextMr }],
+      prefix: "[!456, !789]",
+    })
+    expect(app.sessions.get("one")?.title).toBe("[!456, !789] Review changes")
+    await app.cleanup()
+  })
+
+  test("sets, adds, and removes several targets", async () => {
+    const app = await harness({ sourceBranches: new Map([["456", "321-fix-timeout"], ["101", "5-other"]]) })
+    const third = "https://gitlab.com/group/other/-/merge_requests/101"
+    expect(await app.set({ targets: [mr, nextMr] })).toEqual({ content: `Session targets (2):\n- ${mr}\n- ${nextMr}` })
+    expect(app.sessions.get("one")?.title).toBe("[!456, !789] Review changes")
+    expect(await app.context()).toContain(`Current session target: 2 targets: [{"url":"${mr}","branchIssue":"321"},{"url":"${nextMr}"}]`)
+
+    await app.set({ target: third, operation: "add" })
+    expect(app.sessions.get("one")?.title).toBe("[!456, !789, !101] Review changes")
+    expect(await app.target()).toEqual({ url: mr, targets: [{ url: mr }, { url: nextMr }, { url: third }] })
+    expect(app.emitted.at(-1)?.data).toMatchObject({ sessionID: "one", targets: [{ url: mr }, { url: nextMr }, { url: third }] })
+
+    expect(await app.set({ targets: [nextMr, issue], operation: "remove" })).toEqual({
+      content: `Session targets (2):\n- ${mr}\n- ${third}\nNot session targets, so not removed: ${issue}`,
+    })
+    expect(app.sessions.get("one")?.title).toBe("[!456, !101] Review changes")
+
+    // The remaining target shows its inferred issue again, without another lookup.
+    await app.set({ target: third, operation: "remove" })
+    expect(app.sessions.get("one")?.title).toBe("[#321, !456] Review changes")
+    expect(app.sourceLookups.map((ref) => ref.iid)).toEqual(["456", "789", "101"])
+
+    expect(await app.set({ target: mr, operation: "remove" })).toEqual({ content: "Session target: checked-out branch." })
+    expect(app.sessions.get("one")?.title).toBe("Review changes")
+    expect(await app.context()).toContain("checked-out branch (automatic)")
+    await app.cleanup()
+  })
+
+  test("tells the agent to set every target of a task, even ones it has to find", async () => {
+    const app = await harness()
+    const guidance = await app.context()
+    expect(guidance).toContain("with all of their full URLs in targets")
+    expect(guidance).toContain("If the user describes them instead of linking them, find them first")
+    expect(guidance).toContain('use operation "add" so they are kept')
+    expect(guidance).not.toMatch(/weekly|distill/i)
+    await app.cleanup()
+  })
+
+  test("rejects invalid batches without changing the targets", async () => {
+    const app = await harness()
+    await app.set({ targets: [mr, nextMr] })
+    await expect(app.set({ targets: [mr, "branch"] })).rejects.toThrow()
+    await expect(app.set({ targets: [mr], issue_url: issue })).rejects.toThrow()
+    expect(app.sessions.get("one")?.title).toBe("[!456, !789] Review changes")
+    await app.cleanup()
   })
 
   test("skips child sessions and sessions in another location", async () => {

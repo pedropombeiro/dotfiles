@@ -7,12 +7,15 @@ export type Lookup =
   // `sessionTarget` instead, a display label for where the PR/MR came from,
   // because it ignores the checked-out branch.
   // `explicitTarget` is set only for PRs/MRs that came from set_session_target.
+  // `failed` lists explicit targets whose lookup failed. A target that failed
+  // with an error keeps its previous result in `requests`, if it had one.
   | {
       kind: "found"
       repository?: Repository
       sessionTarget?: string
       explicitTarget?: boolean
       requests: ReviewRequest[]
+      failed?: { url: string; reason: string }[]
     }
 
 export interface Snapshot {

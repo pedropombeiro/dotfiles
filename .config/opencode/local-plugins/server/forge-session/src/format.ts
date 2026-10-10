@@ -47,14 +47,41 @@ function ci(request: ReviewRequest): Segment {
   return { text: `CI ${request.pipeline.label}`, compact: COMPACT_CI[tone], tone, url: request.pipeline.url }
 }
 
+// Counts the PRs/MRs in each state, for a session with several targets.
+// Clicking a segment without a link opens the status dialog with the details.
+function targetsSummary(requests: ReviewRequest[]): Segment[] {
+  const nouns = new Set(requests.map((request) => traitsOf(request).noun))
+  const noun = nouns.size === 1 ? [...nouns][0] : "PR/MR"
+  const count = requests.length === 1 ? `1 ${noun}` : `${requests.length} ${noun === "PR/MR" ? "PRs/MRs" : `${noun}s`}`
+  const open = requests.filter((request) => request.state === "opened")
+  const segments: Segment[] = [{ text: count, tone: "muted", essential: true }]
+  const reviewing = open.filter((request) => automatedReview(request)?.state === "running").length
+  if (reviewing) segments.push({ text: `🤖 ${reviewing} reviewing`, compact: `🤖 ${reviewing}`, tone: "warning", essential: true })
+  const failing = open.filter((request) => pipelineTone(request.pipeline) === "error").length
+  if (failing) segments.push({ text: `${failing} CI failed`, compact: `CI ✗ ${failing}`, tone: "error" })
+  const conflicts = open.filter((request) => request.conflicts).length
+  if (conflicts) segments.push({ text: plural(conflicts, "conflict"), tone: "error", essential: true })
+  const approved = open.filter((request) => request.approved && request.awaitingReviewers.length === 0).length
+  if (approved) segments.push({ text: `${approved} approved`, tone: "success" })
+  const merged = requests.filter((request) => request.state === "merged").length
+  if (merged) segments.push({ text: `${merged} merged`, tone: "success" })
+  const closed = requests.length - open.length - merged
+  if (closed) segments.push({ text: `${closed} closed`, tone: "muted" })
+  return segments
+}
+
 export function footerSegments(snapshot: Snapshot): Segment[] {
   const { lookup, error } = snapshot
   const stale: Segment[] = error ? [{ text: "stale", tone: "warning", essential: true }] : []
   if (!lookup || lookup.kind === "none" || lookup.requests.length === 0) {
     return error ? [{ text: "PR/MR status unavailable", tone: "warning" }] : []
   }
+  if (lookup.failed?.length) {
+    stale.unshift({ text: `${lookup.failed.length} unavailable`, tone: "warning", essential: true })
+  }
 
   const requests = lookup.requests
+  if (lookup.explicitTarget && requests.length > 1) return [...targetsSummary(requests), ...stale]
   if (requests.length > 1) {
     const noun = traitsOf(requests[0]).noun
     return [
@@ -150,6 +177,7 @@ export function detailsMessage(snapshot: Snapshot): string {
     } else if (sessionTarget) {
       lines.push(`Session target: ${sessionTarget}`)
     }
+    for (const { url, reason } of lookup.failed ?? []) lines.push(`Unavailable: ${url} (${reason})`)
     for (const request of requests) lines.push("", ...describe(request, repository?.head ?? ""))
   }
 

@@ -1,12 +1,22 @@
-// Contract between the server, which stores each session's target, and the
-// CLI, which shows the target's status. The ID is the one that
+// Contract between the server, which stores each session's targets, and the
+// CLI, which shows their status. The ID is the one that
 // opencode-forge-session-title registered, so callers written for that
 // package keep working.
+const urls = {
+  url: { type: "string" },
+  issueUrl: { type: "string" },
+} as const
+
+// `url` and `issueUrl` describe the first target, for callers that expect a
+// single target. `targets` lists every target in order.
 const target = {
   type: "object",
   properties: {
-    url: { type: "string" },
-    issueUrl: { type: "string" },
+    ...urls,
+    targets: {
+      type: "array",
+      items: { type: "object", properties: urls, required: ["url"], additionalProperties: false },
+    },
   },
   additionalProperties: false,
 } as const
@@ -14,7 +24,7 @@ const target = {
 export const ForgeSessionRpc = {
   id: "opencode-forge-session-title",
   methods: {
-    // `{ url, issueUrl? }` for an explicit target, `{}` in automatic branch mode.
+    // The session's explicit targets, or `{}` in automatic branch mode.
     target: {
       input: {
         type: "object",
@@ -31,7 +41,7 @@ export const ForgeSessionRpc = {
     },
   },
   events: {
-    // Fires after set_session_target runs. Omits `url` for branch mode.
+    // Fires after set_session_target runs. Has only `sessionID` in branch mode.
     targetChanged: {
       schema: {
         type: "object",
@@ -43,4 +53,5 @@ export const ForgeSessionRpc = {
   },
 } as const
 
-export type TargetOutput = { url?: string; issueUrl?: string }
+export type TargetUrls = { url: string; issueUrl?: string }
+export type TargetOutput = { url?: string; issueUrl?: string; targets?: TargetUrls[] }

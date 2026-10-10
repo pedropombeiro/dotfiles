@@ -14,12 +14,13 @@ export interface SessionWatchOptions {
   human?: { check: (sessionID: string, request: ReviewRequest) => unknown }
 }
 
-const explicitTarget = (lookup: Lookup | undefined): ReviewRequest | undefined =>
-  lookup?.kind === "found" && lookup.explicitTarget === true ? lookup.requests[0] : undefined
+const explicitTargets = (lookup: Lookup | undefined): ReviewRequest[] =>
+  lookup?.kind === "found" && lookup.explicitTarget === true ? lookup.requests : []
 
-// Watches each session's set_session_target PR/MR for automated and human
-// reviews, and keeps its status polling while either needs it, even when hidden.
-// Each kind of notification needs the matching capability on the target's forge.
+// Watches each session's set_session_target PRs/MRs for automated and human
+// reviews, and keeps its status polling while any of them needs it, even when
+// hidden. Each kind of notification needs the matching capability on the
+// PR/MR's forge.
 export function createSessionWatch(options: SessionWatchOptions) {
   const holds = createSessionHolds(options.acquire)
   // The last lookup per session, so a key change doesn't lose the previous state.
@@ -32,19 +33,19 @@ export function createSessionWatch(options: SessionWatchOptions) {
       const previous = last.get(sessionID)
       last.set(sessionID, next)
 
-      const request = explicitTarget(next)
-      const traits = request && traitsOf(request)
-      const automated = !!options.automated && !!traits?.automatedReview
-      const human = !!options.human && !!traits?.feedback && request?.state === "opened"
-      holds.update(sessionID, key, (automated && isReviewRunning(next)) || human)
-      if (!request) return
+      const requests = explicitTargets(next)
+      const automated = !!options.automated && requests.some((request) => traitsOf(request).automatedReview)
+      const human = options.human
+        ? requests.filter((request) => traitsOf(request).feedback && request.state === "opened")
+        : []
+      holds.update(sessionID, key, (automated && isReviewRunning(next)) || human.length > 0)
 
       if (automated) options.automated?.observe(sessionID, previous, next)
-      if (human) options.human?.check(sessionID, request)
+      for (const request of human) options.human?.check(sessionID, request)
     },
-    // Whether the PR/MR is still the session's target.
+    // Whether the PR/MR is still one of the session's targets.
     isTarget(sessionID: string, request: ReviewRequest) {
-      return explicitTarget(last.get(sessionID))?.url === request.url
+      return explicitTargets(last.get(sessionID)).some((target) => target.url === request.url)
     },
     heldKeys: () => holds.heldKeys(),
     dispose: () => holds.dispose(),

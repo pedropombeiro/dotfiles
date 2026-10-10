@@ -140,7 +140,7 @@ job created, and the agent finds them, then sets them as targets. Never name a
 company-specific workflow, project, or schedule in the plugin.
 
 The same applies to plugins published from there. For example,
-[`opencode-forge-session`](https://github.com/pedropombeiro/opencode-plugins/tree/main/packages/forge-session)
+[`opencode-forgekeeper`](https://github.com/pedropombeiro/opencode-plugins/tree/main/packages/forgekeeper)
 started as a local trial. It adds `set_session_target`, prefixes session titles with their
 issues and PRs/MRs, shows the PR/MR status in the CLI footer, and notifies the agent about
 review feedback. Its server keeps the plugin and RPC ID `opencode-forge-session-title`, so

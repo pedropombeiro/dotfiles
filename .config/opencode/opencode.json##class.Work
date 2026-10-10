@@ -17,7 +17,7 @@
     "@nm156/opencode-wakatime@1.4.0",     // Tracks AI coding activity in WakaTime
     "opencode-atuin-history@1.0.1",       // Records the agent's shell commands in Atuin history
     "opencode-homeassistant@1.0.2",       // Sends agent status to Home Assistant and answers permissions from it
-    "opencode-forge-session@1.0.0",       // Tracks each session's issues and PRs/MRs: title prefix, status footer, and review notifications
+    "opencode-forgekeeper@1.0.0",         // Tracks each session's issues and PRs/MRs: title prefix, status footer, and review notifications
     {
       // Sends metrics only to Alloy on the NAS. Traces carry prompts, code, and
       // tool output, and events carry commands and paths, so Work content stays

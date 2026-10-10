@@ -33,8 +33,18 @@ declare it only in the matching environment fragment. A duplicate declaration in
 ### Config environments
 
 The YADM-selected `~/.config/mise/miserc.toml` enables `env_conf_d`, `auto_env`,
-and the explicit `personal`, `work`, `linux-standard`, or `qts` environment.
+and the explicit environments for the machine's role and platform.
 Platform fragments such as `tools.linux.toml` load through `auto_env`.
+
+Keep role-specific tools in `tools.personal.toml`, `tools.work.toml`, or
+`tools.nas.toml`. Use `tools.qts.toml` only for QTS compatibility constraints,
+not as a substitute for the NAS role. The `miserc.toml##class.NAS,distro.qts`
+alternate enables both `nas` and `qts`; the existing QTS-only alternate remains
+the platform fallback. A fragment such as `tools.nas.toml` is loaded only when
+its named environment is enabled. Keep shared application settings, such as
+OpenCode telemetry, in an unqualified fragment rather than adding NAS-only
+tools there. `lazy = true` delays installation but does not scope a tool to a
+machine role.
 
 Explicit environments outrank automatic platform environments. On QTS,
 `tools.qts.toml` overrides `tools.linux.toml` for incompatible runtimes and libc

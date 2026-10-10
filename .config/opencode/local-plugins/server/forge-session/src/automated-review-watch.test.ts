@@ -156,7 +156,11 @@ describe("createAutomatedReviewWatcher", () => {
 
   test("skips PRs/MRs that are no longer targets", async () => {
     const { watcher, sent } = harness({ targets: (url) => !url.endsWith("/2") })
-    await watcher.observe("ses_1", found(mr("REVIEW_STARTED", "1"), mr("REVIEW_STARTED", "2")), found(mr("REVIEWED", "1"), mr("REVIEWED", "2")))
+    await watcher.observe(
+      "ses_1",
+      found(mr("REVIEW_STARTED", "1"), mr("REVIEW_STARTED", "2")),
+      found(mr("REVIEWED", "1"), mr("REVIEWED", "2")),
+    )
     expect(sent).toEqual([["ses_1", ["1 reviewed"]]])
   })
 
@@ -234,7 +238,9 @@ describe("createAutomatedReviewWatcher", () => {
 
   test("sends a delivery that was pending before a restart", async () => {
     const key = notificationKey("ses_1", mr())
-    const { watcher, sent } = harness({ pending: { [key]: { sessionID: "ses_1", url: mr().url, since: 1_000, retryAt: 0 } } })
+    const { watcher, sent } = harness({
+      pending: { [key]: { sessionID: "ses_1", url: mr().url, since: 1_000, retryAt: 0 } },
+    })
     await watcher.observe("ses_1", undefined, found(mr("REQUESTED_CHANGES")))
     expect(sent).toEqual([["ses_1", ["4281 requested changes"]]])
   })
@@ -242,7 +248,11 @@ describe("createAutomatedReviewWatcher", () => {
 
 describe("automated review capability", () => {
   test("maps GitLab Duo states", () => {
-    expect(automatedReview(mr("REVIEW_STARTED"))).toEqual({ name: "GitLab Duo", state: "running", label: "review started" })
+    expect(automatedReview(mr("REVIEW_STARTED"))).toEqual({
+      name: "GitLab Duo",
+      state: "running",
+      label: "review started",
+    })
     expect(automatedReview(mr("REQUESTED_CHANGES"))?.state).toBe("feedback")
     expect(automatedReview(mr("APPROVED"))?.state).toBe("settled")
     expect(automatedReview(mr())).toBeUndefined()

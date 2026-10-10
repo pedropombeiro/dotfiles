@@ -19,7 +19,10 @@ function harness() {
       watches.push({ directory, keys: input.keys, ...(input.visible !== undefined ? { visible: input.visible } : {}) })
       return { enabled: enabled.get(directory) ?? true, statuses: statuses.get(directory) ?? {} }
     },
-    refresh: async (directory, key) => ({ enabled: enabled.get(directory) ?? true, snapshot: statuses.get(directory)?.[key] }),
+    refresh: async (directory, key) => ({
+      enabled: enabled.get(directory) ?? true,
+      snapshot: statuses.get(directory)?.[key],
+    }),
     release: async (directory) => void released.push(directory),
     onChange: () => {},
     setTimer: (callback) => timers.push(callback),

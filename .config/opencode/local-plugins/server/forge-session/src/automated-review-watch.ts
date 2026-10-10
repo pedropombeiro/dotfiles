@@ -124,7 +124,8 @@ export function createAutomatedReviewWatcher(options: AutomatedReviewWatcherOpti
   const known = new Map<string, PendingDeliveries>()
   const sending = new Set<string>()
 
-  const write = (sessionID: string, url: string, delivery?: PendingDelivery) => options.write?.(sessionID, url, delivery)
+  const write = (sessionID: string, url: string, delivery?: PendingDelivery) =>
+    options.write?.(sessionID, url, delivery)
 
   return {
     async observe(sessionID: string, previous: Lookup | undefined, next: Lookup): Promise<void> {

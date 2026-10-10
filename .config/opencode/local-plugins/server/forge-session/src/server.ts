@@ -60,10 +60,7 @@ const DRAIN_TIME = 5_000
 
 async function drain(tasks: Promise<unknown>[], limit: number) {
   let timer: ReturnType<typeof setTimeout> | undefined
-  await Promise.race([
-    Promise.allSettled(tasks),
-    new Promise<void>((resolve) => (timer = setTimeout(resolve, limit))),
-  ])
+  await Promise.race([Promise.allSettled(tasks), new Promise<void>((resolve) => (timer = setTimeout(resolve, limit)))])
   clearTimeout(timer)
 }
 
@@ -279,7 +276,8 @@ export async function setupServer(ctx: Plugin.Context, lookups: TitleLookups, st
       if (type === "session.execution.succeeded" || type === "session.execution.failed") watcher?.turnEnded()
       if (type === "vcs.branch.updated") {
         const location = (event as { location?: { directory?: string } }).location
-        if (!location?.directory || location.directory === ctx.location.directory) void watcher?.branchChanged().catch(() => {})
+        if (!location?.directory || location.directory === ctx.location.directory)
+          void watcher?.branchChanged().catch(() => {})
       }
     }
   })().catch((error) => {

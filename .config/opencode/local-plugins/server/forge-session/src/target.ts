@@ -92,15 +92,20 @@ export function parseTargetChange(input: unknown): TargetChange {
     return { operation, targets: dedupe(urls.map((url) => ({ url: parseTargetUrl(url).url }))) }
   }
 
-  if (operation === "remove" && value.issue_url !== undefined) throw new Error("Removing a target does not accept issue_url.")
-  if (value.target === "branch" && operation !== "replace") throw new Error('"branch" replaces every target, so it takes no operation.')
+  if (operation === "remove" && value.issue_url !== undefined)
+    throw new Error("Removing a target does not accept issue_url.")
+  if (value.target === "branch" && operation !== "replace")
+    throw new Error('"branch" replaces every target, so it takes no operation.')
   const target = parseTarget(value)
   return target ? { operation, targets: [target] } : { operation: "branch" }
 }
 
 // Applies a change to the session's targets. `missing` lists the URLs that a
 // removal named but the session didn't have.
-export function applyTargetChange(current: readonly Target[], change: TargetChange): { targets: Target[]; missing: string[] } {
+export function applyTargetChange(
+  current: readonly Target[],
+  change: TargetChange,
+): { targets: Target[]; missing: string[] } {
   if (change.operation === "branch") return { targets: [], missing: [] }
   const known = new Map(current.map((target) => [target.url, target]))
 

@@ -20,7 +20,8 @@ serves and shows its notices as toasts.
 Both `opencode.json` alternates load it as `./local-plugins/server/forge-session`. OpenCode
 then loads `tui.tsx` in the CLI, so `cli.base.json` has no entry for it. It is a local trial;
 once the design settles, it can be published from
-[`opencode-plugins`](https://github.com/pedropombeiro/opencode-plugins).
+[`opencode-plugins`](https://github.com/pedropombeiro/opencode-plugins). That repository
+should then pin Prettier and check the formatting and types in CI.
 
 ## Requirements
 
@@ -367,6 +368,14 @@ Run the tests from this directory:
 
 ```sh
 mise exec bun@1.3.10 -- bun test
+```
+
+Prettier formats the TypeScript and TSX files, using `.prettierrc.json` in this directory.
+Markdown stays with markdownlint. Check or apply the formatting from this directory:
+
+```sh
+mise x prettier@3.9.9 -- prettier --check '**/*.{ts,tsx}'
+mise x prettier@3.9.9 -- prettier --write '**/*.{ts,tsx}'
 ```
 
 For how local plugins load and the rules for editing them, see

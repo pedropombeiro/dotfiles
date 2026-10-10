@@ -24,7 +24,10 @@ export default Plugin.define({
     const client = createStatusClient({
       clientID: crypto.randomUUID(),
       watch: async (directory, input) =>
-        (await rpc.watch(input, { location: { directory } })) as { enabled: boolean; statuses: Record<string, unknown> },
+        (await rpc.watch(input, { location: { directory } })) as {
+          enabled: boolean
+          statuses: Record<string, unknown>
+        },
       refresh: async (directory, key) =>
         (await rpc.refresh({ key }, { location: { directory } })) as { enabled: boolean; snapshot: unknown },
       release: (directory, clientID) => rpc.release({ clientID }, { location: { directory } }),
@@ -83,7 +86,9 @@ export default Plugin.define({
       })
 
       const snapshot = createMemo(() => snapshotOf(place()))
-      const fullWidth = createMemo(() => (enabledFor(place().directory) ? segmentsWidth(footerSegments(snapshot())) : 0))
+      const fullWidth = createMemo(() =>
+        enabledFor(place().directory) ? segmentsWidth(footerSegments(snapshot())) : 0,
+      )
       const [availableWidth, setAvailableWidth] = createSignal(0)
       const segments = createMemo(() => responsiveFooterSegments(snapshot(), availableWidth()))
 
@@ -114,7 +119,12 @@ export default Plugin.define({
                     fallback={
                       // Segments without a link of their own open the status dialog,
                       // which has the full detail behind the abbreviated indicator.
-                      <text wrapMode="none" flexShrink={0} fg={color(segment.tone)} onMouseUp={() => showStatus(place())}>
+                      <text
+                        wrapMode="none"
+                        flexShrink={0}
+                        fg={color(segment.tone)}
+                        onMouseUp={() => showStatus(place())}
+                      >
                         {segment.text}
                       </text>
                     }
@@ -154,7 +164,10 @@ export default Plugin.define({
     // Commands explain why nothing happens when the place's server has status off.
     const statusOff = (place: Place) => {
       if (enabledFor(place.directory)) return false
-      context.ui.toast.show({ message: "PR/MR status is off in the plugin's options (reviewStatus: false)", variant: "info" })
+      context.ui.toast.show({
+        message: "PR/MR status is off in the plugin's options (reviewStatus: false)",
+        variant: "info",
+      })
       return true
     }
 
@@ -202,8 +215,12 @@ export default Plugin.define({
       return (
         <box height={contentHeight() + 5} paddingLeft={2} paddingRight={2} paddingBottom={1} gap={1}>
           <box height={1} flexShrink={0} flexDirection="row" justifyContent="space-between">
-            <text fg={context.theme.text.base}><b>PR/MR status</b></text>
-            <text fg={context.theme.text.muted} onMouseUp={close}>esc</text>
+            <text fg={context.theme.text.base}>
+              <b>PR/MR status</b>
+            </text>
+            <text fg={context.theme.text.muted} onMouseUp={close}>
+              esc
+            </text>
           </box>
           <scrollbox
             height={contentHeight()}
@@ -237,9 +254,13 @@ export default Plugin.define({
                   >
                     <text
                       wrapMode="none"
-                      fg={disabled()
-                        ? context.theme.text.action.primary.disabled
-                        : active() ? context.theme.text.action.primary.focused : context.theme.text.muted}
+                      fg={
+                        disabled()
+                          ? context.theme.text.action.primary.disabled
+                          : active()
+                            ? context.theme.text.action.primary.focused
+                            : context.theme.text.muted
+                      }
                     >
                       {action === "close" ? "Close" : snapshot().loading ? "Refreshing…" : "Refresh"}
                     </text>
@@ -274,8 +295,20 @@ export default Plugin.define({
       if (requests.length === 1) return openUrl(requests[0].url)
       const url = await context.ui.dialog.select({
         title: "Open PR/MR",
-        actions: [{ bind: "ctrl+w", title: "Close", side: "right", selection: "none", onTrigger: () => context.ui.dialog.clear() }],
-        options: requests.map((mr) => ({ title: `${reference(mr)} ${mr.title}`, value: mr.url, description: mr.targetProject })),
+        actions: [
+          {
+            bind: "ctrl+w",
+            title: "Close",
+            side: "right",
+            selection: "none",
+            onTrigger: () => context.ui.dialog.clear(),
+          },
+        ],
+        options: requests.map((mr) => ({
+          title: `${reference(mr)} ${mr.title}`,
+          value: mr.url,
+          description: mr.targetProject,
+        })),
       })
       if (url) openUrl(url)
     }

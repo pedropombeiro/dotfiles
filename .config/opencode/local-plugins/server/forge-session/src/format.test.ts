@@ -42,7 +42,10 @@ const snapshot = (requests: GitLabMergeRequest[], extra: Partial<Snapshot> = {})
   ...extra,
 })
 
-const text = (value: Snapshot) => footerSegments(value).map((segment) => segment.text).join(" · ")
+const text = (value: Snapshot) =>
+  footerSegments(value)
+    .map((segment) => segment.text)
+    .join(" · ")
 
 describe("footerSegments", () => {
   test("shows an active Duo review", () => {
@@ -69,9 +72,15 @@ describe("footerSegments", () => {
 
   test("shows pending reviewers instead of approval", () => {
     const base = { unresolvedThreads: 0, pipeline: undefined, approved: true }
-    expect(text(snapshot([mr({ ...base, awaitingReviewers: ["david"] })]))).toBe("!4281 · no pipeline · awaiting @david")
-    expect(text(snapshot([mr({ ...base, awaitingReviewers: ["a", "b"] })]))).toBe("!4281 · no pipeline · awaiting @a, @b")
-    expect(text(snapshot([mr({ ...base, awaitingReviewers: ["a", "b", "c"] })]))).toBe("!4281 · no pipeline · awaiting 3 reviewers")
+    expect(text(snapshot([mr({ ...base, awaitingReviewers: ["david"] })]))).toBe(
+      "!4281 · no pipeline · awaiting @david",
+    )
+    expect(text(snapshot([mr({ ...base, awaitingReviewers: ["a", "b"] })]))).toBe(
+      "!4281 · no pipeline · awaiting @a, @b",
+    )
+    expect(text(snapshot([mr({ ...base, awaitingReviewers: ["a", "b", "c"] })]))).toBe(
+      "!4281 · no pipeline · awaiting 3 reviewers",
+    )
     expect(text(snapshot([mr({ ...base, awaitingReviewers: [] })]))).toBe("!4281 · no pipeline · approved")
   })
 
@@ -97,29 +106,51 @@ describe("footerSegments", () => {
 
   test("summarizes several session targets", () => {
     const targets = (requests: GitLabMergeRequest[], failed?: { url: string; reason: string }[]): Snapshot => ({
-      lookup: { kind: "found", explicitTarget: true, sessionTarget: "4 PRs/MRs set with set_session_target", requests, ...(failed ? { failed } : {}) },
+      lookup: {
+        kind: "found",
+        explicitTarget: true,
+        sessionTarget: "4 PRs/MRs set with set_session_target",
+        requests,
+        ...(failed ? { failed } : {}),
+      },
       loading: false,
     })
     const requests = [
       mr({ iid: "1", duoReviewState: "REVIEW_STARTED" }),
-      mr({ iid: "2", duoReviewState: "REVIEW_STARTED", conflicts: true, pipeline: { status: "SUCCESS", label: "passed" } }),
+      mr({
+        iid: "2",
+        duoReviewState: "REVIEW_STARTED",
+        conflicts: true,
+        pipeline: { status: "SUCCESS", label: "passed" },
+      }),
       mr({ iid: "3", approved: true, pipeline: undefined }),
       mr({ iid: "4", state: "merged" }),
       mr({ iid: "5", state: "closed" }),
     ]
-    expect(text(targets(requests))).toBe("5 MRs · 🤖 2 reviewing · 1 CI failed · 1 conflict · 1 approved · 1 merged · 1 closed")
+    expect(text(targets(requests))).toBe(
+      "5 MRs · 🤖 2 reviewing · 1 CI failed · 1 conflict · 1 approved · 1 merged · 1 closed",
+    )
     expect(footerSegments(targets(requests)).every((segment) => !segment.url)).toBe(true)
 
     const failed = [{ url: "https://gitlab.com/group/project/-/merge_requests/6", reason: "GitLab request failed" }]
     const partial = targets(requests.slice(2, 4), failed)
     expect(text(partial)).toBe("2 MRs · 1 approved · 1 merged · 1 unavailable")
-    expect(detailsMessage(partial)).toContain("Unavailable: https://gitlab.com/group/project/-/merge_requests/6 (GitLab request failed)")
+    expect(detailsMessage(partial)).toContain(
+      "Unavailable: https://gitlab.com/group/project/-/merge_requests/6 (GitLab request failed)",
+    )
     // One remaining target shows its full status, and still reports the others.
     expect(text(targets([mr()], failed))).toBe("!4281 · CI failed · 2 unresolved threads · 1 unavailable")
   })
 
   test("shows only the state of a merged or closed session target", () => {
-    const merged = { lookup: { kind: "found" as const, sessionTarget: "!4281 (from the session title)", requests: [mr({ state: "merged" })] }, loading: false }
+    const merged = {
+      lookup: {
+        kind: "found" as const,
+        sessionTarget: "!4281 (from the session title)",
+        requests: [mr({ state: "merged" })],
+      },
+      loading: false,
+    }
     expect(text(merged)).toBe("!4281 · merged")
     expect(detailsMessage(merged)).toContain("Session target: !4281")
   })
@@ -146,7 +177,9 @@ describe("detailsMessage", () => {
   })
 
   test("lists pending reviewers", () => {
-    expect(detailsMessage(snapshot([mr({ awaitingReviewers: ["david", "erin"] })]))).toContain("Awaiting review: @david, @erin")
+    expect(detailsMessage(snapshot([mr({ awaitingReviewers: ["david", "erin"] })]))).toContain(
+      "Awaiting review: @david, @erin",
+    )
     expect(detailsMessage(snapshot([mr()]))).not.toContain("Awaiting review:")
   })
 
@@ -169,12 +202,17 @@ describe("detailsMessage", () => {
 })
 
 describe("responsiveFooterSegments", () => {
-  const value = snapshot([mr({
-    iid: "259389",
-    duoReviewState: "REVIEW_STARTED",
-    pipeline: { status: "SUCCESS", label: "passed", url: "https://gitlab.com/p/-/pipelines/1" },
-  })])
-  const responsiveText = (width: number) => responsiveFooterSegments(value, width).map((segment) => segment.text).join(" · ")
+  const value = snapshot([
+    mr({
+      iid: "259389",
+      duoReviewState: "REVIEW_STARTED",
+      pipeline: { status: "SUCCESS", label: "passed", url: "https://gitlab.com/p/-/pipelines/1" },
+    }),
+  ])
+  const responsiveText = (width: number) =>
+    responsiveFooterSegments(value, width)
+      .map((segment) => segment.text)
+      .join(" · ")
 
   test("selects full, compact, and minimal formats", () => {
     expect(responsiveText(100)).toBe("!259389 · CI passed · 2 unresolved threads · 🤖 reviewing")
@@ -200,11 +238,21 @@ describe("responsiveFooterSegments", () => {
 
   test("keeps conflict and stale warnings in minimal mode", () => {
     const sample = snapshot([mr({ conflicts: true })], { error: { kind: "request", message: "timeout", at: 0 } })
-    expect(responsiveFooterSegments(sample, 28).map((segment) => segment.text).join(" · ")).toBe("!4281 · conflicts · stale")
+    expect(
+      responsiveFooterSegments(sample, 28)
+        .map((segment) => segment.text)
+        .join(" · "),
+    ).toBe("!4281 · conflicts · stale")
   })
 
   test("never exceeds the allocated width", () => {
-    const samples = [value, snapshot([mr({ conflicts: true, approved: true })]), snapshot([mr({ awaitingReviewers: ["david", "erin"] })]), snapshot([mr({ threadsComplete: false })]), snapshot([mr(), mr({ iid: "9" })])]
+    const samples = [
+      value,
+      snapshot([mr({ conflicts: true, approved: true })]),
+      snapshot([mr({ awaitingReviewers: ["david", "erin"] })]),
+      snapshot([mr({ threadsComplete: false })]),
+      snapshot([mr(), mr({ iid: "9" })]),
+    ]
     for (const sample of samples) {
       for (let width = 0; width < 100; width++) {
         expect(segmentsWidth(responsiveFooterSegments(sample, width))).toBeLessThanOrEqual(width)

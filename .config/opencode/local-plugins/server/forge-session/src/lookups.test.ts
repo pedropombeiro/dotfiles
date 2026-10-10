@@ -85,7 +85,11 @@ describe("createTitleLookups", () => {
     const runs: string[][] = []
     const run: Exec = async (file, args) => {
       runs.push([file, ...args])
-      return { code: 0, stderr: "", stdout: JSON.stringify({ data: { repository: { pullRequest: { headRefName: "34-fix" } } } }) }
+      return {
+        code: 0,
+        stderr: "",
+        stdout: JSON.stringify({ data: { repository: { pullRequest: { headRefName: "34-fix" } } } }),
+      }
     }
     const ref: ReviewRef = { forge: "github", host: "github.example.com", project: "o/r", iid: "7" }
     expect(await createTitleLookups(catalog([]).forges, run).sourceBranch(ref, "/repo")).toBe("34-fix")

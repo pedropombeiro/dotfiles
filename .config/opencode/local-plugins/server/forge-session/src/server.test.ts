@@ -88,13 +88,26 @@ const catalogFor = (forge: StatusForge): ForgeCatalog => ({
   projects: async () => [{ host: "gitlab.com", path: "group/project" }],
   repository: async () => ({
     kind: "repository",
-    repository: { head: "abc", branch: "feature", sourceBranch: "feature", source: { host: "gitlab.com", path: "group/project" }, targets: [] },
+    repository: {
+      head: "abc",
+      branch: "feature",
+      sourceBranch: "feature",
+      source: { host: "gitlab.com", path: "group/project" },
+      targets: [],
+    },
   }),
 })
 
 const defaultSessions = () =>
   new Map([
-    ["one", { title: "[#123, !45] Review changes", location: { directory: "/repo" }, parentID: undefined as string | undefined }],
+    [
+      "one",
+      {
+        title: "[#123, !45] Review changes",
+        location: { directory: "/repo" },
+        parentID: undefined as string | undefined,
+      },
+    ],
     ["two", { title: "Other session", location: { directory: "/repo" }, parentID: undefined as string | undefined }],
   ])
 
@@ -278,8 +291,7 @@ async function harness(options: Options = {}) {
     notices: () => emitted.filter((event) => event.name === "notice").map((event) => event.data),
     lastStatus: (key = "one") =>
       emitted.findLast((event) => event.name === "status" && (event.data as { key: string }).key === key)?.data as
-        | { snapshot: Snapshot }
-        | undefined,
+        { snapshot: Snapshot } | undefined,
     set: (input: unknown, sessionID = "one") => tool.execute(input, { sessionID }),
     context: async (sessionID = "one") => {
       const event = { sessionID, system: [] as { type: string; text: string }[] }
@@ -388,7 +400,10 @@ describe("session targets", () => {
     await app.set({ target: "branch" })
     expect(await app.target()).toEqual({})
     expect(app.emitted).toEqual([
-      { name: "targetChanged", data: { sessionID: "one", url: mr, issueUrl: issue, targets: [{ url: mr, issueUrl: issue }] } },
+      {
+        name: "targetChanged",
+        data: { sessionID: "one", url: mr, issueUrl: issue, targets: [{ url: mr, issueUrl: issue }] },
+      },
       { name: "targetChanged", data: { sessionID: "one" } },
     ])
     await app.cleanup()
@@ -401,7 +416,9 @@ describe("session targets", () => {
   })
 
   test("reads a single target stored before sessions could have several", async () => {
-    const storage = new Map<string, unknown>([["sessions/one", { target: { url: mr, branchIssue: "123" }, prefix: "[#123, !45]" }]])
+    const storage = new Map<string, unknown>([
+      ["sessions/one", { target: { url: mr, branchIssue: "123" }, prefix: "[#123, !45]" }],
+    ])
     const app = await harness({ storage, sourceBranches: new Map([["456", "999-other"]]) })
     expect(await app.target()).toEqual({ url: mr, targets: [{ url: mr }] })
     await app.set({ target: nextMr, operation: "add" })
@@ -416,16 +433,26 @@ describe("session targets", () => {
   })
 
   test("sets, adds, and removes several targets", async () => {
-    const app = await harness({ sourceBranches: new Map([["456", "321-fix-timeout"], ["101", "5-other"]]) })
+    const app = await harness({
+      sourceBranches: new Map([
+        ["456", "321-fix-timeout"],
+        ["101", "5-other"],
+      ]),
+    })
     const third = "https://gitlab.com/group/other/-/merge_requests/101"
     expect(await app.set({ targets: [mr, nextMr] })).toEqual({ content: `Session targets (2):\n- ${mr}\n- ${nextMr}` })
     expect(app.sessions.get("one")?.title).toBe("[!456, !789] Review changes")
-    expect(await app.context()).toContain(`Current session target: 2 targets: [{"url":"${mr}","branchIssue":"321"},{"url":"${nextMr}"}]`)
+    expect(await app.context()).toContain(
+      `Current session target: 2 targets: [{"url":"${mr}","branchIssue":"321"},{"url":"${nextMr}"}]`,
+    )
 
     await app.set({ target: third, operation: "add" })
     expect(app.sessions.get("one")?.title).toBe("[!456, !789, !101] Review changes")
     expect(await app.target()).toEqual({ url: mr, targets: [{ url: mr }, { url: nextMr }, { url: third }] })
-    expect(app.emitted.at(-1)?.data).toMatchObject({ sessionID: "one", targets: [{ url: mr }, { url: nextMr }, { url: third }] })
+    expect(app.emitted.at(-1)?.data).toMatchObject({
+      sessionID: "one",
+      targets: [{ url: mr }, { url: nextMr }, { url: third }],
+    })
 
     expect(await app.set({ targets: [nextMr, issue], operation: "remove" })).toEqual({
       content: `Session targets (2):\n- ${mr}\n- ${third}\nNot session targets, so not removed: ${issue}`,
@@ -437,7 +464,9 @@ describe("session targets", () => {
     expect(app.sessions.get("one")?.title).toBe("[#321, !456] Review changes")
     expect(app.sourceLookups.map((ref) => ref.iid)).toEqual(["456", "789", "101"])
 
-    expect(await app.set({ target: mr, operation: "remove" })).toEqual({ content: "Session target: checked-out branch." })
+    expect(await app.set({ target: mr, operation: "remove" })).toEqual({
+      content: "Session target: checked-out branch.",
+    })
     expect(app.sessions.get("one")?.title).toBe("Review changes")
     expect(await app.context()).toContain("checked-out branch (automatic)")
     await app.cleanup()
@@ -516,7 +545,10 @@ describe("branch-based naming", () => {
   })
 
   test("skips the default branch", async () => {
-    const app = await harness({ branch: { current: "trunk", default: "trunk" }, found: { branch: "trunk", number: "1" } })
+    const app = await harness({
+      branch: { current: "trunk", default: "trunk" },
+      found: { branch: "trunk", number: "1" },
+    })
     await app.set({ target: "branch" })
     expect(app.sessions.get("one")?.title).toBe("Review changes")
     await app.cleanup()
@@ -536,7 +568,11 @@ describe("PR/MR status", () => {
     const watched = await app.watch(["one"], "one")
     expect(watched.enabled).toBe(true)
     await settle()
-    expect(app.lastStatus()?.snapshot.lookup).toMatchObject({ kind: "found", explicitTarget: true, requests: [{ iid: "1" }] })
+    expect(app.lastStatus()?.snapshot.lookup).toMatchObject({
+      kind: "found",
+      explicitTarget: true,
+      requests: [{ iid: "1" }],
+    })
     expect((await app.watch(["one"], "one")).statuses.one.lookup).toMatchObject({ requests: [{ title: "Add things" }] })
     await app.cleanup()
   })
@@ -599,7 +635,9 @@ describe("PR/MR status", () => {
     await settle()
     expect(app.synthetic).toMatchObject([{ sessionID: "one", resume: false }])
     expect(app.synthetic[0].text).toContain(projectA)
-    expect(app.notices()).toMatchObject([{ sessionID: "one", title: "GitLab Duo finished reviewing !1", variant: "info" }])
+    expect(app.notices()).toMatchObject([
+      { sessionID: "one", title: "GitLab Duo finished reviewing !1", variant: "info" },
+    ])
     await app.cleanup()
   })
 
@@ -622,7 +660,14 @@ describe("PR/MR status", () => {
   test("follows the branch instead of a branch prefix the plugin wrote", async () => {
     const forge = new StatusForge()
     forge.set("group/project", "1", { state: "closed" })
-    forge.branch = [{ forge: "gitlab", iid: "2", url: "https://gitlab.com/group/project/-/merge_requests/2", state: "opened" } as GitLabMergeRequest]
+    forge.branch = [
+      {
+        forge: "gitlab",
+        iid: "2",
+        url: "https://gitlab.com/group/project/-/merge_requests/2",
+        state: "opened",
+      } as GitLabMergeRequest,
+    ]
     const storage = new Map<string, unknown>([["sessions/two", { prefix: "[!1]" }]])
     const app = await harness({ status: forge, storage, pluginOptions: quiet })
     app.sessions.get("two")!.title = "[!1] Other session"
@@ -669,16 +714,17 @@ describe("PR/MR status lifecycle", () => {
       now: () => clock,
       reads: () => reads,
       advance: (ms: number) => void (clock += ms),
-      comment: (id: string): ReviewComment => ({
-        id,
-        order: Number(id),
-        url: `${projectA}#note_${id}`,
-        editedAt: clock - SETTLE_TIME,
-        resolved: false,
-        bot: false,
-        authorID: "someone",
-        username: "alice",
-      }) as ReviewComment,
+      comment: (id: string): ReviewComment =>
+        ({
+          id,
+          order: Number(id),
+          url: `${projectA}#note_${id}`,
+          editedAt: clock - SETTLE_TIME,
+          resolved: false,
+          bot: false,
+          authorID: "someone",
+          username: "alice",
+        }) as ReviewComment,
       set: (next: ReviewComment[]) => void (comments = next),
       hold: () => void (gate = new Promise<void>((resolve) => (open = resolve))),
       release: () => open(),
@@ -757,7 +803,10 @@ describe("PR/MR status lifecycle", () => {
     app.sessions.get("one")!.location.directory = "/repo-worktree"
     forge.set("group/a", "1", { duoReviewState: "REVIEWED" })
     // A CLI that still leases the session here doesn't make this instance watch it.
-    expect((await app.refresh()).snapshot.lookup).toEqual({ kind: "none", reason: "The session moved to another checkout" })
+    expect((await app.refresh()).snapshot.lookup).toEqual({
+      kind: "none",
+      reason: "The session moved to another checkout",
+    })
     await settle()
     expect(app.synthetic).toEqual([])
     expect([...app.storage.keys()].filter((key) => key.startsWith("status/pending/"))).toEqual([])
@@ -776,7 +825,10 @@ describe("PR/MR status lifecycle", () => {
     expect(app.synthetic).toEqual([])
     expect(app.notices()).toEqual([])
     // The next lookup leaves the session to its new checkout.
-    expect((await app.refresh()).snapshot.lookup).toEqual({ kind: "none", reason: "The session moved to another checkout" })
+    expect((await app.refresh()).snapshot.lookup).toEqual({
+      kind: "none",
+      reason: "The session moved to another checkout",
+    })
     await app.cleanup()
   })
 
@@ -963,7 +1015,13 @@ describe("state shared across instances and reloads", () => {
     const storage = new Map<string, unknown>()
     const sessions = defaultSessions()
     const branch = { current: "123-fix-login", default: "main" }
-    const old = await harness({ storage, sessions, branch, found: { branch: "123-fix-login", number: "45" }, holdBranch: true })
+    const old = await harness({
+      storage,
+      sessions,
+      branch,
+      found: { branch: "123-fix-login", number: "45" },
+      holdBranch: true,
+    })
     old.emit({ type: "session.execution.succeeded", data: { sessionID: "one" } })
     await settle()
     expect(old.branchLookups()).toBe(1)
@@ -1003,7 +1061,16 @@ describe("state shared across instances and reloads", () => {
     // A settled human comment on A, whose fetch is still running.
     reader.clock += FETCH_INTERVAL
     reader.comments = [
-      { id: "7", order: 7, url: `${projectA}#note_7`, editedAt: reader.clock - SETTLE_TIME, resolved: false, bot: false, authorID: "someone", username: "alice" } as ReviewComment,
+      {
+        id: "7",
+        order: 7,
+        url: `${projectA}#note_7`,
+        editedAt: reader.clock - SETTLE_TIME,
+        resolved: false,
+        bot: false,
+        authorID: "someone",
+        username: "alice",
+      } as ReviewComment,
     ]
     reader.gate = new Promise<void>((resolve) => (open = resolve))
     await app.refresh()

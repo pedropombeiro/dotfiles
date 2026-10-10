@@ -98,18 +98,25 @@ describe("locate", () => {
     const github = new FakeForge("github", pull)
     const forges = catalog({ gitlab, github }, { projects: onGitLab, repository: repository("gitlab.com") })
     expect(await locate(forges, { directory: "/repo", targets: target(merge.url) })).toEqual({
-      kind: "found", sessionTarget: merge.url, explicitTarget: true, requests: [merge],
+      kind: "found",
+      sessionTarget: merge.url,
+      explicitTarget: true,
+      requests: [merge],
     })
     expect(await locate(forges, { directory: "/repo", targets: target(pull.url), title: "[!45]" })).toMatchObject({
-      explicitTarget: true, requests: [pull],
+      explicitTarget: true,
+      requests: [pull],
     })
     expect(gitlab.calls).toEqual(["number g/p 45"])
     expect(github.calls).toEqual(["number o/r 7"])
   })
 
   test("rejects explicit targets on unconfigured hosts", async () => {
-    expect(await locate(catalog({}), { directory: "/repo", targets: target("https://github.example.com/o/r/pull/7") })).toEqual({
-      kind: "none", reason: "Unsupported session target host",
+    expect(
+      await locate(catalog({}), { directory: "/repo", targets: target("https://github.example.com/o/r/pull/7") }),
+    ).toEqual({
+      kind: "none",
+      reason: "Unsupported session target host",
     })
   })
 
@@ -117,19 +124,29 @@ describe("locate", () => {
     const gitlab = new FakeForge("gitlab", undefined, [merge])
     const forges = catalog({ gitlab }, { repository: repository("gitlab.com") })
     expect(await locate(forges, { directory: "/repo", targets: target(merge.url) })).toEqual({
-      kind: "none", reason: "Explicit PR/MR target could not be resolved",
+      kind: "none",
+      reason: "Explicit PR/MR target could not be resolved",
     })
-    expect(await locate(forges, { directory: "/repo", targets: target("https://gitlab.com/g/p/-/issues/3") })).toMatchObject({ kind: "none" })
+    expect(
+      await locate(forges, { directory: "/repo", targets: target("https://gitlab.com/g/p/-/issues/3") }),
+    ).toMatchObject({ kind: "none" })
     expect(gitlab.calls).toEqual(["number g/p 45"])
   })
 
   test("rethrows the lookup error of a single target", async () => {
     const gitlab = new FailingForge(new Map(), new Set(["45"]))
-    await expect(locate(catalog({ gitlab }), { directory: "/repo", targets: target(merge.url) })).rejects.toThrow("glab failed")
+    await expect(locate(catalog({ gitlab }), { directory: "/repo", targets: target(merge.url) })).rejects.toThrow(
+      "glab failed",
+    )
   })
 
   test("looks up every target in order, skipping issues", async () => {
-    const gitlab = new FailingForge(new Map([["1", mergeOf("1")], ["2", mergeOf("2")]]))
+    const gitlab = new FailingForge(
+      new Map([
+        ["1", mergeOf("1")],
+        ["2", mergeOf("2")],
+      ]),
+    )
     const lookup = await locate(catalog({ gitlab }), {
       directory: "/repo",
       targets: targets(mergeOf("2").url, "https://gitlab.com/g/p/-/issues/9", mergeOf("1").url),
@@ -145,7 +162,11 @@ describe("locate", () => {
   test("keeps the other targets when one can't be found or fails, reusing its previous result", async () => {
     const gitlab = new FailingForge(new Map([["1", mergeOf("1")]]), new Set(["2"]))
     const urls = targets(mergeOf("1").url, mergeOf("2").url, mergeOf("3").url)
-    const previous = { kind: "found" as const, explicitTarget: true, requests: [mergeOf("2", { duoReviewState: "REVIEW_STARTED" })] }
+    const previous = {
+      kind: "found" as const,
+      explicitTarget: true,
+      requests: [mergeOf("2", { duoReviewState: "REVIEW_STARTED" })],
+    }
     expect(await locate(catalog({ gitlab }), { directory: "/repo", targets: urls, previous })).toMatchObject({
       requests: [mergeOf("1"), mergeOf("2", { duoReviewState: "REVIEW_STARTED" })],
       failed: [
@@ -163,31 +184,63 @@ describe("locate", () => {
   test("throws when every lookup of several targets fails, and explains when none resolves", async () => {
     const failing = new FailingForge(new Map(), new Set(["1", "2"]))
     const urls = targets(mergeOf("1").url, mergeOf("2").url)
-    await expect(locate(catalog({ gitlab: failing }), { directory: "/repo", targets: urls })).rejects.toThrow("glab failed")
-    expect(await locate(catalog({ gitlab: new FailingForge(new Map()) }), { directory: "/repo", targets: urls })).toEqual({
+    await expect(locate(catalog({ gitlab: failing }), { directory: "/repo", targets: urls })).rejects.toThrow(
+      "glab failed",
+    )
+    expect(
+      await locate(catalog({ gitlab: new FailingForge(new Map()) }), { directory: "/repo", targets: urls }),
+    ).toEqual({
       kind: "none",
       reason: "No session target PR/MR could be resolved",
     })
     expect(
-      await locate(catalog({}), { directory: "/repo", targets: targets("https://gitlab.com/g/p/-/issues/1", "https://gitlab.com/g/p/-/issues/2") }),
+      await locate(catalog({}), {
+        directory: "/repo",
+        targets: targets("https://gitlab.com/g/p/-/issues/1", "https://gitlab.com/g/p/-/issues/2"),
+      }),
     ).toEqual({ kind: "none", reason: "No session target is a PR/MR" })
   })
 
   test("limits concurrent lookups", async () => {
-    const gitlab = new FailingForge(new Map(Array.from({ length: 10 }, (_, index) => [`${index + 1}`, mergeOf(`${index + 1}`)])))
+    const gitlab = new FailingForge(
+      new Map(Array.from({ length: 10 }, (_, index) => [`${index + 1}`, mergeOf(`${index + 1}`)])),
+    )
     const urls = targets(...Array.from({ length: 10 }, (_, index) => mergeOf(`${index + 1}`).url))
     const lookup = await locate(catalog({ gitlab }), { directory: "/repo", targets: urls })
     expect(lookup).toMatchObject({ kind: "found" })
-    expect(lookup.kind === "found" && lookup.requests.map((request) => request.iid)).toEqual(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"])
+    expect(lookup.kind === "found" && lookup.requests.map((request) => request.iid)).toEqual([
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+    ])
     expect(gitlab.peak).toBe(4)
   })
 
   test("uses a title reference on the checkout's forge", async () => {
-    expect(await locate(catalog({ gitlab: new FakeForge("gitlab", merge) }, { projects: onGitLab }), { directory: "/repo", title: "[#12, !45]" })).toMatchObject({
-      sessionTarget: "!45 (from the session title)", requests: [merge],
+    expect(
+      await locate(catalog({ gitlab: new FakeForge("gitlab", merge) }, { projects: onGitLab }), {
+        directory: "/repo",
+        title: "[#12, !45]",
+      }),
+    ).toMatchObject({
+      sessionTarget: "!45 (from the session title)",
+      requests: [merge],
     })
-    expect(await locate(catalog({ github: new FakeForge("github", pull) }, { projects: onGitHub }), { directory: "/repo", title: "[#7]" })).toMatchObject({
-      sessionTarget: "#7 (from the session title)", requests: [pull],
+    expect(
+      await locate(catalog({ github: new FakeForge("github", pull) }, { projects: onGitHub }), {
+        directory: "/repo",
+        title: "[#7]",
+      }),
+    ).toMatchObject({
+      sessionTarget: "#7 (from the session title)",
+      requests: [pull],
     })
   })
 
@@ -216,6 +269,9 @@ describe("locate", () => {
     const lookup = await locate(catalog({ github }, { repository: repository("github.com") }), { directory: "/repo" })
     expect(lookup).toMatchObject({ kind: "found", requests: [pull] })
     expect(github.calls).toEqual(["branch feature"])
-    expect(await locate(catalog({ github }), { directory: "/repo" })).toEqual({ kind: "none", reason: "Not a Git repository" })
+    expect(await locate(catalog({ github }), { directory: "/repo" })).toEqual({
+      kind: "none",
+      reason: "Not a Git repository",
+    })
   })
 })

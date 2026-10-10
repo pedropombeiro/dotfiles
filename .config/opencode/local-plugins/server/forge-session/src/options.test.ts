@@ -21,11 +21,20 @@ describe("statusOptions", () => {
         notifyHumanReviews: false,
         resumeSession: false,
       }),
-    ).toEqual({ enabled: false, pollSeconds: 45, notifyAutomatedReviews: false, notifyHumanReviews: false, resumeSession: false })
+    ).toEqual({
+      enabled: false,
+      pollSeconds: 45,
+      notifyAutomatedReviews: false,
+      notifyHumanReviews: false,
+      resumeSession: false,
+    })
   })
 
   test("accepts the former name of notifyAutomatedReviews and ignores invalid intervals", () => {
-    expect(statusOptions({ notifyDuoReview: false, pollSeconds: -1 })).toMatchObject({ notifyAutomatedReviews: false, pollSeconds: 120 })
+    expect(statusOptions({ notifyDuoReview: false, pollSeconds: -1 })).toMatchObject({
+      notifyAutomatedReviews: false,
+      pollSeconds: 120,
+    })
     expect(statusOptions({ notifyDuoReview: false, notifyAutomatedReviews: true }).notifyAutomatedReviews).toBe(true)
   })
 })

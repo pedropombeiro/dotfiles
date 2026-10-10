@@ -75,7 +75,12 @@ export function userTitle(title: string | undefined, prefix: string | undefined)
 
 // Watches the PRs/MRs of the sessions that CLIs show, and tells sessions
 // about reviews of their targets.
-export async function setupStatus(ctx: Plugin.Context, settings: StatusOptions, deps: StatusDependencies, host: StatusHost) {
+export async function setupStatus(
+  ctx: Plugin.Context,
+  settings: StatusOptions,
+  deps: StatusDependencies,
+  host: StatusHost,
+) {
   const directory = ctx.location.directory
   // Cleanup runs in two steps. `closing` is set first: no new fetch or
   // delivery starts, so a check that finishes later, such as a feedback
@@ -117,7 +122,8 @@ export async function setupStatus(ctx: Plugin.Context, settings: StatusOptions, 
     host.notice(value)
   }
 
-  const isTarget = (sessionID: string, url: string) => !closing && !foreign.has(sessionID) && host.isTarget(sessionID, url)
+  const isTarget = (sessionID: string, url: string) =>
+    !closing && !foreign.has(sessionID) && host.isTarget(sessionID, url)
 
   // Whether this instance still owns the session. It reads the session again,
   // because the session may have moved while a lookup or fetch ran. A session
@@ -169,7 +175,8 @@ export async function setupStatus(ctx: Plugin.Context, settings: StatusOptions, 
   }
 
   const readFeedback =
-    deps.feedback ?? (async (request: ReviewRequest, cwd: string) => traitsOf(request).feedback?.fetch(deps.exec, cwd, request))
+    deps.feedback ??
+    (async (request: ReviewRequest, cwd: string) => traitsOf(request).feedback?.fetch(deps.exec, cwd, request))
 
   const automated = settings.notifyAutomatedReviews
     ? createAutomatedReviewWatcher({

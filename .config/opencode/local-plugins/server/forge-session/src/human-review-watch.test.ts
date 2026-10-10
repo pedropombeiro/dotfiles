@@ -125,7 +125,9 @@ describe("feedback text", () => {
   })
 
   test("lists three or more authors with commas and caps the links", () => {
-    const comments = Array.from({ length: 22 }, (_, index) => comment(String(index), { username: ["a", "b", "c"][index % 3] }))
+    const comments = Array.from({ length: 22 }, (_, index) =>
+      comment(String(index), { username: ["a", "b", "c"][index % 3] }),
+    )
     const message = feedbackMessage(mr, comments)
     expect(message).toContain("from @a, @b, and @c on")
     expect(message).toContain("- and 2 more")
@@ -246,7 +248,13 @@ describe("createFeedbackWatcher", () => {
     await h.check()
     const start = h.now()
     h.tick(2 * MINUTE)
-    h.set(snapshot(comment("1", { editedAt: start }), comment("2", { editedAt: start }), comment("3", { editedAt: h.now() })))
+    h.set(
+      snapshot(
+        comment("1", { editedAt: start }),
+        comment("2", { editedAt: start }),
+        comment("3", { editedAt: h.now() }),
+      ),
+    )
     h.tick(3 * MINUTE)
     await h.check()
     expect(h.sent).toEqual([])

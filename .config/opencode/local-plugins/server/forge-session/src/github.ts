@@ -59,12 +59,17 @@ const fields = `number title url state isDraft mergeable reviewDecision headRefO
 // Pagination stops after this many pages; results are then marked partial.
 const MAX_PAGES = 50
 
-export type GraphQL = (host: string, query: string, variables: Record<string, string | number>) => Promise<Record<string, unknown>>
+export type GraphQL = (
+  host: string,
+  query: string,
+  variables: Record<string, string | number>,
+) => Promise<Record<string, unknown>>
 
 export function ghGraphQL(run: Exec, cwd: string): GraphQL {
   return async (host, query, variables) => {
     const args = ["api", "graphql", "--hostname", host, "-f", `query=${query}`]
-    for (const [name, value] of Object.entries(variables)) args.push(typeof value === "number" ? "-F" : "-f", `${name}=${value}`)
+    for (const [name, value] of Object.entries(variables))
+      args.push(typeof value === "number" ? "-F" : "-f", `${name}=${value}`)
     const result = await run("gh", args, cwd)
     let body: { data?: Record<string, unknown>; errors?: Array<{ type?: string; message: string }> }
     try {
@@ -85,25 +90,50 @@ export function ghGraphQL(run: Exec, cwd: string): GraphQL {
 export function classifyError(message: string, code: number): ForgeError {
   const text = message.trim() || `gh exited with code ${code}`
   if (/ENOENT|command not found/i.test(text)) return new ForgeError("missing-gh", "gh is not installed")
-  if (/401|unauthori[sz]ed|authenticat|not logged|token.*expired/i.test(text)) return new ForgeError("auth", "GitHub authentication failed. Run `gh auth status`.")
+  if (/401|unauthori[sz]ed|authenticat|not logged|token.*expired/i.test(text))
+    return new ForgeError("auth", "GitHub authentication failed. Run `gh auth status`.")
   if (/429|rate limit|too many requests/i.test(text)) return new ForgeError("rate-limit", "GitHub rate limit reached")
   return new ForgeError("request", text.split("\n")[0])
 }
 
 const FAILED = ["FAILURE", "ERROR", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAILURE", "STALE"]
-const CONCLUSIONS = ["SUCCESS", "NEUTRAL", "SKIPPED", "FAILURE", "TIMED_OUT", "CANCELLED", "ACTION_REQUIRED", "STARTUP_FAILURE", "STALE"]
+const CONCLUSIONS = [
+  "SUCCESS",
+  "NEUTRAL",
+  "SKIPPED",
+  "FAILURE",
+  "TIMED_OUT",
+  "CANCELLED",
+  "ACTION_REQUIRED",
+  "STARTUP_FAILURE",
+  "STALE",
+]
 const STATES = ["SUCCESS", "FAILURE", "ERROR", "PENDING", "EXPECTED"]
 
 // Summarizes the head commit's checks. Failures win over pending checks, and
 // partial or unrecognized results never report success.
 export function checks(nodes: Check[], complete: boolean, url: string): Pipeline {
   const failed = nodes.filter((node) => FAILED.includes(node.conclusion ?? node.state ?? "")).length
-  const pending = nodes.filter((node) => node.status ? node.status !== "COMPLETED" : ["PENDING", "EXPECTED"].includes(node.state ?? "")).length
-  const unknown = nodes.some((node) => node.status === "COMPLETED"
-    ? !CONCLUSIONS.includes(node.conclusion ?? "")
-    : !node.status && !STATES.includes(node.state ?? ""))
-  if (failed) return { status: "FAILED", label: `${failed} failed${pending ? `, ${pending} pending` : ""}${complete ? "" : " (partial)"}`, url }
-  if (pending || !complete || unknown) return { status: "PENDING", label: `${pending ? `${pending} pending` : "unknown"}${complete ? "" : " (partial)"}`, url }
+  const pending = nodes.filter((node) =>
+    node.status ? node.status !== "COMPLETED" : ["PENDING", "EXPECTED"].includes(node.state ?? ""),
+  ).length
+  const unknown = nodes.some((node) =>
+    node.status === "COMPLETED"
+      ? !CONCLUSIONS.includes(node.conclusion ?? "")
+      : !node.status && !STATES.includes(node.state ?? ""),
+  )
+  if (failed)
+    return {
+      status: "FAILED",
+      label: `${failed} failed${pending ? `, ${pending} pending` : ""}${complete ? "" : " (partial)"}`,
+      url,
+    }
+  if (pending || !complete || unknown)
+    return {
+      status: "PENDING",
+      label: `${pending ? `${pending} pending` : "unknown"}${complete ? "" : " (partial)"}`,
+      url,
+    }
   return { status: "SUCCESS", label: `${nodes.length} passed or skipped`, url }
 }
 
@@ -129,8 +159,12 @@ export const githubTraits: ForgeTraits<GitHubPullRequest, GitHubForge> = {
   // `#N` also names issues, such as in `[#42, #108]`.
   titleReferences: (title) => prefixReferences(title, "#"),
   indicators: (request) =>
-    request.reviewDecision === "CHANGES_REQUESTED" ? [{ text: "changes requested", tone: "warning", essential: true }] : [],
-  details: (request) => [`Review decision: ${request.reviewDecision ? humanize(request.reviewDecision) : "not reported"}`],
+    request.reviewDecision === "CHANGES_REQUESTED"
+      ? [{ text: "changes requested", tone: "warning", essential: true }]
+      : [],
+  details: (request) => [
+    `Review decision: ${request.reviewDecision ? humanize(request.reviewDecision) : "not reported"}`,
+  ],
 }
 
 // Reads GitHub pull requests through `gh api graphql`, using gh's login.
@@ -142,9 +176,13 @@ export class GitHubForge implements Forge {
   async findByNumber(projects: readonly RemoteProject[], number: string): Promise<GitHubPullRequest | undefined> {
     for (const project of projects) {
       const [owner, repo] = project.path.split("/")
-      const data = await this.graphql(project.host, `query($owner:String!,$repo:String!,$number:Int!) {
+      const data = await this.graphql(
+        project.host,
+        `query($owner:String!,$repo:String!,$number:Int!) {
         repository(owner:$owner,name:$repo) { pullRequest(number:$number) { ${fields} } }
-      }`, { owner, repo, number: Number(number) })
+      }`,
+        { owner, repo, number: Number(number) },
+      )
       const node = (data.repository as { pullRequest?: Pull } | undefined)?.pullRequest
       if (node) return this.normalize(project.host, node)
     }
@@ -155,12 +193,19 @@ export class GitHubForge implements Forge {
     let newest: { number: number; updatedAt: string } | undefined
     for (const target of repository.targets) {
       const [owner, repo] = target.path.split("/")
-      const data = await this.graphql(target.host, `query($owner:String!,$repo:String!,$branch:String!) {
+      const data = await this.graphql(
+        target.host,
+        `query($owner:String!,$repo:String!,$branch:String!) {
         repository(owner:$owner,name:$repo) { pullRequests(first:100,states:OPEN,headRefName:$branch,orderBy:{field:UPDATED_AT,direction:DESC}) {
           nodes { number updatedAt headRepository { nameWithOwner } }
-        } } }`, { owner, repo, branch: repository.sourceBranch })
-      const nodes = (data.repository as { pullRequests?: Connection<Pick<Pull, "number" | "updatedAt" | "headRepository">> } | undefined)
-        ?.pullRequests?.nodes ?? []
+        } } }`,
+        { owner, repo, branch: repository.sourceBranch },
+      )
+      const nodes =
+        (
+          data.repository as
+            { pullRequests?: Connection<Pick<Pull, "number" | "updatedAt" | "headRepository">> } | undefined
+        )?.pullRequests?.nodes ?? []
       for (const node of nodes) {
         // A fork's branch with the same name must not name this branch's PR.
         if (node.headRepository?.nameWithOwner.toLowerCase() !== repository.source.path.toLowerCase()) continue
@@ -172,10 +217,15 @@ export class GitHubForge implements Forge {
 
   async sourceBranch(ref: ReviewRef): Promise<string | undefined> {
     const [owner, repo] = ref.project.split("/")
-    const data = await this.graphql(ref.host, `query($owner:String!,$repo:String!,$number:Int!) {
+    const data = await this.graphql(
+      ref.host,
+      `query($owner:String!,$repo:String!,$number:Int!) {
       repository(owner:$owner,name:$repo) { pullRequest(number:$number) { headRefName } }
-    }`, { owner, repo, number: Number(ref.iid) })
-    const branch = (data.repository as { pullRequest?: { headRefName?: unknown } | null } | undefined)?.pullRequest?.headRefName
+    }`,
+      { owner, repo, number: Number(ref.iid) },
+    )
+    const branch = (data.repository as { pullRequest?: { headRefName?: unknown } | null } | undefined)?.pullRequest
+      ?.headRefName
     return typeof branch === "string" && branch ? branch : undefined
   }
 
@@ -186,10 +236,14 @@ export class GitHubForge implements Forge {
       let after: string | undefined
       let complete = false
       for (let page = 0; page < MAX_PAGES; page++) {
-        const data = await this.graphql(target.host, `query($owner:String!,$repo:String!,$branch:String!${after ? ",$after:String!" : ""}) {
+        const data = await this.graphql(
+          target.host,
+          `query($owner:String!,$repo:String!,$branch:String!${after ? ",$after:String!" : ""}) {
           repository(owner:$owner,name:$repo) { pullRequests(first:100,states:OPEN,headRefName:$branch${after ? ",after:$after" : ""}) {
             nodes { ${fields} } pageInfo { hasNextPage endCursor }
-          } } }`, { owner, repo, branch: repository.sourceBranch, ...(after ? { after } : {}) })
+          } } }`,
+          { owner, repo, branch: repository.sourceBranch, ...(after ? { after } : {}) },
+        )
         const pulls = (data.repository as { pullRequests?: Connection<Pull> } | undefined)?.pullRequests
         if (!pulls) throw new ForgeError("request", "GitHub repository unavailable")
         for (const node of pulls.nodes) {
@@ -214,11 +268,16 @@ export class GitHubForge implements Forge {
     const threads = [...node.reviewThreads.nodes]
     let page = node.reviewThreads.pageInfo
     for (let count = 1; page?.hasNextPage && page.endCursor && count < MAX_PAGES; count++) {
-      const data = await this.graphql(host, `query($owner:String!,$repo:String!,$number:Int!,$after:String!) {
+      const data = await this.graphql(
+        host,
+        `query($owner:String!,$repo:String!,$number:Int!,$after:String!) {
         repository(owner:$owner,name:$repo) { pullRequest(number:$number) {
           reviewThreads(first:100,after:$after) { nodes { isResolved } pageInfo { hasNextPage endCursor } }
-        } } }`, { owner, repo, number: node.number, after: page.endCursor })
-      const next = (data.repository as { pullRequest?: { reviewThreads?: Pull["reviewThreads"] } } | undefined)?.pullRequest?.reviewThreads
+        } } }`,
+        { owner, repo, number: node.number, after: page.endCursor },
+      )
+      const next = (data.repository as { pullRequest?: { reviewThreads?: Pull["reviewThreads"] } } | undefined)
+        ?.pullRequest?.reviewThreads
       if (!next) break
       threads.push(...next.nodes)
       page = next.pageInfo
@@ -232,11 +291,17 @@ export class GitHubForge implements Forge {
     const contexts = [...(rollup?.nodes ?? [])]
     let cursor = rollup?.pageInfo
     for (let count = 1; cursor?.hasNextPage && cursor.endCursor && count < MAX_PAGES; count++) {
-      const data = await this.graphql(host, `query($owner:String!,$repo:String!,$oid:GitObjectID!,$after:String!) {
+      const data = await this.graphql(
+        host,
+        `query($owner:String!,$repo:String!,$oid:GitObjectID!,$after:String!) {
         repository(owner:$owner,name:$repo) { object(oid:$oid) { ... on Commit { statusCheckRollup {
           contexts(first:100,after:$after) { nodes { __typename ... on CheckRun { status conclusion detailsUrl } ... on StatusContext { state targetUrl } } pageInfo { hasNextPage endCursor } }
-        } } } } }`, { owner, repo, oid: node.headRefOid, after: cursor.endCursor })
-      const next = (data.repository as { object?: { statusCheckRollup?: { contexts?: Connection<Check> } } } | undefined)?.object?.statusCheckRollup?.contexts
+        } } } } }`,
+        { owner, repo, oid: node.headRefOid, after: cursor.endCursor },
+      )
+      const next = (
+        data.repository as { object?: { statusCheckRollup?: { contexts?: Connection<Check> } } } | undefined
+      )?.object?.statusCheckRollup?.contexts
       if (!next) break
       contexts.push(...next.nodes)
       cursor = next.pageInfo
@@ -266,7 +331,10 @@ export class GitHubForge implements Forge {
       targetBranch: node.baseRefName,
       headSha: node.headRefOid,
       updatedAt: node.updatedAt,
-      pipeline: contexts.nodes.length || !contexts.complete ? checks(contexts.nodes, contexts.complete, `${node.url}/checks`) : undefined,
+      pipeline:
+        contexts.nodes.length || !contexts.complete
+          ? checks(contexts.nodes, contexts.complete, `${node.url}/checks`)
+          : undefined,
       unresolvedThreads: threads.unresolved,
       threadsComplete: threads.complete,
     }

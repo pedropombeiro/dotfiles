@@ -39,7 +39,12 @@ function threadsText(request: ReviewRequest) {
   return `${request.unresolvedThreads}${request.threadsComplete ? "" : "+"} unresolved thread${request.unresolvedThreads === 1 && request.threadsComplete ? "" : "s"}`
 }
 
-const link = (request: ReviewRequest): Segment => ({ text: reference(request), tone: "muted", url: request.url, essential: true })
+const link = (request: ReviewRequest): Segment => ({
+  text: reference(request),
+  tone: "muted",
+  url: request.url,
+  essential: true,
+})
 
 function ci(request: ReviewRequest): Segment {
   const tone = pipelineTone(request.pipeline)
@@ -56,7 +61,8 @@ function targetsSummary(requests: ReviewRequest[]): Segment[] {
   const open = requests.filter((request) => request.state === "opened")
   const segments: Segment[] = [{ text: count, tone: "muted", essential: true }]
   const reviewing = open.filter((request) => automatedReview(request)?.state === "running").length
-  if (reviewing) segments.push({ text: `🤖 ${reviewing} reviewing`, compact: `🤖 ${reviewing}`, tone: "warning", essential: true })
+  if (reviewing)
+    segments.push({ text: `🤖 ${reviewing} reviewing`, compact: `🤖 ${reviewing}`, tone: "warning", essential: true })
   const failing = open.filter((request) => pipelineTone(request.pipeline) === "error").length
   if (failing) segments.push({ text: `${failing} CI failed`, compact: `CI ✗ ${failing}`, tone: "error" })
   const conflicts = open.filter((request) => request.conflicts).length
@@ -93,7 +99,11 @@ export function footerSegments(snapshot: Snapshot): Segment[] {
 
   const [request] = requests
   if (request.state !== "opened") {
-    return [link(request), { text: request.state, tone: request.state === "merged" ? "success" : "muted", essential: true }, ...stale]
+    return [
+      link(request),
+      { text: request.state, tone: request.state === "merged" ? "success" : "muted", essential: true },
+      ...stale,
+    ]
   }
   const segments = [link(request), ci(request)]
   if (request.unresolvedThreads > 0 || !request.threadsComplete) {
@@ -111,7 +121,8 @@ export function footerSegments(snapshot: Snapshot): Segment[] {
   return [...segments, ...stale]
 }
 
-export const segmentsWidth = (segments: Segment[]) => Bun.stringWidth(segments.map((segment) => segment.text).join(" · "))
+export const segmentsWidth = (segments: Segment[]) =>
+  Bun.stringWidth(segments.map((segment) => segment.text).join(" · "))
 
 export function responsiveFooterSegments(snapshot: Snapshot, width: number): Segment[] {
   const full = footerSegments(snapshot)

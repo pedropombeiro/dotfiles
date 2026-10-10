@@ -80,7 +80,10 @@ export function createStatusClient(options: StatusClientOptions) {
     failures.set(directory, count)
     const timer = retries.get(directory)
     if (timer !== undefined) clearTimer(timer)
-    retries.set(directory, setTimer(() => void renew(directory), Math.min(HEARTBEAT, 1000 * 2 ** count)))
+    retries.set(
+      directory,
+      setTimer(() => void renew(directory), Math.min(HEARTBEAT, 1000 * 2 ** count)),
+    )
   }
 
   async function renew(directory: string) {

@@ -69,7 +69,9 @@ export class Forges implements ForgeCatalog {
 
   // Configured hosts win over hosts that a forge recognizes by name.
   kind(host: string): ForgeKind | undefined {
-    return kinds.find((kind) => this.hosts[kind].includes(host)) ?? kinds.find((kind) => registry[kind].recognizes(host))
+    return (
+      kinds.find((kind) => this.hosts[kind].includes(host)) ?? kinds.find((kind) => registry[kind].recognizes(host))
+    )
   }
 
   forHost(host: string, directory: string): Forge | undefined {

@@ -86,7 +86,9 @@ describe("target requests and prefixes", () => {
   test("uses a branch-derived issue unless an explicit issue is set", () => {
     const url = "https://gitlab.com/group/project/-/merge_requests/456"
     expect(targetPrefix({ url, branchIssue: "123" })).toBe("[#123, !456]")
-    expect(targetPrefix({ url, branchIssue: "123", issueUrl: "https://gitlab.com/group/project/-/issues/9" })).toBe("[#9, !456]")
+    expect(targetPrefix({ url, branchIssue: "123", issueUrl: "https://gitlab.com/group/project/-/issues/9" })).toBe(
+      "[#9, !456]",
+    )
     expect(targetPrefix({ url: "https://gitlab.com/group/project/-/issues/5", branchIssue: "123" })).toBe("[#5]")
   })
 
@@ -106,9 +108,9 @@ describe("target requests and prefixes", () => {
   test("lists only the targets' own references for several targets", () => {
     expect(targetsPrefix([])).toBeUndefined()
     expect(targetsPrefix([mr(1)])).toBe("[#9, !1]")
-    expect(targetsPrefix([mr(1), { url: "https://github.com/o/r/pull/2" }, { url: "https://gitlab.com/g/p/-/issues/3" }])).toBe(
-      "[!1, #2, #3]",
-    )
+    expect(
+      targetsPrefix([mr(1), { url: "https://github.com/o/r/pull/2" }, { url: "https://gitlab.com/g/p/-/issues/3" }]),
+    ).toBe("[!1, #2, #3]")
     expect(targetsPrefix([1, 2, 3, 4].map(mr))).toBe("[!1, !2, !3, !4]")
     expect(targetsPrefix([1, 2, 3, 4, 5, 6].map(mr))).toBe("[!1, !2, !3, +3]")
   })
@@ -121,7 +123,10 @@ const issue = "https://gitlab.com/group/project/-/issues/9"
 
 describe("parseTargetChange", () => {
   test("defaults to replacing with a single target or branch mode", () => {
-    expect(parseTargetChange({ target: a, issue_url: issue })).toEqual({ operation: "replace", targets: [{ url: a, issueUrl: issue }] })
+    expect(parseTargetChange({ target: a, issue_url: issue })).toEqual({
+      operation: "replace",
+      targets: [{ url: a, issueUrl: issue }],
+    })
     expect(parseTargetChange({ target: "branch" })).toEqual({ operation: "branch" })
     expect(parseTargetChange({ target: "branch", operation: "replace" })).toEqual({ operation: "branch" })
   })
@@ -151,13 +156,18 @@ describe("parseTargetChange", () => {
 })
 
 describe("applyTargetChange", () => {
-  const current = [{ url: a, branchIssue: "5" }, { url: b, issueUrl: issue }]
+  const current = [
+    { url: a, branchIssue: "5" },
+    { url: b, issueUrl: issue },
+  ]
 
   test("replaces the targets, keeping inferred issues of targets it keeps", () => {
-    expect(applyTargetChange(current, { operation: "replace", targets: [{ url: c }, { url: a }, { url: b }] })).toEqual({
-      targets: [{ url: c }, { url: a, branchIssue: "5" }, { url: b }],
-      missing: [],
-    })
+    expect(applyTargetChange(current, { operation: "replace", targets: [{ url: c }, { url: a }, { url: b }] })).toEqual(
+      {
+        targets: [{ url: c }, { url: a, branchIssue: "5" }, { url: b }],
+        missing: [],
+      },
+    )
   })
 
   test("adds targets after the current ones, keeping their details", () => {
@@ -166,10 +176,12 @@ describe("applyTargetChange", () => {
       { url: b, issueUrl: issue },
       { url: c },
     ])
-    expect(applyTargetChange(current, { operation: "add", targets: [{ url: a, issueUrl: issue }] }).targets[0]).toEqual({
-      url: a,
-      issueUrl: issue,
-    })
+    expect(applyTargetChange(current, { operation: "add", targets: [{ url: a, issueUrl: issue }] }).targets[0]).toEqual(
+      {
+        url: a,
+        issueUrl: issue,
+      },
+    )
   })
 
   test("removes targets and reports the ones it didn't have", () => {
@@ -258,7 +270,10 @@ describe("parseUrl", () => {
 
 describe("parseIssueUrl", () => {
   test("parses issues and work items, but not PRs/MRs", () => {
-    expect(gitlabTraits.parseIssueUrl("https://gitlab.com/g/sub/p/-/work_items/3")).toMatchObject({ project: "g/sub/p", iid: "3" })
+    expect(gitlabTraits.parseIssueUrl("https://gitlab.com/g/sub/p/-/work_items/3")).toMatchObject({
+      project: "g/sub/p",
+      iid: "3",
+    })
     expect(gitlabTraits.parseIssueUrl("https://gitlab.com/g/p/-/merge_requests/3")).toBeUndefined()
     expect(githubTraits.parseIssueUrl("https://github.com/o/r/issues/3")).toMatchObject({ forge: "github", iid: "3" })
     expect(githubTraits.parseIssueUrl("https://github.com/o/r/pull/3")).toBeUndefined()

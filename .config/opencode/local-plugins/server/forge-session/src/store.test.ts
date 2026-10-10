@@ -3,7 +3,13 @@ import type { Repository } from "./git"
 import { ForgeError, type ReviewRequest } from "./forge"
 import { createStatusStore, type Lookup } from "./store"
 
-const repository = { head: "", branch: "b", sourceBranch: "b", source: { host: "h", path: "a/b" }, targets: [] } as Repository
+const repository = {
+  head: "",
+  branch: "b",
+  sourceBranch: "b",
+  source: { host: "h", path: "a/b" },
+  targets: [],
+} as Repository
 const found = (count = 1): Lookup => ({
   kind: "found",
   repository,

@@ -5,15 +5,35 @@ import { reference, traits, traitsOf } from "./forges"
 import { footerSegments, responsiveFooterSegments } from "./format"
 
 const common = {
-  iid: "7", title: "Title", state: "opened", draft: false, conflicts: false, conflictsKnown: true, approved: false,
-  awaitingReviewers: [], reviewersComplete: true, targetProject: "o/r", targetBranch: "main",
-  unresolvedThreads: 0, threadsComplete: true,
+  iid: "7",
+  title: "Title",
+  state: "opened",
+  draft: false,
+  conflicts: false,
+  conflictsKnown: true,
+  approved: false,
+  awaitingReviewers: [],
+  reviewersComplete: true,
+  targetProject: "o/r",
+  targetBranch: "main",
+  unresolvedThreads: 0,
+  threadsComplete: true,
 }
 const merge: GitLabMergeRequest = {
-  ...common, forge: "gitlab", url: "https://gitlab.com/o/r/-/merge_requests/7",
-  hasApprovals: false, approvalRequirementsSatisfied: null, duoReviewState: "REVIEW_STARTED", mergeStatus: "CI_MUST_PASS",
+  ...common,
+  forge: "gitlab",
+  url: "https://gitlab.com/o/r/-/merge_requests/7",
+  hasApprovals: false,
+  approvalRequirementsSatisfied: null,
+  duoReviewState: "REVIEW_STARTED",
+  mergeStatus: "CI_MUST_PASS",
 }
-const pull: GitHubPullRequest = { ...common, forge: "github", url: "https://github.com/o/r/pull/7", reviewDecision: "CHANGES_REQUESTED" }
+const pull: GitHubPullRequest = {
+  ...common,
+  forge: "github",
+  url: "https://github.com/o/r/pull/7",
+  reviewDecision: "CHANGES_REQUESTED",
+}
 
 describe("forge traits", () => {
   test("format references with each forge's sigil", () => {
@@ -67,7 +87,9 @@ describe("forge traits", () => {
     expect(text(merge)).toEqual(["!7", "no pipeline", "🤖 reviewing"])
     expect(text(pull)).toEqual(["#7", "no checks", "changes requested"])
     const fit = (width: number) =>
-      responsiveFooterSegments({ loading: false, lookup: { kind: "found", requests: [pull] } }, width).map((segment) => segment.text)
+      responsiveFooterSegments({ loading: false, lookup: { kind: "found", requests: [pull] } }, width).map(
+        (segment) => segment.text,
+      )
     expect(fit(30)).toEqual(["#7", "no CI", "changes requested"])
     expect(fit(29)).toEqual(["#7", "changes requested"])
   })

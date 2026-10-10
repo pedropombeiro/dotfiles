@@ -3,14 +3,7 @@ import type { Exec } from "./exec"
 import type { Repository } from "./git"
 import { footerSegments } from "./format"
 import { ForgeError } from "./forge"
-import {
-  classifyError,
-  DISCUSSIONS_QUERY,
-  GitLabForge,
-  glabGraphQL,
-  SOURCE_BRANCH_QUERY,
-  type GraphQL,
-} from "./gitlab"
+import { classifyError, DISCUSSIONS_QUERY, GitLabForge, glabGraphQL, SOURCE_BRANCH_QUERY, type GraphQL } from "./gitlab"
 
 const repository: Repository = {
   head: "abc",
@@ -54,8 +47,18 @@ describe("GitLabForge.findByBranch", () => {
     const graphql: GraphQL = async (_host, query, variables) => {
       calls.push(variables)
       if (query === DISCUSSIONS_QUERY) {
-        if (variables.after === "c1") return { project: { mergeRequest: { discussions: discussions([[true, false]], "c2") } } }
-        return { project: { mergeRequest: { discussions: discussions([[true, false], [true, true]]) } } }
+        if (variables.after === "c1")
+          return { project: { mergeRequest: { discussions: discussions([[true, false]], "c2") } } }
+        return {
+          project: {
+            mergeRequest: {
+              discussions: discussions([
+                [true, false],
+                [true, true],
+              ]),
+            },
+          },
+        }
       }
       return {
         p0: { mergeRequests: { nodes: [] } },
@@ -94,7 +97,9 @@ describe("GitLabForge.findByBranch", () => {
     const empty: GraphQL = async () => ({ p0: { mergeRequests: { nodes: [] } }, p1: null })
     expect(await new GitLabForge(empty).findByBranch(repository)).toEqual([])
 
-    const noPipeline: GraphQL = async () => ({ p0: { mergeRequests: { nodes: [node({ headPipeline: null, sourceProject: { fullPath: "Me/Project" } })] } } })
+    const noPipeline: GraphQL = async () => ({
+      p0: { mergeRequests: { nodes: [node({ headPipeline: null, sourceProject: { fullPath: "Me/Project" } })] } },
+    })
     const [mr] = await new GitLabForge(noPipeline).findByBranch(repository)
     expect(mr.pipeline).toBeUndefined()
   })
@@ -114,7 +119,11 @@ describe("GitLabForge title lookups", () => {
     const graphql: GraphQL = async (_host, query, variables) => {
       seen = { query, variables }
       return {
-        p0: { mergeRequests: { nodes: [{ iid: "5", updatedAt: "2026-09-01T00:00:00Z", sourceProject: { fullPath: "me/project" } }] } },
+        p0: {
+          mergeRequests: {
+            nodes: [{ iid: "5", updatedAt: "2026-09-01T00:00:00Z", sourceProject: { fullPath: "me/project" } }],
+          },
+        },
         p1: {
           mergeRequests: {
             nodes: [
@@ -142,7 +151,9 @@ describe("GitLabForge title lookups", () => {
     expect(await new GitLabForge(graphql).sourceBranch(ref)).toBe("12-fix")
     expect(seen).toEqual({ project: "g/p", iid: "4" })
     expect(await new GitLabForge(async () => ({ project: { mergeRequest: null } })).sourceBranch(ref)).toBeUndefined()
-    expect(await new GitLabForge(async () => ({ project: { mergeRequest: { sourceBranch: "" } } })).sourceBranch(ref)).toBeUndefined()
+    expect(
+      await new GitLabForge(async () => ({ project: { mergeRequest: { sourceBranch: "" } } })).sourceBranch(ref),
+    ).toBeUndefined()
   })
 })
 
@@ -158,10 +169,16 @@ describe("GitLabForge.findByNumber", () => {
       const graphql: GraphQL = async (_host, query) => {
         expect(query).toContain("type username bot mergeRequestInteraction { reviewState approved }")
         return {
-          p0: { mergeRequest: node({ reviewers: { nodes: [
-            { type: "HUMAN", mergeRequestInteraction: { reviewState: "REVIEW_STARTED" } },
-            { type: "DUO_CODE_REVIEW_BOT", mergeRequestInteraction: { reviewState } },
-          ] } }) },
+          p0: {
+            mergeRequest: node({
+              reviewers: {
+                nodes: [
+                  { type: "HUMAN", mergeRequestInteraction: { reviewState: "REVIEW_STARTED" } },
+                  { type: "DUO_CODE_REVIEW_BOT", mergeRequestInteraction: { reviewState } },
+                ],
+              },
+            }),
+          },
         }
       }
       const mr = await new GitLabForge(graphql).findByNumber(projects, "1")
@@ -171,19 +188,25 @@ describe("GitLabForge.findByNumber", () => {
 
   test("does not report human or unrelated bot reviews as Duo", async () => {
     const graphql: GraphQL = async () => ({
-      p0: { mergeRequest: node({ reviewers: { nodes: [
-        { type: "HUMAN", mergeRequestInteraction: { reviewState: "REVIEW_STARTED" } },
-        { type: "PROJECT_BOT", mergeRequestInteraction: { reviewState: "REVIEW_STARTED" } },
-      ] } }) },
+      p0: {
+        mergeRequest: node({
+          reviewers: {
+            nodes: [
+              { type: "HUMAN", mergeRequestInteraction: { reviewState: "REVIEW_STARTED" } },
+              { type: "PROJECT_BOT", mergeRequestInteraction: { reviewState: "REVIEW_STARTED" } },
+            ],
+          },
+        }),
+      },
     })
     expect((await new GitLabForge(graphql).findByNumber(projects, "1"))?.duoReviewState).toBeUndefined()
   })
 
   test("handles a Duo reviewer with no interaction", async () => {
     const graphql: GraphQL = async () => ({
-      p0: { mergeRequest: node({ reviewers: { nodes: [
-        { type: "DUO_CODE_REVIEW_BOT", mergeRequestInteraction: null },
-      ] } }) },
+      p0: {
+        mergeRequest: node({ reviewers: { nodes: [{ type: "DUO_CODE_REVIEW_BOT", mergeRequestInteraction: null }] } }),
+      },
     })
     expect((await new GitLabForge(graphql).findByNumber(projects, "1"))?.duoReviewState).toBeUndefined()
   })
@@ -209,7 +232,12 @@ describe("GitLabForge.findByNumber", () => {
 
   // Mirrors gitlab-org/gitlab!260438: rules need no approvals, Duo approved,
   // and the human reviewer hasn't reviewed yet.
-  const duo = { type: "DUO_CODE_REVIEW_BOT", username: "GitLabDuo", bot: true, mergeRequestInteraction: { reviewState: "APPROVED", approved: true } }
+  const duo = {
+    type: "DUO_CODE_REVIEW_BOT",
+    username: "GitLabDuo",
+    bot: true,
+    mergeRequestInteraction: { reviewState: "APPROVED", approved: true },
+  }
   const human = (username: string, approved: boolean, reviewState = approved ? "APPROVED" : "UNREVIEWED") => ({
     type: "HUMAN",
     username,
@@ -219,9 +247,19 @@ describe("GitLabForge.findByNumber", () => {
 
   test("ignores a bot's approval", async () => {
     const graphql: GraphQL = async () => ({
-      p0: { mergeRequest: node({ approved: true, approvedBy: { nodes: [{ id: "gid://gitlab/User/9", bot: true }] }, reviewers: { nodes: [duo] } }) },
+      p0: {
+        mergeRequest: node({
+          approved: true,
+          approvedBy: { nodes: [{ id: "gid://gitlab/User/9", bot: true }] },
+          reviewers: { nodes: [duo] },
+        }),
+      },
     })
-    expect(await new GitLabForge(graphql).findByNumber(projects, "1")).toMatchObject({ approved: false, hasApprovals: false, awaitingReviewers: [] })
+    expect(await new GitLabForge(graphql).findByNumber(projects, "1")).toMatchObject({
+      approved: false,
+      hasApprovals: false,
+      awaitingReviewers: [],
+    })
   })
 
   test("waits for human reviewers who haven't approved", async () => {
@@ -229,14 +267,21 @@ describe("GitLabForge.findByNumber", () => {
       p0: {
         mergeRequest: node({
           approved: true,
-          approvedBy: { nodes: [{ id: "gid://gitlab/User/9", bot: true }, { id: "gid://gitlab/User/1", bot: false }] },
+          approvedBy: {
+            nodes: [
+              { id: "gid://gitlab/User/9", bot: true },
+              { id: "gid://gitlab/User/1", bot: false },
+            ],
+          },
           reviewers: { nodes: [duo, human("alice", true), human("david", false), human("erin", false, "REVIEWED")] },
         }),
       },
     })
     const mr = await new GitLabForge(graphql).findByNumber(projects, "1")
     expect(mr).toMatchObject({ approved: false, hasApprovals: true, awaitingReviewers: ["david", "erin"] })
-    const texts = footerSegments({ loading: false, lookup: { kind: "found", requests: [mr!] } }).map((segment) => segment.text)
+    const texts = footerSegments({ loading: false, lookup: { kind: "found", requests: [mr!] } }).map(
+      (segment) => segment.text,
+    )
     expect(texts).toContain("awaiting @david, @erin")
     expect(texts).not.toContain("approved")
   })
@@ -251,7 +296,10 @@ describe("GitLabForge.findByNumber", () => {
         }),
       },
     })
-    expect(await new GitLabForge(graphql).findByNumber(projects, "1")).toMatchObject({ approved: true, awaitingReviewers: [] })
+    expect(await new GitLabForge(graphql).findByNumber(projects, "1")).toMatchObject({
+      approved: true,
+      awaitingReviewers: [],
+    })
   })
 
   test("prefers the first project that has the MR", async () => {
@@ -314,6 +362,9 @@ describe("glabGraphQL", () => {
   })
 
   test("classifyError keeps the first line of unknown errors", () => {
-    expect(classifyError("glab: dial tcp: timeout\nmore", 1)).toMatchObject({ kind: "request", message: "dial tcp: timeout" })
+    expect(classifyError("glab: dial tcp: timeout\nmore", 1)).toMatchObject({
+      kind: "request",
+      message: "dial tcp: timeout",
+    })
   })
 })

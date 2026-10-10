@@ -83,7 +83,9 @@ export function createStatusService(options: StatusServiceOptions) {
       : []
 
   const watchedForFeedback = (key: string, lookup: Lookup | undefined) =>
-    options.human ? targets(key, lookup).filter((request) => traitsOf(request).feedback && request.state === "opened") : []
+    options.human
+      ? targets(key, lookup).filter((request) => traitsOf(request).feedback && request.state === "opened")
+      : []
 
   // Whether a session needs polling even when no CLI shows it.
   function needsWatch(key: string): boolean {

@@ -47,7 +47,10 @@ export function createTitleLookups(forges: ForgeCatalog, run: Exec, now: () => n
 
     // Uses the forge the URL names, even on a host the catalog doesn't list.
     async sourceBranch(ref, directory) {
-      return traits(ref.forge).open(run, directory).sourceBranch(ref).catch(() => undefined)
+      return traits(ref.forge)
+        .open(run, directory)
+        .sourceBranch(ref)
+        .catch(() => undefined)
     },
   }
 }

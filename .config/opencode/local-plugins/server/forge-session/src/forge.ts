@@ -172,7 +172,9 @@ export function prefixReferences(title: string | undefined, sigil: string): stri
   return titlePrefix(title)
     .slice(1, -1)
     .split(/[\s,]+/)
-    .flatMap((token) => (token.startsWith(sigil) && /^[1-9]\d*$/.test(token.slice(sigil.length)) ? [token.slice(sigil.length)] : []))
+    .flatMap((token) =>
+      token.startsWith(sigil) && /^[1-9]\d*$/.test(token.slice(sigil.length)) ? [token.slice(sigil.length)] : [],
+    )
 }
 
 // Parses a forge's web URL whose path matches `pattern`, capturing the project

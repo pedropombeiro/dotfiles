@@ -4,7 +4,13 @@ import { createStatusService, HOME } from "./status-service"
 import type { Lookup } from "./store"
 
 const mr = (overrides: Partial<GitLabMergeRequest> = {}): GitLabMergeRequest =>
-  ({ forge: "gitlab", iid: "1", url: "https://gitlab.com/g/p/-/merge_requests/1", state: "opened", ...overrides }) as GitLabMergeRequest
+  ({
+    forge: "gitlab",
+    iid: "1",
+    url: "https://gitlab.com/g/p/-/merge_requests/1",
+    state: "opened",
+    ...overrides,
+  }) as GitLabMergeRequest
 
 const targets = (...requests: ReviewRequest[]): Lookup => ({ kind: "found", explicitTarget: true, requests })
 
@@ -33,7 +39,13 @@ function harness({
       observe: async (sessionID) => void observed.push(sessionID),
       hasPending: (sessionID) => pending() && sessionID !== HOME,
     },
-    ...(human ? { human: { check: (sessionID: string, request: ReviewRequest) => void checked.push(`${sessionID} ${request.iid}`) } } : {}),
+    ...(human
+      ? {
+          human: {
+            check: (sessionID: string, request: ReviewRequest) => void checked.push(`${sessionID} ${request.iid}`),
+          },
+        }
+      : {}),
     interval: 100,
     activeInterval: 30,
     leaseTime: 300,
@@ -106,7 +118,10 @@ describe("createStatusService", () => {
 
   test("watches human feedback on open targets only, and only targets the server still has", async () => {
     const app = harness({ human: true })
-    app.lookups.set("ses_1", targets(mr(), mr({ iid: "2", url: "https://gitlab.com/g/p/-/merge_requests/2", state: "merged" })))
+    app.lookups.set(
+      "ses_1",
+      targets(mr(), mr({ iid: "2", url: "https://gitlab.com/g/p/-/merge_requests/2", state: "merged" })),
+    )
     app.service.watch("cli", ["ses_1"], "ses_1")
     await app.advance(0)
     expect(app.checked).toEqual(["ses_1 1"])

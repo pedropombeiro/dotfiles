@@ -51,7 +51,9 @@ type Responses = Record<string, string | undefined>
 function fakeGit(responses: Responses): Exec {
   return async (_file, args) => {
     const output = responses[args.join(" ")]
-    return output === undefined ? { stdout: "", stderr: "fatal", code: 128 } : { stdout: `${output}\n`, stderr: "", code: 0 }
+    return output === undefined
+      ? { stdout: "", stderr: "fatal", code: 128 }
+      : { stdout: `${output}\n`, stderr: "", code: 0 }
   }
 }
 

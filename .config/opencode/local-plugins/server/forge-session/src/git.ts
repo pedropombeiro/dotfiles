@@ -40,7 +40,10 @@ export function parseRemote(url: string): RemoteProject | undefined {
     path = decodeURIComponent(parsed.pathname)
   }
 
-  path = path.replace(/^\/+/, "").replace(/\/+$/, "").replace(/\.git$/, "")
+  path = path
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "")
+    .replace(/\.git$/, "")
   if (!host || !path.includes("/")) return undefined
   return { host: host.toLowerCase(), path }
 }
@@ -102,7 +105,12 @@ export async function resolveRepository(
   const source = parseRemote(remotes.get(sourceRemote)!)
   if (!source || !supported(source.host)) return { kind: "none", reason: "Not a supported forge remote" }
 
-  const remoteHead = await git(run, directory, ["symbolic-ref", "--quiet", "--short", `refs/remotes/${sourceRemote}/HEAD`])
+  const remoteHead = await git(run, directory, [
+    "symbolic-ref",
+    "--quiet",
+    "--short",
+    `refs/remotes/${sourceRemote}/HEAD`,
+  ])
   if (remoteHead && remoteHead === `${sourceRemote}/${sourceBranch}`) {
     return { kind: "none", reason: "Default branch" }
   }
@@ -123,11 +131,7 @@ export type ProjectsLookup = { kind: "projects"; projects: RemoteProject[] } | {
 // Lists the projects on accepted hosts behind a checkout's remotes, `origin`
 // first and all on one host, for looking up a PR/MR by number regardless of the
 // checked-out branch.
-export async function resolveProjects(
-  run: Exec,
-  directory: string,
-  accepted: HostFilter,
-): Promise<ProjectsLookup> {
+export async function resolveProjects(run: Exec, directory: string, accepted: HostFilter): Promise<ProjectsLookup> {
   const remoteConfig = await git(run, directory, ["config", "--get-regexp", "^remote\\..*\\.url$"])
   if (remoteConfig === undefined) return { kind: "none", reason: "No Git remotes" }
 

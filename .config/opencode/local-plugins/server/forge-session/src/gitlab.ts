@@ -111,7 +111,8 @@ export function classifyError(message: string, code: number): ForgeError {
   if (/\b401\b|unauthori[sz]ed|not logged in|authenticat|invalid token|token.*expired/i.test(text)) {
     return new ForgeError("auth", "GitLab authentication failed. Run `glab auth status`.")
   }
-  if (/\b429\b|rate limit|too many requests/i.test(text)) return new ForgeError("rate-limit", "GitLab rate limit reached")
+  if (/\b429\b|rate limit|too many requests/i.test(text))
+    return new ForgeError("rate-limit", "GitLab rate limit reached")
   return new ForgeError("request", text.split("\n")[0])
 }
 
@@ -174,7 +175,8 @@ export const gitlabTraits: ForgeTraits<GitLabMergeRequest, GitLabForge> = {
   titleReferences: (title) => prefixReferences(title, "!"),
   indicators: () => [],
   details(request) {
-    const requirements = request.approvalRequirementsSatisfied === null ? "unknown" : yesNo(request.approvalRequirementsSatisfied)
+    const requirements =
+      request.approvalRequirementsSatisfied === null ? "unknown" : yesNo(request.approvalRequirementsSatisfied)
     const lines = [`Human approvals: ${yesNo(request.hasApprovals)} · Approval requirements satisfied: ${requirements}`]
     if (request.mergeStatus) lines.push(`Merge status: ${humanize(request.mergeStatus)}`)
     return lines
@@ -242,13 +244,14 @@ export class GitLabForge implements Forge {
     const data = await this.graphql(source.host, mergeRequestNumbersQuery(targets.length), variables)
 
     const sourcePath = source.path.toLowerCase()
-    const nodes: Array<{ iid: string; updatedAt: string | null; sourceProject: { fullPath: string } | null }> = targets.flatMap(
-      (_, index) => data?.[`p${index}`]?.mergeRequests?.nodes ?? [],
+    const nodes: Array<{ iid: string; updatedAt: string | null; sourceProject: { fullPath: string } | null }> =
+      targets.flatMap((_, index) => data?.[`p${index}`]?.mergeRequests?.nodes ?? [])
+    return (
+      nodes
+        // Another project's branch with the same name must not name this branch's MR.
+        .filter((node) => node.sourceProject?.fullPath.toLowerCase() === sourcePath)
+        .sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""))[0]?.iid
     )
-    return nodes
-      // Another project's branch with the same name must not name this branch's MR.
-      .filter((node) => node.sourceProject?.fullPath.toLowerCase() === sourcePath)
-      .sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""))[0]?.iid
   }
 
   async sourceBranch(ref: ReviewRef): Promise<string | undefined> {
@@ -296,7 +299,9 @@ export class GitLabForge implements Forge {
     // rules that require no approvals, so only people's approvals count.
     const hasApprovals = (node.approvedBy?.nodes ?? []).some((approver) => approver.bot !== true)
     const awaitingReviewers = (node.reviewers?.nodes ?? [])
-      .filter((reviewer) => reviewer.bot !== true && reviewer.username && reviewer.mergeRequestInteraction?.approved !== true)
+      .filter(
+        (reviewer) => reviewer.bot !== true && reviewer.username && reviewer.mergeRequestInteraction?.approved !== true,
+      )
       .map((reviewer) => reviewer.username!)
     return {
       forge: "gitlab",
@@ -326,8 +331,9 @@ export class GitLabForge implements Forge {
         : undefined,
       unresolvedThreads: threads.count,
       threadsComplete: threads.complete,
-      duoReviewState: node.reviewers?.nodes.find((reviewer) => reviewer.type === "DUO_CODE_REVIEW_BOT")
-        ?.mergeRequestInteraction?.reviewState ?? undefined,
+      duoReviewState:
+        node.reviewers?.nodes.find((reviewer) => reviewer.type === "DUO_CODE_REVIEW_BOT")?.mergeRequestInteraction
+          ?.reviewState ?? undefined,
     }
   }
 }

@@ -23,12 +23,18 @@ type Outcome = { request: ReviewRequest } | { missing: string } | { error: unkno
 
 // Looks up each PR/MR target. A failed lookup reuses the target's previous
 // result and is listed in `failed`; it throws only when no lookup succeeded.
-async function locateTargets(forges: ForgeCatalog, directory: string, targets: SessionTarget[], previous?: Lookup): Promise<Lookup> {
+async function locateTargets(
+  forges: ForgeCatalog,
+  directory: string,
+  targets: SessionTarget[],
+  previous?: Lookup,
+): Promise<Lookup> {
   const requests = targets.flatMap((target) => (target.kind === "merge-request" ? [target] : []))
   // An explicit target that isn't a PR/MR, such as an issue, means the session
   // isn't about one, so the branch's PR/MR would be misleading.
   if (requests.length === 0) {
-    const reason = targets.length === 1 ? `The session target is not a PR/MR (${targets[0].url})` : "No session target is a PR/MR"
+    const reason =
+      targets.length === 1 ? `The session target is not a PR/MR (${targets[0].url})` : "No session target is a PR/MR"
     return { kind: "none", reason }
   }
 
@@ -68,7 +74,11 @@ async function locateTargets(forges: ForgeCatalog, directory: string, targets: S
 
   if (error !== undefined && !outcomes.some((outcome) => "request" in outcome)) throw error
   // Never fall back to the branch, which may have a different PR/MR.
-  if (found.length === 0) return { kind: "none", reason: requests.length === 1 ? failed[0].reason : "No session target PR/MR could be resolved" }
+  if (found.length === 0)
+    return {
+      kind: "none",
+      reason: requests.length === 1 ? failed[0].reason : "No session target PR/MR could be resolved",
+    }
   return {
     kind: "found",
     sessionTarget: requests.length === 1 ? found[0].url : `${requests.length} PRs/MRs set with set_session_target`,
@@ -96,7 +106,11 @@ export async function locate(forges: ForgeCatalog, hints: Hints): Promise<Lookup
     for (const number of numbers) {
       const request = await forge.findByNumber(projects, number)
       if (request) {
-        return { kind: "found", sessionTarget: `${forge.traits.reference(number)} (from the session title)`, requests: [request] }
+        return {
+          kind: "found",
+          sessionTarget: `${forge.traits.reference(number)} (from the session title)`,
+          requests: [request],
+        }
       }
     }
   }

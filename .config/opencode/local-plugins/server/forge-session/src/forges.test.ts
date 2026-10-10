@@ -7,7 +7,10 @@ import { GitLabForge } from "./gitlab"
 const remotes: Exec = async (_file, args) => ({
   code: 0,
   stderr: "",
-  stdout: args[0] === "config" ? "remote.origin.url git@github.com:o/r.git\nremote.lab.url git@gitlab.example.com:g/p.git" : "",
+  stdout:
+    args[0] === "config"
+      ? "remote.origin.url git@github.com:o/r.git\nremote.lab.url git@gitlab.example.com:g/p.git"
+      : "",
 })
 
 const forges = new Forges(remotes, { gitlab: ["gitlab.example.com"], github: ["github.com", "ghe.example.com"] })
@@ -28,7 +31,9 @@ describe("Forges", () => {
   })
 
   test("prefers configured hosts over recognized ones", () => {
-    expect(new Forges(remotes, { gitlab: [], github: ["gitlab.mirror.example.com"] }).kind("gitlab.mirror.example.com")).toBe("github")
+    expect(
+      new Forges(remotes, { gitlab: [], github: ["gitlab.mirror.example.com"] }).kind("gitlab.mirror.example.com"),
+    ).toBe("github")
   })
 
   test("lists only the requested forge's projects, even when origin is on another forge", async () => {
@@ -39,12 +44,17 @@ describe("Forges", () => {
       stderr: "",
       stdout: "remote.origin.url git@gitlab.example.com:g/p.git\nremote.mirror.url git@github.com:o/r.git",
     })
-    expect(await new Forges(mirrored, forges.hosts).projects("/repo", "github")).toEqual([{ host: "github.com", path: "o/r" }])
+    expect(await new Forges(mirrored, forges.hosts).projects("/repo", "github")).toEqual([
+      { host: "github.com", path: "o/r" },
+    ])
   })
 
   test("reads host options with defaults", () => {
     expect(hostsFrom({})).toEqual({ gitlab: ["gitlab.com"], github: ["github.com"] })
-    expect(hostsFrom({ hosts: ["gitlab.example.com", 3], githubHosts: [] })).toEqual({ gitlab: ["gitlab.example.com"], github: [] })
+    expect(hostsFrom({ hosts: ["gitlab.example.com", 3], githubHosts: [] })).toEqual({
+      gitlab: ["gitlab.example.com"],
+      github: [],
+    })
   })
 
   test("parses PR/MR and issue URLs on either forge", () => {
@@ -62,8 +72,16 @@ describe("Forges", () => {
     const unsupported: Exec = async (_file, args) => ({
       code: 0,
       stderr: "",
-      stdout: args[0] === "config" ? "remote.origin.url git@bitbucket.org:o/r.git" : args[0] === "symbolic-ref" && args.length === 4 ? "feature" : "/repo",
+      stdout:
+        args[0] === "config"
+          ? "remote.origin.url git@bitbucket.org:o/r.git"
+          : args[0] === "symbolic-ref" && args.length === 4
+            ? "feature"
+            : "/repo",
     })
-    expect(await new Forges(unsupported, forges.hosts).repository("/repo")).toEqual({ kind: "none", reason: "Not a supported forge remote" })
+    expect(await new Forges(unsupported, forges.hosts).repository("/repo")).toEqual({
+      kind: "none",
+      reason: "Not a supported forge remote",
+    })
   })
 })

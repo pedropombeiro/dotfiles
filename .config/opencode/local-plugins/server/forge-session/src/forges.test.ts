@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test"
 import type { Exec } from "./exec"
-import { Forges } from "./forges"
+import { Forges, hostsFrom, parseReference } from "./forges"
 import { GitHubForge } from "./github"
 import { GitLabForge } from "./gitlab"
 
@@ -40,6 +40,22 @@ describe("Forges", () => {
       stdout: "remote.origin.url git@gitlab.example.com:g/p.git\nremote.mirror.url git@github.com:o/r.git",
     })
     expect(await new Forges(mirrored, forges.hosts).projects("/repo", "github")).toEqual([{ host: "github.com", path: "o/r" }])
+  })
+
+  test("reads host options with defaults", () => {
+    expect(hostsFrom({})).toEqual({ gitlab: ["gitlab.com"], github: ["github.com"] })
+    expect(hostsFrom({ hosts: ["gitlab.example.com", 3], githubHosts: [] })).toEqual({ gitlab: ["gitlab.example.com"], github: [] })
+  })
+
+  test("parses PR/MR and issue URLs on either forge", () => {
+    expect(parseReference("https://gitlab.com/g/p/-/merge_requests/4")).toEqual({
+      ref: { forge: "gitlab", host: "gitlab.com", project: "g/p", iid: "4" },
+      issue: false,
+    })
+    expect(parseReference("https://gitlab.com/g/p/-/issues/4")).toMatchObject({ ref: { forge: "gitlab" }, issue: true })
+    expect(parseReference("https://github.com/o/r/pull/4")).toMatchObject({ ref: { forge: "github" }, issue: false })
+    expect(parseReference("https://github.com/o/r/issues/4")).toMatchObject({ ref: { forge: "github" }, issue: true })
+    expect(parseReference("https://github.com/o/r")).toBeUndefined()
   })
 
   test("resolves the branch only on supported forges", async () => {

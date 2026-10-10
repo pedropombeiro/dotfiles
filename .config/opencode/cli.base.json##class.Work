@@ -20,7 +20,6 @@
     "./local-plugins/tui/queue-command",       // Adds /queue to queue a message for later
     "opencode-terminal-progress@1.0.2",        // Shows agent progress in terminal tabs
     "opencode-tmux-indicator@1.0.2",           // Flags the tmux window while the agent waits for input
-    "./local-plugins/tui/forge-review-status", // Shows the session's PR/MR status in the prompt footer
     "./local-plugins/tui/session-metrics"      // Shows compaction, cache, and timing metrics
   ]
 }

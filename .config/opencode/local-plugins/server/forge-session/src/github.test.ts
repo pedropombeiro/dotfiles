@@ -62,6 +62,38 @@ test("filters same-named branches from other forks and deduplicates remotes", as
   expect(pr.map((item) => item.iid)).toEqual(["1"])
 })
 
+test("finds the newest PR number from the source fork without reading status", async () => {
+  const queries: string[] = []
+  const forge = new GitHubForge(async (_host, query, variables) => {
+    queries.push(query)
+    const nodes = variables.repo === "repo" && variables.owner === "owner"
+      ? [
+          { number: 3, updatedAt: "2026-10-09T00:00:00Z", headRepository: { nameWithOwner: "other/repo" } },
+          { number: 1, updatedAt: "2026-10-01T00:00:00Z", headRepository: { nameWithOwner: "Fork/Repo" } },
+        ]
+      : [{ number: 2, updatedAt: "2026-10-05T00:00:00Z", headRepository: { nameWithOwner: "fork/repo" } }]
+    return { repository: { pullRequests: { nodes } } }
+  })
+  const number = await forge.findNumberByBranch({
+    head: "abc", branch: "feature", sourceBranch: "feature", source: { host: "github.com", path: "fork/repo" },
+    targets: [{ host: "github.com", path: "owner/repo" }, { host: "github.com", path: "fork/repo" }],
+  })
+  expect(number).toBe("2")
+  expect(queries.every((query) => !query.includes("reviewThreads"))).toBe(true)
+})
+
+test("reads a PR's source branch and treats a missing PR as unknown", async () => {
+  const ref = { forge: "github" as const, host: "github.com", project: "owner/repo", iid: "7" }
+  let seen: Record<string, string | number> = {}
+  const forge = new GitHubForge(async (_host, _query, variables) => {
+    seen = variables
+    return { repository: { pullRequest: { headRefName: "34-fix" } } }
+  })
+  expect(await forge.sourceBranch(ref)).toBe("34-fix")
+  expect(seen).toEqual({ owner: "owner", repo: "repo", number: 7 })
+  expect(await new GitHubForge(async () => ({ repository: { pullRequest: null } })).sourceBranch(ref)).toBeUndefined()
+})
+
 test("uses typed integer GraphQL variables and classifies missing gh", async () => {
   const args: string[][] = []
   const gh = ghGraphQL(async (_file, input) => { args.push(input); return { code: 0, stdout: JSON.stringify({ data: { repository: { pullRequest: pull() } } }), stderr: "" } }, "/repo")

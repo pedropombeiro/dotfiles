@@ -10,6 +10,7 @@ import {
   type Forge,
   type ForgeTraits,
   type GitLabMergeRequest,
+  type ReviewRef,
 } from "./forge"
 import type { RemoteProject, Repository } from "./git"
 import { fetchComments } from "./gitlab-feedback"
@@ -81,6 +82,23 @@ export function mergeRequestQuery(projectCount: number): string {
   return `query($iid: String!, ${variables}) {\n${projects}\n}`
 }
 
+// Only the fields that pick the newest MR from the source project.
+export function mergeRequestNumbersQuery(projectCount: number): string {
+  const variables = Array.from({ length: projectCount }, (_, index) => `$p${index}: ID!`).join(", ")
+  const projects = Array.from(
+    { length: projectCount },
+    (_, index) =>
+      `p${index}: project(fullPath: $p${index}) {
+        mergeRequests(sourceBranches: [$branch], state: opened, first: 20) { nodes { iid updatedAt sourceProject { fullPath } } }
+      }`,
+  ).join("\n")
+  return `query($branch: String!, ${variables}) {\n${projects}\n}`
+}
+
+export const SOURCE_BRANCH_QUERY = `query($project: ID!, $iid: String!) {
+  project(fullPath: $project) { mergeRequest(iid: $iid) { sourceBranch } }
+}`
+
 export const DISCUSSIONS_QUERY = `query($project: ID!, $iid: String!, $after: String) {
   project(fullPath: $project) {
     mergeRequest(iid: $iid) { discussions(first: ${PAGE_SIZE}, after: $after) { ${DISCUSSIONS} } }
@@ -128,7 +146,10 @@ export const gitlabTraits: ForgeTraits<GitLabMergeRequest, GitLabForge> = {
   open: (run, directory) => new GitLabForge(glabGraphQL(run, directory)),
   owns: ownedBy("gitlab"),
   parseUrl: (url) => parseWebUrl("gitlab", url, /^\/(.+)\/-\/merge_requests\/([1-9]\d*)\/?$/),
+  // Issues can also be opened as work items.
+  parseIssueUrl: (url) => parseWebUrl("gitlab", url, /^\/(.+)\/-\/(?:issues|work_items)\/([1-9]\d*)\/?$/),
   reference: (iid) => `!${iid}`,
+  issueReference: (iid) => `#${iid}`,
   titleReferences: (title) => prefixReferences(title, "!"),
   indicators: () => [],
   details(request) {
@@ -191,6 +212,28 @@ export class GitLabForge implements Forge {
 
     const requests = await Promise.all(nodes.map((node) => this.normalize(source.host, node)))
     return requests.sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""))
+  }
+
+  async findNumberByBranch(repository: Repository): Promise<string | undefined> {
+    const { source, targets, sourceBranch } = repository
+    const variables: Record<string, string> = { branch: sourceBranch }
+    targets.forEach((target, index) => (variables[`p${index}`] = target.path))
+    const data = await this.graphql(source.host, mergeRequestNumbersQuery(targets.length), variables)
+
+    const sourcePath = source.path.toLowerCase()
+    const nodes: Array<{ iid: string; updatedAt: string | null; sourceProject: { fullPath: string } | null }> = targets.flatMap(
+      (_, index) => data?.[`p${index}`]?.mergeRequests?.nodes ?? [],
+    )
+    return nodes
+      // Another project's branch with the same name must not name this branch's MR.
+      .filter((node) => node.sourceProject?.fullPath.toLowerCase() === sourcePath)
+      .sort((a, b) => (b.updatedAt ?? "").localeCompare(a.updatedAt ?? ""))[0]?.iid
+  }
+
+  async sourceBranch(ref: ReviewRef): Promise<string | undefined> {
+    const data = await this.graphql(ref.host, SOURCE_BRANCH_QUERY, { project: ref.project, iid: ref.iid })
+    const branch = data?.project?.mergeRequest?.sourceBranch
+    return typeof branch === "string" && branch ? branch : undefined
   }
 
   async findByNumber(projects: readonly RemoteProject[], iid: string): Promise<GitLabMergeRequest | undefined> {

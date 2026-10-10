@@ -9,8 +9,10 @@ import {
   type ForgeTraits,
   type GitHubPullRequest,
   type Pipeline,
+  type ReviewRef,
 } from "./forge"
 import type { RemoteProject, Repository } from "./git"
+import { gitlabTraits } from "./gitlab"
 
 interface Connection<T> {
   nodes: T[]
@@ -105,6 +107,13 @@ export function checks(nodes: Check[], complete: boolean, url: string): Pipeline
   return { status: "SUCCESS", label: `${nodes.length} passed or skipped`, url }
 }
 
+// GitHub URLs are accepted on any host, for GitHub Enterprise, except GitLab
+// hosts, which also answer legacy paths such as `/group/project/issues/1`.
+function parseGitHubUrl(url: string, pattern: RegExp) {
+  const ref = parseWebUrl("github", url, pattern)
+  return ref && !gitlabTraits.recognizes(ref.host) ? ref : undefined
+}
+
 export const githubTraits: ForgeTraits<GitHubPullRequest, GitHubForge> = {
   kind: "github",
   noun: "PR",
@@ -113,8 +122,10 @@ export const githubTraits: ForgeTraits<GitHubPullRequest, GitHubForge> = {
   recognizes: () => false,
   open: (run, directory) => new GitHubForge(ghGraphQL(run, directory)),
   owns: ownedBy("github"),
-  parseUrl: (url) => parseWebUrl("github", url, /^\/([^/]+\/[^/]+)\/pull\/([1-9]\d*)\/?$/),
+  parseUrl: (url) => parseGitHubUrl(url, /^\/([^/]+\/[^/]+)\/pull\/([1-9]\d*)\/?$/),
+  parseIssueUrl: (url) => parseGitHubUrl(url, /^\/([^/]+\/[^/]+)\/issues\/([1-9]\d*)\/?$/),
   reference: (iid) => `#${iid}`,
+  issueReference: (iid) => `#${iid}`,
   // `#N` also names issues, such as in `[#42, #108]`.
   titleReferences: (title) => prefixReferences(title, "#"),
   indicators: (request) =>
@@ -138,6 +149,34 @@ export class GitHubForge implements Forge {
       if (node) return this.normalize(project.host, node)
     }
     return undefined
+  }
+
+  async findNumberByBranch(repository: Repository): Promise<string | undefined> {
+    let newest: { number: number; updatedAt: string } | undefined
+    for (const target of repository.targets) {
+      const [owner, repo] = target.path.split("/")
+      const data = await this.graphql(target.host, `query($owner:String!,$repo:String!,$branch:String!) {
+        repository(owner:$owner,name:$repo) { pullRequests(first:100,states:OPEN,headRefName:$branch,orderBy:{field:UPDATED_AT,direction:DESC}) {
+          nodes { number updatedAt headRepository { nameWithOwner } }
+        } } }`, { owner, repo, branch: repository.sourceBranch })
+      const nodes = (data.repository as { pullRequests?: Connection<Pick<Pull, "number" | "updatedAt" | "headRepository">> } | undefined)
+        ?.pullRequests?.nodes ?? []
+      for (const node of nodes) {
+        // A fork's branch with the same name must not name this branch's PR.
+        if (node.headRepository?.nameWithOwner.toLowerCase() !== repository.source.path.toLowerCase()) continue
+        if (!newest || node.updatedAt > newest.updatedAt) newest = node
+      }
+    }
+    return newest ? String(newest.number) : undefined
+  }
+
+  async sourceBranch(ref: ReviewRef): Promise<string | undefined> {
+    const [owner, repo] = ref.project.split("/")
+    const data = await this.graphql(ref.host, `query($owner:String!,$repo:String!,$number:Int!) {
+      repository(owner:$owner,name:$repo) { pullRequest(number:$number) { headRefName } }
+    }`, { owner, repo, number: Number(ref.iid) })
+    const branch = (data.repository as { pullRequest?: { headRefName?: unknown } | null } | undefined)?.pullRequest?.headRefName
+    return typeof branch === "string" && branch ? branch : undefined
   }
 
   async findByBranch(repository: Repository): Promise<GitHubPullRequest[]> {

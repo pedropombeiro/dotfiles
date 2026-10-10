@@ -27,8 +27,26 @@ export function parseUrl(url: string): ReviewRef | undefined {
   return undefined
 }
 
+// The PR/MR or issue a web URL names on any forge.
+export function parseReference(url: string): { ref: ReviewRef; issue: boolean } | undefined {
+  for (const kind of kinds) {
+    const request = registry[kind].parseUrl(url)
+    if (request) return { ref: request, issue: false }
+    const issue = registry[kind].parseIssueUrl(url)
+    if (issue) return { ref: issue, issue: true }
+  }
+  return undefined
+}
+
 // Hosts each forge serves, besides the hosts it recognizes by name.
 export type ForgeHosts = Record<ForgeKind, readonly string[]>
+
+// The `hosts` and `githubHosts` plugin options, which both entry points read.
+export function hostsFrom(options: Record<string, unknown>): ForgeHosts {
+  const list = (value: unknown, fallback: string) =>
+    Array.isArray(value) ? value.filter((host): host is string => typeof host === "string") : [fallback]
+  return { gitlab: list(options.hosts, "gitlab.com"), github: list(options.githubHosts, "github.com") }
+}
 
 // What PR/MR lookup needs from the registry, so tests can supply fakes.
 export interface ForgeCatalog {

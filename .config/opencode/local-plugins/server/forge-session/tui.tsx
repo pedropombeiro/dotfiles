@@ -1,8 +1,8 @@
 /** @jsxImportSource @opentui/solid */
-// OpenCode resolves a local plugin directory's CLI entry point as `<dir>/tui`,
-// so this file stays at the directory root. It is loaded only through the
-// path entries in both cli.base.json alternates; the parent directory is outside
-// OpenCode's plugin discovery paths.
+// OpenCode loads this CLI entry point automatically because the server entry
+// point in index.ts is configured in opencode.json. It shows the PR/MR of the
+// target that the server stores, and tells the agent about its reviews. It
+// reads its options from the server, and `reviewStatus: false` turns it off.
 import { Plugin } from "@opencode/plugin/tui"
 import type { BoxRenderable } from "@opentui/core"
 import { createEffect, createMemo, createSignal, For, on, onCleanup, Show } from "solid-js"
@@ -20,7 +20,7 @@ import {
 import { exec } from "./src/exec"
 import { detailsMessage, footerSegments, responsiveFooterSegments, segmentsWidth, type Tone } from "./src/format"
 import { titlePrefix, type ReviewComment, type ReviewRequest } from "./src/forge"
-import { Forges, reference, traitsOf } from "./src/forges"
+import { Forges, hostsFrom, reference, traitsOf } from "./src/forges"
 import {
   createFeedbackWatcher,
   feedbackMessage,
@@ -31,7 +31,9 @@ import {
 import { locate } from "./src/locate"
 import { createSessionWatch } from "./src/session-watch"
 import { createStatusStore, type Lookup } from "./src/store"
-import { classifyTarget, ForgeSessionTitleRpc } from "./src/target"
+import { resolveCliOptions, reviewStatusEnabled } from "./src/options"
+import { ForgeSessionRpc } from "./src/rpc"
+import { classifyTarget } from "./src/target"
 
 // Cache keys are per session, because sessions sharing a checkout can target
 // different PRs/MRs. The title's managed prefix, which holds its references,
@@ -48,19 +50,22 @@ const parseKey = (key: string): Key => {
 }
 
 export default Plugin.define({
-  id: "pedropombeiro.forge-review-status",
-  setup(context) {
-    const forges = new Forges(exec, {
-      gitlab: Array.isArray(context.options.hosts) ? context.options.hosts : ["gitlab.com"],
-      github: Array.isArray(context.options.githubHosts) ? context.options.githubHosts : ["github.com"],
-    })
-    const pollSeconds = Number(context.options.pollSeconds) > 0 ? Number(context.options.pollSeconds) : 120
+  id: "pedropombeiro.forge-session",
+  async setup(context) {
+    const titles = context.client.rpc(ForgeSessionRpc)
+    const location = context.location ?? context.data.location.default()
+    const options = await resolveCliOptions(context.options, () => titles.options({}, { location }))
+    // Without review status, the plugin keeps only the server's session
+    // targets and titles, so this entry point adds nothing.
+    if (!reviewStatusEnabled(options)) return
+
+    const forges = new Forges(exec, hostsFrom(options))
+    const pollSeconds = Number(options.pollSeconds) > 0 ? Number(options.pollSeconds) : 120
     // Running automated reviews poll faster so a finished review is noticed promptly.
     const reviewPollSeconds = Math.min(pollSeconds, 30)
     // `notifyDuoReview` is the option's former name.
-    const notifyAutomatedReviews = (context.options.notifyAutomatedReviews ?? context.options.notifyDuoReview) !== false
-    const notifyHumanReviews = context.options.notifyHumanReviews !== false
-    const titles = context.client.rpc(ForgeSessionTitleRpc)
+    const notifyAutomatedReviews = (options.notifyAutomatedReviews ?? options.notifyDuoReview) !== false
+    const notifyHumanReviews = options.notifyHumanReviews !== false
     // Shared across TUI instances, so only one of them notifies a session.
     const [notified, updateNotified] = context.storage.store("automatedReviewNotified", {
       initial: { sent: {} } as NotifiedLog,
@@ -81,8 +86,8 @@ export default Plugin.define({
     }
 
     // Reads the target stored by set_session_target. Returns undefined when the
-    // session has no explicit target or the server lacks the RPC, for example
-    // with an opencode-forge-session-title release that predates it.
+    // session has no explicit target or the RPC fails, for example while the
+    // server entry point reloads. Title references and the branch still apply.
     async function rpcTarget(sessionID: string, directory: string) {
       try {
         return classifyTarget(await titles.target({ sessionID }, { location: { directory } }))
@@ -278,7 +283,7 @@ export default Plugin.define({
                       </text>
                     }
                   >
-                    {(url) => (
+                    {(url: () => string) => (
                       // OSC 8 makes the text a terminal hyperlink where supported; the
                       // click handler covers terminals and multiplexers that drop it.
                       // The underline marks the segment as a link, because terminals

@@ -27,6 +27,14 @@ class FakeForge implements Forge {
     this.calls.push(`branch ${repository.sourceBranch}`)
     return this.branch
   }
+
+  async findNumberByBranch() {
+    return this.branch[0]?.iid
+  }
+
+  async sourceBranch() {
+    return undefined
+  }
 }
 
 const merge = { forge: "gitlab", iid: "45", url: "https://gitlab.com/g/p/-/merge_requests/45" } as GitLabMergeRequest

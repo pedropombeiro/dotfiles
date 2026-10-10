@@ -93,8 +93,12 @@ export interface ForgeTraits<Request extends ReviewRequest = ReviewRequest, Adap
   owns(request: ReviewRequest): request is Request
   // The PR/MR a web URL names. Undefined for other URLs, such as issues.
   parseUrl(url: string): ReviewRef | undefined
+  // The issue a web URL names. Undefined for other URLs, such as PRs/MRs.
+  parseIssueUrl(url: string): ReviewRef | undefined
   // Writes a request number the way the forge does, such as `!45` or `#7`.
   reference(iid: string): string
+  // Writes an issue number the way the forge does, such as `#12`.
+  issueReference(iid: string): string
   // The request numbers in a session title's managed prefix, such as
   // `[#12, !45]`, in order. Some may name issues rather than PRs/MRs.
   titleReferences(title: string | undefined): string[]
@@ -159,8 +163,8 @@ export const ownedBy =
   (request: ReviewRequest): request is Extract<ReviewRequest, { forge: Kind }> =>
     request.forge === kind
 
-// opencode-forge-session-title prefixes titles with the session's references,
-// such as `[#123, !456] Title`. Returns the prefix, or "" without one.
+// The server prefixes titles with the session's references, such as
+// `[#123, !456] Title`. Returns the prefix, or "" without one.
 export const titlePrefix = (title: string | undefined) => title?.match(/^\[[^\]]*\]/)?.[0] ?? ""
 
 // The numbers that follow `sigil` in a title's managed prefix, in order.
@@ -207,4 +211,9 @@ export interface Forge {
   findByNumber(projects: readonly RemoteProject[], number: string): Promise<ReviewRequest | undefined>
   // Open PRs/MRs from the repository's current branch, newest first.
   findByBranch(repository: Repository): Promise<ReviewRequest[]>
+  // The number of the newest open PR/MR from the repository's current branch.
+  // Unlike `findByBranch`, it reads no status, so session titles stay cheap.
+  findNumberByBranch(repository: Repository): Promise<string | undefined>
+  // The branch a PR/MR was opened from. Undefined when the PR/MR doesn't exist.
+  sourceBranch(ref: ReviewRef): Promise<string | undefined>
 }

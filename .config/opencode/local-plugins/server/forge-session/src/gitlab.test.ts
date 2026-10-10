@@ -8,6 +8,7 @@ import {
   DISCUSSIONS_QUERY,
   GitLabForge,
   glabGraphQL,
+  SOURCE_BRANCH_QUERY,
   type GraphQL,
 } from "./gitlab"
 
@@ -104,6 +105,44 @@ describe("GitLabForge.findByBranch", () => {
       p1: { mergeRequests: { nodes: [node({ iid: "7", updatedAt: "2026-10-02T00:00:00Z" })] } },
     })
     expect((await new GitLabForge(graphql).findByBranch(repository)).map((mr) => mr.iid)).toEqual(["7", "5"])
+  })
+})
+
+describe("GitLabForge title lookups", () => {
+  test("finds the newest MR number from the source project without reading status", async () => {
+    let seen: { query: string; variables: Record<string, string> } | undefined
+    const graphql: GraphQL = async (_host, query, variables) => {
+      seen = { query, variables }
+      return {
+        p0: { mergeRequests: { nodes: [{ iid: "5", updatedAt: "2026-09-01T00:00:00Z", sourceProject: { fullPath: "me/project" } }] } },
+        p1: {
+          mergeRequests: {
+            nodes: [
+              { iid: "9", updatedAt: "2026-10-09T00:00:00Z", sourceProject: { fullPath: "someone-else/project" } },
+              { iid: "7", updatedAt: "2026-10-02T00:00:00Z", sourceProject: { fullPath: "Me/Project" } },
+            ],
+          },
+        },
+      }
+    }
+    expect(await new GitLabForge(graphql).findNumberByBranch(repository)).toBe("7")
+    expect(seen?.variables).toEqual({ branch: "feature", p0: "me/project", p1: "group/project" })
+    expect(seen?.query).not.toContain("discussions")
+    expect(await new GitLabForge(async () => ({ p0: null, p1: null })).findNumberByBranch(repository)).toBeUndefined()
+  })
+
+  test("reads an MR's source branch", async () => {
+    let seen: Record<string, string> = {}
+    const graphql: GraphQL = async (_host, query, variables) => {
+      seen = variables
+      expect(query).toBe(SOURCE_BRANCH_QUERY)
+      return { project: { mergeRequest: { sourceBranch: "12-fix" } } }
+    }
+    const ref = { forge: "gitlab" as const, host: "gitlab.com", project: "g/p", iid: "4" }
+    expect(await new GitLabForge(graphql).sourceBranch(ref)).toBe("12-fix")
+    expect(seen).toEqual({ project: "g/p", iid: "4" })
+    expect(await new GitLabForge(async () => ({ project: { mergeRequest: null } })).sourceBranch(ref)).toBeUndefined()
+    expect(await new GitLabForge(async () => ({ project: { mergeRequest: { sourceBranch: "" } } })).sourceBranch(ref)).toBeUndefined()
   })
 })
 

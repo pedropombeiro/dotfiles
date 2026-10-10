@@ -5,6 +5,7 @@
     "@nm156/opencode-wakatime@1.4.0",     // Tracks AI coding activity in WakaTime
     "opencode-atuin-history@1.0.1",       // Records the agent's shell commands in Atuin history
     "opencode-homeassistant@1.0.2",       // Sends agent status to Home Assistant and answers permissions from it
+    "opencode-forge-session@1.0.0",       // Tracks each session's issues and PRs/MRs: title prefix, status footer, and review notifications
     {
       // Sends metrics, events, and traces to Alloy on the NAS. otel.pombei.ro only
       // answers on the home network; see ~/.agents/docs/opencode.md#telemetry.
@@ -23,10 +24,7 @@
     },
     // Adds the open_session tool, which the session-search skill uses to focus a
     // session of the current project in the terminal.
-    "./local-plugins/server/session-open",
-    // Tracks each session's issue or PR/MR: prefixes the title and, through its
-    // CLI entry point, shows the PR/MR status and review feedback.
-    "./local-plugins/server/forge-session"
+    "./local-plugins/server/session-open"
   ],
   // Per-agent models take precedence over the top-level model, so `oc`'s inline
   // $OPENCODE_MODEL override (OPENCODE_CONFIG_CONTENT) does not apply to plan/build.

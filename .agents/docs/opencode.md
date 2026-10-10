@@ -115,14 +115,6 @@ plugins can import `solid-js`, `@opentui/solid`, and `@opencode/plugin/tui` with
 
 Each local plugin documents its behavior, options, and tests in its own README:
 
-- [`forge-session`](../../.config/opencode/local-plugins/server/forge-session/README.md):
-  tracks each session's issues or PRs/MRs on GitLab and GitHub, one or several at a time.
-  It adds `set_session_target`, prefixes the title, and shows the PR/MR status in the CLI
-  footer. GitLab explicit targets also notify the agent about Duo and human review
-  feedback. The server entry point does the lookups, polling, and notifications for the
-  sessions that CLIs show. The CLI renews leases on those sessions and renders their status.
-  It merges `opencode-forge-session-title`, whose server IDs it keeps, and the former
-  `forge-review-status`. Never load it alongside either.
 - [`session-metrics`](../../.config/opencode/local-plugins/tui/session-metrics/README.md):
   shows compactions, reported cache reuse, and recorded session/descendant timing in
   the sidebar, with a width-aware footer fallback and a details panel.
@@ -138,14 +130,21 @@ Each local plugin documents its behavior, options, and tests in its own README:
 
 ### Plugins meant for publishing
 
-Some local plugins, such as `forge-session`, are trials of plugins that will be published
-from [`opencode-plugins`](https://github.com/pedropombeiro/opencode-plugins). Keep their
-agent guidance, tool descriptions, defaults, and READMEs generic, so they make sense to
-users outside GitLab and outside Pedro's workflows. Describe behavior that any workflow fits,
+Some local plugins are trials of plugins that will be published from
+[`opencode-plugins`](https://github.com/pedropombeiro/opencode-plugins). Keep their agent
+guidance, tool descriptions, defaults, and READMEs generic, so they make sense to users
+outside GitLab and outside Pedro's workflows. Describe behavior that any workflow fits,
 such as "set every PR/MR the user asks to work on", and leave the workflow-specific part to
 the user's request or a skill. For example, the user asks to review the MRs that a recurring
 job created, and the agent finds them, then sets them as targets. Never name a
 company-specific workflow, project, or schedule in the plugin.
+
+The same applies to plugins published from there. For example,
+[`opencode-forge-session`](https://github.com/pedropombeiro/opencode-plugins/tree/main/packages/forge-session)
+started as a local trial. It adds `set_session_target`, prefixes session titles with their
+issues and PRs/MRs, shows the PR/MR status in the CLI footer, and notifies the agent about
+review feedback. Its server keeps the plugin and RPC ID `opencode-forge-session-title`, so
+never load it alongside `opencode-forge-session-title`.
 
 ### Editing local plugins
 

@@ -111,8 +111,21 @@ describe("target requests and prefixes", () => {
     expect(
       targetsPrefix([mr(1), { url: "https://github.com/o/r/pull/2" }, { url: "https://gitlab.com/g/p/-/issues/3" }]),
     ).toBe("[!1, #2, #3]")
-    expect(targetsPrefix([1, 2, 3, 4].map(mr))).toBe("[!1, !2, !3, !4]")
-    expect(targetsPrefix([1, 2, 3, 4, 5, 6].map(mr))).toBe("[!1, !2, !3, +3]")
+    expect(targetsPrefix([mr(1), { ...mr(2), branchIssue: "8" }])).toBe("[!1, !2]")
+    expect(targetsPrefix([mr(1), { url: mr(2).url }])).toBe("[!1, !2]")
+  })
+
+  test("puts first the issue that every target shares", () => {
+    expect(targetsPrefix([1, 2, 3, 4].map(mr))).toBe("[#9, !1, !2, !3, !4]")
+    expect(targetsPrefix([1, 2, 3, 4, 5, 6].map(mr))).toBe("[#9, !1, !2, !3, +3]")
+    // An explicit issue matches the same issue inferred from a source branch.
+    const explicit = { url: mr(2).url, issueUrl: "https://gitlab.com/group/project/-/issues/9" }
+    expect(targetsPrefix([mr(1), explicit])).toBe("[#9, !1, !2]")
+    // The same number in another project is another issue.
+    const elsewhere = { url: "https://gitlab.com/group/other/-/merge_requests/3", branchIssue: "9" }
+    expect(targetsPrefix([mr(1), elsewhere])).toBe("[!1, !3]")
+    const shared = "https://gitlab.com/group/project/-/issues/9"
+    expect(targetsPrefix([{ ...elsewhere, issueUrl: shared }, explicit])).toBe("[#9, !3, !2]")
   })
 })
 
@@ -138,13 +151,26 @@ describe("parseTargetChange", () => {
     })
   })
 
+  test("relates every PR/MR in targets to a shared issue_url", () => {
+    expect(parseTargetChange({ targets: [a, c], issue_url: `${issue}#note_1`, operation: "add" })).toEqual({
+      operation: "add",
+      targets: [
+        { url: a, issueUrl: issue },
+        { url: c, issueUrl: issue },
+      ],
+    })
+  })
+
   test.each([
     { targets: [] },
     { targets: "https://gitlab.com/group/project/-/merge_requests/1" },
     { targets: [a, 7] },
     { targets: [a, "branch"] },
     { targets: [a], target: b },
-    { targets: [a], issue_url: issue },
+    { targets: [a, issue], issue_url: issue },
+    { targets: [a, "https://github.com/o/r/pull/2"], issue_url: issue },
+    { targets: [a, b], issue_url: b },
+    { targets: [a], operation: "remove", issue_url: issue },
     { targets: Array.from({ length: 51 }, (_, index) => `${a.slice(0, -1)}${index + 1}`) },
     { target: a, operation: "merge" },
     { target: a, operation: "remove", issue_url: issue },

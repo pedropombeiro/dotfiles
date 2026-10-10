@@ -76,16 +76,20 @@ change the current targets with `operation`:
 ```
 
 The server normalizes and deduplicates the URLs, which can come from different projects.
-`issue_url` applies only to a single `target`.
+
+With `targets`, `issue_url` relates every listed target to the same issue, such as a set of
+MRs for one issue. Every target must then be a PR/MR from the issue's forge. With
+`operation: "add"`, only the added targets get the issue.
 
 The agent guidance is generic. When you ask the agent to work on several issues or PRs/MRs,
 it sets all of them as targets. If you describe them instead of linking them, the agent
 finds them first, then sets them. After it creates a PR/MR for a task with several targets,
 it adds the new one instead of replacing the others.
 
-With several targets, the title prefix lists only their own references, such as
-`[!101, !102]`. More than four targets list the first three and count the rest, such as
-`[!101, !102, !103, +3]`.
+With several targets, the title prefix lists their own references, such as `[!101, !102]`.
+When every target has the same related issue, from `issue_url` or from its source branch
+name, the issue comes first, such as `[#12, !101, !102]`. More than four targets list the
+first three and count the rest, such as `[!101, !102, !103, +3]`.
 
 Target URLs can name a GitLab MR, issue, or work item on any host, or a GitHub PR or issue.
 GitHub URLs are accepted on any host that isn't recognizably GitLab, so GitHub Enterprise

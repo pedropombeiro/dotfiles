@@ -27,11 +27,11 @@ type SessionState = { targets: Target[]; prefix?: string }
 
 const GUIDANCE = [
   "When the user establishes or changes the primary issue, PR, or MR for this session, call set_session_target with its full URL before starting that work.",
-  "When the user asks you to work on several issues, PRs, or MRs together, call set_session_target with all of their full URLs in targets. If the user describes them instead of linking them, find them first, then set them before starting that work.",
+  "When the user asks you to work on several issues, PRs, or MRs together, call set_session_target with all of their full URLs in targets. If the user describes them instead of linking them, find them first, then set them before starting that work. When they are all PRs/MRs for one established issue, pass it as issue_url.",
   'After you create a PR or MR for the current task (for example with gpsup, glab mr create, gh pr create, or a forge tool), call set_session_target with the new PR/MR URL. Pass the current issue as issue_url when the PR/MR was created for it. If the session has several targets that are still part of the task, use operation "add" so they are kept.',
   'When the user drops some of several targets from the task, call set_session_target with operation "remove" and their URLs.',
   "Background references, comparisons, and dependencies do not change the target. Follow-ups without a new primary target keep the current target.",
-  "Include issue_url only when its relationship to the target PR/MR is established. Never carry over the checked-out branch’s issue to another target.",
+  "Include issue_url only when its relationship to the target PRs/MRs is established. Never carry over the checked-out branch’s issue to another target.",
   'When the user explicitly returns to work on the checked-out branch, call set_session_target with target "branch".',
 ]
 
@@ -225,7 +225,8 @@ export async function setupServer(ctx: Plugin.Context, lookups: TitleLookups, st
           },
           issue_url: {
             type: "string",
-            description: "Optional full URL of an established related issue for a single target. Omit when unknown.",
+            description:
+              "Optional full URL of an established related issue for target, or for every PR/MR in targets. Omit when unknown.",
           },
         },
         additionalProperties: false,

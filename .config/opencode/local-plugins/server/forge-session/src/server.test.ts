@@ -482,11 +482,24 @@ describe("session targets", () => {
     await app.cleanup()
   })
 
+  test("relates a batch of MRs to one issue and shows it first in the title", async () => {
+    const app = await harness()
+    await app.set({ targets: [mr, nextMr], issue_url: issue })
+    expect(app.storage.get("sessions/one")).toMatchObject({
+      targets: [
+        { url: mr, issueUrl: issue },
+        { url: nextMr, issueUrl: issue },
+      ],
+    })
+    expect(app.sessions.get("one")?.title).toBe("[#42, !456, !789] Review changes")
+    await app.cleanup()
+  })
+
   test("rejects invalid batches without changing the targets", async () => {
     const app = await harness()
     await app.set({ targets: [mr, nextMr] })
     await expect(app.set({ targets: [mr, "branch"] })).rejects.toThrow()
-    await expect(app.set({ targets: [mr], issue_url: issue })).rejects.toThrow()
+    await expect(app.set({ targets: [mr, issue], issue_url: issue })).rejects.toThrow()
     expect(app.sessions.get("one")?.title).toBe("[!456, !789] Review changes")
     await app.cleanup()
   })

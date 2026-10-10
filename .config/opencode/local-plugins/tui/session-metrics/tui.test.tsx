@@ -15,7 +15,7 @@ test("sidebar lifecycle controls fallback and preserves native footer space", as
   ]
   const color = RGBA.fromInts(200, 200, 200)
   const context = {
-    options: {}, theme: { text: { base: color, muted: color } },
+    options: {}, theme: { text: { base: color, muted: color, feedback: { warning: { base: color }, error: { base: color } } } },
     client: {
       session: { get: async () => session, list: async () => ({ data: [], cursor: {} }) },
       message: { list: async () => ({ data: records, cursor: {} }) },
@@ -79,7 +79,7 @@ test("clicking an indicator opens its detail dialog", async () => {
   const toasts: string[] = []
   let cleared = 0
   const context = {
-    options: {}, theme: { text: { base: color, muted: color, action: { primary: { focused: color } } }, background: { action: { primary: { focused: color } } } }, renderer: { height: 30 },
+    options: {}, theme: { text: { base: color, muted: color, feedback: { warning: { base: color }, error: { base: color } }, action: { primary: { focused: color } } }, background: { action: { primary: { focused: color } } } }, renderer: { height: 30 },
     client: {
       session: { get: async () => session, list: async () => ({ data: [], cursor: {} }) },
       message: { list: async () => ({ data: records, cursor: {} }) },

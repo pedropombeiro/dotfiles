@@ -4,7 +4,7 @@
 // from the server over RPC, because the background service is the process
 // that exports telemetry.
 import { Plugin } from "@opencode/plugin/tui"
-import { createMemo, Show } from "solid-js"
+import { createMemo, createSignal, For, onCleanup, Show } from "solid-js"
 import { OtelStatusRpc } from "./src/rpc"
 import {
   describeStatus,
@@ -106,19 +106,69 @@ export default Plugin.define({
       }
     }
 
+    function Details() {
+      const [height, resize] = createSignal(context.renderer.height)
+      const onResize = () => resize(context.renderer.height)
+      context.renderer.on("resize", onResize)
+      onCleanup(() => context.renderer.off("resize", onResize))
+      const [busy, setBusy] = createSignal(false)
+      const [active, setActive] = createSignal("close")
+      const canCheck = () => !!view.status && view.status.state !== "disabled"
+      const close = () => context.ui.dialog.clear()
+      const runCheck = async () => {
+        if (busy() || !canCheck()) return
+        setBusy(true)
+        try { await check() } finally { setBusy(false) }
+      }
+      const toggle = () => setActive((value) => value === "close" && canCheck() && !busy() ? "check" : "close")
+      context.keymap.layer(() => ({ mode: "modal", commands: [
+        { bind: "tab", title: "Next dialog action", run: toggle },
+        { bind: "shift+tab", title: "Previous dialog action", run: toggle },
+        { bind: "left", title: "Previous dialog action", run: toggle },
+        { bind: "right", title: "Next dialog action", run: toggle },
+        { bind: "return", title: "Activate dialog action", run: () => { if (active() === "check") void runCheck(); else close() } },
+      ] }))
+      return <box height={Math.max(6, Math.min(24, Math.floor(height() * 0.6)))} paddingLeft={2} paddingRight={2} paddingBottom={1} gap={1}>
+        <box height={1} flexShrink={0} flexDirection="row" justifyContent="space-between">
+          <text fg={context.theme.text.base}><b>{TITLE}</b></text>
+          <text fg={context.theme.text.muted} onMouseUp={close}>esc</text>
+        </box>
+        <scrollbox flexGrow={1} minHeight={0} scrollX={false} contentOptions={{ flexShrink: 0 }}>
+          <box gap={1} flexShrink={0}>
+            <For each={describeStatus(view.status, view.now).split("\n").filter(Boolean)}>{(line) => {
+              const separator = line.indexOf(": ")
+              const label = separator < 0 ? undefined : line.slice(0, separator)
+              const value = separator < 0 ? line : line.slice(separator + 2)
+              const tone = label === "Error" ? "error" : label === "Warning" ? "warning" : "muted"
+              return <text fg={color(tone)}>
+                <Show when={label} fallback={value}>
+                  <b>{label}</b>{"\n"}<span style={{ fg: label === "Status" ? color(indicatorTone(view.status, view.now)) : tone === "muted" ? context.theme.text.base : color(tone) }}>{value}</span>
+                </Show>
+              </text>
+            }}</For>
+          </box>
+        </scrollbox>
+        <box height={1} flexShrink={0} flexDirection="row" justifyContent="flex-end">
+          <For each={canCheck() ? ["close", "check"] : ["close"]}>{(action) => {
+            const disabled = () => action === "check" && busy()
+            const selected = () => active() === action && !disabled()
+            return <box paddingLeft={1} paddingRight={1} flexShrink={0}
+              backgroundColor={selected() ? context.theme.background.action.primary.focused : undefined}
+              onMouseMove={() => { if (!disabled()) setActive(action) }}
+              onMouseUp={() => { if (action === "check") void runCheck(); else close() }}>
+              <text wrapMode="none" fg={disabled() ? context.theme.text.action.primary.disabled : selected() ? context.theme.text.action.primary.focused : context.theme.text.muted}>
+                {action === "close" ? "Close" : busy() ? "Checking…" : "Check now"}
+              </text>
+            </box>
+          }}</For>
+        </box>
+      </box>
+    }
+
     async function showDetails() {
       await refresh()
-      const message = describeStatus(view.status, Date.now())
-      if (!view.status || view.status.state === "disabled") {
-        await context.ui.dialog.alert({ title: TITLE, message })
-        return
-      }
-      const confirmed = await context.ui.dialog.confirm({
-        title: TITLE,
-        message,
-        label: { confirm: "Check now", cancel: "Close" },
-      })
-      if (confirmed) await check()
+      context.ui.dialog.set({ size: "large", centered: true })
+      context.ui.dialog.show(() => <Details />)
     }
 
     const stops = [

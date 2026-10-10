@@ -32,6 +32,10 @@ viddy = "latest"
 xh = "latest"
 
 # ── System monitoring ─────────────────────────────────────────────────
+# Log file viewer and navigator
+"github:tstack/lnav" = "latest"
+# Modern ps replacement
+"github:dalance/procs" = "latest"
 # TUI system resource monitor (C++ version)
 btop = "latest"
 # top-like interface for Docker containers
@@ -41,7 +45,17 @@ btop = "latest"
 # Better du alternative
 "aqua:bootandy/dust" = "latest"
 
+# ── Network diagnostics ───────────────────────────────────────────────
+# Network bandwidth monitor by process
+"github:imsnif/bandwhich" = "latest"
+# Ping with a real-time graph
+"github:orf/gping" = "gping-v1.21.0"
+# Command-line DNS client for humans
+"aqua:mr-karan/doggo" = "latest"
+
 # ── Git & Docker ──────────────────────────────────────────────────────
+# Secure peer-to-peer file transfer
+croc = "latest"
 # Syntax-highlighting pager for git/diff
 "aqua:dandavison/delta" = "latest"
 # TUI for git
@@ -52,6 +66,10 @@ btop = "latest"
 "aqua:cli/cli" = "latest"
 
 # ── Search & text ─────────────────────────────────────────────────────
+# CLI usage/help generation framework (used by mise)
+usage = "latest"
+# Terminal file manager
+"aqua:sxyazi/yazi" = "26.9.1"
 # Fast grep alternative (rg)
 "aqua:BurntSushi/ripgrep" = "latest"
 # JSON processor
@@ -80,11 +98,47 @@ btop = "latest"
 "pipx:yt-dlp" = "latest"
 # TUI spreadsheet and data explorer
 "pipx:visidata" = "latest"
-# CLI for Home Assistant
-"pipx:homeassistant-cli" = "latest"
+# Python development tools
+"pipx:black" = "latest"
+"pipx:isort" = "latest"
+"pipx:jedi-language-server" = "latest"
+"pipx:yamllint" = "latest"
 # Simplified community man pages
 "pipx:tldr" = "latest"
 # Open files in an existing Neovim instance
 "pipx:neovim-remote" = "latest"
 # Python virtual environment creator
 "pipx:virtualenv" = "latest"
+
+[tasks."grc-rs:sync"]
+description = "Fetch the grc colour rules that grc-rs reads"
+shell = "bash -c"
+# grc-rs ships no rules of its own; it reads the grc project's files.
+# renovate: datasource=github-tags depName=garabik/grc
+env = { GRC_VERSION = "v1.13" }
+run = """
+set -euo pipefail
+
+data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/grc-rs"
+conf="${XDG_CONFIG_HOME:-$HOME/.config}/grc-rs/grc-rs"
+stamp="${data_dir}/.grc-version"
+
+if [[ -f "${stamp}" && "$(<"${stamp}")" == "${GRC_VERSION}" && -f "${conf}" ]]; then
+  exit 0
+fi
+
+tmp=$(mktemp -d)
+trap 'rm -r "${tmp}"' EXIT
+curl -fsSL "https://github.com/garabik/grc/archive/refs/tags/${GRC_VERSION}.tar.gz" |
+  tar -xz -C "${tmp}" --strip-components=1
+
+# Replace the yadm symlinks left behind by the previously tracked copies
+[[ -L "${data_dir}" ]] && rm "${data_dir}"
+[[ -L "${conf}" ]] && rm "${conf}"
+mkdir -p "${data_dir}" "$(dirname "${conf}")"
+rm -f "${data_dir}"/conf.*
+cp "${tmp}"/colourfiles/conf.* "${data_dir}/"
+cp "${tmp}/grc.conf" "${conf}"
+printf '%s\\n' "${GRC_VERSION}" >"${stamp}"
+echo "Installed grc ${GRC_VERSION} colour rules for grc-rs"
+"""

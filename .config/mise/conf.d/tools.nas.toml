@@ -1,4 +1,12 @@
 # Tools for the NAS role, independent of its operating system.
+[tools]
+# Garmin Connect API client
+"pipx:garth" = "latest"
+# HA-CLI pins regex<2025, which has no Python 3.14 wheel.
+"pipx:homeassistant-cli" = { version = "latest", install_env = { UV_OVERRIDE = "{{env.HOME}}/.config/mise/uv-overrides/homeassistant-cli-python314.txt" } }
+# Postgres CLI with autocompletion
+"pipx:pgcli" = { version = "latest", uvx_args = "--with psycopg2-binary --with psycopg-binary" }
+
 [tools."github:grafana/mcp-grafana"]
 version = "2.0.2"
 lazy = true

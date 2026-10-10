@@ -12,7 +12,7 @@
     "build": { "model": "gitlab/duo-chat-opus-5-5" }
   },
   "plugins": [
-    "opencode-gitlab-plugin@3.0.0",       // GitLab API tools for MRs, issues, pipelines, and more
+    "opencode-gitlab-plugin@3.0.1",       // GitLab API tools for MRs, issues, pipelines, and more
     "@mohak34/opencode-notifier@0.7.0",   // System notifications and sounds for permissions, completion, and errors
     "@nm156/opencode-wakatime@1.4.0",     // Tracks AI coding activity in WakaTime
     "opencode-atuin-history@1.0.1",       // Records the agent's shell commands in Atuin history

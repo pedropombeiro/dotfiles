@@ -143,8 +143,8 @@ The same applies to plugins published from there. For example,
 [`opencode-forgekeeper`](https://github.com/pedropombeiro/opencode-plugins/tree/main/packages/forgekeeper)
 started as a local trial. It adds `set_session_target`, prefixes session titles with their
 issues and PRs/MRs, shows the PR/MR status in the CLI footer, and notifies the agent about
-review feedback. Its server keeps the plugin and RPC ID `opencode-forge-session-title`, so
-never load it alongside `opencode-forge-session-title`.
+review feedback. Its plugin and RPC ID is `opencode-forgekeeper` from 2.0.0 on. It replaces
+the deprecated `opencode-forge-session-title`, whose stored targets don't carry over.
 
 ### Editing local plugins
 

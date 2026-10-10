@@ -20,8 +20,14 @@ export default Plugin.define({
               palette: true,
               slash: { name: "queue", arguments: true },
               async run(input?: string) {
-                const toast = await queueMessage(input, context.ui.router.current(), (request) =>
-                  context.client.session.prompt(request),
+                const toast = await queueMessage(
+                  input,
+                  context.ui.router.current(),
+                  {
+                    prompt: (request) => context.client.session.prompt(request),
+                    switchModel: (request) => context.client.session.switchModel(request),
+                  },
+                  context.ui.model.current(),
                 )
                 context.ui.toast.show(toast)
               },

@@ -32,6 +32,12 @@ The command is also available from the command palette as **Queue message**.
 The command calls `client.session.prompt` with `delivery: "queue"` and `resume: true`
 for the session shown in the TUI. `resume: true` is what starts an idle session.
 
+Before queueing, the command reads the model and variant selected in the prompt
+(`ui.model.current()`) and calls `client.session.switchModel`, as the built-in composer
+does. A model picked right before `/queue` therefore applies. The switch is per session,
+so it also changes the model for any turn that starts after it, including a busy
+session's next queued message. If the switch fails, nothing is queued.
+
 The plugin registers its keymap layer while an `app` slot renders, so that
 `Keymap.Provider` is available on OpenCode v2.0.22.
 

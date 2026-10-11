@@ -19,6 +19,13 @@ opkg install patch             # required for conform.nvim neovim plugin
 
 opkg install perl-image-exiftool
 
+# Poppler's pdftoppm supports -png, -singlefile, and -scale-to, which xpdf's lacks.
+# Both packages ship /opt/bin/pdftoppm, so remove xpdf first.
+if opkg list-installed | grep -q '^xpdf '; then
+  opkg remove xpdf
+fi
+opkg install poppler-utils
+
 opkg install nut-upscmd
 
 # Replace `mount` utility with the Entware version

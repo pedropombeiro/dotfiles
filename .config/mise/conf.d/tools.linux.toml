@@ -98,6 +98,8 @@ usage = "latest"
 "pipx:yt-dlp" = "latest"
 # TUI spreadsheet and data explorer
 "pipx:visidata" = "latest"
+# Terminal EPUB reader (epr)
+"pipx:epr-reader" = "latest"
 # Python development tools
 "pipx:black" = "latest"
 "pipx:isort" = "latest"

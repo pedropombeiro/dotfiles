@@ -200,6 +200,8 @@ brew "node_exporter", restart_service: :changed
 brew "pam-reattach"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
+# Small collection of programs that operate on patch files
+brew "patchutils"
 # CLI for Postgres with auto-completion and syntax highlighting
 brew "pgcli"
 # PostgreSQL syntax beautifier

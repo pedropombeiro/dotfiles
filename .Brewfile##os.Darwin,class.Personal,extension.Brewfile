@@ -140,6 +140,8 @@ brew "optipng"
 brew "pam-reattach"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
+# Small collection of programs that operate on patch files
+brew "patchutils"
 # CLI for Postgres with auto-completion and syntax highlighting
 brew "pgcli"
 # PDF rendering library (based on the xpdf-3.0 code base)

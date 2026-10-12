@@ -32,3 +32,19 @@ rust = { version = "1.99.0", profile = "minimal", targets = "x86_64-unknown-linu
 # Upstream ipinfo binaries need glibc 2.32+. Build a static binary instead.
 "go:github.com/ipinfo/cli/ipinfo" = { version = "ipinfo-3.3.2", install_env = { CGO_ENABLED = "0" } }
 # Omitted on QTS: rustnet needs glibc 2.32+ and libpcap.
+
+# Entware has no patchutils package and upstream publishes only source
+# archives, so build filterdiff and its siblings in the install directory.
+# Expose only the installed bin directory, not the build scripts.
+[tools."github:twaugh/patchutils"]
+version = "latest"
+strip_components = 1
+bin_path = "bin"
+postinstall = '''
+set -e
+cd "$MISE_TOOL_INSTALL_PATH"
+. /opt/bin/gcc_env.sh
+./configure --prefix="$MISE_TOOL_INSTALL_PATH" CPPFLAGS="-include /opt/include/limits.h"
+make -j"$(nproc)"
+make install
+'''

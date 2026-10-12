@@ -35,7 +35,7 @@ fi
 
 if [ -f "${HOME}/.Brewfile" ]; then
   printf "${YELLOW}%s${NC}\n" "Updating homebrew bundle"
-  brew bundle --global || printf "${RED}%s${NC}\n" "Failed to install packages"
+  brew bundle --global --quiet || printf "${RED}%s${NC}\n" "Failed to install packages"
 fi
 
 # Lets programs inside tmux reach the local network (macOS Local Network Privacy).

@@ -4,7 +4,7 @@
 description = "Install mise tools (with GitHub token)"
 run = """
 if command -v brew >/dev/null 2>&1; then
-  brew bundle --global
+  brew bundle --global --quiet
 fi
 
 mise install

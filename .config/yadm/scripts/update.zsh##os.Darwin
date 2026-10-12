@@ -45,7 +45,7 @@ trap 'exit 129' HUP
 _update_step "brew update"
 brew update
 brew upgrade --yes
-brew bundle --global
+brew bundle --global --quiet
 brew bundle cleanup --global --force
 "${YADM_SCRIPTS}/sign-tmux.zsh"
 # Converge the declarative resources in conf.d/bootstrap*.toml. Keep the scope

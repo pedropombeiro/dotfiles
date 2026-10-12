@@ -7,8 +7,9 @@
 #
 # macOS Local Network Privacy can't attribute a process under Homebrew's
 # linker-signed tmux server to an app it trusts, so non-Apple programs started
-# in tmux (node, OpenCode) get EHOSTUNREACH ("No route to host") for LAN
-# addresses, while Apple's curl and ssh still work. A fresh ad-hoc
+# in tmux (node, OpenCode) get EHOSTUNREACH ("No route to host", or
+# ECONNREFUSED from Bun) for LAN addresses, while Apple's curl and ssh still
+# work. check-opencode-telemetry.zsh detects an affected OpenCode service. A fresh ad-hoc
 # signature fixes this. Every `brew upgrade tmux` installs a binary with the
 # original signature again, so the update and bootstrap scripts call this after
 # Homebrew runs. See ~/.agents/docs/tmux.md#local-network-access-on-macos.

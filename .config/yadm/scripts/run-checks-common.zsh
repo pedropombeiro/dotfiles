@@ -84,6 +84,7 @@ function check_tmux_local_network_identity() {
 }
 
 check_tmux_local_network_identity
+"${YADM_SCRIPTS}/check-opencode-telemetry.zsh" || any_failed=1
 
 WAKATIME_CLI="$HOME/.wakatime/wakatime-cli"
 if [[ -x "$WAKATIME_CLI" ]]; then

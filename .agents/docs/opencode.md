@@ -241,6 +241,12 @@ OTLP requests to Alloy.
   plugin shows in the CLI footer whether the collector accepts OTLP requests. Its
   `endpoint` and `protocol` options must match the exporter's in both `opencode.json`
   alternates.
+- `~/.config/yadm/scripts/check-opencode-telemetry.zsh` runs that plugin's probe in the
+  service and, when it fails, sends the same request from the shell. Success from the
+  shell means only the service's launch context fails. `mise run dotfiles:checkhealth`
+  reports it. `dotfiles:update` passes `--fix`, which restarts the service once and
+  checks again, unless a session is running. Tests that stub `opencode` or `mise` must
+  run them with `zsh -f`; otherwise `.zshenv` restores the real binaries on `PATH`.
 
 ### Configure telemetry authentication
 

@@ -223,6 +223,11 @@ if [[ -f ${opencode_completion} && $(<"${opencode_completion}") == *_opencode_ya
 fi
 unset opencode_completion
 
+# Upgrades can leave the running service unable to reach the collector, which
+# OpenCode doesn't report. Restarts the service when only its launch context fails.
+_update_step "opencode telemetry"
+"${YADM_SCRIPTS}/check-opencode-telemetry.zsh" --fix
+
 _update_step "skill repositories"
 printf "${YELLOW}%s${NC}\n" "Updating skill repositories..."
 mise bootstrap repos update --yes --skip-dirty "${HOME}/Developer/github.com/pinchtab/pinchtab"

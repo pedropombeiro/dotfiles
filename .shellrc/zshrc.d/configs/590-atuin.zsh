@@ -24,6 +24,7 @@ fi
 
 # Up-arrow / k: inline prefix search with cursor at end of line.
 # Ctrl-R: Atuin TUI (bound by atuin init).
+# Alt-R: fzf over agent-authored history (see _atuin_agent_search_widget).
 # Widgets are created in 510-common-plugins.zsh (before autosuggestions) so they
 # get wrapped for autosuggest clear. Here we just source atuin and bind keys.
 _atuin_setup_keybindings() {
@@ -54,6 +55,30 @@ _atuin_setup_keybindings() {
   _atuin_rebind_keys
 }
 
+# Alt-R: search commands run by coding agents. Since Atuin 18.14, the Ctrl-R TUI
+# only shows human-authored history (atuinsh/atuin#3397), so commands recorded by
+# opencode-atuin-history are only reachable through `atuin search --author`.
+# Lists unique commands, newest first, and places the selection on the command line.
+_atuin_agent_search_widget() {
+  setopt localoptions pipefail no_aliases
+  local selected
+  selected="$(
+    atuin search --author '$all-agent' --filter-mode global --reverse --print0 --format '{command}' 2>/dev/null |
+      perl -0 -ne 'print unless $seen{$_}++' |
+      fzf --read0 --height "${FZF_TMUX_HEIGHT:-40%}" --reverse --scheme=history \
+        --prompt='agent history> ' --query="$LBUFFER" --bind=ctrl-z:ignore
+  )"
+  local ret=$?
+  if [[ -n "$selected" ]]; then
+    POSTDISPLAY=
+    BUFFER="$selected"
+    CURSOR=$#BUFFER
+  fi
+  zle reset-prompt
+  return $ret
+}
+zle -N atuin-agent-search _atuin_agent_search_widget
+
 # zsh-vi-mode resets keymaps when it initialises and clobbers ^R with
 # history-incremental-search-backward. Unqualified `bindkey` calls also land in
 # whichever keymap is `main` at the time, which is emacs before zsh-vi-mode
@@ -66,9 +91,11 @@ _atuin_rebind_keys() {
   bindkey -M viins '^r' atuin-search-viins
   bindkey -M vicmd '/' atuin-search
 
-  # Up/Down arrows: prefix search, in both normal/xterm and application/keypad modes
+  # Alt-R: agent history. Up/Down arrows: prefix search, in both normal/xterm and
+  # application/keypad modes.
   local keymap
   for keymap in emacs viins vicmd; do
+    bindkey -M $keymap '\er' atuin-agent-search
     bindkey -M $keymap '^[[A' history-beginning-search-backward-end
     bindkey -M $keymap '^[OA' history-beginning-search-backward-end
     bindkey -M $keymap '^[[B' history-beginning-search-forward-end

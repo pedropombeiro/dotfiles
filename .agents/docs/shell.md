@@ -241,6 +241,16 @@ new shell:
 rm ~/.local/share/atuin/init.zsh
 ```
 
+### Agent history (Alt-R)
+
+Since Atuin 18.14 ([atuinsh/atuin#3397](https://github.com/atuinsh/atuin/pull/3397)),
+the Ctrl-R TUI shows only human-authored history in every filter mode. Commands
+that `opencode-atuin-history` records with the `opencode` author are still
+stored, but only `atuin search --author` returns them. `590-atuin.zsh` binds
+Alt-R in all three keymaps to `atuin-agent-search`. The widget lists unique
+`$all-agent` commands, newest first, in fzf and places the selection on the
+command line without running it.
+
 ## History exclusions
 
 Native history and Atuin exclude `op://`, encoded `/1PE` references, and configured

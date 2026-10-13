@@ -343,7 +343,7 @@ cask "elgato-stream-deck"
 cask "elgato-wave-link"
 # System-wide audio equaliser
 cask "eqmac"
-# Utility to finds and fix problems on computer systems
+# Utility to find and fix problems on computer systems
 cask "etrecheckpro"
 # Web browser
 cask "firefox"

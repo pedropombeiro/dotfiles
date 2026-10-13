@@ -18,6 +18,7 @@ import {
 } from "./src/status"
 
 const REFRESH_MS = 30_000
+const CONNECT_REFRESH_MS = 1_000
 const WARNING_TOAST_MS = 15_000
 const TITLE = "OTEL collector"
 
@@ -171,6 +172,7 @@ export default Plugin.define({
       context.ui.dialog.show(() => <Details />)
     }
 
+    let connectTimer: ReturnType<typeof setTimeout> | undefined
     const stops = [
       context.ui.slot({ append: "home.footer.status", render: () => <Indicator /> }),
       context.ui.slot({ append: "prompt.footer.status", render: () => <Indicator /> }),
@@ -194,6 +196,13 @@ export default Plugin.define({
         },
       }),
       otel.events.on("changed", (event) => apply(event.data as unknown as OtelStatus)),
+      context.data.on("server.connected", () => {
+        clearTimeout(connectTimer)
+        connectTimer = setTimeout(() => {
+          connectTimer = undefined
+          void refresh()
+        }, CONNECT_REFRESH_MS)
+      }),
     ]
 
     void refresh()
@@ -202,6 +211,7 @@ export default Plugin.define({
     const timer = setInterval(() => void refresh(), REFRESH_MS)
 
     return () => {
+      clearTimeout(connectTimer)
       clearInterval(timer)
       for (const stop of stops) stop()
     }

@@ -15,7 +15,7 @@ CARGO_HOME = "/opt/share/cargo"
 
 [tools]
 # Python uses the GNU precompiled build selected above.
-python = "3.14"
+python = "3.15.0"
 # Use the unofficial glibc-217 Node build.
 node = "23.7.0"
 # Include the musl target for tools built from source on QTS.

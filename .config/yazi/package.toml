@@ -1,6 +1,6 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "603fa36"
+rev = "9166202"
 hash = "347cc6b190eb0c2fd60513cc7ae37412"
 
 [[plugin.deps]]
@@ -10,12 +10,12 @@ hash = "244048d1c3e7c557796f372c5c01de5d"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:smart-enter"
-rev = "603fa36"
+rev = "9166202"
 hash = "187cc58ba7ac3befd49c342129e6f1b6"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "603fa36"
+rev = "9166202"
 hash = "5b2fbef7d1513ce38ff72623a071a5e"
 
 [[plugin.deps]]
@@ -25,12 +25,12 @@ hash = "6ea5f37c7f219671ec504cb8311f889d"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:vcs-files"
-rev = "603fa36"
+rev = "9166202"
 hash = "4f2a05edce73aef2bceb2ee2c134c8f2"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:chmod"
-rev = "603fa36"
+rev = "9166202"
 hash = "87472b05a8c420100f6a2b9cde1e7746"
 
 [[plugin.deps]]
@@ -45,12 +45,12 @@ hash = "7ac02a3fa73cd734ddf4ac85af4c0507"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
-rev = "603fa36"
+rev = "9166202"
 hash = "d1e0499cae5f3aeb628c267616d4b682"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:diff"
-rev = "603fa36"
+rev = "9166202"
 hash = "14558d2829c0aa05e99c57de8f74d199"
 
 [[plugin.deps]]
@@ -60,7 +60,7 @@ hash = "868db729374b97871bc30b96d0e9061f"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:zoom"
-rev = "603fa36"
+rev = "9166202"
 hash = "558bbb58e3dd36d488280a8f10e7b904"
 
 [[plugin.deps]]
@@ -90,5 +90,5 @@ hash = "4563f3536e1d08650cb3706213f645dc"
 
 [[flavor.deps]]
 use = "bennyyip/gruvbox-dark"
-rev = "619fdc5"
-hash = "d4c7003ec6dc4efd5d3a050d5c2f2575"
+rev = "71b03f6"
+hash = "fc8fb278e5e1ede76b7a57c76a6db28b"

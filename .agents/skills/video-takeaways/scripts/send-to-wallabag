@@ -6,16 +6,16 @@ readonly program=send-to-wallabag
 
 usage() {
   cat <<'EOF'
-Usage: send-to-wallabag [OPTIONS] INPUT
+Usage: send-to-wallabag [OPTIONS] FILE
+  or:  send-to-wallabag --list-tags [--env-file PATH]
 
-Send a video summary to Wallabag as an HTML entry. INPUT is a local Markdown
-file, a Memos URL, or memos/MEMO_ID. Posting the same video URL again updates
-the existing entry.
+Send a Markdown video summary to Wallabag as an HTML entry. Posting the same
+video URL again updates the existing entry. With --list-tags, print existing
+Wallabag tags with entry counts, most used first.
 
 Options:
   --env-file PATH      Wallabag credentials file (or WALLABAG_ENV_FILE)
-  --base-url URL       Memos base URL (or MEMOS_BASE_URL)
-  --token-file PATH    Memos personal access token file (or MEMOS_TOKEN_FILE)
+  --list-tags          Print existing tags instead of sending a summary
   --url URL            Override the entry URL (default: the video URL)
   --title TITLE        Override the entry title
   --author AUTHOR      Override the entry author
@@ -25,9 +25,9 @@ Options:
   -h, --help           Show this help
 
 The default credentials file is ~/.config/wallabag/credentials.env. It
-contains KEY=value lines for WALLABAG_URL,
-WALLABAG_CLIENT_ID, WALLABAG_CLIENT_SECRET, WALLABAG_USERNAME, and
-WALLABAG_PASSWORD. The script parses it and never sources it.
+contains KEY=value lines for WALLABAG_URL, WALLABAG_CLIENT_ID,
+WALLABAG_CLIENT_SECRET, WALLABAG_USERNAME, and WALLABAG_PASSWORD. The script
+parses it and never sources it.
 EOF
 }
 
@@ -43,8 +43,7 @@ warn() {
 }
 
 env_file=${WALLABAG_ENV_FILE:-${HOME:-}/.config/wallabag/credentials.env}
-base_url=${MEMOS_BASE_URL:-}
-token_file=${MEMOS_TOKEN_FILE:-}
+list_tags=false
 entry_url=""
 title=""
 author=""
@@ -54,14 +53,12 @@ no_cover=false
 
 while (($# > 0)); do
   case "$1" in
-  --env-file | --base-url | --token-file | --url | --title | --author | --lang | --thumbnail)
+  --env-file | --url | --title | --author | --lang | --thumbnail)
     if (($# < 2)); then
       die 64 "$1 requires a value"
     fi
     case "$1" in
     --env-file) env_file=$2 ;;
-    --base-url) base_url=$2 ;;
-    --token-file) token_file=$2 ;;
     --url) entry_url=$2 ;;
     --title) title=$2 ;;
     --author) author=$2 ;;
@@ -69,6 +66,10 @@ while (($# > 0)); do
     --thumbnail) thumbnail=$2 ;;
     esac
     shift 2
+    ;;
+  --list-tags)
+    list_tags=true
+    shift
     ;;
   --no-cover)
     no_cover=true
@@ -93,18 +94,25 @@ while (($# > 0)); do
   esac
 done
 
-if (($# != 1)); then
-  usage >&2
-  exit 64
+if [[ $list_tags == true ]]; then
+  if (($# != 0)); then
+    usage >&2
+    exit 64
+  fi
+  dependencies=(curl jq)
+else
+  if (($# != 1)); then
+    usage >&2
+    exit 64
+  fi
+  dependencies=(curl jq pandoc perl)
 fi
 
-for dependency in curl jq pandoc perl; do
+for dependency in "${dependencies[@]}"; do
   if ! command -v "$dependency" >/dev/null 2>&1; then
     die 127 "required command not found: $dependency"
   fi
 done
-
-readonly input=$1
 
 # Read the credentials file line by line. Never source it.
 wallabag_url=""
@@ -178,13 +186,6 @@ cleanup() {
 }
 trap cleanup EXIT
 
-source_file="$work_dir/source.md"
-body_file="$work_dir/body.md"
-html_file="$work_dir/body.html"
-request_file="$work_dir/request.json"
-token_response="$work_dir/token.json"
-entry_response="$work_dir/entry.json"
-
 # Print a readable error for a failed HTTP request and exit.
 http_failure() {
   local context=$1 status=$2 response=$3 detail=""
@@ -212,65 +213,75 @@ http_failure() {
   exit 1
 }
 
-# Load the summary from a local file or Memos.
-fetch_memo=false
-memo_id=""
-origin_url=""
-case "$input" in
-http://*/memos/* | https://*/memos/*)
-  fetch_memo=true
-  inferred_base_url=${input%%/memos/*}
-  memo_id=${input#*/memos/}
-  memo_id=${memo_id%%[/?#]*}
-  [[ -n $base_url ]] || base_url=$inferred_base_url
-  ;;
-memos/*)
-  fetch_memo=true
-  memo_id=${input#memos/}
-  ;;
-esac
-
-if [[ $fetch_memo == true ]]; then
-  base_url=${base_url%/}
-  if [[ -z $base_url ]]; then
-    die 64 "set --base-url or MEMOS_BASE_URL for a Memos resource"
-  fi
-  if [[ -z $memo_id ]]; then
-    die 64 "Memos input has no memo ID: $input"
-  fi
-  if [[ -z $token_file ]]; then
-    die 64 "set --token-file or MEMOS_TOKEN_FILE for a Memos input"
-  fi
-  if [[ ! -r $token_file ]]; then
-    die 1 "token file is not readable: $token_file"
-  fi
-  memos_token=$(<"$token_file")
-  if [[ -z $memos_token || $memos_token == *[[:space:]]* || $memos_token == *\"* || $memos_token == *\\* ]]; then
-    die 1 "token file contains an empty or invalid token"
-  fi
-
-  memo_response="$work_dir/memo.json"
+# Request an OAuth token and store it in access_token. Secrets reach jq through
+# its environment and curl through standard input, so they never appear in
+# process arguments.
+access_token=""
+request_access_token() {
+  local token_response="$work_dir/token.json" http_status
   http_status=$(
-    printf 'header = "Authorization: Bearer %s"\n' "$memos_token" |
-      curl --config - --silent --show-error --connect-timeout 10 --max-time 60 \
-        --output "$memo_response" --write-out '%{http_code}' \
-        "$base_url/api/v1/memos/$memo_id"
+    WALLABAG_CLIENT_ID=$client_id \
+      WALLABAG_CLIENT_SECRET=$client_secret \
+      WALLABAG_USERNAME=$username \
+      WALLABAG_PASSWORD=$password \
+      jq -jn '"grant_type=password"
+        + "&client_id=\(env.WALLABAG_CLIENT_ID | @uri)"
+        + "&client_secret=\(env.WALLABAG_CLIENT_SECRET | @uri)"
+        + "&username=\(env.WALLABAG_USERNAME | @uri)"
+        + "&password=\(env.WALLABAG_PASSWORD | @uri)"' |
+      curl --silent --show-error --connect-timeout 10 --max-time 60 \
+        --header 'Content-Type: application/x-www-form-urlencoded' \
+        --data-binary @- \
+        --output "$token_response" --write-out '%{http_code}' \
+        "$wallabag_url/oauth/v2/token"
   ) || http_status=000
-  unset memos_token
+  unset client_id client_secret username password
   if [[ $http_status != 200 ]]; then
-    die 1 "Memos request failed with HTTP $http_status"
+    http_failure "Wallabag token request" "$http_status" "$token_response"
   fi
-  jq -r '.content // empty' "$memo_response" >"$source_file"
-  if [[ ! -s $source_file ]]; then
-    die 1 "memo content is empty"
+
+  access_token=$(jq -r '.access_token // empty' "$token_response" 2>/dev/null) || access_token=""
+  rm -f "$token_response"
+  if [[ -z $access_token || $access_token == *[[:space:]]* || $access_token == *\"* || $access_token == *\\* ]]; then
+    die 1 "Wallabag token response did not contain a usable access token"
   fi
-  origin_url="$base_url/memos/$memo_id"
-else
-  if [[ ! -r $input ]]; then
-    die 1 "input file is not readable: $input"
+}
+
+if [[ $list_tags == true ]]; then
+  tags_response="$work_dir/tags.json"
+  request_access_token
+  http_status=$(
+    printf 'header = "Authorization: Bearer %s"\n' "$access_token" |
+      curl --config - --silent --show-error --connect-timeout 10 --max-time 60 \
+        --output "$tags_response" --write-out '%{http_code}' \
+        "$wallabag_url/api/tags.json"
+  ) || http_status=000
+  unset access_token
+  if [[ $http_status != 200 ]]; then
+    http_failure "Wallabag tags request" "$http_status" "$tags_response"
   fi
-  cp "$input" "$source_file"
+  if ! jq -e 'type == "array"' "$tags_response" >/dev/null 2>&1; then
+    die 1 "Wallabag tags response is not a JSON array"
+  fi
+  if jq -e 'length == 0' "$tags_response" >/dev/null; then
+    printf '%s: no existing tags found\n' "$program" >&2
+    exit 0
+  fi
+  jq -r 'sort_by(-(.nbEntries // 0), .label) | .[] | "\(.nbEntries // 0)\t\(.label)"' "$tags_response"
+  exit 0
 fi
+
+readonly input=$1
+source_file="$work_dir/source.md"
+body_file="$work_dir/body.md"
+html_file="$work_dir/body.html"
+request_file="$work_dir/request.json"
+entry_response="$work_dir/entry.json"
+
+if [[ ! -r $input ]]; then
+  die 1 "input file is not readable: $input"
+fi
+cp "$input" "$source_file"
 
 # Infer metadata the same way the summary format defines it.
 readonly thumbnail_pattern='^\[!\[[^]]*\]\(([^)]+)\)\]\(([^)]+)\)\s*$'
@@ -374,41 +385,11 @@ jq -n \
   --arg authors "$author" \
   --arg tags "$tags" \
   --arg preview_picture "$thumbnail" \
-  --arg origin_url "$origin_url" \
   '{url: $url, title: $title, content: $content, language: $language, authors: $authors, tags: $tags}
-    + (if $preview_picture != "" then {preview_picture: $preview_picture} else {} end)
-    + (if $origin_url != "" then {origin_url: $origin_url} else {} end)' \
+    + (if $preview_picture != "" then {preview_picture: $preview_picture} else {} end)' \
   >"$request_file"
 
-# Request an OAuth token. Secrets reach jq through its environment and curl
-# through standard input, so they never appear in process arguments.
-http_status=$(
-  WALLABAG_CLIENT_ID=$client_id \
-    WALLABAG_CLIENT_SECRET=$client_secret \
-    WALLABAG_USERNAME=$username \
-    WALLABAG_PASSWORD=$password \
-    jq -jn '"grant_type=password"
-      + "&client_id=\(env.WALLABAG_CLIENT_ID | @uri)"
-      + "&client_secret=\(env.WALLABAG_CLIENT_SECRET | @uri)"
-      + "&username=\(env.WALLABAG_USERNAME | @uri)"
-      + "&password=\(env.WALLABAG_PASSWORD | @uri)"' |
-    curl --silent --show-error --connect-timeout 10 --max-time 60 \
-      --header 'Content-Type: application/x-www-form-urlencoded' \
-      --data-binary @- \
-      --output "$token_response" --write-out '%{http_code}' \
-      "$wallabag_url/oauth/v2/token"
-) || http_status=000
-unset client_id client_secret username password
-if [[ $http_status != 200 ]]; then
-  http_failure "Wallabag token request" "$http_status" "$token_response"
-fi
-
-access_token=$(jq -r '.access_token // empty' "$token_response" 2>/dev/null) || access_token=""
-if [[ -z $access_token || $access_token == *[[:space:]]* || $access_token == *\"* || $access_token == *\\* ]]; then
-  die 1 "Wallabag token response did not contain a usable access token"
-fi
-rm -f "$token_response"
-
+request_access_token
 http_status=$(
   printf 'header = "Authorization: Bearer %s"\n' "$access_token" |
     curl --config - --silent --show-error --connect-timeout 10 --max-time 120 \

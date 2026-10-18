@@ -1,7 +1,7 @@
 ---
 name: video-takeaways
-description: "Video URLs and YouTube links: extract actionable takeaways with timestamp hyperlinks, then save approved notes as Markdown, to Memos, to Wallabag for e-reader sync, or to another requested destination. Use when asked to summarize learnings, lessons, rules of thumb, practical advice, Markdown notes, memos, or Wallabag entries from a video, talk, tutorial, or interview."
-version: 2.0.0
+description: "Video URLs and YouTube links: extract actionable takeaways with timestamp hyperlinks, then save approved notes as Markdown, to Wallabag for e-reader sync, or to another requested destination. Use when asked to summarize learnings, lessons, rules of thumb, practical advice, Markdown notes, or Wallabag entries from a video, talk, tutorial, or interview."
+version: 3.0.0
 license: MIT
 compatibility: opencode
 metadata:
@@ -19,8 +19,8 @@ default to English, even when the video uses another language.
 - The user provides a video URL and asks for learnings, takeaways, notes, a
   checklist, or rules of thumb.
 - The user wants each takeaway linked to the relevant point in the video.
-- The user wants the result saved to Memos, sent to Wallabag for an e-reader,
-  or written to another destination.
+- The user wants the result sent to Wallabag for an e-reader, or written to a
+  file or another destination.
 
 ## When not to use
 
@@ -35,20 +35,20 @@ default to English, even when the video uses another language.
    to retrieve a YouTube transcript with `webfetch`.
 2. Follow [`references/WORKFLOW.md`](references/WORKFLOW.md) to identify topics,
    verify claims, and map each takeaway to a caption timestamp.
-3. Draft the complete summary in the agreed language. Group advice by theme,
+3. Consult existing Wallabag tags once per session, as described in
+   [`references/WORKFLOW.md`](references/WORKFLOW.md#consult-existing-tags).
+4. Draft the complete summary in the agreed language. Group advice by theme,
    use actionable language, and append a timestamp hyperlink to every takeaway.
-4. After approval, use the `question` tool with multiple selection enabled to
-   offer **Markdown**, **Memo**, and **Wallabag**. Honor an explicit destination
-   already chosen by the user without asking again.
-5. For Markdown output, write the approved draft to a local `.md` file and
+5. After approval, use the `question` tool with multiple selection enabled to
+   offer **Markdown** and **Wallabag**. Honor an explicit destination already
+   chosen by the user without asking again.
+6. For Markdown output, write the approved draft to a local `.md` file and
    verify it as described in [`references/WORKFLOW.md`](references/WORKFLOW.md).
-6. For Memo output, consult existing tags once per session, then save and verify
-   the note using [`references/MEMOS.md`](references/MEMOS.md).
 7. For Wallabag output, run
    [`scripts/send-to-wallabag`](scripts/send-to-wallabag) and follow
-   [`references/WALLABAG.md`](references/WALLABAG.md). When Memo and Wallabag
-   are selected, save the memo first and send the stored memo, so the entry's
-   origin URL points to it.
+   [`references/WALLABAG.md`](references/WALLABAG.md). When Markdown is also
+   selected, send the saved file. Otherwise, send a temporary copy of the
+   approved draft.
 
 ## Output contract
 
@@ -67,7 +67,7 @@ default to English, even when the video uses another language.
   Do not present one person's advice as universal consensus.
 - If automatic captions make a term or number uncertain, omit it, qualify it,
   or retain the original-language term in parentheses.
-- End every Memos summary with `#video-takeaways` and 2-4 subject tags. Follow
+- End every summary with `#video-takeaways` and 2-4 subject tags. Follow
   the tag rules in [`references/WORKFLOW.md`](references/WORKFLOW.md), which
   prefer existing tags over new ones.
 - Put the video's thumbnail directly below the H1 as a linked Markdown image
@@ -79,23 +79,21 @@ default to English, even when the video uses another language.
 - Default to English, even when the video uses another language. Write in the
   video's original language, or another language, when the user asks. Translate
   for meaning rather than word for word.
-- Memos is an optional output adapter. Do not assume a host, token path,
-  username, or visibility.
 - Markdown is an optional output adapter with no additional dependencies. Save
   it only when selected, unless another output needs a temporary Markdown source.
 - Wallabag is an optional output adapter. Selecting it approves sending the
   summary, so don't ask for a second confirmation. Never create, read, or print
-  the Wallabag credentials file.
+  the Wallabag credentials file. Do not assume a Wallabag host.
 - Honor an explicit request to use a local file, repository document, or other
   destination.
-- Do not publish, share, or make a memo public unless the user explicitly asks.
+- Do not publish or share notes unless the user explicitly asks.
 
 ## Dependencies
 
-The core transcript helper requires `yt-dlp`, `jq`, and Perl. Memos output also
-requires `curl`; Wallabag output requires `curl` and Pandoc. If captions are
-not available, report that clearly. Do not silently substitute an unverified
-summary from video metadata or search results.
+The core transcript helper requires `yt-dlp`, `jq`, and Perl. Wallabag output
+and the tag lookup also require `curl`, and Wallabag output requires Pandoc. If
+captions are not available, report that clearly. Do not silently substitute an
+unverified summary from video metadata or search results.
 
 ## When captions are unavailable
 

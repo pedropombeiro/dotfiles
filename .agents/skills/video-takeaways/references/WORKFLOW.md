@@ -5,7 +5,8 @@ Use this workflow to turn caption cues into verifiable, actionable notes.
 ## Write Markdown output
 
 [`SKILL.md`](../SKILL.md#workflow) defines how to choose outputs after approval.
-For Wallabag without Memo, send the approved local Markdown draft.
+For Wallabag without Markdown, write the approved draft to a temporary
+Markdown file, send it, and delete it afterward.
 
 For Markdown output, use `$HOME/Downloads` when it exists and is writable.
 Otherwise, use the current directory. Derive a readable filename from the H1
@@ -14,20 +15,18 @@ title, remove path separators and filesystem control characters, and use
 space and `(2)`, `(3)`, and so on before `.md` until the name is available. If the user
 specifies a path, use that path and ask before overwriting an existing file.
 
-## Consult existing tags for Memos
+## Consult existing tags
 
-Before the first Memo output in a session, run:
+Before drafting the first summary in a session, list the existing Wallabag tags:
 
 ```bash
-scripts/list-memo-tags \
-  --base-url https://memos.example.com \
-  --token-file ~/.config/memos/token
+scripts/send-to-wallabag --list-tags
 ```
 
-Configure the helper using `--base-url` and `--token-file`, or
-`MEMOS_BASE_URL` and `MEMOS_TOKEN_FILE`. Run it only once per session and reuse
-its output for subsequent Memo outputs in the same conversation. Skip this step
-when Memos is not selected.
+The helper prints one `COUNT<TAB>TAG` line per tag, most used first. Run it
+only once per session and reuse its output for later summaries in the same
+conversation. If the Wallabag credentials file is missing or the lookup fails,
+continue without the inventory and tell the user.
 
 Always include `#video-takeaways` and aim for 3-5 tags total. Prefer an existing
 tag whenever its meaning fits, even if a narrower new tag seems attractive.
@@ -136,7 +135,7 @@ Check the draft for these requirements:
 - Uncertain automatic-caption terms are qualified or omitted.
 - Personal stories have not become general rules without support.
 - The source title and URL are present.
-- A Memos draft ends with `#video-takeaways` and any subject-specific tags.
+- The draft ends with `#video-takeaways` and any subject-specific tags.
 - The draft uses 3-5 tags, reuses existing labels where possible, and identifies
   any proposed new tag.
 
@@ -144,15 +143,16 @@ Show the full draft to the user and ask for confirmation before saving it.
 
 ## Verify after saving
 
-1. Read the stored memo or file again.
-2. Confirm that Markdown links and hashtags survived unchanged.
-3. For Memos, confirm that the linked Markdown thumbnail appears below the H1
-   when the helper produced one.
-4. Spot-check several saved timestamps against the TSV, including at least one
-   near the beginning and one near the end.
-5. Report the memo resource name or destination path to the user.
+For Markdown output:
 
-For Wallabag output, also report the `entry_id`, `entry_url`, `source_url`,
+1. Read the saved file again.
+2. Confirm that Markdown links, the linked thumbnail below the H1, and the
+   hashtags survived unchanged.
+3. Spot-check several saved timestamps against the TSV, including at least one
+   near the beginning and one near the end.
+4. Report the destination path to the user.
+
+For Wallabag output, report the `entry_id`, `entry_url`, `source_url`,
 `title`, `author`, `language`, `tags`, `cover`, `archived`, and `validation`
 values printed by `scripts/send-to-wallabag`. Treat a nonzero exit status as a
 failed send, and report the helper's error message.

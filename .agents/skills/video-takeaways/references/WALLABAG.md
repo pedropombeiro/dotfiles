@@ -48,17 +48,11 @@ create it.
 
 ## Send a summary
 
-The helper accepts a local Markdown file, a full Memos URL, or a Memos resource:
+Pass the helper a local Markdown file:
 
 ```bash
 scripts/send-to-wallabag summary.md
-scripts/send-to-wallabag https://memos.example.com/memos/MEMO_ID
-scripts/send-to-wallabag memos/MEMO_ID
 ```
-
-For Memos inputs, configure access with `--base-url` and `--token-file`, or
-`MEMOS_BASE_URL` and `MEMOS_TOKEN_FILE`, as described in the
-[Memos output reference](MEMOS.md).
 
 These flags override inferred values:
 
@@ -78,7 +72,6 @@ The helper derives the entry from the summary:
 - **URL:** the video URL from the link on the thumbnail line, or else the first
   link on the `Source:` line. The helper fails when it finds neither and you
   don't pass `--url`.
-- **Origin URL:** the memo URL, for Memos inputs only.
 - **Title:** the H1.
 - **Author:** the creator named in the trailing `Source:` metadata, else the
   `Source:` link text, else `Video Takeaways`.
@@ -93,6 +86,18 @@ The helper derives the entry from the summary:
 
 Wallabag uses the supplied HTML and doesn't fetch the video page when the
 title, content, and URL are all non-empty. It cleans the HTML before storing it.
+
+## List existing tags
+
+Print the account's existing tags with their entry counts, most used first:
+
+```bash
+scripts/send-to-wallabag --list-tags
+```
+
+Each line has the form `COUNT<TAB>TAG`. The inventory covers every entry in
+the account, including articles saved outside this skill. Tags that no longer
+have any entries don't appear in it.
 
 ## Re-send a summary
 

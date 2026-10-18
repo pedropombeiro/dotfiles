@@ -35,7 +35,7 @@ When `lazy-mcp` is available, follow its discovery sequence:
 
 When the environment exposes Memos tools directly, use its native tool listing
 or schema inspection instead. If no `memos` server is configured, explain that
-Memo output is unavailable and offer Markdown or EPUB output instead.
+Memo output is unavailable and offer Markdown or Wallabag output instead.
 
 The relevant operations create, update, and retrieve a memo. Tool names vary by
 MCP client; names such as `memo_create_memo`, `memo_update_memo`, and

@@ -5,7 +5,7 @@ Use this workflow to turn caption cues into verifiable, actionable notes.
 ## Write Markdown output
 
 [`SKILL.md`](../SKILL.md#workflow) defines how to choose outputs after approval.
-For EPUB without Memo, generate the EPUB from the approved local Markdown draft.
+For Wallabag without Memo, send the approved local Markdown draft.
 
 For Markdown output, use `$HOME/Downloads` when it exists and is writable.
 Otherwise, use the current directory. Derive a readable filename from the H1
@@ -13,8 +13,6 @@ title, remove path separators and filesystem control characters, and use
 `video-takeaways.md` if nothing remains. Never overwrite an existing file. Add a
 space and `(2)`, `(3)`, and so on before `.md` until the name is available. If the user
 specifies a path, use that path and ask before overwriting an existing file.
-
-Never upload or email an EPUB without a separate explicit request.
 
 ## Consult existing tags for Memos
 
@@ -154,8 +152,10 @@ Show the full draft to the user and ask for confirmation before saving it.
    near the beginning and one near the end.
 5. Report the memo resource name or destination path to the user.
 
-For EPUB output, also report the output path, file size, title, author,
-language, cover state, and validation result produced by `scripts/create-epub`.
+For Wallabag output, also report the `entry_id`, `entry_url`, `source_url`,
+`title`, `author`, `language`, `tags`, `cover`, `archived`, and `validation`
+values printed by `scripts/send-to-wallabag`. Treat a nonzero exit status as a
+failed send, and report the helper's error message.
 
 Remove temporary transcript files after the task when they are no longer
 useful.

@@ -1,0 +1,457 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly program=send-to-wallabag
+
+usage() {
+  cat <<'EOF'
+Usage: send-to-wallabag [OPTIONS] INPUT
+
+Send a video summary to Wallabag as an HTML entry. INPUT is a local Markdown
+file, a Memos URL, or memos/MEMO_ID. Posting the same video URL again updates
+the existing entry.
+
+Options:
+  --env-file PATH      Wallabag credentials file (or WALLABAG_ENV_FILE)
+  --base-url URL       Memos base URL (or MEMOS_BASE_URL)
+  --token-file PATH    Memos personal access token file (or MEMOS_TOKEN_FILE)
+  --url URL            Override the entry URL (default: the video URL)
+  --title TITLE        Override the entry title
+  --author AUTHOR      Override the entry author
+  --lang LANGUAGE      Override the entry language (default: en)
+  --thumbnail URL      Override the cover image URL
+  --no-cover           Send the entry without a cover image
+  -h, --help           Show this help
+
+The default credentials file is ~/.config/wallabag/credentials.env. It
+contains KEY=value lines for WALLABAG_URL,
+WALLABAG_CLIENT_ID, WALLABAG_CLIENT_SECRET, WALLABAG_USERNAME, and
+WALLABAG_PASSWORD. The script parses it and never sources it.
+EOF
+}
+
+die() {
+  local status=$1
+  shift
+  printf '%s: %s\n' "$program" "$*" >&2
+  exit "$status"
+}
+
+warn() {
+  printf '%s: warning: %s\n' "$program" "$*" >&2
+}
+
+env_file=${WALLABAG_ENV_FILE:-${HOME:-}/.config/wallabag/credentials.env}
+base_url=${MEMOS_BASE_URL:-}
+token_file=${MEMOS_TOKEN_FILE:-}
+entry_url=""
+title=""
+author=""
+language=""
+thumbnail=""
+no_cover=false
+
+while (($# > 0)); do
+  case "$1" in
+  --env-file | --base-url | --token-file | --url | --title | --author | --lang | --thumbnail)
+    if (($# < 2)); then
+      die 64 "$1 requires a value"
+    fi
+    case "$1" in
+    --env-file) env_file=$2 ;;
+    --base-url) base_url=$2 ;;
+    --token-file) token_file=$2 ;;
+    --url) entry_url=$2 ;;
+    --title) title=$2 ;;
+    --author) author=$2 ;;
+    --lang) language=$2 ;;
+    --thumbnail) thumbnail=$2 ;;
+    esac
+    shift 2
+    ;;
+  --no-cover)
+    no_cover=true
+    shift
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  --)
+    shift
+    break
+    ;;
+  -*)
+    printf '%s: unknown option: %s\n' "$program" "$1" >&2
+    usage >&2
+    exit 64
+    ;;
+  *)
+    break
+    ;;
+  esac
+done
+
+if (($# != 1)); then
+  usage >&2
+  exit 64
+fi
+
+for dependency in curl jq pandoc perl; do
+  if ! command -v "$dependency" >/dev/null 2>&1; then
+    die 127 "required command not found: $dependency"
+  fi
+done
+
+readonly input=$1
+
+# Read the credentials file line by line. Never source it.
+wallabag_url=""
+client_id=""
+client_secret=""
+username=""
+password=""
+
+if [[ ! -r $env_file ]]; then
+  die 1 "credentials file is not readable: $env_file (see references/WALLABAG.md)"
+fi
+
+env_mode=$(stat -c '%a' "$env_file" 2>/dev/null || stat -f '%Lp' "$env_file" 2>/dev/null || printf '600')
+if ((8#$env_mode & 8#077)); then
+  warn "credentials file is accessible by other users (mode $env_mode); run chmod 600 $env_file"
+fi
+
+line_number=0
+while IFS= read -r line || [[ -n $line ]]; do
+  ((line_number += 1))
+  line=${line%$'\r'}
+  if [[ $line =~ ^[[:space:]]*(#.*)?$ ]]; then
+    continue
+  fi
+  if [[ ! $line =~ ^[[:space:]]*(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+    die 1 "$env_file:$line_number: expected KEY=value"
+  fi
+  key=${BASH_REMATCH[2]}
+  value=${BASH_REMATCH[3]}
+  if [[ ${#value} -ge 2 &&
+    (($value == \"*\" && $value == *\") || ($value == \'*\' && $value == *\')) ]]; then
+    value=${value:1:${#value}-2}
+  fi
+  case "$key" in
+  WALLABAG_URL) wallabag_url=$value ;;
+  WALLABAG_CLIENT_ID) client_id=$value ;;
+  WALLABAG_CLIENT_SECRET) client_secret=$value ;;
+  WALLABAG_USERNAME) username=$value ;;
+  WALLABAG_PASSWORD) password=$value ;;
+  *) warn "$env_file:$line_number: ignoring unknown key $key" ;;
+  esac
+done <"$env_file"
+unset line value
+
+missing=()
+[[ -n $wallabag_url ]] || missing+=(WALLABAG_URL)
+[[ -n $client_id ]] || missing+=(WALLABAG_CLIENT_ID)
+[[ -n $client_secret ]] || missing+=(WALLABAG_CLIENT_SECRET)
+[[ -n $username ]] || missing+=(WALLABAG_USERNAME)
+[[ -n $password ]] || missing+=(WALLABAG_PASSWORD)
+if ((${#missing[@]} > 0)); then
+  die 1 "credentials file is missing: ${missing[*]}"
+fi
+
+wallabag_url=${wallabag_url%/}
+case "$wallabag_url" in
+http://* | https://*) ;;
+*) die 1 "WALLABAG_URL must start with http:// or https://" ;;
+esac
+readonly wallabag_url
+
+temp_root=${TMPDIR:-/tmp}
+temp_root=${temp_root%/}
+readonly temp_root
+work_dir=$(mktemp -d "$temp_root/video-takeaway-wallabag.XXXXXX")
+readonly work_dir
+chmod 700 "$work_dir"
+
+cleanup() {
+  rm -rf "$work_dir"
+}
+trap cleanup EXIT
+
+source_file="$work_dir/source.md"
+body_file="$work_dir/body.md"
+html_file="$work_dir/body.html"
+request_file="$work_dir/request.json"
+token_response="$work_dir/token.json"
+entry_response="$work_dir/entry.json"
+
+# Print a readable error for a failed HTTP request and exit.
+http_failure() {
+  local context=$1 status=$2 response=$3 detail=""
+  if [[ -s $response ]]; then
+    detail=$(
+      jq -r '
+        [.error_description, .message, (.error | if type == "object" then .message else . end)]
+        | map(select(type == "string" and . != ""))
+        | first // empty
+      ' "$response" 2>/dev/null
+    ) || detail=""
+  fi
+  printf '%s: %s failed with HTTP %s%s\n' "$program" "$context" "$status" "${detail:+: $detail}" >&2
+  case "$status" in
+  000)
+    printf '%s: could not reach %s; check WALLABAG_URL and the network\n' "$program" "$wallabag_url" >&2
+    ;;
+  400 | 401)
+    printf '%s: check the client ID, client secret, username, and password\n' "$program" >&2
+    ;;
+  403)
+    printf '%s: a WAF (CrowdSec AppSec on the external router) may have blocked the request, which can happen when it inspects the HTML body\n' "$program" >&2
+    ;;
+  esac
+  exit 1
+}
+
+# Load the summary from a local file or Memos.
+fetch_memo=false
+memo_id=""
+origin_url=""
+case "$input" in
+http://*/memos/* | https://*/memos/*)
+  fetch_memo=true
+  inferred_base_url=${input%%/memos/*}
+  memo_id=${input#*/memos/}
+  memo_id=${memo_id%%[/?#]*}
+  [[ -n $base_url ]] || base_url=$inferred_base_url
+  ;;
+memos/*)
+  fetch_memo=true
+  memo_id=${input#memos/}
+  ;;
+esac
+
+if [[ $fetch_memo == true ]]; then
+  base_url=${base_url%/}
+  if [[ -z $base_url ]]; then
+    die 64 "set --base-url or MEMOS_BASE_URL for a Memos resource"
+  fi
+  if [[ -z $memo_id ]]; then
+    die 64 "Memos input has no memo ID: $input"
+  fi
+  if [[ -z $token_file ]]; then
+    die 64 "set --token-file or MEMOS_TOKEN_FILE for a Memos input"
+  fi
+  if [[ ! -r $token_file ]]; then
+    die 1 "token file is not readable: $token_file"
+  fi
+  memos_token=$(<"$token_file")
+  if [[ -z $memos_token || $memos_token == *[[:space:]]* || $memos_token == *\"* || $memos_token == *\\* ]]; then
+    die 1 "token file contains an empty or invalid token"
+  fi
+
+  memo_response="$work_dir/memo.json"
+  http_status=$(
+    printf 'header = "Authorization: Bearer %s"\n' "$memos_token" |
+      curl --config - --silent --show-error --connect-timeout 10 --max-time 60 \
+        --output "$memo_response" --write-out '%{http_code}' \
+        "$base_url/api/v1/memos/$memo_id"
+  ) || http_status=000
+  unset memos_token
+  if [[ $http_status != 200 ]]; then
+    die 1 "Memos request failed with HTTP $http_status"
+  fi
+  jq -r '.content // empty' "$memo_response" >"$source_file"
+  if [[ ! -s $source_file ]]; then
+    die 1 "memo content is empty"
+  fi
+  origin_url="$base_url/memos/$memo_id"
+else
+  if [[ ! -r $input ]]; then
+    die 1 "input file is not readable: $input"
+  fi
+  cp "$input" "$source_file"
+fi
+
+# Infer metadata the same way the summary format defines it.
+readonly thumbnail_pattern='^\[!\[[^]]*\]\(([^)]+)\)\]\(([^)]+)\)\s*$'
+
+if [[ -z $title ]]; then
+  title=$(perl -ne 'if (/^#\s+(.+?)\s*$/) { print $1; exit }' "$source_file")
+fi
+if [[ -z $title ]]; then
+  title=$(basename "$input")
+  title=${title%.*}
+fi
+
+if [[ -z $author ]]; then
+  author=$(perl -ne '
+    if (/^Source:.*\(([^,()]+),\s*[^()]*(?:language|english|french|german|spanish|italian|portuguese)[^()]*\)\s*\.?$/i) {
+      print $1;
+      exit;
+    }
+  ' "$source_file")
+fi
+if [[ -z $author ]]; then
+  author=$(perl -ne 'if (/^Source:\s+\[([^]]+?)(?:\s+on\s+YouTube)?\]\(/i) { print $1; exit }' "$source_file")
+fi
+author=${author:-Video Takeaways}
+language=${language:-en}
+
+if [[ -z $entry_url ]]; then
+  entry_url=$(PATTERN=$thumbnail_pattern perl -ne 'if (/$ENV{PATTERN}/) { print $2; exit }' "$source_file")
+fi
+if [[ -z $entry_url ]]; then
+  entry_url=$(perl -ne '
+    next unless /^Source:/;
+    if (/\]\((https?:\/\/[^)\s]+)\)/ || /(https?:\/\/[^\s)>]+)/) { print $1; exit }
+  ' "$source_file")
+fi
+if [[ -z $entry_url ]]; then
+  die 64 "could not infer the video URL from the thumbnail or Source line; pass --url"
+fi
+
+if [[ $no_cover == true ]]; then
+  thumbnail=""
+elif [[ -z $thumbnail ]]; then
+  thumbnail=$(PATTERN=$thumbnail_pattern perl -ne 'if (/$ENV{PATTERN}/) { print $1; exit }' "$source_file")
+fi
+case "$thumbnail" in
+"" | http://* | https://*) ;;
+*) die 64 "--thumbnail must be an http:// or https:// URL" ;;
+esac
+
+# Collect hashtags from the last non-blank line when it holds only hashtags.
+readonly hashtag_pattern='^\s*#[^\s#]+(?:\s+#[^\s#]+)*\s*$'
+hashtag_line=$(perl -ne 'chomp; $last = $_ if /\S/; END { print $last // "" }' "$source_file")
+tags=video-takeaways
+if PATTERN=$hashtag_pattern perl -e 'exit(($ARGV[0] =~ /$ENV{PATTERN}/) ? 0 : 1)' "$hashtag_line"; then
+  has_hashtag_line=true
+  tags=$(
+    printf '%s\n' "$hashtag_line" |
+      perl -ne '
+        my %seen;
+        my @tags = grep { !$seen{$_}++ } ("video-takeaways", map { s/^#//r } split);
+        print join(",", @tags);
+      '
+  )
+else
+  has_hashtag_line=false
+fi
+
+# Remove the H1, the thumbnail line, and the final hashtag line from the body.
+HASHTAGS=$has_hashtag_line THUMBNAIL=$thumbnail_pattern HASHTAG=$hashtag_pattern perl -e '
+  my @lines = <STDIN>;
+  if ($ENV{HASHTAGS} eq "true") {
+    for (my $i = $#lines; $i >= 0; $i--) {
+      next unless $lines[$i] =~ /\S/;
+      splice(@lines, $i, 1) if $lines[$i] =~ /$ENV{HASHTAG}/;
+      last;
+    }
+  }
+  my $removed_title = 0;
+  for my $line (@lines) {
+    if (!$removed_title && $line =~ /^#\s+\S/) {
+      $removed_title = 1;
+      next;
+    }
+    next if $line =~ /$ENV{THUMBNAIL}/;
+    print $line;
+  }
+' <"$source_file" >"$body_file"
+
+pandoc "$body_file" --from=gfm --to=html5 --output="$html_file"
+if [[ ! -s $html_file ]]; then
+  die 1 "pandoc produced an empty HTML body"
+fi
+
+expected_timestamp=$(perl -ne 'if (/[?&]t=(\d+s)/) { print $1; exit }' "$body_file")
+
+jq -n \
+  --arg url "$entry_url" \
+  --arg title "$title" \
+  --rawfile content "$html_file" \
+  --arg language "$language" \
+  --arg authors "$author" \
+  --arg tags "$tags" \
+  --arg preview_picture "$thumbnail" \
+  --arg origin_url "$origin_url" \
+  '{url: $url, title: $title, content: $content, language: $language, authors: $authors, tags: $tags}
+    + (if $preview_picture != "" then {preview_picture: $preview_picture} else {} end)
+    + (if $origin_url != "" then {origin_url: $origin_url} else {} end)' \
+  >"$request_file"
+
+# Request an OAuth token. Secrets reach jq through its environment and curl
+# through standard input, so they never appear in process arguments.
+http_status=$(
+  WALLABAG_CLIENT_ID=$client_id \
+    WALLABAG_CLIENT_SECRET=$client_secret \
+    WALLABAG_USERNAME=$username \
+    WALLABAG_PASSWORD=$password \
+    jq -jn '"grant_type=password"
+      + "&client_id=\(env.WALLABAG_CLIENT_ID | @uri)"
+      + "&client_secret=\(env.WALLABAG_CLIENT_SECRET | @uri)"
+      + "&username=\(env.WALLABAG_USERNAME | @uri)"
+      + "&password=\(env.WALLABAG_PASSWORD | @uri)"' |
+    curl --silent --show-error --connect-timeout 10 --max-time 60 \
+      --header 'Content-Type: application/x-www-form-urlencoded' \
+      --data-binary @- \
+      --output "$token_response" --write-out '%{http_code}' \
+      "$wallabag_url/oauth/v2/token"
+) || http_status=000
+unset client_id client_secret username password
+if [[ $http_status != 200 ]]; then
+  http_failure "Wallabag token request" "$http_status" "$token_response"
+fi
+
+access_token=$(jq -r '.access_token // empty' "$token_response" 2>/dev/null) || access_token=""
+if [[ -z $access_token || $access_token == *[[:space:]]* || $access_token == *\"* || $access_token == *\\* ]]; then
+  die 1 "Wallabag token response did not contain a usable access token"
+fi
+rm -f "$token_response"
+
+http_status=$(
+  printf 'header = "Authorization: Bearer %s"\n' "$access_token" |
+    curl --config - --silent --show-error --connect-timeout 10 --max-time 120 \
+      --header 'Content-Type: application/json' \
+      --data-binary @"$request_file" \
+      --output "$entry_response" --write-out '%{http_code}' \
+      "$wallabag_url/api/entries.json"
+) || http_status=000
+unset access_token
+if [[ $http_status != 200 ]]; then
+  http_failure "Wallabag entry request" "$http_status" "$entry_response"
+fi
+
+entry_id=$(jq -r '.id // empty' "$entry_response" 2>/dev/null) || entry_id=""
+if [[ ! $entry_id =~ ^[0-9]+$ ]]; then
+  die 1 "Wallabag response did not contain an entry ID"
+fi
+
+validation=skipped
+if [[ -n $expected_timestamp ]]; then
+  if jq -e --arg needle "t=$expected_timestamp" '(.content // "") | contains($needle)' \
+    "$entry_response" >/dev/null; then
+    validation=passed
+  else
+    die 1 "entry $entry_id does not contain t=$expected_timestamp; Wallabag may have fetched the page instead of using the supplied content"
+  fi
+fi
+
+jq -r \
+  --arg entry_url "$wallabag_url/view/$entry_id" \
+  --arg title "$title" \
+  --arg author "$author" \
+  --arg language "$language" \
+  --arg validation "$validation" \
+  '
+    "entry_id=\(.id)",
+    "entry_url=\($entry_url)",
+    "source_url=\(.url // "")",
+    "title=\(.title // $title)",
+    "author=\((.published_by // []) | if length > 0 then join(", ") else $author end)",
+    "language=\(.language // $language)",
+    "tags=\([.tags[]?.label] | join(","))",
+    "cover=\(.preview_picture // "none")",
+    "archived=\(.is_archived == 1 or .is_archived == true)",
+    "validation=\($validation)"
+  ' "$entry_response"

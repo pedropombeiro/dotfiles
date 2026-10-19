@@ -3,6 +3,11 @@
     "allow": ["mcp__incident_io__*", "Skill(incident)"]
   },
   "model": "opus[1m]",
+  "deniedMcpServers": [
+    {
+      "serverUrl": "https://mcp.incident.io/*"
+    }
+  ],
   "hooks": {
     "PostToolUse": [
       {
@@ -32,6 +37,9 @@
   },
   "autoUpdatesChannel": "stable",
   "minimumVersion": "2.1.89",
+  "tui": "fullscreen",
   "editorMode": "vim",
-  "tui": "fullscreen"
+  "enabledPlugins": {
+    "incident.io@anthropic-plugin-directory": true
+  }
 }

@@ -55,7 +55,7 @@ Open Yazi with `fm`, which changes the shell directory on exit, or with
 | Scroll the preview                        | `J` or `K`   |                           |
 | Zoom into an image preview                | `+` or `-`   |                           |
 | Open Quick Look                           | `C-p`        | macOS                     |
-| Show disk usage for the hovered path      | `Space d u`  | Runs `dua i`              |
+| Show disk usage for the hovered path      | `Space d u`  | Runs `diskbloom`          |
 | Follow a log file                         | `Space t f`  | Runs `tail -f`            |
 | Open LazyGit                              | `Space t g`  |                           |
 | Run a shell command on the selection      | `;` or `:`   | `:` waits for the command |

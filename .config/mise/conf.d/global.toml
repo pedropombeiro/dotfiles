@@ -25,8 +25,8 @@ MISE_RUSTUP_HOME = "{{env.HOME}}/.local/share/rustup"
 atuin = "latest"
 # Render Markdown cheat sheets in terminal popups
 "aqua:charmbracelet/glow" = "latest"
-# Interactive disk usage analyzer
-dua = "latest"
+# Interactive disk usage treemap
+"github:Zingzy/diskbloom" = "latest"
 # Fast alternative to find
 "aqua:sharkdp/fd" = "latest"
 # Tmux session manager

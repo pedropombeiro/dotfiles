@@ -80,12 +80,6 @@
       "versioning": "regex:^gping-v(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
     },
     {
-      "description": "Group shared dua updates",
-      "matchManagers": ["mise"],
-      "matchPackageNames": ["/dua/"],
-      "groupName": "mise shared dua"
-    },
-    {
       "description": "Group opencode updates",
       "matchManagers": ["custom.regex", "mise"],
       "matchPackageNames": ["/opencode/"],

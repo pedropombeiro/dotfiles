@@ -1,0 +1,12 @@
+
+#
+# `diskbloom` resolves symlinks in the scan root before starting diskbloom.
+# Upstream lstat()s the root, so a symlinked path such as /share/Container on
+# QTS scans as a single empty file. Remove this wrapper once upstream resolves
+# https://github.com/Zingzy/diskbloom/issues/1.
+#
+
+case "$1" in
+  -v | --version | version) command diskbloom "$@" ;;
+  *) command diskbloom "${${1:-.}:A}" "${@:2}" ;;
+esac

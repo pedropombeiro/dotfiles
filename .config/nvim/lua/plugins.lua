@@ -78,16 +78,15 @@ return {
 
   {
     "petertriho/nvim-scrollbar", -- Extensible Neovim Scrollbar
+    branch = "refactor/v2", -- TODO: Remove after v2 replaces v1 on main on 2026-11-16
     event = { "BufNewFile", "BufReadPost" },
+    dependencies = { "lewis6991/gitsigns.nvim" },
     opts = {
-      excluded_buftypes = {
-        "nofile",
+      exclude = {
+        buftypes = { "nofile" },
       },
-    },
-    specs = {
-      {
-        "lewis6991/gitsigns.nvim",
-        opts = function() require("scrollbar.handlers.gitsigns").setup() end,
+      providers = {
+        gitsigns = true,
       },
     },
   },
@@ -283,6 +282,7 @@ return {
             "v",
             { action_callback = require("gitlinker.actions").open_in_browser }
           )
+          ooo
         end,
         mode = "v",
         desc = "Yank Git URL",

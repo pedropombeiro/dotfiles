@@ -8,5 +8,9 @@
 
 case "$1" in
   -v | --version | version) command diskbloom "$@" ;;
-  *) command diskbloom "${${1:-.}:A}" "${@:2}" ;;
+  *)
+    local root="${${1:-.}:A}"
+    [[ -d "$root" ]] || root="${root:h}"
+    command diskbloom "$root" "${@:2}"
+    ;;
 esac

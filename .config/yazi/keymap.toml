@@ -11,7 +11,7 @@ on = ["<Space>", "d", "u"]
 # diskbloom treats a symlinked root as an empty file, so resolve the path first.
 # https://github.com/Zingzy/diskbloom/issues/1
 # QTS has no realpath; readlink -f works on QTS and macOS.
-run = 'shell --block -- diskbloom "$(readlink -f %h)"'
+run = 'shell --block -- root="$(readlink -f %h)" || exit; [ -d "$root" ] || root="$(dirname "$root")"; diskbloom "$root"'
 
 [[mgr.prepend_keymap]]
 on   = ["<Space>", "<Space>"]

@@ -21,7 +21,7 @@ end
 
 local function onSleep()
   log.i("onSleep")
-  task("/usr/bin/killall", { "Busylight_HTTP_Mac" })
+  task("/usr/bin/killall", { "BusylightHTTP" })
   streamDeckOff()
 end
 

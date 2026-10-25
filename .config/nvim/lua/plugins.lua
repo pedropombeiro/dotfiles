@@ -282,6 +282,7 @@ return {
             "v",
             { action_callback = require("gitlinker.actions").open_in_browser }
           )
+          ooo
         end,
         mode = "v",
         desc = "Yank Git URL",

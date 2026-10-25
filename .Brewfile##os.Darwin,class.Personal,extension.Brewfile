@@ -58,6 +58,8 @@ brew "entr"
 brew "exiftool"
 # Modern, maintained replacement for ls
 brew "eza"
+# Play, record, convert, and stream select audio and video codecs
+brew "ffmpeg"
 # Scriptable ping program for checking if multiple hosts are up
 brew "fping"
 # Command-line fuzzy finder written in Go

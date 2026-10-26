@@ -6,6 +6,9 @@
 libc = "musl"
 
 [settings.python]
+# Entware GCC can't build CPython on QTS. Fail fast when no precompiled build
+# exists yet instead of attempting a source build.
+compile = false
 precompiled_arch = "x86_64"
 precompiled_os = "unknown-linux-gnu"
 

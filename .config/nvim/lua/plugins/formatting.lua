@@ -60,7 +60,11 @@ return {
       sh                     = { "shellcheck", "shfmt" },
       sql                    = { "pg_format", "sql_formatter", stop_after_first = true },
       svelte                 = { "prettier" },
-      toml                   = { "taplo" },
+      toml                   = function(bufnr)
+        -- Match the hk `mise-fmt` step for mise config files
+        if require("utils.mise").is_config_buffer(bufnr) then return { "mise_fmt" } end
+        return { "taplo" }
+      end,
       typescript             = { "prettier" },
       typescriptreact        = { "prettier" },
       vue                    = { "prettier" },
@@ -89,6 +93,11 @@ return {
       },
       lua = {
         prepend_args = { "--verify" },
+      },
+      mise_fmt = {
+        command = "mise",
+        args = { "fmt", "--stdin" },
+        stdin = true,
       },
       nginx = {
         command = "nginxbeautifier",

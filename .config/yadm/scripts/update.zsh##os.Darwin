@@ -20,9 +20,9 @@ iterm2_progress -i
 
 _cleanup_done=0
 _update_cleanup() {
-  (( _cleanup_done )) && return
-  _cleanup_done=1
   local rc=$?
+  (( _cleanup_done )) && return "$rc"
+  _cleanup_done=1
   if [[ $rc -ne 0 ]]; then
     iterm2_progress -e
     iterm2_badge "update: FAILED"
@@ -34,6 +34,7 @@ _update_cleanup() {
     iterm2_notify "update complete"
   fi
   echo
+  return "$rc"
 }
 trap _update_cleanup EXIT
 trap 'exit 130' INT
@@ -42,11 +43,42 @@ trap 'exit 129' HUP
 
 "${YADM_SCRIPTS}/relink-dotfiles.zsh"
 
+# Root-run Python tools can leave bytecode caches that block `brew cleanup`.
+# Limit repairs to Python caches and preserve groups and non-root ownership.
+_brew_prefix=$(brew --prefix) || exit $?
+_brew_cellar=$(brew --cellar) || exit $?
+_python_roots=(
+  "$_brew_cellar"/python(N/)
+  "$_brew_cellar"/python@*(N/)
+  "$_brew_prefix"/lib/python*/site-packages(N/)
+)
+_root_owned=()
+if (( ${#_python_roots[@]} )); then
+  _root_owned_output=$(find "${_python_roots[@]}" -xdev -user 0 \
+    \( -type d -o -type f \) \
+    \( -path '*/__pycache__' -o -path '*/__pycache__/*' \) -print0) || exit $?
+  _root_owned=("${(@0)_root_owned_output}")
+  # Quoted NUL splitting preserves the empty entry after find's final delimiter.
+  _root_owned=("${(@)_root_owned:#}")
+fi
+if (( ${#_root_owned[@]} )); then
+  printf "${YELLOW}%s${NC}\n" "Fixing ownership of ${#_root_owned[@]} root-owned Python cache entries"
+  printf '  %s\n' "${_root_owned[@]:0:5}"
+  (( ${#_root_owned[@]} > 5 )) && printf '  ... and %d more\n' $(( ${#_root_owned[@]} - 5 ))
+  sudo chown -h "$UID" "${_root_owned[@]}" || exit $?
+fi
+unset _brew_prefix _brew_cellar _python_roots _root_owned_output _root_owned
+
 _update_step "brew update"
 brew update
 brew upgrade --yes
 brew bundle --global --quiet
-brew bundle cleanup --global --force
+_brew_cleanup_rc=0
+brew bundle cleanup --global --force || _brew_cleanup_rc=$?
+# `brew bundle cleanup` hides `brew cleanup` stderr; rerun it so failures are visible.
+brew cleanup || exit $?
+(( _brew_cleanup_rc == 0 )) || exit "$_brew_cleanup_rc"
+unset _brew_cleanup_rc
 "${YADM_SCRIPTS}/sign-tmux.zsh"
 # Converge the declarative resources in conf.d/bootstrap*.toml. Keep the scope
 # explicit: dotfiles, macOS defaults, and user sections overlap YADM workflows.

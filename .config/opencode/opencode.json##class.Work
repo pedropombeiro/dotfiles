@@ -589,6 +589,11 @@
     // Web search tools keep asking, matching the native websearch and webfetch rules.
     { "action": "lazy-mcp_invoke_command", "resource": "*", "effect": "ask" },
     { "action": "lazy-mcp_invoke_command", "resource": "context7/*", "effect": "allow" },
+    { "action": "lazy-mcp_invoke_command", "resource": "esquery*/count", "effect": "allow" },
+    { "action": "lazy-mcp_invoke_command", "resource": "esquery*/esql", "effect": "allow" },
+    { "action": "lazy-mcp_invoke_command", "resource": "esquery*/list_fields", "effect": "allow" },
+    { "action": "lazy-mcp_invoke_command", "resource": "esquery*/list_indices", "effect": "allow" },
+    { "action": "lazy-mcp_invoke_command", "resource": "esquery*/search", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "gitlab/get_*", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "gitlab/gitlab_get_*", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "gitlab/gitlab_list_*", "effect": "allow" },

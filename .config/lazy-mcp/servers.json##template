@@ -65,6 +65,24 @@
         "SIGNOZ-API-KEY": "${GITLAB_OBSERVABILITY_API_KEY}"
       }
     },
+    {
+      "name": "esquery",
+      "description": "GitLab production logs (Kibana log.gprd.gitlab.net) through the Kibana SSO session. RED data.",
+      "type": "local",
+      "command": ["mise", "x", "gitlab:gitlab-com/gl-infra/esquery", "--", "esquery", "mcp"],
+      "env": {
+        "KIBANA_URL": "https://log.gprd.gitlab.net"
+      }
+    },
+    {
+      "name": "esquery-staging",
+      "description": "GitLab staging and nonprod logs (Kibana nonprod-log.gitlab.net) through the Kibana SSO session",
+      "type": "local",
+      "command": ["mise", "x", "gitlab:gitlab-com/gl-infra/esquery", "--", "esquery", "mcp"],
+      "env": {
+        "KIBANA_URL": "https://nonprod-log.gitlab.net"
+      }
+    },
 {% endif %}
 {% if yadm.class != "NAS" %}
     {

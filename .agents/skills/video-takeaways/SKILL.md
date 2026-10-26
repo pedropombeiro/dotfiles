@@ -1,7 +1,7 @@
 ---
 name: video-takeaways
 description: "Video URLs and YouTube links: extract actionable takeaways with timestamp hyperlinks, then save approved notes as Markdown, to Wallabag for e-reader sync, or to another requested destination. Use when asked to summarize learnings, lessons, rules of thumb, practical advice, Markdown notes, or Wallabag entries from a video, talk, tutorial, or interview."
-version: 3.0.0
+version: 3.1.0
 license: MIT
 compatibility: opencode
 metadata:
@@ -91,7 +91,8 @@ default to English, even when the video uses another language.
 ## Dependencies
 
 The core transcript helper requires `yt-dlp`, `jq`, and Perl. Wallabag output
-and the tag lookup also require `curl`, and Wallabag output requires Pandoc. If
+and the tag lookup also require the sibling `wallabag` skill and its
+dependencies, including `curl` and Pandoc. If
 captions are not available, report that clearly. Do not silently substitute an
 unverified summary from video metadata or search results.
 

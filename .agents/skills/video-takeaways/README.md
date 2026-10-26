@@ -41,7 +41,8 @@ notes, the skill can write a Markdown file, send them to
    - `jq`
    - Perl
 
-4. For Wallabag output, install `curl` and Pandoc.
+4. For Wallabag output, install the `wallabag` skill next to this one, at
+   `~/.agents/skills/wallabag/`, along with its dependencies.
 
 5. Restart OpenCode so it discovers the installed skill.
 
@@ -49,8 +50,9 @@ notes, the skill can write a Markdown file, send them to
 
 Wallabag is optional. Create a dedicated API client in Wallabag, then store its
 credentials in `~/.config/wallabag/credentials.env` with mode 600. To use
-another file, pass `--env-file` or set `WALLABAG_ENV_FILE`. The
-[Wallabag output reference](references/WALLABAG.md) lists the required keys.
+another file, pass `--env-file` or set `WALLABAG_ENV_FILE`. The `wallabag`
+skill's [API helper reference](../wallabag/references/API.md#set-up-access)
+lists the required keys.
 
 ## Use the skill
 
@@ -91,8 +93,8 @@ Run any helper with `--help` for all options.
 - [`SKILL.md`](SKILL.md) defines when an agent loads the skill and how it behaves.
 - [`references/WORKFLOW.md`](references/WORKFLOW.md) describes transcript review
   and takeaway composition.
-- [`references/WALLABAG.md`](references/WALLABAG.md) describes Wallabag setup,
-  entry contents, and verification.
+- [`references/WALLABAG.md`](references/WALLABAG.md) describes how summaries
+  map to Wallabag entries and how the helper verifies them.
 
 ## License
 

@@ -184,8 +184,10 @@ plugin. Tab still cycles agents in reverse, and the agent picker remains availab
 
 ## Models
 
-`opencode.json` pins per-agent models: `plan` uses Astra and `build` uses Opus 5.5. The
-top-level `model` covers other agents, and `agents.title.model` covers maintenance tasks.
+`opencode.json` pins per-agent models: `plan` uses Opus 5.5 without a pinned reasoning
+variant, and `build` uses Sonnet 5.5 with `medium` reasoning. Select Plan's reasoning
+variant per session when needed. The top-level `model` covers other agents, and
+`agents.title.model` covers maintenance tasks.
 Per-agent models take precedence over the top-level `model`, so the `oc` wrapper's inline
 `$OPENCODE_MODEL` override (`OPENCODE_CONFIG_CONTENT` with `--standalone`) no longer changes
 the model for `plan` or `build`. An explicit `opencode run --model` still wins over the

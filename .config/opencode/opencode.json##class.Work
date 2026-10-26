@@ -8,8 +8,8 @@
   "agents": {
     // The built-in title agent handles maintenance tasks such as session titles.
     "title": { "model": "gitlab/duo-chat-gpt-6-luna" },
-    "plan": { "model": "gitlab/duo-chat-gpt-6-astra" },
-    "build": { "model": "gitlab/duo-chat-opus-5-5" }
+    "plan": { "model": "gitlab/duo-chat-opus-5-5" },
+    "build": { "model": "gitlab/duo-chat-sonnet-5-5#medium" }
   },
   "plugins": [
     "opencode-gitlab-plugin@3.1.0",       // GitLab API tools for MRs, issues, pipelines, and more

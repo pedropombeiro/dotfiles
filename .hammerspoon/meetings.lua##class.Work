@@ -138,8 +138,8 @@ end)
 M._watcher:start()
 
 -- Seed state so a reload mid-meeting does not fire a spurious onMeetingStart.
-for appName in pairs(webcam.apps) do
-  if hs.application.get(appName) then activeMeetings[appName] = true end
+for _, appName in ipairs(webcam.runningApps()) do
+  activeMeetings[appName] = true
 end
 
 log.i("Meeting watcher started")

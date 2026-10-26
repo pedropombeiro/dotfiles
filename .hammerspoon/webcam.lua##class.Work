@@ -11,13 +11,18 @@ local M = {
   },
 }
 
+-- hs.application.get matches partial names, so "Zoom" would also match the
+-- Stream Deck plugin "ESDZoom". Compare exact names instead.
 local function runningApps()
   local names = {}
-  for name in pairs(M.apps) do
-    if hs.application.get(name) then table.insert(names, name) end
+  for _, app in ipairs(hs.application.runningApplications()) do
+    local name = app:name()
+    if name and M.apps[name] then table.insert(names, name) end
   end
   return names
 end
+
+M.runningApps = runningApps
 
 local function setPower(action, reason)
   if action == lastAction then

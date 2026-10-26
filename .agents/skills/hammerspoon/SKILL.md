@@ -29,7 +29,14 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
   `activeMeetings` from running apps on load so a reload mid-meeting doesn't fire a spurious start.
 - `busylight.lua##class.Work` - Wraps the BusylightHTTP API (`constants.busylightUrl`). Exports `busylight.off()`.
   Treats `404 NO_DEVICE` as informational when the device is absent. Sends one off request when the last watched meeting
-  application closes; other presence controllers can subsequently change the light.
+  application closes; other presence controllers can subsequently change the light. Also runs a health monitor: every
+  60s, 45s after unlock, and on Busylight USB add/remove events, it classifies the chain as `ok`, `undocked`, `no_usb`
+  (light missing from the USB bus), `no_device` (on USB, but BusylightHTTP lost it), or `http_down`. After two
+  consecutive bad checks while unlocked, it shows a persistent notification with a **Fix** button (a click on the body
+  also runs the fix). `no_usb` cycles `sharedPeripheralPort` and then restarts BusylightHTTP; the other states only
+  restart BusylightHTTP. A hub reset waits while the Wave mic (`constants.waveMicPattern`) reports
+  `hs.audiodevice:inUse()`, rechecking every 15s; this is reliable only because Wave Link is not installed to hold the
+  device open. Exports `check()` and `fix(reason)`.
 - `webcam.lua##class.Work` — Powers the YoloCam S3 USB port on/off via uhubctl. Exports `webcam.on()` and
   `webcam.off()`. Powers off on Hammerspoon load (unless Zoom is running). Called by `meetings.lua` and `sleepwake.lua`.
 - `httpserver/` — Modular HTTP server on `localhost:18990`. Sub-modules each return a table of
@@ -297,7 +304,8 @@ signatures. It maps to the Hammerspoon docs site and has broader coverage than t
   old name. A key that doesn't match makes the `meetings.lua` watcher silently drop the app's events. The Zoom meeting
   app reports `Zoom` (bundle ID `us.zoom.xos`). Match on the exact name `Zoom`, not a substring — `ESDZoom` (Stream
   Deck plugin, `com.elgato.zoom.sdPlugin`) and `Zoom Workspace Aomhost` (`us.zoom.aomhost`) also contain "zoom" and
-  would cause false triggers. Verify a key with:
+  would cause false triggers. `hs.application.get(name)` matches partial names, so it returns `ESDZoom` for `Zoom`;
+  use `webcam.runningApps()`, which compares `runningApplications()` names exactly. Verify a key with:
   ```sh
   hs -c "for _,a in ipairs(hs.application.runningApplications()) do local n=a:name() if n:lower():find('zoom') then print(n, a:bundleID()) end end"
   ```

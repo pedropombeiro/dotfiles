@@ -143,6 +143,10 @@ the source of truth.
   approval first**. Do NOT post it directly.
 - Only post/submit when the user explicitly says "post", "send", "submit", or "reply"
   (without the word "draft").
+- When authorized to post, save comments and replies as pending/draft comments by
+  default. "Post it" alone does not request immediate publication. Publish directly
+  only when the user explicitly requests it or pending comments are not supported.
+  Leave pending comments unpublished and report whether the comment is pending or published.
 
 ## What to Avoid
 

@@ -1,23 +1,292 @@
 local constants = require("constants")
+local usb = require("usb")
 local log = hs.logger.new("busylight", "info")
 
 local M = {}
 
+-- Kuando (Plenom) USB vendor ID; the product name is also checked because
+-- older units enumerate under a different vendor.
+local busylightVendorID = 0x27BB
+local caldigitVendorID = 8584
+
+local checkInterval = 60
+-- Consecutive bad checks before notifying, so transient restarts stay quiet.
+local failuresBeforeNotify = 2
+-- BusylightHTTP and the hub settle after unlock; restoreServices restarts them.
+local unlockGraceSeconds = 45
+local hubOffMillis = 2000
+local settleSeconds = 5
+local verifySeconds = 10
+local micPollSeconds = 15
+
+-- state: ok | undocked | no_usb | no_device | http_down | unknown
+local currentState = "unknown"
+local failures = 0
+local locked = false
+local graceUntil = 0
+local fixing = false
+local pendingFix = nil
+
+-- Retain running tasks so they are not garbage-collected mid-run.
+M._tasks = {}
+
+local function task(path, args, callback)
+  local t
+  t = hs.task.new(path, function(...)
+    M._tasks[t] = nil
+    if callback then callback(...) end
+  end, args)
+  M._tasks[t] = true
+  t:start()
+  return t
+end
+
 local function request(query, reason)
   local url = constants.busylightUrl .. "?" .. query
-  hs.http.asyncGet(url, nil, function(status, body)
+  hs.http.asyncGet(url, nil, function(code, body)
     -- BusylightHTTP answers 404 with NO_DEVICE when the light is unplugged or
     -- its hub is unpowered; that is expected, not an error worth warning about.
-    if status == 200 then
+    if code == 200 then
       log.i("Busylight " .. query .. " [" .. reason .. "]")
-    elseif status == 404 and body and body:find("NO_DEVICE", 1, true) then
+    elseif code == 404 and body and body:find("NO_DEVICE", 1, true) then
       log.i("Busylight not connected, skipping " .. query .. " [" .. reason .. "]")
     else
-      log.w("Busylight " .. query .. " failed (status " .. tostring(status) .. "): " .. tostring(body))
+      log.w("Busylight " .. query .. " failed (status " .. tostring(code) .. "): " .. tostring(body))
     end
   end)
 end
 
 function M.off(reason) request("action=off", reason or "M.off") end
+
+local function usbState()
+  local docked, present = false, false
+  for _, d in ipairs(hs.usb.attachedDevices() or {}) do
+    if d.vendorID == caldigitVendorID then docked = true end
+    local name = (d.productName or ""):upper()
+    if d.vendorID == busylightVendorID or name:find("BUSYLIGHT", 1, true) then present = true end
+  end
+  return docked, present
+end
+
+local function classify(docked, present, httpCode, body)
+  if not docked then return "undocked" end
+  if httpCode == 200 then return "ok" end
+  if httpCode == 404 and body and body:find("NO_DEVICE", 1, true) then return present and "no_device" or "no_usb" end
+  return "http_down"
+end
+
+local descriptions = {
+  no_usb = "The light is not on the USB bus. The shared hub may have lost its data link.",
+  no_device = "The light is on USB, but BusylightHTTP cannot reach it.",
+  http_down = "BusylightHTTP is not responding.",
+}
+
+local function needsHubReset(state) return state == "no_usb" end
+
+-- The Wave mic shares the hub, so a reset would cut it off. inUse() is true
+-- only while some app has the device open (no Wave Link keeps it open).
+local function waveMicInUse()
+  for _, dev in ipairs(hs.audiodevice.allInputDevices()) do
+    local name = dev:name() or ""
+    if name:find(constants.waveMicPattern, 1, true) and dev:inUse() then return true end
+  end
+  return false
+end
+
+local function withdrawNotification()
+  if M._notification then
+    M._notification:withdraw()
+    M._notification = nil
+  end
+end
+
+local function notifyResult(title, text)
+  hs.notify.new({ title = title, informativeText = text, withdrawAfter = 10 }):send()
+end
+
+local runCheck
+local showNotification
+
+local function finishFix(reason)
+  hs.timer.doAfter(verifySeconds, function()
+    fixing = false
+    runCheck(function(state)
+      if state == "ok" then
+        log.i("fix succeeded [" .. reason .. "]")
+        notifyResult("Busylight fixed", "The light is reachable again.")
+      else
+        log.w("fix did not help, state=" .. state .. " [" .. reason .. "]")
+        showNotification(state, "The automatic fix did not help. Check the cables.")
+      end
+    end)
+  end)
+end
+
+local function busylightHTTPRunning()
+  for _, app in ipairs(hs.application.runningApplications()) do
+    if app:name() == "BusylightHTTP" then return true end
+  end
+  return false
+end
+
+-- killall returns before the app exits; opening it too early only re-activates
+-- the dying instance, which then quits and leaves nothing running.
+local function restartBusylightHTTP(reason)
+  log.i("restarting BusylightHTTP [" .. reason .. "]")
+  task("/usr/bin/killall", { "BusylightHTTP" }, function()
+    local waited = 0
+    M._restartTimer = hs.timer.doEvery(0.5, function()
+      waited = waited + 0.5
+      if busylightHTTPRunning() and waited < 10 then return end
+      M._restartTimer:stop()
+      M._restartTimer = nil
+      task("/usr/bin/open", { "-g", "-a", "BusylightHTTP" }, function() finishFix(reason) end)
+    end)
+  end)
+end
+
+function M.fix(reason)
+  reason = reason or "M.fix"
+  if fixing then
+    log.i("fix already running, ignoring [" .. reason .. "]")
+    return false
+  end
+
+  local state = currentState
+  if state == "ok" or state == "undocked" then
+    log.i("fix skipped, state=" .. state .. " [" .. reason .. "]")
+    return false
+  end
+
+  if needsHubReset(state) and waveMicInUse() then
+    if not pendingFix then
+      log.i("Wave mic in use, deferring hub reset [" .. reason .. "]")
+      hs.alert.show("Busylight: will reset the USB hub once the Wave mic is free")
+    end
+    pendingFix = reason
+    M._micTimer = M._micTimer
+      or hs.timer.doEvery(micPollSeconds, function()
+        if waveMicInUse() then return end
+        M._micTimer:stop()
+        M._micTimer = nil
+        local deferred = pendingFix
+        pendingFix = nil
+        if deferred then runCheck(function() M.fix(deferred .. "+micFree") end) end
+      end)
+    return true
+  end
+
+  fixing = true
+  pendingFix = nil
+  if M._micTimer then
+    M._micTimer:stop()
+    M._micTimer = nil
+  end
+  withdrawNotification()
+
+  if needsHubReset(state) then
+    log.i("cycling shared hub " .. constants.usbHub .. ":" .. constants.sharedPeripheralPort .. " [" .. reason .. "]")
+    usb.cycle(constants.usbHub, constants.sharedPeripheralPort, hubOffMillis, function(exitCode)
+      if exitCode ~= 0 then
+        -- Never leave the shared port off; the Wave mic depends on it.
+        usb.power(constants.usbHub, constants.sharedPeripheralPort, "on")
+      end
+      hs.timer.doAfter(settleSeconds, function() restartBusylightHTTP(reason) end)
+    end)
+  else
+    restartBusylightHTTP(reason)
+  end
+  return true
+end
+
+showNotification = function(state, note)
+  withdrawNotification()
+  local text = descriptions[state] or state
+  if note then text = text .. " " .. note end
+  M._notification = hs.notify.new(function(n)
+    local types = hs.notify.activationTypes
+    if n:activationType() == types.actionButtonClicked or n:activationType() == types.contentsClicked then
+      M.fix("notification")
+    end
+  end, {
+    title = "Busylight unavailable",
+    informativeText = text,
+    subTitle = needsHubReset(state) and "Fix resets the shared USB hub (drops the Wave mic briefly)" or "",
+    hasActionButton = true,
+    actionButtonTitle = "Fix",
+    otherButtonTitle = "Ignore",
+    withdrawAfter = 0,
+  })
+  M._notification:send()
+end
+
+local function onStateChange(state)
+  if state == "ok" or state == "undocked" then
+    failures = 0
+    withdrawNotification()
+    return
+  end
+
+  failures = failures + 1
+  if failures ~= failuresBeforeNotify then return end
+  if locked or fixing or os.time() < graceUntil then
+    -- Retry the notification on the next check.
+    failures = failures - 1
+    return
+  end
+  log.w("unhealthy: " .. state)
+  showNotification(state)
+end
+
+runCheck = function(callback)
+  local docked, present = usbState()
+  if not docked then
+    currentState = "undocked"
+    onStateChange("undocked")
+    if callback then callback("undocked") end
+    return
+  end
+
+  hs.http.asyncGet(constants.busylightUrl .. "?action=currentpresence", nil, function(code, body)
+    local state = classify(docked, present, code, body)
+    currentState = state
+    if not fixing then onStateChange(state) end
+    if callback then callback(state) end
+  end)
+end
+
+function M.check() runCheck() end
+
+M._caffeinateWatcher = hs.caffeinate.watcher.new(function(event)
+  local w = hs.caffeinate.watcher
+  if event == w.screensDidLock or event == w.systemWillSleep then
+    locked = true
+  elseif event == w.screensDidUnlock then
+    locked = false
+    graceUntil = os.time() + unlockGraceSeconds
+    M._unlockTimer = hs.timer.doAfter(unlockGraceSeconds, function()
+      M._unlockTimer = nil
+      runCheck()
+    end)
+  end
+end)
+M._caffeinateWatcher:start()
+
+M._usbWatcher = hs.usb.watcher.new(function(event)
+  local name = (event.productName or ""):upper()
+  if event.vendorID == busylightVendorID or name:find("BUSYLIGHT", 1, true) then
+    log.i("Busylight USB " .. event.eventType)
+    -- Re-check once BusylightHTTP has had time to notice the change.
+    M._usbTimer = hs.timer.doAfter(5, function()
+      M._usbTimer = nil
+      runCheck()
+    end)
+  end
+end)
+M._usbWatcher:start()
+
+M._checkTimer = hs.timer.doEvery(checkInterval, runCheck)
+graceUntil = os.time() + unlockGraceSeconds
+runCheck()
 
 return M

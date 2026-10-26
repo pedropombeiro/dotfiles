@@ -20,5 +20,7 @@ M.busylightUrl = "http://localhost:8989"
 M.airpodsPattern = "AirPods"
 M.airpodsAddress = "ec-73-79-44-76-9d"
 M.dockedAudioDevice = "CalDigit TS4 Audio - Rear"
+-- Elgato Wave mic on the shared hub; matched as a plain substring of the input device name.
+M.waveMicPattern = "Wave"
 
 return M

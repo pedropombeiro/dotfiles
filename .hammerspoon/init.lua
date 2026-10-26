@@ -2,6 +2,7 @@
 require("hs.ipc")
 
 local modules = {
+  "busylight",
   "hotkeys",
   "httpserver",
   "meetings",

@@ -156,9 +156,30 @@ busylight_no_device_reason() {
     printf '%s\n' "device is not visible on USB; unrecognized port state: ${port_status}"
   elif [[ " $port_status " != *" connect "* ]]; then
     printf '%s\n' "hub ${hub} port ${port} is powered but empty - check the cable from the dock to the Busylight hub"
+  elif (( $(sub_hub_child_count "$port_status") == 0 )); then
+    # The ganged sub-hub can keep powering the light after its data link drops.
+    printf '%s\n' "the sub-hub on hub ${hub} port ${port} is connected, but nothing behind it is on the USB bus - click Fix in the Hammerspoon notification, or run: uhubctl --action cycle --location ${hub} --port ${port}"
   else
     printf '%s\n' "hub ${hub} port ${port} has a device, but no BUSYLIGHT on the bus - check the light's own cable"
   fi
+}
+
+# Count the devices directly behind the hub on a uhubctl port line, for example
+# "Port 1: 0503 power ... [1a40:0101 USB 2.0 Hub, USB 2.00, 4 ports, ganged]".
+# Prints -1 when the device is not a hub or cannot be found in the USB tree.
+sub_hub_child_count() {
+  setopt LOCAL_OPTIONS EXTENDED_GLOB
+  local port_status=$1 name tree
+  if [[ "$port_status" != *" ports"* || "$port_status" != *"["*"]"* ]]; then
+    print -- -1
+    return
+  fi
+  name=${${port_status#*\[[0-9a-f]##:[0-9a-f]## }%%,*}
+  if ! tree=$(ioreg -p IOUSB -w0 -r -n "$name" 2>/dev/null) || [[ -z "$tree" ]]; then
+    print -- -1
+    return
+  fi
+  print -- ${#${(M)${(f)tree}:#  +-o *}}
 }
 
 probe_busylight_endpoint() {

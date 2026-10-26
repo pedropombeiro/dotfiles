@@ -1,0 +1,272 @@
+#!/usr/bin/env python3
+"""Prepare a local document for Wallabag.
+
+Converts a Google Docs "Web Page (.html, zipped)" export or a Markdown file
+into clean GitHub-flavored Markdown. Local images can't be uploaded to
+Wallabag, so the script replaces each one with a matching public image from
+--source-url when it finds one, and with a note otherwise.
+"""
+
+import argparse
+import html.parser
+import os
+import re
+import shutil
+import struct
+import subprocess
+import sys
+import tempfile
+import urllib.parse
+import urllib.request
+import zipfile
+
+PROGRAM = "prepare-document"
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15"
+RATIO_TOLERANCE = 0.02
+INLINE_MAX_HEIGHT = 32
+MIN_CANDIDATE_SIDE = 100
+MAX_CANDIDATES = 80
+IMAGE_RE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+
+
+def die(status, message):
+    print(f"{PROGRAM}: {message}", file=sys.stderr)
+    sys.exit(status)
+
+
+def warn(message):
+    print(f"{PROGRAM}: warning: {message}", file=sys.stderr)
+
+
+def image_size(data):
+    """Return (width, height) for PNG, GIF, JPEG, or WebP bytes, else None."""
+    if data[:8] == b"\x89PNG\r\n\x1a\n" and len(data) >= 24:
+        return struct.unpack(">II", data[16:24])
+    if data[:6] in (b"GIF87a", b"GIF89a") and len(data) >= 10:
+        return struct.unpack("<HH", data[6:10])
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        chunk = data[12:16]
+        if chunk == b"VP8X" and len(data) >= 30:
+            w = int.from_bytes(data[24:27], "little") + 1
+            h = int.from_bytes(data[27:30], "little") + 1
+            return w, h
+        if chunk == b"VP8 " and len(data) >= 30:
+            w, h = struct.unpack("<HH", data[26:30])
+            return w & 0x3FFF, h & 0x3FFF
+        if chunk == b"VP8L" and len(data) >= 25:
+            bits = int.from_bytes(data[21:25], "little")
+            return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
+        return None
+    if data[:2] == b"\xff\xd8":
+        i = 2
+        while i + 9 < len(data):
+            if data[i] != 0xFF:
+                i += 1
+                continue
+            marker = data[i + 1]
+            if marker in (0xD8, 0x01) or 0xD0 <= marker <= 0xD7:
+                i += 2
+                continue
+            length = struct.unpack(">H", data[i + 2 : i + 4])[0]
+            if 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC):
+                h, w = struct.unpack(">HH", data[i + 5 : i + 9])
+                return w, h
+            i += 2 + length
+    return None
+
+
+def fetch(url, limit=None):
+    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return response.read(limit) if limit else response.read()
+
+
+def unwrap_google_redirects(markdown):
+    """Replace https://www.google.com/url?q=TARGET&... with TARGET."""
+
+    def replace(match):
+        query = urllib.parse.urlsplit(match.group(0)).query
+        target = urllib.parse.parse_qs(query).get("q", [""])[0]
+        return target or match.group(0)
+
+    return re.sub(r"https://www\.google\.com/url\?[^)\s>\"]+", replace, markdown)
+
+
+def pandoc_html_to_markdown(html_path):
+    if shutil.which("pandoc") is None:
+        die(127, "required command not found: pandoc")
+    result = subprocess.run(
+        ["pandoc", html_path, "--from=html", "--to=gfm-raw_html", "--wrap=none"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout
+
+
+def load_google_docs_zip(zip_path, output_dir):
+    """Extract the export and return (markdown, base directory for images)."""
+    extract_dir = os.path.join(output_dir, "source")
+    with zipfile.ZipFile(zip_path) as archive:
+        for name in archive.namelist():
+            target = os.path.realpath(os.path.join(extract_dir, name))
+            if not target.startswith(os.path.realpath(extract_dir) + os.sep):
+                die(1, f"refusing to extract unsafe path from ZIP: {name}")
+        archive.extractall(extract_dir)
+        html_files = [n for n in archive.namelist() if n.lower().endswith((".html", ".htm"))]
+    if len(html_files) != 1:
+        die(1, f"expected one HTML file in the ZIP, found {len(html_files)}")
+    html_path = os.path.join(extract_dir, html_files[0])
+    return pandoc_html_to_markdown(html_path), os.path.dirname(html_path)
+
+
+class ImageCollector(html.parser.HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.images = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag != "img":
+            return
+        attributes = dict(attrs)
+        src = attributes.get("src") or ""
+        if src.startswith(("http://", "https://")):
+            self.images.append((src, attributes.get("width"), attributes.get("height")))
+
+
+def canonical_image_url(src):
+    """Unwrap image-proxy URLs that embed the original URL, such as Substack's CDN."""
+    match = re.search(r"/(https?%3A%2F%2F.+)$", src)
+    if match:
+        return urllib.parse.unquote(match.group(1))
+    return src
+
+
+def candidate_images(source_url):
+    try:
+        page = fetch(source_url).decode("utf-8", errors="replace")
+    except Exception as error:  # noqa: BLE001 - report any fetch failure
+        warn(f"could not fetch {source_url}: {error}")
+        return []
+    collector = ImageCollector()
+    collector.feed(page)
+    candidates, seen = [], set()
+    for src, width, height in collector.images:
+        url = urllib.parse.urljoin(source_url, canonical_image_url(src))
+        if url in seen:
+            continue
+        seen.add(url)
+        size = None
+        dimensions = re.search(r"_(\d+)x(\d+)\.[A-Za-z]+$", urllib.parse.urlsplit(url).path)
+        if dimensions:
+            size = int(dimensions.group(1)), int(dimensions.group(2))
+        elif width and height and width.isdigit() and height.isdigit():
+            size = int(width), int(height)
+        else:
+            try:
+                size = image_size(fetch(url, limit=65536))
+            except Exception:  # noqa: BLE001 - skip unreadable candidates
+                size = None
+        if size and min(size) >= MIN_CANDIDATE_SIDE:
+            candidates.append((url, size))
+        if len(candidates) >= MAX_CANDIDATES:
+            break
+    return candidates
+
+
+def ratio(size):
+    return size[0] / size[1]
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog=PROGRAM,
+        description="Convert a Google Docs HTML ZIP or a Markdown file into "
+        "Wallabag-ready Markdown, replacing local images with public ones.",
+    )
+    parser.add_argument("input", help="Google Docs .zip export or .md file")
+    parser.add_argument(
+        "--source-url",
+        help="public page of the same article; its images replace matching local images",
+    )
+    parser.add_argument(
+        "--output-dir", help="directory for article.md (default: a new directory under $TMPDIR)"
+    )
+    args = parser.parse_args()
+
+    if not os.path.isfile(args.input):
+        die(1, f"input file is not readable: {args.input}")
+    output_dir = args.output_dir or tempfile.mkdtemp(prefix="wallabag-document.")
+    os.makedirs(output_dir, mode=0o700, exist_ok=True)
+
+    lower = args.input.lower()
+    if lower.endswith(".zip"):
+        markdown, base_dir = load_google_docs_zip(args.input, output_dir)
+    elif lower.endswith((".md", ".markdown")):
+        with open(args.input, encoding="utf-8") as handle:
+            markdown = handle.read()
+        base_dir = os.path.dirname(os.path.abspath(args.input))
+    else:
+        die(64, "input must be a Google Docs .zip export or a Markdown .md file")
+
+    markdown = unwrap_google_redirects(markdown)
+
+    candidates = candidate_images(args.source_url) if args.source_url else []
+    next_candidate = 0
+    note = (
+        "*[Image not available publicly. See the original article.]*"
+        if args.source_url
+        else "*[Image omitted.]*"
+    )
+    report = []
+
+    def replace(match):
+        nonlocal next_candidate
+        alt, path = match.group(1), match.group(2)
+        if path.startswith(("http://", "https://")):
+            report.append((path, "-", "remote", path))
+            return match.group(0)
+        local = os.path.join(base_dir, urllib.parse.unquote(path))
+        try:
+            with open(local, "rb") as handle:
+                size = image_size(handle.read(65536))
+        except OSError:
+            size = None
+        size_text = f"{size[0]}x{size[1]}" if size else "unknown"
+        if size and size[1] <= INLINE_MAX_HEIGHT:
+            report.append((path, size_text, "dropped-inline", "-"))
+            return ""
+        if size:
+            for index in range(next_candidate, len(candidates)):
+                url, candidate_size = candidates[index]
+                if abs(ratio(candidate_size) - ratio(size)) / ratio(size) <= RATIO_TOLERANCE:
+                    next_candidate = index + 1
+                    report.append((path, size_text, "matched", url))
+                    return f"![{alt}]({url})"
+        report.append((path, size_text, "omitted", "-"))
+        return note
+
+    markdown = IMAGE_RE.sub(replace, markdown)
+    markdown = re.sub(r"\n{3,}", "\n\n", markdown).strip() + "\n"
+
+    markdown_path = os.path.join(output_dir, "article.md")
+    with open(markdown_path, "w", encoding="utf-8") as handle:
+        handle.write(markdown)
+
+    title = next(
+        (m.group(1).strip() for m in re.finditer(r"^#\s+(.+)$", markdown, re.MULTILINE)), ""
+    )
+    counts = {status: sum(1 for r in report if r[2] == status) for status in
+              ("matched", "omitted", "dropped-inline", "remote")}
+    print(f"markdown={markdown_path}")
+    print(f"output_dir={output_dir}")
+    print(f"title={title}")
+    print(f"source_candidates={len(candidates)}")
+    for status, count in counts.items():
+        print(f"images_{status.replace('-', '_')}={count}")
+    for path, size_text, status, url in report:
+        print(f"image={path}\t{size_text}\t{status}\t{url}")
+
+
+if __name__ == "__main__":
+    main()

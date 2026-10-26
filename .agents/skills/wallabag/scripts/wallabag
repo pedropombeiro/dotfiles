@@ -1,0 +1,422 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly program=wallabag
+
+usage() {
+  cat <<'EOF'
+Usage: wallabag post [OPTIONS] FILE
+  or:  wallabag tags [--env-file PATH]
+
+Commands:
+  post    Send a Markdown (.md) or HTML (.html) file to Wallabag as an entry.
+          Posting the same URL again updates the existing entry.
+  tags    Print existing tags with entry counts, most used first.
+
+Post options:
+  --url URL            Entry URL (required). Wallabag uses it as the identity
+  --title TITLE        Entry title (default: the first Markdown H1)
+  --author AUTHOR      Entry author
+  --lang LANGUAGE      Entry language (default: en)
+  --tag TAG            Tag to add; repeat or pass a comma-separated list
+  --thumbnail URL      Cover image URL
+  --expect TEXT        Fail unless the stored content contains TEXT
+
+Common options:
+  --env-file PATH      Credentials file (or WALLABAG_ENV_FILE)
+  -h, --help           Show this help
+
+Markdown is converted with `pandoc --from=gfm --to=html5`. The first H1 is
+removed from the body, because the Wallabag EPUB title page already shows the
+title.
+
+The default credentials file is ~/.config/wallabag/credentials.env. It
+contains KEY=value lines for WALLABAG_URL, WALLABAG_CLIENT_ID,
+WALLABAG_CLIENT_SECRET, WALLABAG_USERNAME, and WALLABAG_PASSWORD. The script
+parses it and never sources it.
+EOF
+}
+
+die() {
+  local status=$1
+  shift
+  printf '%s: %s\n' "$program" "$*" >&2
+  exit "$status"
+}
+
+warn() {
+  printf '%s: warning: %s\n' "$program" "$*" >&2
+}
+
+if (($# == 0)); then
+  usage >&2
+  exit 64
+fi
+
+command=$1
+shift
+case "$command" in
+post | tags) ;;
+-h | --help)
+  usage
+  exit 0
+  ;;
+*)
+  printf '%s: unknown command: %s\n' "$program" "$command" >&2
+  usage >&2
+  exit 64
+  ;;
+esac
+
+env_file=${WALLABAG_ENV_FILE:-${HOME:-}/.config/wallabag/credentials.env}
+entry_url=""
+title=""
+author=""
+language=""
+thumbnail=""
+expect=""
+tag_args=()
+
+while (($# > 0)); do
+  case "$1" in
+  --env-file | --url | --title | --author | --lang | --tag | --thumbnail | --expect)
+    if (($# < 2)); then
+      die 64 "$1 requires a value"
+    fi
+    if [[ $command == tags && $1 != --env-file ]]; then
+      die 64 "$1 is only valid with the post command"
+    fi
+    case "$1" in
+    --env-file) env_file=$2 ;;
+    --url) entry_url=$2 ;;
+    --title) title=$2 ;;
+    --author) author=$2 ;;
+    --lang) language=$2 ;;
+    --tag) tag_args+=("$2") ;;
+    --thumbnail) thumbnail=$2 ;;
+    --expect) expect=$2 ;;
+    esac
+    shift 2
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  --)
+    shift
+    break
+    ;;
+  -*)
+    printf '%s: unknown option: %s\n' "$program" "$1" >&2
+    usage >&2
+    exit 64
+    ;;
+  *)
+    break
+    ;;
+  esac
+done
+
+if [[ $command == tags ]]; then
+  if (($# != 0)); then
+    usage >&2
+    exit 64
+  fi
+  dependencies=(curl jq)
+else
+  if (($# != 1)); then
+    usage >&2
+    exit 64
+  fi
+  dependencies=(curl jq perl)
+fi
+
+for dependency in "${dependencies[@]}"; do
+  if ! command -v "$dependency" >/dev/null 2>&1; then
+    die 127 "required command not found: $dependency"
+  fi
+done
+
+# Validate post arguments before touching credentials or the network.
+if [[ $command == post ]]; then
+  readonly input=$1
+  if [[ ! -r $input ]]; then
+    die 1 "input file is not readable: $input"
+  fi
+  case "$input" in
+  *.md | *.markdown) input_format=markdown ;;
+  *.html | *.htm) input_format=html ;;
+  *) die 64 "input must be a Markdown (.md) or HTML (.html) file: $input" ;;
+  esac
+  if [[ $input_format == markdown ]] && ! command -v pandoc >/dev/null 2>&1; then
+    die 127 "required command not found: pandoc"
+  fi
+  case "$entry_url" in
+  "") die 64 "--url is required" ;;
+  http://* | https://*) ;;
+  *) die 64 "--url must be an http:// or https:// URL" ;;
+  esac
+  case "$thumbnail" in
+  "" | http://* | https://*) ;;
+  *) die 64 "--thumbnail must be an http:// or https:// URL" ;;
+  esac
+fi
+
+# Read the credentials file line by line. Never source it.
+wallabag_url=""
+client_id=""
+client_secret=""
+username=""
+password=""
+
+if [[ ! -r $env_file ]]; then
+  die 1 "credentials file is not readable: $env_file (see references/API.md)"
+fi
+
+env_mode=$(stat -c '%a' "$env_file" 2>/dev/null || stat -f '%Lp' "$env_file" 2>/dev/null || printf '600')
+if ((8#$env_mode & 8#077)); then
+  warn "credentials file is accessible by other users (mode $env_mode); run chmod 600 $env_file"
+fi
+
+line_number=0
+while IFS= read -r line || [[ -n $line ]]; do
+  ((line_number += 1))
+  line=${line%$'\r'}
+  if [[ $line =~ ^[[:space:]]*(#.*)?$ ]]; then
+    continue
+  fi
+  if [[ ! $line =~ ^[[:space:]]*(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+    die 1 "$env_file:$line_number: expected KEY=value"
+  fi
+  key=${BASH_REMATCH[2]}
+  value=${BASH_REMATCH[3]}
+  if [[ ${#value} -ge 2 &&
+    (($value == \"*\" && $value == *\") || ($value == \'*\' && $value == *\')) ]]; then
+    value=${value:1:${#value}-2}
+  fi
+  case "$key" in
+  WALLABAG_URL) wallabag_url=$value ;;
+  WALLABAG_CLIENT_ID) client_id=$value ;;
+  WALLABAG_CLIENT_SECRET) client_secret=$value ;;
+  WALLABAG_USERNAME) username=$value ;;
+  WALLABAG_PASSWORD) password=$value ;;
+  *) warn "$env_file:$line_number: ignoring unknown key $key" ;;
+  esac
+done <"$env_file"
+unset line value
+
+missing=()
+[[ -n $wallabag_url ]] || missing+=(WALLABAG_URL)
+[[ -n $client_id ]] || missing+=(WALLABAG_CLIENT_ID)
+[[ -n $client_secret ]] || missing+=(WALLABAG_CLIENT_SECRET)
+[[ -n $username ]] || missing+=(WALLABAG_USERNAME)
+[[ -n $password ]] || missing+=(WALLABAG_PASSWORD)
+if ((${#missing[@]} > 0)); then
+  die 1 "credentials file is missing: ${missing[*]}"
+fi
+
+wallabag_url=${wallabag_url%/}
+case "$wallabag_url" in
+http://* | https://*) ;;
+*) die 1 "WALLABAG_URL must start with http:// or https://" ;;
+esac
+readonly wallabag_url
+
+temp_root=${TMPDIR:-/tmp}
+temp_root=${temp_root%/}
+readonly temp_root
+work_dir=$(mktemp -d "$temp_root/wallabag.XXXXXX")
+readonly work_dir
+chmod 700 "$work_dir"
+
+cleanup() {
+  rm -rf "$work_dir"
+}
+trap cleanup EXIT
+
+# Print a readable error for a failed HTTP request and exit.
+http_failure() {
+  local context=$1 status=$2 response=$3 detail=""
+  if [[ -s $response ]]; then
+    detail=$(
+      jq -r '
+        [.error_description, .message, (.error | if type == "object" then .message else . end)]
+        | map(select(type == "string" and . != ""))
+        | first // empty
+      ' "$response" 2>/dev/null
+    ) || detail=""
+  fi
+  printf '%s: %s failed with HTTP %s%s\n' "$program" "$context" "$status" "${detail:+: $detail}" >&2
+  case "$status" in
+  000)
+    printf '%s: could not reach %s; check WALLABAG_URL and the network\n' "$program" "$wallabag_url" >&2
+    ;;
+  400 | 401)
+    printf '%s: check the client ID, client secret, username, and password\n' "$program" >&2
+    ;;
+  403)
+    printf '%s: a WAF (CrowdSec AppSec on the external router) may have blocked the request, which can happen when it inspects the HTML body\n' "$program" >&2
+    ;;
+  esac
+  exit 1
+}
+
+# Request an OAuth token and store it in access_token. Secrets reach jq through
+# its environment and curl through standard input, so they never appear in
+# process arguments.
+access_token=""
+request_access_token() {
+  local token_response="$work_dir/token.json" http_status
+  http_status=$(
+    WALLABAG_CLIENT_ID=$client_id \
+      WALLABAG_CLIENT_SECRET=$client_secret \
+      WALLABAG_USERNAME=$username \
+      WALLABAG_PASSWORD=$password \
+      jq -jn '"grant_type=password"
+        + "&client_id=\(env.WALLABAG_CLIENT_ID | @uri)"
+        + "&client_secret=\(env.WALLABAG_CLIENT_SECRET | @uri)"
+        + "&username=\(env.WALLABAG_USERNAME | @uri)"
+        + "&password=\(env.WALLABAG_PASSWORD | @uri)"' |
+      curl --silent --show-error --connect-timeout 10 --max-time 60 \
+        --header 'Content-Type: application/x-www-form-urlencoded' \
+        --data-binary @- \
+        --output "$token_response" --write-out '%{http_code}' \
+        "$wallabag_url/oauth/v2/token"
+  ) || http_status=000
+  unset client_id client_secret username password
+  if [[ $http_status != 200 ]]; then
+    http_failure "Wallabag token request" "$http_status" "$token_response"
+  fi
+
+  access_token=$(jq -r '.access_token // empty' "$token_response" 2>/dev/null) || access_token=""
+  rm -f "$token_response"
+  if [[ -z $access_token || $access_token == *[[:space:]]* || $access_token == *\"* || $access_token == *\\* ]]; then
+    die 1 "Wallabag token response did not contain a usable access token"
+  fi
+}
+
+if [[ $command == tags ]]; then
+  tags_response="$work_dir/tags.json"
+  request_access_token
+  http_status=$(
+    printf 'header = "Authorization: Bearer %s"\n' "$access_token" |
+      curl --config - --silent --show-error --connect-timeout 10 --max-time 60 \
+        --output "$tags_response" --write-out '%{http_code}' \
+        "$wallabag_url/api/tags.json"
+  ) || http_status=000
+  unset access_token
+  if [[ $http_status != 200 ]]; then
+    http_failure "Wallabag tags request" "$http_status" "$tags_response"
+  fi
+  if ! jq -e 'type == "array"' "$tags_response" >/dev/null 2>&1; then
+    die 1 "Wallabag tags response is not a JSON array"
+  fi
+  if jq -e 'length == 0' "$tags_response" >/dev/null; then
+    printf '%s: no existing tags found\n' "$program" >&2
+    exit 0
+  fi
+  jq -r 'sort_by(-(.nbEntries // 0), .label) | .[] | "\(.nbEntries // 0)\t\(.label)"' "$tags_response"
+  exit 0
+fi
+
+body_file="$work_dir/body.md"
+html_file="$work_dir/body.html"
+request_file="$work_dir/request.json"
+entry_response="$work_dir/entry.json"
+
+if [[ $input_format == markdown ]]; then
+  if [[ -z $title ]]; then
+    title=$(perl -ne 'if (/^#\s+(.+?)\s*#*\s*$/) { print $1; exit }' "$input")
+  fi
+  # Drop the first H1, because the EPUB title page shows the title.
+  perl -ne '
+    if (!$seen && /^#\s+\S/) { $seen = 1; next; }
+    print;
+  ' "$input" >"$body_file"
+  pandoc "$body_file" --from=gfm --to=html5 --output="$html_file"
+else
+  cp "$input" "$html_file"
+fi
+if [[ ! -s $html_file ]]; then
+  die 1 "the HTML body is empty"
+fi
+if [[ -z $title ]]; then
+  die 64 "--title is required when the input has no Markdown H1"
+fi
+language=${language:-en}
+
+# Normalize tags: split on commas, trim, drop empties and duplicates.
+tags=""
+if ((${#tag_args[@]} > 0)); then
+  tags=$(
+    printf '%s\n' "${tag_args[@]}" |
+      perl -ne '
+        for (split /,/) { s/^\s+|\s+$//g; push @t, $_ if length && !$seen{$_}++ }
+        END { print join(",", @t) }
+      '
+  )
+fi
+
+jq -n \
+  --arg url "$entry_url" \
+  --arg title "$title" \
+  --rawfile content "$html_file" \
+  --arg language "$language" \
+  --arg authors "$author" \
+  --arg tags "$tags" \
+  --arg preview_picture "$thumbnail" \
+  '{url: $url, title: $title, content: $content, language: $language}
+    + (if $authors != "" then {authors: $authors} else {} end)
+    + (if $tags != "" then {tags: $tags} else {} end)
+    + (if $preview_picture != "" then {preview_picture: $preview_picture} else {} end)' \
+  >"$request_file"
+
+request_access_token
+http_status=$(
+  printf 'header = "Authorization: Bearer %s"\n' "$access_token" |
+    curl --config - --silent --show-error --connect-timeout 10 --max-time 120 \
+      --header 'Content-Type: application/json' \
+      --data-binary @"$request_file" \
+      --output "$entry_response" --write-out '%{http_code}' \
+      "$wallabag_url/api/entries.json"
+) || http_status=000
+unset access_token
+if [[ $http_status != 200 ]]; then
+  http_failure "Wallabag entry request" "$http_status" "$entry_response"
+fi
+
+entry_id=$(jq -r '.id // empty' "$entry_response" 2>/dev/null) || entry_id=""
+if [[ ! $entry_id =~ ^[0-9]+$ ]]; then
+  die 1 "Wallabag response did not contain an entry ID"
+fi
+
+validation=skipped
+if [[ -n $expect ]]; then
+  if jq -e --arg needle "$expect" '(.content // "") | contains($needle)' \
+    "$entry_response" >/dev/null; then
+    validation=passed
+  else
+    die 1 "entry $entry_id does not contain the expected text; Wallabag may have fetched the page instead of using the supplied content"
+  fi
+fi
+
+jq -r \
+  --arg entry_url "$wallabag_url/view/$entry_id" \
+  --arg title "$title" \
+  --arg author "$author" \
+  --arg language "$language" \
+  --arg validation "$validation" \
+  '
+    "entry_id=\(.id)",
+    "entry_url=\($entry_url)",
+    "source_url=\(.url // "")",
+    "title=\(.title // $title)",
+    "author=\((.published_by // []) | if length > 0 then join(", ") else $author end)",
+    "language=\(.language // $language)",
+    "tags=\([.tags[]?.label] | join(","))",
+    "cover=\(.preview_picture // "none")",
+    "archived=\(.is_archived == 1 or .is_archived == true)",
+    "content_length=\((.content // "") | length)",
+    "validation=\($validation)"
+  ' "$entry_response"

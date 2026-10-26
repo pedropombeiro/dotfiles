@@ -130,8 +130,21 @@ class ImageCollector(html.parser.HTMLParser):
             return
         attributes = dict(attrs)
         src = attributes.get("src") or ""
-        if src.startswith(("http://", "https://")):
-            self.images.append((src, attributes.get("width"), attributes.get("height")))
+        if not src.startswith(("http://", "https://")):
+            return
+        if re.search(r"\b(avatar|logo|icon|profile)\b", attributes.get("alt") or "", re.I):
+            return
+        # Skip images the page displays small, such as avatars and site icons,
+        # even when the underlying file is large.
+        style = attributes.get("style") or ""
+        for name in ("width", "height"):
+            displayed = re.search(rf"(?:^|;)\s*{name}\s*:\s*(\d+)px", style)
+            value = attributes.get(name) or ""
+            if (displayed and int(displayed.group(1)) < MIN_CANDIDATE_SIDE) or (
+                value.isdigit() and int(value) < MIN_CANDIDATE_SIDE
+            ):
+                return
+        self.images.append((src, attributes.get("width"), attributes.get("height")))
 
 
 def canonical_image_url(src):
@@ -266,6 +279,8 @@ def main():
         print(f"images_{status.replace('-', '_')}={count}")
     for path, size_text, status, url in report:
         print(f"image={path}\t{size_text}\t{status}\t{url}")
+    for url, size in candidates:
+        print(f"candidate={size[0]}x{size[1]}\t{url}")
 
 
 if __name__ == "__main__":

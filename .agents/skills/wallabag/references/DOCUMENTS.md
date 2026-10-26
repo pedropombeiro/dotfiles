@@ -40,6 +40,10 @@ It prints `key=value` lines:
 | `images_dropped_inline` | Inline images removed as layout artifacts.              |
 | `images_remote`         | Images that already had a remote URL.                   |
 | `image`                 | One line per image: `PATH<TAB>SIZE<TAB>STATUS<TAB>URL`. |
+| `candidate`             | One line per public image: `SIZE<TAB>URL`.              |
+
+Review the `candidate` lines when a match looks wrong. Every candidate should
+be an article image, not a logo, avatar, or banner.
 
 ## Handle local images
 
@@ -49,8 +53,14 @@ to appear in the entry.
 With `--source-url`, the script reads the public page and collects its images
 in page order. It reads each candidate's dimensions from a `_WIDTHxHEIGHT`
 suffix in the URL, from the `width` and `height` attributes, or from the image
-header. It skips candidates smaller than 100 pixels on either side, such as
-avatars and icons, and unwraps image-proxy URLs that embed the original URL.
+header. It skips candidates smaller than 100 pixels on either side, and
+unwraps image-proxy URLs that embed the original URL.
+
+The script also skips images that the page displays below 100 pixels through
+`width`, `height`, or inline `style` values, and images whose `alt` text
+mentions an avatar, logo, icon, or profile. Site chrome often uses large files
+at a small display size. A 400x400 author avatar would otherwise match a
+square chart in the article.
 
 The script then walks the local images in document order. Each local image
 matches the next unused candidate whose aspect ratio is within 2% of its own.

@@ -123,6 +123,9 @@ Each local plugin documents its behavior, options, and tests in its own README:
 - [`queue-command`](../../.config/opencode/local-plugins/tui/queue-command/README.md):
   adds `/queue <message>`, which queues a message for the current session instead of
   sending it right away.
+- [`session-search`](../../.config/opencode/local-plugins/tui/session-search/README.md):
+  adds **Search sessions** to the command palette and `/search-session`, which search
+  past sessions and open a match without an agent turn.
 - [`session-open`](../../.config/opencode/local-plugins/server/session-open/README.md):
   adds the `open_session` tool, which focuses a past session of the current project.
 - [`otel-status`](../../.config/opencode/local-plugins/server/otel-status/README.md):

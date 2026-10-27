@@ -55,8 +55,7 @@ always searched.
 
 The script reads the current session from `$OPENCODE_SESSION_ID`. Without it,
 the script takes the current project from the working directory and can't
-exclude the current session. Command shell blocks, such as the one in
-`/search-session`, don't set the variable.
+exclude the current session. Command shell blocks don't set the variable.
 
 ## Present the results
 
@@ -76,10 +75,11 @@ If nothing matches, tell the user which searches the script ran, from the
 
 ## Act on a session
 
-The `/search-session` command runs the script before the agent starts and
-includes these steps in its prompt. When the user wants to return to a session
-in any other way, ask what to do with the `question` tool. Ask both questions in
-the same call:
+The user can also search without an agent turn: the `session-search` CLI
+plugin adds **Search sessions** to the command palette and the
+`/search-session` slash command. When the user asks you to find a session,
+ask what to do with it with the `question` tool. Ask both questions in the
+same call:
 
 1. If several sessions match, ask which one to use. Label each option with the
    session title and put the session ID and date in its description.

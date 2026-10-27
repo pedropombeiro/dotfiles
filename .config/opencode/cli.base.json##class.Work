@@ -18,7 +18,6 @@
   "plugins": [
     "./local-plugins/tui/permission-mode",     // Shift+Tab toggles the global permission preference
     "./local-plugins/tui/queue-command",       // Adds /queue to queue a message for later
-    "./local-plugins/tui/session-search",      // Adds Search sessions and /search-session
     "opencode-terminal-progress@1.1.0",        // Shows agent progress in terminal tabs
     "opencode-tmux-indicator@1.0.2",           // Flags the tmux window while the agent waits for input
     "./local-plugins/tui/session-metrics"      // Shows compaction, cache, and timing metrics

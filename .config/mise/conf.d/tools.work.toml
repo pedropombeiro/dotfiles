@@ -5,6 +5,8 @@ HISTIGNORE = "*AWS_SECRET*:*AWS_ACCESS*:*glpat-*:*glrt-*:*gloas-*:*PRIVATE-TOKEN
 # Use mise's precompiled Ruby globally and in the GDK, even when GitLab's
 # machine-wide Ruby plugin is installed. Project version pins still apply.
 ruby = "core:ruby"
+# Avoid vfox-gcloud's missing Lua python module.
+gcloud = "asdf:mise-plugins/mise-gcloud"
 
 [settings.ruby]
 # Fail promptly if a binary is unavailable instead of starting a source build.

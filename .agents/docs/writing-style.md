@@ -122,10 +122,13 @@ the source of truth.
     branch matters.
   - Note the SHA in the prose (`references are pinned to <short-sha>`) when a document
     carries several permalinks.
-  - Check the target repository's visibility first. A link into a private repo is a dead
-    end for most readers, so inline the relevant snippet or rule instead.
+  - Check the target's visibility first. A link to a private repository or document is a
+    dead end for most readers, so summarize or inline the relevant part in the text itself,
+    not in a separate excerpt file.
   - Link the specific artifacts under discussion, not just the repo root: for a version
     mismatch, link both files that disagree.
+  - Back each concrete claim about how something works with a link to its source, such as
+    the code, configuration, documentation, job log, or discussion that shows it.
 - Use bullets to improve readability for lists and structured updates.
 - In longer messages, separate paragraphs with double line breaks.
 - Minimal emoji - use them functionally:

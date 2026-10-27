@@ -3,8 +3,8 @@
 // background service, which has no access to the terminal UI, so it emits an
 // RPC event that tui.tsx handles and acknowledges. opencode.json loads this
 // directory through a path entry; OpenCode then loads tui.tsx in the CLI.
-// The session-search skill and the /search-session command call this tool;
-// update them if its name or behavior changes.
+// The session-search skill calls this tool; update it if the tool's name or
+// behavior changes. local-plugins/tui/session-search mirrors its open rules.
 import type { Plugin } from "@opencode/plugin"
 import { randomUUID } from "node:crypto"
 import { rejectReason, type SessionRef } from "./src/match"

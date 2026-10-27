@@ -1,7 +1,8 @@
 # session-open
 
 A server plugin that adds the `open_session` tool, which focuses a past session in the
-terminal. The `session-search` skill and the `/search-session` command use it.
+terminal. The `session-search` skill uses it. The `session-search` CLI plugin
+(`/search-session`) opens sessions directly and doesn't need it.
 
 ## Behavior
 

@@ -5,7 +5,7 @@ Use this workflow to turn caption cues into verifiable, actionable notes.
 ## Write Markdown output
 
 [`SKILL.md`](../SKILL.md#workflow) defines how to choose outputs after approval.
-For Wallabag without Markdown, write the approved draft to a temporary
+For Wallabag or Readeck without Markdown, write the approved draft to a temporary
 Markdown file, send it, and delete it afterward.
 
 For Markdown output, use `$HOME/Downloads` when it exists and is writable.
@@ -17,15 +17,19 @@ specifies a path, use that path and ask before overwriting an existing file.
 
 ## Consult existing tags
 
-Before drafting the first summary in a session, list the existing Wallabag tags:
+Before drafting the first summary in a session, list the existing tags of the
+service that will receive it:
 
 ```bash
 scripts/send-to-wallabag --list-tags
+scripts/send-to-readeck --list-tags
 ```
 
-The helper prints one `COUNT<TAB>TAG` line per tag, most used first. Run it
-only once per session and reuse its output for later summaries in the same
-conversation. If the Wallabag credentials file is missing or the lookup fails,
+Each helper prints one `COUNT<TAB>TAG` line per tag, most used first. Use the
+helper for the destination the user named. When no destination is known yet, try
+Wallabag first, and use Readeck when the Wallabag lookup fails or its
+credentials file is missing. Run the lookup only once per session and reuse its
+output for later summaries in the same conversation. If both lookups fail,
 continue without the inventory and tell the user.
 
 Always include `#video-takeaways` and aim for 3-5 tags total. Prefer an existing
@@ -154,8 +158,9 @@ For Markdown output:
 
 For Wallabag output, report the `entry_id`, `entry_url`, `source_url`,
 `title`, `author`, `language`, `tags`, `cover`, `archived`, and `validation`
-values printed by `scripts/send-to-wallabag`. Treat a nonzero exit status as a
-failed send, and report the helper's error message.
+values printed by `scripts/send-to-wallabag`. For Readeck output, report the same
+values, plus `replaced`, printed by `scripts/send-to-readeck`. Treat a nonzero
+exit status as a failed send, and report the helper's error message.
 
 Remove temporary transcript files after the task when they are no longer
 useful.

@@ -1,7 +1,7 @@
 ---
 name: video-takeaways
-description: "Video URLs and YouTube links: extract actionable takeaways with timestamp hyperlinks, then save approved notes as Markdown, to Wallabag for e-reader sync, or to another requested destination. Use when asked to summarize learnings, lessons, rules of thumb, practical advice, Markdown notes, or Wallabag entries from a video, talk, tutorial, or interview."
-version: 3.1.0
+description: "Video URLs and YouTube links: extract actionable takeaways with timestamp hyperlinks, then save approved notes as Markdown, to Wallabag or Readeck for e-reader and phone reading, or to another requested destination. Use when asked to summarize learnings, lessons, rules of thumb, practical advice, Markdown notes, or Wallabag or Readeck entries from a video, talk, tutorial, or interview."
+version: 3.2.0
 license: MIT
 compatibility: opencode
 metadata:
@@ -19,8 +19,8 @@ default to English, even when the video uses another language.
 - The user provides a video URL and asks for learnings, takeaways, notes, a
   checklist, or rules of thumb.
 - The user wants each takeaway linked to the relevant point in the video.
-- The user wants the result sent to Wallabag for an e-reader, or written to a
-  file or another destination.
+- The user wants the result sent to Wallabag or Readeck for an e-reader or a
+  phone, or written to a file or another destination.
 
 ## When not to use
 
@@ -35,20 +35,23 @@ default to English, even when the video uses another language.
    to retrieve a YouTube transcript with `webfetch`.
 2. Follow [`references/WORKFLOW.md`](references/WORKFLOW.md) to identify topics,
    verify claims, and map each takeaway to a caption timestamp.
-3. Consult existing Wallabag tags once per session, as described in
+3. Consult existing tags once per session, as described in
    [`references/WORKFLOW.md`](references/WORKFLOW.md#consult-existing-tags).
 4. Draft the complete summary in the agreed language. Group advice by theme,
    use actionable language, and append a timestamp hyperlink to every takeaway.
 5. After approval, use the `question` tool with multiple selection enabled to
-   offer **Markdown** and **Wallabag**. Honor an explicit destination already
-   chosen by the user without asking again.
+   offer **Markdown**, **Wallabag**, and **Readeck**. Honor an explicit
+   destination already chosen by the user without asking again.
 6. For Markdown output, write the approved draft to a local `.md` file and
    verify it as described in [`references/WORKFLOW.md`](references/WORKFLOW.md).
 7. For Wallabag output, run
    [`scripts/send-to-wallabag`](scripts/send-to-wallabag) and follow
-   [`references/WALLABAG.md`](references/WALLABAG.md). When Markdown is also
+   [`references/WALLABAG.md`](references/WALLABAG.md). For Readeck output, run
+   [`scripts/send-to-readeck`](scripts/send-to-readeck) and follow
+   [`references/READECK.md`](references/READECK.md). When Markdown is also
    selected, send the saved file. Otherwise, send a temporary copy of the
-   approved draft.
+   approved draft. When several outputs are selected, send to each one and
+   report each result.
 
 ## Output contract
 
@@ -81,9 +84,10 @@ default to English, even when the video uses another language.
   for meaning rather than word for word.
 - Markdown is an optional output adapter with no additional dependencies. Save
   it only when selected, unless another output needs a temporary Markdown source.
-- Wallabag is an optional output adapter. Selecting it approves sending the
-  summary, so don't ask for a second confirmation. Never create, read, or print
-  the Wallabag credentials file. Do not assume a Wallabag host.
+- Wallabag and Readeck are optional output adapters. Selecting one approves
+  sending the summary, so don't ask for a second confirmation. Never create,
+  read, or print their credentials files. Do not assume a Wallabag or Readeck
+  host.
 - Honor an explicit request to use a local file, repository document, or other
   destination.
 - Do not publish or share notes unless the user explicitly asks.
@@ -91,8 +95,9 @@ default to English, even when the video uses another language.
 ## Dependencies
 
 The core transcript helper requires `yt-dlp`, `jq`, and Perl. Wallabag output
-and the tag lookup also require the sibling `wallabag` skill and its
-dependencies, including `curl` and Pandoc. If
+requires the sibling `wallabag` skill, and Readeck output requires the sibling
+`readeck` skill. Both need their dependencies, including `curl` and Pandoc. The
+tag lookup uses whichever of these skills is installed and configured. If
 captions are not available, report that clearly. Do not silently substitute an
 unverified summary from video metadata or search results.
 

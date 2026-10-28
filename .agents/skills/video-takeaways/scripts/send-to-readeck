@@ -1,0 +1,237 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly program=send-to-readeck
+
+usage() {
+  cat <<'EOF'
+Usage: send-to-readeck [OPTIONS] FILE
+  or:  send-to-readeck --list-tags [--env-file PATH]
+
+Send a Markdown video summary to Readeck as a bookmark. Posting the same video
+URL again replaces the existing bookmark and keeps its labels, favorite, and
+archive state. With --list-tags, print existing Readeck labels with bookmark
+counts, most used first.
+
+This helper derives the entry metadata from the summary format and delegates
+the request to the shared `readeck` skill (../readeck/scripts/readeck).
+
+Options:
+  --env-file PATH      Readeck credentials file (or READECK_ENV_FILE)
+  --list-tags          Print existing tags instead of sending a summary
+  --url URL            Override the entry URL (default: the video URL)
+  --title TITLE        Override the entry title
+  --author AUTHOR      Override the entry author
+  --lang LANGUAGE      Override the entry language (default: en)
+  --thumbnail URL      Override the cover image URL
+  --no-cover           Send the entry without a cover image
+  -h, --help           Show this help
+EOF
+}
+
+die() {
+  local status=$1
+  shift
+  printf '%s: %s\n' "$program" "$*" >&2
+  exit "$status"
+}
+
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+readonly readeck="$script_dir/../../readeck/scripts/readeck"
+if [[ ! -x $readeck ]]; then
+  die 127 "shared Readeck helper not found: $readeck (install the readeck skill)"
+fi
+
+env_args=()
+list_tags=false
+entry_url=""
+title=""
+author=""
+language=""
+thumbnail=""
+no_cover=false
+
+while (($# > 0)); do
+  case "$1" in
+  --env-file | --url | --title | --author | --lang | --thumbnail)
+    if (($# < 2)); then
+      die 64 "$1 requires a value"
+    fi
+    case "$1" in
+    --env-file) env_args=(--env-file "$2") ;;
+    --url) entry_url=$2 ;;
+    --title) title=$2 ;;
+    --author) author=$2 ;;
+    --lang) language=$2 ;;
+    --thumbnail) thumbnail=$2 ;;
+    esac
+    shift 2
+    ;;
+  --list-tags)
+    list_tags=true
+    shift
+    ;;
+  --no-cover)
+    no_cover=true
+    shift
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  --)
+    shift
+    break
+    ;;
+  -*)
+    printf '%s: unknown option: %s\n' "$program" "$1" >&2
+    usage >&2
+    exit 64
+    ;;
+  *)
+    break
+    ;;
+  esac
+done
+
+if [[ $list_tags == true ]]; then
+  if (($# != 0)); then
+    usage >&2
+    exit 64
+  fi
+  exec "$readeck" tags ${env_args[@]+"${env_args[@]}"}
+fi
+
+if (($# != 1)); then
+  usage >&2
+  exit 64
+fi
+if ! command -v perl >/dev/null 2>&1; then
+  die 127 "required command not found: perl"
+fi
+
+readonly input=$1
+if [[ ! -r $input ]]; then
+  die 1 "input file is not readable: $input"
+fi
+
+temp_root=${TMPDIR:-/tmp}
+temp_root=${temp_root%/}
+work_dir=$(mktemp -d "$temp_root/video-takeaway-readeck.XXXXXX")
+readonly work_dir
+chmod 700 "$work_dir"
+cleanup() {
+  rm -rf "$work_dir"
+}
+trap cleanup EXIT
+
+source_file="$work_dir/source.md"
+body_file="$work_dir/body.md"
+cp "$input" "$source_file"
+
+# Infer metadata the same way the summary format defines it.
+readonly thumbnail_pattern='^\[!\[[^]]*\]\(([^)]+)\)\]\(([^)]+)\)\s*$'
+
+if [[ -z $title ]]; then
+  title=$(perl -ne 'if (/^#\s+(.+?)\s*$/) { print $1; exit }' "$source_file")
+fi
+if [[ -z $title ]]; then
+  title=$(basename "$input")
+  title=${title%.*}
+fi
+
+if [[ -z $author ]]; then
+  author=$(perl -ne '
+    if (/^Source:.*\(([^,()]+),\s*[^()]*(?:language|english|french|german|spanish|italian|portuguese)[^()]*\)\s*\.?$/i) {
+      print $1;
+      exit;
+    }
+  ' "$source_file")
+fi
+if [[ -z $author ]]; then
+  author=$(perl -ne 'if (/^Source:\s+\[([^]]+?)(?:\s+on\s+YouTube)?\]\(/i) { print $1; exit }' "$source_file")
+fi
+author=${author:-Video Takeaways}
+language=${language:-en}
+
+if [[ -z $entry_url ]]; then
+  entry_url=$(PATTERN=$thumbnail_pattern perl -ne 'if (/$ENV{PATTERN}/) { print $2; exit }' "$source_file")
+fi
+if [[ -z $entry_url ]]; then
+  entry_url=$(perl -ne '
+    next unless /^Source:/;
+    if (/\]\((https?:\/\/[^)\s]+)\)/ || /(https?:\/\/[^\s)>]+)/) { print $1; exit }
+  ' "$source_file")
+fi
+if [[ -z $entry_url ]]; then
+  die 64 "could not infer the video URL from the thumbnail or Source line; pass --url"
+fi
+
+if [[ $no_cover == true ]]; then
+  thumbnail=""
+elif [[ -z $thumbnail ]]; then
+  thumbnail=$(PATTERN=$thumbnail_pattern perl -ne 'if (/$ENV{PATTERN}/) { print $1; exit }' "$source_file")
+fi
+
+# Collect hashtags from the last non-blank line when it holds only hashtags.
+readonly hashtag_pattern='^\s*#[^\s#]+(?:\s+#[^\s#]+)*\s*$'
+hashtag_line=$(perl -ne 'chomp; $last = $_ if /\S/; END { print $last // "" }' "$source_file")
+tags=video-takeaways
+if PATTERN=$hashtag_pattern perl -e 'exit(($ARGV[0] =~ /$ENV{PATTERN}/) ? 0 : 1)' "$hashtag_line"; then
+  has_hashtag_line=true
+  tags=$(
+    printf '%s\n' "$hashtag_line" |
+      perl -ne '
+        my %seen;
+        my @tags = grep { !$seen{$_}++ } ("video-takeaways", map { s/^#//r } split);
+        print join(",", @tags);
+      '
+  )
+else
+  has_hashtag_line=false
+fi
+
+# Remove the H1, the thumbnail line, and the final hashtag line from the body.
+HASHTAGS=$has_hashtag_line THUMBNAIL=$thumbnail_pattern HASHTAG=$hashtag_pattern perl -e '
+  my @lines = <STDIN>;
+  if ($ENV{HASHTAGS} eq "true") {
+    for (my $i = $#lines; $i >= 0; $i--) {
+      next unless $lines[$i] =~ /\S/;
+      splice(@lines, $i, 1) if $lines[$i] =~ /$ENV{HASHTAG}/;
+      last;
+    }
+  }
+  my $removed_title = 0;
+  for my $line (@lines) {
+    if (!$removed_title && $line =~ /^#\s+\S/) {
+      $removed_title = 1;
+      next;
+    }
+    next if $line =~ /$ENV{THUMBNAIL}/;
+    print $line;
+  }
+' <"$source_file" >"$body_file"
+
+# Readeck doesn't deduplicate URLs. Replacing keeps a re-sent summary to one
+# bookmark, and the new bookmark keeps the labels, favorite, and archive state.
+post_args=(
+  --url "$entry_url"
+  --title "$title"
+  --author "$author"
+  --lang "$language"
+  --tag "$tags"
+  --replace
+)
+if [[ -n $thumbnail ]]; then
+  post_args+=(--thumbnail "$thumbnail")
+fi
+
+# A missing timestamp in the stored article means Readeck didn't use the
+# supplied summary.
+expected_timestamp=$(perl -ne 'if (/[?&]t=(\d+s)/) { print $1; exit }' "$body_file")
+if [[ -n $expected_timestamp ]]; then
+  post_args+=(--expect "t=$expected_timestamp")
+fi
+
+"$readeck" post ${env_args[@]+"${env_args[@]}"} "${post_args[@]}" "$body_file"

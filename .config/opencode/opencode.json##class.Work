@@ -19,10 +19,16 @@
     "opencode-homeassistant@1.1.0",       // Sends agent status to Home Assistant and answers permissions from it
     "opencode-session-finder@1.0.0",      // Searches past sessions from the palette, and adds search_sessions and open_session
     {
-      // Local build: mise run build forgekeeper. /babysit loads the GitLab
-      // babysitting skill, which is installed only on Work machines.
-      "package": "../../Developer/github.com/pedropombeiro/opencode-plugins/packages/forgekeeper/dist",
-      "options": { "babysitSkill": "gitlab-babysit-mr" },
+      // Local feedback-inbox trial: mise run build forgekeeper in this worktree.
+      "package": "../../Developer/github.com/pedropombeiro/opencode-plugins-feedback-inbox/packages/forgekeeper/dist",
+      // Starts summary turns for new review feedback, which can read only linked notes,
+      // and for targets that start to conflict or merge. Stacked MRs get retarget
+      // proposals only; switch to "apply" once a real proposal looks right.
+      "options": {
+        "reviewFeedbackDelivery": "summary",
+        "lifecycleDelivery": "summary",
+        "lifecycleExecution": { "parentMerged": { "mode": "prepare", "actions": ["retarget"] } },
+      },
     },
     {
       // Sends metrics only to Alloy on the NAS. Traces carry prompts, code, and

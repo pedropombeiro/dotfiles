@@ -1,0 +1,200 @@
+#!/usr/bin/env python3
+"""Prepare a local document for Readeck.
+
+Converts a Google Docs "Web Page (.html, zipped)" export or a Markdown file
+into clean GitHub-flavored Markdown. Readeck stores images that ship with a
+bookmark, so the script copies each local image into an `images/` directory
+next to the Markdown and points the Markdown at the copy. `readeck post`
+uploads those images with the bookmark.
+"""
+
+import argparse
+import os
+import re
+import shutil
+import struct
+import subprocess
+import sys
+import tempfile
+import urllib.parse
+import zipfile
+
+PROGRAM = "prepare-document"
+INLINE_MAX_HEIGHT = 32
+IMAGE_RE = re.compile(r"!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
+
+
+def die(status, message):
+    print(f"{PROGRAM}: {message}", file=sys.stderr)
+    sys.exit(status)
+
+
+def image_size(data):
+    """Return (width, height) for PNG, GIF, JPEG, or WebP bytes, else None."""
+    if data[:8] == b"\x89PNG\r\n\x1a\n" and len(data) >= 24:
+        return struct.unpack(">II", data[16:24])
+    if data[:6] in (b"GIF87a", b"GIF89a") and len(data) >= 10:
+        return struct.unpack("<HH", data[6:10])
+    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        chunk = data[12:16]
+        if chunk == b"VP8X" and len(data) >= 30:
+            w = int.from_bytes(data[24:27], "little") + 1
+            h = int.from_bytes(data[27:30], "little") + 1
+            return w, h
+        if chunk == b"VP8 " and len(data) >= 30:
+            w, h = struct.unpack("<HH", data[26:30])
+            return w & 0x3FFF, h & 0x3FFF
+        if chunk == b"VP8L" and len(data) >= 25:
+            bits = int.from_bytes(data[21:25], "little")
+            return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
+        return None
+    if data[:2] == b"\xff\xd8":
+        i = 2
+        while i + 9 < len(data):
+            if data[i] != 0xFF:
+                i += 1
+                continue
+            marker = data[i + 1]
+            if marker in (0xD8, 0x01) or 0xD0 <= marker <= 0xD7:
+                i += 2
+                continue
+            length = struct.unpack(">H", data[i + 2 : i + 4])[0]
+            if 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC):
+                h, w = struct.unpack(">HH", data[i + 5 : i + 9])
+                return w, h
+            i += 2 + length
+    return None
+
+
+def unwrap_google_redirects(markdown):
+    """Replace https://www.google.com/url?q=TARGET&... with TARGET."""
+
+    def replace(match):
+        query = urllib.parse.urlsplit(match.group(0)).query
+        target = urllib.parse.parse_qs(query).get("q", [""])[0]
+        return target or match.group(0)
+
+    return re.sub(r"https://www\.google\.com/url\?[^)\s>\"]+", replace, markdown)
+
+
+def pandoc_html_to_markdown(html_path):
+    if shutil.which("pandoc") is None:
+        die(127, "required command not found: pandoc")
+    result = subprocess.run(
+        ["pandoc", html_path, "--from=html", "--to=gfm-raw_html", "--wrap=none"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout
+
+
+def load_google_docs_zip(zip_path, output_dir):
+    """Extract the export and return (markdown, base directory for images)."""
+    extract_dir = os.path.join(output_dir, "source")
+    with zipfile.ZipFile(zip_path) as archive:
+        for name in archive.namelist():
+            target = os.path.realpath(os.path.join(extract_dir, name))
+            if not target.startswith(os.path.realpath(extract_dir) + os.sep):
+                die(1, f"refusing to extract unsafe path from ZIP: {name}")
+        archive.extractall(extract_dir)
+        html_files = [n for n in archive.namelist() if n.lower().endswith((".html", ".htm"))]
+    if len(html_files) != 1:
+        die(1, f"expected one HTML file in the ZIP, found {len(html_files)}")
+    html_path = os.path.join(extract_dir, html_files[0])
+    return pandoc_html_to_markdown(html_path), os.path.dirname(html_path)
+
+
+def safe_name(path):
+    name = os.path.basename(urllib.parse.unquote(path))
+    return re.sub(r"[^A-Za-z0-9._-]", "-", name)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        prog=PROGRAM,
+        description="Convert a Google Docs HTML ZIP or a Markdown file into "
+        "Readeck-ready Markdown, copying local images next to it.",
+    )
+    parser.add_argument("input", help="Google Docs .zip export or .md file")
+    parser.add_argument(
+        "--output-dir", help="directory for article.md (default: a new directory under $TMPDIR)"
+    )
+    args = parser.parse_args()
+
+    if not os.path.isfile(args.input):
+        die(1, f"input file is not readable: {args.input}")
+    output_dir = args.output_dir or tempfile.mkdtemp(prefix="readeck-document.")
+    os.makedirs(output_dir, mode=0o700, exist_ok=True)
+    images_dir = os.path.join(output_dir, "images")
+
+    lower = args.input.lower()
+    if lower.endswith(".zip"):
+        markdown, base_dir = load_google_docs_zip(args.input, output_dir)
+    elif lower.endswith((".md", ".markdown")):
+        with open(args.input, encoding="utf-8") as handle:
+            markdown = handle.read()
+        base_dir = os.path.dirname(os.path.abspath(args.input))
+    else:
+        die(64, "input must be a Google Docs .zip export or a Markdown .md file")
+
+    markdown = unwrap_google_redirects(markdown)
+
+    report = []
+    copied = {}
+
+    def replace(match):
+        alt, path = match.group(1), match.group(2)
+        if re.match(r"^(?:[A-Za-z][A-Za-z0-9+.-]*:|//)", path):
+            report.append((path, "-", "remote", path))
+            return match.group(0)
+        decoded = urllib.parse.unquote(path)
+        local = os.path.join(base_dir, decoded)
+        extension = os.path.splitext(decoded)[1].lower()
+        if extension not in IMAGE_EXTENSIONS:
+            report.append((path, "-", "unsupported", "-"))
+            return "*[Image omitted: unsupported file type.]*"
+        try:
+            with open(local, "rb") as handle:
+                header = handle.read(65536)
+        except OSError:
+            report.append((path, "-", "missing", "-"))
+            return "*[Image missing.]*"
+        size = image_size(header)
+        size_text = f"{size[0]}x{size[1]}" if size else "unknown"
+        if size and size[1] <= INLINE_MAX_HEIGHT:
+            report.append((path, size_text, "dropped-inline", "-"))
+            return ""
+        key = os.path.realpath(local)
+        if key not in copied:
+            os.makedirs(images_dir, mode=0o700, exist_ok=True)
+            relative = f"images/{len(copied) + 1}-{safe_name(decoded)}"
+            shutil.copyfile(local, os.path.join(output_dir, relative))
+            copied[key] = relative
+        report.append((path, size_text, "embedded", copied[key]))
+        return f"![{alt}]({copied[key]})"
+
+    markdown = IMAGE_RE.sub(replace, markdown)
+    markdown = re.sub(r"\n{3,}", "\n\n", markdown).strip() + "\n"
+
+    markdown_path = os.path.join(output_dir, "article.md")
+    with open(markdown_path, "w", encoding="utf-8") as handle:
+        handle.write(markdown)
+
+    title = next(
+        (m.group(1).strip() for m in re.finditer(r"^#\s+(.+)$", markdown, re.MULTILINE)), ""
+    )
+    statuses = ("embedded", "missing", "unsupported", "dropped-inline", "remote")
+    counts = {status: sum(1 for r in report if r[2] == status) for status in statuses}
+    print(f"markdown={markdown_path}")
+    print(f"output_dir={output_dir}")
+    print(f"title={title}")
+    for status, count in counts.items():
+        print(f"images_{status.replace('-', '_')}={count}")
+    for path, size_text, status, output in report:
+        print(f"image={path}\t{size_text}\t{status}\t{output}")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,672 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly program=readeck
+
+usage() {
+  cat <<'EOF'
+Usage: readeck post [OPTIONS] FILE
+  or:  readeck tags [--env-file PATH]
+
+Commands:
+  post    Send a Markdown (.md) or HTML (.html) file to Readeck as a bookmark.
+          Readeck doesn't deduplicate URLs, so an existing bookmark with the same
+          URL makes the command fail unless you pass --replace.
+  tags    Print existing labels with bookmark counts, most used first.
+
+Post options:
+  --url URL            Bookmark URL (required). Used to find existing bookmarks
+  --title TITLE        Bookmark title (default: the first Markdown H1)
+  --author AUTHOR      Bookmark author
+  --lang LANGUAGE      Bookmark language (default: en)
+  --tag TAG            Label to add; repeat or pass a comma-separated list
+  --thumbnail IMAGE    Cover image: an http(s) URL or a local image file
+  --expect TEXT        Fail unless the stored article contains TEXT
+  --replace            Replace bookmarks with the same URL, keeping their state
+  --timeout SECONDS    Time to wait for Readeck to process the page (default: 60)
+
+Common options:
+  --env-file PATH      Credentials file (or READECK_ENV_FILE)
+  -h, --help           Show this help
+
+Markdown is converted with `pandoc --from=gfm --to=html5`. The first H1 is
+removed from the body, because Readeck shows the title separately. Local images
+that FILE references with relative paths are uploaded with the bookmark.
+
+The default credentials file is ~/.config/readeck/credentials.env. It contains
+KEY=value lines for READECK_URL and READECK_TOKEN, and optionally
+READECK_HEADER_NAME and READECK_HEADER_VALUE for a reverse proxy that requires a
+secret header. The script parses the file and never sources it.
+EOF
+}
+
+die() {
+  local status=$1
+  shift
+  printf '%s: %s\n' "$program" "$*" >&2
+  exit "$status"
+}
+
+warn() {
+  printf '%s: warning: %s\n' "$program" "$*" >&2
+}
+
+if (($# == 0)); then
+  usage >&2
+  exit 64
+fi
+
+command=$1
+shift
+case "$command" in
+post | tags) ;;
+-h | --help)
+  usage
+  exit 0
+  ;;
+*)
+  printf '%s: unknown command: %s\n' "$program" "$command" >&2
+  usage >&2
+  exit 64
+  ;;
+esac
+
+env_file=${READECK_ENV_FILE:-${HOME:-}/.config/readeck/credentials.env}
+entry_url=""
+title=""
+author=""
+language=""
+thumbnail=""
+expect=""
+replace=false
+wait_seconds=60
+tag_args=()
+
+while (($# > 0)); do
+  case "$1" in
+  --env-file | --url | --title | --author | --lang | --tag | --thumbnail | --expect | --timeout)
+    if (($# < 2)); then
+      die 64 "$1 requires a value"
+    fi
+    if [[ $command == tags && $1 != --env-file ]]; then
+      die 64 "$1 is only valid with the post command"
+    fi
+    case "$1" in
+    --env-file) env_file=$2 ;;
+    --url) entry_url=$2 ;;
+    --title) title=$2 ;;
+    --author) author=$2 ;;
+    --lang) language=$2 ;;
+    --tag) tag_args+=("$2") ;;
+    --thumbnail) thumbnail=$2 ;;
+    --expect) expect=$2 ;;
+    --timeout) wait_seconds=$2 ;;
+    esac
+    shift 2
+    ;;
+  --replace)
+    if [[ $command == tags ]]; then
+      die 64 "--replace is only valid with the post command"
+    fi
+    replace=true
+    shift
+    ;;
+  -h | --help)
+    usage
+    exit 0
+    ;;
+  --)
+    shift
+    break
+    ;;
+  -*)
+    printf '%s: unknown option: %s\n' "$program" "$1" >&2
+    usage >&2
+    exit 64
+    ;;
+  *)
+    break
+    ;;
+  esac
+done
+
+if [[ $command == tags ]]; then
+  if (($# != 0)); then
+    usage >&2
+    exit 64
+  fi
+  dependencies=(curl jq)
+else
+  if (($# != 1)); then
+    usage >&2
+    exit 64
+  fi
+  dependencies=(curl jq perl)
+fi
+
+for dependency in "${dependencies[@]}"; do
+  if ! command -v "$dependency" >/dev/null 2>&1; then
+    die 127 "required command not found: $dependency"
+  fi
+done
+
+# Reject characters that would break an HTTP header, a curl config line, or a
+# multipart header.
+check_plain() {
+  local name=$1 value=$2
+  if [[ $value == *[[:cntrl:]]* || $value == *\"* || $value == *\\* ]]; then
+    die 64 "$name must not contain control characters, double quotes, or backslashes"
+  fi
+}
+
+# Validate post arguments before touching credentials or the network.
+if [[ $command == post ]]; then
+  readonly input=$1
+  if [[ ! -r $input ]]; then
+    die 1 "input file is not readable: $input"
+  fi
+  case "$input" in
+  *.md | *.markdown) input_format=markdown ;;
+  *.html | *.htm) input_format=html ;;
+  *) die 64 "input must be a Markdown (.md) or HTML (.html) file: $input" ;;
+  esac
+  if [[ $input_format == markdown ]] && ! command -v pandoc >/dev/null 2>&1; then
+    die 127 "required command not found: pandoc"
+  fi
+  case "$entry_url" in
+  "") die 64 "--url is required" ;;
+  http://* | https://*) ;;
+  *) die 64 "--url must be an http:// or https:// URL" ;;
+  esac
+  # Readeck stores URLs without the fragment. A request that keeps it doesn't
+  # match the page it received, and Readeck then tries to fetch the URL itself.
+  entry_url=${entry_url%%#*}
+  check_plain --url "$entry_url"
+  if [[ $entry_url == *[[:space:]]* ]]; then
+    die 64 "--url must not contain whitespace"
+  fi
+  case "$thumbnail" in
+  "" | http://* | https://*) ;;
+  *)
+    if [[ ! -f $thumbnail ]]; then
+      die 64 "--thumbnail must be an http:// or https:// URL or an existing image file"
+    fi
+    ;;
+  esac
+  if [[ ! $wait_seconds =~ ^[0-9]+$ ]] || ((wait_seconds < 1)); then
+    die 64 "--timeout must be a positive number of seconds"
+  fi
+fi
+
+# Read the credentials file line by line. Never source it.
+readeck_url=""
+token=""
+header_name=""
+header_value=""
+
+if [[ ! -r $env_file ]]; then
+  die 1 "credentials file is not readable: $env_file (see references/API.md)"
+fi
+
+env_mode=$(stat -c '%a' "$env_file" 2>/dev/null || stat -f '%Lp' "$env_file" 2>/dev/null || printf '600')
+if ((8#$env_mode & 8#077)); then
+  warn "credentials file is accessible by other users (mode $env_mode); run chmod 600 $env_file"
+fi
+
+line_number=0
+while IFS= read -r line || [[ -n $line ]]; do
+  ((line_number += 1))
+  line=${line%$'\r'}
+  if [[ $line =~ ^[[:space:]]*(#.*)?$ ]]; then
+    continue
+  fi
+  if [[ ! $line =~ ^[[:space:]]*(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+    die 1 "$env_file:$line_number: expected KEY=value"
+  fi
+  key=${BASH_REMATCH[2]}
+  value=${BASH_REMATCH[3]}
+  if [[ ${#value} -ge 2 &&
+    (($value == \"*\" && $value == *\") || ($value == \'*\' && $value == *\')) ]]; then
+    value=${value:1:${#value}-2}
+  fi
+  case "$key" in
+  READECK_URL) readeck_url=$value ;;
+  READECK_TOKEN) token=$value ;;
+  READECK_HEADER_NAME) header_name=$value ;;
+  READECK_HEADER_VALUE) header_value=$value ;;
+  *) warn "$env_file:$line_number: ignoring unknown key $key" ;;
+  esac
+done <"$env_file"
+unset line value
+
+missing=()
+[[ -n $readeck_url ]] || missing+=(READECK_URL)
+[[ -n $token ]] || missing+=(READECK_TOKEN)
+if ((${#missing[@]} > 0)); then
+  die 1 "credentials file is missing: ${missing[*]}"
+fi
+if [[ -n $header_name && -z $header_value ]] || [[ -z $header_name && -n $header_value ]]; then
+  die 1 "READECK_HEADER_NAME and READECK_HEADER_VALUE must be set together"
+fi
+
+readeck_url=${readeck_url%/}
+case "$readeck_url" in
+http://* | https://*) ;;
+*) die 1 "READECK_URL must start with http:// or https://" ;;
+esac
+check_plain READECK_URL "$readeck_url"
+check_plain READECK_TOKEN "$token"
+if [[ $token == *[[:space:]]* ]]; then
+  die 1 "READECK_TOKEN must not contain whitespace"
+fi
+if [[ -n $header_name ]]; then
+  if [[ ! $header_name =~ ^[A-Za-z0-9-]+$ ]]; then
+    die 1 "READECK_HEADER_NAME must contain only letters, digits, and hyphens"
+  fi
+  check_plain READECK_HEADER_VALUE "$header_value"
+fi
+readonly readeck_url
+
+temp_root=${TMPDIR:-/tmp}
+temp_root=${temp_root%/}
+work_dir=$(mktemp -d "$temp_root/readeck.XXXXXX")
+readonly work_dir
+chmod 700 "$work_dir"
+
+cleanup() {
+  rm -rf "$work_dir"
+}
+trap cleanup EXIT
+
+# Print a readable error for a failed HTTP request and exit.
+http_failure() {
+  local context=$1 status=$2 response=$3 detail=""
+  if [[ -s $response ]]; then
+    detail=$(
+      jq -r '
+        [
+          .message,
+          (.errors // [] | .[]?),
+          (.fields // {} | to_entries[] | select((.value.errors // []) | length > 0)
+            | "\(.key): \(.value.errors | join(", "))")
+        ]
+        | map(select(type == "string" and . != ""))
+        | join("; ")
+      ' "$response" 2>/dev/null
+    ) || detail=""
+  fi
+  printf '%s: %s failed with HTTP %s%s\n' "$program" "$context" "$status" "${detail:+: $detail}" >&2
+  case "$status" in
+  000)
+    printf '%s: could not reach %s; check READECK_URL and the network\n' "$program" "$readeck_url" >&2
+    ;;
+  401)
+    printf '%s: Readeck rejected the API token; create a new one under Profile > API Tokens\n' "$program" >&2
+    ;;
+  403)
+    printf '%s: the token lacks a scope (it needs Bookmarks: Read Only and Write Only), or a firewall blocked the request\n' "$program" >&2
+    ;;
+  404)
+    if [[ -z $detail || $detail == "Not Found" ]]; then
+      printf '%s: if %s sits behind a router that requires a secret header, set READECK_HEADER_NAME and READECK_HEADER_VALUE\n' "$program" "$readeck_url" >&2
+    fi
+    ;;
+  esac
+  exit 1
+}
+
+# Call the Readeck API. The token and the optional proxy header reach curl through
+# standard input, so they never appear in process arguments. Prints the HTTP
+# status. Usage: api METHOD PATH OUTPUT_FILE [CURL_ARGS...]
+api() {
+  local method=$1 path=$2 output=$3 status
+  shift 3
+  status=$(
+    {
+      printf 'header = "Authorization: Bearer %s"\n' "$token"
+      if [[ -n $header_name ]]; then
+        printf 'header = "%s: %s"\n' "$header_name" "$header_value"
+      fi
+    } |
+      curl --config - --silent --show-error --connect-timeout 10 --max-time 120 \
+        --request "$method" --header 'Accept: application/json' \
+        --output "$output" --write-out '%{http_code}' \
+        ${1+"$@"} "$readeck_url$path"
+  ) || status=000
+  printf '%s' "$status"
+}
+
+# Call the API and fail unless the status is one of the accepted codes.
+# Usage: api_ok "CONTEXT" "STATUS ..." METHOD PATH OUTPUT_FILE [CURL_ARGS...]
+api_ok() {
+  local context=$1 accepted=$2 status
+  shift 2
+  status=$(api "$@")
+  case " $accepted " in
+  *" $status "*) ;;
+  *) http_failure "$context" "$status" "$3" ;;
+  esac
+}
+
+if [[ $command == tags ]]; then
+  tags_response="$work_dir/labels.json"
+  api_ok "Readeck labels request" 200 GET /api/bookmarks/labels "$tags_response"
+  if ! jq -e 'type == "array"' "$tags_response" >/dev/null 2>&1; then
+    die 1 "Readeck labels response is not a JSON array"
+  fi
+  if jq -e 'length == 0' "$tags_response" >/dev/null; then
+    printf '%s: no existing labels found\n' "$program" >&2
+    exit 0
+  fi
+  jq -r 'sort_by(-(.count // 0), .name) | .[] | "\(.count // 0)\t\(.name)"' "$tags_response"
+  exit 0
+fi
+
+input_dir=$(cd "$(dirname "$input")" && pwd)
+body_file="$work_dir/body.html"
+page_file="$work_dir/page.html"
+mapping_file="$work_dir/images.tsv"
+: >"$mapping_file"
+
+if [[ $input_format == markdown ]]; then
+  source_md="$work_dir/body.md"
+  if [[ -z $title ]]; then
+    title=$(perl -ne 'if (/^#\s+(.+?)\s*#*\s*$/) { print $1; exit }' "$input")
+  fi
+  # Drop the first H1, because Readeck shows the title separately.
+  perl -ne '
+    if (!$seen && /^#\s+\S/) { $seen = 1; next; }
+    print;
+  ' "$input" >"$source_md"
+  pandoc "$source_md" --from=gfm --to=html5 --output="$body_file"
+else
+  cp "$input" "$body_file"
+fi
+if [[ ! -s $body_file ]]; then
+  die 1 "the HTML body is empty"
+fi
+if [[ -z $title ]]; then
+  die 64 "--title is required when the input has no Markdown H1"
+fi
+language=${language:-en}
+if [[ ! $language =~ ^[A-Za-z]{2,3}(-[A-Za-z0-9]+)*$ ]]; then
+  die 64 "--lang must be a language code such as en or pt-BR: $language"
+fi
+
+# Entry origin, for the URLs of uploaded images.
+entry_origin=$(printf '%s' "$entry_url" | perl -ne 'print $1 if m{^(https?://[^/?#]+)}')
+if [[ -z $entry_origin ]]; then
+  die 64 "could not read the origin of --url"
+fi
+
+# Rewrite relative image paths to absolute URLs on the entry's origin, and record
+# each local file in the mapping as PATH<TAB>URL<TAB>CONTENT_TYPE. Absolute URLs,
+# root-relative paths, and data: URIs stay as they are.
+perl -e '
+  use strict;
+  use warnings;
+  my ($origin, $base_dir, $map_file) = @ARGV;
+  my %types = (
+    png => "image/png", jpg => "image/jpeg", jpeg => "image/jpeg",
+    gif => "image/gif", webp => "image/webp", svg => "image/svg+xml",
+  );
+  my (%urls, @rows);
+  local $/;
+  my $html = <STDIN>;
+  $html =~ s{(<img\b[^>]*?\bsrc\s*=\s*)(["\x27])([^"\x27]*)\2}{
+    my ($pre, $quote, $src) = ($1, $2, $3);
+    if ($src =~ m{^(?:[A-Za-z][A-Za-z0-9+.-]*:|/|\#)} || $src eq "") {
+      "$pre$quote$src$quote";
+    } else {
+      (my $path = $src) =~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
+      $path =~ s/[?\#].*$//;
+      my $file = "$base_dir/$path";
+      die "readeck: image not found: $path\n" unless -f $file;
+      my ($ext) = $path =~ /\.([A-Za-z0-9]+)$/;
+      $ext = lc($ext // "");
+      die "readeck: unsupported image type: $path\n" unless $types{$ext};
+      unless ($urls{$file}) {
+        (my $name = $path) =~ s{.*/}{};
+        $name =~ s/[^A-Za-z0-9._-]/-/g;
+        my $url = sprintf("%s/.local-images/%d-%s", $origin, scalar(@rows) + 1, $name);
+        $urls{$file} = $url;
+        push @rows, join("\t", $file, $url, $types{$ext});
+      }
+      "$pre$quote$urls{$file}$quote";
+    }
+  }gie;
+  open(my $out, ">", $map_file) or die "readeck: cannot write $map_file: $!\n";
+  print {$out} "$_\n" for @rows;
+  close($out);
+  print $html;
+' "$entry_origin" "$input_dir" "$mapping_file" <"$body_file" >"$work_dir/body-rewritten.html" ||
+  die 1 "could not process the images in $input"
+mv "$work_dir/body-rewritten.html" "$body_file"
+
+# A local cover image is uploaded like any other image and referenced by URL.
+cover_url=$thumbnail
+if [[ -n $thumbnail && $thumbnail != http://* && $thumbnail != https://* ]]; then
+  case "$thumbnail" in
+  *.png | *.PNG) cover_type=image/png ;;
+  *.jpg | *.jpeg | *.JPG | *.JPEG) cover_type=image/jpeg ;;
+  *.gif | *.GIF) cover_type=image/gif ;;
+  *.webp | *.WEBP) cover_type=image/webp ;;
+  *) die 64 "unsupported --thumbnail image type: $thumbnail" ;;
+  esac
+  cover_name=$(basename "$thumbnail" | perl -pe 's/[^A-Za-z0-9._-]/-/g')
+  cover_url="$entry_origin/.local-images/cover-$cover_name"
+  thumbnail_path=$(cd "$(dirname "$thumbnail")" && pwd)/$(basename "$thumbnail")
+  printf '%s\t%s\t%s\n' "$thumbnail_path" "$cover_url" "$cover_type" >>"$mapping_file"
+fi
+check_plain cover "$cover_url"
+image_count=$(wc -l <"$mapping_file" | tr -d '[:space:]')
+
+html_escape() {
+  perl -pe 's/&/&amp;/g; s/</&lt;/g; s/>/&gt;/g; s/"/&quot;/g'
+}
+
+# Wrap the body in a page that carries the metadata Readeck reads.
+if [[ $input_format == markdown ]] || ! grep -q -i '<html' "$body_file"; then
+  {
+    printf '<!DOCTYPE html>\n<html lang="%s">\n<head>\n<meta charset="utf-8">\n' "$(printf '%s' "$language" | html_escape)"
+    printf '<title>%s</title>\n' "$(printf '%s' "$title" | html_escape)"
+    printf '<meta property="og:title" content="%s">\n' "$(printf '%s' "$title" | html_escape)"
+    if [[ -n $author ]]; then
+      printf '<meta name="author" content="%s">\n' "$(printf '%s' "$author" | html_escape)"
+    fi
+    if [[ -n $cover_url ]]; then
+      printf '<meta property="og:image" content="%s">\n' "$(printf '%s' "$cover_url" | html_escape)"
+    fi
+    printf '</head>\n<body>\n<article>\n<h1>%s</h1>\n' "$(printf '%s' "$title" | html_escape)"
+    cat "$body_file"
+    printf '\n</article>\n</body>\n</html>\n'
+  } >"$page_file"
+else
+  cp "$body_file" "$page_file"
+fi
+
+# Normalize labels: split on commas, trim, drop empties and duplicates.
+labels=()
+if ((${#tag_args[@]} > 0)); then
+  while IFS= read -r label; do
+    [[ -n $label ]] && labels+=("$label")
+  done < <(
+    printf '%s\n' "${tag_args[@]}" |
+      perl -ne '
+        for (split /,/) { s/^\s+|\s+$//g; print "$_\n" if length && !$seen{$_}++ }
+      '
+  )
+fi
+
+# Find existing bookmarks with the same URL, because Readeck doesn't deduplicate.
+site=$(printf '%s' "$entry_url" | perl -ne 'print $1 if m{^https?://(?:[^/@]*@)?([^/:?#]+)}')
+existing_ids=()
+offset=0
+total=1
+while ((offset < total)); do
+  page_response="$work_dir/existing.json"
+  page_headers="$work_dir/existing.headers"
+  api_ok "Readeck bookmark lookup" 200 GET "/api/bookmarks?site=$site&limit=100&offset=$offset" \
+    "$page_response" --dump-header "$page_headers"
+  total=$(sed -n 's/^[Tt]otal-[Cc]ount:[[:space:]]*\([0-9]*\).*/\1/p' "$page_headers" | tail -1)
+  total=${total:-0}
+  while IFS= read -r existing; do
+    [[ -n $existing ]] && existing_ids+=("$existing")
+  done < <(jq -r --arg url "$entry_url" '.[] | select(.url == $url) | .id' "$page_response")
+  offset=$((offset + 100))
+done
+
+if ((${#existing_ids[@]} > 0)) && [[ $replace != true ]]; then
+  printf 'existing_id=%s\n' "${existing_ids[0]}"
+  die 1 "a bookmark with this URL already exists (${existing_ids[*]}); pass --replace to replace it"
+fi
+
+create_response="$work_dir/create.json"
+create_headers="$work_dir/create.headers"
+if ((image_count > 0)); then
+  form_args=(--form-string "url=$entry_url" --form-string "title=$title")
+  if ((${#labels[@]} > 0)); then
+    for label in "${labels[@]}"; do
+      form_args+=(--form-string "labels=$label")
+    done
+  fi
+  form_args+=(--form "resource=@$page_file;filename=_;type=text/html;headers=\"Location: $entry_url\"")
+  while IFS=$'\t' read -r image_path image_url image_type; do
+    form_args+=(--form "resource=@$image_path;filename=_;type=$image_type;headers=\"Location: $image_url\"")
+  done <"$mapping_file"
+  api_ok "Readeck bookmark request" 202 POST /api/bookmarks "$create_response" \
+    --dump-header "$create_headers" "${form_args[@]}"
+else
+  request_file="$work_dir/request.json"
+  jq -n \
+    --arg url "$entry_url" \
+    --arg title "$title" \
+    --rawfile html "$page_file" \
+    '{url: $url, title: $title, html: $html}' >"$request_file"
+  if ((${#labels[@]} > 0)); then
+    labels_json=$(printf '%s\n' "${labels[@]}" | jq -R . | jq -s .)
+    jq --argjson labels "$labels_json" '. + {labels: $labels}' "$request_file" >"$request_file.tmp"
+    mv "$request_file.tmp" "$request_file"
+  fi
+  api_ok "Readeck bookmark request" 202 POST /api/bookmarks "$create_response" \
+    --dump-header "$create_headers" --header 'Content-Type: application/json' \
+    --data-binary @"$request_file"
+fi
+
+entry_id=$(sed -n 's/^[Bb]ookmark-[Ii]d:[[:space:]]*//p' "$create_headers" | tr -d '\r' | tail -1)
+if [[ ! $entry_id =~ ^[A-Za-z0-9]+$ ]]; then
+  die 1 "Readeck response did not contain a bookmark ID"
+fi
+
+# Delete the bookmark this run created, so a failed send leaves nothing behind.
+discard_new_bookmark() {
+  api DELETE "/api/bookmarks/$entry_id" "$work_dir/discard.json" >/dev/null || true
+}
+
+# Wait until Readeck finishes processing the page.
+info_file="$work_dir/info.json"
+waited=0
+while true; do
+  api_ok "Readeck bookmark status request" 200 GET "/api/bookmarks/$entry_id" "$info_file"
+  if jq -e '.loaded == true' "$info_file" >/dev/null 2>&1; then
+    break
+  fi
+  if ((waited >= wait_seconds)); then
+    discard_new_bookmark
+    die 1 "Readeck didn't finish processing the page within $wait_seconds seconds; the new bookmark was removed"
+  fi
+  sleep 1
+  waited=$((waited + 1))
+done
+
+# Readeck reports a page it couldn't use as errors or as a bookmark without an article.
+if ! jq -e '(.errors // [] | length == 0) and .has_article == true' "$info_file" >/dev/null; then
+  reason=$(jq -r '(.errors // []) | if length > 0 then join("; ") else "no article was stored" end' "$info_file")
+  discard_new_bookmark
+  die 1 "Readeck couldn't store the page ($reason); the new bookmark was removed"
+fi
+
+article_file="$work_dir/article.html"
+api_ok "Readeck article request" 200 GET "/api/bookmarks/$entry_id/article" "$article_file"
+
+validation=skipped
+if [[ -n $expect ]]; then
+  if grep -q -F -- "$expect" "$article_file"; then
+    validation=passed
+  else
+    discard_new_bookmark
+    die 1 "the stored article doesn't contain the expected text; Readeck may have fetched the page instead of using the supplied content; the new bookmark was removed"
+  fi
+fi
+
+# Correct metadata that Readeck read differently from what was requested.
+patch=$(jq -n \
+  --arg author "$author" \
+  --arg lang "$language" \
+  --slurpfile info "$info_file" '
+    ($info[0]) as $i
+    | {}
+    + (if $author != "" and ($i.authors // []) != [$author] then {authors: [$author]} else {} end)
+    + (if $lang != "" and ($i.lang // "") != $lang then {lang: $lang} else {} end)
+  ')
+
+# Carry the state of replaced bookmarks over, then delete them.
+replaced=()
+if ((${#existing_ids[@]} > 0)); then
+  carry_archived=false
+  carry_marked=false
+  carry_labels='[]'
+  for old_id in "${existing_ids[@]}"; do
+    old_file="$work_dir/old-$old_id.json"
+    api_ok "Readeck existing bookmark request" 200 GET "/api/bookmarks/$old_id" "$old_file"
+    if jq -e '.is_archived == true' "$old_file" >/dev/null; then carry_archived=true; fi
+    if jq -e '.is_marked == true' "$old_file" >/dev/null; then carry_marked=true; fi
+    carry_labels=$(jq -n --argjson a "$carry_labels" --slurpfile o "$old_file" '$a + ($o[0].labels // []) | unique')
+  done
+  patch=$(printf '%s' "$patch" | jq \
+    --argjson archived "$carry_archived" \
+    --argjson marked "$carry_marked" \
+    --argjson labels "$carry_labels" '
+      . + (if $archived then {is_archived: true} else {} end)
+        + (if $marked then {is_marked: true} else {} end)
+        + (if ($labels | length) > 0 then {add_labels: $labels} else {} end)
+    ')
+fi
+
+if [[ $patch != '{}' ]]; then
+  patch_file="$work_dir/patch.json"
+  printf '%s' "$patch" >"$patch_file"
+  api_ok "Readeck bookmark update" 200 PATCH "/api/bookmarks/$entry_id" "$work_dir/patch-response.json" \
+    --header 'Content-Type: application/json' --data-binary @"$patch_file"
+fi
+
+if ((${#existing_ids[@]} > 0)); then
+  for old_id in "${existing_ids[@]}"; do
+    api_ok "Readeck replaced bookmark removal" "200 204" DELETE "/api/bookmarks/$old_id" "$work_dir/delete.json"
+    replaced+=("$old_id")
+  done
+fi
+
+api_ok "Readeck bookmark status request" 200 GET "/api/bookmarks/$entry_id" "$info_file"
+
+jq -r \
+  --arg entry_url "$readeck_url/bookmarks/$entry_id" \
+  --arg validation "$validation" \
+  --arg images "$image_count" \
+  --arg replaced "${replaced[*]+${replaced[*]}}" \
+  --arg content_length "$(wc -c <"$article_file" | tr -d '[:space:]')" '
+    "entry_id=\(.id)",
+    "entry_url=\($entry_url)",
+    "source_url=\(.url // "")",
+    "title=\(.title // "")",
+    "author=\((.authors // []) | join(", "))",
+    "language=\(.lang // "")",
+    "tags=\((.labels // []) | join(","))",
+    "cover=\(.resources.image.src // "none")",
+    "archived=\(.is_archived == true)",
+    "content_length=\($content_length)",
+    "images_uploaded=\($images)",
+    "replaced=\(if $replaced == "" then "none" else ($replaced | gsub(" "; ",")) end)",
+    "validation=\($validation)"
+  ' "$info_file"

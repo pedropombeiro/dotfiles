@@ -586,6 +586,8 @@
     // lazy-mcp-permissions plugin re-evaluates these rules against `server/command`.
     // Web search tools keep asking, matching the native websearch and webfetch rules.
     { "action": "lazy-mcp_invoke_command", "resource": "*", "effect": "ask" },
+    { "action": "lazy-mcp_invoke_command", "resource": "clickhouse/list_*", "effect": "allow" },
+    { "action": "lazy-mcp_invoke_command", "resource": "clickhouse/run_query", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "context7/*", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "esquery*/count", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "esquery*/esql", "effect": "allow" },

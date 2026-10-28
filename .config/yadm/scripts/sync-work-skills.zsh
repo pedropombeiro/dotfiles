@@ -39,6 +39,7 @@ sync_work_skills
 if [[ "${class}" == Work ]]; then
   typeset -A sources=(
     caproni "${HOME}/.config/dotfiles/gitlab/.opencode/skills/caproni"
+    devex-clickhouse "${HOME}/Developer/gitlab.com/gitlab-org/quality/analytics/team/.skills/clickhouse"
     fpf-report "${HOME}/Developer/gitlab.com/gitlab-org/ci-cd/fix-pipeline-flow-report/skill"
     orbit "${HOME}/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph/skills/orbit"
   )

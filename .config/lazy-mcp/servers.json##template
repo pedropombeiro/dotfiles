@@ -83,6 +83,20 @@
         "KIBANA_URL": "https://nonprod-log.gitlab.net"
       }
     },
+    {
+      "name": "clickhouse",
+      "description": "DevEx analytics ClickHouse (CI, test, coverage, and work item metrics): list databases and tables, run SELECT queries",
+      "type": "local",
+      "command": ["mise", "x", "uv", "--", "uv", "run", "--with", "mcp-clickhouse", "--python", "3.13", "mcp-clickhouse"],
+      "env": {
+        "CLICKHOUSE_HOST": "gltxq8v2en.us-east1.gcp.clickhouse.cloud",
+        "CLICKHOUSE_PORT": "8443",
+        "CLICKHOUSE_USER": "{file:~/.config/lazy-mcp/clickhouse-username}",
+        "CLICKHOUSE_PASSWORD": "{file:~/.config/lazy-mcp/clickhouse-password}",
+        "CLICKHOUSE_SECURE": "true",
+        "CLICKHOUSE_VERIFY": "true"
+      }
+    },
 {% endif %}
 {% if yadm.class != "NAS" %}
     {

@@ -1,0 +1,6 @@
+{
+  "secretDirs": [
+    "{{ env.HOME }}/.garminconnect",
+    "{{ env.HOME }}/.garminconnect_base64"
+  ]
+}

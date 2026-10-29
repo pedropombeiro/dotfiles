@@ -399,6 +399,7 @@ unset gitlab_dotfiles_dir
 # them to keep the skills current.
 mise bootstrap repos update --yes --skip-dirty \
   "${HOME}/Developer/gitlab.com/gitlab-org/ai/skills" \
+  "${HOME}/Developer/gitlab.com/pedropombeiro/gitlab-agent-skills" \
   "${HOME}/Developer/gitlab.com/gitlab-org/ci-cd/fix-pipeline-flow-report" \
   "${HOME}/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph" >/dev/null ||
   echo "Warning: failed to update Work skill repos; using the existing checkouts" >&2
@@ -429,6 +430,7 @@ if [[ -n ${GDK_ROOT} ]]; then
 
   # Symlink personal dotfiles into gitlab repo
   sync_dotfiles_to_gitlab "${GDK_ROOT}"
+  python3 "${YADM_SCRIPTS}/link-gitlab-agent-skills.py"
 
   # Ensure spring binstubs are hidden from status by default
   ensure_spring_binstubs_skip_worktree "${GDK_ROOT}"

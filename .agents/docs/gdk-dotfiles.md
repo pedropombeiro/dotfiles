@@ -94,8 +94,17 @@ fd --hidden --type f . ~/.config/dotfiles/gitlab/
 
 ## Agent instruction scope
 
-Keep GitLab-project skills and commands in this private repository so the sync
-scopes them to GDK worktrees. Machine-wide Work skills belong in
+Keep private GitLab-project skills and commands in this private repository so the sync
+scopes them to GDK worktrees. Shareable skills live in the public
+`pedropombeiro/gitlab-agent-skills` repository, cloned under
+`~/Developer/gitlab.com/pedropombeiro/gitlab-agent-skills` by Work bootstrap.
+`link-gitlab-agent-skills.py` links its selected skill directories directly into
+the main GitLab checkout and registered worktrees, and its pipeline commands into
+`~/.local/bin`. It refuses unexpected local files instead of copying them into
+the public source. Both `relink-dotfiles.zsh` and `update-work.zsh` invoke it;
+`gitlab-worktree-setup` invokes it for new worktrees. Edit public skills in their
+source checkout. `dotfiles:update` refreshes that checkout with `--skip-dirty`.
+Machine-wide Work skills belong in
 `~/.agents/skills.work`; see [skill loading](opencode.md#skill-loading).
 
 ## Troubleshooting

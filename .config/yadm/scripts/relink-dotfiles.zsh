@@ -56,6 +56,9 @@ unset gopro_graphics
 class="$(yadm config local.class)"
 
 "${YADM_SCRIPTS}/link-private-work-files.zsh"
+if [[ "$(yadm config local.class)" == Work ]]; then
+  python3 "${YADM_SCRIPTS}/link-gitlab-agent-skills.py"
+fi
 
 if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then
   src_path="${HOME}/Sync/pedro/.dotfiles/Home/MBP.${class}"

@@ -1,4 +1,5 @@
 [bootstrap.repos]
+"~/Developer/gitlab.com/pedropombeiro/gitlab-agent-skills" = { url = "git@gitlab.com:pedropombeiro/gitlab-agent-skills.git" }
 "~/.config/dotfiles/gitlab" = { url = "git@gitlab.com:pedropombeiro/gitlab-dotfiles.git" }
 "~/Developer/gitlab.com/gitlab-com/content-sites/handbook" = { url = "git@gitlab.com:gitlab-com/content-sites/handbook.git" }
 "~/Developer/gitlab.com/gitlab-com/www-gitlab-com" = { url = "git@gitlab.com:gitlab-com/www-gitlab-com.git" }

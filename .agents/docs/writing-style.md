@@ -129,6 +129,13 @@ the source of truth.
     mismatch, link both files that disagree.
   - Back each concrete claim about how something works with a link to its source, such as
     the code, configuration, documentation, job log, or discussion that shows it.
+- Preserve Slack context: threads expire after 90 days. When an issue, epic, or MR depends on a thread,
+  capture the relevant messages in a collapsible `<details>` block near the first reference to the thread,
+  with authors, dates, and the original link.
+  Keep the actionable summary outside the block, distinguish proposals from agreed decisions, and only
+  reproduce content appropriate for the destination's visibility. Consider all audiences who can read the
+  destination: do not mention, quote, or summarize context from private Slack groups, channels, or direct
+  messages in artifacts available to a broader audience. A collapsed block does not restrict visibility.
 - Use bullets to improve readability for lists and structured updates.
 - In longer messages, separate paragraphs with double line breaks.
 - Minimal emoji - use them functionally:

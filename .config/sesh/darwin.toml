@@ -8,5 +8,5 @@ preview_command = "eza --all --icons --color=always --sort=modified --reverse {}
 
 [[wildcard]]
 pattern = "~/Developer/github.com/pedropombeiro/*"
-startup_command = "zsh"
+disable_startup_command = true
 preview_command = "eza --all --git --icons --color=always {}"

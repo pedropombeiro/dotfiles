@@ -24,6 +24,7 @@ Thumbs.db
 .config/lazy-mcp/grafana-token
 .config/lazy-mcp/clickhouse-username
 .config/lazy-mcp/clickhouse-password
+.config/mr-dashboard/env
 .config/dotfiles/gitlab/
 .config/sesh/caproni.toml
 # OpenCode owns cli.json; the tracked terminal config is cli.base.json.
@@ -85,6 +86,7 @@ Thumbs.db
 .config/yadm/bootstrap.d/965-ensure-weekly-log.sh
 .config/yadm/bootstrap.d/966-sync-caproni-sesh.sh
 .config/yadm/bootstrap.d/973-setup-clickhouse-credentials.sh
+.config/yadm/bootstrap.d/974-setup-mr-dashboard.sh
 .config/yadm/bootstrap.d/999-print-manual-steps.sh
 .config/yadm/config_templates/LaunchDaemons/org.gitlab1.ifconfig.plist
 .config/yadm/scripts/defaults.sh

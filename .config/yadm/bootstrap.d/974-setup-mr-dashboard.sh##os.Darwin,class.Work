@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
+
+# shellcheck source=../scripts/colors.sh
+source "${YADM_SCRIPTS}/colors.sh"
+
+app_dir="${HOME}/Developer/gitlab.com/narendran-kannan/mr-dashboard"
+app_ref="837e312f3afe78a7002bccc6be80332c5a863541"
+config_dir="${HOME}/.config/mr-dashboard"
+config_file="${config_dir}/env"
+service_label="com.mr-dashboard.agent"
+service_file="${HOME}/Library/LaunchAgents/${service_label}.plist"
+service_domain="gui/$(id -u)"
+op_account_id="LKATQYUATRBRDHRRABEBH4RJ5Y" # gitlab.1password.com
+op_vault_id="mjxzs6kzr37xpofym72k274g2u"   # Employee
+op_item_id="t6e2zrzfisxdiibcb7iwji63km"    # Narendran's MR dashboard API token
+mise_bin=$(command -v mise)
+
+if [[ ! -d "${app_dir}" ]]; then
+  mkdir -p "$(dirname "${app_dir}")"
+  git clone git@gitlab.com:narendran-kannan/mr-dashboard.git "${app_dir}"
+  (cd "${app_dir}" && git switch --detach "${app_ref}")
+fi
+
+if [[ ! -f "${app_dir}/bin/cli.js" ]]; then
+  printf '%s\n' "MR Dashboard checkout is incomplete: ${app_dir}" >&2
+  exit 1
+fi
+
+umask 077
+mkdir -p "${config_dir}"
+chmod 700 "${config_dir}"
+tmp_file=$(mktemp "${config_dir}/env.XXXXXX")
+trap 'rm -f "${tmp_file}"' EXIT
+
+if [[ ! -s "${config_file}" ]]; then
+  if command -v op >/dev/null 2>&1 &&
+    op read --no-newline --account "${op_account_id}" \
+      "op://${op_vault_id}/${op_item_id}/credential" >"${tmp_file}" &&
+    [[ -s "${tmp_file}" ]]; then
+    # The CLI parses this as data, not shell code. Strip CR/LF from the token.
+    token=$(tr -d '\r\n' <"${tmp_file}")
+    {
+      printf '%s\n' 'GITLAB_HOST=gitlab.com'
+      printf '%s=%s\n' 'GITLAB_TOKEN' "${token}"
+      printf '%s\n' 'PORT=4321' 'MRDASH_OTEL=off' 'MRDASH_BIND=127.0.0.1'
+    } >"${tmp_file}"
+    unset token
+    mv "${tmp_file}" "${config_file}"
+    printf "${GREEN}%s${NC}\n" "Configured MR Dashboard token from 1Password"
+  else
+    : >"${config_file}"
+    chmod 600 "${config_file}"
+    printf "${YELLOW}%s${NC}\n" "Could not read the credential of 'Narendran's MR dashboard API token' in the Employee vault. Unlock 1Password and rerun this script. Service not installed."
+    exit 0
+  fi
+fi
+chmod 600 "${config_file}"
+
+"${mise_bin}" exec node@22 -- node --version
+mkdir -p "${HOME}/Library/LaunchAgents" "${HOME}/Library/Logs"
+cat >"${service_file}" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>${service_label}</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>${mise_bin}</string>
+    <string>exec</string><string>node@22</string><string>--</string>
+    <string>node</string><string>${app_dir}/bin/cli.js</string>
+  </array>
+  <key>WorkingDirectory</key><string>${app_dir}</string>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>MRDASH_CONFIG</key><string>${config_file}</string>
+  </dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>30</integer>
+  <key>StandardOutPath</key><string>${HOME}/Library/Logs/mr-dashboard.log</string>
+  <key>StandardErrorPath</key><string>${HOME}/Library/Logs/mr-dashboard.log</string>
+</dict>
+</plist>
+EOF
+plutil -lint "${service_file}"
+launchctl bootout "${service_domain}/${service_label}" 2>/dev/null || true
+launchctl enable "${service_domain}/${service_label}"
+launchctl bootstrap "${service_domain}" "${service_file}"
+printf "${GREEN}%s${NC}\n" "MR Dashboard starts at login: http://localhost:4321"

@@ -69,6 +69,9 @@ the source of truth.
   omit narrative such as "split from" or "previously included in".
 - Prefer a claim a reviewer can check over one they must take on faith. Vague prose invites a
   reviewing agent to invent specifics about it, so if a check was not run, do not imply it was.
+- When describing Pedro's workflow, distinguish documented or implemented capabilities from practices
+  he actually uses. Confirm adoption before presenting a feature as current practice, and label
+  experiments and planned behavior explicitly.
 - Highly structured - follow a consistent template:
   - `## What does this MR do and why?`
   - `## References`

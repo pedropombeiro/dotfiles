@@ -25,8 +25,7 @@
       // and for targets that start to conflict or merge. Stacked MRs get retarget
       // proposals only; switch to "apply" once a real proposal looks right.
       "options": {
-        "reviewFeedbackDelivery": "summary",
-        "lifecycleDelivery": "summary",
+        "delivery": { "reviews": "summary", "lifecycle": "summary" },
         "lifecycleExecution": { "parentMerged": { "mode": "prepare", "actions": ["retarget"] } },
       },
     },

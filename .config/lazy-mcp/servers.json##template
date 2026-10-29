@@ -121,6 +121,22 @@
       }
     },
 {% endif %}
+{% if yadm.class == "Personal" %}
+    {
+      "name": "garmin",
+      "description": "Create and schedule Garmin Connect workouts (including nested repeat blocks) and read the workout library and calendar. Bulk delete and unschedule tools are disabled; single-item ones are enabled and need approval",
+      "type": "local",
+      "command": [
+        "mise", "x", "uv", "--", "uv", "run", "--frozen", "--no-dev", "--python", "3.12",
+        "--project", "{{ env.HOME }}/Developer/github.com/Taxuspt/garmin_mcp",
+        "garmin-mcp"
+      ],
+      "env": {
+        "GARMIN_TOOL_PROFILE": "workouts",
+        "GARMIN_DISABLED_TOOLS": "delete_workouts,unschedule_workouts"
+      }
+    },
+{% endif %}
     {
       "name": "context7",
       "description": "Library documentation and code examples",

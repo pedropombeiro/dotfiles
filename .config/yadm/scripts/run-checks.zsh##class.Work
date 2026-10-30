@@ -333,21 +333,34 @@ check_glab_auth() {
 
 check_hammerspoon_bluetooth() {
   print_op_stay "Checking Hammerspoon Bluetooth permission"
-  local hs_bundle_id="org.hammerspoon.Hammerspoon"
-  if defaults read /Library/Preferences/com.apple.Bluetooth.plist 2>/dev/null | grep -q "$hs_bundle_id"; then
-    print_ok
+  # The permission lives in the user TCC database, which this shell cannot read.
+  # Run blueutil from inside Hammerspoon so macOS applies Hammerspoon's grant.
+  local blueutil_bin
+  blueutil_bin=$(command -v blueutil 2>/dev/null || echo /opt/homebrew/bin/blueutil)
+
+  if ! command -v hs >/dev/null 2>&1 || ! pgrep -x Hammerspoon >/dev/null 2>&1; then
+    echo
+    print_warn "Hammerspoon is not running; cannot verify Bluetooth permission"
     return
   fi
 
-  local tcc_db="$HOME/Library/Application Support/com.apple.TCC/TCC.db"
-  if [[ -r "$tcc_db" ]] && sqlite3 "$tcc_db" "SELECT client FROM access WHERE service='kTCCServiceBluetoothAlways' AND client='$hs_bundle_id' AND auth_value=2;" 2>/dev/null | grep -q "$hs_bundle_id"; then
-    print_ok
-    return
-  fi
+  local power
+  power=$(hs -t 10 -c "local out, ok, _, rc = hs.execute('${blueutil_bin} --power'); print(ok and rc == 0 and (out:gsub('%s+', '')) or 'error')" 2>/dev/null | tail -1)
 
-  echo
-  print_failure "Hammerspoon lacks Bluetooth permission (System Settings > Privacy & Security > Bluetooth)"
-  any_failed=1
+  case "$power" in
+    1)
+      print_ok
+      ;;
+    0)
+      echo
+      print_warn "Bluetooth is off; cannot verify Hammerspoon's permission"
+      ;;
+    *)
+      echo
+      print_failure "Hammerspoon cannot use Bluetooth (System Settings > Privacy & Security > Bluetooth)"
+      any_failed=1
+      ;;
+  esac
 }
 
 check_weekly_log_repo() {

@@ -10,7 +10,11 @@
 
 const ALTERNATIVE =
   process.platform === "darwin" ? "such as `trash`" : "such as moving it to a scratch directory for the user to review"
-const MESSAGE = `Refusing to run \`rm -rf\` without user supervision. YOU MUST do it in a non-destructive way (${ALTERNATIVE}) or ask for permission. DO NOT attempt to work around this instruction.`
+const message = (command) =>
+  `Refusing to run \`rm -rf\`. Use a non-destructive alternative (${ALTERNATIVE}). ` +
+  `If the deletion must be permanent, do not run it yourself: give the user this command ` +
+  `to run manually and wait for them to confirm:\n\n${command}\n\n` +
+  `DO NOT attempt to work around this instruction.`
 
 // Command separators: newlines, `;`, `&`, `|`, subshells, and substitutions
 const SEGMENT_SPLIT = /[\n;&|()`]|\$\(/
@@ -90,11 +94,11 @@ const executableText = (command) =>
       return substitutions.length ? `;${substitutions.join(";")};` : "''"
     })
 
-const check = (command = "", depth = 0) => {
-  if (executableText(command).split(SEGMENT_SPLIT).some(isRmRf)) throw new Error(MESSAGE)
+const check = (command = "", depth = 0, original = command) => {
+  if (executableText(command).split(SEGMENT_SPLIT).some(isRmRf)) throw new Error(message(original))
   // Commands passed to `sh -c` and friends are quoted, so check them separately
   if (depth < 2) {
-    for (const m of command.matchAll(SHELL_C)) check(m[1] ?? m[2], depth + 1)
+    for (const m of command.matchAll(SHELL_C)) check(m[1] ?? m[2], depth + 1, original)
   }
 }
 

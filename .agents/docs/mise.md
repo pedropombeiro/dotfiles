@@ -37,7 +37,9 @@ and the explicit environments for the machine's role and platform.
 Platform fragments such as `tools.linux.toml` load through `auto_env`.
 
 Keep role-specific tools in `tools.personal.toml`, `tools.work.toml`, or
-`tools.nas.toml`. Use `tools.qts.toml` only for QTS compatibility constraints,
+`tools.nas.toml`. Put role-specific environment variables in `env.work.toml` or
+`env.nas.toml` rather than in shell files: the mise shims apply them to every tool
+call, whichever shell, script, or cron job makes it. Use `tools.qts.toml` only for QTS compatibility constraints,
 not as a substitute for the NAS role. The `miserc.toml##class.NAS,distro.qts`
 alternate enables both `nas` and `qts`; the existing QTS-only alternate remains
 the platform fallback. A fragment such as `tools.nas.toml` is loaded only when

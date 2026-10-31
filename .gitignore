@@ -111,6 +111,7 @@ Thumbs.db
 .pgsql_profile
 .profile
 .shellrc/login.d/brew.sh
+.shellrc/rc.d/1password.sh
 .shellrc/rc.d/aliases-nas.sh
 .shellrc/rc.d/docker.sh
 .shellrc/rc.d/go-qts.sh

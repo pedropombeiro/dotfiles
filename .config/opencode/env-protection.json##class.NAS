@@ -4,6 +4,7 @@
     "/share/CACHEDEV1_DATA/Container/secrets",
     "~/.config/op"
   ],
+  "manifests": ["/share/CACHEDEV1_DATA/Container/secrets.manifest.toml"],
   "secretFiles": [
     "/share/CACHEDEV1_DATA/Container/compose/*/.env",
     "/share/CACHEDEV1_DATA/Container/compose/*/*.env",

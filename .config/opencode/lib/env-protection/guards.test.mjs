@@ -143,6 +143,18 @@ test("only treats secret-looking .env keys as secrets", () => {
   expect(output).toContain("Europe/Lisbon");
 });
 
+test("keeps 1Password references, secret paths and parameters, but not secrets with slashes", () => {
+  const text = [
+    'password = "grafana-postgres/password"',
+    "token: op://NAS/hass/gitlab_pat",
+    "password_file: /run/secrets/bookorbit_postgres_password",
+    "const secret = (name) => readFileSync(name)",
+  ].join("\n");
+  expect(redacted(text, guards({ secretDirs: [], secretFiles: [] }))).toBe(text);
+  const slashed = `${fake("slash-1", 10)}/${fake("slash-2", 10)}`;
+  expect(redacted(`password: ${slashed}`, guards({ secretDirs: [], secretFiles: [] }))).not.toContain(slashed);
+});
+
 test("isHighEntropy rejects words and identifiers", () => {
   expect(isHighEntropy(HEX_KEY)).toBe(true);
   expect(isHighEntropy(PASSWORD)).toBe(true);
@@ -173,6 +185,30 @@ test("redacts every line of a multi-line .env value, and keeps parsing after it"
   for (const line of body) expect(redacted(`  ${line} (empty)`, g)).not.toContain(line);
   expect(redacted(body.join("\n"), g)).not.toContain(body[1]);
   expect(redacted(`token ${after}`, g)).not.toContain(after);
+});
+
+test("protects the [templates] targets of a secrets manifest, including new ones", () => {
+  const value = fake("rendered", 24);
+  write(
+    join(root, "repo/secrets.manifest.toml"),
+    '[templates]\n"compose/app/rendered.scrape.yml" = { template = "x.tpl" }\n\n[secrets]\n"compose/app/not-a-target.yml" = { ref = "a/b" }\n',
+  );
+  write(join(root, "repo/compose/app/rendered.scrape.yml"), `metrics_path: /m/${value}\n`);
+  write(join(root, "repo/compose/app/not-a-target.yml"), "name: plain\n");
+  const g = guards({ manifests: [join(root, "repo/secrets.manifest.toml")] });
+  expect(g.isProtectedFile(join(root, "repo/compose/app/rendered.scrape.yml"))).toBe(true);
+  expect(g.isProtectedFile(join(root, "repo/compose/app/not-a-target.yml"))).toBe(false);
+  expect(redacted(`path /m/${value}`, g)).not.toContain(value);
+  // A template added later is protected after the next refresh
+  const later = fake("later", 24);
+  write(join(root, "repo/compose/app/later.yml"), `token: ${later}\n`);
+  write(
+    join(root, "repo/secrets.manifest.toml"),
+    '[templates]\n"compose/app/rendered.scrape.yml" = { template = "x.tpl" }\n"compose/app/later.yml" = { template = "y.tpl" }\n',
+  );
+  clock += 15_000;
+  expect(redacted(`value ${later}`, g)).not.toContain(later);
+  expect(g.isProtectedFile(join(root, "repo/compose/app/later.yml"))).toBe(true);
 });
 
 test("redacts service account tokens from protected files and by format", () => {

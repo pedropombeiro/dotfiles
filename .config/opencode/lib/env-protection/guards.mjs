@@ -1,7 +1,7 @@
 // Guard logic for plugins/env-protection.js. It lives outside plugins/ so that OpenCode
 // doesn't load it as a plugin and so that guards.test.mjs can exercise it directly.
 import { existsSync, readdirSync, readFileSync, realpathSync, statSync } from "node:fs";
-import { basename, join, resolve, sep } from "node:path";
+import { basename, dirname, join, resolve, sep } from "node:path";
 
 export const SECRET_RULES = [
   ["gitlab-token", /\b(?:glpat|glptt|gldt|glrt|glcbt|glffct|gloas|glsoat|glagent|glptr)-[0-9A-Za-z_-]{20,}\b/g],
@@ -59,6 +59,16 @@ export const warningFor = (count) =>
   `WARNING: env-protection redacted ${count} secret value(s). ` +
   "Reference them via the file path or an environment variable, never the literal value.\n";
 
+// A reference to where a secret lives, not the secret: a 1Password item/field or
+// op://VAULT/item/field, or a path such as /run/secrets/name. Every segment after the
+// vault must be lowercase and not look random, so a base64 secret that contains "/" is
+// still redacted. Exact redaction of known values doesn't depend on this.
+const isReference = (value) => {
+  const path = value.replace(/^op:\/\/[^/]+\//, "").replace(/^\//, "");
+  if (!path.includes("/") && !value.startsWith("op://")) return false;
+  return path.split("/").every((segment) => /^[a-z0-9_.-]+$/.test(segment) && !isHighEntropy(segment));
+};
+
 export const redactStructuredSecrets = (text) => {
   if (typeof text !== "string") return { text, hits: [] };
   const hits = [];
@@ -80,7 +90,9 @@ export const redactStructuredSecrets = (text) => {
         /^\[REDACTED/.test(value) ||
         /^(?:x{3,}|\*{3,}|<[^>]+>|changeme|example|placeholder|dummy|fake|test|none|null)$/i.test(value) ||
         /[A-Za-z_][\w.]*\s*\(/.test(value) ||
-        /^[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)+$/.test(value)
+        /^[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)+$/.test(value) ||
+        isReference(value) ||
+        /^\([\w\s,]*\)$/.test(value)
       ) {
         return match;
       }
@@ -365,9 +377,38 @@ export const loadConfig = (configPath) => {
     resolve(process.env.XDG_CONFIG_HOME || resolve(process.env.HOME || "~", ".config"), "opencode", "env-protection.json");
   try {
     const config = JSON.parse(readFileSync(path, "utf8"));
-    return { secretDirs: config.secretDirs ?? [], secretFiles: config.secretFiles ?? [] };
+    return {
+      secretDirs: config.secretDirs ?? [],
+      secretFiles: config.secretFiles ?? [],
+      manifests: config.manifests ?? [],
+    };
   } catch {
-    return { secretDirs: [], secretFiles: [] };
+    return { secretDirs: [], secretFiles: [], manifests: [] };
+  }
+};
+
+/**
+ * The files a secrets manifest renders: the keys of its [templates] table, relative to the
+ * manifest's directory or starting with ~/. Only that table is read, with a line parser,
+ * since its keys are quoted paths. Never throws.
+ */
+export const manifestTargets = (manifestPath) => {
+  try {
+    const path = expandHome(manifestPath);
+    const targets = [];
+    let inTemplates = false;
+    for (const line of readFileSync(path, "utf8").split(/\r?\n/)) {
+      const table = line.match(/^\s*\[([^\]]+)\]\s*(?:#.*)?$/);
+      if (table) {
+        inTemplates = table[1].trim() === "templates";
+        continue;
+      }
+      const key = inTemplates && line.match(/^\s*"([^"]+)"\s*=/);
+      if (key) targets.push(key[1].startsWith("~/") ? expandHome(key[1]) : resolve(dirname(path), key[1]));
+    }
+    return targets;
+  } catch {
+    return [];
   }
 };
 
@@ -406,9 +447,10 @@ export const createGuards = ({ directory, worktree, config = loadConfig(), now =
   const ENV_FILE_TOKEN_PATTERN = /(?:^|[/\\])[^/\\]*\.env(?:\.[a-zA-Z0-9_.]+)?$/i;
 
   const secretDirs = realpaths(config.secretDirs);
-  const secretFilePatterns = config.secretFiles ?? [];
-  // Re-resolved on refresh, so a protected file that appears later is covered.
-  let secretFiles = realpaths(secretFilePatterns);
+  // Listed files, plus the targets of each manifest's [templates]. Re-resolved on refresh,
+  // so a protected file or a new template that appears later is covered.
+  const secretFilePatterns = () => [...(config.secretFiles ?? []), ...(config.manifests ?? []).flatMap(manifestTargets)];
+  let secretFiles = realpaths(secretFilePatterns());
 
   const resolveAgainst = (filePath, base) => {
     try {
@@ -479,7 +521,7 @@ export const createGuards = ({ directory, worktree, config = loadConfig(), now =
   const refresh = () => {
     if (now() - checkedAt < REFRESH_INTERVAL_MS) return;
     checkedAt = now();
-    secretFiles = realpaths(secretFilePatterns);
+    secretFiles = realpaths(secretFilePatterns());
     const files = protectedFiles();
     const nextSignature = files
       .map((file) => {

@@ -159,6 +159,22 @@ test("parses .pgpass and YAML secret files", () => {
   expect(output).toContain("homeassistant");
 });
 
+test("redacts every line of a multi-line .env value, and keeps parsing after it", () => {
+  // Armor lines are built at runtime, so gitleaks doesn't see a key block in the source.
+  const armor = (word) => `-----${word} PGP ${["PRIVATE", "KEY", "BLOCK"].join(" ")}-----`;
+  const body = [fake("pgp-1", 64, "base64"), fake("pgp-2", 64, "base64"), fake("pgp-3", 42, "base64")];
+  const after = fake("after-key", 24);
+  write(
+    join(root, "repo/compose/renovate/.env"),
+    `RENOVATE_GIT_PRIVATE_KEY="${armor("BEGIN")}\n\n${body.join("\n")}\n${armor("END")}"\nRENOVATE_TOKEN=${after}\n`,
+  );
+  const g = guards();
+  // An awk that took each line for a key printed the lines one by one.
+  for (const line of body) expect(redacted(`  ${line} (empty)`, g)).not.toContain(line);
+  expect(redacted(body.join("\n"), g)).not.toContain(body[1]);
+  expect(redacted(`token ${after}`, g)).not.toContain(after);
+});
+
 test("redacts service account tokens from protected files and by format", () => {
   expect(redacted(`token ${OPS_TOKEN}`)).not.toContain(OPS_TOKEN);
   const other = `ops_${fake("ops-other-1", 43)}${fake("ops-other-2", 43)}`;

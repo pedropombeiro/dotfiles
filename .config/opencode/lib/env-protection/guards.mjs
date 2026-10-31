@@ -149,7 +149,7 @@ const fileFormat = (filePath) => {
   return "whole";
 };
 
-const unquote = (value) => value.trim().replace(/^(["'])(.*)\1$/, "$2");
+const unquote = (value) => value.trim().replace(/^(["'])([\s\S]*)\1$/, "$2");
 
 /** The secret values a file holds, by format. Never throws. */
 export const fileSecretValues = (filePath, { whole = false } = {}) => {
@@ -163,14 +163,30 @@ export const fileSecretValues = (filePath, { whole = false } = {}) => {
       return value ? [value] : [];
     }
     const values = [];
-    for (const line of text.split(/\r?\n/)) {
+    const lines = text.split(/\r?\n/);
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
       if (format === "pgpass") {
         const fields = line.split(":");
         if (fields.length >= 5 && !line.startsWith("#")) values.push(fields.slice(4).join(":"));
       } else if (format === "env") {
         const match = line.match(/^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)\s*$/);
-        if (match && SECRET_ENV_KEY.test(match[1]) && !NON_SECRET_ENV_KEY.test(match[1])) {
-          values.push(unquote(match[2]));
+        if (!match) continue;
+        // A quoted value can span lines, such as a PEM or PGP key. Join the lines up to the
+        // closing quote, so they aren't read as keys, whatever the key's name.
+        let raw = match[2];
+        const quote = raw.match(/^(["'])/)?.[1];
+        if (quote && (raw.trimEnd().length === 1 || !raw.trimEnd().endsWith(quote))) {
+          while (i + 1 < lines.length) {
+            raw += `\n${lines[++i]}`;
+            if (lines[i].trimEnd().endsWith(quote)) break;
+          }
+        }
+        if (SECRET_ENV_KEY.test(match[1]) && !NON_SECRET_ENV_KEY.test(match[1])) {
+          const value = unquote(raw);
+          values.push(value);
+          // Each line of a multi-line value on its own, for output that prints one line
+          if (value.includes("\n")) values.push(...value.split("\n").map((part) => part.trim()));
         }
       } else {
         const match = line.match(/^\s*([A-Za-z_][\w.-]*)\s*:\s*(\S.*?)\s*$/);

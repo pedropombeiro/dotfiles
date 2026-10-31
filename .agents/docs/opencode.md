@@ -51,13 +51,38 @@ call actually prompted. A tool name without its own rule does not prove a prompt
 ## Secret Protection
 
 `~/.config/opencode/plugins/env-protection.js` is a plain tracked file, so it is active on
-every machine. It blocks direct access to configured credential files, redacts values read
-through shell commands, detects common structured tokens, and scrubs replayed message
-history. It refuses any tool call whose input contains a literal structured secret, except
-`read`, `grep`, and `glob`, which stay local. That covers file writes, MCP calls through
-`lazy-mcp`, web search and fetch, and subagent prompts. Shell commands are checked only
-when they print or write text (`echo`, `printf`, `tee`, heredocs), because commands such as
-`curl -H` can legitimately pass a token.
+every machine. It's a thin entry point: the logic lives in
+`~/.config/opencode/lib/env-protection/guards.mjs`, outside the plugin discovery path, with
+tests in `guards.test.mjs`. Run them with `node --test` from that directory. Bun doesn't run
+on the NAS.
+
+`env-protection.json` lists the protected paths per machine. `secretDirs` holds directories
+whose every file is one secret. `secretFiles` holds individual files, parsed by format:
+`.pgpass` (password field), `.env` (keys that look secret, not `*_HEADER`), YAML (every key
+except `*user`), and anything else as one value. Both lists accept `~/` and `*` path
+segments. The plugin:
+
+- Blocks file tools on protected paths and `.env` files. `.env.example`, `.sample`,
+  `.template`, and `.tpl` stay readable.
+- Refuses shell commands that dump or encode a protected path, such as `xxd`, `od`,
+  `strings`, `base64`, `head -c`, `tail -c`, `dd`, and `cut -c`. Relative paths resolve
+  against the shell tool's `workdir`. Metadata commands such as `ls -l`, `stat`, and
+  `test -r` still work.
+- Redacts every protected value from all tool output and from replayed history, whether or
+  not the command named the file. It matches each value and its hex, base64, base64url, and
+  URL-encoded forms, plus any 12-character run of a high-entropy value or its hex form,
+  ignoring whitespace. Values shorter than 8 characters and `*_user` files aren't redacted.
+  Composite values such as URIs contribute their secret-looking parts, not host names. The
+  index refreshes at most every 10 seconds when protected files change.
+- Detects common structured tokens, including 1Password service account tokens (`ops_`).
+- Refuses any tool call whose input contains a structured secret or a protected value,
+  except `read`, `grep`, and `glob`, which stay local. That covers file writes, MCP calls
+  through `lazy-mcp`, web search and fetch, and subagent prompts. Shell commands are checked
+  only when they print or write text (`echo`, `printf`, `tee`, heredocs), because commands
+  such as `curl -H` can legitimately pass a token.
+
+These are guardrails against mistakes, not a boundary: an agent running as the same user can
+still read a protected file in ways the plugin doesn't recognize.
 
 Home-directory path rules are `permissions` entries with a `read` or `edit` action, for
 example `{ "action": "read", "resource": "~/.ssh/*", "effect": "deny" }`. OpenCode expands
@@ -223,7 +248,10 @@ requires per-machine Basic Auth credentials, validated by Traefik before it forw
 OTLP requests to Alloy.
 
 - `opencode.json##default` (Personal and NAS) exports metrics, events, and traces. Traces
-  include prompts, model output, tool arguments, and tool output.
+  include prompts, model output, tool arguments, and tool output. Tool output reaches the
+  exporter through `session.tool.success`, after `env-protection` has redacted it, so traces
+  hold the redacted text. The plugin doesn't redact prompts or model output. Tempo keeps
+  traces for 7 days (`block_retention` in the NAS repo's `compose/grafana/tempo/tempo.yaml`).
 - `opencode.json##class.Work` exports metrics only. Traces carry content, and events carry
   commands, paths, and error text, so keep Work content off personal infrastructure.
 - `~/.shellrc/rc.d/opencode.sh` sets `OPENCODE_RESOURCE_ATTRIBUTES` to the short host name.

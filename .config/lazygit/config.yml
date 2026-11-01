@@ -630,9 +630,10 @@ customCommands:
             description: "Adding missing tests or correcting existing tests"
             value: "test"
     command: |
-      msg=$(~/.local/bin/git-ai-commit-msg --no-commit {{ if .Form.Type }}--type "{{ .Form.Type }}"{{ end }})
-      echo "$msg"
-      printf "%s\n" "$msg" > {{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT
+      msg=$(~/.local/bin/git-ai-commit-msg --no-commit {{ if .Form.Type }}--type "{{ .Form.Type }}"{{ end }}) || exit "$?"
+      [ -n "$msg" ] || exit 1
+      printf "%s\n" "$msg"
+      printf "%s\n" "$msg" > "{{ .SelectedWorktree.GitDir }}/LAZYGIT_PENDING_COMMIT"
     loadingText: "opencode is analyzing changes..."
     context: files
     output: log

@@ -26,6 +26,10 @@ do_commit=1
 while [ $# -gt 0 ]; do
   case "$1" in
   --type)
+    if [ $# -lt 2 ]; then
+      echo "error: --type requires a value" >&2
+      exit 1
+    fi
     type="$2"
     shift 2
     ;;
@@ -40,7 +44,8 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-model="${OPENCODE_COMMIT_MODEL:-${OPENCODE_MODEL:-gitlab/duo-chat-gpt-6-luna}}"
+# Use a small model for this text-only task.
+model="${OPENCODE_COMMIT_MODEL:-${OPENCODE_MODEL:-gitlab/duo-chat-gpt-5-4-mini}}"
 
 # Fall back to local model when offline
 _offline_model="${OPENCODE_OFFLINE_MODEL:-ollama/gemma4:e2b}"
@@ -51,16 +56,49 @@ fi
 unset _offline_model
 
 # Use yadm when running from the home directory (dotfiles repo)
-if [ "$(pwd)" = "$HOME" ] || { ! git rev-parse --git-dir >/dev/null 2>&1 && yadm status >/dev/null 2>&1; }; then
+if [ "$(pwd -P)" = "$(cd "$HOME" && pwd -P)" ] || { ! git rev-parse --git-dir >/dev/null 2>&1 && yadm rev-parse --git-dir >/dev/null 2>&1; }; then
   git_cmd="yadm"
 else
   git_cmd="git"
 fi
 
-tmpfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-msg.XXXXXX")
-statusfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-status.XXXXXX")
+# Provider settings may contain substituted credentials.
+umask 077
+run_dir=$(mktemp -d "${TMPDIR:-/tmp}/git-ai-commit-msg.XXXXXX")
+tmpfile="$run_dir/diff"
+statusfile="$run_dir/staged-status"
+msgfile="$run_dir/message"
+session_id=""
+run_pid=""
+progress_active=0
+cleanup() {
+  result=$?
+  trap - EXIT HUP INT TERM
+  if [ -n "$run_pid" ]; then
+    kill "$run_pid" 2>/dev/null || :
+    wait "$run_pid" 2>/dev/null || :
+  fi
+  if [ "$progress_active" -eq 1 ]; then
+    iterm2_progress -c || :
+  fi
+  if [ -n "$session_id" ]; then
+    # Keep the private config alive until session deletion finishes.
+    (
+      (run_opencode session delete --standalone "$session_id") || :
+      rm -rf "$run_dir"
+    ) </dev/null >/dev/null 2>&1 &
+  else
+    rm -rf "$run_dir"
+  fi
+  exit "$result"
+}
+trap cleanup EXIT
+trap 'exit 129' HUP
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
 tmp_opencode_state_root="${TMPDIR:-/tmp}/opencode-state"
-tmp_opencode_state="$tmp_opencode_state_root/$UID"
+tmp_opencode_state="$tmp_opencode_state_root/$(id -u)"
 opencode_commit_data_root="${XDG_DATA_HOME:-$HOME/.local/share}"
 opencode_commit_data="$opencode_commit_data_root/opencode-commit"
 tmp_opencode_state_ttl_seconds=$((7 * 24 * 60 * 60))
@@ -76,7 +114,6 @@ if [ -d "$tmp_opencode_state" ]; then
   fi
 fi
 mkdir -p "$tmp_opencode_state"
-trap 'rm -f "$tmpfile" "$statusfile"' EXIT
 
 opencode_data_dir="$opencode_commit_data/opencode"
 mkdir -p "$opencode_data_dir"
@@ -89,17 +126,15 @@ if [ ! -t 0 ]; then
   cat >"$tmpfile"
 fi
 if [ ! -s "$tmpfile" ]; then
-  $git_cmd diff --cached >"$tmpfile"
+  $git_cmd diff --cached --no-ext-diff --no-color >"$tmpfile"
+  $git_cmd diff --cached --name-status --no-ext-diff --no-color >"$statusfile"
 fi
 if [ ! -s "$tmpfile" ]; then
   echo "error: no diff provided on stdin and no staged changes" >&2
   exit 1
 fi
 
-# Capture git status so the agent can see renames, additions, deletions, etc.
-$git_cmd status >"$statusfile"
-
-prompt="Based on the attached git status output and diff, write a commit message with a subject line (max 72 chars), blank line, then a body explaining what and why (wrap at 72 chars)."
+prompt="Based on the attached diff and any staged name/status metadata, write a commit message with a subject line (max 72 chars), blank line, then a body explaining what and why (wrap at 72 chars)."
 if [ "$type" != "none" ]; then
   if [ -n "$type" ]; then
     prompt="$prompt Use conventional commit format. The subject line must be '$type(<scope>): <subject>'. Derive the scope from the primary area of the codebase affected (e.g. file, module, or component name). Only omit the scope if the change is truly global."
@@ -109,35 +144,90 @@ if [ "$type" != "none" ]; then
 fi
 prompt="$prompt CRITICAL: Your response must contain ONLY the commit message itself. No explanations, no preamble, no thinking, no markdown. Start directly with the subject line."
 
-iterm2_progress -i
 # Preserve mise's real state and data dirs before overriding XDG_STATE_HOME
 # and XDG_DATA_HOME for opencode isolation. Must be computed beforehand
 # because zsh evaluates command-prefix assignments left-to-right.
 mise_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/mise"
 mise_data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/mise"
-# --standalone runs a private server, so the isolated XDG dirs never start a
-# second background service that would compete for the shared service port.
-# The inline config disables every non-built-in plugin (`-*`, then `opencode.*`
-# re-enables the built-ins, which include the providers), so a commit message
-# does not load the GitLab, notifier, WakaTime, and local guard plugins.
-msg=$(OPENCODE_TERMINAL_PROGRESS=0 OPENCODE_CONFIG_CONTENT='{"plugins":["-*","opencode.*"]}' XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" MISE_STATE_DIR="$mise_state_dir" MISE_DATA_DIR="$mise_data_dir" opencode run --standalone -m "$model" --agent build "$prompt" -f "$statusfile" -f "$tmpfile")
-iterm2_progress -c
-rm -rf "$opencode_commit_data/opencode/log"
 
-if [ -z "$msg" ]; then
+# Read normalized provider settings so JSONC, substitutions, and provider
+# package overrides keep working without copying the rest of the global config.
+# This command discovers config; it does not submit a model request.
+(
+  cd "$run_dir" || exit 1
+  OPENCODE_DISABLE_PROJECT_CONFIG=1 \
+    OPENCODE_CONFIG_CONTENT='{"plugins":["-*","opencode.*"]}' \
+    XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" \
+    MISE_STATE_DIR="$mise_state_dir" MISE_DATA_DIR="$mise_data_dir" \
+    opencode debug config --standalone >"$run_dir/sources.json"
+)
+mkdir "$run_dir/config"
+jq --arg provider "${model%%/*}" '
+  (reduce .[] as $source ({}; . * ($source.info.providers // {}))) as $providers |
+  {
+    providers: (if $providers[$provider] then {($provider): $providers[$provider]} else {} end),
+    plugins: ["-*", "opencode.*"],
+    snapshots: false,
+    update: "disable",
+    agents: {commit: {
+      mode: "primary",
+      system: "You write git commit messages. Output only the message.",
+      permissions: [{action: "*", resource: "*", effect: "deny"}]
+    }}
+  }
+' "$run_dir/sources.json" >"$run_dir/config/opencode.json"
+rm -f "$run_dir/sources.json"
+
+# A private config directory excludes global instructions, agents, and MCP.
+# Project discovery is disabled even when TMPDIR is inside a repository.
+# --standalone keeps this operation off the shared background service.
+run_opencode() {
+  cd "$run_dir" || exit 1
+  unset OPENCODE_CONFIG
+  exec env OPENCODE_TERMINAL_PROGRESS=0 \
+    OPENCODE_CONFIG_DIR="$run_dir/config" \
+    OPENCODE_DISABLE_PROJECT_CONFIG=1 \
+    OPENCODE_CONFIG_CONTENT='{}' \
+    OPENCODE_CLI_CONFIG_CONTENT='{"plugins":["-*"]}' \
+    XDG_DATA_HOME="$opencode_commit_data" \
+    XDG_STATE_HOME="$tmp_opencode_state" \
+    MISE_STATE_DIR="$mise_state_dir" \
+    MISE_DATA_DIR="$mise_data_dir" \
+    opencode "$@"
+}
+
+progress_active=1
+iterm2_progress -i || :
+session_id="ses_commit$(date +%s)$$"
+set -- -f "$tmpfile"
+if [ -s "$statusfile" ]; then
+  set -- "$@" -f "$statusfile"
+fi
+# --title skips the extra model call that otherwise generates a session title.
+run_opencode run --standalone --session "$session_id" --title commit -m "$model" --agent commit "$prompt" "$@" </dev/null >"$msgfile" &
+run_pid=$!
+if wait "$run_pid"; then
+  run_pid=""
+else
+  result=$?
+  run_pid=""
+  exit "$result"
+fi
+iterm2_progress -c || :
+progress_active=0
+msg=$(cat "$msgfile")
+
+if ! LC_ALL=C grep -q '[^[:space:]]' "$msgfile"; then
   echo "error: opencode returned an empty response" >&2
   exit 1
 fi
 
 if [ "$do_commit" -eq 1 ]; then
-  msgfile=$(mktemp "${TMPDIR:-/tmp}/git-ai-commit-msg.XXXXXX")
-  # shellcheck disable=SC2064
-  trap "rm -f \"$tmpfile\" \"$statusfile\" \"$msgfile\"" EXIT
   printf "%s\n" "$msg" >"$msgfile"
   printf "\n── commit message ──────────────────────────────────────────────────────\n" >&2
   printf "%s\n" "$msg" >&2
   printf "────────────────────────────────────────────────────────────────────────\n\n" >&2
   $git_cmd commit -F "$msgfile"
 else
-  echo "$msg"
+  printf '%s\n' "$msg"
 fi

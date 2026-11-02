@@ -18,11 +18,11 @@ CARGO_HOME = "/opt/share/cargo"
 
 [tools]
 # Python uses the GNU precompiled build selected above.
-python = "3.15.0"
+python = "3.15.2"
 # Use the unofficial glibc-217 Node build.
 node = "23.7.0"
 # Include the musl target for tools built from source on QTS.
-rust = { version = "1.99.0", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
+rust = { version = "1.99.1", profile = "minimal", targets = "x86_64-unknown-linux-musl" }
 # greenlet's wheels need glibc 2.24+, so it builds from source here. Entware GCC's
 # fallback limits.h sets MB_LEN_MAX=1; load the libc limits first to satisfy glibc.
 "pipx:neovim-remote" = { version = "latest", install_env = { CPPFLAGS = "-include /opt/include/limits.h" } }
@@ -33,7 +33,7 @@ rust = { version = "1.99.0", profile = "minimal", targets = "x86_64-unknown-linu
 # Build ets from source on QTS instead of using the shared release binary.
 "go:github.com/zmwangx/ets" = "0.2.2"
 # Upstream ipinfo binaries need glibc 2.32+. Build a static binary instead.
-"go:github.com/ipinfo/cli/ipinfo" = { version = "ipinfo-3.3.2", install_env = { CGO_ENABLED = "0" } }
+"go:github.com/ipinfo/cli/ipinfo" = { version = "ipinfo-3.3.4", install_env = { CGO_ENABLED = "0" } }
 # Omitted on QTS: rustnet needs glibc 2.32+ and libpcap.
 
 # Entware has no patchutils package and upstream publishes only source

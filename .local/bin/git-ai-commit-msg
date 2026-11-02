@@ -55,12 +55,24 @@ if [ "$model" != "$_offline_model" ] && ! ping -c 1 -W 2 1.1.1.1 >/dev/null 2>&1
 fi
 unset _offline_model
 
-# Use yadm when running from the home directory (dotfiles repo)
-if [ "$(pwd -P)" = "$(cd "$HOME" && pwd -P)" ] || { ! git rev-parse --git-dir >/dev/null 2>&1 && yadm rev-parse --git-dir >/dev/null 2>&1; }; then
+# Use yadm when running from the home directory (dotfiles repo).
+yadm_repo="${XDG_DATA_HOME:-$HOME/.local/share}/yadm/repo.git"
+if [ "$(pwd -P)" = "$(cd "$HOME" && pwd -P)" ] || { [ -d "$yadm_repo" ] && ! git rev-parse --git-dir >/dev/null 2>&1; }; then
   git_cmd="yadm"
 else
   git_cmd="git"
 fi
+
+# The yadm wrapper takes about 0.7 s per call, while git against its bare
+# repository takes about 35 ms. Read-only commands skip the wrapper; only the
+# commit itself uses yadm.
+read_git() {
+  if [ "$git_cmd" = "yadm" ] && [ -d "$yadm_repo" ]; then
+    git --git-dir="$yadm_repo" --work-tree="$HOME" "$@"
+  else
+    $git_cmd "$@"
+  fi
+}
 
 # Provider settings may contain substituted credentials.
 umask 077
@@ -126,8 +138,8 @@ if [ ! -t 0 ]; then
   cat >"$tmpfile"
 fi
 if [ ! -s "$tmpfile" ]; then
-  $git_cmd diff --cached --no-ext-diff --no-color >"$tmpfile"
-  $git_cmd diff --cached --name-status --no-ext-diff --no-color >"$statusfile"
+  read_git diff --cached --no-ext-diff --no-color >"$tmpfile"
+  read_git diff --cached --name-status --no-ext-diff --no-color >"$statusfile"
 fi
 if [ ! -s "$tmpfile" ]; then
   echo "error: no diff provided on stdin and no staged changes" >&2
@@ -150,42 +162,112 @@ prompt="$prompt CRITICAL: Your response must contain ONLY the commit message its
 mise_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/mise"
 mise_data_dir="${XDG_DATA_HOME:-$HOME/.local/share}/mise"
 
-# Read normalized provider settings so JSONC, substitutions, and provider
-# package overrides keep working without copying the rest of the global config.
-# This command discovers config; it does not submit a model request.
-(
-  cd "$run_dir" || exit 1
-  OPENCODE_DISABLE_PROJECT_CONFIG=1 \
-    OPENCODE_CONFIG_CONTENT='{"plugins":["-*","opencode.*"]}' \
-    XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" \
-    MISE_STATE_DIR="$mise_state_dir" MISE_DATA_DIR="$mise_data_dir" \
-    opencode debug config --standalone >"$run_dir/sources.json"
-)
-mkdir "$run_dir/config"
-jq --arg provider "${model%%/*}" '
-  (reduce .[] as $source ({}; . * ($source.info.providers // {}))) as $providers |
-  {
-    providers: (if $providers[$provider] then {($provider): $providers[$provider]} else {} end),
-    plugins: ["-*", "opencode.*"],
-    snapshots: false,
-    update: "disable",
-    agents: {commit: {
-      mode: "primary",
-      system: "You write git commit messages. Output only the message.",
-      permissions: [{action: "*", resource: "*", effect: "deny"}]
-    }}
-  }
-' "$run_dir/sources.json" >"$run_dir/config/opencode.json"
-rm -f "$run_dir/sources.json"
+# The run uses a private config directory that holds only the selected
+# provider's settings and the commit agent. It excludes global instructions,
+# agents, and MCP servers. Deriving it takes about 0.45 s (`opencode debug
+# config` plus `jq`), so it is cached per provider and rebuilt when a config
+# source changes, after a failed run, or on a new day (which bounds staleness
+# after an OpenCode upgrade).
+provider="${model%%/*}"
+config_root="$opencode_commit_data/config"
+config_dir="$config_root/$provider"
+config_key_file="$config_root/$provider.key"
+config_cached=0
 
-# A private config directory excludes global instructions, agents, and MCP.
+config_sources() {
+  _cfg_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+  for _f in "${OPENCODE_CONFIG:-}" \
+    "$_cfg_home/opencode/opencode.json" "$_cfg_home/opencode/opencode.jsonc" \
+    "/Library/Application Support/opencode/opencode.json" \
+    "/Library/Application Support/opencode/opencode.jsonc" \
+    "/etc/opencode/opencode.json" "/etc/opencode/opencode.jsonc"; do
+    if [ -n "$_f" ] && [ -f "$_f" ]; then
+      printf '%s\n' "$_f"
+    fi
+  done
+}
+
+# Substitutions such as {env:NAME} and {file:PATH} resolve at load time, so a
+# cached copy could go stale without any source file changing.
+config_cacheable=1
+config_key="$provider $(date +%Y%m%d)"
+while IFS= read -r _f; do
+  [ -n "$_f" ] || continue
+  if grep -Eq '\{(env|file):' "$_f"; then
+    config_cacheable=0
+  fi
+  if _meta=$(stat -Lf '%m %z' "$_f" 2>/dev/null); then
+    :
+  else
+    _meta=$(stat -Lc '%Y %s' "$_f")
+  fi
+  config_key="$config_key
+$_f $_meta"
+done <<EOF
+$(config_sources)
+EOF
+
+# Disabling plugins that this run never uses (tools, sidebar, MCP, and every
+# provider except the two this script selects) trims startup by about 0.25 s,
+# and skips network work such as the GitHub Copilot model sync. The `dynamic`
+# provider plugin is required for `aisdk:` provider packages. Other providers
+# keep the full built-in set.
+case "$provider" in
+gitlab | ollama)
+  config_plugins='["-*","opencode.*","-opencode.provider.*","opencode.provider.dynamic","opencode.provider.gitlab","opencode.provider.ollama","-opencode.tool.*","-opencode.sidebar.*","-opencode.home.*","-opencode.mcp.*","-opencode.simulation.*"]'
+  ;;
+*)
+  config_plugins='["-*","opencode.*"]'
+  ;;
+esac
+
+if [ "$config_cacheable" -eq 0 ]; then
+  config_dir="$run_dir/config"
+fi
+if [ "$config_cacheable" -eq 1 ] && [ -f "$config_dir/opencode.json" ] &&
+  [ -f "$config_key_file" ] && [ "$(cat "$config_key_file")" = "$config_key" ]; then
+  config_cached=1
+else
+  mkdir -p "$config_dir"
+  # `debug config` normalizes JSONC, substitutions, and provider package
+  # overrides. It discovers configuration; it does not submit a model request.
+  (
+    cd "$run_dir" || exit 1
+    OPENCODE_DISABLE_PROJECT_CONFIG=1 \
+      OPENCODE_CONFIG_CONTENT='{"plugins":["-*","opencode.*"]}' \
+      XDG_DATA_HOME="$opencode_commit_data" XDG_STATE_HOME="$tmp_opencode_state" \
+      MISE_STATE_DIR="$mise_state_dir" MISE_DATA_DIR="$mise_data_dir" \
+      opencode debug config --standalone >"$run_dir/sources.json"
+  )
+  jq --arg provider "$provider" --argjson plugins "$config_plugins" '
+    (reduce .[] as $source ({}; . * ($source.info.providers // {}))) as $providers |
+    {
+      providers: (if $providers[$provider] then {($provider): $providers[$provider]} else {} end),
+      plugins: $plugins,
+      snapshots: false,
+      update: "disable",
+      agents: {commit: {
+        mode: "primary",
+        system: "You write git commit messages. Output only the message.",
+        permissions: [{action: "*", resource: "*", effect: "deny"}]
+      }}
+    }
+  ' "$run_dir/sources.json" >"$config_dir/opencode.json.$$"
+  rm -f "$run_dir/sources.json"
+  mv -f "$config_dir/opencode.json.$$" "$config_dir/opencode.json"
+  if [ "$config_cacheable" -eq 1 ]; then
+    printf '%s\n' "$config_key" >"$config_key_file.$$"
+    mv -f "$config_key_file.$$" "$config_key_file"
+  fi
+fi
+
 # Project discovery is disabled even when TMPDIR is inside a repository.
 # --standalone keeps this operation off the shared background service.
 run_opencode() {
   cd "$run_dir" || exit 1
   unset OPENCODE_CONFIG
   exec env OPENCODE_TERMINAL_PROGRESS=0 \
-    OPENCODE_CONFIG_DIR="$run_dir/config" \
+    OPENCODE_CONFIG_DIR="$config_dir" \
     OPENCODE_DISABLE_PROJECT_CONFIG=1 \
     OPENCODE_CONFIG_CONTENT='{}' \
     OPENCODE_CLI_CONFIG_CONTENT='{"plugins":["-*"]}' \
@@ -211,6 +293,10 @@ if wait "$run_pid"; then
 else
   result=$?
   run_pid=""
+  # A stale cached config can cause a failure; rebuild it on the next run.
+  if [ "$config_cached" -eq 1 ]; then
+    rm -f "$config_key_file"
+  fi
   exit "$result"
 fi
 iterm2_progress -c || :

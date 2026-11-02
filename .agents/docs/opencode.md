@@ -221,6 +221,29 @@ every `oc` launch uses a private server instead of the shared service, and it di
 tools that run plain `opencode`, such as `opencode.nvim`. Reserve `$OPENCODE_MODEL` for
 per-project overrides in a project's mise config.
 
+## Commit message generator
+
+`~/.local/bin/git-ai-commit-msg` backs Lazygit's `Ctrl+G` command. It runs `opencode run
+--standalone` against its own data directory (`~/.local/share/opencode-commit`), so it never
+touches the shared service or its session history. Each run deletes its session afterwards.
+
+- **Private config**: the run uses `OPENCODE_CONFIG_DIR` pointing at a derived config that holds
+  only the selected provider's settings and a `commit` agent with every tool denied. Global
+  instructions, agents, and MCP servers stay out of the prompt. Deriving the config costs about
+  0.45 s, so it is cached in `opencode-commit/config/<provider>/`. The cache is rebuilt when a
+  global or managed config file changes, after a failed run, and once a day. A config with
+  `{env:...}` or `{file:...}` substitutions is never cached, because those resolve at load time.
+- **Plugins**: for the `gitlab` and `ollama` providers, the derived config disables the built-in
+  tool, sidebar, MCP, and other provider plugins, which saves about 0.25 s. `aisdk:` provider
+  packages still need `opencode.provider.dynamic`, and `opencode.models.dev` must stay enabled.
+- **yadm**: the `yadm` wrapper takes about 0.7 s per call, while `git` against
+  `~/.local/share/yadm/repo.git` takes about 35 ms. Read-only commands in the script use `git
+  --git-dir ... --work-tree "$HOME"`. Only the commit itself calls `yadm`. Avoid `yadm` in any
+  interactive hot path.
+- **Model**: `gitlab/duo-chat-gpt-5-4-mini`. `haiku-5-5` performs the same, `gpt-6-luna` is
+  slower, and `haiku-4-5` is erratic and skips the scope. A trivial prompt still takes about
+  1.4 s on the model side, so the model request sets the floor.
+
 ## Plugin Version Pinning
 
 npm plugins in `opencode.json` and `cli.base.json` are pinned to exact versions, not `@latest`.

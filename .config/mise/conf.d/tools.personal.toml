@@ -1,7 +1,7 @@
 [tools]
 # ── Runtimes ──────────────────────────────────────────────────────────
 # Ruby runtime. The Work profile declares its own backend policy and version.
-ruby = "4.0.7"
+ruby = "4.0.9"
 # Go toolchain. Mason builds Go-based tools such as gopls and jsonnetfmt.
 go = "latest"
 # ── Rust tooling ──────────────────────────────────────────────────────

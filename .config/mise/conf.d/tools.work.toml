@@ -18,9 +18,9 @@ includes = ["~/.config/mise/tasks", "~/.config/mise/tasks-work"]
 [tools]
 # ── Runtimes & infra ──────────────────────────────────────────────────
 # Global Ruby runtime, installed from mise's precompiled binaries.
-ruby = "4.0.7"
+ruby = "4.0.9"
 # Go toolchain
-go = "1.27.1"
+go = "1.27.3"
 # OLAP database
 clickhouse = "25.12.11.4-stable"
 # Zero-trust infrastructure access (SSH/k8s/DB)
@@ -35,10 +35,10 @@ teleport-community = "17"
 # GitLab CLI
 glab = "latest"
 # Local Kubernetes environments for GitLab development
-"gitlab:gitlab-org/caproni" = "v4.35.1"
+"gitlab:gitlab-org/caproni" = "v4.35.3"
 # VM and container runtime used by Caproni on macOS
 colima = "0.10.3"
-lima = "2.2.0"
+lima = "2.2.1"
 # Run local processes with Kubernetes network and filesystem context
 mirrord = "3.274.0"
 # Query GitLab's Kibana/Elasticsearch logs with the Kibana SSO session

@@ -8,7 +8,7 @@
 "pipx:pgcli" = { version = "latest", uvx_args = "--with psycopg2-binary --with psycopg-binary" }
 
 [tools."github:grafana/mcp-grafana"]
-version = "2.0.2"
+version = "2.1.1"
 lazy = true
 lazy_bins = ["mcp-grafana"]
 exe = "mcp-grafana"

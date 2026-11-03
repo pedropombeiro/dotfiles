@@ -11,7 +11,6 @@
 version = "2.1.1"
 lazy = true
 lazy_bins = ["mcp-grafana"]
-exe = "mcp-grafana"
 
 [tools."github:grafana/mcp-grafana".platforms]
 # Select the native CLI archive, not the similarly named MCP bundle assets.

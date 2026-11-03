@@ -1,6 +1,7 @@
 {
   "settings": {
     "dictation_hotkey": "right-command",
+    "indicator_position": "bottom",
     "labs.benchmark_details": true,
     "labs.filler_words": true,
     "labs.history_stats": true,
@@ -9,7 +10,9 @@
     "labs.parakeet_ultra": true,
     "labs.spoken_formatting": true,
     "labs.spoken_symbols": true,
-    "recording_audio_behavior": "duck"
+    "pause_browser_media": true,
+    "recording_audio_behavior": "duck",
+    "release_microphone_while_idle": true
   },
   "vocabulary": [],
   "transcription": {

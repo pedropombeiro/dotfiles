@@ -1,6 +1,19 @@
 {
   "settings": {
-    "dictation_hotkey": "right-command"
+    "dictation_hotkey": "right-command",
+    "labs.benchmark_details": true,
+    "labs.filler_words": true,
+    "labs.history_stats": true,
+    "labs.live_text": true,
+    "labs.output_fixes": true,
+    "labs.parakeet_ultra": true,
+    "labs.spoken_formatting": true,
+    "labs.spoken_symbols": true,
+    "recording_audio_behavior": "duck"
   },
-  "vocabulary": []
+  "vocabulary": [],
+  "transcription": {
+    "model": "parakeet_ultra",
+    "language": "en"
+  }
 }

@@ -2,9 +2,10 @@
 #
 # Sync Hex (https://anoma.ly/hex) settings with ~/.config/yadm/hex-settings.json.
 #
-#   apply  Start Hex, apply the tracked settings and vocabulary, and save a snapshot.
-#   dump   Add the settings changed since the snapshot, and the current vocabulary,
-#          to the tracked file.
+#   apply  Start Hex, apply the tracked settings, vocabulary, and speech model, and
+#          save a snapshot.
+#   dump   Add the settings changed since the snapshot, the current vocabulary, and
+#          the speech model to the tracked file.
 #
 # Hex replaces settings.json on every save and mixes it with machine state, so the
 # tracked file holds only overrides. Hex doesn't report its defaults, so dump finds
@@ -53,6 +54,13 @@ apply() {
         "${hex}" vocabulary add "${term}" >/dev/null
       fi
     done
+    # After the settings, so a model behind a Labs toggle is available. Downloads it
+    # if it's missing, and does nothing if it's already in use.
+    model="$(jq -r '.transcription.model // empty' "${tracked}")"
+    if [[ -n ${model} ]]; then
+      language="$(jq -r '.transcription.language // empty' "${tracked}")"
+      "${hex}" model install "${model}" ${language:+--language "${language}"}
+    fi
   fi
 
   "${hex}" launch-at-login on >/dev/null
@@ -71,26 +79,33 @@ dump() {
   fi
 
   current="$(current_settings)"
-  vocabulary="$("${hex}" vocabulary list --json | jq '.entries')"
   changed="$(jq -n --argjson now "${current}" --slurpfile was "${snapshot}" --argjson excluded "${excluded}" '
     $now | with_entries(select(.value != $was[0][.key] and ([.key] | inside($excluded) | not)))')"
+  # The vocabulary and speech model aren't writable settings, so they replace the
+  # tracked copies as a whole.
+  replaced="$(jq -n \
+    --argjson vocabulary "$("${hex}" vocabulary list --json | jq '.entries')" \
+    --argjson transcription "$("${hex}" settings get transcription --json |
+      jq '[.settings[] | {(.key | ltrimstr("transcription.")): .value}] | add')" \
+    '{vocabulary: $vocabulary, transcription: $transcription}')"
 
   [[ -f ${tracked} ]] || echo '{}' >"${tracked}"
-  vocabulary_changed="$(jq --argjson vocabulary "${vocabulary}" '(.vocabulary // []) != $vocabulary' "${tracked}")"
-  jq --indent 2 --argjson changed "${changed}" --argjson vocabulary "${vocabulary}" '
-    {settings: ((.settings // {}) + $changed | to_entries | sort_by(.key) | from_entries),
-     vocabulary: $vocabulary}' "${tracked}" >"${tracked}.tmp"
+  replaced_keys="$(jq -r --argjson replaced "${replaced}" '
+    . as $old | $replaced | to_entries[] | select(.value != $old[.key]) | "  " + .key' "${tracked}")"
+  jq --indent 2 --argjson changed "${changed}" --argjson replaced "${replaced}" '
+    {settings: ((.settings // {}) + $changed | to_entries | sort_by(.key) | from_entries)} + $replaced' \
+    "${tracked}" >"${tracked}.tmp"
   mv "${tracked}.tmp" "${tracked}"
   printf '%s\n' "${current}" >"${snapshot}"
 
-  if [[ ${changed} == "{}" && ${vocabulary_changed} == false ]]; then
+  if [[ ${changed} == "{}" && -z ${replaced_keys} ]]; then
     echo "No Hex settings changed since the last snapshot"
     return
   fi
   echo "Updated in ${tracked}:"
   jq -r 'keys[] | "  " + .' <<<"${changed}"
-  if [[ ${vocabulary_changed} == true ]]; then
-    echo "  vocabulary"
+  if [[ -n ${replaced_keys} ]]; then
+    echo "${replaced_keys}"
   fi
 }
 

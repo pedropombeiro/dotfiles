@@ -37,8 +37,23 @@ save_snapshot() {
   mv "${snapshot}.tmp" "${snapshot}"
 }
 
+changed_since_snapshot() {
+  jq -n --argjson now "$(current_settings)" --slurpfile was "${snapshot}" --argjson excluded "${excluded}" '
+    $now | with_entries(select(.value != $was[0][.key] and ([.key] | inside($excluded) | not)))'
+}
+
 apply() {
   "${hex}" start >/dev/null
+
+  # Applying replaces the snapshot, which would hide changes that dump hasn't saved.
+  if [[ -f ${snapshot} ]]; then
+    pending="$(changed_since_snapshot)"
+    if [[ ${pending} != "{}" ]]; then
+      echo "Hex settings changed since the last snapshot; run 'mise run hex:dump' and commit first:" >&2
+      jq -r 'keys[] | "  " + .' <<<"${pending}" >&2
+      exit 1
+    fi
+  fi
 
   if [[ -f ${tracked} ]]; then
     if jq -e '.settings // {} | length > 0' "${tracked}" >/dev/null; then
@@ -79,8 +94,7 @@ dump() {
   fi
 
   current="$(current_settings)"
-  changed="$(jq -n --argjson now "${current}" --slurpfile was "${snapshot}" --argjson excluded "${excluded}" '
-    $now | with_entries(select(.value != $was[0][.key] and ([.key] | inside($excluded) | not)))')"
+  changed="$(changed_since_snapshot)"
   # The vocabulary and speech model aren't writable settings, so they replace the
   # tracked copies as a whole.
   replaced="$(jq -n \

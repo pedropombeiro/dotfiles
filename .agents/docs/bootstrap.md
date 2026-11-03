@@ -83,6 +83,10 @@ undo changes made in System Settings.
   `${XDG_STATE_HOME:-~/.local/state}/yadm/history-backups/restore.*` before linking.
   If a history has no restored copy, relinking copies the local file into the
   restored directory.
+- `939` starts Hex and applies `~/.config/yadm/hex-settings.json`. The file
+  holds only overrides, because Hex replaces `settings.json` on each save and
+  mixes it with machine state. After changing Hex settings, run
+  `mise run hex:dump` to copy them into the file, then commit it.
 - Checkpoints that wait for a manual step use `wait_for` from
   `scripts/wait-for.sh`.
 - Scripts must be safe to re-run. Guard one-time steps, such as restoring

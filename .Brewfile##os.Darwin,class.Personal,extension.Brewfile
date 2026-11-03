@@ -267,6 +267,8 @@ cask "google-earth-pro"
 cask "gyroflow"
 # Desktop automation application
 cask "hammerspoon"
+# Local voice dictation
+cask "anomalyco/tap/hex", trusted: true
 # Tool for multi-language users
 cask "input-source-pro"
 # System monitoring app

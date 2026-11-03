@@ -88,6 +88,10 @@ description = "Dump current Homebrew packages to Brewfile"
 raw = true
 run = "brew bundle dump --global --force --formula --cask --tap"
 
+[tasks."hex:dump"]
+description = "Save Hex settings changed since the last snapshot to hex-settings.json"
+run = "~/.config/yadm/scripts/hex-settings.sh dump"
+
 [tasks."brew:cleanup"]
 description = "Remove packages not in Brewfile"
 run = "brew bundle cleanup --file ~/.Brewfile --force"

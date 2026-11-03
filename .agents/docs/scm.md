@@ -67,6 +67,9 @@ tracked files. Run it with `--dry-run` to preview.
 ## Amending commits
 
 - Amend an unreviewed local commit when needed to correct its contents or commit message.
+- When a follow-up change corrects or completes an unpushed commit from the current task, amend it into that commit
+  instead of adding a new one. If the commit isn't `HEAD`, use `git commit --fixup=<sha>`, then
+  `GIT_SEQUENCE_EDITOR=: git rebase -i --autosquash <sha>~1`. Commit unrelated changes separately.
 - Do not amend a commit after its merge request has undergone review; create a follow-up commit instead.
 
 ## Conventional Commits

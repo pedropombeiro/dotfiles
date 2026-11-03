@@ -35,14 +35,14 @@ teleport-community = "17"
 # GitLab CLI
 glab = "latest"
 # Local Kubernetes environments for GitLab development
-"gitlab:gitlab-org/caproni" = "v4.38.1"
+"gitlab:gitlab-org/caproni" = "v4.39.2"
 # VM and container runtime used by Caproni on macOS
 colima = "0.10.3"
 lima = "2.2.1"
 # Run local processes with Kubernetes network and filesystem context
 mirrord = "3.281.0"
 # Query GitLab's Kibana/Elasticsearch logs with the Kibana SSO session
-"gitlab:gitlab-com/gl-infra/esquery" = "1.9.0"
+"gitlab:gitlab-com/gl-infra/esquery" = "1.10.0"
 # Kubernetes terminal UI
 k9s = "latest"
 # GitLab Duo AI CLI

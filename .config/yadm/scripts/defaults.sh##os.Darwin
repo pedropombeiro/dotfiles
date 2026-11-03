@@ -343,7 +343,6 @@ defaults write macos-wakatime.WakaTime wakatime_monitored_apps -array \
   "com.DanPristupov.Fork" \
   "com.ScooterSoftware.BeyondCompare" \
   "com.spotify.client" \
-  "com.superduper.superwhisper" \
   "com.tinyspeck.slackmacgap" \
   "io.robbie.HomeAssistant" \
   "net.whatsapp.WhatsApp" \

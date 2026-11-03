@@ -414,8 +414,6 @@ cask "shottr"
 cask "slack"
 # Music streaming service
 cask "spotify"
-# Dictation tool including LLM reformatting
-cask "superwhisper"
 # System tray app for automatic time tracking
 cask "wakatime"
 # Native desktop client for WhatsApp

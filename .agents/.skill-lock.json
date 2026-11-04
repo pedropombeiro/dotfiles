@@ -9,7 +9,7 @@
       "skillFolderHash": "2a8db28b640349bec00c258b77840928ced7f187",
       "pluginName": "clickhouse-best-practices",
       "installedAt": "2026-09-07T08:03:05.918Z",
-      "updatedAt": "2026-11-03T07:59:40.628Z"
+      "updatedAt": "2026-11-04T17:55:06.539Z"
     },
     "grill-me": {
       "source": "mattpocock/skills",
@@ -35,9 +35,9 @@
       "sourceType": "gitlab",
       "sourceUrl": "https://gitlab.com/gitlab-com/gl-infra/esquery.git",
       "skillPath": "skill/SKILL.md",
-      "skillFolderHash": "6d50efad138f30ba9a9e89027d4e6dc8283733a751218c9bd0d07face34214b9",
+      "skillFolderHash": "89cfc0605b561b8595a9dff8f22e0ce6ef77e688347fed3cdf0dbdcfdf057211",
       "installedAt": "2026-10-26T16:37:23.866Z",
-      "updatedAt": "2026-11-03T07:59:40.806Z"
+      "updatedAt": "2026-11-04T17:55:06.571Z"
     }
   },
   "dismissed": {

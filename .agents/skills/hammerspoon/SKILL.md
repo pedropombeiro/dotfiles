@@ -21,7 +21,11 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
 - `urlrouter.lua##class.Work` — URL-based browser router (replaces Choosy). Hammerspoon is registered as the default
   HTTP/HTTPS handler via `duti`. Routes `zoom.us/j/` and `zoom.us/my/` links to Zoom.app, `*.slack.com` links to
   Slack.app, everything else to Chrome. Slack archive URLs are converted to `slack://channel` deep links (see Slack deep
-  linking below) so the desktop app navigates to the message/thread instead of just focusing.
+  linking below) so the desktop app navigates to the message/thread instead of just focusing. Routes name apps by
+  **bundle ID** (Zoom is `us.zoom.xos`); a wrong ID makes `openURLWithBundle` return `false` and the click does nothing.
+  On load it notifies about any routed app or Space browser that isn't installed, and when opening a URL fails it
+  notifies and falls back to the browser for the current Space. `hs.application.pathForBundleID` returns `""`, not
+  `nil`, for a missing app. Verify an ID with `mdfind "kMDItemCFBundleIdentifier == '<id>'"`.
 - `meetings.lua##class.Work` — Auto-switches audio to AirPods when Zoom launches (connects via `blueutil` if needed),
   pauses Spotify, quits eqMac, powers on webcam USB. On Zoom exit: restores previous audio device, resumes Spotify,
   relaunches eqMac hidden, quits Camo Studio, blanks the Busylight via its HTTP API, powers off webcam USB port. Uses a

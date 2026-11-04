@@ -11,14 +11,39 @@ local routes = {
     name = "Slack",
     exclude = { "/ssb/", "/sso/", "/sign_in", "/signin", "/oauth" },
   },
-  { url = "zoom.us/j/", bundle = "us.zoom.videomeetings", name = "Zoom" },
-  { url = "zoom.us/my/", bundle = "us.zoom.videomeetings", name = "Zoom" },
+  { url = "zoom.us/j/", bundle = "us.zoom.xos", name = "Zoom" },
+  { url = "zoom.us/my/", bundle = "us.zoom.xos", name = "Zoom" },
   -- Caproni rigs (gitlab.<id>.test) live on Colima VM IPs. Chrome's macOS Local
   -- Network grant is bound to stale code-sign clone paths, so it drops those
   -- connections as unreachable; Firefox is unaffected. Two-label hosts such as
   -- gdk.test resolve to a loopback alias and stay in Chrome.
   { host = "^[^.]+%.[^.]+%.test$", bundle = "org.mozilla.firefox", name = "Firefox (Caproni)" },
 }
+
+local function warn(msg)
+  log.e(msg)
+  hs.notify.new({ title = "urlrouter", informativeText = msg, withdrawAfter = 15 }):send()
+end
+
+local function checkInstalledApps()
+  local missing, seen = {}, {}
+  local function check(name, bundle)
+    if seen[bundle] then return end
+    seen[bundle] = true
+    -- pathForBundleID returns "" (not nil) when no app has this bundle ID
+    local path = hs.application.pathForBundleID(bundle)
+    if not path or path == "" then table.insert(missing, name .. " (" .. bundle .. ")") end
+  end
+  for _, route in ipairs(routes) do
+    check(route.name, route.bundle)
+  end
+  for _, bundle in pairs(spaceBrowsers) do
+    check(bundle, bundle)
+  end
+  if #missing > 0 then warn("Not installed, links will not route correctly: " .. table.concat(missing, ", ")) end
+end
+
+checkInstalledApps()
 
 local slackTeams = {
   gitlab = "E03N1RJJX7C",
@@ -79,7 +104,11 @@ hs.urlevent.httpCallback = function(scheme, host, params, fullURL, senderPID)
           return
         end
       end
-      hs.urlevent.openURLWithBundle(fullURL, route.bundle)
+      if not hs.urlevent.openURLWithBundle(fullURL, route.bundle) then
+        local browser = browserForCurrentSpace()
+        warn(route.name .. " (" .. route.bundle .. ") failed to open URL; opened in " .. browser)
+        hs.urlevent.openURLWithBundle(fullURL, browser)
+      end
       return
     end
   end

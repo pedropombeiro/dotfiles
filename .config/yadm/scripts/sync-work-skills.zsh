@@ -22,8 +22,9 @@ sync_work_skills() {
         unlink "${source}"
       elif [[ ! -e "${target}" && ! -L "${target}" ]]; then
         mv "${source}" "${target}"
-      elif [[ "${name}" == clickhouse-best-practices && -d "${target}" && ! -L "${target}" ]]; then
-        # The upstream installer recreates this snapshot in the shared directory.
+      elif [[ -d "${target}" && ! -L "${target}" ]] &&
+        jq -e --arg n "${name}" '.skills | has($n)' "${HOME}/.agents/.skill-lock.json" >/dev/null 2>&1; then
+        # npx skills reinstalls managed snapshots into the shared directory.
         rsync -a --delete "${source}/" "${target}/"
         rm -r "${source}"
       else

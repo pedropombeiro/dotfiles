@@ -285,20 +285,58 @@ set -- -f "$tmpfile"
 if [ -s "$statusfile" ]; then
   set -- "$@" -f "$statusfile"
 fi
+# opencode writes one "> <agent> · <model>" header to stderr per request
+# attempt, so repeated headers mean it is retrying. Its stderr is captured
+# instead of streamed so a failing run reports one clear error rather than a
+# wall of identical headers.
+errfile="$run_dir/stderr"
+header_pattern='^> commit '
+# A healthy run prints one header. Give up once this many attempts produced no
+# output, because each retry is another token request that extends rate limits.
+max_attempts=3
+
+# Print opencode's stderr without ANSI colors, attempt headers, or blank lines.
+opencode_errors() {
+  _esc=$(printf '\033')
+  sed "s/${_esc}\\[[0-9;]*m//g" "$errfile" | grep -v -e "$header_pattern" -e '^[[:space:]]*$' || :
+}
+
 # --title skips the extra model call that otherwise generates a session title.
-run_opencode run --standalone --session "$session_id" --title commit -m "$model" --agent commit "$prompt" "$@" </dev/null >"$msgfile" &
+run_opencode run --standalone --session "$session_id" --title commit -m "$model" --agent commit "$prompt" "$@" </dev/null >"$msgfile" 2>"$errfile" &
 run_pid=$!
-if wait "$run_pid"; then
+gave_up=0
+while kill -0 "$run_pid" 2>/dev/null; do
+  if [ ! -s "$msgfile" ] && [ "$(grep -c -e "$header_pattern" "$errfile" || :)" -ge "$max_attempts" ]; then
+    gave_up=1
+    kill "$run_pid" 2>/dev/null || :
+    break
+  fi
+  sleep 1
+done
+if wait "$run_pid" 2>/dev/null && [ "$gave_up" -eq 0 ]; then
   run_pid=""
 else
   result=$?
   run_pid=""
-  # A stale cached config can cause a failure; rebuild it on the next run.
-  if [ "$config_cached" -eq 1 ]; then
-    rm -f "$config_key_file"
+  # A killed run reports 143; use a plain failure code for our own abort.
+  if [ "$gave_up" -eq 1 ] || [ "$result" -eq 0 ]; then result=1; fi
+  errors=$(opencode_errors)
+  if [ "$gave_up" -eq 1 ] || printf '%s' "$errors" | grep -q '429'; then
+    echo "error: opencode got no response from $model; it is probably rate-limited (HTTP 429)." >&2
+    echo "Each retry is another token request, so wait a minute before trying again." >&2
+    # After our own abort, stderr holds only the kill's transport error.
+    if [ "$gave_up" -eq 0 ]; then printf '%s\n' "$errors" | tail -n 3 >&2; fi
+  else
+    echo "error: opencode failed (exit $result)" >&2
+    printf '%s\n' "$errors" | tail -n 20 >&2
+    # A stale cached config can cause a failure; rebuild it on the next run.
+    if [ "$config_cached" -eq 1 ]; then
+      rm -f "$config_key_file"
+    fi
   fi
   exit "$result"
 fi
+opencode_errors >&2
 iterm2_progress -c || :
 progress_active=0
 msg=$(cat "$msgfile")

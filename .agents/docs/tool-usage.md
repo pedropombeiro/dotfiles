@@ -8,6 +8,14 @@ Tool discovery and recovery from failed file operations.
 - A `describe_commands` batch containing an invalid name can fail to return schemas
   for valid names too. Rediscover the command names before retrying.
 
+## Shell approval prompts
+
+Shell commands that aren't pre-approved, such as multi-line scripts and heredocs,
+each trigger a separate security prompt. Combine related steps, for example
+build, upload, and commit, into one command chained with `&&`, rather than
+running them as consecutive commands. Prefer the file tools for reads and edits,
+since they don't prompt.
+
 ## PinchTab browser
 
 PinchTab requires Google Chrome. If Chrome is unavailable, resolve its installation

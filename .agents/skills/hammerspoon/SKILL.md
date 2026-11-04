@@ -292,6 +292,12 @@ signatures. It maps to the Hammerspoon docs site and has broader coverage than t
 
 ## Gotchas
 
+- yadm reruns `alt` after most git commands (even `yadm ls-files`), and `alt` deletes each alternate symlink before
+  recreating it. `init.lua` therefore debounces its config-directory watcher (2s) so a reload never runs while a
+  module's symlink is missing, and loads each module with `pcall` so a failure disables only that module and its
+  dependents, with one notification. Scripts that only read the repo should call
+  `git --git-dir="$XDG_DATA_HOME/yadm/repo.git" --work-tree="$HOME"` instead of `yadm`.
+
 - `hs.task`, `hs.timer`, and `hs.*.watcher` objects are garbage-collected if **nothing reachable references them** — the
   underlying process/timer/watcher is then killed/disabled. In a side-effect-only module (no `return`), a top-level
   `local watcher = hs.application.watcher.new(...)` referenced by nothing is collected once the chunk finishes. Store

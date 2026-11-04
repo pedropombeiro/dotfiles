@@ -24,8 +24,12 @@ local -a EXCEPTIONS=(
 
 cd "$HOME" || exit 1
 
+# Call git directly: yadm reruns `alt` after git commands, which deletes and
+# recreates every alternate symlink and races with the other hooks.
+local yadm_repo="${XDG_DATA_HOME:-$HOME/.local/share}/yadm/repo.git"
+
 # (f) splits on newlines, (M) keeps only matching elements
-local -a alts=( ${(M)${(f)"$(yadm ls-files)"}:#*\#\#*} )
+local -a alts=( ${(M)${(f)"$(git --git-dir="$yadm_repo" --work-tree="$HOME" ls-files)"}:#*\#\#*} )
 local -A variants
 local f base suffix
 for f in "${alts[@]}"; do

@@ -3,8 +3,15 @@
 # Pre-commit hook: reject staged files that are yadm alt symlinks.
 # Called by pre-commit with filenames as arguments.
 
+# Call git directly: yadm reruns `alt` after git commands, which deletes and
+# recreates every alternate symlink and races with the other hooks.
+local yadm_repo="${XDG_DATA_HOME:-$HOME/.local/share}/yadm/repo.git"
+
+# Split into lines first: stripping `##…` from the joined output would remove
+# everything after the first alternate.
 # (f) splits on newlines, (M) keeps matching, (u) deduplicates
-local -a alt_basenames=( "${(@fu)${(M)${(f)$(yadm ls-files)}:#*\#\#*}/\#\#*/}" )
+local -a tracked=( ${(f)"$(git --git-dir="$yadm_repo" --work-tree="$HOME" ls-files)"} )
+local -a alt_basenames=( ${(u)${(M)tracked:#*\#\#*}%%\#\#*} )
 
 if (( ${#alt_basenames} == 0 )); then
   exit 0

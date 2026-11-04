@@ -261,12 +261,21 @@ else
   fi
 fi
 
+# Every run is a fresh process, so the GitLab provider would mint a new direct
+# access token (a rate-limited request) each time. Sharing its token cache on
+# disk reuses one token across runs for about 25 minutes. The cache holds a
+# credential, so keep the directory private (umask 077 is already set).
+direct_access_cache="$opencode_commit_data/direct-access"
+mkdir -p "$direct_access_cache"
+chmod 700 "$direct_access_cache"
+
 # Project discovery is disabled even when TMPDIR is inside a repository.
 # --standalone keeps this operation off the shared background service.
 run_opencode() {
   cd "$run_dir" || exit 1
   unset OPENCODE_CONFIG
   exec env OPENCODE_TERMINAL_PROGRESS=0 \
+    GITLAB_DIRECT_ACCESS_CACHE_DIR="$direct_access_cache" \
     OPENCODE_CONFIG_DIR="$config_dir" \
     OPENCODE_DISABLE_PROJECT_CONFIG=1 \
     OPENCODE_CONFIG_CONTENT='{}' \

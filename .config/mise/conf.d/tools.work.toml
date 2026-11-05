@@ -40,9 +40,9 @@ glab = "latest"
 colima = "0.10.3"
 lima = "2.2.1"
 # Run local processes with Kubernetes network and filesystem context
-mirrord = "3.282.0"
+mirrord = "3.283.0"
 # Query GitLab's Kibana/Elasticsearch logs with the Kibana SSO session
-"gitlab:gitlab-com/gl-infra/esquery" = "1.10.0"
+"gitlab:gitlab-com/gl-infra/esquery" = "1.11.0"
 # Kubernetes terminal UI
 k9s = "latest"
 # GitLab Duo AI CLI

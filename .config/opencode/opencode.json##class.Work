@@ -19,14 +19,27 @@
     "opencode-homeassistant@1.1.0",       // Sends agent status to Home Assistant and answers permissions from it
     "opencode-session-finder@1.1.1",      // Searches past sessions from the palette, and adds search_sessions and open_session
     {
-      // Local feedback-inbox trial: mise run build forgekeeper in this worktree.
-      "package": "../../Developer/github.com/pedropombeiro/opencode-plugins-feedback-inbox/packages/forgekeeper/dist",
-      // Starts summary turns for new review feedback, which can read only linked notes,
-      // and for targets that start to conflict or merge. Stacked MRs get retarget
-      // proposals only; switch to "apply" once a real proposal looks right.
+      // Local build of the review-automation branch, for live testing. Restore
+      // "opencode-forgekeeper@3.0.0" once it ships.
+      "package": "/Users/pedropombeiro/Developer/github.com/pedropombeiro/opencode-plugins-review-automation/packages/forgekeeper",
       "options": {
         "delivery": { "reviews": "summary", "lifecycle": "summary" },
         "lifecycleExecution": { "parentMerged": { "mode": "prepare", "actions": ["retarget"] } },
+        "reviewAutomation": {
+          "rules": [
+            {
+              "host": "gitlab.com",
+              "projects": ["gitlab-org/gitlab"],
+              "reviewers": [
+                "GitLabDuo",
+                "ai-appsec-security-mr-reviewer-gitlab-org",
+                "duo-security-review-gitlab-org",
+                "gitlab-release-tools-bot",
+              ],
+              "action": "prepare",
+            },
+          ],
+        },
       },
     },
     {

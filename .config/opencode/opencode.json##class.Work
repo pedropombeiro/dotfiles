@@ -17,7 +17,7 @@
     "@nm156/opencode-wakatime@1.4.0",     // Tracks AI coding activity in WakaTime
     "opencode-atuin-history@1.0.1",       // Records the agent's shell commands in Atuin history
     "opencode-homeassistant@1.1.0",       // Sends agent status to Home Assistant and answers permissions from it
-    "opencode-session-finder@1.1.0",      // Searches past sessions from the palette, and adds search_sessions and open_session
+    "opencode-session-finder@1.1.1",      // Searches past sessions from the palette, and adds search_sessions and open_session
     {
       // Local feedback-inbox trial: mise run build forgekeeper in this worktree.
       "package": "../../Developer/github.com/pedropombeiro/opencode-plugins-feedback-inbox/packages/forgekeeper/dist",

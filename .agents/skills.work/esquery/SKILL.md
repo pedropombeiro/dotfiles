@@ -6,7 +6,15 @@ description: Query GitLab's Elasticsearch log clusters (the data behind Kibana a
 # esquery
 
 `esquery` runs counts, aggregations, and bulk exports (sliced scroll) against GitLab's pubsub log indices.
-Source: `~/code/esquery` (<https://gitlab.com/gitlab-com/gl-infra/esquery>). Install or update from the checkout with `cd ~/code/esquery && go install .`.
+Source: `~/code/esquery` (<https://gitlab.com/gitlab-com/gl-infra/esquery>). Install or update from the checkout with `cd ~/code/esquery && git pull && go install .`, or without a checkout with `go install gitlab.com/gitlab-com/gl-infra/esquery@latest`.
+
+## Version
+
+This skill describes esquery **1.11.0 or later**. Older versions have no `--async` / `--async-timeout` flags and no MCP `async` argument (see Long-running queries). Run `esquery version` before the first query:
+
+- Below 1.11.0, or `unknown command "version"`: update with one of the commands above, run `esquery version` again, and tell the user you updated it. If the update fails (no Go toolchain, no network), say so and don't use `--async`.
+- `dev`: a build without version information. `esquery count --help | grep -- --async` shows whether it supports async.
+- A running `esquery mcp` server keeps using the binary it started with. After an update, ask the user to restart it (in pi, reload the MCP server) before relying on `async`.
 
 ## RED data
 
@@ -59,6 +67,8 @@ Common flags:
 - `--source-include` / `--source-exclude`: comma-separated fields, to keep exports small.
 - `--slices N`: `scroll` parallelism (default 4). Match it to the shard count for maximum throughput.
 - `--only-slice K`: run just slice `K`, for external parallelisation.
+- `--async`: `count` and `search` only. Run as an async search for queries that outlive the Kibana proxy (see Long-running queries).
+- `--async-timeout D`: with `--async`, how long to wait before deleting the search and failing (default `10m`, `0` for no limit).
 - `--verbose` / `--debug`: log requests / full HTTP traffic.
 
 ## Indices
@@ -94,7 +104,24 @@ Cluster facts from the ci-runners [gitlab-elasticsearch skill](https://gitlab.co
 - Two wildcards in one `query_string` term (`json.msg:*selections*failed*`) match nothing. Use `match_phrase` or AND two single-wildcard clauses.
 - The analyzer splits on underscores, so `match_phrase` on `ZONE_RESOURCE_POOL_EXHAUSTED` undercounts badly. Use a wildcard `query_string` for such tokens.
 - Over long ranges, check `_shards.failed` (`esquery search --output full | jq ._shards`) before trusting a count.
-- Heavy responses can fail with a 502 from the load balancer. Lower `--size` and trim fields with `--source-include`.
+- Heavy responses can fail with a 502 from the load balancer. Lower `--size` and trim fields with `--source-include`. A 502 that arrives after about 60 seconds is different: the request outlived the Kibana proxy, and the search may still be running on the cluster. Don't retry it in a loop or split the window into many small queries. Run it once with `--async` (see Long-running queries).
+
+## Long-running queries
+
+The Kibana proxy drops a request after about 60 seconds. Multi-day windows and data more than a few days old often take longer, even with narrow `.keyword` filters. `count --async` and `search --async` (esquery 1.11.0 or later, see Version) run as an Elasticsearch async search instead, the way Kibana Discover does. The output is the same as without the flag.
+
+```bash
+esquery search --async --index 'pubsub-sidekiq-inf-gprd*' \
+  --query '{"bool":{"filter":[{"range":{"@timestamp":{"gte":"now-7d"}}},{"term":{"json.class_name.keyword":"Some::Class"}}]}}' \
+  --aggs '{"per_day":{"date_histogram":{"field":"@timestamp","calendar_interval":"day"}}}'
+```
+
+- A search that finishes within a second returns as usual and isn't stored. Otherwise esquery polls (each request waits up to 20 seconds) and prints progress to stderr: `esquery: async search running for 40s, 938 of 1260 shards reported`. All shards can report while the search is still reducing, so don't read that as nearly done.
+- `--async-timeout` defaults to `10m`. When it runs out, esquery deletes the search and exits with an error that says to narrow the query or raise the limit. It returns no partial results. Narrowing the query is usually the better fix. Use `--async-timeout 0` (no limit) only when the user agrees that a long-running query is worth it.
+- The search is deleted on exit, including after an error, a timeout or Ctrl-C. A process killed outright leaves it running for up to 5 more minutes.
+- One async search with aggregations (`date_histogram` per day, `terms`, `cardinality`, `min`/`max` on `@timestamp`) is cheaper than a loop of day-sized counts, and gives the breakdown at the same time. Use `"size": 0` unless you need sample documents.
+- Async search only avoids the proxy timeout. The query costs the cluster just as much.
+- Not available with `--dedicated-tenant` (OpenSearch).
 
 ## Patterns
 
@@ -175,7 +202,13 @@ One line per field and type: name, type, aggregatable. `text` fields are for `ma
 
 ## MCP
 
-When the `esquery` MCP server is registered in pi (`pi mcp add esquery --env KIBANA_URL=https://log.gprd.gitlab.net -- ~/go/bin/esquery mcp`), the same operations are available from codemode as `mcp__esquery__count`, `search`, `esql`, `export`, `list_indices`, `list_fields` and `kibana_link`. Every tool returns structured output: read `result.structuredContent`, for example `rows[0].n` from `esql` (rows are objects keyed by column name) or `total` and `aggregations` from `search`. `esql` takes `params: {name: value}` for `?name` and `??name` placeholders. `export` writes to a file and returns only the path and count. Read the file with `jq`. When the user wants to see the results in Kibana, call `kibana_link` with the same `index` and the conditions as `filters` (`{field, value}`, `{field, values}`, `{field, range}`, `{field, exists}`, each a Discover filter pill), the same `query` DSL for anything else, or `esql` with parameter values written into the query, and give them the returned `url`; set the time range with `from`/`to` (the Discover time picker), not with a `@timestamp` filter. The RED data rule applies to the MCP tools too.
+When the `esquery` MCP server is registered in pi (`pi mcp add esquery --env KIBANA_URL=https://log.gprd.gitlab.net -- ~/go/bin/esquery mcp`), the same operations are available from codemode as `mcp__esquery__count`, `search`, `esql`, `export`, `list_indices`, `list_fields` and `kibana_link`. The RED data rule applies to the MCP tools too.
+
+- Every tool returns structured output: read `result.structuredContent`, for example `total` and `aggregations` from `search`, or `rows[0].n` from `esql` (rows are objects keyed by column name).
+- `esql` takes `params: {name: value}` for `?name` and `??name` placeholders.
+- `count` and `search` take `async: true` for long-running queries (see Long-running queries), and `async_timeout_s` (default 600, `0` for no limit). Progress goes out as MCP progress notifications, so pi's 60s per-request timeout does not apply; a timed-out call returns an error.
+- `export` writes to a file and returns only the path and count. Read the file with `jq`.
+- `kibana_link` returns a Discover `url` for the user. Pass the same `index` and either the conditions as `filters` (`{field, value}`, `{field, values}`, `{field, range}`, `{field, exists}`, one Discover filter pill each), the same `query` DSL for anything else, or `esql` with parameter values written into the query. Set the time range with `from`/`to` (the Discover time picker), not with a `@timestamp` filter.
 
 ## Workflow
 
@@ -183,5 +216,7 @@ When the `esquery` MCP server is registered in pi (`pi mcp add esquery --env KIB
 2. `esquery count` on a tight window to confirm the query matches something.
 3. `esquery search --aggs ...` to break it down by host, shard, error, zone, ...
 4. `esquery scroll` only when you need the raw documents.
+
+If `count` or `search` fails with a 502 after about 60 seconds, rerun it once with `--async`.
 
 Report the total for the window, the top-N breakdown on the most useful dimension, and one representative document (truncated) if the user needs to see what the logs look like.

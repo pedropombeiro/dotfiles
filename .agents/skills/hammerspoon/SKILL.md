@@ -40,7 +40,9 @@ macOS automation tool. Installed on **all Darwin machines** via Brewfile cask. C
   also runs the fix). `no_usb` cycles `sharedPeripheralPort` and then restarts BusylightHTTP; the other states only
   restart BusylightHTTP. A hub reset waits while the Wave mic (`constants.waveMicPattern`) reports
   `hs.audiodevice:inUse()`, rechecking every 15s; this is reliable only because Wave Link is not installed to hold the
-  device open. Exports `check()` and `fix(reason)`.
+  device open. When a check finds BusylightHTTP reachable but reporting a null `runningcommand` (its state after
+  starting, before any command), it sends one off request so Home Assistant's presence sensor does not go unavailable.
+  Exports `check()` and `fix(reason)`.
 - `webcam.lua##class.Work` — Powers the YoloCam S3 USB port on/off via uhubctl. Exports `webcam.on()` and
   `webcam.off()`. Powers off on Hammerspoon load (unless Zoom is running). Called by `meetings.lua` and `sleepwake.lua`.
 - `httpserver/` — Modular HTTP server on `localhost:18990`. Sub-modules each return a table of

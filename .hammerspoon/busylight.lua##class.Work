@@ -58,6 +58,15 @@ end
 
 function M.off(reason) request("action=off", reason or "M.off") end
 
+-- BusylightHTTP reports every field as null until its first command after
+-- starting, and Home Assistant's sensor reads that as unavailable. The light
+-- is dark after a start, so an off request only records the state.
+local function hasPresence(body)
+  local ok, presence = pcall(hs.json.decode, body or "")
+  local running = ok and type(presence) == "table" and presence.runningcommand
+  return type(running) == "table" and running.eventname ~= nil
+end
+
 local function usbState()
   local docked, present = false, false
   for _, d in ipairs(hs.usb.attachedDevices() or {}) do
@@ -250,6 +259,7 @@ runCheck = function(callback)
   hs.http.asyncGet(constants.busylightUrl .. "?action=currentpresence", nil, function(code, body)
     local state = classify(docked, present, code, body)
     currentState = state
+    if state == "ok" and not hasPresence(body) then M.off("seed empty state") end
     if not fixing then onStateChange(state) end
     if callback then callback(state) end
   end)

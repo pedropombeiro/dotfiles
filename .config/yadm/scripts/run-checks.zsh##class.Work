@@ -182,6 +182,19 @@ sub_hub_child_count() {
   print -- ${#${(M)${(f)tree}:#  +-o *}}
 }
 
+# BusylightHTTP answers 200 with every field null until it receives its first
+# command after starting. Home Assistant's sensor reads that as unavailable.
+report_busylight_presence() {
+  local body=$1 presence
+  presence=$(print -r -- "$body" | jq -r '.runningcommand.eventname // empty' 2>/dev/null)
+  if [[ -n "$presence" ]]; then
+    print_ok "$presence"
+  else
+    echo
+    print_warn "BusylightHTTP has no presence state (no command since it started); the Home Assistant sensor will be unavailable"
+  fi
+}
+
 probe_busylight_endpoint() {
   local url=$1
   local body http_code
@@ -202,7 +215,7 @@ check_busylight_local() {
   body=${${(f)result}[3]}
 
   if [[ $rc -eq 0 && $http_code == 200 ]]; then
-    print_ok "$(echo "$body" | jq -r '.runningcommand.parameter')"
+    report_busylight_presence "$body"
     return
   fi
 
@@ -271,7 +284,8 @@ check_busylight_proxy() {
   body=${${(f)result}[3]}
 
   if [[ $rc -eq 0 && $http_code == 200 ]]; then
-    print_ok "$(echo "$body" | jq -r '.runningcommand.parameter')"
+    # The direct check already warned about a missing presence state.
+    print_ok "$(print -r -- "$body" | jq -r '.runningcommand.eventname // "no presence state"')"
     return
   fi
 

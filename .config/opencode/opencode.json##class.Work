@@ -19,9 +19,9 @@
     "opencode-homeassistant@1.1.0",       // Sends agent status to Home Assistant and answers permissions from it
     "opencode-session-finder@1.1.1",      // Searches past sessions from the palette, and adds search_sessions and open_session
     {
-      // Local build of the review-automation branch, for live testing. Restore
-      // "opencode-forgekeeper@<version>" once it ships.
-      "package": "/Users/pedropombeiro/Developer/github.com/pedropombeiro/opencode-plugins-review-automation/packages/forgekeeper",
+      // Local build of the review-requests branch, stacked on review automation,
+      // for live testing. Restore "opencode-forgekeeper@<version>" once it ships.
+      "package": "/Users/pedropombeiro/Developer/github.com/pedropombeiro/opencode-plugins-review-requests/packages/forgekeeper",
       "options": {
         "delivery": { "reviews": "summary", "lifecycle": "summary" },
         "lifecycleExecution": { "parentMerged": { "mode": "prepare", "actions": ["retarget"] } },

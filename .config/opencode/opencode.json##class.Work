@@ -25,9 +25,10 @@
       "options": {
         "delivery": { "reviews": "summary", "lifecycle": "summary" },
         "lifecycleExecution": { "parentMerged": { "mode": "prepare", "actions": ["retarget"] } },
-        "reviewAutomation": {
+        "automation": {
           "rules": [
             {
+              "on": "review",
               "host": "gitlab.com",
               "projects": ["gitlab-org/gitlab"],
               "reviewers": [

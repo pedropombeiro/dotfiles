@@ -26,6 +26,10 @@
         "delivery": { "reviews": "summary", "lifecycle": "summary" },
         "lifecycleExecution": { "parentMerged": { "mode": "prepare", "actions": ["retarget"] } },
         "automation": {
+          // Models trusted to prepare fixes from review feedback.
+          "modelGroups": {
+            "coding": ["gitlab/duo-chat-opus-5-5", "gitlab/duo-chat-gpt-6-astra"],
+          },
           "rules": [
             {
               "on": "review",
@@ -38,6 +42,7 @@
                 "gitlab-release-tools-bot",
               ],
               "action": "prepare",
+              "allowedModelGroup": "coding",
             },
           ],
         },

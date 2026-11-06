@@ -20,7 +20,7 @@
     "opencode-session-finder@1.1.1",      // Searches past sessions from the palette, and adds search_sessions and open_session
     {
       // Local build of the review-automation branch, for live testing. Restore
-      // "opencode-forgekeeper@3.0.0" once it ships.
+      // "opencode-forgekeeper@<version>" once it ships.
       "package": "/Users/pedropombeiro/Developer/github.com/pedropombeiro/opencode-plugins-review-automation/packages/forgekeeper",
       "options": {
         "delivery": { "reviews": "summary", "lifecycle": "summary" },

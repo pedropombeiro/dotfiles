@@ -55,6 +55,8 @@ typos = "latest"
 prettier = "latest"
 # Python static type checker
 "pipx:mypy" = "latest"
+# Python formatter and linter, also used by Neovim
+ruff = "latest"
 
 # ── AI tooling ────────────────────────────────────────────────────────
 # Lazy-loading MCP server proxy for AI tools

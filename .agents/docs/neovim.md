@@ -104,6 +104,8 @@ If a parser fails to install on the NAS, check whether its repository ships
 
 ## Guidelines
 
+Python formatting defaults to Ruff. Respect project-specific formatter configuration rather than forcing Ruff.
+
 - Follow existing code style and patterns in `lua/plugins/`
 - Keep plugin configs modular (one file per plugin or feature)
 - Prefer `opts = {}` over `config = function()` when possible

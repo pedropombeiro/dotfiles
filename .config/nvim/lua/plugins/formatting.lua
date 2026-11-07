@@ -55,7 +55,7 @@ return {
       lua                    = { "stylua" },
       markdown               = { "markdownlint-cli2" },
       nginx                  = { "nginx" },
-      python                 = { "isort", "black" },
+      python                 = function(bufnr) return require("utils.python-formatters").select(bufnr) end,
       ruby                   = { "standardrb", "rubocop", stop_after_first = true },
       sh                     = { "shellcheck", "shfmt" },
       sql                    = { "pg_format", "sql_formatter", stop_after_first = true },
@@ -88,7 +88,17 @@ return {
     end,
     -- Customize formatters
     formatters = {
+      ruff_format = {
+        command = require("conform.util").find_executable({ ".venv/bin/ruff", "venv/bin/ruff" }, "ruff"),
+      },
+      ruff_organize_imports = {
+        command = require("conform.util").find_executable({ ".venv/bin/ruff", "venv/bin/ruff" }, "ruff"),
+      },
+      isort = {
+        command = require("conform.util").find_executable({ ".venv/bin/isort", "venv/bin/isort" }, "isort"),
+      },
       black = {
+        command = require("conform.util").find_executable({ ".venv/bin/black", "venv/bin/black" }, "black"),
         prepend_args = { "--fast" },
       },
       lua = {

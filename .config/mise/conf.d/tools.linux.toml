@@ -101,8 +101,6 @@ usage = "latest"
 # Terminal EPUB reader (epr)
 "pipx:epr-reader" = "latest"
 # Python development tools
-"pipx:black" = "latest"
-"pipx:isort" = "latest"
 "pipx:jedi-language-server" = "latest"
 "pipx:yamllint" = "latest"
 # Simplified community man pages

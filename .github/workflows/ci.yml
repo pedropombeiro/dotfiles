@@ -89,6 +89,12 @@ jobs:
 
           echo "Neovim config validation passed"
 
+      - name: Test Python formatter selection
+        run: |
+          mkdir -p "$HOME/.config/nvim/lua/utils"
+          cp .config/nvim/lua/utils/python-formatters.lua "$HOME/.config/nvim/lua/utils/"
+          nvim --headless -u NONE -l .config/nvim/tests/python-formatters.lua
+
   # Job 4: Bootstrap script validation
   bootstrap-validate:
     name: Bootstrap scripts syntax

@@ -18,8 +18,12 @@ since they don't prompt.
 
 ## PinchTab browser
 
-PinchTab requires Google Chrome. If Chrome is unavailable, resolve its installation
-or configuration rather than substituting another browser.
+PinchTab requires Google Chrome. The NAS has no local browser, so don't offer local
+browser automation or an interactive sign-in there. Confirm that a browser is
+available in the execution environment before proposing browser-based work. On the
+NAS, prefer a supported API or ask the user to complete the UI step on their device.
+Installing or configuring a browser requires separate approval. Don't substitute
+another browser for Chrome.
 
 ## Truncated file-tool arguments
 

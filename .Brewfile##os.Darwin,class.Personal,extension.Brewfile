@@ -253,6 +253,7 @@ cask "eqmac"
 cask "firefox"
 cask "font-jetbrains-mono"
 cask "font-meslo-lg-nerd-font"
+cask "font-roboto"
 # GIT client
 cask "fork"
 # Update maps and software, sync with Garmin Connect and register your device

@@ -60,5 +60,6 @@ fi
 
 [tasks.default]
 description = "Fetch dotfiles and run updates"
-depends = ["dotfiles:pull", "dotfiles:update"]
+# A `run` array runs in order; `depends` would run the pull and update in parallel.
+run = [{ task = "dotfiles:pull" }, { task = "dotfiles:update" }]
 hide = true

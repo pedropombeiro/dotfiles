@@ -62,6 +62,34 @@ can't declare:
   edits don't use sudo.
 - System `defaults` domains, `nvram`, `pmset`, `systemsetup`, and `duti`.
 
+## Update script steps
+
+`update.zsh` (each OS variant), `update-common.zsh`, and `update-work.zsh` run
+their work through `update-ui.zsh`. It shows one spinner line per step, prints
+captured output only when a step fails, and ends with the package versions that
+changed. Full output goes to `~/.local/state/dotfiles-update/<timestamp>.log`.
+
+- Put each step in a function and register it with `_step "<label>" <function>`
+  at the start of a line. The step total counts those lines, so put conditions
+  inside the function, not around the `_step` call.
+- Step functions run with `ERR_RETURN` in the main shell: the first failing
+  command fails the step. Use `return`, never `exit`, and add `|| true` for
+  commands whose non-zero status is expected. Code from other projects that's
+  sourced into the shell, such as zinit, breaks under `ERR_RETURN`. Run it with
+  `setopt local_options no_err_return` and check its results explicitly.
+- `ERR_RETURN` also applies inside glob `e` qualifiers: the first failing test
+  ends the step and reports success. Filter in a loop instead, with the test
+  in an `||` list. `zselect -t` exits 1 on timeout, so write
+  `zselect -t <n> || true` when using it as a sleep.
+- Steps have no stdin. Pass non-interactive flags such as `--yes` or `-y`. The
+  entry point primes `sudo` before the first step.
+- Report details with `_update_warn` (shown under the step and in the final
+  summary) or `_update_note` (appended to the step's result line). Plain output
+  goes to the log only.
+- Add a package manager to the change summary with an `_ui_versions_<name>`
+  function that prints `name<TAB>version` lines, then list it in the entry
+  point's `_update_track` call.
+
 User-domain `defaults write` calls fit `[bootstrap.macos.defaults]`, but they
 stay in `defaults.sh`. Under mise they would be re-applied on every update and
 undo changes made in System Settings.

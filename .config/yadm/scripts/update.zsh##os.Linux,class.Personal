@@ -2,51 +2,26 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 
-source "${YADM_SCRIPTS}/colors.sh"
+source "${YADM_SCRIPTS}/update-ui.zsh"
 
-_update_total=0; for _f in ${(%):-%x} "${YADM_SCRIPTS}/update-common.zsh"; do (( _update_total += $(grep -c '^[[:space:]]*_update_step ' "$_f" 2>/dev/null || echo 0) )); done
-_update_current=0
-_update_step() {
-  (( _update_current++ ))
-  iterm2_progress $(( _update_current * 100 / _update_total ))
-  iterm2_badge "update: $1"
+_update_init ${(%):-%x} "${YADM_SCRIPTS}/update-common.zsh"
+_update_require_sudo
+_update_track apt brew mise npm
+
+# Steps run without a terminal on stdin, so answer apt's prompt up front.
+step_apt() {
+  sudo apt update
+  sudo apt upgrade -y
 }
 
-fpath=(~/.shellrc/zshrc.d/functions $fpath)
-autoload -Uz iterm2_progress iterm2_badge iterm2_notify
-
-iterm2_badge "update: starting"
-iterm2_progress -i
-
-_cleanup_done=0
-_update_cleanup() {
-  (( _cleanup_done )) && return
-  _cleanup_done=1
-  local rc=$?
-  if [[ $rc -ne 0 ]]; then
-    iterm2_progress -e
-    iterm2_badge "update: FAILED"
-    iterm2_notify "update failed"
-  else
-    iterm2_progress 100
-    iterm2_badge -c
-    iterm2_progress -c
-    iterm2_notify "update complete"
-  fi
-  echo
+step_brew() {
+  brew update
+  brew upgrade
 }
-trap _update_cleanup EXIT
-trap 'exit 130' INT
-trap 'exit 143' TERM
-trap 'exit 129' HUP
 
-_update_step "apt"
-sudo apt update
-sudo apt upgrade
-
-_update_step "brew"
-brew update
-brew upgrade
+_step "apt" step_apt
+_step "brew" step_brew
 
 source "${YADM_SCRIPTS}/update-common.zsh"
 
+_update_finish

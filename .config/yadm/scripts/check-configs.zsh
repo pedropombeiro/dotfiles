@@ -36,6 +36,7 @@ done
 
 if (( any_missing )); then
   printf "${YELLOW}%s${NC}\n" "⚠️  Missing expected config files."
+  exit 1
 else
   printf "${GREEN}%s${NC}\n" "✅ Config file checks passed!"
 fi

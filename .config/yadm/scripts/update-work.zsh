@@ -3,8 +3,7 @@
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 typeset -g SCRIPT_PATH=${(%):-%x}
 
-source "${YADM_SCRIPTS}/colors.sh"
-(( $+functions[_update_step] )) || _update_step() { : }
+(( $+functions[_update_init] )) || source "${YADM_SCRIPTS}/update-ui.zsh"
 
 ensure_clickhouse_binary() {
   local clickhouse_bin
@@ -13,9 +12,9 @@ ensure_clickhouse_binary() {
   [[ -n ${clickhouse_bin} && -x ${clickhouse_bin} ]] || return 0
 
   if xattr -p com.apple.quarantine ${clickhouse_bin} >/dev/null 2>&1; then
-    printf "${YELLOW}%s${NC}\n" 'ClickHouse is quarantined, clearing macOS quarantine...'
+    _update_note 'cleared ClickHouse macOS quarantine'
     xattr -d com.apple.quarantine ${clickhouse_bin} >/dev/null 2>&1 ||
-      printf "${YELLOW}%s${NC}\n" 'Failed to clear ClickHouse quarantine; migrations may fail.'
+      _update_warn 'Failed to clear ClickHouse quarantine; migrations may fail.'
   fi
 }
 
@@ -110,7 +109,7 @@ workhorse:
 EOF
 
   if ! delta "${gdk_root}/gdk.yml" "${gdk_root}/gdk.tmp.yml"; then
-    printf "${YELLOW}%s${NC}\n" "Overwriting gdk.yml. Please rerun 'gdk reconfigure'..."
+    _update_warn "Overwrote gdk.yml (previous copy in gdk.prev.yml, diff in the log). Rerun 'gdk reconfigure'."
     cp -f "${gdk_root}/gdk.yml" "${gdk_root}/gdk.prev.yml"
     cp -f "${gdk_root}/gdk.tmp.yml" "${gdk_root}/gdk.yml"
   fi
@@ -275,7 +274,7 @@ sync_dotfiles_to_gitlab() {
   gitlab_dir="${gdk_root}/gitlab"
 
   if [[ ! -d "${dotfiles_dir}/.git" ]]; then
-    echo "Warning: ${dotfiles_dir} is missing; run 'mise bootstrap repos apply' after enabling the 1Password SSH agent" >&2
+    _update_warn "${dotfiles_dir} is missing; run 'mise bootstrap repos apply' after enabling the 1Password SSH agent"
     return 0
   fi
 
@@ -311,7 +310,10 @@ ensure_spring_binstubs_skip_worktree() {
 
   [[ -d "${gitlab_dir}" ]] || return 0
 
-  source "${HOME}/.shellrc/zshrc.d/functions/scripts/spring-binstubs.zsh"
+  # Shell-function code written for interactive use; don't abort it on the
+  # first failing command.
+  setopt local_options no_err_return
+  source "${HOME}/.shellrc/zshrc.d/functions/scripts/spring-binstubs.zsh" || return
   spring_binstubs ensure "${gitlab_dir}"
 }
 
@@ -360,30 +362,40 @@ write_opencode_config() {
 EOF
 }
 
-mise reshim
+step_gitlab_dotfiles() {
+  local gitlab_dotfiles_dir="${HOME}/.config/dotfiles/gitlab"
 
-# Refresh the private gitlab-dotfiles checkout, then link its home/ files, so
-# files added upstream are linked in this update, with or without GDK. The GDK
-# sync below reuses the refreshed checkout.
-gitlab_dotfiles_dir="${HOME}/.config/dotfiles/gitlab"
-if [[ -d "${gitlab_dotfiles_dir}/.git" ]]; then
-  mise bootstrap repos update --yes --skip-dirty "${gitlab_dotfiles_dir}" >/dev/null ||
-    echo "Warning: failed to update GitLab dotfiles; using the existing checkout" >&2
-fi
-unset gitlab_dotfiles_dir
-"${YADM_SCRIPTS}/link-private-work-files.zsh"
+  mise reshim
+
+  # Refresh the private gitlab-dotfiles checkout, then link its home/ files, so
+  # files added upstream are linked in this update, with or without GDK. The GDK
+  # step reuses the refreshed checkout.
+  if [[ -d "${gitlab_dotfiles_dir}/.git" ]]; then
+    mise bootstrap repos update --yes --skip-dirty "${gitlab_dotfiles_dir}" ||
+      _update_warn "Failed to update GitLab dotfiles; using the existing checkout."
+  fi
+  "${YADM_SCRIPTS}/link-private-work-files.zsh"
+}
 
 # sync-work-skills.zsh links Work skills into these checkouts, so fast-forward
 # them to keep the skills current.
-mise bootstrap repos update --yes --skip-dirty \
-  "${HOME}/Developer/gitlab.com/gitlab-org/ai/skills" \
-  "${HOME}/Developer/gitlab.com/pedropombeiro/gitlab-agent-skills" \
-  "${HOME}/Developer/gitlab.com/gitlab-org/ci-cd/fix-pipeline-flow-report" \
-  "${HOME}/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph" >/dev/null ||
-  echo "Warning: failed to update Work skill repos; using the existing checkouts" >&2
+step_work_skill_repos() {
+  mise bootstrap repos update --yes --skip-dirty \
+    "${HOME}/Developer/gitlab.com/gitlab-org/ai/skills" \
+    "${HOME}/Developer/gitlab.com/pedropombeiro/gitlab-agent-skills" \
+    "${HOME}/Developer/gitlab.com/gitlab-org/ci-cd/fix-pipeline-flow-report" \
+    "${HOME}/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph" ||
+    _update_warn "Failed to update Work skill repos; using the existing checkouts."
+}
 
-if [[ -n ${GDK_ROOT} ]]; then
-  local clickhouse_bin_path
+step_gdk() {
+  local clickhouse_bin_path subdir
+  local exclude_file="${GDK_ROOT}/.git/info/exclude"
+
+  if [[ -z ${GDK_ROOT} ]]; then
+    _update_note 'skipped: GDK_ROOT is not set'
+    return 0
+  fi
 
   clickhouse_bin_path=$(mise which clickhouse 2>/dev/null || true)
   [[ -n ${clickhouse_bin_path} ]] || clickhouse_bin_path=/opt/homebrew/bin/clickhouse
@@ -425,15 +437,21 @@ if [[ -n ${GDK_ROOT} ]]; then
   mise trust "${GDK_ROOT}"
 
   # Add .mise.local.toml to local git exclude if not already present
-  local exclude_file="${GDK_ROOT}/.git/info/exclude"
   if [[ -f ${exclude_file} ]] && ! grep -q '^\.mise\.local\.toml$' "${exclude_file}"; then
     echo '.mise.local.toml' >> "${exclude_file}"
   fi
 
-  git -C ${GDK_ROOT}/gitlab config --unset-all remote.origin.fetch
+  # --unset-all exits with 5 when the key is already absent.
+  git -C ${GDK_ROOT}/gitlab config --unset-all remote.origin.fetch || true
   git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/master:refs/remotes/origin/master'
   git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/pedropombeiro/*:refs/remotes/origin/pedropombeiro/*'
-fi
+}
 
-_update_step "run checks"
-${YADM_SCRIPTS}/run-checks.zsh
+step_checks() {
+  "${YADM_SCRIPTS}/run-checks.zsh"
+}
+
+_step "gitlab dotfiles" step_gitlab_dotfiles
+_step "work skill repos" step_work_skill_repos
+_step "gdk config" step_gdk
+_step "checks" step_checks

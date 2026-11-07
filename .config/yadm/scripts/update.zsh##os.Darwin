@@ -2,102 +2,93 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 
-source "${YADM_SCRIPTS}/colors.sh"
+source "${YADM_SCRIPTS}/update-ui.zsh"
 
-_update_total=0; for _f in ${(%):-%x} "${YADM_SCRIPTS}/update-common.zsh" "${YADM_SCRIPTS}/update-work.zsh"; do (( _update_total += $(grep -c '^[[:space:]]*_update_step ' "$_f" 2>/dev/null || echo 0) )); done
-_update_current=0
-_update_step() {
-  (( _update_current++ ))
-  iterm2_progress $(( _update_current * 100 / _update_total ))
-  iterm2_badge "update: $1"
+_is_work=0
+[[ $(yadm config local.class) == 'Work' ]] && _is_work=1
+
+_step_files=(${(%):-%x} "${YADM_SCRIPTS}/update-common.zsh")
+(( _is_work )) && _step_files+=("${YADM_SCRIPTS}/update-work.zsh")
+_update_init "${_step_files[@]}"
+_update_require_sudo
+_update_track brew cask mise npm mas
+
+step_relink() {
+  "${YADM_SCRIPTS}/relink-dotfiles.zsh"
 }
 
-fpath=(~/.shellrc/zshrc.d/functions $fpath)
-autoload -Uz iterm2_progress iterm2_badge iterm2_notify
+step_brew() {
+  local brew_prefix brew_cellar root_owned_output
+  local -a python_roots root_owned
+  local -i cleanup_rc=0
 
-iterm2_badge "update: starting"
-iterm2_progress -i
-
-_cleanup_done=0
-_update_cleanup() {
-  local rc=$?
-  (( _cleanup_done )) && return "$rc"
-  _cleanup_done=1
-  if [[ $rc -ne 0 ]]; then
-    iterm2_progress -e
-    iterm2_badge "update: FAILED"
-    iterm2_notify "update failed"
-  else
-    iterm2_progress 100
-    iterm2_badge -c
-    iterm2_progress -c
-    iterm2_notify "update complete"
+  # Root-run Python tools can leave bytecode caches that block `brew cleanup`.
+  # Limit repairs to Python caches and preserve groups and non-root ownership.
+  brew_prefix=$(brew --prefix)
+  brew_cellar=$(brew --cellar)
+  python_roots=(
+    "$brew_cellar"/python(N/)
+    "$brew_cellar"/python@*(N/)
+    "$brew_prefix"/lib/python*/site-packages(N/)
+  )
+  if (( ${#python_roots[@]} )); then
+    root_owned_output=$(find "${python_roots[@]}" -xdev -user 0 \
+      \( -type d -o -type f \) \
+      \( -path '*/__pycache__' -o -path '*/__pycache__/*' \) -print0)
+    root_owned=("${(@0)root_owned_output}")
+    # Quoted NUL splitting preserves the empty entry after find's final delimiter.
+    root_owned=("${(@)root_owned:#}")
   fi
-  echo
-  return "$rc"
+  if (( ${#root_owned[@]} )); then
+    printf '%s\n' "${root_owned[@]}"
+    sudo chown -h "$UID" "${root_owned[@]}"
+    _update_note "fixed ownership of ${#root_owned[@]} root-owned Python cache entries"
+  fi
+
+  brew update
+  brew upgrade --yes
+  brew bundle --global --quiet
+  brew bundle cleanup --global --force || cleanup_rc=$?
+  # `brew bundle cleanup` hides `brew cleanup` stderr; rerun it so failures are visible.
+  brew cleanup
+  return ${cleanup_rc}
 }
-trap _update_cleanup EXIT
-trap 'exit 130' INT
-trap 'exit 143' TERM
-trap 'exit 129' HUP
 
-"${YADM_SCRIPTS}/relink-dotfiles.zsh"
+step_tmux_signature() {
+  "${YADM_SCRIPTS}/sign-tmux.zsh"
+}
 
-# Root-run Python tools can leave bytecode caches that block `brew cleanup`.
-# Limit repairs to Python caches and preserve groups and non-root ownership.
-_brew_prefix=$(brew --prefix) || exit $?
-_brew_cellar=$(brew --cellar) || exit $?
-_python_roots=(
-  "$_brew_cellar"/python(N/)
-  "$_brew_cellar"/python@*(N/)
-  "$_brew_prefix"/lib/python*/site-packages(N/)
-)
-_root_owned=()
-if (( ${#_python_roots[@]} )); then
-  _root_owned_output=$(find "${_python_roots[@]}" -xdev -user 0 \
-    \( -type d -o -type f \) \
-    \( -path '*/__pycache__' -o -path '*/__pycache__/*' \) -print0) || exit $?
-  _root_owned=("${(@0)_root_owned_output}")
-  # Quoted NUL splitting preserves the empty entry after find's final delimiter.
-  _root_owned=("${(@)_root_owned:#}")
-fi
-if (( ${#_root_owned[@]} )); then
-  printf "${YELLOW}%s${NC}\n" "Fixing ownership of ${#_root_owned[@]} root-owned Python cache entries"
-  printf '  %s\n' "${_root_owned[@]:0:5}"
-  (( ${#_root_owned[@]} > 5 )) && printf '  ... and %d more\n' $(( ${#_root_owned[@]} - 5 ))
-  sudo chown -h "$UID" "${_root_owned[@]}" || exit $?
-fi
-unset _brew_prefix _brew_cellar _python_roots _root_owned_output _root_owned
-
-_update_step "brew update"
-brew update
-brew upgrade --yes
-brew bundle --global --quiet
-_brew_cleanup_rc=0
-brew bundle cleanup --global --force || _brew_cleanup_rc=$?
-# `brew bundle cleanup` hides `brew cleanup` stderr; rerun it so failures are visible.
-brew cleanup || exit $?
-(( _brew_cleanup_rc == 0 )) || exit "$_brew_cleanup_rc"
-unset _brew_cleanup_rc
-"${YADM_SCRIPTS}/sign-tmux.zsh"
 # Converge the declarative resources in conf.d/bootstrap*.toml. Keep the scope
 # explicit: dotfiles, macOS defaults, and user sections overlap YADM workflows.
 # The tools phase is covered by the mise step below.
-mise bootstrap --only packages,repos,macos-launchd-agents --skip-dirty --yes
-mise run mas:upgrade
+step_mise_bootstrap() {
+  mise bootstrap --only packages,repos,macos-launchd-agents --skip-dirty --yes
+}
 
-printf "${YELLOW}%s${NC}\n" "Updating mise plugins and upgrading mise"
-_update_step "mise plugins"
-(cd ~ && mise plugins update && mise install --yes && mise upgrade --yes)
+step_mas() {
+  mise run mas:upgrade
+}
 
-"${YADM_SCRIPTS}/mise-prune-if-needed.zsh"
+step_mise() {
+  (cd ~ && mise plugins update && mise install --yes && mise upgrade --yes)
+  "${YADM_SCRIPTS}/mise-prune-if-needed.zsh"
+}
+
+step_brew_dump() {
+  mise run brew:dump
+}
+
+_step "relink dotfiles" step_relink
+_step "brew" step_brew
+_step "tmux signature" step_tmux_signature
+_step "mise bootstrap" step_mise_bootstrap
+_step "mac app store" step_mas
+_step "mise tools" step_mise
 
 source "${YADM_SCRIPTS}/update-common.zsh"
 
-if [[ $(yadm config local.class) == 'Work' ]]; then
-  source "${YADM_SCRIPTS}/update-work.zsh"
-fi
+(( _is_work )) && source "${YADM_SCRIPTS}/update-work.zsh"
 
-echo
-_update_step "brew dump"
-mise run brew:dump
+_step "brew dump" step_brew_dump
+
+_update_finish

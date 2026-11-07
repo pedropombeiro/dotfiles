@@ -2,72 +2,45 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 
-source "${YADM_SCRIPTS}/colors.sh"
+# PROGRESS_OFFSET and PROGRESS_RANGE let a caller map this run onto part of its
+# own iTerm2 progress bar; update-ui.zsh reads them.
+source "${YADM_SCRIPTS}/update-ui.zsh"
 
-_update_total=0; for _f in ${(%):-%x} "${YADM_SCRIPTS}/update-common.zsh"; do (( _update_total += $(grep -c '^[[:space:]]*_update_step ' "$_f" 2>/dev/null || echo 0) )); done
-_update_current=0
-_progress_offset=${PROGRESS_OFFSET:-0}
-_progress_range=${PROGRESS_RANGE:-100}
-_update_step() {
-  (( _update_current++ ))
-  iterm2_progress $(( _progress_offset + (_update_current * _progress_range / _update_total) ))
-  iterm2_badge "update: $1"
-}
+_update_init ${(%):-%x} "${YADM_SCRIPTS}/update-common.zsh"
+_update_track opkg mise npm
 
-fpath=(~/.shellrc/zshrc.d/functions $fpath)
-autoload -Uz iterm2_progress iterm2_badge iterm2_notify
-
-iterm2_badge "update: starting"
-if [[ -z "${PROGRESS_OFFSET+x}" ]]; then
-  iterm2_progress -i
-else
-  iterm2_progress "$_progress_offset"
-fi
-
-_cleanup_done=0
-_update_cleanup() {
-  (( _cleanup_done )) && return
-  _cleanup_done=1
-  local rc=$?
-  if [[ $rc -ne 0 ]]; then
-    iterm2_progress -e
-    iterm2_badge "update: FAILED"
-    iterm2_notify "update failed"
-  elif [[ -z "${PROGRESS_OFFSET+x}" ]]; then
-    iterm2_progress 100
-    iterm2_badge -c
-    iterm2_progress -c
-    iterm2_notify "update complete"
-  fi
-  echo
-}
-trap _update_cleanup EXIT
-trap 'exit 130' INT
-trap 'exit 143' TERM
-trap 'exit 129' HUP
-
-_update_step "entware"
-printf "${YELLOW}%s${NC}\n" "Updating Entware packages..."
-opkg update && opkg upgrade
-
-_update_step "mise"
-printf "${YELLOW}%s${NC}\n" "Updating mise packages..."
 export MISE_INSTALL_ARCH=x64-musl
-yes | mise self-update
-(cd ~ && mise plugin update && mise install --yes && mise upgrade)
 
-_update_step "grc-rs rules"
-(cd ~ && mise run grc-rs:sync)
+step_entware() {
+  opkg update
+  opkg upgrade
+}
 
-_update_step "tmux plugins"
-printf "${YELLOW}%s${NC}\n" "Updating tmux plugins..."
-tpm_bin="${XDG_DATA_HOME:-${HOME}/.local/share}/tmux/plugins/tpm/bin"
-"${tpm_bin}/update_plugins" all
-"${tpm_bin}/clean_plugins"
+step_mise() {
+  yes | mise self-update
+  (cd ~ && mise plugin update && mise install --yes && mise upgrade --yes)
+}
 
-_update_step "pre-commit"
-printf "${YELLOW}%s${NC}\n" "Installing /share/Container hk hooks..."
-(cd /share/Container && hk install --mise)
+step_grc_rs() {
+  (cd ~ && mise run grc-rs:sync)
+}
+
+step_tmux_plugins() {
+  local tpm_bin="${XDG_DATA_HOME:-${HOME}/.local/share}/tmux/plugins/tpm/bin"
+  "${tpm_bin}/update_plugins" all
+  "${tpm_bin}/clean_plugins"
+}
+
+step_container_hooks() {
+  (cd /share/Container && hk install --mise)
+}
+
+_step "entware" step_entware
+_step "mise" step_mise
+_step "grc-rs rules" step_grc_rs
+_step "tmux plugins" step_tmux_plugins
+_step "container hk hooks" step_container_hooks
 
 source "${YADM_SCRIPTS}/update-common.zsh"
 
+_update_finish

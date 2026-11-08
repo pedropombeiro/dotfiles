@@ -7,7 +7,7 @@ YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pw
 source "${YADM_SCRIPTS}/update-ui.zsh"
 
 _update_init ${(%):-%x} "${YADM_SCRIPTS}/update-common.zsh"
-_update_track opkg mise npm
+_update_track opkg mise npm nvim mason
 
 export MISE_INSTALL_ARCH=x64-musl
 

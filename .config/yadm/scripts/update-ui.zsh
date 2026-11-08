@@ -96,7 +96,8 @@ _update_require_sudo() {
 }
 
 # Records installed versions for the given managers so `_update_finish` can
-# report what changed. Supported: brew, cask, mise, npm, mas, apt, opkg.
+# report what changed. Supported: brew, cask, mise, npm, mas, apt, opkg, nvim
+# (Lazy plugin commits), and mason.
 _update_track() {
   local manager
 
@@ -303,6 +304,31 @@ _ui_versions_mas() {
   mas list | sed -E 's/^ *[0-9]+ +(.*[^ ]) +\((.*)\)$/\1\t\2/'
 }
 
+# Lazy plugins report a short commit; `_ui_detail_nvim` adds the commit count.
+_ui_versions_nvim() {
+  local lockfile="${XDG_CONFIG_HOME:-${HOME}/.config}/nvim/lazy-lock.json"
+  [[ -f ${lockfile} ]] || return 1
+  jq -r 'to_entries[] | "\(.key)\t\(.value.commit[0:7])"' "${lockfile}"
+}
+
+# Prints " (N commits)" for a plugin that moved forward, or " (rolled back)".
+_ui_detail_nvim() {
+  local dir="${XDG_DATA_HOME:-${HOME}/.local/share}/nvim/lazy/$1" count
+  [[ -d ${dir} ]] || return 0
+  count=$(git -C "${dir}" rev-list --count "$2..$3" 2>/dev/null) || return 0
+  if (( count > 0 )); then
+    printf ' (%d commit%s)' ${count} "${${count:#1}:+s}"
+  elif git -C "${dir}" merge-base --is-ancestor "$3" "$2" 2>/dev/null; then
+    printf ' (rolled back)'
+  fi
+}
+
+_ui_versions_mason() {
+  local -a receipts=("${XDG_DATA_HOME:-${HOME}/.local/share}"/nvim/mason/packages/*/mason-receipt.json(N))
+  (( ${#receipts} )) || return 1
+  jq -r '"\(.name)\t\(.source.id | sub(".*@"; ""))"' "${receipts[@]}"
+}
+
 _ui_versions_apt() {
   (( $+commands[dpkg-query] )) || return 1
   dpkg-query -W -f '${Package}\t${Version}\n'
@@ -342,7 +368,11 @@ _ui_diff() {
     if (( ! ${+old[${name}]} )); then
       _ui_installed+=("${manager}"$'\t'"${name}"$'\t'"${new[${name}]}")
     elif [[ ${old[${name}]} != "${new[${name}]}" ]]; then
-      _ui_upgraded+=("${manager}"$'\t'"${name}"$'\t'"${old[${name}]} → ${new[${name}]}")
+      version="${old[${name}]} → ${new[${name}]}"
+      if (( $+functions[_ui_detail_${manager}] )); then
+        version+=$("_ui_detail_${manager}" "${name}" "${old[${name}]}" "${new[${name}]}" 2>/dev/null)
+      fi
+      _ui_upgraded+=("${manager}"$'\t'"${name}"$'\t'"${version}")
     fi
   done
   for name in ${(ko)old}; do

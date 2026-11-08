@@ -6,7 +6,7 @@ source "${YADM_SCRIPTS}/update-ui.zsh"
 
 _update_init ${(%):-%x} "${YADM_SCRIPTS}/update-common.zsh"
 _update_require_sudo
-_update_track apt brew mise npm
+_update_track apt brew mise npm nvim mason
 
 # Steps run without a terminal on stdin, so answer apt's prompt up front.
 step_apt() {

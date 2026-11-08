@@ -88,7 +88,10 @@ changed. Full output goes to `~/.local/state/dotfiles-update/<timestamp>.log`.
   goes to the log only.
 - Add a package manager to the change summary with an `_ui_versions_<name>`
   function that prints `name<TAB>version` lines, then list it in the entry
-  point's `_update_track` call.
+  point's `_update_track` call. An optional `_ui_detail_<name>` function
+  receives the name and the old and new versions, and appends its output to
+  that package's row under "Upgraded". The `nvim` source uses it to add the
+  number of commits a plugin moved.
 
 User-domain `defaults write` calls fit `[bootstrap.macos.defaults]`, but they
 stay in `defaults.sh`. Under mise they would be re-applied on every update and

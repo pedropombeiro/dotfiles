@@ -11,7 +11,7 @@ _step_files=(${(%):-%x} "${YADM_SCRIPTS}/update-common.zsh")
 (( _is_work )) && _step_files+=("${YADM_SCRIPTS}/update-work.zsh")
 _update_init "${_step_files[@]}"
 _update_require_sudo
-_update_track brew cask mise npm mas
+_update_track brew cask mise npm mas nvim mason
 
 step_relink() {
   "${YADM_SCRIPTS}/relink-dotfiles.zsh"

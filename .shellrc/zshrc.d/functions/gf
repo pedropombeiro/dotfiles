@@ -8,4 +8,4 @@ if [[ "$PWD" == "$HOME" ]]; then
 fi
 
 $git_cmd fetch --jobs=10
-$git_cmd branch -vv | grep -E '(origin|security)/.*: gone]' | awk '{print $1}' | grep -v '^_.*$' | awk '{print $1 " has been merged!"}' | xargs -I _ hs -c 'hs.notify.new({title="Git fetch", informativeText="_"}):send(); return'
+$git_cmd for-each-ref --format='%(refname:short) %(upstream:short) %(upstream:track)' refs/heads | awk '$2 ~ /^(origin|security)\// && $3 == "[gone]" && $1 !~ /^_/ {print $1 " has been merged!"}' | xargs -I _ hs -c 'hs.notify.new({title="Git fetch", informativeText="_"}):send(); return'

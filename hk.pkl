@@ -248,6 +248,9 @@ hooks {
     ["check"] {
         steps = fast_steps
     }
+    ["pre-push"] {
+        steps = fast_steps
+    }
     ["commit-msg"] {
         steps {
             ["commitlint"] {

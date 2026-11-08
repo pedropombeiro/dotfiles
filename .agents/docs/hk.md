@@ -23,7 +23,7 @@ and is safe to rerun:
 - When the global hk hooks are absent, as on the NAS (`distro.qts`), it registers the hk
   `pre-commit` and `commit-msg` hooks in the yadm repository's config. The NAS infrastructure
   repository registers its own hk hooks, so global hooks would run hk twice there.
-- It registers the `check-all` pre-push hook described below.
+- It registers the `check-push` pre-push hook described below and removes the old `check-all` hook.
 - It moves a leftover `pre-commit` framework hook script aside to `pre-commit.pre-commit-framework.bak`.
 
 Use `git config --file` to edit the yadm repository's config by hand. `yadm enter` passes its
@@ -31,20 +31,20 @@ arguments through `zsh -c`, which breaks the quoting of hook commands.
 
 ### Pre-push check
 
-The `check-all` pre-push hook runs `hk check --all`, the same full check as CI.
-A hook registered by hk itself would only check the files in the pushed commits, which misses files
-that a formatter or linter config change affects. It is registered in the yadm repository's config,
-not globally, so pushes in other repositories with an `hk.pkl` are unaffected.
+The `check-push` hook runs `hk run pre-push --from-hook`. hk reads the ref updates from Git's
+standard input and selects files changed in the outgoing commits. Unrelated unstaged files do not
+block the push. CI still runs `hk check --all` against the committed repository to catch effects
+of formatter or linter configuration changes on otherwise unchanged files.
 
-The hook command wraps the check in a shell function, which discards the remote arguments that Git
-passes to the hook. `hk check --all` rejects those arguments. The function changes to the work tree
+The hook is registered in the yadm repository's config, not globally. Its wrapper forwards Git's
+remote arguments and standard input to hk. The function changes to the work tree
 before running hk. Git runs `pre-push` in the directory `yadm push` was run from, and hk loads the
 nearest `hk.pkl` above that directory. Pushing from another hk repository, such as `/share/Container`,
 would otherwise apply that repository's config to `$HOME`. Without the dotfiles excludes and
-`HK_STASH_UNTRACKED=false`, hk then scans over a million files. The name avoids the `hk-` prefix that
+`HK_STASH_UNTRACKED=false`, hk can scan over a million files. The name avoids the `hk-` prefix that
 `hk install` manages. The command adds `standardrb` to `HK_SKIP_STEPS` when it is not installed, as on
-the NAS. The hook checks the working tree, not the pushed commits, so uncommitted changes can affect
-its result. Bypass it with `HK=0 yadm push`.
+the NAS. Checks read the selected files from the working tree, so uncommitted edits to those files
+can still affect the result. Bypass it with `HK=0 yadm push`.
 
 After changing a formatter or linter config, such as `.editorconfig`, `.markdownlint.jsonc`, or a
 step's options in `hk.pkl`, run `yadm enter hk check --all` before committing. Commit hooks only
@@ -123,7 +123,7 @@ yadm enter hk check --step stylua  # single step
 
 ## Adding New Steps
 
-Edit `~/hk.pkl`. Add to the `fast_steps` mapping — it is shared across `pre-commit`, `fix`, and
+Edit `~/hk.pkl`. Add to the `fast_steps` mapping - it is shared across `pre-commit`, `pre-push`, `fix`, and
 `check` hooks. Run `yadm enter hk validate` to verify syntax.
 
 Wrap the `check` command of a check-only custom step in `readOnly(...)` when it doesn't write

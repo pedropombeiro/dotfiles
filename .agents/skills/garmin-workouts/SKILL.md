@@ -1,5 +1,5 @@
 ---
-name: Garmin workouts
+name: garmin-workouts
 description: Convert training sessions from Google Calendar, training-plan PDFs, or pasted text into Garmin Connect workouts. Use when preparing, uploading, or scheduling workouts, including lap-button steps, distance or timed reps, recoveries, and VMA-based pace targets.
 ---
 

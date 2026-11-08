@@ -51,6 +51,8 @@ shfmt = "latest"
 stylua = "latest"
 # Spell checker for source code
 typos = "latest"
+# Agent Skills structure and reference validator
+"github:agent-ecosystem/skill-validator" = "latest"
 # JSON/Markdown/YAML formatter
 prettier = "latest"
 # Python static type checker

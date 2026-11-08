@@ -178,6 +178,32 @@ local fast_steps = new Mapping<String, Step> {
     }
 
     // ── Validation ───────────────────────────────────────────────────────
+    ["skill-validator"] {
+        glob = List(".agents/skills*/*/**")
+        // Validate local skills only, not upstream snapshots or linked installs.
+        exclude = List(
+            ".agents/skills.work/clickhouse-best-practices/*",
+            ".agents/skills.work/esquery/*",
+            ".agents/skills.work/orbit/*",
+            ".agents/skills/hk-configure/*",
+            ".agents/skills/hk-debug/*",
+            ".agents/skills/opencode-refine/*",
+            ".agents/skills/grill-me/*",
+            ".agents/skills/grilling/*"
+        )
+        check = readOnly("""
+          for f in {{files}}; do
+            printf '%s\\n' "$f" | cut -d/ -f1-3
+          done | sort -u | while IFS= read -r skill; do
+            [ -f "$skill/SKILL.md" ] || continue
+            [ ! -L "$skill" ] || continue
+            status=0
+            mise x github:agent-ecosystem/skill-validator -- skill-validator validate structure -o compact "$skill" || status=$?
+            # Exit 2 means advisory warnings; errors and CLI failures still block.
+            [ "$status" -eq 0 ] || [ "$status" -eq 2 ] || exit "$status"
+          done
+          """)
+    }
     ["check-json"] {
         glob = List("*.json")
         check = readOnly("python3 -c 'import json,sys; [json.load(open(f)) for f in sys.argv[1:]]' {{files}}")

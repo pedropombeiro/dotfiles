@@ -99,7 +99,7 @@ Event-to-sound mapping (in `httpserver/notify.lua`):
 
 `Hyper+A` and `Caps Lock+A` call `~/.local/bin/opencode-goto-waiting` through the shared
 `opencode.lua` module. The script owns conversation discovery, cycling, and tmux client
-selection; see [OpenCode Tmux Tab Indicator](../../docs/tmux.md#opencode-tmux-tab-indicator).
+selection; see the OpenCode Tmux Tab Indicator section in `~/.agents/docs/tmux.md`.
 Hammerspoon then activates iTerm2 and selects the resolved tab.
 
 The HTTP equivalent is `http://localhost:18990/?action=opencode-goto`. A missing waiting session

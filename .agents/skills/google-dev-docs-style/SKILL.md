@@ -17,7 +17,7 @@ local conventions as the higher-priority style layer.
 Apply guidance in this order:
 
 1. Explicit user instructions and repository-specific guidance.
-2. [`~/.agents/docs/writing-style.md`](../../docs/writing-style.md).
+2. `~/.agents/docs/writing-style.md`.
 3. This skill's Google style guidance.
 4. Established usage in the document or product.
 

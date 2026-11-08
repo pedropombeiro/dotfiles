@@ -5,7 +5,7 @@ Use this workflow to turn caption cues into verifiable, actionable notes.
 ## Write Markdown output
 
 [`SKILL.md`](../SKILL.md#workflow) defines how to choose outputs after approval.
-For Wallabag or Readeck without Markdown, write the approved draft to a temporary
+For Readeck without Markdown, write the approved draft to a temporary
 Markdown file, send it, and delete it afterward.
 
 For Markdown output, use `$HOME/Downloads` when it exists and is writable.
@@ -17,20 +17,17 @@ specifies a path, use that path and ask before overwriting an existing file.
 
 ## Consult existing tags
 
-Before drafting the first summary in a session, list the existing tags of the
-service that will receive it:
+Before drafting the first summary in a session, list the existing Readeck tags,
+even when the user has not chosen an output destination yet:
 
 ```bash
-scripts/send-to-wallabag --list-tags
 scripts/send-to-readeck --list-tags
 ```
 
-Each helper prints one `COUNT<TAB>TAG` line per tag, most used first. Use the
-helper for the destination the user named. When no destination is known yet, try
-Wallabag first, and use Readeck when the Wallabag lookup fails or its
-credentials file is missing. Run the lookup only once per session and reuse its
-output for later summaries in the same conversation. If both lookups fail,
-continue without the inventory and tell the user.
+The helper prints one `COUNT<TAB>TAG` line per tag, most used first. Run the
+lookup only once per session and reuse its output for later summaries in the
+same conversation. If the lookup fails, continue without the inventory and
+tell the user.
 
 Always include `#video-takeaways` and aim for 3-5 tags total. Prefer an existing
 tag whenever its meaning fits, even if a narrower new tag seems attractive.
@@ -156,9 +153,8 @@ For Markdown output:
    near the beginning and one near the end.
 4. Report the destination path to the user.
 
-For Wallabag output, report the `entry_id`, `entry_url`, `source_url`,
+For Readeck output, report the `entry_id`, `entry_url`, `source_url`,
 `title`, `author`, `language`, `tags`, `cover`, `archived`, and `validation`
-values printed by `scripts/send-to-wallabag`. For Readeck output, report the same
 values, plus `replaced`, printed by `scripts/send-to-readeck`. Treat a nonzero
 exit status as a failed send, and report the helper's error message.
 

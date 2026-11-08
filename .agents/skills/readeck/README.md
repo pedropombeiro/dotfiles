@@ -67,13 +67,13 @@ scripts/readeck tags
 
 Run any helper with `--help` for all options.
 
-## Differences from the Wallabag skill
+## Output behavior
 
 - Readeck doesn't deduplicate URLs, so re-sending needs `--replace`, which
   creates a new bookmark and deletes the old one.
 - Local images are uploaded, so `prepare-document` has no `--source-url` option
   and never writes "image not available publicly" notes.
-- Authentication uses one API token, not an OAuth client and a password.
+- Authentication uses a dedicated API token.
 
 ## Documentation
 

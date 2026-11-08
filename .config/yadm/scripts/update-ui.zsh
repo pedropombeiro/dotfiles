@@ -6,7 +6,9 @@
 # line replaces it when the step ends. A failed step prints the end of its
 # output and the run continues; `_update_finish` exits non-zero if any step
 # failed. Steps report details with `_update_warn` (repeated in the final
-# summary) and `_update_note` (appended to the result line).
+# summary) and `_update_note` (appended to the result line). Child scripts can
+# explain a failure by appending lines to the file named by
+# `$UPDATE_FAILURE_FILE`; the final summary lists them under the failed step.
 #
 # Step functions run with ERR_RETURN, so the first failing command fails the
 # step. Use `return`, not `exit`, inside a step: it runs in the main shell.
@@ -30,7 +32,7 @@ typeset -gF _ui_started_at=${EPOCHREALTIME}
 typeset -gi _ui_total=0 _ui_current=0 _ui_tty=0 _ui_cleanup_done=0
 typeset -gi _ui_spinner_pid=0 _ui_sudo_pid=0
 typeset -gi _ui_progress_offset=${PROGRESS_OFFSET:-0} _ui_progress_range=${PROGRESS_RANGE:-100}
-typeset -ga _ui_managers=() _ui_failures=() _ui_warnings=()
+typeset -ga _ui_managers=() _ui_failures=() _ui_failure_details=() _ui_warnings=()
 typeset -ga _ui_step_warnings=() _ui_step_notes=()
 typeset -ga _ui_upgraded=() _ui_installed=() _ui_removed=() _ui_caveats=()
 typeset -gi _ui_label_width=22
@@ -118,6 +120,7 @@ _step() {
   fi
   local label=$1 fn=$2
   local prefix step_log line icon color
+  local -x UPDATE_FAILURE_FILE
   local -i rc=0 shown hidden
   local -F start=${EPOCHREALTIME} elapsed
 
@@ -125,6 +128,7 @@ _step() {
   prefix="[${_ui_current}/${_ui_total}]"
   _ui_step_warnings=()
   _ui_step_notes=()
+  UPDATE_FAILURE_FILE=$(mktemp)
   iterm2_progress $(( _ui_progress_offset + (_ui_current - 1) * _ui_progress_range / (_ui_total > 0 ? _ui_total : 1) ))
   iterm2_badge "update: ${label}"
   print -r -- $'\n'"==> ${prefix} ${label}" >> "${UPDATE_LOG}"
@@ -144,6 +148,7 @@ _step() {
   if (( rc )); then
     icon='✗' color=${RED}
     _ui_failures+=("${label} (exit ${rc})")
+    _ui_failure_details+=("$(<"${UPDATE_FAILURE_FILE}")")
     print -r -- "==> failed with exit status ${rc}" >> "${UPDATE_LOG}"
   elif (( ${#_ui_step_warnings} )); then
     icon='!' color=${YELLOW}
@@ -169,6 +174,7 @@ _step() {
   fi
 
   [[ -n ${step_log} ]] && rm -f "${step_log}"
+  rm -f "${UPDATE_FAILURE_FILE}"
   return 0
 }
 
@@ -465,8 +471,12 @@ _ui_print_summary() {
 
   if (( ${#_ui_failures} )); then
     _ui_section 'Failed'
-    for line in "${_ui_failures[@]}"; do
-      _ui_emit "${RED}" "✗ ${line}"
+    local -i i
+    for i in {1..${#_ui_failures}}; do
+      _ui_emit "${RED}" "✗ ${_ui_failures[i]}"
+      for line in "${(@f)_ui_failure_details[i]}"; do
+        [[ -n ${line} ]] && _ui_emit "${RED}" "    ${line}"
+      done
     done
   fi
 

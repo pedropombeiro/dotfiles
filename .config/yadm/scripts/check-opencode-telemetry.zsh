@@ -31,6 +31,7 @@ function print_ok() {
 }
 
 function print_failure() {
+  [[ -n "${UPDATE_FAILURE_FILE:-}" ]] && print -r -- "$1" >> "${UPDATE_FAILURE_FILE}"
   printf "${RED}%s${NC}\n" "$1"
 }
 

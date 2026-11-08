@@ -214,7 +214,8 @@ variant per session when needed. The top-level `model` covers other agents, and
 Per-agent models take precedence over the top-level `model`, so the `oc` wrapper's inline
 `$OPENCODE_MODEL` override (`OPENCODE_CONFIG_CONTENT` with `--standalone`) no longer changes
 the model for `plan` or `build`. An explicit `opencode run --model` still wins over the
-agent's model, so `oc run` and `git-ai-commit-msg` (`$OPENCODE_COMMIT_MODEL`) are unaffected.
+agent's model, so `oc run` is unaffected. `git-ai-commit-msg` selects its model
+separately through the generation API using `$OPENCODE_COMMIT_MODEL`.
 
 Set the default model in `opencode.json`, not in `$OPENCODE_MODEL`. When the variable is set,
 every `oc` launch uses a private server instead of the shared service, and it diverges from
@@ -223,19 +224,29 @@ per-project overrides in a project's mise config.
 
 ## Commit message generator
 
-`~/.local/bin/git-ai-commit-msg` backs Lazygit's `Ctrl+G` command. It runs `opencode run
---standalone` against its own data directory (`~/.local/share/opencode-commit`), so it never
-touches the shared service or its session history. Each run deletes its session afterwards.
+`~/.local/bin/git-ai-commit-msg` backs Lazygit's `Ctrl+G` command. It calls
+`opencode api post /api/experimental/generate/text` through the shared service.
+Stateless generation uses the server's base provider configuration without creating
+a session or running an agent. The request contains only the commit-writing prompt,
+diff, staged name/status metadata, and selected model. Session tools and instructions
+are not part of the request. No archiving or session deletion is needed.
 
-- **Private config**: the run uses `OPENCODE_CONFIG_DIR` pointing at a derived config that holds
-  only the selected provider's settings and a `commit` agent with every tool denied. Global
-  instructions, agents, and MCP servers stay out of the prompt. Deriving the config costs about
-  0.45 s, so it is cached in `opencode-commit/config/<provider>/`. The cache is rebuilt when a
-  global or managed config file changes, after a failed run, and once a day. A config with
-  `{env:...}` or `{file:...}` substitutions is never cached, because those resolve at load time.
-- **Plugins**: for the `gitlab` and `ollama` providers, the derived config disables the built-in
-  tool, sidebar, MCP, and other provider plugins, which saves about 0.25 s. `aisdk:` provider
-  packages still need `opencode.provider.dynamic`, and `opencode.models.dev` must stay enabled.
+- **API**: the endpoint is experimental. The script validates `.data.text` and
+  reports API errors. It stops waiting after 90 seconds, but the server request
+  may continue after the client exits.
+- **Diff budget**: minified bundles and source maps contribute only their
+  diff headers and structural metadata, such as additions, deletions, and renames.
+  Other files, including lockfiles and build configuration, retain up to 4 KB
+  per file and 12 KB overall. Headers and structural metadata share a separate
+  4 KB budget; staged statuses have another 4 KB budget. If a file header cannot
+  fit, its content is omitted too. Omission markers identify trimmed content.
+  The same filtering applies to stdin diffs.
+- **Request transport**: `opencode api --data` accepts inline JSON, not stdin or
+  `@file` syntax. Diff budgets keep the request below the argument-size limit.
+- **Credentials**: the shared service owns provider credentials and token reuse.
+  The script no longer derives a private config or uses `opencode-commit` data.
+- **Tests**: run `node --test ~/.config/yadm/tests/git-ai-commit-msg.test.mjs`
+  for mocked API, diff-budget, model-selection, and error-handling checks.
 - **yadm**: the `yadm` wrapper takes about 0.7 s per call, while `git` against
   `~/.local/share/yadm/repo.git` takes about 35 ms. Read-only commands in the script use `git
   --git-dir ... --work-tree "$HOME"`. Only the commit itself calls `yadm`. Avoid `yadm` in any

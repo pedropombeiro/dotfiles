@@ -40,7 +40,7 @@ glab = "latest"
 colima = "0.10.3"
 lima = "2.2.1"
 # Run local processes with Kubernetes network and filesystem context
-mirrord = "3.284.0"
+mirrord = "3.285.0"
 # Query GitLab's Kibana/Elasticsearch logs with the Kibana SSO session
 "gitlab:gitlab-com/gl-infra/esquery" = "1.11.1"
 # Kubernetes terminal UI

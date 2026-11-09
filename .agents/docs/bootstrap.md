@@ -64,6 +64,19 @@ can't declare:
 
 ## Update script steps
 
+On macOS, the interactive `approve downloads` step follows the Homebrew step.
+It checks only casks installed or upgraded in that run, using Homebrew's artifact
+targets rather than mise shims. CLI tools run with `--version` and a 120-second
+timeout. Apps that need Gatekeeper approval open in the background and quit
+gracefully after starting. Apps running before the Homebrew step, or already
+running when checked, stay open. An existing app process can defer approval
+until its next restart. Failures produce warnings without failing the update.
+The mise tools step does not approve casks or remove quarantine attributes.
+
+Bootstrap step `945` uses the same app checks for `/Applications/*.app`,
+including unapproved quarantine flags such as `0181` and `0381`. It also leaves
+existing apps open and quits only apps launched for approval.
+
 `update.zsh` (each OS variant), `update-common.zsh`, and `update-work.zsh` run
 their work through `update-ui.zsh`. It shows one spinner line per step, prints
 captured output only when a step fails, and ends with the package versions that

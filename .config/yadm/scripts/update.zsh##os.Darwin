@@ -22,6 +22,13 @@ step_brew() {
   local -a python_roots root_owned
   local -i cleanup_rc=0
 
+  # Capture app state before Homebrew can stop or replace an app.
+  source "${YADM_SCRIPTS}/approve-quarantined.zsh"
+  _approval_running_apps=$(approval_apps list) || {
+    _approval_running_apps=''
+    _update_warn 'Could not record running apps; app approval will be skipped.'
+  }
+
   # Root-run Python tools can leave bytecode caches that block `brew cleanup`.
   # Limit repairs to Python caches and preserve groups and non-root ownership.
   brew_prefix=$(brew --prefix)
@@ -54,6 +61,11 @@ step_brew() {
   return ${cleanup_rc}
 }
 
+step_approve_downloads() {
+  source "${YADM_SCRIPTS}/approve-quarantined.zsh"
+  approve_casks "${_ui_snapshot_dir}/brew-info-before.json" "$_approval_running_apps"
+}
+
 step_tmux_signature() {
   "${YADM_SCRIPTS}/sign-tmux.zsh"
 }
@@ -80,6 +92,7 @@ step_brew_dump() {
 
 _step "relink dotfiles" step_relink
 _step "brew" step_brew
+_step --interactive "approve downloads" step_approve_downloads
 _step "tmux signature" step_tmux_signature
 _step "mise bootstrap" step_mise_bootstrap
 _step "mac app store" step_mas

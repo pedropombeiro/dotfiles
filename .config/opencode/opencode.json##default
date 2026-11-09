@@ -38,7 +38,7 @@
     // The built-in title agent handles maintenance tasks such as session titles.
     "title": { "model": "gitlab/duo-chat-gpt-6-luna" },
     "plan": { "model": "gitlab/duo-chat-opus-5-5" },
-    "build": { "model": "gitlab/duo-chat-sonnet-5-5#medium" }
+    "build": { "model": "gitlab/duo-chat-gpt-6-1-sol" }
   },
   "mcp": {
     "servers": {

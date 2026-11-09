@@ -136,6 +136,12 @@
           "cost": [{ "input": 5, "output": 25, "cache": { "read": 0.50, "write": 6.25 } }]
         },
         "duo-chat-opus-5-5": {
+          "settings": {
+            "cache": {
+              "ttl": "5m",
+              "warming": { "interval": "auto", "duration": "15 minutes" }
+            }
+          },
           "cost": [{ "input": 4, "output": 20, "cache": { "read": 0.20, "write": 5 } }]
         },
         "duo-chat-opus-4-8": {

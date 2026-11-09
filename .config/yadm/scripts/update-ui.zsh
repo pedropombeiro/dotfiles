@@ -4,7 +4,8 @@
 # `_step <label> <function>` runs one update step with its output captured in a
 # per-run log. On a terminal, a spinner shows the running step, and one result
 # line replaces it when the step ends. A failed step prints the end of its
-# output and the run continues; `_update_finish` exits non-zero if any step
+# output and repeats error lines in the summary, even when they precede that
+# tail. The run continues; `_update_finish` exits non-zero if any step
 # failed. Steps report details with `_update_warn` (repeated in the final
 # summary) and `_update_note` (appended to the result line). Child scripts can
 # explain a failure by appending lines to the file named by
@@ -148,6 +149,9 @@ _step() {
   if (( rc )); then
     icon='✗' color=${RED}
     _ui_failures+=("${label} (exit ${rc})")
+    if [[ ! -s ${UPDATE_FAILURE_FILE} && -n ${step_log} ]]; then
+      _ui_failure_excerpt "${step_log}" > "${UPDATE_FAILURE_FILE}"
+    fi
     _ui_failure_details+=("$(<"${UPDATE_FAILURE_FILE}")")
     print -r -- "==> failed with exit status ${rc}" >> "${UPDATE_LOG}"
   elif (( ${#_ui_step_warnings} )); then
@@ -176,6 +180,32 @@ _step() {
   [[ -n ${step_log} ]] && rm -f "${step_log}"
   rm -f "${UPDATE_FAILURE_FILE}"
   return 0
+}
+
+# Prefer explicit diagnostics from the whole step over a potentially successful
+# tail. Keep summaries bounded, strip terminal colors, and fall back to the last
+# five non-blank lines when the command uses an unfamiliar error format.
+_ui_failure_excerpt() {
+  awk '
+    {
+      gsub(/\033\[[0-9;]*m/, "")
+      sub(/\r$/, "")
+      if ($0 !~ /[^[:space:]]/) next
+      recent[++count % 5] = $0
+      lower = tolower($0)
+      if (lower ~ /^[[:space:]]*((error|fatal)(:|[[:space:]])|curl:|✘|✗)/) {
+        if (errors < 8) print
+        errors++
+      }
+    }
+    END {
+      if (errors > 8) print "… " errors - 8 " more error lines in the log"
+      if (!errors) {
+        for (i = (count > 5 ? count - 4 : 1); i <= count; i++)
+          print recent[i % 5]
+      }
+    }
+  ' "$1"
 }
 
 # Shows a message under the step's result line and in the final summary.

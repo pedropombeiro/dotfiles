@@ -61,6 +61,11 @@
       // footer. Keep the endpoint and protocol in sync with the exporter's.
       "package": "./local-plugins/server/otel-status",
       "options": { "endpoint": "https://otel.pombei.ro", "protocol": "http/protobuf" }
+    },
+    {
+      // Local build of the cache-coach branch, for live testing. Restore
+      // "opencode-cache-coach@<version>" once it ships.
+      "package": "/Users/pedropombeiro/Developer/github.com/pedropombeiro/opencode-plugins/packages/cache-coach"
     }
   ],
   "mcp": {

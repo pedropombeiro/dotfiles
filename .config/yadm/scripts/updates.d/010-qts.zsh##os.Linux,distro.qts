@@ -1,0 +1,34 @@
+#!/usr/bin/env zsh
+
+_update_watch opkg mise npm nvim mason
+
+step_entware() {
+  opkg update
+  opkg upgrade
+}
+
+step_mise() {
+  export MISE_INSTALL_ARCH=x64-musl
+  mise self-update --yes
+  (cd ~ && mise plugin update && mise install --yes && mise upgrade --yes)
+}
+
+step_grc_rs() {
+  (cd ~ && mise run grc-rs:sync)
+}
+
+step_tmux_plugins() {
+  local tpm_bin="${XDG_DATA_HOME:-${HOME}/.local/share}/tmux/plugins/tpm/bin"
+  "${tpm_bin}/update_plugins" all
+  "${tpm_bin}/clean_plugins"
+}
+
+step_container_hooks() {
+  (cd /share/Container && hk install --mise)
+}
+
+_update_register "entware" step_entware
+_update_register "mise" step_mise
+_update_register "grc-rs rules" step_grc_rs
+_update_register "tmux plugins" step_tmux_plugins
+_update_register "container hk hooks" step_container_hooks

@@ -2,7 +2,7 @@
 #
 # Link internal Work files that must not be in the public repo. They live under
 # home/ in the private gitlab-dotfiles checkout, at their path relative to
-# $HOME. Runs from relink-dotfiles.zsh and from update-work.zsh after the
+# $HOME. Runs from relink-dotfiles.zsh and the Work repository update module after the
 # checkout is refreshed, so files added upstream are linked in the same update.
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )" &>/dev/null && pwd )

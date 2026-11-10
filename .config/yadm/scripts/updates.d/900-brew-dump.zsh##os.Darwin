@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+step_brew_dump() {
+  mise run brew:dump
+}
+
+_update_register "brew dump" step_brew_dump

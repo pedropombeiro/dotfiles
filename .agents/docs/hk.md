@@ -16,7 +16,7 @@ See [Packslip skills policy](mise.md#completions-and-skills-policy) for updates.
 hk is installed globally via `hk install --global`, using Git 2.54+ config-based hooks. It runs as a
 silent no-op in repos without an `hk.pkl`.
 
-The "git hooks" step of `mise run dotfiles:update` (`.config/yadm/scripts/update-common.zsh`)
+The "git hooks" step of `mise run dotfiles:update` (`.config/yadm/scripts/updates.d/170-git-hooks.zsh`)
 configures the dotfiles hooks in the yadm repository's config (`~/.local/share/yadm/repo.git/config`)
 and is safe to rerun:
 

@@ -1,9 +1,6 @@
 #!/usr/bin/env zsh
 
-YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 typeset -g SCRIPT_PATH=${(%):-%x}
-
-(( $+functions[_update_init] )) || source "${YADM_SCRIPTS}/lib/update-ui.zsh"
 
 ensure_clickhouse_binary() {
   local clickhouse_bin
@@ -362,32 +359,6 @@ write_opencode_config() {
 EOF
 }
 
-step_gitlab_dotfiles() {
-  local gitlab_dotfiles_dir="${HOME}/.config/dotfiles/gitlab"
-
-  mise reshim
-
-  # Refresh the private gitlab-dotfiles checkout, then link its home/ files, so
-  # files added upstream are linked in this update, with or without GDK. The GDK
-  # step reuses the refreshed checkout.
-  if [[ -d "${gitlab_dotfiles_dir}/.git" ]]; then
-    mise bootstrap repos update --yes --skip-dirty "${gitlab_dotfiles_dir}" ||
-      _update_warn "Failed to update GitLab dotfiles; using the existing checkout."
-  fi
-  "${YADM_SCRIPTS}/link-private-work-files.zsh"
-}
-
-# sync-work-skills.zsh links Work skills into these checkouts, so fast-forward
-# them to keep the skills current.
-step_work_skill_repos() {
-  mise bootstrap repos update --yes --skip-dirty \
-    "${HOME}/Developer/gitlab.com/gitlab-org/ai/skills" \
-    "${HOME}/Developer/gitlab.com/pedropombeiro/gitlab-agent-skills" \
-    "${HOME}/Developer/gitlab.com/gitlab-org/ci-cd/fix-pipeline-flow-report" \
-    "${HOME}/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph" ||
-    _update_warn "Failed to update Work skill repos; using the existing checkouts."
-}
-
 step_gdk() {
   local clickhouse_bin_path subdir
   local exclude_file="${GDK_ROOT}/.git/info/exclude"
@@ -447,11 +418,4 @@ step_gdk() {
   git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/pedropombeiro/*:refs/remotes/origin/pedropombeiro/*'
 }
 
-step_checks() {
-  "${YADM_SCRIPTS}/run-checks.zsh"
-}
-
-_step "gitlab dotfiles" step_gitlab_dotfiles
-_step "work skill repos" step_work_skill_repos
-_step "gdk config" step_gdk
-_step "checks" step_checks
+_update_register "gdk config" step_gdk

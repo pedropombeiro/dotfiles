@@ -1,0 +1,7 @@
+#!/usr/bin/env zsh
+
+step_checks() {
+  "${YADM_SCRIPTS}/run-checks.zsh"
+}
+
+_update_register "checks" step_checks

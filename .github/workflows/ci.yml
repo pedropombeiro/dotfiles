@@ -198,6 +198,30 @@ jobs:
       - name: No alt symlinks committed
         run: yadm ls-files -z | xargs -0 zsh "${HOME}/.config/yadm/scripts/validators/check-no-alt-symlinks.zsh"
 
+  # Fixture tests do not run live checks, updates, or service operations.
+  yadm-script-tests:
+    name: YADM script regression tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Install test dependencies
+        run: sudo apt-get update && sudo apt-get install -y zsh yadm jq
+
+      - name: Check Zsh syntax
+        shell: zsh {0}
+        run: |
+          for script in .config/yadm/scripts/**/*.zsh*(N-.); do
+            zsh -n "$script" || exit
+          done
+
+      - name: Run isolated regression tests
+        shell: zsh {0}
+        run: |
+          for test in .config/yadm/scripts/tests/test-*.zsh; do
+            zsh -df "$test" || exit
+          done
+
   # Job 6: Secret scanning
   secret-scanning:
     name: Secret scanning (Gitleaks)

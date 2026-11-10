@@ -1,0 +1,24 @@
+#!/usr/bin/env zsh
+
+step_gitlab_dotfiles() {
+  local gitlab_dotfiles_dir="${HOME}/.config/dotfiles/gitlab"
+  mise reshim
+  # Refresh before linking home files and configuring GDK.
+  if [[ -d "${gitlab_dotfiles_dir}/.git" ]]; then
+    mise bootstrap repos update --yes --skip-dirty "${gitlab_dotfiles_dir}" ||
+      _update_warn "Failed to update GitLab dotfiles; using the existing checkout."
+  fi
+  "${YADM_SCRIPTS}/link-private-work-files.zsh"
+}
+
+step_work_skill_repos() {
+  mise bootstrap repos update --yes --skip-dirty \
+    "${HOME}/Developer/gitlab.com/gitlab-org/ai/skills" \
+    "${HOME}/Developer/gitlab.com/pedropombeiro/gitlab-agent-skills" \
+    "${HOME}/Developer/gitlab.com/gitlab-org/ci-cd/fix-pipeline-flow-report" \
+    "${HOME}/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph" ||
+    _update_warn "Failed to update Work skill repos; using the existing checkouts."
+}
+
+_update_register "gitlab dotfiles" step_gitlab_dotfiles
+_update_register "work skill repos" step_work_skill_repos

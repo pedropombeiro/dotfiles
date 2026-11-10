@@ -10,11 +10,11 @@ Use `mise config ls` to see active files and `mise ls <tool>` to find the source
 of a version selection. Read the configuration for current tool versions.
 
 `conf.d/bootstrap.toml` declares repositories and user LaunchAgents. YADM
-bootstrap and the macOS `update.zsh##os.Darwin` invoke explicit `--only`
+bootstrap and the macOS `updates.d/010-macos.zsh##os.Darwin` invoke explicit `--only`
 scopes. The macOS update runs `--only packages,repos,macos-launchd-agents`; the
 Linux update scripts don't run `mise bootstrap`. The `macos-launchd-agents`
 scope, also called `launchd`, covers user LaunchAgents only. Add a scope to
-`update.zsh##os.Darwin` when you declare a new resource type.
+`updates.d/010-macos.zsh##os.Darwin` when you declare a new resource type.
 
 Do not run bare `mise bootstrap`: its dotfile, macOS default, and user
 configuration overlap YADM workflows. With mise 2026.9.14 it also exits with

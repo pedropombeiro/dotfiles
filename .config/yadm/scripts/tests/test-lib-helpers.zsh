@@ -11,7 +11,7 @@ trap 'rm -rf -- "$sandbox"' EXIT
 root="$sandbox/home/.config/yadm/scripts"
 mkdir -p "$root/lib"
 cp "$scripts/colors.sh" "$scripts/iterm2.sh" "$root/"
-cp "$scripts/lib/"{colors.sh,iterm2.sh,check-helpers.zsh,update-ui.zsh,wait-for.sh} "$root/lib/"
+cp "$scripts/lib/"{colors.sh,iterm2.sh,check-helpers.zsh,update-ui.zsh,update-packages.zsh,wait-for.sh} "$root/lib/"
 
 for shell in sh bash zsh; do
   HOME="$sandbox/home" "$shell" -c '

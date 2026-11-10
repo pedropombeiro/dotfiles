@@ -14,13 +14,12 @@
 # Step functions run with ERR_RETURN, so the first failing command fails the
 # step. Use `return`, not `exit`, inside a step: it runs in the main shell.
 #
-# The step total comes from counting lines that start with `_step ` in the files
-# passed to `_update_init`, so call `_step` unconditionally at the start of a
-# line and put any condition inside the step function.
+# The runner supplies the registered step count to `_update_init`.
 
 zmodload zsh/datetime zsh/zselect
 
 source "${${(%):-%x}:A:h}/colors.sh"
+source "${${(%):-%x}:A:h}/update-packages.zsh"
 DIM='\033[2m'
 
 fpath=(~/.shellrc/zshrc.d/functions $fpath)
@@ -32,6 +31,7 @@ typeset -g _ui_snapshot_dir='' _ui_notify_message=''
 typeset -gF _ui_started_at=${EPOCHREALTIME}
 typeset -gi _ui_total=0 _ui_current=0 _ui_tty=0 _ui_cleanup_done=0
 typeset -gi _ui_spinner_pid=0 _ui_sudo_pid=0
+typeset -gi _ui_initialized=0
 typeset -gi _ui_progress_offset=${PROGRESS_OFFSET:-0} _ui_progress_range=${PROGRESS_RANGE:-100}
 typeset -ga _ui_managers=() _ui_failures=() _ui_failure_details=() _ui_warnings=()
 typeset -ga _ui_step_warnings=() _ui_step_notes=()
@@ -43,15 +43,9 @@ else
   YELLOW='' GREEN='' RED='' CYAN='' BOLD='' NC='' DIM=''
 fi
 
-# Sets up the log, traps, and progress. Arguments are the files that contain
-# this run's `_step` calls.
+# Sets up the log, traps, and progress for the registered step count.
 _update_init() {
-  local file count
-
-  for file in "$@"; do
-    count=$(grep -c '^[[:space:]]*_step ' "${file}" 2>/dev/null)
-    (( _ui_total += ${count:-0} ))
-  done
+  _ui_total=$1
 
   mkdir -p "${_ui_log_dir}"
   UPDATE_LOG="${_ui_log_dir}/$(date +%Y-%m-%dT%H-%M-%S).log"
@@ -61,7 +55,7 @@ _update_init() {
 
   _ui_snapshot_dir=$(mktemp -d)
 
-  trap _ui_cleanup EXIT
+  _ui_initialized=1
   trap 'exit 130' INT
   trap 'exit 143' TERM
   trap 'exit 129' HUP
@@ -280,8 +274,15 @@ _ui_spinner_stop() {
   printf '\r\e[K'
 }
 
-_ui_cleanup() {
+# Define this at file scope: Zsh scopes EXIT traps created inside functions.
+TRAPEXIT() {
   local rc=$?
+  (( _ui_initialized )) || return $rc
+  _ui_cleanup "$rc"
+}
+
+_ui_cleanup() {
+  local rc=${1:-$?}
   (( _ui_cleanup_done )) && return ${rc}
   _ui_cleanup_done=1
 
@@ -301,151 +302,6 @@ _ui_cleanup() {
     iterm2_notify "${_ui_notify_message:-update complete}"
   fi
   return ${rc}
-}
-
-# ── Version snapshots ─────────────────────────────────────────────────
-# Each prints one `name<TAB>version` line per installed package.
-
-# `brew list --cask --versions` aborts on the first cask with broken metadata,
-# so read both lists from `brew info`, once per snapshot.
-_ui_brew_info() {
-  local cache="${_ui_snapshot_dir}/brew-info-${_ui_phase}.json"
-  (( $+commands[brew] )) || return 1
-  [[ -s ${cache} ]] || brew info --json=v2 --installed >| "${cache}" || return 1
-  jq -r "$1" "${cache}"
-}
-
-_ui_versions_brew() {
-  _ui_brew_info '.formulae[] | "\(.name)\t\(.installed[-1].version)"'
-}
-
-_ui_versions_cask() {
-  _ui_brew_info '.casks[] | "\(.token)\t\(.installed)"'
-}
-
-_ui_versions_mise() {
-  (( $+commands[mise] )) || return 1
-  (cd ~ && mise ls --current --json) |
-    jq -r 'to_entries[] | "\(.key)\t\([.value[].version] | join(", "))"'
-}
-
-_ui_versions_npm() {
-  (( $+commands[npm] )) || return 1
-  npm ls -g --json --depth=0 |
-    jq -r '.dependencies // {} | to_entries[] | "\(.key)\t\(.value.version)"'
-}
-
-_ui_versions_mas() {
-  (( $+commands[mas] )) || return 1
-  mas list | sed -E 's/^ *[0-9]+ +(.*[^ ]) +\((.*)\)$/\1\t\2/'
-}
-
-# Lazy plugins report a short commit; `_ui_detail_nvim` adds the commit count.
-_ui_versions_nvim() {
-  local lockfile="${XDG_CONFIG_HOME:-${HOME}/.config}/nvim/lazy-lock.json"
-  [[ -f ${lockfile} ]] || return 1
-  jq -r 'to_entries[] | "\(.key)\t\(.value.commit[0:7])"' "${lockfile}"
-}
-
-# Prints " (N commits)" for a plugin that moved forward, or " (rolled back)".
-_ui_detail_nvim() {
-  local dir="${XDG_DATA_HOME:-${HOME}/.local/share}/nvim/lazy/$1" count
-  [[ -d ${dir} ]] || return 0
-  count=$(git -C "${dir}" rev-list --count "$2..$3" 2>/dev/null) || return 0
-  if (( count > 0 )); then
-    printf ' (%d commit%s)' ${count} "${${count:#1}:+s}"
-  elif git -C "${dir}" merge-base --is-ancestor "$3" "$2" 2>/dev/null; then
-    printf ' (rolled back)'
-  fi
-}
-
-_ui_versions_mason() {
-  local -a receipts=("${XDG_DATA_HOME:-${HOME}/.local/share}"/nvim/mason/packages/*/mason-receipt.json(N))
-  (( ${#receipts} )) || return 1
-  jq -r '"\(.name)\t\(.source.id | sub(".*@"; ""))"' "${receipts[@]}"
-}
-
-_ui_versions_apt() {
-  (( $+commands[dpkg-query] )) || return 1
-  dpkg-query -W -f '${Package}\t${Version}\n'
-}
-
-_ui_versions_opkg() {
-  (( $+commands[opkg] )) || return 1
-  opkg list-installed | awk -F ' - ' -v OFS='\t' '{ print $1, $2 }'
-}
-
-_ui_snapshot() {
-  local _ui_phase=$1 manager
-
-  mkdir -p "${_ui_snapshot_dir}/${_ui_phase}"
-  for manager in "${_ui_managers[@]}"; do
-    "_ui_versions_${manager}" >| "${_ui_snapshot_dir}/${_ui_phase}/${manager}" 2>/dev/null ||
-      rm -f "${_ui_snapshot_dir}/${_ui_phase}/${manager}"
-  done
-}
-
-_ui_diff() {
-  local manager=$1 name version
-  local before="${_ui_snapshot_dir}/before/${manager}" after="${_ui_snapshot_dir}/after/${manager}"
-  local -A old new
-
-  # Skip a manager whose listing failed, rather than reporting every package.
-  [[ -s ${before} && -s ${after} ]] || return 0
-
-  while IFS=$'\t' read -r name version; do
-    [[ -n ${name} ]] && old[${name}]=${version}
-  done < "${before}"
-  while IFS=$'\t' read -r name version; do
-    [[ -n ${name} ]] && new[${name}]=${version}
-  done < "${after}"
-
-  for name in ${(ko)new}; do
-    if (( ! ${+old[${name}]} )); then
-      _ui_installed+=("${manager}"$'\t'"${name}"$'\t'"${new[${name}]}")
-    elif [[ ${old[${name}]} != "${new[${name}]}" ]]; then
-      version="${old[${name}]} → ${new[${name}]}"
-      if (( $+functions[_ui_detail_${manager}] )); then
-        version+=$("_ui_detail_${manager}" "${name}" "${old[${name}]}" "${new[${name}]}" 2>/dev/null)
-      fi
-      _ui_upgraded+=("${manager}"$'\t'"${name}"$'\t'"${version}")
-    fi
-  done
-  for name in ${(ko)old}; do
-    (( ${+new[${name}]} )) || _ui_removed+=("${manager}"$'\t'"${name}"$'\t'"${old[${name}]}")
-  done
-}
-
-# Collects Homebrew caveats for upgraded and installed formulae and casks.
-_ui_collect_caveats() {
-  local row manager output
-  local -a formulae casks records
-  local -i i
-
-  for row in "${_ui_upgraded[@]}" "${_ui_installed[@]}"; do
-    manager=${row%%$'\t'*}
-    row=${row#*$'\t'}
-    case ${manager} in
-      brew) formulae+=("${row%%$'\t'*}") ;;
-      cask) casks+=("${row%%$'\t'*}") ;;
-    esac
-  done
-
-  if (( ${#formulae} )); then
-    output=$(brew info --json=v2 --formula "${formulae[@]}" 2>/dev/null |
-      jq -j '.formulae[] | select((.caveats // "") != "") | .name, "\u0000", .caveats, "\u0000"')
-    records+=("${(@0)output}")
-  fi
-  if (( ${#casks} )); then
-    output=$(brew info --json=v2 --cask "${casks[@]}" 2>/dev/null |
-      jq -j '.casks[] | select((.caveats // "") != "") | .token, "\u0000", .caveats, "\u0000"')
-    records+=("${(@0)output}")
-  fi
-
-  records=("${(@)records:#}")
-  for (( i = 1; i < ${#records}; i += 2 )); do
-    _ui_caveats+=("${records[i]}"$'\t'"${records[i + 1]%$'\n'}")
-  done
 }
 
 # Prints to the terminal (with color) and to the log (without).

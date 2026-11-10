@@ -77,8 +77,9 @@ Bootstrap step `945` uses the same app checks for `/Applications/*.app`,
 including unapproved quarantine flags such as `0181` and `0381`. It also leaves
 existing apps open and quits only apps launched for approval.
 
-`update.zsh` (each OS variant), `update-common.zsh`, and `update-work.zsh` run
-their work through `scripts/lib/update-ui.zsh`. It shows one spinner line per step, prints
+`scripts/update.zsh` loads machine-selected modules from `scripts/updates.d/`.
+Modules register ordered steps before the runner starts any work. The runner
+uses `scripts/lib/update-ui.zsh` to show one spinner line per step and prints
 captured output only when a step fails, and ends with the package versions that
 changed. Full output goes to `~/.local/state/dotfiles-update/<timestamp>.log`.
 
@@ -149,7 +150,7 @@ Bootstrap leaves these to you on purpose. Don't automate or flag them as gaps.
   when apps ask. Hammerspoon needs Accessibility and Bluetooth.
 - **BusylightHTTP (Work):** install it from a local installer file. `940` only
   adds it as a login item.
-- **GDK configuration (Work):** `950` installs GDK, and `update-work.zsh`
+- **GDK configuration (Work):** `950` installs GDK, and the Work GDK update module
   configures it. A new machine doesn't need GDK right away, so run
   `mise run dotfiles:update` from a new terminal after bootstrap. Shell startup
   exports `GDK_ROOT` when `~/gitlab-development-kit` or `~/gdk` exists, preferring

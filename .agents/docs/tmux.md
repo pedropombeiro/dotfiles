@@ -201,7 +201,7 @@ launch-context restriction; a successful Apple `curl` test alone doesn't rule
 it out.
 
 `~/.config/yadm/scripts/sign-tmux.zsh##os.Darwin` replaces the signature with a
-fresh ad-hoc one. `update.zsh##os.Darwin` runs it after Homebrew upgrades, and
+fresh ad-hoc one. `updates.d/010-macos.zsh##os.Darwin` runs it after Homebrew upgrades, and
 bootstrap step `005` runs it after the first install. It records the signed
 binary's CDHash in `~/.local/state/yadm/tmux-codesign.cdhash` and skips binaries
 it already signed. Pass `--force` to re-sign even when the CDHash matches.

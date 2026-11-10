@@ -1,0 +1,18 @@
+#!/usr/bin/env zsh
+
+_update_use_sudo
+_update_watch apt brew mise npm nvim mason
+
+# Steps run without a terminal on stdin, so answer apt's prompt up front.
+step_apt() {
+  sudo apt update
+  sudo apt upgrade -y
+}
+
+step_brew() {
+  brew update
+  brew upgrade
+}
+
+_update_register "apt" step_apt
+_update_register "brew" step_brew

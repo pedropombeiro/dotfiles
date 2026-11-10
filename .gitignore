@@ -102,7 +102,13 @@ Thumbs.db
 .config/yadm/scripts/iterm2-setup.sh
 .config/yadm/scripts/remap-mac-keys.sh
 .config/yadm/scripts/sign-tmux.zsh
-.config/yadm/scripts/update.zsh
+.config/yadm/scripts/updates.d/010-linux-personal.zsh
+.config/yadm/scripts/updates.d/010-macos.zsh
+.config/yadm/scripts/updates.d/010-qts.zsh
+.config/yadm/scripts/updates.d/190-work-repositories.zsh
+.config/yadm/scripts/updates.d/200-work.zsh
+.config/yadm/scripts/updates.d/800-work-checks.zsh
+.config/yadm/scripts/updates.d/900-brew-dump.zsh
 .default-gems
 .hammerspoon/audio.lua
 .hammerspoon/busylight.lua

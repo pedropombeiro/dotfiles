@@ -81,6 +81,52 @@ The top-level `colors.sh` and `iterm2.sh` files forward to their implementations
 in `lib/` for existing NAS callers. Use the `lib/` paths for new callers. Remove
 these compatibility files only after the NAS repository's callers migrate.
 
+## Update workflows
+
+`mise run dotfiles:update` calls the ordinary executable `scripts/update.zsh`.
+The entry point loads direct `updates.d/*.zsh` entries in filename order and
+ignores `##` source files. YADM selects platform and role alternates. Work
+modules require both `os.Darwin` and `class.Work`, preserving the previous
+macOS-only workflow. QTS package updates use `os.Linux,distro.qts` because they
+depend on Entware and QNAP paths.
+
+Modules define functions and register steps with
+`_update_register [--interactive] "label" function_name`. They must not run
+updates at source time. Functions must exist before registration, and each
+registered function must have a unique name across the selected modules.
+Use `_update_use_sudo` to request credentials before execution and
+`_update_watch manager...` to declare package snapshots. Manager declarations
+are deduplicated in registration order.
+
+The runner validates every selected module before loading it, then calculates
+the progress total from registered steps. Empty discovery, invalid entries,
+syntax errors, and registration failures abort before live steps start. An
+individually missing module or alternate link is not detected while others
+remain. Registration-only fixture tests cover the expected machine selections.
+
+Step functions run in the main shell with `ERR_RETURN`. Use `return`, not
+`exit`, and keep shell-option changes local. Shared state persists between
+steps, including Homebrew's running-app snapshot for download approval.
+Failures stop the affected step, not the workflow. `_update_warn` and
+`_update_note` preserve warnings and notes for the summary, and
+`UPDATE_FAILURE_FILE` carries explicit diagnostics from child scripts.
+The final status is nonzero if any step fails.
+
+Preserve ordering when adding modules. Package updates precede dependent
+maintenance, Zinit precedes bytecode compilation, Work repositories precede
+GDK configuration, and Brew dump runs last. Keep related private helpers with
+their owning module. Shared helpers belong in `lib/`: `update-runner.zsh`
+handles registration and orchestration, `update-ui.zsh` handles step output
+and lifecycle, `update-packages.zsh` handles version comparisons, and
+`startup-benchmark.zsh` handles benchmark history and reporting.
+
+Make new modules executable, stage alternate sources with `yadm add`, and run
+`yadm alt` to activate selected links. Never stage generated links. Run
+`zsh -df ~/.config/yadm/scripts/tests/test-update-runner.zsh`.
+The fixture tests cover order, shared state, interactive
+steps, failures, cleanup, and NAS `PROGRESS_OFFSET` and `PROGRESS_RANGE` support.
+CI runs all `scripts/tests/test-*.zsh` suites without executing live updates.
+
 ## Health checks
 
 `mise run dotfiles:checkhealth` calls `~/.config/yadm/scripts/run-checks.zsh`.

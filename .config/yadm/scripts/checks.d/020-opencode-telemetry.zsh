@@ -12,13 +12,13 @@
 # OTLP export from this shell (Apple's curl on macOS) to tell a launch-context
 # problem apart from a collector, network, or credential problem.
 #
-# Usage: check-opencode-telemetry.zsh [--fix]
+# Usage: 020-opencode-telemetry.zsh [--fix]
 #   --fix  Restart the service once when only its launch context fails, unless
 #          a session is running, then check again.
 
 setopt EXTENDED_GLOB
 
-YADM_SCRIPTS=$(cd -- "$(dirname -- "${(%):-%x}")/../scripts" &>/dev/null && pwd)
+YADM_SCRIPTS=${${(%):-%x}:A:h:h}
 
 source "${YADM_SCRIPTS}/colors.sh"
 

@@ -1,0 +1,34 @@
+#!/usr/bin/env zsh
+
+set -o pipefail
+setopt EXTENDED_GLOB
+source "${${(%):-%x}:A:h:h}/check-helpers.zsh"
+
+check_weekly_log_repo() {
+  print_op_stay "Checking weekly-log repo"
+
+  local repo_dir="$HOME/Developer/gitlab.com/pedropombeiro/weekly-log"
+  if [[ ! -d "$repo_dir/.git" ]]; then
+    echo
+    print_failure "weekly-log repo not found at $repo_dir"
+    any_failed=1
+    return
+  fi
+
+  # brain/ itself exists on every branch (scaffolding only: .gitkeep +
+  # README.md); a populated brain/<YYYY>/ is the real signal that content is
+  # checked out and the weekly log contains real content.
+  local -a year_dirs
+  year_dirs=("$repo_dir"/brain/[0-9](#c4)(N/))
+  if (( ${#year_dirs} == 0 )); then
+    echo
+    print_failure "$repo_dir/brain has no year directories - checked out an empty branch?"
+    any_failed=1
+    return
+  fi
+
+  print_ok
+}
+
+check_weekly_log_repo
+exit "$any_failed"

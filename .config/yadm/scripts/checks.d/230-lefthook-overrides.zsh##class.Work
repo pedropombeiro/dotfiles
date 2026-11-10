@@ -1,0 +1,38 @@
+#!/usr/bin/env zsh
+
+set -o pipefail
+source "${${(%):-%x}:A:h:h}/check-helpers.zsh"
+
+# lefthook-local.yml only supplies `env:` overlays for commands defined in
+# lefthook.yml. An orphaned override has no `run:`, so lefthook aborts the hook.
+check_lefthook_local_overrides() {
+  print_op_stay "Checking lefthook-local.yml overrides"
+
+  local repo="$GDK_ROOT/gitlab"
+  local local_cfg="$repo/lefthook-local.yml"
+  local base_cfg="$repo/lefthook.yml"
+
+  if [[ ! -f "$local_cfg" || ! -f "$base_cfg" ]]; then
+    print_ok "(skipped, no lefthook config)"
+    return
+  fi
+
+  local -a orphans
+  local cmd
+  # Command names are the 4-space-indented keys under each hook's `commands:`.
+  for cmd in ${(f)"$(grep -oE '^ {4}[A-Za-z0-9_-]+:' "$local_cfg" | tr -d ' :')"}; do
+    grep -qE "^ +${cmd}:" "$base_cfg" || orphans+=("$cmd")
+  done
+
+  if (( ${#orphans} == 0 )); then
+    print_ok
+  else
+    echo
+    for cmd in "${orphans[@]}"; do
+      print_warn "lefthook-local.yml overrides '${cmd}', absent from lefthook.yml - pushes will abort"
+    done
+  fi
+}
+
+check_lefthook_local_overrides
+exit "$any_failed"

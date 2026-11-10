@@ -249,7 +249,7 @@ step_opencode_skills() {
 # Upgrades can leave the running service unable to reach the collector, which
 # OpenCode doesn't report. Restarts the service when only its launch context fails.
 step_opencode_telemetry() {
-  "${YADM_SCRIPTS}/check-opencode-telemetry.zsh" --fix
+  "${YADM_SCRIPTS}/checks.d/020-opencode-telemetry.zsh" --fix
 }
 
 step_skill_repositories() {
@@ -310,7 +310,7 @@ step_neovim_benchmark() {
 }
 
 step_config_checks() {
-  "${YADM_SCRIPTS}/check-configs.zsh"
+  "${YADM_SCRIPTS}/checks.d/025-configs.zsh"
 }
 
 _step "tldr" step_tldr

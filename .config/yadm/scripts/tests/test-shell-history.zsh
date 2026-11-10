@@ -3,7 +3,7 @@
 # Check history policy independently of plugin loading and startup order.
 emulate -LR zsh
 setopt err_return pipefail
-root=${0:A:h:h:h:h}
+root=${0:A:h:h:h:h:h}
 temporary=$(mktemp -d "${TMPDIR:-/tmp}/shell-history.XXXXXXXX")
 trap 'rm -rf -- "$temporary"' EXIT
 export HISTFILE="$temporary/history"

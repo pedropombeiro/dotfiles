@@ -2,7 +2,7 @@
 
 set -o pipefail
 
-YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
+YADM_SCRIPTS=${${(%):-%x}:A:h:h}
 
 source "${YADM_SCRIPTS}/colors.sh"
 

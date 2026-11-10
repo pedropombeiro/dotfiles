@@ -261,7 +261,7 @@ Atuin retains its additional built-in secret filtering.
 
 Keep `SHARE_HISTORY` for cross-pane history. It already appends commands, so
 `INC_APPEND_HISTORY` is disabled. Verify the policy independently of shell
-startup with `zsh -df ~/.config/yadm/scripts/check-shell-history.zsh`.
+startup with `zsh -df ~/.config/yadm/scripts/tests/test-shell-history.zsh`.
 
 ## Key Integrations
 

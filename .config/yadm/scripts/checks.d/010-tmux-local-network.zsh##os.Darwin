@@ -1,0 +1,127 @@
+#!/usr/bin/env zsh
+
+set -o pipefail
+setopt EXTENDED_GLOB
+source "${${(%):-%x}:A:h:h}/check-helpers.zsh"
+
+function check_tmux_local_network_connection() {
+  print_op_stay "Checking LAN connections from the tmux server"
+
+  # Keep this target in sync with the exporter endpoint in opencode.json.
+  local host=otel.pombei.ro port=443 address
+  address=$(/usr/bin/dscacheutil -q host -a name "$host" | awk '/^ip_address:/ { print $2; exit }')
+  case "$address" in
+    10.*|192.168.*|172.(1[6-9]|2[0-9]|3[01]).*) ;;
+    *)
+      print_ok "(skipped, collector has no private IPv4 address)"
+      return
+      ;;
+  esac
+
+  # Apple tools can reach the LAN even when Local Network Privacy blocks Node.
+  if ! /usr/bin/nc -n -z -G 3 -w 3 "$address" "$port" &>/dev/null; then
+    print_ok "(skipped, collector unreachable from this shell)"
+    return
+  fi
+
+  local node_bin
+  node_bin=$(mise which node 2>/dev/null)
+  if [[ "$node_bin" != /* || ! -x "$node_bin" ]]; then
+    echo
+    print_warn "Cannot probe tmux LAN access: mise has no executable Node runtime"
+    return
+  fi
+
+  # Use the server's context, even when checkhealth runs outside tmux. Pass an
+  # absolute runtime path rather than relying on the server's PATH or shims.
+  local probe_script='const net = require("node:net");
+const timer = setTimeout(() => finish("ETIMEDOUT"), 4000);
+const socket = net.connect(Number(process.argv[2]), process.argv[1]);
+function finish(result) {
+  clearTimeout(timer);
+  socket.destroy();
+  console.log(result);
+}
+socket.once("connect", () => finish("ok"));
+socket.once("error", error => finish(error.code || "UNKNOWN"));'
+  local result
+  if ! result=$(tmux run-shell "${(qq)node_bin} -e ${(qq)probe_script} ${(qq)address} ${(qq)port}" 2>&1); then
+    echo
+    print_warn "Cannot run tmux LAN probe: ${result}"
+    return
+  fi
+
+  case "$result" in
+    ok) print_ok ;;
+    EHOSTUNREACH|ECONNREFUSED)
+      echo
+      print_failure "LAN access from tmux fails (${result}), but Apple's nc reaches ${host}:${port}"
+      print_warn "Check tmux in System Settings > Privacy & Security > Local Network"
+      print_warn "If needed, run zsh ~/.config/yadm/scripts/sign-tmux.zsh --force outside tmux"
+      print_warn "Save work before restarting tmux; tmux kill-server ends every session"
+      print_warn "Then start a new tmux server and run mise exec -- opencode service restart"
+      any_failed=1
+      ;;
+    *)
+      echo
+      print_warn "Cannot confirm tmux LAN access: ${result:-no probe output}"
+      ;;
+  esac
+}
+
+function check_tmux_local_network_identity() {
+  local tmux_bin=$(whence -p tmux)
+  [[ -n "$tmux_bin" ]] || return 0
+  tmux_bin=${tmux_bin:A}
+  print_op_stay "Checking tmux identity for macOS Local Network access"
+
+  local state_file="${XDG_STATE_HOME:-${HOME}/.local/state}/yadm/tmux-codesign.cdhash"
+  local signature current saved
+  if ! signature=$(codesign -dvvv "$tmux_bin" 2>&1); then
+    echo
+    print_failure "Cannot inspect tmux signature: ${signature}"
+    any_failed=1
+    return
+  fi
+  current=$(print -r -- "$signature" | awk -F= '/^CDHash=/ { print $2 }')
+  [[ -r "$state_file" ]] && saved=$(<"$state_file")
+  if [[ -z "$current" || "$current" != "$saved" ]]; then
+    echo
+    print_failure "tmux needs re-signing: run zsh ~/.config/yadm/scripts/sign-tmux.zsh outside tmux"
+    print_warn "Then save work and restart the tmux server; tmux kill-server ends every session"
+    any_failed=1
+    return
+  fi
+
+  # list-sessions doesn't start a server. With TMUX set, these commands inspect
+  # the current socket rather than an unrelated default server.
+  if ! tmux list-sessions >/dev/null 2>&1; then
+    print_ok "(signed, no running server on this socket)"
+    return
+  fi
+
+  local server_pid started started_epoch signed_epoch
+  server_pid=$(tmux display-message -p '#{pid}' 2>/dev/null)
+  started=$(LC_ALL=C ps -p "$server_pid" -o lstart= 2>/dev/null)
+  started_epoch=$(LC_ALL=C date -j -f '%a %b %e %T %Y' "${started##[[:space:]]#}" '+%s' 2>/dev/null)
+  signed_epoch=$(stat -f '%m' "$state_file" 2>/dev/null)
+  if [[ "$started_epoch" != <-> || "$signed_epoch" != <-> ]]; then
+    echo
+    print_failure "Cannot compare tmux server start time with its signing record"
+    any_failed=1
+    return
+  fi
+  if (( started_epoch <= signed_epoch )); then
+    echo
+    print_failure "tmux server predates its signing record; LAN access from Bun or OpenCode may fail"
+    print_warn "Save work before running tmux kill-server outside tmux; this ends every session"
+    print_warn "Start a new tmux server, then run mise exec -- opencode service restart from an interactive shell"
+    any_failed=1
+  else
+    print_ok
+    check_tmux_local_network_connection
+  fi
+}
+
+check_tmux_local_network_identity
+exit "$any_failed"

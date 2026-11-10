@@ -78,6 +78,7 @@ Thumbs.db
 .config/yadm/bootstrap.d/930-regular-install.sh
 .config/yadm/bootstrap.d/937-configure-pinchtab.sh
 .config/yadm/bootstrap.d/938-import-input-source-pro-settings.sh
+.config/yadm/bootstrap.d/939-apply-hex-settings.sh
 .config/yadm/bootstrap.d/940-open-apps-at-login.sh
 .config/yadm/bootstrap.d/941-open-hammerspoon-at-login.sh
 .config/yadm/bootstrap.d/945-open-apps-for-first-time.sh
@@ -89,10 +90,17 @@ Thumbs.db
 .config/yadm/bootstrap.d/974-setup-mr-dashboard.sh
 .config/yadm/bootstrap.d/999-print-manual-steps.sh
 .config/yadm/config_templates/LaunchDaemons/org.gitlab1.ifconfig.plist
+.config/yadm/scripts/checks.d/010-tmux-local-network.zsh
+.config/yadm/scripts/checks.d/070-glibc-compat.zsh
+.config/yadm/scripts/checks.d/100-desktop.zsh
+.config/yadm/scripts/checks.d/110-peripherals.zsh
+.config/yadm/scripts/checks.d/200-glab-auth.zsh
+.config/yadm/scripts/checks.d/210-gdk-wakatime.zsh
+.config/yadm/scripts/checks.d/220-weekly-log.zsh
+.config/yadm/scripts/checks.d/230-lefthook-overrides.zsh
 .config/yadm/scripts/defaults.sh
 .config/yadm/scripts/iterm2-setup.sh
 .config/yadm/scripts/remap-mac-keys.sh
-.config/yadm/scripts/run-checks.zsh
 .config/yadm/scripts/sign-tmux.zsh
 .config/yadm/scripts/update.zsh
 .default-gems
@@ -105,9 +113,7 @@ Thumbs.db
 .hammerspoon/urlrouter.lua
 .hammerspoon/usb.lua
 .hammerspoon/webcam.lua
-.local/bin/run_mr_pipeline
 .local/bin/tree-sitter
-.local/bin/wait_for_mr_merge
 .pgsql_profile
 .profile
 .shellrc/login.d/brew.sh

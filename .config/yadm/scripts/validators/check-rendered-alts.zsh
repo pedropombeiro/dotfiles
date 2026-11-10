@@ -17,7 +17,7 @@
 # It implements only the yadm conditions this repository uses. An unknown
 # condition is reported as an error instead of being guessed at.
 
-YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )" &>/dev/null && pwd )
+YADM_SCRIPTS=${${(%):-%x}:A:h:h}
 
 source "${YADM_SCRIPTS}/colors.sh"
 

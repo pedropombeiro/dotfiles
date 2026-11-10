@@ -3,7 +3,7 @@
 emulate -LR zsh
 setopt err_exit
 
-YADM_SCRIPTS=${0:A:h}
+YADM_SCRIPTS=${0:A:h:h}
 source "${YADM_SCRIPTS}/update-ui.zsh"
 local sandbox=$(mktemp -d "${TMPDIR:-/tmp}/update-ui-test.XXXXXXXX")
 trap 'rm -rf -- "$sandbox"' EXIT

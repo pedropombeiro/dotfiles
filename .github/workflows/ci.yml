@@ -193,10 +193,10 @@ jobs:
           yadm alt
 
       - name: Validate rendered files
-        run: zsh "${HOME}/.config/yadm/scripts/check-rendered-alts.zsh"
+        run: zsh "${HOME}/.config/yadm/scripts/validators/check-rendered-alts.zsh"
 
       - name: No alt symlinks committed
-        run: yadm ls-files -z | xargs -0 zsh "${HOME}/.config/yadm/scripts/check-no-alt-symlinks.zsh"
+        run: yadm ls-files -z | xargs -0 zsh "${HOME}/.config/yadm/scripts/validators/check-no-alt-symlinks.zsh"
 
   # Job 6: Secret scanning
   secret-scanning:

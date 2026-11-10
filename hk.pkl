@@ -239,7 +239,7 @@ local fast_steps = new Mapping<String, Step> {
     ["no-yadm-alt-symlinks"] {
         glob = List("*")
         check = readOnly("""
-          script="$HOME/.config/yadm/scripts/check-no-alt-symlinks.zsh"
+          script="$HOME/.config/yadm/scripts/validators/check-no-alt-symlinks.zsh"
           [ -x "$script" ] || exit 0
           [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$HOME" ] || exit 0
           "$script" {{files}}
@@ -248,7 +248,7 @@ local fast_steps = new Mapping<String, Step> {
     ["no-duplicated-yadm-alts"] {
         glob = List("**/*##*")
         check = readOnly("""
-          script="$HOME/.config/yadm/scripts/check-alt-duplication.zsh"
+          script="$HOME/.config/yadm/scripts/validators/check-alt-duplication.zsh"
           [ -x "$script" ] || exit 0
           [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$HOME" ] || exit 0
           "$script"

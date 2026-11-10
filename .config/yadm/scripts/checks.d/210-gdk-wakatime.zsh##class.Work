@@ -1,0 +1,34 @@
+#!/usr/bin/env zsh
+
+set -o pipefail
+source "${${(%):-%x}:A:h:h}/check-helpers.zsh"
+
+check_gdk_wakatime_projects() {
+  [[ -n "$GDK_ROOT" ]] || return 0
+
+  local wakatime_dirs=("$GDK_ROOT")
+  for subdir in "$GDK_ROOT"/*/; do
+    local d="${subdir%/}"
+    [[ "$(cd "$d" && git rev-parse --show-toplevel 2>/dev/null)" == "$d" ]] && wakatime_dirs+=("$d")
+  done
+
+  local _line
+  for wd in "${wakatime_dirs[@]}"; do
+    local wp_file="$wd/.wakatime-project"
+    local label="${wd#$GDK_ROOT/}"
+    [[ "$wd" == "$GDK_ROOT" ]] && label="(root)"
+
+    print_op_stay "Checking .wakatime-project in GDK $label"
+    if ! (cd "$wd" && git remote get-url origin) &>/dev/null; then
+      print_ok "(no remote, skipped)"
+    elif [[ -f "$wp_file" ]] && { read -r _line < "$wp_file" && [[ -n "$_line" ]]; }; then
+      print_ok "$_line"
+    else
+      print_failure ".wakatime-project missing or empty in $wd"
+      any_failed=1
+    fi
+  done
+}
+
+check_gdk_wakatime_projects
+exit "$any_failed"

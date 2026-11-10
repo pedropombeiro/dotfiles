@@ -204,13 +204,23 @@ it out.
 fresh ad-hoc one. `update.zsh##os.Darwin` runs it after Homebrew upgrades, and
 bootstrap step `005` runs it after the first install. It records the signed
 binary's CDHash in `~/.local/state/yadm/tmux-codesign.cdhash` and skips binaries
-it already signed.
+it already signed. Pass `--force` to re-sign even when the CDHash matches.
 
 `mise run dotfiles:checkhealth` checks the signature against this record on
 macOS and compares the server's start time with the record's modification time.
 It reports a binary that needs re-signing or a server started before signing.
 Inside tmux, it checks the current socket; outside tmux, it checks the default
 socket. It doesn't re-sign binaries or terminate sessions.
+
+After those checks pass, checkhealth also probes `otel.pombei.ro:443` through
+`tmux run-shell`, using an absolute Node runtime path from `mise which node`.
+It skips the probe if the host has no private IPv4 address or Apple's `nc`
+cannot reach it. If `nc` connects but Node reports `EHOSTUNREACH` or
+`ECONNREFUSED`, the check fails and points to **System Settings > Privacy &
+Security > Local Network**. Missing Node, timeouts, and other probe errors
+produce warnings. A matching signature and a newer server alone don't confirm
+that macOS permits LAN access. Recheck the permission after macOS updates if
+connections stop working.
 
 The new signature applies only to a new tmux server. After the script re-signs
 tmux, run `tmux kill-server`, which ends every session, then restart the

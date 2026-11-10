@@ -13,6 +13,20 @@
 # signature fixes this. Every `brew upgrade tmux` installs a binary with the
 # original signature again, so the update and bootstrap scripts call this after
 # Homebrew runs. See ~/.agents/docs/tmux.md#local-network-access-on-macos.
+#
+# Usage: sign-tmux.zsh [--force]
+#   --force  Re-sign even when the binary matches the saved CDHash.
+
+force=0
+case "${1:-}" in
+  --force) force=1 ;;
+  '') ;;
+  *) print -ru2 -- "Usage: sign-tmux.zsh [--force]"; exit 2 ;;
+esac
+if (( $# > 1 )); then
+  print -ru2 -- "Usage: sign-tmux.zsh [--force]"
+  exit 2
+fi
 
 YADM_SCRIPTS=$(cd -- "$(dirname -- "${(%):-%x}")/../scripts" &>/dev/null && pwd)
 
@@ -28,7 +42,7 @@ cdhash() {
 }
 
 current=$(cdhash "${tmux_bin}")
-if [[ -n ${current} && -r ${state_file} && $(<"${state_file}") == "${current}" ]]; then
+if (( ! force )) && [[ -n ${current} && -r ${state_file} && $(<"${state_file}") == "${current}" ]]; then
   exit 0
 fi
 

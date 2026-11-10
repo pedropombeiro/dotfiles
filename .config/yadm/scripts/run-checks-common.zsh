@@ -29,6 +29,71 @@ function print_warn() {
 
 any_failed=0
 
+function check_tmux_local_network_connection() {
+  print_op_stay "Checking LAN connections from the tmux server"
+
+  # Keep this target in sync with the exporter endpoint in opencode.json.
+  local host=otel.pombei.ro port=443 address
+  address=$(/usr/bin/dscacheutil -q host -a name "$host" | awk '/^ip_address:/ { print $2; exit }')
+  case "$address" in
+    10.*|192.168.*|172.(1[6-9]|2[0-9]|3[01]).*) ;;
+    *)
+      print_ok "(skipped, collector has no private IPv4 address)"
+      return
+      ;;
+  esac
+
+  # Apple tools can reach the LAN even when Local Network Privacy blocks Node.
+  if ! /usr/bin/nc -n -z -G 3 -w 3 "$address" "$port" &>/dev/null; then
+    print_ok "(skipped, collector unreachable from this shell)"
+    return
+  fi
+
+  local node_bin
+  node_bin=$(mise which node 2>/dev/null)
+  if [[ "$node_bin" != /* || ! -x "$node_bin" ]]; then
+    echo
+    print_warn "Cannot probe tmux LAN access: mise has no executable Node runtime"
+    return
+  fi
+
+  # Use the server's context, even when checkhealth runs outside tmux. Pass an
+  # absolute runtime path rather than relying on the server's PATH or shims.
+  local probe_script='const net = require("node:net");
+const timer = setTimeout(() => finish("ETIMEDOUT"), 4000);
+const socket = net.connect(Number(process.argv[2]), process.argv[1]);
+function finish(result) {
+  clearTimeout(timer);
+  socket.destroy();
+  console.log(result);
+}
+socket.once("connect", () => finish("ok"));
+socket.once("error", error => finish(error.code || "UNKNOWN"));'
+  local result
+  if ! result=$(tmux run-shell "${(qq)node_bin} -e ${(qq)probe_script} ${(qq)address} ${(qq)port}" 2>&1); then
+    echo
+    print_warn "Cannot run tmux LAN probe: ${result}"
+    return
+  fi
+
+  case "$result" in
+    ok) print_ok ;;
+    EHOSTUNREACH|ECONNREFUSED)
+      echo
+      print_failure "LAN access from tmux fails (${result}), but Apple's nc reaches ${host}:${port}"
+      print_warn "Check tmux in System Settings > Privacy & Security > Local Network"
+      print_warn "If needed, run zsh ~/.config/yadm/scripts/sign-tmux.zsh --force outside tmux"
+      print_warn "Save work before restarting tmux; tmux kill-server ends every session"
+      print_warn "Then start a new tmux server and run mise exec -- opencode service restart"
+      any_failed=1
+      ;;
+    *)
+      echo
+      print_warn "Cannot confirm tmux LAN access: ${result:-no probe output}"
+      ;;
+  esac
+}
+
 function check_tmux_local_network_identity() {
   [[ "$(uname -s)" == Darwin ]] || return 0
 
@@ -81,6 +146,7 @@ function check_tmux_local_network_identity() {
     any_failed=1
   else
     print_ok
+    check_tmux_local_network_connection
   fi
 }
 

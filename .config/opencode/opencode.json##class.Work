@@ -86,12 +86,12 @@
     }
   },
   // V1 field without a stable native equivalent; OpenCode turns it into provider policies.
-  "enabled_providers": ["ollama", "gitlab", "anthropic", "google"],
+  "enabled_providers": ["ollama", "gitlab", "claude-agent", "google"],
   "providers": {
-    "anthropic": {
+    "claude-agent": {
       "models": {
-        "claude-fable-5": {
-          "name": "Fable 5",
+        "claude-fable-5-2": {
+          "name": "Fable 5.2",
           "cost": [{ "input": 10, "output": 50, "cache": { "read": 1, "write": 12.5 } }]
         }
       }

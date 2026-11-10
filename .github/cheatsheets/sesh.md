@@ -7,7 +7,7 @@ in [`tmux.conf`](../../.config/tmux/tmux.conf) and
 ## Memorize first
 
 1. `Prefix T` opens the session picker in a tmux popup.
-1. `Prefix L`, `fn+Tab`, or `Caps Lock+L` toggles to the previous session.
+1. `Prefix L`, `fn+Tab`, or `Caps Lock+L` toggles to the terminal client's previous session.
 1. `C-x` inside the picker switches to zoxide directories, so any visited
    project becomes a session in one step.
 1. An orange `●` marks a session with an OpenCode agent waiting for input.

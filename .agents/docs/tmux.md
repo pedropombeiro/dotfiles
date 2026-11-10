@@ -211,7 +211,7 @@ Tmux integrates with `sesh` for session discovery and switching.
 ### Keybindings
 
 - `prefix + T` opens the sesh picker in a tmux popup (fzf-tmux).
-- `prefix + L` switches to the last active session using `sesh last`.
+- `prefix + L` switches to the client's previous session using `switch-client -l`.
 - `fn + Tab` and `Caps Lock + L` (iTerm2 only) are alternatives to `prefix + L`, implemented in
   Hammerspoon. `Hyper + L` works too, via the same `hyperBind` registration.
 
@@ -229,6 +229,11 @@ which have a single field, so `-1` and `1` both resolve to the directory.
 
 Both live in `~/.hammerspoon/hotkeys/sesh.lua`. They run
 `tmux switch-client -c <frontmost iTerm2 tty> -l`, which is what `prefix + L` ends up doing.
+
+All three shortcuts use per-client history. Avoid `sesh last` here: it selects
+from server-wide session recency, so activity in another terminal can change the
+destination. If the client's previous session was deleted, `switch-client -l`
+has no fallback.
 
 macOS consumes the `fn`/Globe modifier, so it **cannot** be bound in `tmux.conf`. Both
 shortcuts are scoped to iTerm2. `-c <tty>` is required because each tmux client tracks its own

@@ -17,7 +17,7 @@ step_entware() {
 }
 
 step_mise() {
-  yes | mise self-update
+  mise self-update --yes
   (cd ~ && mise plugin update && mise install --yes && mise upgrade --yes)
 }
 

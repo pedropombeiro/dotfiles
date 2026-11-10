@@ -19,7 +19,7 @@
 
 YADM_SCRIPTS=${${(%):-%x}:A:h:h}
 
-source "${YADM_SCRIPTS}/colors.sh"
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 # Query the repo with plain git: `yadm config local.*` and git passthrough
 # commands trigger auto-alt, which would re-render the files under test.

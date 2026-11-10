@@ -5,7 +5,7 @@ setopt LOCAL_OPTIONS EXTENDED_GLOB
 # ${(%):-%x} = zsh equivalent of bash's ${BASH_SOURCE[0]}
 YADM_SCRIPTS=$(cd -- "$(dirname -- "${(%):-%x}")/../scripts" &>/dev/null && pwd)
 
-source "${YADM_SCRIPTS}/colors.sh"
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 "${YADM_SCRIPTS}/sync-work-skills.zsh" || exit $?
 

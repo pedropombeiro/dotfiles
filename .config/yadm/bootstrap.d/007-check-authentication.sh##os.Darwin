@@ -7,10 +7,10 @@
 
 YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
-# shellcheck source=../scripts/colors.sh
-source "${YADM_SCRIPTS}/colors.sh"
-# shellcheck source=../scripts/wait-for.sh
-source "${YADM_SCRIPTS}/wait-for.sh"
+# shellcheck source=../scripts/lib/colors.sh
+source "${YADM_SCRIPTS}/lib/colors.sh"
+# shellcheck source=../scripts/lib/wait-for.sh
+source "${YADM_SCRIPTS}/lib/wait-for.sh"
 
 agent_sock="${HOME}/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 class="$(yadm config --get local.class)"

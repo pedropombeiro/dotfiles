@@ -30,7 +30,7 @@ fi
 
 YADM_SCRIPTS=$(cd -- "$(dirname -- "${(%):-%x}")/../scripts" &>/dev/null && pwd)
 
-source "${YADM_SCRIPTS}/colors.sh"
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 tmux_bin=$(whence -p tmux) || exit 0
 tmux_bin=${tmux_bin:A} # Resolve Homebrew's symlink to the Cellar binary

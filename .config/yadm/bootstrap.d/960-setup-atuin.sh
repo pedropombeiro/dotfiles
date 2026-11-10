@@ -2,8 +2,8 @@
 
 YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
-# shellcheck source=../scripts/colors.sh
-source "${YADM_SCRIPTS}/colors.sh"
+# shellcheck source=../scripts/lib/colors.sh
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 if ! command -v atuin &>/dev/null; then
   printf "${YELLOW}%s${NC}\n" "atuin not found, skipping sync setup"

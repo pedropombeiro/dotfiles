@@ -7,7 +7,7 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )" &>/dev/null && pwd )
 
-source "${YADM_SCRIPTS}/colors.sh"
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 [[ $(yadm config local.class) == Work ]] || exit 0
 

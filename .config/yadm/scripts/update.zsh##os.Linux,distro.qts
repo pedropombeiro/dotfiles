@@ -4,7 +4,7 @@ YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pw
 
 # PROGRESS_OFFSET and PROGRESS_RANGE let a caller map this run onto part of its
 # own iTerm2 progress bar; update-ui.zsh reads them.
-source "${YADM_SCRIPTS}/update-ui.zsh"
+source "${YADM_SCRIPTS}/lib/update-ui.zsh"
 
 _update_init ${(%):-%x} "${YADM_SCRIPTS}/update-common.zsh"
 _update_track opkg mise npm nvim mason

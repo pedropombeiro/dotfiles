@@ -6,7 +6,7 @@
 
 setopt EXTENDED_GLOB
 
-source "${0:A:h}/colors.sh"
+source "${0:A:h}/lib/colors.sh"
 
 config_home=${XDG_CONFIG_HOME:-${HOME}/.config}
 cache_home=${XDG_CACHE_HOME:-${HOME}/.cache}

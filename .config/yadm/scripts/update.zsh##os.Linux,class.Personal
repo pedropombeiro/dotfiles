@@ -2,7 +2,7 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 
-source "${YADM_SCRIPTS}/update-ui.zsh"
+source "${YADM_SCRIPTS}/lib/update-ui.zsh"
 
 _update_init ${(%):-%x} "${YADM_SCRIPTS}/update-common.zsh"
 _update_require_sudo

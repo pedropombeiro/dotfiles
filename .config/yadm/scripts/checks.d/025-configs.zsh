@@ -4,7 +4,7 @@ set -o pipefail
 
 YADM_SCRIPTS=${${(%):-%x}:A:h:h}
 
-source "${YADM_SCRIPTS}/colors.sh"
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 function print_op_stay() {
   printf "${CYAN}%-63s${NC} " "- $1..."

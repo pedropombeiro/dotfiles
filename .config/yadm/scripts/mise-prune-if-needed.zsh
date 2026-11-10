@@ -2,7 +2,7 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )" &>/dev/null && pwd )
 
-source "${YADM_SCRIPTS}/colors.sh"
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 # mise automatically removes versions replaced by upgrades after upgrade.prune_after.
 # This threshold handles older unreferenced installs that automatic pruning does not cover.

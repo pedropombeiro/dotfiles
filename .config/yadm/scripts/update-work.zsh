@@ -3,7 +3,7 @@
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 typeset -g SCRIPT_PATH=${(%):-%x}
 
-(( $+functions[_update_init] )) || source "${YADM_SCRIPTS}/update-ui.zsh"
+(( $+functions[_update_init] )) || source "${YADM_SCRIPTS}/lib/update-ui.zsh"
 
 ensure_clickhouse_binary() {
   local clickhouse_bin

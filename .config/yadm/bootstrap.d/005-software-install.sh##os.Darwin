@@ -2,8 +2,8 @@
 
 YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
-# shellcheck source=../scripts/colors.sh
-source "${YADM_SCRIPTS}/colors.sh"
+# shellcheck source=../scripts/lib/colors.sh
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 # The Xcode Command Line Tools include git and make. /usr/bin/git exists as a
 # launcher before they are installed, so check the developer directory instead.

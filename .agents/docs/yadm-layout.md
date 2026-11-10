@@ -44,7 +44,7 @@ Choose the first approach that fits:
    include a small per-machine alternate. Use this approach when the tool
    supports includes, for example `~/.config/git/config` including
    `config-specific##class.NAS`, or a script that sources
-   `check-helpers.zsh`.
+   `scripts/lib/check-helpers.zsh`.
 1. **Conditions inside a single file.** When the file is code, branch at
    runtime. For example, `mason-tool-installer.lua` checks `vim.g.distro` and
    `vim.g.yadm_class`.
@@ -68,6 +68,19 @@ settings in a file that the tool reads in addition, as
 [OpenCode's terminal config](opencode.md#terminal-config) does with
 `cli.base.json`.
 
+## Script libraries
+
+Put reusable sourced helpers in `~/.config/yadm/scripts/lib/`, including output
+helpers, update UI functions, approval functions, and shared data lists. Keep
+workflow entry points and standalone maintenance commands at the top level.
+Libraries must preserve the caller's `YADM_SCRIPTS` as the scripts root, not the
+`lib/` directory. Resolve sibling helpers relative to the library file when
+possible, and preserve each library's shell compatibility.
+
+The top-level `colors.sh` and `iterm2.sh` files forward to their implementations
+in `lib/` for existing NAS callers. Use the `lib/` paths for new callers. Remove
+these compatibility files only after the NAS repository's callers migrate.
+
 ## Health checks
 
 `mise run dotfiles:checkhealth` calls `~/.config/yadm/scripts/run-checks.zsh`.
@@ -84,7 +97,7 @@ symlinks and ignores `##` source files. Give independent checks distinct
 basenames because YADM selects only one alternate per basename. Stage new
 alternates and run `yadm alt` to activate them.
 
-Checks can source `scripts/check-helpers.zsh` for output helpers and the
+Checks can source `scripts/lib/check-helpers.zsh` for output helpers and the
 `any_failed` accumulator. Exit with that status after running all checks in
 the module. Warnings alone don't set it. `print_failure` preserves
 `UPDATE_FAILURE_FILE` reporting without marking repaired issues as failures.
@@ -118,7 +131,7 @@ health checks directly, including the telemetry check's `--fix` mode.
    #!/usr/bin/env zsh
 
    set -o pipefail
-   source "${${(%):-%x}:A:h:h}/check-helpers.zsh"
+   source "${${(%):-%x}:A:h:h}/lib/check-helpers.zsh"
    ```
 
    Keep related checks and required state in the same module. Shell variables,

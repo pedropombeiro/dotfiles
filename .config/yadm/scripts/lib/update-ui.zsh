@@ -20,7 +20,7 @@
 
 zmodload zsh/datetime zsh/zselect
 
-source "${YADM_SCRIPTS}/colors.sh"
+source "${${(%):-%x}:A:h}/colors.sh"
 DIM='\033[2m'
 
 fpath=(~/.shellrc/zshrc.d/functions $fpath)

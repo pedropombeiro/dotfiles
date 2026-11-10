@@ -1,9 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
-# shellcheck disable=SC2034  # Variables sourced by other scripts
-YELLOW='\033[1;33m'
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-CYAN='\033[0;36m'
-BOLD='\033[1m'
-NC='\033[0m' # No Color
+# Compatibility for NAS callers. New callers should source lib/colors.sh.
+# shellcheck source=./lib/colors.sh
+. "${HOME}/.config/yadm/scripts/lib/colors.sh"

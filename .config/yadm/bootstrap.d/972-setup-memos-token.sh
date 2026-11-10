@@ -4,8 +4,8 @@ set -euo pipefail
 
 YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
-# shellcheck source=../scripts/colors.sh
-source "${YADM_SCRIPTS}/colors.sh"
+# shellcheck source=../scripts/lib/colors.sh
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 token_file="${HOME}/.config/lazy-mcp/memos-token"
 token_dir="$(dirname "${token_file}")"

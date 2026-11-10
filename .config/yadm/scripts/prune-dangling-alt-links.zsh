@@ -12,7 +12,7 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )" &>/dev/null && pwd )
 
-source "${YADM_SCRIPTS}/colors.sh"
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 dry_run=0
 [[ ${1:-} == --dry-run ]] && dry_run=1

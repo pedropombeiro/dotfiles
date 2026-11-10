@@ -2,7 +2,7 @@
 
 set -o pipefail
 setopt EXTENDED_GLOB
-source "${${(%):-%x}:A:h:h}/check-helpers.zsh"
+source "${${(%):-%x}:A:h:h}/lib/check-helpers.zsh"
 
 # Slugify a markdown heading line the way GitHub/GitLab anchors do: strip the
 # leading #s, lowercase, drop everything but alphanumerics/spaces/hyphens, then

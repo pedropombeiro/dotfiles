@@ -2,7 +2,7 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 
-source "${YADM_SCRIPTS}/update-ui.zsh"
+source "${YADM_SCRIPTS}/lib/update-ui.zsh"
 
 _is_work=0
 [[ $(yadm config local.class) == 'Work' ]] && _is_work=1
@@ -23,7 +23,7 @@ step_brew() {
   local -i cleanup_rc=0
 
   # Capture app state before Homebrew can stop or replace an app.
-  source "${YADM_SCRIPTS}/approve-quarantined.zsh"
+  source "${YADM_SCRIPTS}/lib/approve-quarantined.zsh"
   _approval_running_apps=$(approval_apps list) || {
     _approval_running_apps=''
     _update_warn 'Could not record running apps; app approval will be skipped.'
@@ -62,7 +62,7 @@ step_brew() {
 }
 
 step_approve_downloads() {
-  source "${YADM_SCRIPTS}/approve-quarantined.zsh"
+  source "${YADM_SCRIPTS}/lib/approve-quarantined.zsh"
   approve_casks "${_ui_snapshot_dir}/brew-info-before.json" "$_approval_running_apps"
 }
 

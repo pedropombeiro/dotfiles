@@ -2,7 +2,7 @@
 
 set -o pipefail
 setopt EXTENDED_GLOB
-source "${${(%):-%x}:A:h:h}/check-helpers.zsh"
+source "${${(%):-%x}:A:h:h}/lib/check-helpers.zsh"
 
 WAKATIME_CLI="$HOME/.wakatime/wakatime-cli"
 if [[ -x "$WAKATIME_CLI" ]]; then

@@ -13,9 +13,9 @@
 set -e
 
 # Progress indicators are cosmetic, so a missing helper must not abort the commit.
-_iterm2_helpers="${HOME}/.config/yadm/scripts/iterm2.sh"
+_iterm2_helpers="${HOME}/.config/yadm/scripts/lib/iterm2.sh"
 if [ -r "${_iterm2_helpers}" ]; then
-  # shellcheck source=../../.config/yadm/scripts/iterm2.sh
+  # shellcheck source=../../.config/yadm/scripts/lib/iterm2.sh
   . "${_iterm2_helpers}"
 else
   iterm2_progress() { :; }

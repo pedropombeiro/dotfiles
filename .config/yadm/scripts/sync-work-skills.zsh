@@ -4,7 +4,7 @@ set -eu
 
 class=$(yadm config local.class || true)
 work_dir="${HOME}/.agents/skills.work"
-source "${0:A:h}/work-skills.zsh"
+source "${0:A:h}/lib/work-skills.zsh"
 
 mkdir -p "${work_dir}"
 

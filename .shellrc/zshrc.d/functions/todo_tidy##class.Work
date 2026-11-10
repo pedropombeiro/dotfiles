@@ -1,5 +1,5 @@
 
-source ~/.config/yadm/scripts/colors.sh
+source ~/.config/yadm/scripts/lib/colors.sh
 
 set -o pipefail
 

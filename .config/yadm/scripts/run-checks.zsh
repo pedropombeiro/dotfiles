@@ -3,7 +3,7 @@
 set -o pipefail
 
 YADM_SCRIPTS=${${(%):-%x}:A:h}
-source "${YADM_SCRIPTS}/check-helpers.zsh"
+source "${YADM_SCRIPTS}/lib/check-helpers.zsh"
 
 # YADM selects applicable alternates. Never execute the ## source files.
 checks_dir="${YADM_SCRIPTS}/checks.d"

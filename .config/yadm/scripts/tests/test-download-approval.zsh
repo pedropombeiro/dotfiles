@@ -3,7 +3,7 @@
 emulate -LR zsh
 setopt err_exit
 
-source "${0:A:h:h}/approve-quarantined.zsh"
+source "${0:A:h:h}/lib/approve-quarantined.zsh"
 local sandbox=$(mktemp -d "${TMPDIR:-/tmp}/download-approval-test.XXXXXXXX")
 trap 'rm -rf -- "$sandbox"' EXIT
 local -a calls warnings

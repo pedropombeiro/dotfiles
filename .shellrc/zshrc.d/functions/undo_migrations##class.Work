@@ -8,7 +8,7 @@
 (
   set -e
 
-  source ~/.config/yadm/scripts/colors.sh
+  source ~/.config/yadm/scripts/lib/colors.sh
 
   BRANCH_MIGRATIONS=($(list-migrations))
   if [[ ${#BRANCH_MIGRATIONS[@]} -ne 0 ]]; then

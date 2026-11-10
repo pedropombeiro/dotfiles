@@ -32,7 +32,7 @@
 # - loads Rails environment to warm up the app
 #
 
-source ~/.config/yadm/scripts/colors.sh
+source ~/.config/yadm/scripts/lib/colors.sh
 source ~/.shellrc/zshrc.d/functions/scripts/spring-binstubs.zsh
 
 local _fgdku_rebase=1 _fgdku_prune=1 _arg

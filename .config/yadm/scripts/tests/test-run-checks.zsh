@@ -15,8 +15,9 @@ export GIT_CONFIG_KEY_1=yadm.auto-perms GIT_CONFIG_VALUE_1=false
 export UPDATE_FAILURE_FILE="$scratch/failures"
 export CHECK_TRACE="$scratch/trace"
 
-mkdir -p "$scratch/scripts/checks.d"
-cp "$scripts/run-checks.zsh" "$scripts/check-helpers.zsh" "$scripts/colors.sh" "$scratch/scripts/"
+mkdir -p "$scratch/scripts/checks.d" "$scratch/scripts/lib"
+cp "$scripts/run-checks.zsh" "$scratch/scripts/"
+cp "$scripts/lib/check-helpers.zsh" "$scripts/lib/colors.sh" "$scratch/scripts/lib/"
 runner="$scratch/scripts/run-checks.zsh"
 checks="$scratch/scripts/checks.d"
 
@@ -68,21 +69,22 @@ expect_run 1 $'shared\nselected\nisolated'
 [[ $(wc -l < "$UPDATE_FAILURE_FILE") -eq 2 ]] || fail 'invalid entries not reported'
 rm "$checks/015-broken.zsh" "$checks/016-disabled.zsh"
 
-fixture '015-warning.zsh' 'source "${0:h:h}/check-helpers.zsh"; print_warn warning; exit "$any_failed"'
+fixture '015-warning.zsh' 'source "${0:h:h}/lib/check-helpers.zsh"; print_warn warning; exit "$any_failed"'
 expect_run 0 $'shared\nselected\nisolated'
 [[ ! -s "$UPDATE_FAILURE_FILE" ]] || fail 'warning was recorded as failure'
-fixture '015-warning.zsh' 'source "${0:h:h}/check-helpers.zsh"; print_failure detail; any_failed=1; exit "$any_failed"'
+fixture '015-warning.zsh' 'source "${0:h:h}/lib/check-helpers.zsh"; print_failure detail; any_failed=1; exit "$any_failed"'
 expect_run 1 $'shared\nselected\nisolated'
 grep -q '^detail$' "$UPDATE_FAILURE_FILE" || fail 'module detail not preserved'
 
 # Exercise real YADM selection with harmless copies of production filenames.
-mkdir -p "$scratch/identity/checks.d"
+mkdir -p "$scratch/identity/checks.d" "$scratch/identity/lib"
 for module in "$scripts/checks.d/"*.zsh*; do
   [[ -L "$module" ]] && continue
   printf '#!/usr/bin/env zsh\nprint -r -- "${0:t}" >> "$CHECK_TRACE"\n' > "$scratch/identity/checks.d/${module:t}"
   chmod +x "$scratch/identity/checks.d/${module:t}"
 done
-cp "$scripts/run-checks.zsh" "$scripts/check-helpers.zsh" "$scripts/colors.sh" "$scratch/identity/"
+cp "$scripts/run-checks.zsh" "$scratch/identity/"
+cp "$scripts/lib/check-helpers.zsh" "$scripts/lib/colors.sh" "$scratch/identity/lib/"
 yd() {
   yadm --yadm-dir "$scratch/yadm-config" --yadm-data "$scratch/yadm-data" "$@"
 }

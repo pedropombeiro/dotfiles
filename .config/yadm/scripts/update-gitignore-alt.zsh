@@ -2,7 +2,7 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )" &>/dev/null && pwd )
 
-source "${YADM_SCRIPTS}/colors.sh"
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 GITIGNORE="${HOME}/.gitignore"
 BEGIN_MARKER="# BEGIN yadm-alt (auto-generated, do not edit)"

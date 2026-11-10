@@ -2,7 +2,7 @@
 
 set -o pipefail
 setopt EXTENDED_GLOB
-source "${${(%):-%x}:A:h:h}/check-helpers.zsh"
+source "${${(%):-%x}:A:h:h}/lib/check-helpers.zsh"
 
 # A vendored skill removed from disk without updating .skill-lock.json gets
 # silently reinstalled on the next skill update. Work-only skills live in
@@ -16,7 +16,7 @@ function check_skill_lock_orphans() {
     return
   fi
 
-  source "${YADM_SCRIPTS}/work-skills.zsh"
+  source "${YADM_SCRIPTS}/lib/work-skills.zsh"
   local class=$(yadm config local.class 2>/dev/null)
 
   local -a orphans

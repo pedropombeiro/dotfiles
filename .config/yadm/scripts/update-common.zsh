@@ -2,7 +2,7 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &> /dev/null && pwd )
 
-(( $+functions[_update_init] )) || source "${YADM_SCRIPTS}/update-ui.zsh"
+(( $+functions[_update_init] )) || source "${YADM_SCRIPTS}/lib/update-ui.zsh"
 
 is_benchmark_value() {
   [[ "$1" =~ '^[0-9]+(\.[0-9]+)?([eE][-+]?[0-9]+)?$' ]]

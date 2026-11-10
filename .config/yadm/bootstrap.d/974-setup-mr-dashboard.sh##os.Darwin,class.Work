@@ -4,8 +4,8 @@ set -euo pipefail
 
 YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
-# shellcheck source=../scripts/colors.sh
-source "${YADM_SCRIPTS}/colors.sh"
+# shellcheck source=../scripts/lib/colors.sh
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 app_dir="${HOME}/Developer/gitlab.com/narendran-kannan/mr-dashboard"
 app_ref="837e312f3afe78a7002bccc6be80332c5a863541"

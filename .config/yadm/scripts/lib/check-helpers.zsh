@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 
 # Shared output and failure state for independently executed health checks.
-YADM_SCRIPTS=${${(%):-%x}:A:h}
-source "${YADM_SCRIPTS}/colors.sh"
+YADM_SCRIPTS=${${(%):-%x}:A:h:h}
+source "${YADM_SCRIPTS}/lib/colors.sh"
 
 function print_op() {
   printf "${CYAN}%s${NC}\n" "- $1"

@@ -38,8 +38,8 @@ Copy an existing script rather than starting from scratch. They use
 
 YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
-# shellcheck source=../scripts/colors.sh
-source "${YADM_SCRIPTS}/colors.sh"
+# shellcheck source=../scripts/lib/colors.sh
+source "${YADM_SCRIPTS}/lib/colors.sh"
 ```
 
 ## When bootstrap runs
@@ -78,7 +78,7 @@ including unapproved quarantine flags such as `0181` and `0381`. It also leaves
 existing apps open and quits only apps launched for approval.
 
 `update.zsh` (each OS variant), `update-common.zsh`, and `update-work.zsh` run
-their work through `update-ui.zsh`. It shows one spinner line per step, prints
+their work through `scripts/lib/update-ui.zsh`. It shows one spinner line per step, prints
 captured output only when a step fails, and ends with the package versions that
 changed. Full output goes to `~/.local/state/dotfiles-update/<timestamp>.log`.
 
@@ -133,7 +133,7 @@ undo changes made in System Settings.
   save and mixes it with machine state. After changing Hex settings, run
   `mise run hex:dump` to copy them into the file, then commit it.
 - Checkpoints that wait for a manual step use `wait_for` from
-  `scripts/wait-for.sh`.
+  `scripts/lib/wait-for.sh`.
 - Scripts must be safe to re-run. Guard one-time steps, such as restoring
   settings or opening apps for the first time, with a check for their result.
 - Leave numbering gaps so later scripts can be inserted without renumbering

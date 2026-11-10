@@ -21,6 +21,6 @@ test("registers the palette command and leader shortcut during app rendering", a
   expect(render!()).toBeNull()
   expect(layer!.mode).toBe("global")
   expect(layer!.commands[0]).toMatchObject({
-    id: "pedropombeiro.tail-latest-temp", bind: "<leader>o", palette: true,
+    id: "pedropombeiro.temp-file-tail", bind: "<leader>o", palette: true,
   })
 })

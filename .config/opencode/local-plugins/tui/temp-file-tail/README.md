@@ -1,4 +1,4 @@
-# Tail the latest temp file
+# Temp-file tail
 
 Press `<leader>o` (`Ctrl+X`, then `o` by default) to toggle a tmux pane below
 OpenCode. The pane takes 30% of the OpenCode pane's height and runs `tail -F`
@@ -47,7 +47,7 @@ The toggle survives plugin reloads. You can also focus the tail pane and press
 `Ctrl+C` to close it. Outside tmux, or when there are no files, the command shows
 a warning without opening a pane.
 
-The command is also available as **Toggle latest temp-file tail** in the
+The command is also available as **Toggle temp-file tail** in the
 command palette. Both `cli.base.json` alternates load the plugin. After changing
 the plugin list, launch OpenCode from a new shell to refresh
 `OPENCODE_CLI_CONFIG_CONTENT`.

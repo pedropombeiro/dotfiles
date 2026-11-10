@@ -148,7 +148,7 @@ Each local plugin documents its behavior, options, and tests in its own README:
 - [`queue-command`](../../.config/opencode/local-plugins/tui/queue-command/README.md):
   adds `/queue <message>`, which queues a message for the current session instead of
   sending it right away.
-- [`tail-latest-temp`](../../.config/opencode/local-plugins/tui/tail-latest-temp/README.md):
+- [`temp-file-tail`](../../.config/opencode/local-plugins/tui/temp-file-tail/README.md):
   toggles a bottom tmux pane with `<leader>o`, following the latest file under
   `$TMPDIR/opencode` while keeping focus in OpenCode. It prefers files written
   by the active session or its descendants, with a global fallback.

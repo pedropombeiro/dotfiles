@@ -3,7 +3,7 @@ import { toggleTail } from "./src/tail"
 import { preferredFile } from "./src/session"
 
 export default Plugin.define({
-  id: "pedropombeiro.tail-latest-temp",
+  id: "pedropombeiro.temp-file-tail",
   setup(context) {
     let busy = false
     return context.ui.slot({
@@ -14,8 +14,8 @@ export default Plugin.define({
           mode: "global",
           commands: [
             {
-              id: "pedropombeiro.tail-latest-temp",
-              title: "Toggle latest temp-file tail",
+              id: "pedropombeiro.temp-file-tail",
+              title: "Toggle temp-file tail",
               group: "Tools",
               bind: "<leader>o",
               palette: true,

@@ -1,5 +1,6 @@
 import { Plugin } from "@opencode/plugin/tui"
 import { toggleTail } from "./src/tail"
+import { preferredFile } from "./src/session"
 
 export default Plugin.define({
   id: "pedropombeiro.tail-latest-temp",
@@ -22,7 +23,13 @@ export default Plugin.define({
                 if (busy) return
                 busy = true
                 try {
-                  context.ui.toast.show(await toggleTail())
+                  const route = context.ui.router.current()
+                  context.ui.toast.show(await toggleTail(process.env, undefined, (directory) =>
+                    preferredFile(directory, route.type === "session" ? route.sessionID : undefined, {
+                      messages: (id, cursor) => context.client.message.list({ sessionID: id, limit: 100, ...(cursor ? { cursor } : { order: "desc" as const }) }),
+                      children: (id, cursor) => context.client.session.list({ parentID: id, limit: 100, ...(cursor ? { cursor } : { order: "asc" as const }) }),
+                    }),
+                  ))
                 } finally {
                   busy = false
                 }

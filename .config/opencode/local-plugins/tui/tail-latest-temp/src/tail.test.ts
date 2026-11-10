@@ -2,7 +2,7 @@ import { afterEach, expect, test } from "bun:test"
 import { mkdtemp, mkdir, rm, symlink, utimes, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { latestFile, tailCommand, toggleTail } from "./tail"
+import { captionCleanup, latestFile, tailCommand, toggleTail } from "./tail"
 
 const directories: string[] = []
 afterEach(async () => {
@@ -53,6 +53,7 @@ test("opens a detached 30% bottom split using TMPDIR and literal argv", async ()
   const file = "/custom temp/opencode/it's $(not-a-command).log"
   const result = await toggleTail(env, async (args) => {
     calls.push(args)
+    if (args[0] === "show-options") return "off"
     return args[0] === "split-window" ? "%3" : "%1\t\n%2\t%99"
   }, async (directory) => {
     expect(directory).toBe("/custom temp/opencode")
@@ -64,6 +65,12 @@ test("opens a detached 30% bottom split using TMPDIR and literal argv", async ()
     ["split-window", "-v", "-d", "-l", "30%", "-t", "%1", "-P", "-F", "#{pane_id}", "--", "sh", "-c", tailCommand, "opencode-tail", file],
     ["set-option", "-p", "-t", "%3", "@opencode-tail", "%1"],
     ["set-option", "-p", "-t", "%3", "remain-on-exit", "off"],
+    ["select-pane", "-t", "%3", "-T", `OpenCode tail: ${file}`],
+    ["show-options", "-w", "-A", "-v", "-t", "%1", "pane-border-status"],
+    ["set-hook", "-w", "-t", "%1", "pane-exited[19742]", captionCleanup],
+    ["set-hook", "-w", "-t", "%1", "after-kill-pane[19742]", captionCleanup],
+    ["set-option", "-w", "-t", "%1", "@opencode-tail-captions", "1"],
+    ["set-option", "-w", "-t", "%1", "pane-border-status", "top"],
   ])
 })
 

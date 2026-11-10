@@ -6,6 +6,7 @@ import { promisify } from "node:util"
 
 const exec = promisify(execFile)
 const marker = "@opencode-tail"
+export const captionCleanup = "if-shell -F '#{&&:#{@opencode-tail-captions},#{==:#{P:#{?@opencode-tail,1,}},}}' 'set-option -w pane-border-status off ; set-option -wu @opencode-tail-captions'"
 export const tailCommand = 'if command -v bat >/dev/null 2>&1; then tail -F "$1" | bat --paging=never --color=always --style=plain --file-name "$1"; else exec tail -F "$1"; fi'
 
 export async function latestFile(directory: string): Promise<string | undefined> {
@@ -72,6 +73,14 @@ export async function toggleTail(
     try {
       await run(["set-option", "-p", "-t", pane, marker, owner])
       await run(["set-option", "-p", "-t", pane, "remain-on-exit", "off"])
+      await run(["select-pane", "-t", pane, "-T", `OpenCode tail: ${file}`])
+      const border = await run(["show-options", "-w", "-A", "-v", "-t", owner, "pane-border-status"])
+      if (border === "off") {
+        await run(["set-hook", "-w", "-t", owner, "pane-exited[19742]", captionCleanup])
+        await run(["set-hook", "-w", "-t", owner, "after-kill-pane[19742]", captionCleanup])
+        await run(["set-option", "-w", "-t", owner, "@opencode-tail-captions", "1"])
+        await run(["set-option", "-w", "-t", owner, "pane-border-status", "top"])
+      }
     } catch (error) {
       await run(["kill-pane", "-t", pane]).catch(() => {})
       throw error

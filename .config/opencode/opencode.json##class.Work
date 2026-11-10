@@ -19,9 +19,10 @@
     "opencode-homeassistant@1.1.0",       // Sends agent status to Home Assistant and answers permissions from it
     "opencode-session-finder@1.1.1",      // Searches past sessions from the palette, and adds search_sessions and open_session
     {
-      // Local build of the review-requests branch, rebased on main, for live
-      // testing. Restore "opencode-forgekeeper@<version>" once it ships.
-      "package": "/Users/pedropombeiro/Developer/github.com/pedropombeiro/opencode-plugins-review-requests/packages/forgekeeper",
+      // Local build of the job-investigation branch (issue #128), for live
+      // testing. Switch back to the review-requests worktree to test PR #131,
+      // and restore "opencode-forgekeeper@<version>" once both ship.
+      "package": "/Users/pedropombeiro/Developer/github.com/pedropombeiro/opencode-plugins-job-investigation/packages/forgekeeper",
       "options": {
         "delivery": { "reviews": "summary", "lifecycle": "summary" },
         "lifecycleExecution": { "parentMerged": { "mode": "prepare", "actions": ["retarget"] } },
@@ -43,6 +44,13 @@
               ],
               "action": "prepare",
               "allowedModelGroup": "coding",
+            },
+            {
+              // Investigates failed jobs on MRs you wrote or review. Changes nothing.
+              "on": "job-failed",
+              "host": "gitlab.com",
+              "projects": ["gitlab-org/gitlab", "gitlab-org/security/gitlab"],
+              "action": "investigate",
             },
           ],
         },

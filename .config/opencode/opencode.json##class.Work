@@ -67,7 +67,7 @@
       "package": "./local-plugins/server/otel-status",
       "options": { "endpoint": "https://otel.pombei.ro", "protocol": "http/protobuf" }
     },
-    "opencode-cache-coach@0.2.0"
+    "opencode-cache-coach@0.2.1"
   ],
   "mcp": {
     "servers": {

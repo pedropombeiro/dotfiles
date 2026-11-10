@@ -29,7 +29,7 @@
       "package": "./local-plugins/server/otel-status",
       "options": { "endpoint": "https://otel.pombei.ro", "protocol": "http/protobuf" }
     },
-    "opencode-cache-coach@0.2.0"
+    "opencode-cache-coach@0.2.1"
   ],
   // Per-agent models take precedence over the top-level model, so `oc`'s inline
   // $OPENCODE_MODEL override (OPENCODE_CONFIG_CONTENT) does not apply to plan/build.

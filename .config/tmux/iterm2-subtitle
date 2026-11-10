@@ -1,0 +1,26 @@
+#!/bin/bash
+# Mirror each ordinary iTerm2 client's active pane title into its tab subtitle.
+set -o pipefail
+
+write_subtitle() {
+  local tty=$1 title=$2
+  # Only write to terminal devices, never to an arbitrary path from a caller.
+  [[ $tty == /dev/tty* && -c $tty && -w $tty ]] || return 0
+  # OSC fields are separated by semicolons. Strip terminal controls and replace
+  # separators so a pane title cannot inject additional fields or escape codes.
+  title=$(printf '%s' "$title" | LC_ALL=C tr -d '\000-\037\177' | tr ';' ',')
+  { printf '\033]21337;status=%s\007' "$title" > "$tty"; } 2>/dev/null
+}
+
+if [[ ${1-} == --clear ]]; then
+  write_subtitle "${2-}" ''
+  exit 0
+fi
+
+# Query titles separately: titles may contain tabs/newlines and are data, never
+# interpolated into a shell command. Control-mode and non-iTerm2 clients opt out.
+while IFS=$'\t' read -r tty pane; do
+  [[ -n $tty && -n $pane ]] || continue
+  title=$(tmux display-message -p -t "$pane" '#{?@opencode-full-title,#{@opencode-full-title},#{pane_title}}' 2>/dev/null) || continue
+  write_subtitle "$tty" "$title"
+done < <(tmux list-clients -F $'#{?#{&&:#{m:iTerm2*,#{client_termtype}},#{==:#{client_control_mode},0}},#{client_tty}\t#{pane_id},}' 2>/dev/null)

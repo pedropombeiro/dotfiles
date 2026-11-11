@@ -29,6 +29,26 @@ test("shell writes include redirect targets and common command destinations, not
   expect(writtenPaths(tool("shell", { command: "touch output.log", workdir: "/temp/opencode" }))).toEqual(["/temp/opencode/output.log"])
 })
 
+test("recognizes the supplied redirects, including a variable destination before a Python heredoc", () => {
+  const directory = "/private/var/folders/example/T/opencode"
+  expect(writtenPaths(tool("shell", {
+    command: `git for-each-ref --format='%(refname) %(objectname)' refs/heads/ > ${directory}/pre-rebase-branches-20261111.txt`,
+  }))).toEqual([`${directory}/pre-rebase-branches-20261111.txt`])
+  expect(writtenPaths(tool("shell", {
+    command: `T=${directory}; git diff HEAD --stat | wc -l; git status --short; glab api projects/1/merge_requests/2 | jq -r .description > $T/586457-mr-cur3.md; python3 - <<'EOF'\nT='${directory}'\ns=open(T+'/586457-mr-cur3.md').read()\nEOF`,
+  }))).toEqual([`${directory}/586457-mr-cur3.md`])
+})
+
+test("expands chained variables and log environment assignments without counting plain log reads", () => {
+  expect(writtenPaths(tool("shell", {
+    command: 'T="$TMPDIR/opencode"; LOG="${T}/run.log"; bash "$T/script.sh" > "$LOG" 2>&1',
+  }))).toContain("$TMPDIR/opencode/run.log")
+  expect(writtenPaths(tool("shell", {
+    command: 'T=/temp/opencode; RUN_LOG="$T/run.log" bash "$T/script.sh"',
+  }))).toEqual(["/temp/opencode/run.log"])
+  expect(writtenPaths(tool("shell", { command: 'LOG=/temp/opencode/read.log; cat "$LOG"' }))).toEqual([])
+})
+
 test("selects latest modified session/descendant write across pages with canonical paths and TMPDIR expansion", async () => {
   const base = await mkdtemp(join(tmpdir(), "opencode-session-test-"))
   directories.push(base)

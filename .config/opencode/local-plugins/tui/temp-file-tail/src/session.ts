@@ -20,20 +20,28 @@ function shellWrites(command: string): string[] {
   const tokens = [...command.matchAll(/(?:"(?:\\.|[^"\\])*"|'[^']*'|[^\s;&|<>"']+)+|[;&|<>]+|\n/g)]
     .map(([raw]) => ({ raw, value: raw.replace(/"((?:\\.|[^"\\])*)"|'([^']*)'/g, (_, double, single) => single ?? double.replace(/\\(["\\$`])/g, "$1")) }))
   const paths: string[] = []
+  const variables = new Map<string, string>()
+  let logAssignments: string[] = []
+  const expand = (value: string): string => value.replace(/\$\{([A-Za-z_][A-Za-z0-9_]*)\}|\$([A-Za-z_][A-Za-z0-9_]*)/g,
+    (match, braced, plain) => variables.get(braced ?? plain) ?? match)
   let args: string[] = []
   const flush = () => {
     const name = basename(args[0] ?? "")
     const operands = args.slice(1).filter((arg) => !arg.startsWith("-"))
+    // Log destinations are often passed into a script rather than redirected here.
+    // Only count assignments on executable commands, not a standalone declaration.
+    if (args.length && name !== "export") paths.push(...logAssignments)
     if (["tee", "touch", "mkdir"].includes(name)) paths.push(...operands)
     if (["cp", "mv", "install"].includes(name) && operands.length >= 2) paths.push(operands.at(-1)!)
     args = []
+    logAssignments = []
   }
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i]!
     if (/^[;&|]+$/.test(token.raw) || token.raw === "\n") { flush(); continue }
     if (/^>+$/.test(token.raw)) {
       const target = tokens[++i]
-      if (target) paths.push(target.value)
+      if (target) paths.push(expand(target.value))
       continue
     }
     if (token.raw.includes("<")) {
@@ -42,7 +50,15 @@ function shellWrites(command: string): string[] {
       i++
       continue
     }
-    args.push(token.value)
+    const assignment = token.value.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/s)
+    if (assignment && (!args.length || args[0] === "export")) {
+      const value = expand(assignment[2]!)
+      variables.set(assignment[1]!, value)
+      // Explicit log variables on a command invocation associate its output.
+      if (/^[A-Z_]*LOG$/.test(assignment[1]!)) logAssignments.push(value)
+      continue
+    }
+    args.push(expand(token.value))
   }
   flush()
   return paths

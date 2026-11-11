@@ -34,8 +34,10 @@ it falls back to the latest file anywhere under `$TMPDIR/opencode`.
 
 Recognized writes include `write`, `edit`, patch destinations, shell output
 redirects, `tee`, `touch`, `mkdir`, and the destinations of `cp`, `mv`, and
-`install`. Written directories contribute their newest regular file. Shell
-detection is conservative: arbitrary scripts, variable-assigned paths, and
+`install`. Command-local variable assignments are expanded in these paths,
+and uppercase `*LOG=...` assignments passed to script invocations also qualify.
+Written directories contribute their newest regular file. Shell
+detection is conservative: arbitrary script internals and
 tools nested inside Code Mode are not inspected. Both absolute paths and
 `$TMPDIR` references work, including canonical macOS `/private` paths.
 This is a history-based association, not proof of exclusive file ownership.

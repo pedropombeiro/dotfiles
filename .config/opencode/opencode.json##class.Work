@@ -19,10 +19,7 @@
     "opencode-homeassistant@1.1.0",       // Sends agent status to Home Assistant and answers permissions from it
     "opencode-session-finder@1.1.1",      // Searches past sessions from the palette, and adds search_sessions and open_session
     {
-      // Local build of the job-investigation branch (issue #128), for live
-      // testing. Switch back to the review-requests worktree to test PR #131,
-      // and restore "opencode-forgekeeper@<version>" once both ship.
-      "package": "/Users/pedropombeiro/Developer/github.com/pedropombeiro/opencode-plugins-job-investigation/packages/forgekeeper",
+      "package": "opencode-forgekeeper@3.2.0",
       "options": {
         "delivery": { "reviews": "summary", "lifecycle": "summary" },
         "lifecycleExecution": { "parentMerged": { "mode": "prepare", "actions": ["retarget"] } },

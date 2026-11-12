@@ -76,6 +76,35 @@ test("selects latest modified session/descendant write across pages with canonic
   expect(calls).toContain("child:first")
 })
 
+test("prefers a running push log directly under TMPDIR over a handoff file", async () => {
+  const base = await mkdtemp(join(tmpdir(), "opencode-session-test-"))
+  directories.push(base)
+  const directory = join(base, "opencode")
+  await mkdir(directory)
+  const handoff = join(directory, "handoff-home-assistant-ios-mtls.md")
+  const log = join(base, "mtls-issuance-push.log")
+  await writeFile(handoff, "handoff")
+  await writeFile(log, "push")
+  await utimes(handoff, 1000, 1000)
+  await utimes(log, 2000, 2000)
+  const source: Source = {
+    async messages() {
+      return { data: [
+        tool("write", { path: handoff }),
+        tool("shell", { command: 'git push > "$TMPDIR/mtls-issuance-push.log" 2>&1' }, "running"),
+      ], cursor: {} }
+    },
+    async children() { return { data: [], cursor: {} } },
+  }
+  expect(await preferredFile(directory, "parent", source)).toBe(await realpath(log))
+  for (const path of [log, "${TMPDIR}/mtls-issuance-push.log"]) {
+    source.messages = async () => ({ data: [tool("write", { path })], cursor: {} })
+    expect(await sessionFile(directory, "parent", source)).toBe(await realpath(log))
+  }
+  source.messages = async () => ({ data: [tool("read", { path: log })], cursor: {} })
+  expect(await preferredFile(directory, "parent", source)).toBe(handoff)
+})
+
 test("ignores outside paths and missing writes, and resolves files inside written directories", async () => {
   const base = await mkdtemp(join(tmpdir(), "opencode-session-test-"))
   directories.push(base)

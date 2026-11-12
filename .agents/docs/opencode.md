@@ -149,9 +149,9 @@ Each local plugin documents its behavior, options, and tests in its own README:
   adds `/queue <message>`, which queues a message for the current session instead of
   sending it right away.
 - [`temp-file-tail`](../../.config/opencode/local-plugins/tui/temp-file-tail/README.md):
-  toggles a bottom tmux pane with `<leader>o`, following the latest file under
-  `$TMPDIR/opencode` while keeping focus in OpenCode. It prefers files written
-  by the active session or its descendants, with a global fallback.
+  toggles a bottom tmux pane with `<leader>o` while keeping focus in OpenCode.
+  It prefers files under `$TMPDIR` written by the active session or its
+  descendants, with a global fallback restricted to `$TMPDIR/opencode`.
 - [`otel-status`](../../.config/opencode/local-plugins/server/otel-status/README.md):
   shows in the CLI footer whether the collector accepts OTLP requests.
 

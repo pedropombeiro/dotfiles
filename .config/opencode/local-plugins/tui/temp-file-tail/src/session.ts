@@ -105,7 +105,10 @@ async function pages<T>(load: (cursor?: string) => Promise<Page<T>>): Promise<T[
 }
 
 export async function sessionFile(directory: string, sessionID: string, source: Source): Promise<string | undefined> {
-  const root = await realpath(directory).catch(() => resolve(directory))
+  // Session writes may live directly in TMPDIR; only the global fallback is
+  // restricted to its opencode subdirectory.
+  const temporary = resolve(directory, "..")
+  const root = await realpath(temporary).catch(() => temporary)
   const contains = (path: string) => {
     const suffix = relative(root, path)
     return suffix !== ".." && !suffix.startsWith(`..${sep}`) && !isAbsolute(suffix)
@@ -124,7 +127,7 @@ export async function sessionFile(directory: string, sessionID: string, source: 
     queue.push(...children.map((child) => child.id))
     for (const message of messages) {
       for (const raw of writtenPaths(message)) {
-        const expanded = raw.replace(/^\$(?:TMPDIR|\{TMPDIR\})(?=\/|$)/, resolve(directory, ".."))
+        const expanded = raw.replace(/^\$(?:TMPDIR|\{TMPDIR\})(?=\/|$)/, temporary)
         if (!isAbsolute(expanded)) continue
         const path = await realpath(expanded).catch(() => undefined)
         if (path && contains(path)) candidates.add(path)

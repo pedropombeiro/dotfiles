@@ -2,8 +2,9 @@
 
 Press `<leader>o` (`Ctrl+X`, then `o` by default) to toggle a tmux pane below
 OpenCode. The pane takes 30% of the OpenCode pane's height and runs `tail -F`
-on the most recently modified regular file under `$TMPDIR/opencode`, including
-subdirectories. If `TMPDIR` is unset, the plugin uses the system temp directory.
+on the most recently modified session-written regular file under `$TMPDIR`,
+including subdirectories. Without a qualifying session file, it selects the latest
+file under `$TMPDIR/opencode`. If `TMPDIR` is unset, the plugin uses the system temp directory.
 Symlinks are skipped.
 
 Focus stays in OpenCode. Press the shortcut again to close the tail pane, then
@@ -27,7 +28,7 @@ plain. If `bat` is unavailable, the pane runs plain `tail -F`.
 ## Session selection
 
 Inside a session, the plugin chooses the most recently modified existing file
-written by that session or any of its descendant sessions. It reads paginated
+under `$TMPDIR` written by that session or any of its descendant sessions. It reads paginated
 tool history, including running writes. Read-only references and failed calls
 do not qualify. If no session file qualifies, or you are on the home screen,
 it falls back to the latest file anywhere under `$TMPDIR/opencode`.
@@ -40,6 +41,8 @@ Written directories contribute their newest regular file. Shell
 detection is conservative: arbitrary script internals and
 tools nested inside Code Mode are not inspected. Both absolute paths and
 `$TMPDIR` references work, including canonical macOS `/private` paths.
+For example, `git push > "$TMPDIR/push.log" 2>&1` qualifies even though the log
+is outside the `opencode` subdirectory. Files outside `$TMPDIR` do not qualify.
 This is a history-based association, not proof of exclusive file ownership.
 History lookup failures show an error rather than silently selecting another
 session's file.

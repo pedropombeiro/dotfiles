@@ -15,6 +15,7 @@ This skill describes esquery **1.11.0 or later**. Older versions have no `--asyn
 - Below 1.11.0, or `unknown command "version"`: update with one of the commands above, run `esquery version` again, and tell the user you updated it. If the update fails (no Go toolchain, no network), say so and don't use `--async`.
 - `dev`: a build without version information. `esquery count --help | grep -- --async` shows whether it supports async.
 - A running `esquery mcp` server keeps using the binary it started with. After an update, ask the user to restart it (in pi, reload the MCP server) before relying on `async`.
+- `warning: the skill in ... differs from the one in this esquery` on stderr: this file is older than the binary. Run `esquery skill install`, then tell the user to reload skills or start a new session.
 
 ## RED data
 

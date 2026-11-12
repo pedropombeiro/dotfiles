@@ -123,6 +123,12 @@
 {% endif %}
 {% if yadm.class == "Personal" %}
     {
+      "name": "galaxus",
+      "description": "Search the Galaxus Switzerland product catalog with current prices, ratings, and reviews",
+      "type": "remote",
+      "url": "https://mcp.galaxus.ch"
+    },
+    {
       "name": "garmin",
       "description": "Create and schedule Garmin Connect workouts (including nested repeat blocks) and read the workout library and calendar. Bulk delete and unschedule tools are disabled; single-item ones are enabled and need approval",
       "type": "local",

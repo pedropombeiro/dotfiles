@@ -2,13 +2,3 @@
 
 # Ensure Homebrew and mise binaries are in PATH for run-shell commands
 run-shell '/opt/homebrew/bin/tmux set-environment -g PATH "/opt/homebrew/bin:/opt/homebrew/sbin:$HOME/.local/share/mise/shims:/usr/bin:/bin:/usr/sbin:/sbin"'
-
-# Reserve our own hook index so reloads don't duplicate or replace other hooks.
-# Run on all attached clients: the event's pane need not be the displayed pane.
-set-hook -g 'client-attached[21337]' 'run-shell "~/.config/tmux/iterm2-subtitle"'
-set-hook -g 'client-session-changed[21337]' 'run-shell "~/.config/tmux/iterm2-subtitle"'
-set-hook -g 'session-window-changed[21337]' 'run-shell "~/.config/tmux/iterm2-subtitle"'
-set-hook -gw 'window-pane-changed[21337]' 'run-shell "~/.config/tmux/iterm2-subtitle"'
-set-hook -gw 'pane-title-changed[21337]' 'run-shell "~/.config/tmux/iterm2-subtitle"'
-set-hook -g 'client-detached[21337]' 'if-shell -F "#{m:iTerm2*,#{client_termtype}}" { run-shell "~/.config/tmux/iterm2-subtitle --clear #{q:client_tty}" }'
-run-shell '~/.config/tmux/iterm2-subtitle'

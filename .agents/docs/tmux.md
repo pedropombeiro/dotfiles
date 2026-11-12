@@ -79,7 +79,7 @@ background pane. The `on` setting only forwards passthrough from the currently f
 
 ## iTerm2 tab subtitles
 
-On macOS, `~/.config/tmux/iterm2-subtitle` copies each attached iTerm2 client's
+On macOS and the NAS, `~/.config/tmux/iterm2-subtitle` copies each attached iTerm2 client's
 active `pane_title` into its tab subtitle using OSC 21337. The main title stays
 `session - command`. This uses ordinary tmux, with `ZSH_TMUX_ITERM2=false`.
 
@@ -89,19 +89,21 @@ option over `pane_title`, bypassing OpenCode's terminal-title truncation. The
 plugin refreshes subtitles after writes and removes the override on the home
 screen or plugin cleanup. iTerm2 can still shorten text to fit the tab width.
 
-The macOS platform config registers hooks for pane title changes, pane and
+The shared tmux config registers hooks for pane title changes, pane and
 window selection, client attachment, and session switches. Each update queries
 the clients' current panes, so background panes don't replace the displayed
 description. Empty pane titles clear the subtitle, and detaching clears it too.
 The hooks use index `21337` so reloads don't duplicate them or replace other hooks.
 
-The helper skips non-iTerm2 and control-mode clients. It changes only the status
-text, leaving dot and text colors alone. This reserves iTerm2's Session Status
-text for the pane title: another program setting that text can overwrite it until
-the next hook runs. Semicolons become commas, and ASCII control characters are
+The helper supports macOS `/dev/tty*` and Linux `/dev/pts/*` client terminals,
+including NAS clients connected over SSH. It skips non-iTerm2 and control-mode
+clients. It changes only the status text, leaving dot and text colors alone.
+This reserves iTerm2's Session Status text for the pane title: another program
+setting that text can overwrite it until the next hook runs. Semicolons become
+commas, and ASCII control characters are
 removed before titles are sent to the terminal.
 
-Reload with `tmux source-file ~/.config/tmux/tmux.platform.conf`. No shell or
+Reload with `tmux source-file ~/.config/tmux/tmux.conf`. No shell or
 tmux server restart is needed. Native `tmux -CC` integration stays disabled.
 
 ## Yank Last Command Output (`prefix + y`)

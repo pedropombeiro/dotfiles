@@ -5,7 +5,7 @@ set -o pipefail
 write_subtitle() {
   local tty=$1 title=$2
   # Only write to terminal devices, never to an arbitrary path from a caller.
-  [[ $tty == /dev/tty* && -c $tty && -w $tty ]] || return 0
+  [[ ($tty == /dev/tty* || $tty == /dev/pts/*) && -c $tty && -w $tty ]] || return 0
   # OSC fields are separated by semicolons. Strip terminal controls and replace
   # separators so a pane title cannot inject additional fields or escape codes.
   title=$(printf '%s' "$title" | LC_ALL=C tr -d '\000-\037\177' | tr ';' ',')

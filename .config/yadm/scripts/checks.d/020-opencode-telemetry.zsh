@@ -47,6 +47,19 @@ function service_check() {
   opencode api post /api/rpc/otel-status/check --data '{"input":{}}' 2>/dev/null | jq -ce '.output | objects'
 }
 
+# Retries service_check while the plugin loads. The service loads plugins for
+# each directory on its first request from there, and rejects RPC calls until
+# they finish, so the first check after a service start can fail.
+# Usage: wait_for_plugin <attempts>. Prints the status JSON.
+function wait_for_plugin() {
+  local attempt
+  for attempt in {1..$1}; do
+    (( attempt > 1 )) && sleep 2
+    service_check && return 0
+  done
+  return 1
+}
+
 # Sends the empty OTLP metrics export from this shell, with the exporter's
 # headers. Prints the HTTP status code, or 000 when the connection fails.
 function shell_probe() {
@@ -88,12 +101,7 @@ function restart_service() {
   fi
   (cd "$HOME" && mise exec -- opencode service restart) >/dev/null 2>&1 || return 1
   # The plugin loads after the service starts listening.
-  local attempt
-  for attempt in {1..15}; do
-    service_check >/dev/null && return 0
-    sleep 2
-  done
-  return 1
+  wait_for_plugin 15 >/dev/null
 }
 
 function print_context_advice() {
@@ -116,9 +124,9 @@ function check_opencode_telemetry() {
   fi
 
   local status_json state endpoint protocol error
-  if ! status_json=$(service_check); then
+  if ! status_json=$(wait_for_plugin 5); then
     echo
-    print_failure "The otel-status plugin didn't respond. Check that opencode.json loads it."
+    print_failure "The otel-status plugin didn't respond within 10 seconds. Check that opencode.json loads it."
     return 1
   fi
   state=$(jq -r .state <<<"$status_json")

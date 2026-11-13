@@ -26,7 +26,7 @@ chmod +x "$temporary/bin/"{sesh,tmux}
 export HOME="$temporary/home" PATH="$temporary/bin:$PATH"
 helper="$root/.local/bin/sesh-list-waiting"
 
-for flags in '' '--icons' '-c' '-tc' '-t -c'; do
+for flags in '' '--icons'; do
   output=$("$helper" ${=flags})
   [[ $output == *'~/Developer/github.com/pedropombeiro/new-project'* ]] || fail "Project missing: $flags"
   [[ $output == *'~/Developer/github.com/pedropombeiro/space project'* ]] || fail "Space in project name lost: $flags"
@@ -36,9 +36,9 @@ for flags in '' '--icons' '-c' '-tc' '-t -c'; do
   print -r -- "$output" | awk -F '\t' 'NF != 3 { exit 1 }' || fail "Invalid picker fields: $flags"
   print -r -- "$output" | awk -F '\t' '$1 != $2 || $1 ~ /📁|\033/ { exit 1 }' || fail "Display icon leaked into connect/preview input: $flags"
 done
-for flag in -t -z -T -p --tmux --zoxide --tmuxinator --panes; do
-  output=$("$helper" "$flag")
-  [[ $output != *new-project* ]] || fail "Projects leaked into source filter: $flag"
+for flags in -t -z -T -p -c -tc '-t -c' '--config --icons' --config --tmux --zoxide --tmuxinator --panes; do
+  output=$("$helper" ${=flags})
+  [[ $output != *new-project* ]] || fail "Projects leaked into source filter: $flags"
 done
 SESH_TEST_FAIL=true "$helper" >/dev/null && fail 'sesh failure was hidden'
 export HOME="$temporary/missing-home"

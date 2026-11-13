@@ -4,26 +4,53 @@
 # opencode-tmux-indicator sets the per-window `@opencode-waiting` option. A session is marked
 # when any of its windows has it set. Each output row has three tab-separated fields:
 #
-#   1. the original `sesh list` row, for `sesh connect` and `sesh preview`
+#   1. the plain session name or directory path, for `sesh connect` and `sesh preview`
 #   2. the bare session name, for tmux commands such as `kill-session`
 #   3. the display row, with an orange bullet for waiting sessions
 #
 # Pickers use `--delimiter '\t' --with-nth 3 --accept-nth 1`. All arguments pass through
-# to `sesh list`.
+# to `sesh list`. Config/all views also include immediate child directories under
+# ~/Developer/github.com/pedropombeiro, independently of zoxide history.
 
 set -o pipefail
 
 icons=false
+source_filter=false
+config=false
 for arg in "$@"; do
   case $arg in
-    -i | --icons) icons=true ;;
+  --icons) icons=true ;;
+  --config)
+    source_filter=true
+    config=true
+    ;;
+  --tmux | --zoxide | --tmuxinator | --panes) source_filter=true ;;
+  -[!-]*)
+    [[ $arg == *i* ]] && icons=true
+    [[ $arg == *[tczTp]* ]] && source_filter=true
+    [[ $arg == *c* ]] && config=true
+    ;;
   esac
 done
 
 # Passed through the environment because BSD awk rejects newlines in `-v` values.
-export SESH_WAITING=$(tmux list-windows -a -F '#{?@opencode-waiting,#{session_name},}' 2>/dev/null | sort -u)
+SESH_WAITING=$(tmux list-windows -a -F '#{?@opencode-waiting,#{session_name},}' 2>/dev/null | sort -u)
+export SESH_WAITING
 
-sesh list "$@" | awk -v icons="$icons" '
+{
+  sesh list "$@" || exit
+  if ! "$source_filter" || "$config"; then
+    shopt -s nullglob
+    for project in "$HOME"/Developer/github.com/pedropombeiro/*/; do
+      project=${project%/}
+      if "$icons"; then
+        printf '📁 ~%s\n' "${project#"$HOME"}"
+      else
+        printf '~%s\n' "${project#"$HOME"}"
+      fi
+    done
+  fi
+} | awk -v icons="$icons" '
   BEGIN {
     n = split(ENVIRON["SESH_WAITING"], names, "\n")
     for (i = 1; i <= n; i++) if (names[i] != "") is_waiting[names[i]] = 1
@@ -38,7 +65,11 @@ sesh list "$@" | awk -v icons="$icons" '
       prefix = ""
       name = $0
     }
+    # zoxide may already list a discovered project, with either an absolute or ~ path.
+    key = name
+    if (index(key, ENVIRON["HOME"] "/") == 1) key = "~" substr(key, length(ENVIRON["HOME"]) + 1)
+    if (seen[key]++) next
     display = (name in is_waiting) ? prefix marker name : prefix "  " name
-    printf "%s\t%s\t%s\n", $0, name, display
+    printf "%s\t%s\t%s\n", name, name, display
   }
 '

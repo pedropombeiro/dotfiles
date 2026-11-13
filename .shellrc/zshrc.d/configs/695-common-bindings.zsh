@@ -27,7 +27,7 @@ sesh-sessions() {
     exec <&1
     local session
     # sesh-list-waiting marks sessions with an OpenCode agent waiting for input
-    session=$(~/.local/bin/sesh-list-waiting -t -c | fzf --height 40% --reverse --ansi \
+    session=$(~/.local/bin/sesh-list-waiting | fzf --height 40% --reverse --ansi \
       --delimiter '\t' --with-nth -1 --accept-nth 1 \
       --bind 'change:first' \
       --border-label ' sesh ' --border --prompt 'sesh> ')

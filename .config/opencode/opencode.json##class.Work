@@ -19,7 +19,7 @@
     "opencode-homeassistant@1.1.0",       // Sends agent status to Home Assistant and answers permissions from it
     "opencode-session-finder@1.1.1",      // Searches past sessions from the palette, and adds search_sessions and open_session
     {
-      "package": "opencode-forgekeeper@3.2.0",
+      "package": "opencode-forgekeeper@3.3.0",
       "options": {
         "delivery": { "reviews": "summary", "lifecycle": "summary" },
         "lifecycleExecution": { "parentMerged": { "mode": "prepare", "actions": ["retarget"] } },
@@ -72,7 +72,7 @@
       "package": "./local-plugins/server/otel-status",
       "options": { "endpoint": "https://otel.pombei.ro", "protocol": "http/protobuf" }
     },
-    "opencode-cache-coach@0.2.1"
+    "opencode-cache-coach@0.3.0"
   ],
   "mcp": {
     "servers": {

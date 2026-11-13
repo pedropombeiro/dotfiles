@@ -3,8 +3,9 @@ local busylight = require("busylight")
 local constants = require("constants")
 local webcam = require("webcam")
 local log = hs.logger.new("meetings", "info")
-local spotifyWasPlaying = false
-local eqMacWasRunning = false
+-- Keep restoration intent across config reloads, including reloads mid-meeting.
+local spotifyStateKey = "meetings.spotifyWasPlaying"
+local eqMacStateKey = "meetings.eqMacWasRunning"
 local connectTask = nil
 local pollTimer = nil
 
@@ -68,38 +69,45 @@ local function onMeetingStart()
   end
 
   if hs.spotify.isPlaying() then
-    spotifyWasPlaying = true
+    hs.settings.set(spotifyStateKey, true)
     hs.spotify.pause()
     log.i("Paused Spotify")
   end
 
   local eqMac = hs.application.get("eqMac")
   if eqMac then
-    eqMacWasRunning = true
+    hs.settings.set(eqMacStateKey, true)
     eqMac:kill()
     log.i("Quit eqMac")
   end
 end
 
 local function resumeSpotify()
-  if spotifyWasPlaying then
-    spotifyWasPlaying = false
+  if hs.settings.get(spotifyStateKey) then
     hs.spotify.play()
+    hs.settings.set(spotifyStateKey, false)
     log.i("Resumed Spotify")
   end
 end
 
-local function onMeetingEnd()
-  webcam.off("onMeetingEnd")
-
-  if eqMacWasRunning then
-    eqMacWasRunning = false
-    hs.execute("open -g -a eqMac")
+local function restoreMeetingAudio()
+  if hs.settings.get(eqMacStateKey) then
+    local output, success, _, exitCode = hs.execute("open -g -a eqMac 2>&1")
+    if not success then
+      log.e("Could not relaunch eqMac (exit " .. tostring(exitCode) .. "): " .. tostring(output))
+      return
+    end
+    hs.settings.set(eqMacStateKey, false)
     log.i("Relaunched eqMac in background")
     audio.setDockedAudioOutput(resumeSpotify)
   else
     resumeSpotify()
   end
+end
+
+local function onMeetingEnd()
+  webcam.off("onMeetingEnd")
+  restoreMeetingAudio()
 
   local camo = hs.application.get("Camo Studio")
   if camo then
@@ -141,6 +149,9 @@ M._watcher:start()
 for _, appName in ipairs(webcam.runningApps()) do
   activeMeetings[appName] = true
 end
+
+-- Recover if a meeting ended while Hammerspoon was not watching.
+if next(activeMeetings) == nil then restoreMeetingAudio() end
 
 log.i("Meeting watcher started")
 

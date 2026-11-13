@@ -6,7 +6,7 @@
 #
 #   1. the plain session name or directory path, for `sesh connect` and `sesh preview`
 #   2. the bare session name, for tmux commands such as `kill-session`
-#   3. the display row, with an orange bullet for waiting sessions
+#   3. the display row, with an orange bullet for waiting sessions and the active window
 #
 # Pickers use `--delimiter '\t' --with-nth 3 --accept-nth 1`. All arguments pass through
 # to `sesh list`. The all view also includes immediate child directories under
@@ -34,39 +34,36 @@ done
 SESH_WAITING=$(tmux list-windows -a -F '#{?@opencode-waiting,#{session_name},}' 2>/dev/null | sort -u)
 export SESH_WAITING
 
+sessions=$(sesh list "$@" --json) || exit
 {
-  sesh list "$@" || exit
+  printf '%s\n' "$sessions"
   if ! "$source_filter"; then
     shopt -s nullglob
-    for project in "$HOME"/Developer/github.com/pedropombeiro/*/; do
-      project=${project%/}
-      if "$icons"; then
-        printf '📁 ~%s\n' "${project#"$HOME"}"
-      else
-        printf '~%s\n' "${project#"$HOME"}"
-      fi
-    done
+    {
+      for project in "$HOME"/Developer/github.com/pedropombeiro/*/; do
+        printf '%s\0' "${project%/}"
+      done
+    } | jq -Rs 'split("\u0000") | map(select(length > 0) | {Src: "directory", Name: ., Path: .})'
   fi
-} | awk -v icons="$icons" '
-  BEGIN {
-    n = split(ENVIRON["SESH_WAITING"], names, "\n")
-    for (i = 1; i <= n; i++) if (names[i] != "") is_waiting[names[i]] = 1
-    marker = "\033[38;5;214m●\033[39m "
-  }
-  {
-    # With icons, each row is "<colored icon> <name>"; the icon never contains a space.
-    if (icons == "true" && (pos = index($0, " ")) > 0) {
-      prefix = substr($0, 1, pos)
-      name = substr($0, pos + 1)
-    } else {
-      prefix = ""
-      name = $0
-    }
-    # zoxide may already list a discovered project, with either an absolute or ~ path.
-    key = name
-    if (index(key, ENVIRON["HOME"] "/") == 1) key = "~" substr(key, length(ENVIRON["HOME"]) + 1)
-    if (seen[key]++) next
-    display = (name in is_waiting) ? prefix marker name : prefix "  " name
-    printf "%s\t%s\t%s\n", name, name, display
-  }
+} | jq -rs --argjson icons "$icons" '
+  def home: if startswith(env.HOME + "/") then "~" + ltrimstr(env.HOME) else . end;
+  def pathkey: sub("^~/"; env.HOME + "/") | sub("/+$"; "");
+  def clean: gsub("[\t\r\n]"; " ");
+  def glyph:
+    {tmux: "", config: "", zoxide: "", tmuxinator: "", "tmux-pane": "", directory: "📁"}[.Src] // "";
+  add as $sessions
+  | (env.SESH_WAITING | split("\n")) as $waiting
+  | ([$sessions[] | select(.Src == "tmux") | .Path // "" | select(length > 0) | pathkey]) as $tmuxpaths
+  | reduce $sessions[] as $s ({seen: {}, rows: []};
+      ($s.Path // "" | pathkey) as $path
+      | (if $s.Src == "tmux" then "tmux:" + $s.Name elif $path != "" then $path else $s.Src + ":" + $s.Name end) as $key
+      | if .seen[$key] or ($s.Src != "tmux" and $path != "" and ($tmuxpaths | index($path)) != null) then .
+        else .seen[$key] = true | .rows += [$s] end)
+  | .rows[]
+  | (if .Src == "directory" then .Path | home else .Name end) as $name
+  | ([.TmuxWindows[]? | select(.Active) | .Name][0] // "") as $window
+  | (if $icons then ((.Icon | select(. != null and . != "")) // glyph) + " " else "" end) as $prefix
+  | (if .Src == "tmux" and ($waiting | index($name)) != null then "\u001b[38;5;214m●\u001b[39m " else "  " end) as $marker
+  | [$name, $name, ($prefix + $marker + $name + (if $window != "" then "  \u001b[90m[" + ($window | clean) + "]\u001b[39m" else "" end))]
+  | join("\t")
 '

@@ -65,8 +65,19 @@ if [[ "${1:-}" == --update && -f "${HOME}/.agents/.skill-lock.json" ]] && (( $+c
   done
   result=0
   if (( ${#skills_to_update} )); then
+    # The updater treats skills outside its discovery paths as missing and
+    # reinstalls them even when their hashes match. Expose work snapshots only
+    # for the update, then remove links or move updated snapshots back on exit.
+    trap 'sync_work_skills' EXIT
+    for name in "${skills_to_update[@]}"; do
+      target="${work_dir}/${name}"
+      source="${HOME}/.agents/skills/${name}"
+      if [[ ${work_skills[(Ie)${name}]} != 0 && -d "${target}" && ! -e "${source}" && ! -L "${source}" ]]; then
+        mkdir -p "${source:h}"
+        ln -s "${target}" "${source}"
+      fi
+    done
     npx --yes skills update --global --yes "${skills_to_update[@]}" || result=$?
   fi
-  sync_work_skills
   exit "${result}"
 fi

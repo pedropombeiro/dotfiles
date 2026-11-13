@@ -20,7 +20,7 @@ includes = ["~/.config/mise/tasks", "~/.config/mise/tasks-work"]
 # Global Ruby runtime, installed from mise's precompiled binaries.
 ruby = "4.0.9"
 # Go toolchain
-go = "1.27.3"
+go = "1.27.4"
 # OLAP database
 clickhouse = "25.12.11.4-stable"
 # Zero-trust infrastructure access (SSH/k8s/DB)
@@ -42,7 +42,7 @@ lima = "2.3.0"
 # Run local processes with Kubernetes network and filesystem context
 mirrord = "3.285.0"
 # Query GitLab's Kibana/Elasticsearch logs with the Kibana SSO session
-"gitlab:gitlab-com/gl-infra/esquery" = "1.12.0"
+"gitlab:gitlab-com/gl-infra/esquery" = "1.12.1"
 # Kubernetes terminal UI
 k9s = "latest"
 # GitLab Duo AI CLI

@@ -49,9 +49,15 @@ esac
 EOF
 chmod +x "$sandbox/bin/yadm" "$sandbox/bin/npx"
 
+mkdir -p "$HOME/.agents/skills/orbit-cli"
+print local-cli > "$HOME/.agents/skills/orbit-cli/SKILL.md"
+zsh -f "$scripts/sync-work-skills.zsh"
+[[ ! -e "$HOME/.agents/skills/orbit-cli" && ! -L "$HOME/.agents/skills/orbit-cli" ]] || fail 'orbit-cli left in shared discovery directory'
+[[ $(<"$HOME/.agents/skills.work/orbit-cli/SKILL.md") == local-cli ]] || fail 'orbit-cli snapshot not relocated'
+
 run_sync() {
   local expected=$1 rc=0
-  zsh "$scripts/sync-work-skills.zsh" --update > "$sandbox/output" 2>&1 || rc=$?
+  zsh -f "$scripts/sync-work-skills.zsh" --update > "$sandbox/output" 2>&1 || rc=$?
   [[ $rc == $expected ]] || { cat "$sandbox/output"; fail "expected exit $expected, got $rc"; }
   [[ ! -e "$shared" && ! -L "$shared" ]] || fail 'work skill left in shared discovery directory'
 }

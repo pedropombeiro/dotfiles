@@ -43,6 +43,7 @@ if [[ "${class}" == Work ]]; then
     devex-clickhouse "${HOME}/Developer/gitlab.com/gitlab-org/quality/analytics/team/.skills/clickhouse"
     fpf-report "${HOME}/Developer/gitlab.com/gitlab-org/ci-cd/fix-pipeline-flow-report/skill"
     orbit "${HOME}/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph/skills/orbit"
+    orbit-cli "${HOME}/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph/skills/orbit-cli"
   )
   for name in gitlab-babysit-mr gitlab-pipeline-watch glab-glql; do
     sources[${name}]="${HOME}/Developer/gitlab.com/gitlab-org/ai/skills/skills/${name}"

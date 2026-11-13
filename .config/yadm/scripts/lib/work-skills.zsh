@@ -10,4 +10,5 @@ typeset -ga work_skills=(
   glab-glql
   incident
   orbit
+  orbit-cli
 )

@@ -25,6 +25,14 @@ jobs:
     env:
       MISE_ENV: ci
       MISE_ENV_CONF_D: true
+      # Keep aligned with hk.pkl; Ruby and Renovate checks are skipped below.
+      # Include runtimes for npm tools and the pipx-backed YAML linter.
+      CI_MISE_TOOLS: >-
+        hk aqua:gitleaks/gitleaks typos
+        github:editorconfig-checker/editorconfig-checker
+        shellcheck shfmt stylua prettier
+        github:agent-ecosystem/skill-validator
+        node npm:markdownlint-cli2 pipx pipx:yamllint
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -33,6 +41,30 @@ jobs:
           # Keep in sync with min_version in .config/mise/conf.d/global.toml
           # renovate: datasource=github-releases depName=jdx/mise
           version: "2026.11.7"
+          install: false
+          env: false
+          export_path: false
+          cache: false
+
+      # mise-action only saves its cache when it also installs the tools.
+      - name: Cache check tools
+        uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25 # v5
+        with:
+          path: ~/.local/share/mise
+          key: mise-hk-v2-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('.github/workflows/ci.yml', '.config/mise/**') }}
+
+      - name: Install check tools
+        shell: bash
+        env:
+          MISE_GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          read -r -a tools <<< "$CI_MISE_TOOLS"
+          if mise install "${tools[@]}"; then
+            exit 0
+          fi
+          echo "::warning::Tool installation failed; retrying once in 10 seconds with debug logging"
+          sleep 10
+          MISE_LOG_LEVEL=debug mise install --verbose "${tools[@]}"
 
       # Install zsh for syntax checking
       - name: Install zsh
@@ -43,7 +75,10 @@ jobs:
       # no-yadm-alt-symlinks is a no-op outside a yadm work tree; the
       # yadm-render job runs it against a real one.
       - name: Run hk check
-        run: hk check --all
+        shell: bash
+        run: |
+          read -r -a tools <<< "$CI_MISE_TOOLS"
+          mise exec "${tools[@]}" -- hk check --all
         env:
           HK_SKIP_STEPS: standardrb,renovate-config-validator
 

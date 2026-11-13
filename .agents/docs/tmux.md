@@ -249,7 +249,10 @@ Tmux integrates with `sesh` for session discovery and switching.
 
 ### Keybindings
 
-- `prefix + T` opens the sesh picker in a tmux popup (fzf-tmux).
+- `prefix + T` opens the sesh picker in a tmux popup (fzf-tmux), initially showing
+  only tmux sessions. `Ctrl+A` shows all sources, and `Ctrl+T` returns to tmux only.
+  Search results sort by match quality. The preview uses `sesh preview --watch`
+  to refresh active tmux sessions every 500 ms.
 - `prefix + L` switches to the client's previous session using `switch-client -l`.
 - `fn + Tab` and `Caps Lock + L` (iTerm2 only) are alternatives to `prefix + L`, implemented in
   Hammerspoon. `Hyper + L` works too, via the same `hyperBind` registration.
@@ -257,12 +260,19 @@ Tmux integrates with `sesh` for session discovery and switching.
 ### OpenCode waiting indicator
 
 Both pickers (`prefix + T` and `Alt + s`) list sessions through `~/.local/bin/sesh-list-waiting`,
-which wraps `sesh list` and adds an orange `●` before any session with a window where
+which reads `sesh list --json` and adds an orange `●` before any session with a window where
 `@opencode-waiting` is set (see [OpenCode Tmux Tab Indicator](#opencode-tmux-tab-indicator)).
-The wrapper emits `<sesh row>\t<session name>\t<display row>`, so fzf runs with
+The wrapper emits `<connection target>\t<session name>\t<display row>`, so fzf runs with
 `--delimiter '\t' --with-nth -1 --accept-nth 1`. `sesh connect` and `sesh preview` get
 field 1, and `tmux kill-session` gets field 2. The `ctrl-f` reload returns plain `fd` rows,
 which have a single field, so `-1` and `1` both resolve to the directory.
+
+The display row includes the active tmux window name. Icons, waiting markers, and
+window labels stay out of connection targets. The all-sources view also discovers
+immediate child directories under `~/Developer/github.com/pedropombeiro/`, without
+relying on zoxide. Source-specific filters do not add these directories. The helper
+deduplicates paths against running tmux sessions while retaining separate tmux
+sessions that share a path. It requires `jq`.
 
 ### fn+Tab and Caps Lock+L last-session shortcuts
 

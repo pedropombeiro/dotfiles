@@ -30,7 +30,7 @@ for arg in "$@"; do
   esac
 done
 
-# Passed through the environment because BSD awk rejects newlines in `-v` values.
+# Pass waiting session names to jq without mixing them into the session JSON.
 SESH_WAITING=$(tmux list-windows -a -F '#{?@opencode-waiting,#{session_name},}' 2>/dev/null | sort -u)
 export SESH_WAITING
 
@@ -56,8 +56,8 @@ sessions=$(sesh list "$@" --json) || exit
   | ([$sessions[] | select(.Src == "tmux") | .Path // "" | select(length > 0) | pathkey]) as $tmuxpaths
   | reduce $sessions[] as $s ({seen: {}, rows: []};
       ($s.Path // "" | pathkey) as $path
-      | (if $s.Src == "tmux" then "tmux:" + $s.Name elif $path != "" then $path else $s.Src + ":" + $s.Name end) as $key
-      | if .seen[$key] or ($s.Src != "tmux" and $path != "" and ($tmuxpaths | index($path)) != null) then .
+      | (if $s.Src == "tmux" or $s.Src == "config" then $s.Src + ":" + $s.Name elif $path != "" then $path else $s.Src + ":" + $s.Name end) as $key
+      | if .seen[$key] or (($s.Src == "zoxide" or $s.Src == "directory") and $path != "" and ($tmuxpaths | index($path)) != null) then .
         else .seen[$key] = true | .rows += [$s] end)
   | .rows[]
   | (if .Src == "directory" then .Path | home else .Name end) as $name

@@ -24,7 +24,7 @@ jq -n --arg home "$HOME" '[
   {Src: "tmux", Name: "active", Path: ($home + "/Developer/github.com/pedropombeiro/existing"), TmuxWindows: [{Name: "editor window", Active: true}]},
   {Src: "tmux", Name: "another-session", Path: ($home + "/Developer/github.com/pedropombeiro/existing")},
   {Src: "zoxide", Name: ($home + "/Developer/github.com/pedropombeiro/existing"), Path: ($home + "/Developer/github.com/pedropombeiro/existing")},
-  {Src: "config", Name: "config with spaces", Path: ($home + "/.config/example"), Icon: "🔧"}
+  {Src: "config", Name: "config with spaces", Path: ($home + "/Developer/github.com/pedropombeiro/existing"), Icon: "🔧"}
 ]'
 EOF
 cat > "$temporary/bin/tmux" <<'EOF'

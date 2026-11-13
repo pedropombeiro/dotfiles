@@ -6,7 +6,7 @@ in [`tmux.conf`](../../.config/tmux/tmux.conf) and
 
 ## Memorize first
 
-1. `Prefix T` opens the session picker in a tmux popup.
+1. `Prefix T` opens the session picker in a tmux popup, initially showing only running sessions.
 1. `Prefix L`, `fn+Tab`, or `Caps Lock+L` toggles to the terminal client's previous session.
 1. `C-x` inside the picker switches to zoxide directories, so any visited
    project becomes a session in one step.
@@ -17,13 +17,20 @@ in [`tmux.conf`](../../.config/tmux/tmux.conf) and
 
 | Goal                                  | Keys                 | Notes                                    |
 | ------------------------------------- | -------------------- | ---------------------------------------- |
-| Show all sources                      | `C-a`                | Default view                             |
-| Show only running tmux sessions       | `C-t`                |                                          |
+| Show all sources                      | `C-a`                | Includes local GitHub projects           |
+| Show only running tmux sessions       | `C-t`                | Default view                             |
 | Show configured sessions              | `C-g`                | Dotfiles, Neovim, tmux, mise, and others |
 | Show zoxide directories               | `C-x`                | Creates a session on connect             |
 | Find directories two levels below `~` | `C-f`                | Uses `fd`, including hidden directories  |
 | Kill the highlighted tmux session     | `C-d`                | The list reloads in place                |
 | Move through results                  | `Tab` or `Shift+Tab` |                                          |
+
+Typing ranks results by match quality. Tmux rows include the active window name,
+and their previews refresh every 500 ms. Connection targets exclude display labels.
+
+The all-sources view discovers immediate child directories under
+`~/Developer/github.com/pedropombeiro/`, even without zoxide history. Running
+projects appear as tmux sessions rather than duplicate directory rows.
 
 ## Commands
 
@@ -33,12 +40,13 @@ in [`tmux.conf`](../../.config/tmux/tmux.conf) and
 | Print the root of the current session        | `sesh root`           |
 | Clone a repository and open it as a session  | `sesh clone URL`      |
 | Create a directory and open it as a session  | `sesh mkdir PATH`     |
-| Pick a window from another session           | `sesh window`         |
+| Select or create a named window              | `sesh window connect` |
 | Manage Git worktrees as sessions             | `sesh worktree`       |
 | Rename a session from its GitHub issue title | `sesh rename`         |
 | Inspect raw rows, for scripting              | `sesh list --json`    |
 
-`URL` is a Git remote, and `PATH` is the directory to create.
+`URL` is a Git remote, and `PATH` is the directory to create. Pass a window name
+to `sesh window connect` to select or create that window.
 
 ## Recipes
 

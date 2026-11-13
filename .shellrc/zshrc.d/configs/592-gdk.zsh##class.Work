@@ -15,4 +15,4 @@ fi
 # Completers are autoloaded from zshrc.d/functions, which joins fpath after compinit
 compdef _fgdku fgdku
 compdef _git_parent git_parent
-compdef _git gpf=git-push gpsup=git-push gpif=git-push
+compdef _git gpsup=git-push gpif=git-push

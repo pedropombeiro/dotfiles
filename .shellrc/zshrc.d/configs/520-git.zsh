@@ -14,6 +14,6 @@ zinit snippet OMZP::git-extras
 export GIT_COMPLETION_CHECKOUT_NO_GUESS=1 # only autocomplete with local branches
 
 # Custom functions from zshrc.d/functions join fpath after compinit, so register them here
-compdef _git gp=git-push
+compdef _git gp=git-push gpf=git-push
 compdef _git_prune git_prune
 compdef _precommand y

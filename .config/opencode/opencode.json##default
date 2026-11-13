@@ -16,7 +16,7 @@
     {
       // Sends metrics, events, and traces to Alloy on the NAS. otel.pombei.ro only
       // answers on the home network; see ~/.agents/docs/opencode.md#telemetry.
-      "package": "@devtheops/opencode-plugin-otel@2.0.1",
+      "package": "@devtheops/opencode-plugin-otel@2.1.0",
       "options": {
         "enabled": true,
         "endpoint": "https://otel.pombei.ro",
@@ -64,7 +64,7 @@
       }
     },
     "gitlab": {
-      "package": "aisdk:gitlab-ai-provider@6.23.1",
+      "package": "aisdk:gitlab-ai-provider@6.24.0",
       "models": {
         // Superseded by Fable 5.1, Opus 5.5, and Sonnet 5.5.
         "duo-chat-opus-4-5": { "disabled": true },

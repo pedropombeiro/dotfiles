@@ -58,10 +58,10 @@ brew "curl"
 brew "libtiff"
 # Command-line interface for SQLite
 brew "sqlite"
-# Tool for exploring each layer in a docker image
-brew "dive"
 # Diff that understands syntax
 brew "difftastic"
+# Tool for exploring each layer in a docker image
+brew "dive"
 # Pack, ship and run any application as a lightweight container
 brew "docker", link: false
 # Docker CLI plugin for extended build capabilities with BuildKit

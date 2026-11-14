@@ -153,12 +153,12 @@ print 'PASS: public update entry point'
 
 # Select actual production alternates, then inspect registrations without execution.
 mkdir -p "$sandbox/identity/updates.d" "$sandbox/identity/lib"
-cp "$scripts/updates.d/"*.zsh*(N-.) "$sandbox/identity/updates.d/"
+cp "$scripts/updates.d/"*.zsh*(N.) "$sandbox/identity/updates.d/"
 cp "$scripts/lib/startup-benchmark.zsh" "$sandbox/identity/lib/"
 yd() { yadm --yadm-dir "$sandbox/yadm-config" --yadm-data "$sandbox/yadm-data" "$@"; }
 yd init -w "$sandbox/identity" > "$sandbox/yadm-output" 2>&1
 yd add "$sandbox/identity/updates.d" >> "$sandbox/yadm-output" 2>&1
-common=$'tldr\nzinit\nzsh bytecode\nbat theme\nnpm\nopencode skills\nopencode telemetry\nskill repositories\nzsh benchmark\nyazi plugins\ngit hooks\nneovim plugins\nneovim benchmark\nconfig checks'
+common=$'tldr\nzinit\nzsh bytecode\ntmux plugins\nbat theme\nGeoLite2 database\nnpm\nopencode skills\nopencode telemetry\nskill repositories\nzsh benchmark\nyazi plugins\ngit hooks\nneovim plugins\nneovim benchmark\nconfig checks'
 for identity in Darwin:Personal Darwin:Work Linux:Personal Linux:Work Linux:NAS:qts; do
   parts=("${(@s/:/)identity}")
   yd config local.os "$parts[1]"
@@ -174,7 +174,7 @@ for identity in Darwin:Personal Darwin:Work Linux:Personal Linux:Work Linux:NAS:
       expected+=$'\nbrew dump'
       ;;
     Linux:Personal) expected=$'apt\nbrew\n'"$common" ;;
-    Linux:NAS:qts) expected=$'entware\nmise\ngrc-rs rules\ntmux plugins\ncontainer hk hooks\n'"$common" ;;
+    Linux:NAS:qts) expected=$'entware\nmise\ngrc-rs rules\ncontainer hk hooks\n'"$common" ;;
   esac
   actual=$(zsh -f -c '
     YADM_SCRIPTS=$1
@@ -184,10 +184,10 @@ for identity in Darwin:Personal Darwin:Work Linux:Personal Linux:Work Linux:NAS:
   ' _ "$sandbox/identity" "$scripts")
   [[ $actual == "$expected" ]] || fail "$identity selection/order: $actual"
   case $identity in
-    Darwin:*) expected_managers='brew cask mise mise-plugins npm mas nvim mason zinit skills repos yazi' ;;
-    Linux:Personal) expected_managers='apt brew mise npm nvim mason zinit skills repos yazi' ;;
-    Linux:NAS:qts) expected_managers='opkg mise mise-plugins npm nvim mason tmux zinit skills repos yazi' ;;
-    *) expected_managers='zinit skills repos yazi' ;;
+    Darwin:*) expected_managers='brew cask mise mise-plugins npm mas nvim mason zinit tmux skills repos yazi' ;;
+    Linux:Personal) expected_managers='apt brew mise npm nvim mason zinit tmux skills repos yazi' ;;
+    Linux:NAS:qts) expected_managers='opkg mise mise-plugins npm nvim mason zinit tmux skills repos yazi' ;;
+    *) expected_managers='zinit tmux skills repos yazi' ;;
   esac
   actual_managers=$(zsh -f -c '
     YADM_SCRIPTS=$1

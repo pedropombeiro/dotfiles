@@ -44,7 +44,8 @@ setup_field() {
 if ! setup_field account-id username || ! setup_field license-key password; then
   printf "${YELLOW}%s${NC}\n" "Could not read the '${op_item_title}' item from the Private 1Password vault."
   printf "${YELLOW}%s${NC}\n" "Write its username (account ID) to ${credentials_dir}/account-id and its password (license key) to ${credentials_dir}/license-key."
-  printf "${YELLOW}%s${NC}\n" "Where 1Password isn't signed in, such as the NAS, copy them from a Mac: scp -r ~/.config/geoipupdate HOST:.config/"
+  # The NAS has no SFTP subsystem, and scp resolves relative paths against /root there
+  printf "${YELLOW}%s${NC}\n" "Where 1Password isn't signed in, such as the NAS, copy them from a Mac: scp -O -r ~/.config/geoipupdate nas:/share/homes/admin/.config/"
   exit 0
 fi
 

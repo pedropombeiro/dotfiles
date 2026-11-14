@@ -40,7 +40,7 @@ jobs:
         with:
           # Keep in sync with min_version in .config/mise/conf.d/global.toml
           # renovate: datasource=github-releases depName=jdx/mise
-          version: "2026.11.7"
+          version: "2026.11.8"
           install: false
           env: false
           export_path: false

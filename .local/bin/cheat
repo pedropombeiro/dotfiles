@@ -73,7 +73,7 @@ sheet_for_command() {
   local name
   name=$(normalize "$1")
   case $name in
-    neovim | yazi | lazygit | lazydocker | lnav | jless | atuin | fzf | sesh | visidata | trippy) echo "$name" ;;
+    neovim | yazi | lazygit | lazydocker | btop | lnav | jless | atuin | fzf | sesh | visidata | trippy) echo "$name" ;;
     *) return 1 ;;
   esac
 }

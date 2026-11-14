@@ -13,6 +13,7 @@ configuration, so the sheets describe this setup rather than upstream defaults.
 | [Neovim](neovim.md) | Pickers, LSP refactoring, quickfix, hunks, tests, OpenCode |
 | [LazyGit](lazygit.md) | Line staging, fixups, commit surgery, custom patches |
 | [LazyDocker](lazydocker.md) | Container inspection, logs, shells, Compose lifecycle, cleanup |
+| [btop](btop.md) | Process sorting, filters, trees, CPU interpretation, signals, resource graphs |
 | [lnav](lnav.md) | Time navigation, log filters, SQL analysis, bookmarks, export |
 | [jless](jless.md) | Structural JSON navigation, search, copying values and paths |
 | [Atuin](atuin.md) | Context filters, fuzzy operators, inspector, history cleanup |
@@ -32,7 +33,7 @@ configuration, so the sheets describe this setup rather than upstream defaults.
 | Read a sheet in the terminal                   | `cheat --local yazi` |
 | Open this index                                | `cheat index`        |
 
-`Prefix h` recognizes Neovim, Yazi, LazyGit, LazyDocker, lnav, jless, Atuin,
+`Prefix h` recognizes Neovim, Yazi, LazyGit, LazyDocker, btop, lnav, jless, Atuin,
 fzf, sesh, Trippy (`trip`), and VisiData when tmux reports `vd` or `visidata`.
 The Homebrew VisiData installation on
 macOS reports `Python`, so use the picker or `cheat vd` there. In a shell or
@@ -54,6 +55,8 @@ each sheet, so use `--local` to read edits you haven't pushed yet.
 
 - Regenerate a binding list with `tmux list-keys -N`, `<leader><Tab>` in
   Neovim, `~` in Yazi, or `?` in LazyGit.
+- btop: last checked on 2026-11-14 against version 1.4.8. Press `H`, `?`, or
+  `F1` for help; this setup reserves lowercase `h` for process sorting.
 - When a configuration file changes a binding, update the matching sheet and
   the private Memos copy tagged `#cheatsheet`.
 - VisiData: last verified on 2026-10-06 against version 3.4. Press `z C-h`

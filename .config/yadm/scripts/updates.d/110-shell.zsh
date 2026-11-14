@@ -49,5 +49,6 @@ step_zsh_bytecode() {
   _update_warn "${#pending} zinit file(s) still had no .zwc after 5s; the next login shell compiles them."
 }
 
+_update_watch zinit
 _update_register "zinit" step_zinit
 _update_register "zsh bytecode" step_zsh_bytecode

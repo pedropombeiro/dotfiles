@@ -27,4 +27,21 @@ _ui_skill_lockfile=$sandbox/skill-lock.json
 _ui_versions_skills > /dev/null 2>&1 && fail 'missing skill lock file listed'
 print -r -- '{"skills":{"beta":{"skillFolderHash":"0123456789abcdef"},"alpha":{"skillFolderHash":"fedcba9876543210"}}}' > "$_ui_skill_lockfile"
 [[ $(_ui_versions_skills) == $'beta\t0123456\nalpha\tfedcba9' ]] || fail 'skill lock file listing'
-print 'PASS: package snapshots, version comparisons, failed listings, and skill hashes'
+commit() {
+  git -C "$1" -c user.name=test -c user.email=test@example.com -c commit.gpgsign=false \
+    commit -q --allow-empty -m "$2"
+  git -C "$1" rev-parse --short=7 HEAD
+}
+repo() { git init -q "$1" && commit "$1" initial; }
+_ui_zinit_dir=$sandbox/zinit
+_ui_versions_zinit > /dev/null 2>&1 && fail 'missing zinit directory listed'
+zinit_sha=$(repo "$_ui_zinit_dir/zinit.git")
+plugin_old=$(repo "$_ui_zinit_dir/plugins/owner---repo")
+mkdir -p "$_ui_zinit_dir/plugins/_local---zinit"
+[[ $(_ui_versions_zinit) == "zinit"$'\t'"$zinit_sha"$'\n'"owner/repo"$'\t'"$plugin_old" ]] ||
+  fail 'zinit checkout listing'
+commit "$_ui_zinit_dir/plugins/owner---repo" second > /dev/null
+plugin_new=$(commit "$_ui_zinit_dir/plugins/owner---repo" third)
+[[ $(_ui_detail_zinit owner/repo "$plugin_old" "$plugin_new") == ' (2 commits)' ]] || fail 'zinit commit count'
+[[ $(_ui_detail_zinit owner/repo "$plugin_new" "$plugin_old") == ' (rolled back)' ]] || fail 'zinit rollback'
+print 'PASS: package snapshots, version comparisons, failed listings, skill hashes, and git checkouts'

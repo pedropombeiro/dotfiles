@@ -33,6 +33,26 @@ _ui_versions_mas() {
   mas list | sed -E 's/^ *[0-9]+ +(.*[^ ]) +\((.*)\)$/\1\t\2/'
 }
 
+# Prints name<TAB>short HEAD commit when the directory is a git checkout.
+_ui_git_head() {
+  local name=$1 dir=$2 commit
+  [[ -e ${dir}/.git ]] || return 0
+  commit=$(git -C "${dir}" rev-parse --short=7 HEAD 2>/dev/null) || return 0
+  print -r -- "${name}"$'\t'"${commit}"
+}
+
+# Describes how far a checkout moved between two commits.
+_ui_git_distance() {
+  local dir=$1 old=$2 new=$3 count
+  [[ -d ${dir} ]] || return 0
+  count=$(git -C "${dir}" rev-list --count "${old}..${new}" 2>/dev/null) || return 0
+  if (( count > 0 )); then
+    printf ' (%d commit%s)' ${count} "${${count:#1}:+s}"
+  elif git -C "${dir}" merge-base --is-ancestor "${new}" "${old}" 2>/dev/null; then
+    printf ' (rolled back)'
+  fi
+}
+
 _ui_versions_nvim() {
   local lockfile="${XDG_CONFIG_HOME:-${HOME}/.config}/nvim/lazy-lock.json"
   [[ -f ${lockfile} ]] || return 1
@@ -40,14 +60,31 @@ _ui_versions_nvim() {
 }
 
 _ui_detail_nvim() {
-  local dir="${XDG_DATA_HOME:-${HOME}/.local/share}/nvim/lazy/$1" count
-  [[ -d ${dir} ]] || return 0
-  count=$(git -C "${dir}" rev-list --count "$2..$3" 2>/dev/null) || return 0
-  if (( count > 0 )); then
-    printf ' (%d commit%s)' ${count} "${${count:#1}:+s}"
-  elif git -C "${dir}" merge-base --is-ancestor "$3" "$2" 2>/dev/null; then
-    printf ' (rolled back)'
+  _ui_git_distance "${XDG_DATA_HOME:-${HOME}/.local/share}/nvim/lazy/$1" "$2" "$3"
+}
+
+typeset -g _ui_zinit_dir="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit"
+
+# zinit stores owner/repo plugins as owner---repo directories.
+_ui_zinit_path() {
+  if [[ $1 == zinit ]]; then
+    print -r -- "${_ui_zinit_dir}/zinit.git"
+  else
+    print -r -- "${_ui_zinit_dir}/plugins/${1//\//---}"
   fi
+}
+
+_ui_versions_zinit() {
+  local dir
+  [[ -d ${_ui_zinit_dir} ]] || return 1
+  _ui_git_head zinit "${_ui_zinit_dir}/zinit.git"
+  for dir in "${_ui_zinit_dir}"/plugins/*(N/); do
+    _ui_git_head "${${dir:t}//---//}" "${dir}"
+  done
+}
+
+_ui_detail_zinit() {
+  _ui_git_distance "$(_ui_zinit_path "$1")" "$2" "$3"
 }
 
 _ui_versions_mason() {

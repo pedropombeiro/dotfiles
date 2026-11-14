@@ -105,7 +105,8 @@ clients. It changes only the status text, leaving dot and text colors alone.
 This reserves iTerm2's Session Status text for the pane title: another program
 setting that text can overwrite it until the next hook runs. Semicolons become
 commas, and ASCII control characters are
-removed before titles are sent to the terminal.
+removed before titles are sent to the terminal. The helper uses `tr -d '[:cntrl:]'`
+because BusyBox `tr` on the NAS ignores most of an octal range and lets `ESC` through.
 
 Reload with `tmux source-file ~/.config/tmux/tmux.conf`. No shell or
 tmux server restart is needed. Native `tmux -CC` integration stays disabled.

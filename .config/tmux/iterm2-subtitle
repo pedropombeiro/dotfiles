@@ -8,7 +8,9 @@ write_subtitle() {
   [[ ($tty == /dev/tty* || $tty == /dev/pts/*) && -c $tty && -w $tty ]] || return 0
   # OSC fields are separated by semicolons. Strip terminal controls and replace
   # separators so a pane title cannot inject additional fields or escape codes.
-  title=$(printf '%s' "$title" | LC_ALL=C tr -d '\000-\037\177' | tr ';' ',')
+  # Use [:cntrl:]: BusyBox tr on the NAS ignores most of an octal range such as
+  # '\000-\037', which let ESC through.
+  title=$(printf '%s' "$title" | LC_ALL=C tr -d '[:cntrl:]' | tr ';' ',')
   { printf '\033]21337;status=%s\007' "$title" > "$tty"; } 2>/dev/null
 }
 

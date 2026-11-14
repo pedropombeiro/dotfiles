@@ -49,13 +49,31 @@ Enter with `Prefix [`. Bindings follow vi.
 Mouse drags keep the selection instead of copying immediately. Press `Enter`
 to copy it.
 
+## Hint copy
+
+`Prefix F` starts tmux-fingers, which labels copyable text in the pane with
+hints. Type a hint to copy its match without entering copy mode.
+
+| Goal                                      | Keys                 | Notes                                  |
+| ----------------------------------------- | -------------------- | -------------------------------------- |
+| Copy a match                              | The hint letters     | Shows a "copied" message               |
+| Copy a match and paste it into the pane   | `Shift` + hint       |                                        |
+| Copy a match and open it                  | `Ctrl` + hint        | URLs in the browser, files in Finder   |
+| Copy several matches at once              | `Tab`, hints, `Tab`  | The second `Tab` copies the selection  |
+| Leave without copying                     | `q`, `Esc`, or `C-c` |                                        |
+
+It highlights SHAs, URLs, paths, IPs, UUIDs, hex values, numbers with four or
+more digits, and paths in `git status` and diff output. Custom patterns add
+GitLab references such as `!12345` or `gitlab-org/gitlab#678`, and `file:line`
+locations from RSpec, RuboCop, and grep output.
+
 ## Custom launchers
 
 | Goal                                     | Keys                     | Notes                                         |
 | ---------------------------------------- | ------------------------ | --------------------------------------------- |
 | Copy the previous command's output       | `Prefix y`               | Uses OSC 133 prompt markers                   |
 | Copy the command line you are typing     | `Prefix Y`               | Works without copy mode                       |
-| Copy a SHA, URL, path, or MR on screen   | `Prefix F`, then a hint  | `Shift` pastes it, `Ctrl` opens it            |
+| Copy a SHA, URL, path, or MR on screen   | `Prefix F`, then a hint  | See [Hint copy](#hint-copy)                   |
 | Open LazyGit in a zoomed pane            | `Prefix l`               | Uses YADM in `~` and `~/.config`              |
 | Open Yazi through `fm` in a zoomed pane  | `Prefix f`               | Starts in the pane's directory                |
 | Start or resume OpenCode in a side pane  | `Prefix o` or `Prefix O` |                                               |

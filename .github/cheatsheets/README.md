@@ -7,7 +7,7 @@ configuration, so the sheets describe this setup rather than upstream defaults.
 
 | Sheet | Focus |
 | --- | --- |
-| [tmux](tmux.md) | Pane surgery, copy mode, command output, tool launchers |
+| [tmux](tmux.md) | Pane surgery, copy mode, hint copy, command output, tool launchers |
 | [sesh](sesh.md) | Session sources, project discovery, waiting-agent indicator |
 | [Yazi](yazi.md) | Git-aware browsing, bulk operations, bookmarks, archives |
 | [Neovim](neovim.md) | Pickers, LSP refactoring, quickfix, hunks, tests, OpenCode |

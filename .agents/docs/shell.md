@@ -141,7 +141,7 @@ Plugins load in turbo priority order after the first prompt:
 | ---------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
 | `wait'0'` / `wait'0a'` | zoxide, OMZ libs, FSH, autosuggestions, fzf-tab, CLI completions, Git, vi-mode | 505-zoxide.zsh, 510-common-plugins.zsh, 520-git.zsh, 570-zsh-vi-mode.zsh |
 | `wait'0b'`             | fzf, OpenCode completion, common-aliases                                       | 591-fzf.zsh, 594-opencode.zsh, 610-common-aliases.zsh                    |
-| `wait'0c'`             | git-extras, Atuin                                                              | 520-git.zsh, 590-atuin.zsh                                               |
+| `wait'0c'`             | git-extras, Atuin, Carapace gap fill                                           | 520-git.zsh, 590-atuin.zsh, 595-carapace.zsh                             |
 
 `wait'0'` and `wait'0a'` share the first priority group, in submission order.
 `500-deferred-init.zsh` defines `_defer_shell_init`, which registers named
@@ -161,6 +161,28 @@ Zoxide's default initialization is cached at
 path and the executable/configuration timestamps, and is written atomically.
 When `_ZO_*` customization variables are set, generate initialization for that
 shell instead. Keep Atuin's session ID generation per-session.
+
+### Carapace completions
+
+[Carapace](https://carapace-sh.github.io/carapace-bin/) completes only commands
+that have no other completion, such as `docker`, `kubectl`, `glab`, and `fd`.
+Native, generated, and pattern completions keep precedence. Carapace adds
+descriptions, and when a completer fails, it shows the reason, such as a
+stopped Docker daemon, instead of an empty list.
+
+- `320-generate-completions.zsh` turns `carapace _carapace zsh` into the
+  autoloaded `~/.config/zsh/site-functions/_carapace`. The command list stays
+  in a `# carapace-commands:` comment instead of a `compdef` for every command.
+- `595-carapace.zsh` reads that list after the other deferred tasks and assigns
+  `_comps` entries for commands without a completion. It skips commands that
+  match `_postpatcomps` fallback patterns, such as `pip[0-9.]#`.
+- `_carapace` runs only on the first `matcher-list` pass, with
+  `CARAPACE_MATCH=1` for case-insensitive filtering. Carapace filters values
+  itself, so later passes would only run it again and repeat its message.
+
+The generators in `320-generate-completions.zsh` rerun once when that file
+changes, so a new transform reaches every machine. Check which completer owns a
+command with `print $_comps[docker]`.
 
 ### FSH + autosuggestions ordering
 

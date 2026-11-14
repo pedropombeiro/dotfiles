@@ -23,6 +23,9 @@ MISE_RUSTUP_HOME = "{{env.HOME}}/.local/share/rustup"
 # ── Shell UX ──────────────────────────────────────────────────────────
 # Shell history with sync and search
 atuin = "latest"
+# Completions with descriptions and error messages, for commands with no other
+# completion (see ~/.shellrc/zshrc.d/configs/595-carapace.zsh)
+carapace = "latest"
 # Render Markdown cheat sheets in terminal popups
 "aqua:charmbracelet/glow" = "latest"
 # Interactive disk usage treemap

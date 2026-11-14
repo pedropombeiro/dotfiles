@@ -108,6 +108,15 @@ commas, and ASCII control characters are
 removed before titles are sent to the terminal. The helper uses `tr -d '[:cntrl:]'`
 because BusyBox `tr` on the NAS ignores most of an octal range and lets `ESC` through.
 
+A client whose terminal stops reading output fills its tty buffer, and a plain
+write to it then blocks forever. This happens when an SSH session outlives its
+closed iTerm2 tab. To keep such a client from hanging tmux, the hooks and the
+config-load call use `run-shell -b`, and each write gives up after one second
+(`ITERM2_SUBTITLE_WRITE_TIMEOUT`). The timeout uses only bash 3.2 features,
+because `/bin/bash` is 3.2 on macOS and QTS: no `wait -n` and no `timeout(1)`.
+`~/.config/yadm/scripts/tests/test-iterm2-subtitle.zsh` reproduces an unread
+terminal with `zsh/zpty`.
+
 Reload with `tmux source-file ~/.config/tmux/tmux.conf`. No shell or
 tmux server restart is needed. Native `tmux -CC` integration stays disabled.
 

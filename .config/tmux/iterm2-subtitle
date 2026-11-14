@@ -2,6 +2,28 @@
 # Mirror each ordinary iTerm2 client's active pane title into its tab subtitle.
 set -o pipefail
 
+# A client whose terminal stops reading, such as an SSH session orphaned by a
+# closed tab, fills its tty buffer, and a plain write then blocks forever. tmux
+# hooks and config reloads that wait on this script would hang with it.
+write_timeout=${ITERM2_SUBTITLE_WRITE_TIMEOUT:-1}
+
+# Write from a child process and kill it if the terminal doesn't accept the
+# bytes in time. Use only bash 3.2 features: /bin/bash is 3.2 on macOS and
+# QTS, so `wait -n` and timeout(1) aren't available everywhere.
+write_with_timeout() {
+  local tty=$1 data=$2 timer writer
+  # The timer ends either on its own, meaning the terminal didn't accept the
+  # write in time, or when the writer kills it after a completed write.
+  sleep "$write_timeout" &
+  timer=$!
+  { printf '%s' "$data" > "$tty"; kill "$timer"; } 2>/dev/null &
+  writer=$!
+  wait "$timer" 2>/dev/null
+  kill -KILL "$writer" 2>/dev/null
+  wait "$writer" 2>/dev/null
+  return 0
+}
+
 write_subtitle() {
   local tty=$1 title=$2
   # Only write to terminal devices, never to an arbitrary path from a caller.
@@ -11,7 +33,7 @@ write_subtitle() {
   # Use [:cntrl:]: BusyBox tr on the NAS ignores most of an octal range such as
   # '\000-\037', which let ESC through.
   title=$(printf '%s' "$title" | LC_ALL=C tr -d '[:cntrl:]' | tr ';' ',')
-  { printf '\033]21337;status=%s\007' "$title" > "$tty"; } 2>/dev/null
+  write_with_timeout "$tty" $'\033]21337;status='"$title"$'\007'
 }
 
 if [[ ${1-} == --clear ]]; then

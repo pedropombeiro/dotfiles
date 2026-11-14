@@ -4,8 +4,10 @@
 set -e
 setopt NULL_GLOB
 scripts=${${(%):-%x}:A:h:h}
-scratch=$(mktemp -d "${TMPDIR:-/tmp}/test-run-checks.XXXXXXXX")
-trap 'rm -rf -- "$scratch"' EXIT
+source "$scripts/tests/lib/test-helpers.zsh"
+test_sandbox yadm
+trap test_cleanup EXIT
+scratch=$TEST_SANDBOX
 
 # Prevent inherited repository settings from affecting the fixture repository.
 unset GIT_DIR GIT_WORK_TREE GIT_COMMON_DIR GIT_INDEX_FILE
@@ -27,12 +29,11 @@ fail() {
 }
 
 expect_run() {
-  local expected_rc=$1 expected_trace=$2 rc=0
+  local expected_rc=$1 expected_trace=$2
   : > "$CHECK_TRACE"
   : > "$UPDATE_FAILURE_FILE"
-  zsh "$runner" > "$scratch/output" 2>&1 || rc=$?
-  [[ $rc == $expected_rc ]] || { cat "$scratch/output"; fail "expected exit $expected_rc, got $rc"; }
-  [[ $(<"$CHECK_TRACE") == "$expected_trace" ]] || fail "unexpected execution order: $(<"$CHECK_TRACE")"
+  test_expect_status "${identity:-discovery}: runner" "$expected_rc" zsh -df "$runner"
+  test_assert_equal "${identity:-discovery}: execution order" "$expected_trace" "$(<"$CHECK_TRACE")"
 }
 
 fixture() {

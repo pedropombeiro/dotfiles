@@ -3,12 +3,13 @@
 # Isolated updater fixtures: no network calls or changes to installed skills.
 set -eu
 scripts=${0:A:h:h}
-sandbox=$(mktemp -d "${TMPDIR:-/tmp}/sync-work-skills-test.XXXXXXXX")
-trap 'rm -rf -- "$sandbox"' EXIT
+source "$scripts/tests/lib/test-helpers.zsh"
+test_sandbox jq rsync
+trap test_cleanup EXIT
+sandbox=$TEST_SANDBOX
 fail() { print -ru2 -- "FAIL: $*"; exit 1; }
 
-mkdir -p "$sandbox/bin" "$sandbox/home/.agents/skills.work/esquery"
-export HOME="$sandbox/home" PATH="$sandbox/bin:$PATH"
+mkdir -p "$HOME/.agents/skills.work/esquery"
 export FIXTURE_CLASS=Work FIXTURE_MODE=noop
 export FIXTURE_TRACE="$sandbox/trace"
 lock="$HOME/.agents/.skill-lock.json"
@@ -19,11 +20,11 @@ print stale > "$work/removed.md"
 print '{"version":3,"skills":{"esquery":{"skillFolderHash":"original"},"grilling":{"skillFolderHash":"personal"}}}' > "$lock"
 cp "$lock" "$sandbox/lock-before"
 
-cat > "$sandbox/bin/yadm" <<'EOF'
+test_stub yadm <<'EOF'
 #!/usr/bin/env zsh
 print -r -- "$FIXTURE_CLASS"
 EOF
-cat > "$sandbox/bin/npx" <<'EOF'
+test_stub npx <<'EOF'
 #!/usr/bin/env zsh
 set -eu
 print -r -- "$*" >> "$FIXTURE_TRACE"
@@ -47,18 +48,15 @@ case "$FIXTURE_MODE" in
     ;;
 esac
 EOF
-chmod +x "$sandbox/bin/yadm" "$sandbox/bin/npx"
 
 mkdir -p "$HOME/.agents/skills/orbit-cli"
 print local-cli > "$HOME/.agents/skills/orbit-cli/SKILL.md"
-zsh -f "$scripts/sync-work-skills.zsh"
+test_expect_status 'initial skill relocation' 0 zsh -df "$scripts/sync-work-skills.zsh"
 [[ ! -e "$HOME/.agents/skills/orbit-cli" && ! -L "$HOME/.agents/skills/orbit-cli" ]] || fail 'orbit-cli left in shared discovery directory'
 [[ $(<"$HOME/.agents/skills.work/orbit-cli/SKILL.md") == local-cli ]] || fail 'orbit-cli snapshot not relocated'
 
 run_sync() {
-  local expected=$1 rc=0
-  zsh -f "$scripts/sync-work-skills.zsh" --update > "$sandbox/output" 2>&1 || rc=$?
-  [[ $rc == $expected ]] || { cat "$sandbox/output"; fail "expected exit $expected, got $rc"; }
+  test_expect_status "sync $FIXTURE_CLASS/$FIXTURE_MODE" "$1" zsh -df "$scripts/sync-work-skills.zsh" --update
   [[ ! -e "$shared" && ! -L "$shared" ]] || fail 'work skill left in shared discovery directory'
 }
 

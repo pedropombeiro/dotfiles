@@ -131,6 +131,31 @@ The fixture tests cover order, shared state, interactive
 steps, failures, cleanup, and NAS `PROGRESS_OFFSET` and `PROGRESS_RANGE` support.
 CI runs all `scripts/tests/test-*.zsh` suites without executing live updates.
 
+### Run regression tests
+
+Run the same suite runner locally and in CI:
+
+```sh
+zsh -df ~/.config/yadm/scripts/tests/run-tests.zsh
+```
+
+Suites require Zsh, YADM, Git, jq, rsync, and Python 3 for the existing benchmark
+tests. The runner itself uses only Zsh. It executes `test-*.zsh`
+files in filename order, continues after failures, and exits nonzero if any suite
+fails or no suites are found. CI has a 10-minute job timeout. Run an individual
+suite directly with `zsh -df path/to/test-name.zsh`.
+
+Keep shell-semantic tests in Zsh. For isolated command fixtures, source
+`scripts/tests/lib/test-helpers.zsh`, resolve production paths, then call
+`test_sandbox dependency...` and install `trap test_cleanup EXIT` at suite scope.
+The helper creates a temporary home, working directory, XDG directories, and tool
+path. It clears inherited Git and mise overrides and resolves dependencies
+without mise shims, which otherwise consult host configuration after `HOME`
+changes. `test_stub` installs executable fixture commands. `test_expect_status`
+captures command output and reports status mismatches, and `test_assert_equal`
+shows unified diffs. Keep expected machine selections independent of production
+discovery and update them when adding or renaming modules.
+
 ## Health checks
 
 `mise run dotfiles:checkhealth` calls `~/.config/yadm/scripts/run-checks.zsh`.

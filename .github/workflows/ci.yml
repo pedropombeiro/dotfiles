@@ -238,12 +238,13 @@ jobs:
   yadm-script-tests:
     name: YADM script regression tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Install test dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y zsh jq
+          sudo apt-get update && sudo apt-get install -y zsh jq rsync python3
           sudo curl -fsSL --retry 3 --retry-delay 5 -o /usr/local/bin/yadm \
             "https://raw.githubusercontent.com/yadm-dev/yadm/${YADM_VERSION}/yadm"
           sudo chmod +x /usr/local/bin/yadm
@@ -257,11 +258,7 @@ jobs:
           done
 
       - name: Run isolated regression tests
-        shell: zsh {0}
-        run: |
-          for test in .config/yadm/scripts/tests/test-*.zsh; do
-            zsh -df "$test" || exit
-          done
+        run: zsh -df .config/yadm/scripts/tests/run-tests.zsh
 
   # Job 6: Secret scanning
   secret-scanning:

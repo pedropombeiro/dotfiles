@@ -27,6 +27,26 @@ stdout and stderr, closes the pane, and returns the command's exit code.
 Use tmux for the command that needs it. Use dedicated file tools for reads and
 edits, and avoid preflight tmux calls.
 
+## Test interactive applications safely
+
+Prefer bounded, non-interactive modes for smoke tests. For Trippy, use
+`trip -m json -C 1 HOST` instead of starting the TUI.
+
+If a test needs a TUI in a dedicated tmux pane or session:
+
+1. Record the test process IDs before teardown.
+2. Send the application's quit key, such as `q` for Trippy, and wait for it to exit.
+3. If it does not exit within a bounded wait, terminate the recorded test
+   processes before destroying the pane or session.
+4. Verify that the recorded processes have exited after cleanup, including when
+   the test times out or fails. Never use a broad process-name kill.
+
+Destroying a tmux pane or session does not guarantee that its children exit.
+On macOS, surviving Trippy processes can consume a full CPU core in the
+[Crossterm terminal-input loop](https://github.com/crossterm-rs/crossterm/issues/793)
+after the terminal closes. Do not rely on the helper's pane cleanup alone for
+interactive applications.
+
 ## Requirements and setup
 
 - The agent session must run inside tmux with `$TMUX` and `$TMUX_PANE` set.

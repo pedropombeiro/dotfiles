@@ -184,10 +184,10 @@ for identity in Darwin:Personal Darwin:Work Linux:Personal Linux:Work Linux:NAS:
   ' _ "$sandbox/identity" "$scripts")
   [[ $actual == "$expected" ]] || fail "$identity selection/order: $actual"
   case $identity in
-    Darwin:*) expected_managers='brew cask mise npm mas nvim mason zinit skills repos' ;;
-    Linux:Personal) expected_managers='apt brew mise npm nvim mason zinit skills repos' ;;
-    Linux:NAS:qts) expected_managers='opkg mise npm nvim mason zinit skills repos' ;;
-    *) expected_managers='zinit skills repos' ;;
+    Darwin:*) expected_managers='brew cask mise npm mas nvim mason zinit skills repos yazi' ;;
+    Linux:Personal) expected_managers='apt brew mise npm nvim mason zinit skills repos yazi' ;;
+    Linux:NAS:qts) expected_managers='opkg mise npm nvim mason zinit skills repos yazi' ;;
+    *) expected_managers='zinit skills repos yazi' ;;
   esac
   actual_managers=$(zsh -f -c '
     YADM_SCRIPTS=$1

@@ -120,6 +120,17 @@ _ui_detail_repos() {
   done
 }
 
+typeset -g _ui_yazi_packages="${XDG_CONFIG_HOME:-${HOME}/.config}/yazi/package.toml"
+
+# Each `[[plugin.deps]]` or `[[flavor.deps]]` entry lists `use` before `rev`.
+_ui_versions_yazi() {
+  [[ -f ${_ui_yazi_packages} ]] || return 1
+  awk -F'"' '
+    /^use = / { use = $2 }
+    /^rev = / && use != "" { print use "\t" $2; use = "" }
+  ' "${_ui_yazi_packages}"
+}
+
 typeset -g _ui_skill_lockfile="${HOME}/.agents/.skill-lock.json"
 
 _ui_versions_skills() {

@@ -7,4 +7,5 @@ step_yazi() {
   ya pkg upgrade
 }
 
+_update_watch yazi
 _update_register "yazi plugins" step_yazi

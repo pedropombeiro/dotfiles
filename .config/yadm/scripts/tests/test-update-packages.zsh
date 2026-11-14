@@ -55,4 +55,18 @@ _update_repos=("$sandbox/repos/tool" "$sandbox/repos/missing")
 repo_new=$(commit "$sandbox/repos/tool" second)
 [[ $(_ui_detail_repos "$sandbox/repos/tool" "$repo_old" "$repo_new") == ' (1 commit)' ]] ||
   fail 'repository commit count'
-print 'PASS: package snapshots, version comparisons, failed listings, skill hashes, and git checkouts'
+_ui_yazi_packages=$sandbox/package.toml
+_ui_versions_yazi > /dev/null 2>&1 && fail 'missing yazi package file listed'
+cat > "$_ui_yazi_packages" <<'TOML'
+[[plugin.deps]]
+use = "yazi-rs/plugins:git"
+rev = "1ef5fe0"
+hash = "347cc6b190eb0c2fd60513cc7ae37412"
+
+[[flavor.deps]]
+use = "bennyyip/gruvbox-dark"
+rev = "71b03f6"
+TOML
+[[ $(_ui_versions_yazi) == $'yazi-rs/plugins:git\t1ef5fe0\nbennyyip/gruvbox-dark\t71b03f6' ]] ||
+  fail 'yazi package listing'
+print 'PASS: package snapshots, version comparisons, failed listings, skill hashes, git checkouts, and yazi packages'

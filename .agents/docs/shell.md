@@ -197,6 +197,11 @@ updates print `fzf-tab: message patch no longer applies`. Remove the patch and
 the ices once upstream fixes
 [Aloxaf/fzf-tab#604](https://github.com/Aloxaf/fzf-tab/issues/604).
 
+fzf-tab ignores `FZF_DEFAULT_OPTS`, so `510-common-plugins.zsh` passes only
+`FZF_DEFAULT_COLOR` through an evaluated `fzf-flags` style. Context-specific
+`fzf-flags` styles replace the general one, so they must include
+`$FZF_DEFAULT_COLOR` too.
+
 ### FSH + autosuggestions ordering
 
 FSH must load **before** autosuggestions (per FSH README) so autosuggestions wraps

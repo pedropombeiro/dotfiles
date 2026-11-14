@@ -166,7 +166,8 @@ _opencode_install_completion() {
 # fzf re-sorts alphabetically by session ID, which is meaningless here.
 # The completion runs with curcontext `:complete:opencode:` (empty argument
 # field), so the fzf-tab context needs a trailing wildcard to match.
-zstyle ':fzf-tab:complete:(opencode|oc):*' fzf-flags --no-sort --height=60% --reverse
+zstyle -e ':fzf-tab:complete:(opencode|oc):*' fzf-flags \
+  'reply=($FZF_DEFAULT_COLOR --no-sort --height=60% --reverse)'
 
 # fzf-tab sorts its candidate list itself (lib/-ftb-generate-complist) before
 # fzf ever sees it, so --no-sort alone is not enough; it checks the `sort` style

@@ -38,6 +38,8 @@ brew "ctop"
 brew "curl"
 # Command-line interface for SQLite
 brew "sqlite"
+# Diff that understands syntax
+brew "difftastic"
 # Pack, ship and run any application as a lightweight container
 brew "docker", link: false
 # Docker CLI plugin for extended build capabilities with BuildKit

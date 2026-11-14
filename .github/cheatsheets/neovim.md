@@ -77,6 +77,7 @@ Inside a picker:
 | Send all hunks to quickfix                  | `<leader>ghq`                  |                                |
 | Diff against the index or `HEAD~`           | `<leader>ghd` or `<leader>ghD` |                                |
 | Open the changes in a side-by-side diff     | `<leader>gd`                   | CodeDiff                       |
+| Open a structural diff of the changes       | `<leader>gD` or `<leader>gP`   | difftastic; `gP` picks commit  |
 | Open the lines in GitLab                    | `:GBrowse`                     | `:GBrowse!` copies the URL     |
 | Open LazyGit                                | `<leader>tg`                   | A zoomed tmux pane inside tmux |
 

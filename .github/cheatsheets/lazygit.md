@@ -28,6 +28,7 @@ YADM in `~` and `~/.config`. Press `?` in any panel for its bindings.
 | Stash with options                       | `S`                   | For example, keep the index       |
 | Open the reset menu                      | `D`                   | Includes nuking the working tree  |
 | Diff in Beyond Compare                   | `B`                   |                                   |
+| Switch between delta and difftastic      | `\|`                  | difftastic ignores reformatting   |
 
 ## Commit surgery
 
@@ -83,3 +84,7 @@ above it.
 
 **Clean up before pushing.** Create fixups with `F` while you work, then press
 `S` on the oldest commit of the branch to squash them all.
+
+**Review a refactor without reformatting noise.** Press `|` to switch the diff to
+difftastic, which compares syntax instead of lines. Outside LazyGit, use
+`git dft`, `git dshow`, or `git dlog`, or `<leader>gD` in Neovim.

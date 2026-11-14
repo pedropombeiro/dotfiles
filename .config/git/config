@@ -135,7 +135,17 @@
 
   cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
 
+[difftool "difftastic"]
+
+  # Structural diff; use with `git difftool -t difftastic`
+  cmd = difft "$LOCAL" "$REMOTE"
+
 [alias]
+
+  # Structural diffs with difftastic; delta remains the default pager
+  dft   = -c diff.external=difft diff
+  dlog  = -c diff.external=difft log -p --ext-diff
+  dshow = -c diff.external=difft show --ext-diff
 
   diff-side-by-side = -c delta.features="decorations side-by-side" diff
   diff-line-numbers = -c delta.features="decorations line-numbers" diff

@@ -60,6 +60,8 @@ btop = "latest"
 croc = "latest"
 # Syntax-highlighting pager for git/diff
 "aqua:dandavison/delta" = "latest"
+# Structural diff that understands syntax (git dft, lazygit, Neovim)
+"aqua:Wilfred/difftastic" = "latest"
 # TUI for git
 "aqua:jesseduffield/lazygit" = "latest"
 # TUI for Docker management

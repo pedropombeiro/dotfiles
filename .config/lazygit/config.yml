@@ -173,7 +173,8 @@ gui:
   switchTabsWithPanelJumpKeys: false
 # Config relating to git
 git:
-  # See https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_Pagers.md
+  # See https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_DiffRenderers.md
+  # Press | to cycle through the renderers; the first one is the default.
   diffRenderers:
     - # Value of the --color arg in the git diff command. Some pagers want this to be set to 'always' and some want it set to 'never'
       colorArg: always
@@ -182,6 +183,9 @@ git:
       # delta --dark --paging=never
       # ydiff -p cat -s --wrap --width={{columnWidth}}
       command: "delta --paging=never --features='-side-by-side'"
+    - # Structural diff: ignores reformatting and shows moved code in context
+      type: extDiff
+      command: "difft --color=always --display=inline --background={{colorScheme}} --context={{diffContext}}"
   # Config relating to committing
   commit:
     # If true, pass '--signoff' flag when committing

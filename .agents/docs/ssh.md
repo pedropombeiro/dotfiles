@@ -16,6 +16,29 @@ The NAS starts or reconnects to tmux through
 `~/.shellrc/zshrc.d/configs/tmux.platform.zsh##distro.qts`. A successful SSH
 reconnection therefore returns to the existing tmux session.
 
+## Remote commands and file copies
+
+A command passed to `ssh nas` runs in a non-login shell, which differs from an
+interactive session in three ways:
+
+- `PATH` lacks Entware and mise, so `yadm`, `mise`, and `zsh` aren't found. Add
+  Entware to `PATH`, then run the command in a login shell:
+
+  ```sh
+  ssh -T nas 'export PATH=/opt/bin:/opt/sbin:$PATH; zsh -lic "mise run geoip:update"'
+  ```
+
+- `HOME` is `/root` rather than `/share/homes/admin`. QTS keeps `/root` in memory
+  and clears it on reboot, so files written there through `~` or a relative path
+  are lost. The login shell started by `zsh -lic` sets the correct `HOME`.
+- The NAS has no SFTP subsystem, which recent OpenSSH `scp` uses by default. Pass
+  `-O` for the legacy protocol, and give an absolute destination, because `scp`
+  resolves relative paths against `/root`:
+
+  ```sh
+  scp -O -r ~/.config/geoipupdate nas:/share/homes/admin/.config/
+  ```
+
 ## Keepalive settings
 
 The default SSH configuration sends a server-alive request every 15 seconds.

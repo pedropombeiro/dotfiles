@@ -5,6 +5,11 @@ Run `trip HOST`. On macOS the config turns on unprivileged mode, so `sudo` isn't
 needed. On the NAS, `admin` is uid 0, so privileged mode works directly. The
 key bindings are upstream defaults. Press `h` or `?` in the TUI for the full list.
 
+The `trip` shell function adds the GeoLite2 City database once
+`mise run geoip:update` has downloaded it, so each hop shows its city and
+country code. The bootstrap reads the MaxMind credentials from the
+`MaxMind GeoLite2` item in 1Password. Dotfiles updates refresh the database.
+
 ## Memorize first
 
 1. `d` shows the selected hop's details, including every address it answers from.
@@ -30,7 +35,7 @@ key bindings are upstream defaults. Press `h` or `?` in the TUI for the full lis
 | Goal | Keys | Notes |
 | --- | --- | --- |
 | Toggle the latency chart | `c` | Zoom with `=` and `-` |
-| Toggle the world map | `m` | Needs a GeoIP database for locations |
+| Toggle the world map | `m` | Circles show each hop's location accuracy |
 | Toggle the flows view | `f` | Needs `-R paris` or `-R dublin` |
 | Open the settings | `s` | `1` to `7` jump to a tab |
 | Clear the DNS cache | `C-k` | After a DNS change |
@@ -44,6 +49,7 @@ key bindings are upstream defaults. Press `h` or `?` in the TUI for the full lis
 | Follow load-balanced paths | `trip --udp -R paris HOST` | Then press `f` for flows |
 | Force IPv4 or IPv6 | `trip -4 HOST` or `trip -6 HOST` | |
 | Save a report instead of the TUI | `trip -m markdown -C 10 HOST` | `-m json` or `-m csv` too |
+| Show full city and country names | `trip --tui-geoip-mode long HOST` | `location` shows coordinates |
 | Trace from a specific interface | `trip -I en0 HOST` | Compare Wi-Fi and Ethernet |
 
 ## Recipes

@@ -29,6 +29,32 @@ description = "Run dotfile health checks"
 run = "~/.config/yadm/scripts/run-checks.zsh"
 
 
+# ── Network ───────────────────────────────────────────────────────────
+
+[tasks."geoip:update"]
+description = "Download or refresh the GeoLite2 City database that trippy reads"
+shell = "bash -c"
+run = """
+set -euo pipefail
+
+# 975-setup-geoip-credentials.sh writes these from 1Password. The GeoLite2
+# license requires refreshing the database at least every 30 days.
+creds_dir="${XDG_CONFIG_HOME:-$HOME/.config}/geoipupdate"
+db_dir="${XDG_DATA_HOME:-$HOME/.local/share}/GeoIP"
+if [[ ! -s "${creds_dir}/account-id" || ! -s "${creds_dir}/license-key" ]]; then
+  echo "MaxMind credentials are missing from ${creds_dir}." >&2
+  echo "Run ~/.config/yadm/bootstrap.d/975-setup-geoip-credentials.sh to configure them." >&2
+  exit 1
+fi
+
+mkdir -p "${db_dir}"
+GEOIPUPDATE_ACCOUNT_ID_FILE="${creds_dir}/account-id" \\
+  GEOIPUPDATE_LICENSE_KEY_FILE="${creds_dir}/license-key" \\
+  GEOIPUPDATE_EDITION_IDS="GeoLite2-City" \\
+  GEOIPUPDATE_DB_DIR="${db_dir}" \\
+  geoipupdate
+"""
+
 # ── Git ───────────────────────────────────────────────────────────────
 
 [tasks."git:push"]

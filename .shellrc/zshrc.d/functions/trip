@@ -1,0 +1,15 @@
+
+#
+# The `trip` function runs trippy with the GeoLite2 City database when it has
+# been downloaded (mise run geoip:update), showing each hop's city and country
+# code. These options live here rather than in trippy.toml because trippy
+# refuses to start when either is configured and the database file is missing,
+# which is the case until a machine has MaxMind credentials.
+#
+
+local db="${XDG_DATA_HOME:-$HOME/.local/share}/GeoIP/GeoLite2-City.mmdb"
+if [[ -s "$db" ]]; then
+  command trip --geoip-mmdb-file "$db" --tui-geoip-mode short "$@"
+else
+  command trip "$@"
+fi

@@ -80,3 +80,8 @@ macos-arm64 = { asset_pattern = "editorconfig-checker-darwin-all.tar.gz" }
 [tools."github:Morantron/tmux-fingers"]
 version = "latest"
 bin = "tmux-fingers"
+
+# Downloads and refreshes the MaxMind GeoLite2 City database that trippy reads
+# (mise run geoip:update). Not in the aqua registry.
+[tools."github:maxmind/geoipupdate"]
+version = "latest"

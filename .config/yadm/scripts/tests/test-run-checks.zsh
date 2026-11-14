@@ -105,11 +105,12 @@ for identity in Darwin:Personal Darwin:Work Linux:Personal Linux:Work Linux:NAS:
   yd alt > "$scratch/yadm-output" 2>&1
   if [[ $parts[1] == Darwin ]]; then
     expected=$'010-tmux-local-network.zsh\n'"$common"
-    if [[ $parts[2] == Work ]]; then
-      expected+=$'\n100-desktop.zsh\n110-peripherals.zsh'
-    fi
   else
     expected="$common"$'\n070-glibc-compat.zsh'
+  fi
+  expected+=$'\n080-geoip-database.zsh'
+  if [[ $parts[1] == Darwin && $parts[2] == Work ]]; then
+    expected+=$'\n100-desktop.zsh\n110-peripherals.zsh'
   fi
   [[ $parts[2] != Work ]] || expected+=$'\n'"$work"
   expect_run 0 "$expected"

@@ -1,0 +1,51 @@
+# Trippy (trip) configuration. Only overrides are listed; run
+# `trip --print-config-template` for every option and its default.
+
+[trippy]
+# Use IPPROTO_ICMP sockets so tracing works without sudo. macOS supports this
+# directly. Linux only allows it for groups in net.ipv4.ping_group_range, and
+# QTS disables it, but the NAS runs as uid 0, so privileged mode works there.
+{% if yadm.os == "Darwin" %}
+unprivileged = true
+{% endif %}
+
+[tui]
+# Show the reverse-DNS name and the IP, so LAN hops stay recognisable
+tui-address-mode = "both"
+
+# Gruvbox dark, matching tmux, bat, and btop
+[theme-colors]
+bg-color = "282828"
+border-color = "504945"
+text-color = "ebdbb2"
+tab-text-color = "fabd2f"
+hops-table-header-bg-color = "3c3836"
+hops-table-header-text-color = "fabd2f"
+hops-table-row-active-text-color = "ebdbb2"
+hops-table-row-inactive-text-color = "928374"
+hops-chart-selected-color = "b8bb26"
+hops-chart-unselected-color = "928374"
+hops-chart-axis-color = "665c54"
+frequency-chart-bar-color = "8ec07c"
+frequency-chart-text-color = "ebdbb2"
+flows-chart-bar-selected-color = "b8bb26"
+flows-chart-bar-unselected-color = "665c54"
+flows-chart-text-current-color = "b8bb26"
+flows-chart-text-non-current-color = "ebdbb2"
+samples-chart-color = "fabd2f"
+samples-chart-lost-color = "fb4934"
+help-dialog-bg-color = "3c3836"
+help-dialog-text-color = "ebdbb2"
+settings-dialog-bg-color = "3c3836"
+settings-tab-text-color = "fabd2f"
+settings-table-header-text-color = "282828"
+settings-table-header-bg-color = "83a598"
+settings-table-row-text-color = "ebdbb2"
+map-world-color = "928374"
+map-radius-color = "fabd2f"
+map-selected-color = "b8bb26"
+map-info-panel-border-color = "504945"
+map-info-panel-bg-color = "282828"
+map-info-panel-text-color = "ebdbb2"
+info-bar-bg-color = "3c3836"
+info-bar-text-color = "ebdbb2"

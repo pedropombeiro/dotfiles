@@ -170,6 +170,8 @@ brew "tesseract-lang"
 brew "the_silver_searcher"
 # Terminal multiplexer
 brew "tmux"
+# Network diagnostic tool, inspired by mtr
+brew "trippy"
 # Extremely fast Python package installer and resolver, written in Rust
 brew "uv"
 # Syntax-aware linter for prose

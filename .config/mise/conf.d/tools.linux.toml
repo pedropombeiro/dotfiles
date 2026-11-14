@@ -52,6 +52,8 @@ btop = "latest"
 "github:orf/gping" = "gping-v1.21.0"
 # Command-line DNS client for humans
 "aqua:mr-karan/doggo" = "latest"
+# Traceroute and ping TUI with per-hop loss and latency (trip)
+"aqua:fujiapple852/trippy" = "latest"
 
 # ── Git & Docker ──────────────────────────────────────────────────────
 # Secure peer-to-peer file transfer

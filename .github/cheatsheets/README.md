@@ -17,6 +17,7 @@ configuration, so the sheets describe this setup rather than upstream defaults.
 | [jless](jless.md) | Structural JSON navigation, search, copying values and paths |
 | [Atuin](atuin.md) | Context filters, fuzzy operators, inspector, history cleanup |
 | [VisiData](visidata.md) | Row subsets, typed columns, aggregations, pivots, joins |
+| [Trippy](trippy.md) | Per-hop loss, TCP traces past firewalls, flows, reports |
 | [fzf](fzf.md) | Shell widgets, fuzzy completion, query syntax |
 | [zoxide](zoxide.md) | Keyword jumps, interactive selection, integrations |
 | [Zsh](zsh.md) | Vi-mode editing, history expansion, custom functions |
@@ -32,7 +33,7 @@ configuration, so the sheets describe this setup rather than upstream defaults.
 | Open this index                                | `cheat index`        |
 
 `Prefix h` recognizes Neovim, Yazi, LazyGit, LazyDocker, lnav, jless, Atuin,
-fzf, sesh, and VisiData when tmux reports `vd` or `visidata`.
+fzf, sesh, Trippy (`trip`), and VisiData when tmux reports `vd` or `visidata`.
 The Homebrew VisiData installation on
 macOS reports `Python`, so use the picker or `cheat vd` there. In a shell or
 another program, it opens the picker in a popup. Over SSH, `cheat` shows the
@@ -57,6 +58,8 @@ each sheet, so use `--local` to read edits you haven't pushed yet.
   the private Memos copy tagged `#cheatsheet`.
 - VisiData: last verified on 2026-10-06 against version 3.4. Press `z C-h`
   to list commands and bindings for the current sheet.
+- Trippy: last verified on 2026-11-14 against version 0.13.0. Press `h` for
+  the bindings, or run `trip --print-config-template` for every option.
 - LazyDocker, lnav, and jless: last checked on 2026-10-06 against versions
   0.25.2, 0.14.1, and 0.9.0. Use `?` in LazyDocker or lnav, and `F1` in jless
   for built-in help.

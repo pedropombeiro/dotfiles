@@ -61,6 +61,7 @@ normalize() {
     lg) echo lazygit ;;
     lzd) echo lazydocker ;;
     vd) echo visidata ;;
+    trip) echo trippy ;;
     readme | help) echo index ;;
     *) echo "$name" ;;
   esac
@@ -72,7 +73,7 @@ sheet_for_command() {
   local name
   name=$(normalize "$1")
   case $name in
-    neovim | yazi | lazygit | lazydocker | lnav | jless | atuin | fzf | sesh | visidata) echo "$name" ;;
+    neovim | yazi | lazygit | lazydocker | lnav | jless | atuin | fzf | sesh | visidata | trippy) echo "$name" ;;
     *) return 1 ;;
   esac
 }

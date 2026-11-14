@@ -62,6 +62,7 @@ Thumbs.db
 .config/pgcli/config
 .config/sesh/sesh.toml
 .config/tmux/tmux.platform.conf
+.config/trippy/trippy.toml
 .config/yadm/bootstrap.d/001-enable-touchid-on-terminal.sh
 .config/yadm/bootstrap.d/003-install-launch-daemons.sh
 .config/yadm/bootstrap.d/005-software-install.sh
@@ -150,7 +151,6 @@ Thumbs.db
 .shellrc/zshrc.d/functions/fgdku
 .shellrc/zshrc.d/functions/git_parent
 .shellrc/zshrc.d/functions/glt_info
-.shellrc/zshrc.d/functions/gpf
 .shellrc/zshrc.d/functions/gpif
 .shellrc/zshrc.d/functions/gpsup
 .shellrc/zshrc.d/functions/gswm

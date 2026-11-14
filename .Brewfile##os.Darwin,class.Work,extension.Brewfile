@@ -258,6 +258,8 @@ brew "tmux"
 brew "tokei"
 # CLI tool that moves files or folder to the trash
 brew "trash"
+# Network diagnostic tool, inspired by mtr
+brew "trippy"
 # USB hub per-port power control
 brew "uhubctl"
 # Validating, recursive, caching DNS resolver

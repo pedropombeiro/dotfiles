@@ -164,6 +164,18 @@
             { "input": 0.20, "output": 1.20, "cache": { "read": 0.02, "write": 0.25 } },
             { "tier": { "type": "context", "size": 200000 }, "input": 0.40, "output": 1.80, "cache": { "read": 0.04, "write": 0.50 } }
           ]
+        },
+        // Gemini 4 uses implicit caching only, so it has no cache write price.
+        // Carbon uses the standard price that starts Dec 1, 2026. The introductory
+        // price before then is $2 / $10, with cache reads at $0.10.
+        "duo-chat-gemini-4-carbon": {
+          "cost": [{ "input": 4, "output": 20, "cache": { "read": 0.20 } }]
+        },
+        "duo-chat-gemini-4-hydrogen": {
+          "cost": [{ "input": 1.50, "output": 7.50, "cache": { "read": 0.075 } }]
+        },
+        "duo-chat-kimi-k3-1-pro": {
+          "cost": [{ "input": 2, "output": 10, "cache": { "read": 0.20, "write": 2 } }]
         }
       }
     }

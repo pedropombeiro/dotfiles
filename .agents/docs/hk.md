@@ -64,6 +64,12 @@ Two settings in `hk.pkl` are needed to make hk work cleanly in the yadm context
   unstaged changes, auto-fixers may modify them alongside staged content.
   Other hooks, including `fix`, default to no stashing in hk v2.
 
+  The pre-commit hook also re-stages the working-tree copy of each staged file,
+  so partial staging doesn't survive: `git add -p` hunks or a blob written with
+  `update-index --cacheinfo` get replaced by the whole file. To split one file
+  across commits, write each intermediate version to the working tree before
+  committing it, then restore the final file.
+
 ## Running Hooks Manually
 
 In hk v2, `hk fix` and `mise run dotfiles:fix` leave fixes unstaged for review.

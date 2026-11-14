@@ -22,6 +22,15 @@ _ui_versions_mise() {
     jq -r 'to_entries[] | "\(.key)\t\([.value[].version] | join(", "))"'
 }
 
+_ui_versions_mise-plugins() {
+  (( $+commands[mise] )) || return 1
+  (cd ~ && mise plugins ls --urls) | awk -v OFS='\t' 'NF >= 2 { print $1, $NF }'
+}
+
+_ui_detail_mise-plugins() {
+  _ui_git_distance "${MISE_DATA_DIR:-${XDG_DATA_HOME:-${HOME}/.local/share}/mise}/plugins/$1" "$2" "$3"
+}
+
 _ui_versions_npm() {
   (( $+commands[npm] )) || return 1
   npm ls -g --json --depth=0 |

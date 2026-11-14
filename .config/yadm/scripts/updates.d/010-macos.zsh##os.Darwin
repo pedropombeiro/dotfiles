@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 _update_use_sudo
-_update_watch brew cask mise npm mas nvim mason
+_update_watch brew cask mise mise-plugins npm mas nvim mason
 
 step_relink() {
   "${YADM_SCRIPTS}/relink-dotfiles.zsh"

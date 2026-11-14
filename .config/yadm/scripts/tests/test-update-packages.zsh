@@ -69,4 +69,16 @@ rev = "71b03f6"
 TOML
 [[ $(_ui_versions_yazi) == $'yazi-rs/plugins:git\t1ef5fe0\nbennyyip/gruvbox-dark\t71b03f6' ]] ||
   fail 'yazi package listing'
-print 'PASS: package snapshots, version comparisons, failed listings, skill hashes, git checkouts, and yazi packages'
+mkdir -p "$sandbox/bin"
+cat > "$sandbox/bin/mise" <<'SCRIPT'
+#!/bin/sh
+printf '%s\n' \
+  'eza                 https://github.com/mise-plugins/mise-eza.git                    HEAD 636e59a' \
+  'gcloud              https://github.com/mise-plugins/mise-gcloud.git                 HEAD 963aaa6'
+SCRIPT
+chmod +x "$sandbox/bin/mise"
+(
+  path=("$sandbox/bin" $path)
+  [[ $(_ui_versions_mise-plugins) == $'eza\t636e59a\ngcloud\t963aaa6' ]]
+) || fail 'mise plugin listing'
+print 'PASS: package snapshots, version comparisons, failed listings, skill hashes, git checkouts, yazi packages, and mise plugins'

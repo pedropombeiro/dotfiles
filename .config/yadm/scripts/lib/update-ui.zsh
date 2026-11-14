@@ -93,10 +93,10 @@ _update_require_sudo() {
 }
 
 # Records installed versions for the given managers so `_update_finish` can
-# report what changed. Supported: brew, cask, mise, npm, mas, apt, opkg, nvim
-# (Lazy plugin commits), mason, zinit (plugin commits), skills (`npx skills`
-# folder hashes), repos (checkouts declared with `_update_watch_repos`), and yazi
-# (`package.toml` revisions).
+# report what changed. Supported: brew, cask, mise, mise-plugins, npm, mas, apt,
+# opkg, nvim (Lazy plugin commits), mason, zinit (plugin commits), skills
+# (`npx skills` folder hashes), repos (checkouts declared with
+# `_update_watch_repos`), and yazi (`package.toml` revisions).
 _update_track() {
   local manager
 
@@ -320,10 +320,12 @@ _ui_section() {
 
 _ui_rows() {
   local row manager name rest
-  local -i width=0
+  local -i width=0 manager_width=6
 
   for row in "$@"; do
+    manager=${row%%$'\t'*}
     name=${${row#*$'\t'}%%$'\t'*}
+    (( ${#manager} > manager_width )) && manager_width=${#manager}
     (( ${#name} > width )) && width=${#name}
   done
   (( width > 32 )) && width=32
@@ -332,7 +334,7 @@ _ui_rows() {
     manager=${row%%$'\t'*}
     rest=${row#*$'\t'}
     name=${rest%%$'\t'*}
-    _ui_emit '' "$(printf '%-6s %-*s %s' "${manager}" ${width} "${name}" "${rest#*$'\t'}")"
+    _ui_emit '' "$(printf '%-*s %-*s %s' ${manager_width} "${manager}" ${width} "${name}" "${rest#*$'\t'}")"
   done
 }
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-_update_watch opkg mise npm nvim mason
+_update_watch opkg mise mise-plugins npm nvim mason
 
 step_entware() {
   opkg update

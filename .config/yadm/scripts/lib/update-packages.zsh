@@ -93,6 +93,33 @@ _ui_versions_mason() {
   jq -r '"\(.name)\t\(.source.id | sub(".*@"; ""))"' "${receipts[@]}"
 }
 
+# Names checkouts by their path below ~/Developer/<forge>, or below ~.
+_ui_repo_name() {
+  local dir=$1
+  if [[ ${dir} == ${HOME}/Developer/*/*/* ]]; then
+    print -r -- "${${dir#${HOME}/Developer/}#*/}"
+  else
+    print -r -- "${dir/#${HOME}/~}"
+  fi
+}
+
+_ui_versions_repos() {
+  local dir
+  (( ${#_update_repos} )) || return 1
+  for dir in "${_update_repos[@]}"; do
+    _ui_git_head "$(_ui_repo_name "${dir}")" "${dir}"
+  done
+}
+
+_ui_detail_repos() {
+  local dir
+  for dir in "${_update_repos[@]}"; do
+    [[ $(_ui_repo_name "${dir}") == "$1" ]] || continue
+    _ui_git_distance "${dir}" "$2" "$3"
+    return
+  done
+}
+
 typeset -g _ui_skill_lockfile="${HOME}/.agents/.skill-lock.json"
 
 _ui_versions_skills() {

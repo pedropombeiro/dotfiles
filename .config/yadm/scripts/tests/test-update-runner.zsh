@@ -41,6 +41,11 @@ chmod +x "$sandbox/modules/"*.zsh*
 _update_load_modules "$sandbox/modules"
 [[ ${(j:,:)_update_labels} == first,second ]] || fail 'wrong registration order'
 [[ ${(j:,:)_update_managers} == mise,npm,brew ]] || fail 'manager order/deduplication'
+(
+  _update_watch_repos /a /b
+  _update_watch_repos /a
+  [[ ${(j:,:)_update_repos} == /a,/b && ${(j:,:)_update_managers} == mise,npm,brew,repos ]]
+) || fail 'repository watch deduplication'
 [[ -z $shared_state && $_update_sudo == 1 ]] || fail 'live work during registration'
 if _update_register duplicate first 2> "$sandbox/error"; then fail 'duplicate accepted'; fi
 if _update_register missing undefined 2> "$sandbox/error"; then fail 'undefined function accepted'; fi
@@ -179,10 +184,10 @@ for identity in Darwin:Personal Darwin:Work Linux:Personal Linux:Work Linux:NAS:
   ' _ "$sandbox/identity" "$scripts")
   [[ $actual == "$expected" ]] || fail "$identity selection/order: $actual"
   case $identity in
-    Darwin:*) expected_managers='brew cask mise npm mas nvim mason zinit skills' ;;
-    Linux:Personal) expected_managers='apt brew mise npm nvim mason zinit skills' ;;
-    Linux:NAS:qts) expected_managers='opkg mise npm nvim mason zinit skills' ;;
-    *) expected_managers='zinit skills' ;;
+    Darwin:*) expected_managers='brew cask mise npm mas nvim mason zinit skills repos' ;;
+    Linux:Personal) expected_managers='apt brew mise npm nvim mason zinit skills repos' ;;
+    Linux:NAS:qts) expected_managers='opkg mise npm nvim mason zinit skills repos' ;;
+    *) expected_managers='zinit skills repos' ;;
   esac
   actual_managers=$(zsh -f -c '
     YADM_SCRIPTS=$1

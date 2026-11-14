@@ -1,7 +1,14 @@
 #!/usr/bin/env zsh
 
+typeset -g gitlab_dotfiles_dir="${HOME}/.config/dotfiles/gitlab"
+typeset -ga work_skill_repos=(
+  "${HOME}/Developer/gitlab.com/gitlab-org/ai/skills"
+  "${HOME}/Developer/gitlab.com/pedropombeiro/gitlab-agent-skills"
+  "${HOME}/Developer/gitlab.com/gitlab-org/ci-cd/fix-pipeline-flow-report"
+  "${HOME}/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph"
+)
+
 step_gitlab_dotfiles() {
-  local gitlab_dotfiles_dir="${HOME}/.config/dotfiles/gitlab"
   mise reshim
   # Refresh before linking home files and configuring GDK.
   if [[ -d "${gitlab_dotfiles_dir}/.git" ]]; then
@@ -12,13 +19,12 @@ step_gitlab_dotfiles() {
 }
 
 step_work_skill_repos() {
-  mise bootstrap repos update --yes --skip-dirty \
-    "${HOME}/Developer/gitlab.com/gitlab-org/ai/skills" \
-    "${HOME}/Developer/gitlab.com/pedropombeiro/gitlab-agent-skills" \
-    "${HOME}/Developer/gitlab.com/gitlab-org/ci-cd/fix-pipeline-flow-report" \
-    "${HOME}/Developer/gitlab.com/gitlab-org/orbit/knowledge-graph" ||
+  mise bootstrap repos update --yes --skip-dirty "${work_skill_repos[@]}" ||
     _update_warn "Failed to update Work skill repos; using the existing checkouts."
 }
+
+# GitLab dotfiles also provide the caproni skill.
+_update_watch_repos "${gitlab_dotfiles_dir}" "${work_skill_repos[@]}"
 
 _update_register "gitlab dotfiles" step_gitlab_dotfiles
 _update_register "work skill repos" step_work_skill_repos

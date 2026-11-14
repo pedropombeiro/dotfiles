@@ -2,7 +2,7 @@
 
 # Modules only define functions and register work. The runner executes it later.
 typeset -ga _update_labels=() _update_functions=() _update_interactive=()
-typeset -ga _update_managers=()
+typeset -ga _update_managers=() _update_repos=()
 typeset -gi _update_sudo=0
 
 _update_register() {
@@ -31,6 +31,13 @@ _update_use_sudo() {
 _update_watch() {
   _update_managers+=("$@")
   _update_managers=("${(@u)_update_managers}")
+}
+
+# Reports commits that steps pull into these git checkouts.
+_update_watch_repos() {
+  _update_repos+=("$@")
+  _update_repos=("${(@u)_update_repos}")
+  _update_watch repos
 }
 
 _update_load_modules() {

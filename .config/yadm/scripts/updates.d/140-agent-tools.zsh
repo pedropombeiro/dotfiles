@@ -14,12 +14,15 @@ step_opencode_telemetry() {
   "${YADM_SCRIPTS}/checks.d/020-opencode-telemetry.zsh" --fix
 }
 
+typeset -ga skill_repositories=("${HOME}/Developer/github.com/pinchtab/pinchtab")
+
 step_skill_repositories() {
-  mise bootstrap repos update --yes --skip-dirty "${HOME}/Developer/github.com/pinchtab/pinchtab"
+  mise bootstrap repos update --yes --skip-dirty "${skill_repositories[@]}"
   "${YADM_SCRIPTS}/relink-dotfiles.zsh"
 }
 
 _update_watch skills
+_update_watch_repos "${skill_repositories[@]}"
 _update_register "opencode skills" step_opencode_skills
 _update_register "opencode telemetry" step_opencode_telemetry
 _update_register "skill repositories" step_skill_repositories

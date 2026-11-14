@@ -44,4 +44,15 @@ commit "$_ui_zinit_dir/plugins/owner---repo" second > /dev/null
 plugin_new=$(commit "$_ui_zinit_dir/plugins/owner---repo" third)
 [[ $(_ui_detail_zinit owner/repo "$plugin_old" "$plugin_new") == ' (2 commits)' ]] || fail 'zinit commit count'
 [[ $(_ui_detail_zinit owner/repo "$plugin_new" "$plugin_old") == ' (rolled back)' ]] || fail 'zinit rollback'
+[[ $(_ui_repo_name "$HOME/Developer/gitlab.com/gitlab-org/ai/skills") == gitlab-org/ai/skills ]] ||
+  fail 'forge checkout name'
+[[ $(_ui_repo_name "$HOME/.config/dotfiles/gitlab") == '~/.config/dotfiles/gitlab' ]] || fail 'home checkout name'
+_update_repos=()
+_ui_versions_repos > /dev/null 2>&1 && fail 'empty repository list listed'
+repo_old=$(repo "$sandbox/repos/tool")
+_update_repos=("$sandbox/repos/tool" "$sandbox/repos/missing")
+[[ $(_ui_versions_repos) == "$sandbox/repos/tool"$'\t'"$repo_old" ]] || fail 'repository listing'
+repo_new=$(commit "$sandbox/repos/tool" second)
+[[ $(_ui_detail_repos "$sandbox/repos/tool" "$repo_old" "$repo_new") == ' (1 commit)' ]] ||
+  fail 'repository commit count'
 print 'PASS: package snapshots, version comparisons, failed listings, skill hashes, and git checkouts'

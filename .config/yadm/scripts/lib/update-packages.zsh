@@ -56,6 +56,13 @@ _ui_versions_mason() {
   jq -r '"\(.name)\t\(.source.id | sub(".*@"; ""))"' "${receipts[@]}"
 }
 
+typeset -g _ui_skill_lockfile="${HOME}/.agents/.skill-lock.json"
+
+_ui_versions_skills() {
+  [[ -f ${_ui_skill_lockfile} ]] || return 1
+  jq -r '.skills | to_entries[] | "\(.key)\t\(.value.skillFolderHash[0:7])"' "${_ui_skill_lockfile}"
+}
+
 _ui_versions_apt() {
   (( $+commands[dpkg-query] )) || return 1
   dpkg-query -W -f '${Package}\t${Version}\n'

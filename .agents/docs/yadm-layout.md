@@ -96,7 +96,9 @@ updates at source time. Functions must exist before registration, and each
 registered function must have a unique name across the selected modules.
 Use `_update_use_sudo` to request credentials before execution and
 `_update_watch manager...` to declare package snapshots. Manager declarations
-are deduplicated in registration order.
+are deduplicated in registration order. The `skills` manager compares
+`skillFolderHash` values in `~/.agents/.skill-lock.json`, so the summary lists
+skills that `npx skills update` changed.
 
 The runner validates every selected module before loading it, then calculates
 the progress total from registered steps. Empty discovery, invalid entries,

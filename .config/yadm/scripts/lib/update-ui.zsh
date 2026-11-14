@@ -94,7 +94,7 @@ _update_require_sudo() {
 
 # Records installed versions for the given managers so `_update_finish` can
 # report what changed. Supported: brew, cask, mise, npm, mas, apt, opkg, nvim
-# (Lazy plugin commits), and mason.
+# (Lazy plugin commits), mason, and skills (`npx skills` folder hashes).
 _update_track() {
   local manager
 

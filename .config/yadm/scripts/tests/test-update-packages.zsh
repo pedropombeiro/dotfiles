@@ -23,4 +23,8 @@ _ui_diff fixture
 rm "$sandbox/after/fixture"
 _ui_diff fixture
 [[ ${#_ui_removed} == 1 ]] || fail 'missing listing created false removals'
-print 'PASS: package snapshots, version comparisons, and failed listings'
+_ui_skill_lockfile=$sandbox/skill-lock.json
+_ui_versions_skills > /dev/null 2>&1 && fail 'missing skill lock file listed'
+print -r -- '{"skills":{"beta":{"skillFolderHash":"0123456789abcdef"},"alpha":{"skillFolderHash":"fedcba9876543210"}}}' > "$_ui_skill_lockfile"
+[[ $(_ui_versions_skills) == $'beta\t0123456\nalpha\tfedcba9' ]] || fail 'skill lock file listing'
+print 'PASS: package snapshots, version comparisons, failed listings, and skill hashes'

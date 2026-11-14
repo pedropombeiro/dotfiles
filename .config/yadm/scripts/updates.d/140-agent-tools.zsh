@@ -19,6 +19,7 @@ step_skill_repositories() {
   "${YADM_SCRIPTS}/relink-dotfiles.zsh"
 }
 
+_update_watch skills
 _update_register "opencode skills" step_opencode_skills
 _update_register "opencode telemetry" step_opencode_telemetry
 _update_register "skill repositories" step_skill_repositories

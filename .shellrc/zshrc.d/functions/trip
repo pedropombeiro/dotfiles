@@ -1,15 +1,22 @@
 
 #
-# The `trip` function runs trippy with the GeoLite2 City database when it has
-# been downloaded (mise run geoip:update), showing each hop's city and country
-# code. These options live here rather than in trippy.toml because trippy
-# refuses to start when either is configured and the database file is missing,
-# which is the case until a machine has MaxMind credentials.
+# The `trip` function runs trippy with two additions that can't live in
+# trippy.toml, because trippy refuses to start when they don't apply and offers
+# no flag to turn them off again:
+#
+# - The GeoLite2 City database (mise run geoip:update), showing each hop's city
+#   and country code. Skipped until the database has been downloaded.
+# - AS (network owner) lookups through Team Cymru's DNS service. The system
+#   resolver doesn't support them, so they use the servers in /etc/resolv.conf.
+#   Passing -r or --dns-resolve-method, for example `trip -r system` to honor
+#   VPN-only DNS, skips them.
 #
 
+local -a extra
 local db="${XDG_DATA_HOME:-$HOME/.local/share}/GeoIP/GeoLite2-City.mmdb"
-if [[ -s "$db" ]]; then
-  command trip --geoip-mmdb-file "$db" --tui-geoip-mode short "$@"
-else
-  command trip "$@"
+[[ -s "$db" ]] && extra+=(--geoip-mmdb-file "$db" --tui-geoip-mode short)
+if (( ! ${@[(I)-r*|--dns-resolve-method*]} )); then
+  extra+=(--dns-resolve-method resolv --dns-lookup-as-info)
 fi
+
+command trip "${extra[@]}" "$@"

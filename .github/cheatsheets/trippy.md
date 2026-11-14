@@ -9,6 +9,10 @@ The `trip` shell function adds the GeoLite2 City database once
 `mise run geoip:update` has downloaded it, so each hop shows its city and
 country code. The bootstrap reads the MaxMind credentials from the
 `MaxMind GeoLite2` item in 1Password. Dotfiles updates refresh the database.
+The function also looks up each hop's network owner (AS) through Team Cymru's
+DNS service. That needs the `resolv` resolver, which skips VPN-only DNS. When
+internal hostnames show as IPs, run `trip -r system HOST`: choosing a resolver
+turns the AS lookup off.
 
 ## Memorize first
 

@@ -12,8 +12,10 @@ unprivileged = true
 [tui]
 # Show the reverse-DNS name and the IP, so LAN hops stay recognisable
 tui-address-mode = "both"
-# The GeoIP database and tui-geoip-mode are set by the trip shell function:
-# trippy refuses to start when either is configured without the database file.
+# The trip shell function adds the GeoIP database, tui-geoip-mode, and AS
+# lookups. Trippy refuses to start when the GeoIP options are configured without
+# the database file, or when AS lookups meet the system resolver, and neither
+# can be turned off again from the command line.
 
 # Gruvbox dark, matching tmux, bat, and btop
 [theme-colors]

@@ -5,6 +5,8 @@ Configuration: [`~/.config/tmux/tmux.conf`](../../.config/tmux/tmux.conf).
 
 ## Memorize first
 
+1. `Prefix s` opens Sesh, and ``Prefix ` `` returns to the previous session.
+1. `Prefix g` opens Lazygit, and `Prefix f` opens the file manager.
 1. `Prefix y` copies the previous command's output to the clipboard.
 1. `M-h` `M-j` `M-k` `M-l` move between tmux panes and Neovim splits.
 1. `Prefix z` zooms a pane, and `Prefix !` breaks it out into its own window.
@@ -30,6 +32,7 @@ Configuration: [`~/.config/tmux/tmux.conf`](../../.config/tmux/tmux.conf).
 | Move a pane into another window         | `Prefix m`, then `:join-pane` | Joins the marked pane           |
 | Kill a pane without confirmation        | `Prefix x`                    |                                 |
 | Reload the configuration                | `Prefix r`                    |                                 |
+| Enter pane/window move mode             | `Prefix G`                    | `Prefix g` opens LazyGit        |
 
 ## Copy mode
 
@@ -53,7 +56,7 @@ to copy it.
 
 ## Hint copy
 
-`Prefix F` starts tmux-fingers, which labels copyable text in the pane with
+`Prefix v` starts tmux-fingers, which labels copyable text in the pane with
 hints. Type a hint to copy its match without entering copy mode.
 
 | Goal                                      | Keys                 | Notes                                  |
@@ -71,16 +74,22 @@ locations from RSpec, RuboCop, and grep output.
 
 ## Custom launchers
 
-| Goal                                     | Keys                     | Notes                                         |
-| ---------------------------------------- | ------------------------ | --------------------------------------------- |
-| Copy the previous command's output       | `Prefix y`               | Uses OSC 133 prompt markers                   |
-| Copy the command line you are typing     | `Prefix Y`               | Works without copy mode                       |
-| Copy a SHA, URL, path, or MR on screen   | `Prefix F`, then a hint  | See [Hint copy](#hint-copy)                   |
-| Open LazyGit in a zoomed pane            | `Prefix l`               | Uses YADM in `~` and `~/.config`              |
-| Open Yazi through `fm` in a zoomed pane  | `Prefix f`               | Starts in the pane's directory                |
-| Start or resume OpenCode in a side pane  | `Prefix o` or `Prefix O` |                                               |
-| Open the sesh picker or the last session | `Prefix T` or `Prefix L` | See the [sesh sheet](sesh.md)                 |
-| Open the cheat sheet for the pane's app  | `Prefix h`               | Picker for shells; see the [index](README.md) |
+| Goal                                     | Keys                        | Notes                                         |
+| ---------------------------------------- | --------------------------- | --------------------------------------------- |
+| Copy the previous command's output       | `Prefix y`                  | Uses OSC 133 prompt markers                   |
+| Copy the command line you are typing     | `Prefix u`                  | `Prefix Y` is an alias                        |
+| Copy a SHA, URL, path, or MR on screen   | `Prefix v`, then a hint     | `F` is an alias; see [Hint copy](#hint-copy)  |
+| Open LazyGit in a zoomed pane            | `Prefix g`                  | `Prefix l` is an alias; YADM-aware            |
+| Open Yazi through `fm` in a zoomed pane  | `Prefix f`                  | Starts in the pane's directory                |
+| Start or resume OpenCode in a side pane  | `Prefix o` or `Prefix O`    |                                               |
+| Open the sesh picker or the last session | `Prefix s` or ``Prefix ` `` | `T` opens the picker; `S` and `L` go back     |
+| Open the native tmux session tree        | `Prefix C-s`                | See the [sesh sheet](sesh.md)                 |
+| Open the cheat sheet for the pane's app  | `Prefix h`                  | Picker for shells; see the [index](README.md) |
+
+`Prefix Space` lists sessions, Git, files, copying, and help directly in the
+root menu. Their menu letters match their prefix shortcuts. `Space` inside the
+menu opens the command prompt. OpenCode remains in the Tools submenu and on
+`Prefix o` and `Prefix O`.
 
 ## Recipes
 
@@ -88,7 +97,7 @@ locations from RSpec, RuboCop, and grep output.
 press `Prefix y`, and paste. The binding selects the region between the last two
 prompts, so it works even after the output scrolls away.
 
-**Grab one value from noisy output.** Press `Prefix F` and type the hint next to
+**Grab one value from noisy output.** Press `Prefix v` and type the hint next to
 the SHA, URL, IP, MR reference such as `!12345`, or `file:line` from RSpec or
 RuboCop output. `Tab` selects several matches before copying. Over SSH to the
 NAS, the copy reaches the Mac clipboard through OSC 52.

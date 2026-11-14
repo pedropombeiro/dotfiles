@@ -6,12 +6,16 @@ in [`tmux.conf`](../../.config/tmux/tmux.conf) and
 
 ## Memorize first
 
-1. `Prefix T` opens the session picker in a tmux popup, initially showing only running sessions.
-1. `Prefix L`, `fn+Tab`, or `Caps Lock+L` toggles to the terminal client's previous session.
+1. `Prefix s` opens the session picker in a tmux popup, initially showing only running sessions.
+1. ``Prefix ` ``, `fn+Tab`, or `Caps Lock+L` toggles to the terminal client's previous session.
 1. `C-x` inside the picker switches to zoxide directories, so any visited
    project becomes a session in one step.
 1. An orange `●` marks a session with an OpenCode agent waiting for input.
 1. `M-s` opens the picker from a plain shell outside tmux.
+
+`Prefix T` remains an alias for the picker. `Prefix S` and `Prefix L` remain
+aliases for the previous session.
+`Prefix C-s` opens the native tmux session tree.
 
 ## Picker controls
 
@@ -50,10 +54,10 @@ to `sesh window connect` to select or create that window.
 
 ## Recipes
 
-**Start work on a project you visited last week.** Press `Prefix T`, then `C-x`,
+**Start work on a project you visited last week.** Press `Prefix s`, then `C-x`,
 and type part of the directory name. sesh creates the session and runs the
 default startup command, `yazi`.
 
-**Edit a tool configuration without leaving your work.** Press `Prefix T`, then
+**Edit a tool configuration without leaving your work.** Press `Prefix s`, then
 `C-g`, and pick a configured session such as `tmux config`. Return with
-`Prefix L`.
+``Prefix ` ``.

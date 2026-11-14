@@ -247,23 +247,43 @@ To modify tmux settings:
 3. Reload tmux: `tmux source-file ~/.config/tmux/tmux.conf` or `prefix + r` (if configured)
 4. Commit changes with `yadm` (not `git`)
 
+## Frequent Action Keybindings
+
+Frequent actions use Shift-free prefix keys. The previous uppercase or
+lowercase keys remain aliases. Alias bindings dispatch with
+`send-keys -K C-b KEY` because `send-keys -K` doesn't expand `#{prefix}`.
+Update them if the prefix changes.
+
+- `prefix + g` opens Lazygit, with `prefix + l` retained as an alias. Native tmux
+  move mode uses `prefix + G` instead of `prefix + g`.
+- `prefix + v` starts visual hint copying, with `prefix + F` retained as an alias.
+- `prefix + u` copies the unfinished command line, with `prefix + Y` retained as an alias.
+- `prefix + Space` lists Sesh, the previous session, Lazygit, files, copying,
+  and app help directly in the which-key root menu. Menu letters match the
+  prefix shortcuts. The config replaces `@wk_menu_root`, then refreshes
+  `command-alias[201]` because the plugin snapshots the menu into that alias at
+  load time. Both depend on tmux-which-key internals.
+
 ## Sesh Session Manager
 
 Tmux integrates with `sesh` for session discovery and switching.
 
 ### Keybindings
 
-- `prefix + T` opens the sesh picker in a tmux popup (fzf-tmux), initially showing
+- `prefix + s` opens the sesh picker in a tmux popup (fzf-tmux), initially showing
   only tmux sessions. `Ctrl+A` shows all sources, and `Ctrl+T` returns to tmux only.
   Search results sort by match quality. The preview uses `sesh preview --watch`
   to refresh active tmux sessions every 500 ms.
-- `prefix + L` switches to the client's previous session using `switch-client -l`.
-- `fn + Tab` and `Caps Lock + L` (iTerm2 only) are alternatives to `prefix + L`, implemented in
+- ``prefix + ` `` switches to the client's previous session using `switch-client -l`.
+- `prefix + T` remains an alias for the picker. `prefix + S` and `prefix + L`
+  remain aliases for the previous session.
+- `prefix + C-s` opens the native tmux session tree.
+- `fn + Tab` and `Caps Lock + L` (iTerm2 only) are alternatives to ``prefix + ` ``, implemented in
   Hammerspoon. `Hyper + L` works too, via the same `hyperBind` registration.
 
 ### OpenCode waiting indicator
 
-Both pickers (`prefix + T` and `Alt + s`) list sessions through `~/.local/bin/sesh-list-waiting`,
+Both pickers (`prefix + s` and `Alt + s`) list sessions through `~/.local/bin/sesh-list-waiting`,
 which reads `sesh list --json` and adds an orange `●` before any session with a window where
 `@opencode-waiting` is set (see [OpenCode Tmux Tab Indicator](#opencode-tmux-tab-indicator)).
 The wrapper emits `<connection target>\t<session name>\t<display row>`, so fzf runs with

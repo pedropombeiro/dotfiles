@@ -70,7 +70,8 @@ hints. Type a hint to copy its match without entering copy mode.
 It highlights SHAs, URLs, paths, IPs, UUIDs, hex values, numbers with four or
 more digits, and paths in `git status` and diff output. Custom patterns add
 GitLab references such as `!12345` or `gitlab-org/gitlab#678`, and `file:line`
-locations from RSpec, RuboCop, and grep output.
+locations from RSpec, RuboCop, and grep output. Hint copy omits the full stop
+after a path at the end of a sentence.
 
 ## Custom launchers
 

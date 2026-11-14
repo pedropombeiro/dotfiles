@@ -264,6 +264,11 @@ Update them if the prefix changes.
   `command-alias[201]` because the plugin snapshots the menu into that alias at
   load time. Both depend on tmux-which-key internals.
 
+tmux-fingers joins custom patterns before built-ins in one alternation, so a
+custom pattern wins when both match at the same position. `@fingers-pattern-2`
+uses this to replace the built-in `path` pattern, which includes a
+sentence-ending dot.
+
 ## Sesh Session Manager
 
 Tmux integrates with `sesh` for session discovery and switching.

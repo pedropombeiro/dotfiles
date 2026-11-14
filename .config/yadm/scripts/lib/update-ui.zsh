@@ -96,7 +96,8 @@ _update_require_sudo() {
 # report what changed. Supported: brew, cask, mise, mise-plugins, npm, mas, apt,
 # opkg, nvim (Lazy plugin commits), mason, zinit (plugin commits), skills
 # (`npx skills` folder hashes), repos (checkouts declared with
-# `_update_watch_repos`), and yazi (`package.toml` revisions).
+# `_update_watch_repos`), yazi (`package.toml` revisions), and tmux (TPM plugin
+# commits).
 _update_track() {
   local manager
 

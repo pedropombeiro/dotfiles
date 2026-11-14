@@ -129,6 +129,20 @@ _ui_detail_repos() {
   done
 }
 
+typeset -g _ui_tmux_plugins="${XDG_DATA_HOME:-${HOME}/.local/share}/tmux/plugins"
+
+_ui_versions_tmux() {
+  local dir
+  [[ -d ${_ui_tmux_plugins} ]] || return 1
+  for dir in "${_ui_tmux_plugins}"/*(N/); do
+    _ui_git_head "${dir:t}" "${dir}"
+  done
+}
+
+_ui_detail_tmux() {
+  _ui_git_distance "${_ui_tmux_plugins}/$1" "$2" "$3"
+}
+
 typeset -g _ui_yazi_packages="${XDG_CONFIG_HOME:-${HOME}/.config}/yazi/package.toml"
 
 # Each `[[plugin.deps]]` or `[[flavor.deps]]` entry lists `use` before `rev`.

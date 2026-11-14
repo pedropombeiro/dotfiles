@@ -81,4 +81,11 @@ chmod +x "$sandbox/bin/mise"
   path=("$sandbox/bin" $path)
   [[ $(_ui_versions_mise-plugins) == $'eza\t636e59a\ngcloud\t963aaa6' ]]
 ) || fail 'mise plugin listing'
-print 'PASS: package snapshots, version comparisons, failed listings, skill hashes, git checkouts, yazi packages, and mise plugins'
+_ui_tmux_plugins=$sandbox/tmux-plugins
+_ui_versions_tmux > /dev/null 2>&1 && fail 'missing tmux plugin directory listed'
+tmux_old=$(repo "$_ui_tmux_plugins/tpm")
+mkdir -p "$_ui_tmux_plugins/not-a-checkout"
+[[ $(_ui_versions_tmux) == "tpm"$'\t'"$tmux_old" ]] || fail 'tmux plugin listing'
+tmux_new=$(commit "$_ui_tmux_plugins/tpm" second)
+[[ $(_ui_detail_tmux tpm "$tmux_old" "$tmux_new") == ' (1 commit)' ]] || fail 'tmux plugin commit count'
+print 'PASS: package snapshots, version comparisons, failed listings, skill hashes, git checkouts, yazi packages, mise plugins, and tmux plugins'

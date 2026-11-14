@@ -186,7 +186,7 @@ for identity in Darwin:Personal Darwin:Work Linux:Personal Linux:Work Linux:NAS:
   case $identity in
     Darwin:*) expected_managers='brew cask mise mise-plugins npm mas nvim mason zinit skills repos yazi' ;;
     Linux:Personal) expected_managers='apt brew mise npm nvim mason zinit skills repos yazi' ;;
-    Linux:NAS:qts) expected_managers='opkg mise mise-plugins npm nvim mason zinit skills repos yazi' ;;
+    Linux:NAS:qts) expected_managers='opkg mise mise-plugins npm nvim mason tmux zinit skills repos yazi' ;;
     *) expected_managers='zinit skills repos yazi' ;;
   esac
   actual_managers=$(zsh -f -c '

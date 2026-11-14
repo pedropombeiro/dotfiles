@@ -55,6 +55,7 @@ to copy it.
 | ---------------------------------------- | ------------------------ | --------------------------------------------- |
 | Copy the previous command's output       | `Prefix y`               | Uses OSC 133 prompt markers                   |
 | Copy the command line you are typing     | `Prefix Y`               | Works without copy mode                       |
+| Copy a SHA, URL, path, or MR on screen   | `Prefix F`, then a hint  | `Shift` pastes it, `Ctrl` opens it            |
 | Open LazyGit in a zoomed pane            | `Prefix l`               | Uses YADM in `~` and `~/.config`              |
 | Open Yazi through `fm` in a zoomed pane  | `Prefix f`               | Starts in the pane's directory                |
 | Start or resume OpenCode in a side pane  | `Prefix o` or `Prefix O` |                                               |
@@ -66,6 +67,11 @@ to copy it.
 **Send a failing command's output to a chat or an agent.** Run the command,
 press `Prefix y`, and paste. The binding selects the region between the last two
 prompts, so it works even after the output scrolls away.
+
+**Grab one value from noisy output.** Press `Prefix F` and type the hint next to
+the SHA, URL, IP, MR reference such as `!12345`, or `file:line` from RSpec or
+RuboCop output. `Tab` selects several matches before copying. Over SSH to the
+NAS, the copy reaches the Mac clipboard through OSC 52.
 
 **Reshape a cluttered window.** Press `Prefix m` on a pane you want elsewhere,
 switch to the target window, run `Prefix :` then `join-pane -h`. Press

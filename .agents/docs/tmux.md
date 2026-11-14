@@ -50,6 +50,10 @@ The configuration uses TPM (Tmux Plugin Manager) with these plugins:
     terminal responses, and intercepting them breaks Yazi's terminal probe.
 - `egel/tmux-gruvbox` - Gruvbox theme (dark256)
 - `MunifTanjim/tmux-mode-indicator` - Shows WAIT/COPY/SYNC/TMUX mode in status bar
+- `Morantron/tmux-fingers` - Hint-based copy on `Prefix F`. mise installs the binary
+  (`global.toml`), so `@fingers-skip-wizard` disables the plugin's interactive
+  installer. `@fingers-enable-bindings 0` keeps `Prefix J` for tmux-pain-control.
+  Copies use `load-buffer -w`, which reaches the local clipboard over SSH through OSC 52.
 
 ### Related Files
 

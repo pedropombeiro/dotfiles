@@ -73,3 +73,10 @@ version = "latest"
 
 [tools."github:editorconfig-checker/editorconfig-checker".platforms]
 macos-arm64 = { asset_pattern = "editorconfig-checker-darwin-all.tar.gz" }
+
+# Hint-based copy mode for tmux. tmux-fingers.tmux prefers this binary on PATH
+# over its interactive install wizard. Releases ship bare binaries, so rename
+# the asset to the command name.
+[tools."github:Morantron/tmux-fingers"]
+version = "latest"
+bin = "tmux-fingers"

@@ -184,6 +184,19 @@ The generators in `320-generate-completions.zsh` rerun once when that file
 changes, so a new transform reaches every machine. Check which completer owns a
 command with `print $_comps[docker]`.
 
+### fzf-tab message patch
+
+fzf-tab drops `_message` and `compadd -x` explanations when there are no
+candidates and the Tab widget returns 0, as OMZ's
+`expand-or-complete-with-dots` does. This hides Carapace errors and "no
+matches" warnings. `510-common-plugins.zsh` applies
+`~/.shellrc/zshrc.d/patches/fzf-tab-message-fix.patch` through zinit's
+`atclone`, `atpull'%atclone'`, and `reset` ices. `reset` discards the patch
+before a pull, and `atpull` reapplies it. If the patch stops applying, zinit
+updates print `fzf-tab: message patch no longer applies`. Remove the patch and
+the ices once upstream fixes
+[Aloxaf/fzf-tab#604](https://github.com/Aloxaf/fzf-tab/issues/604).
+
 ### FSH + autosuggestions ordering
 
 FSH must load **before** autosuggestions (per FSH README) so autosuggestions wraps

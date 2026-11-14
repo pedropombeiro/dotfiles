@@ -60,7 +60,12 @@ zinit wait'0' lucid light-mode for \
   atload'!_zsh_autosuggest_start; _fix_autosuggest_accept_line' zsh-users/zsh-autosuggestions
 
 # fzf-tab: replace zsh completion menu with fzf popup
-zinit wait'0a' lucid light-mode for \
+# Patch fzf-tab so completion messages survive OMZ's Tab wrapper. `reset`
+# discards the patch before each pull, and atpull reapplies it. Skip the
+# patch once it's already applied, and warn when it no longer applies.
+zinit wait'0a' lucid light-mode reset \
+  atclone'local p="$HOME/.shellrc/zshrc.d/patches/fzf-tab-message-fix.patch"; git apply -R --check "$p" 2>/dev/null || git apply "$p" || print -u2 "fzf-tab: message patch no longer applies"' \
+  atpull'%atclone' for \
   Aloxaf/fzf-tab
 
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons $realpath'

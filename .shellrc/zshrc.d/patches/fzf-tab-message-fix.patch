@@ -1,0 +1,25 @@
+Keep completion messages visible when fzf-tab finds no candidates.
+
+When the Tab widget returns 0 without matches, as Oh My Zsh's
+expand-or-complete-with-dots does, fzf-tab runs _fzf-tab-apply, which clears
+the list holding `_message` and `compadd -x` explanations. Carapace reports
+completer errors through `_message`. Remove this patch once upstream fixes it:
+https://github.com/Aloxaf/fzf-tab/issues/604
+
+diff --git a/fzf-tab.zsh b/fzf-tab.zsh
+--- a/fzf-tab.zsh
++++ b/fzf-tab.zsh
+@@ -157,7 +157,12 @@ builtin unalias -m '[^+]*'
+   }
+
+   case $#_ftb_complist in
+-    0) return 1;;
++    0)
++      # Keep the original widget's list state so explanations from
++      # `_message` and `compadd -x` remain visible.
++      _ftb_finish=1
++      return 1
++      ;;
+     1)
+       choices=("EXPECT_KEY" "${_ftb_compcap[1]%$bs*}")
+       if (( _ftb_continue_last )); then

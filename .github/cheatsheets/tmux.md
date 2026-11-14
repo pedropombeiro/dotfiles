@@ -38,8 +38,10 @@ Enter with `Prefix [`. Bindings follow vi.
 | Goal                                     | Keys                           |
 | ---------------------------------------- | ------------------------------ |
 | Search forward or backward               | `/` or `?`, then `n` and `N`   |
-| Start a selection, or select whole lines | `Space` or `V`                 |
-| Toggle a rectangular selection           | `v` or `C-v`                   |
+| Start a selection, or select whole lines | `v` or `Space`, or `V`         |
+| Start a rectangular selection            | `C-v`                          |
+| Switch between rectangular and normal    | `C-v` (or `v` to go back)      |
+| Cancel the selection                     | `v` on a normal selection      |
 | Copy to the system clipboard and exit    | `Enter`                        |
 | Copy from the cursor to the end of line  | `D`                            |
 | Append the selection to the last buffer  | `A`                            |

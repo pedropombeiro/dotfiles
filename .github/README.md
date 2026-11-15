@@ -175,7 +175,7 @@ ssh -T git@gitlab.com
 
 ## Configuration
 
-See [theme selection](themes.md) for the shared theme setting, application
+See [theme selection](../.config/dotfiles/README.md) for the shared theme setting, application
 mappings, and the apply command.
 
 ### macOS Settings

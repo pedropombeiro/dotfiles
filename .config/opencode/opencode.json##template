@@ -14,11 +14,7 @@
     "opencode-homeassistant@1.1.0",       // Sends agent status to Home Assistant and answers permissions from it
     "opencode-session-finder@1.1.1",      // Searches past sessions from the palette, and adds search_sessions and open_session
     {
-{% if yadm.class == "Work" %}
-      "package": "opencode-forgekeeper@3.3.2",
-{% else %}
-      "package": "opencode-forgekeeper@3.3.0",
-{% endif %}
+      "package": "opencode-forgekeeper@4.0.0",
       "options": {
         "delivery": { "reviews": "summary", "lifecycle": "summary" },
         "lifecycleExecution": { "parentMerged": { "mode": "prepare", "actions": ["retarget"] } },
@@ -381,9 +377,6 @@
     { "action": "shell", "resource": "gh search code *", "effect": "allow" },
     { "action": "shell", "resource": "gh search issues *", "effect": "allow" },
     { "action": "shell", "resource": "gh auth status*", "effect": "allow" },
-{% if yadm.class == "Work" %}
-    { "action": "shell", "resource": "gh auth token*", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "git add *", "effect": "allow" },
     { "action": "shell", "resource": "git blame *", "effect": "allow" },
     { "action": "shell", "resource": "git branch*", "effect": "allow" },
@@ -457,8 +450,7 @@
     { "action": "shell", "resource": "gem which *", "effect": "allow" },
     { "action": "shell", "resource": "golangci-lint run*", "effect": "allow" },
     { "action": "shell", "resource": "grep *", "effect": "allow" },
-{% if yadm.class == "Work" %}
-{% else %}
+{% if yadm.class == "NAS" %}
     { "action": "shell", "resource": "hass-cli raw post /api/services/rest/reload --json '{}'", "effect": "allow" },
 {% endif %}
     { "action": "shell", "resource": "head *", "effect": "allow" },
@@ -526,9 +518,7 @@
     { "action": "shell", "resource": "more *", "effect": "allow" },
     { "action": "shell", "resource": "nl*", "effect": "allow" },
     { "action": "shell", "resource": "npm view *", "effect": "allow" },
-{% if yadm.class == "Work" %}
     { "action": "shell", "resource": "npx --yes --package renovate*", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "node --check *", "effect": "allow" },
     { "action": "shell", "resource": "od *", "effect": "allow" },
     { "action": "shell", "resource": "opencode --version*", "effect": "allow" },
@@ -622,11 +612,6 @@
     { "action": "shell", "resource": "yadm show*", "effect": "allow" },
     { "action": "shell", "resource": "yadm status*", "effect": "allow" },
     { "action": "shell", "resource": "zsh -n *", "effect": "allow" },
-{% if yadm.class == "Work" %}
-    { "action": "shell", "resource": "awk *", "effect": "allow" },
-    { "action": "shell", "resource": "chmod +x /private/tmp/*", "effect": "allow" },
-    { "action": "shell", "resource": "chmod +x /tmp/*", "effect": "allow" },
-{% endif %}
     // Linters run without a prompt in read-only mode. Flags that rewrite files still ask.
     { "action": "shell", "resource": "markdownlint *", "effect": "allow" },
     { "action": "shell", "resource": "markdownlint-cli2 *", "effect": "allow" },
@@ -678,11 +663,9 @@
     { "action": "shell", "resource": "glab api *-F *", "effect": "ask" },
 {% endif %}
     { "action": "execute", "resource": "*", "effect": "allow" },
-{% if yadm.class == "Work" %}
     { "action": "external_directory", "resource": "~/.agents/docs/*", "effect": "allow" },
     { "action": "external_directory", "resource": "/tmp", "effect": "allow" },
     { "action": "external_directory", "resource": "/tmp/*", "effect": "allow" },
-{% endif %}
     { "action": "external_directory", "resource": "/private/tmp/**/*", "effect": "allow" },
     { "action": "external_directory", "resource": "/private/tmp/*", "effect": "allow" },
     { "action": "external_directory", "resource": "/private/tmp", "effect": "allow" },

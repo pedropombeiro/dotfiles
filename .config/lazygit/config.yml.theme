@@ -50,54 +50,7 @@ gui:
   # Format used when displaying time if the time is less than 24 hours ago.
   # Uses Go's time format syntax: https://pkg.go.dev/time#Time.Format
   shortTimeFormat: 15:04
-  # Config relating to colors and styles.
-  # See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#color-attributes
-  theme:
-    # Border color of focused window
-    activeBorderColor:
-      - "#97971a" # green
-      - bold
-    # Border color of non-focused windows
-    inactiveBorderColor:
-      - "#928374" # gray
-    # Border color of focused window when searching in that window
-    searchingActiveBorderColor:
-      - "#83a598" # cyan
-      - bold
-    # Color of keybindings help text in the bottom line
-    optionsTextColor:
-      - "#8ec07c" # aqua
-    # Background color of selected line.
-    # See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#highlighting-the-selected-line
-    selectedLineBgColor:
-      - "#458588" # blue
-    # Background color of selected line when view doesn't have focus.
-    inactiveViewSelectedLineBgColor:
-      - bold
-    # Foreground color of copied commit
-    cherryPickedCommitFgColor:
-      - "#458588" # blue
-    # Background color of copied commit
-    cherryPickedCommitBgColor:
-      - "#83a598" # cyan
-    # Foreground color of marked base commit (for rebase)
-    markedBaseCommitFgColor:
-      - "#458588" # blue
-    # Background color of marked base commit (for rebase)
-    markedBaseCommitBgColor:
-      - yellow
-    # Color for file with unstaged changes
-    unstagedChangesColor:
-      - "#fb4934" # red
-    # Default text color
-    defaultFgColor:
-      - "#ebdbb2" # default
-    authorColors:
-      "Pedro Pombeiro": "#83a598" # use a light blue for my commits
-    branchColorPatterns:
-      "^\\^pedropombeiro/(/|$)": "#83a598" # use a light blue for branches beginning with 'pedropombeiro/'
-      "^\\^_pedropombeiro/(/|$)": "#7c6f64" # use gray for branches beginning with '_pedropombeiro/'
-      "^tmp(/|$)": "#504945" # use dark gray for branches beginning with 'tmp/'
+@THEME_lazygit_colors@
   # Config relating to the commit length indicator
   commitLength:
     # If true, show an indicator of commit message length

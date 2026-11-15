@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 import datetime  # Allow additional datetime column formats
+import json
+import os
+from pathlib import Path
 
 import dateutil
 from visidata import BaseSheet, DirSheet, GraphSheet, Sheet, colors, options, vd
@@ -124,7 +127,8 @@ vd.themes["gruvbox-dark"] = dict(
 )
 
 if options.theme == "":
-    options.theme = "gruvbox-dark"
+    theme_root = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "dotfiles"
+    options.theme = json.loads((theme_root / "theme.json").read_text())["visidata"]
 
 ################################################################################
 # Set some UI preferences for better experience

@@ -73,7 +73,7 @@ zinit wait'0a' lucid light-mode reset \
 # Context-specific fzf-flags replace this style, so they add the colors too.
 zstyle -e ':fzf-tab:*' fzf-flags 'reply=($FZF_DEFAULT_COLOR)'
 zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always --icons $realpath'
-zstyle ':fzf-tab:complete:eza:*' fzf-preview 'if [[ -d $realpath ]]; then eza -1 --color=always --icons "$realpath"; elif [[ ${realpath:l} == *.(md|markdown) ]]; then glow -s "$HOME/.config/glow/gruvbox.json" -w "${FZF_PREVIEW_COLUMNS:-80}" "$realpath"; else bat --color=always --style=numbers --line-range=:500 "$realpath"; fi'
+zstyle ':fzf-tab:complete:eza:*' fzf-preview 'if [[ -d $realpath ]]; then eza -1 --color=always --icons "$realpath"; elif [[ ${realpath:l} == *.(md|markdown) ]]; then glow -s "${XDG_CONFIG_HOME:-$HOME/.config}/glow/selected.json" -w "${FZF_PREVIEW_COLUMNS:-80}" "$realpath"; else bat --color=always --style=numbers --line-range=:500 "$realpath"; fi'
 # Cache brew info output for 24h (86400s) to avoid slow network lookups on every tab
 zstyle ':fzf-tab:complete:brew-(install|info|upgrade):*' fzf-preview 'CACHE="/tmp/brew-info-$word"; [[ -f $CACHE && $((EPOCHSECONDS - $(stat -f%m $CACHE))) -lt 86400 ]] || HOMEBREW_COLOR=1 brew info $word 2>/dev/null >$CACHE; cat $CACHE'
 zstyle -e ':fzf-tab:complete:brew-(install|info|upgrade):*' fzf-flags \

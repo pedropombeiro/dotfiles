@@ -1,22 +1,3 @@
-# Trippy (trip) configuration. Only overrides are listed; run
-# `trip --print-config-template` for every option and its default.
-
-[trippy]
-# Use IPPROTO_ICMP sockets so tracing works without sudo. macOS supports this
-# directly. Linux only allows it for groups in net.ipv4.ping_group_range, and
-# QTS disables it, but the NAS runs as uid 0, so privileged mode works there.
-{% if yadm.os == "Darwin" %}
-unprivileged = true
-{% endif %}
-
-[tui]
-# Show the reverse-DNS name and the IP, so LAN hops stay recognisable
-tui-address-mode = "both"
-# The trip shell function adds the GeoIP database, tui-geoip-mode, and AS
-# lookups. Trippy refuses to start when the GeoIP options are configured without
-# the database file, or when AS lookups meet the system resolver, and neither
-# can be turned off again from the command line.
-
 # Gruvbox dark, matching tmux, bat, and btop
 [theme-colors]
 bg-color = "282828"

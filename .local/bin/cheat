@@ -8,7 +8,7 @@
 set -o pipefail
 
 SHEETS_DIR=${CHEAT_SHEETS_DIR:-$HOME/.github/cheatsheets}
-GLOW_STYLE=$HOME/.config/glow/gruvbox.json
+GLOW_STYLE=${XDG_CONFIG_HOME:-$HOME/.config}/glow/selected.json
 REPO_URL=https://github.com/pedropombeiro/dotfiles/blob/master/.github/cheatsheets
 # Picker height. The tmux popup sets 100%, so the picker fills the popup.
 FZF_HEIGHT=${CHEAT_FZF_HEIGHT:-40%}

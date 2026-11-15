@@ -64,11 +64,11 @@ return {
     end
 
     --- Override Neotest default theme
-    local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
+    local theme = require("config.theme").nvim
     if theme == config.theme.name then
       local augroup = vim.api.nvim_create_augroup("NeotestColorSchemeRefresh", { clear = true })
       vim.api.nvim_create_autocmd("ColorScheme", {
-        pattern = "gruvbox",
+        pattern = theme,
         callback = define_highlights,
         group = augroup,
       })

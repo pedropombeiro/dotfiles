@@ -101,7 +101,7 @@ return {
       --- Override foldcolumn colors to match theme
       ---@type pmsp.neovim.Config
       local config = require("config")
-      local theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
+      local theme = require("config.theme").nvim
       if theme == config.theme.name then
         Set_hl(
           { FoldColumn = { ctermbg = "none", bg = "none", ctermfg = "gray", fg = config.theme.colors.gray } },

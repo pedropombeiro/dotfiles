@@ -60,7 +60,9 @@ th.git.modified_sign = ""
 th.git.deleted_sign = ""
 require("git"):setup()
 
-local gruvbox_theme = require("yatline-gruvbox"):setup("dark") -- or "light"
+local theme_root = (os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")) .. "/dotfiles"
+local theme_profile = dofile(theme_root .. "/yazi-theme.lua")
+local gruvbox_theme = require(theme_profile.yatline):setup(theme_profile.style)
 gruvbox_theme.branch_color = "#ebdbb2"
 gruvbox_theme.commit_color = "#d3869b"
 gruvbox_theme.behind_color = "#af3a03"

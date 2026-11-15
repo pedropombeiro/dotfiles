@@ -47,7 +47,7 @@ require("lazy").setup({
     version = false, -- always use the latest git commit
     -- version = "*", -- try installing the latest stable version for plugins that support semver
   },
-  install = { colorscheme = { "gruvbox" } },
+  install = { colorscheme = { require("config.theme").nvim } },
   checker = {
     enabled = true,
     notify = true,

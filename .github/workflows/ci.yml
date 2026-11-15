@@ -114,6 +114,10 @@ jobs:
       - name: Test Neovim config loads
         run: |
           # Create minimal test that loads config
+          mkdir -p "$HOME/.config/nvim/lua" "$HOME/.config/dotfiles"
+          cp -R .config/nvim/lua/config "$HOME/.config/nvim/lua/"
+          cp .config/dotfiles/theme "$HOME/.config/dotfiles/"
+          cp -R .config/dotfiles/themes "$HOME/.config/dotfiles/"
           nvim --headless --noplugin -u NONE -c "
             set runtimepath+=$HOME/.config/nvim
             lua dofile(vim.fn.expand('.config/nvim/lua/config/init.lua'))

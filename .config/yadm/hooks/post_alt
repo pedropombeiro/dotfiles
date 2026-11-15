@@ -2,6 +2,8 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &>/dev/null && pwd )
 
+"${HOME}/.local/bin/dotfiles-theme" apply || exit $?
+
 source "${YADM_SCRIPTS}/prune-dangling-alt-links.zsh"
 source "${YADM_SCRIPTS}/relink-dotfiles.zsh"
 source "${YADM_SCRIPTS}/update-gitignore-alt.zsh"

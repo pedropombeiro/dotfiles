@@ -9,12 +9,7 @@ return {
   "ellisonleao/gruvbox.nvim",
   lazy = false, -- Must load immediately for colorscheme
   priority = 1000, -- make sure to load this before all the other start plugins
-  cond = function()
-    local nvim_theme = vim.env.NVIM_THEME -- defined in ~/.shellrc/rc.d/_theme.sh
-    if nvim_theme == nil then nvim_theme = theme.name end
-
-    return nvim_theme == "gruvbox"
-  end,
+  cond = function() return theme.name == "gruvbox" end,
   config = function(_, opts)
     require("gruvbox").setup(opts)
 

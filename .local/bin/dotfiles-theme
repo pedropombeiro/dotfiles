@@ -1,0 +1,184 @@
+#!/usr/bin/env python3
+"""Resolve and apply the persisted dotfiles theme without shell initialization."""
+
+import argparse
+import json
+import os
+import re
+import shlex
+import shutil
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+CONFIG = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+ROOT = CONFIG / "dotfiles"
+TOKEN = re.compile(r"@THEME_([a-z_]+)@")
+TARGETS = (
+    "bat/config",
+    "atuin/config.toml",
+    "btop/btop.conf",
+    "lazygit/config.yml",
+    "lnav/config.json",
+    "yazi/theme.toml",
+    "git/theme.conf",
+    "tmux/theme.conf",
+    "tmux/theme-status.conf",
+    "trippy/trippy.toml",
+)
+
+
+def load_theme(name=None):
+    if name is None:
+        name = (ROOT / "theme").read_text().strip()
+    if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name):
+        raise ValueError(f"Invalid theme identifier: {name!r}")
+    profile = ROOT / "themes" / f"{name}.json"
+    if not profile.is_file():
+        raise ValueError(f"Unsupported theme: {name}")
+    values = json.loads(profile.read_text())
+    if not isinstance(values, dict) or not all(
+        isinstance(key, str) and isinstance(value, str) for key, value in values.items()
+    ):
+        raise ValueError(f"Invalid application mappings: {profile}")
+    return name, values
+
+
+def atomic_write(path, content):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.is_symlink():
+        raise ValueError(f"Refusing to replace symlink: {path}")
+    if path.exists() and path.read_text() == content:
+        return
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", dir=path.parent, delete=False
+        ) as output:
+            temporary = Path(output.name)
+            output.write(content)
+        temporary.chmod(0o644)
+        temporary.replace(path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
+def render(values):
+    # Render everything before writing anything, so invalid profiles fail early.
+    values = dict(values)
+    for key in ("lazygit_colors", "trippy_colors"):
+        values[key] = (ROOT / "themes" / values[key]).read_text().rstrip("\n")
+    # TPM scans only one level of sourced files for @plugin declarations.
+    values["tmux_config"] = (
+        (CONFIG / "tmux/themes" / f"{values['tmux']}.conf").read_text().rstrip("\n")
+    )
+    values["trippy_platform"] = (
+        "unprivileged = true" if sys.platform == "darwin" else ""
+    )
+    outputs = {}
+    for target in TARGETS:
+        template = CONFIG / f"{target}.theme"
+        outputs[CONFIG / target] = TOKEN.sub(
+            lambda match: values[match[1]], template.read_text()
+        )
+    # btop saves interactive preferences. Preserve them on subsequent applies.
+    btop = CONFIG / "btop/btop.conf"
+    if btop.exists():
+        content, count = re.subn(
+            r"^color_theme\s*=.*$",
+            lambda _: f'color_theme = "{values["btop"]}"',
+            btop.read_text(),
+            flags=re.MULTILINE,
+        )
+        if count != 1:
+            raise ValueError(f"Expected one color_theme setting in {btop}")
+        outputs[btop] = content
+    glow = CONFIG / "glow" / values["glow"]
+    outputs[CONFIG / "glow/selected.json"] = glow.read_text()
+    return outputs
+
+
+def shell_exports(name, values):
+    exports = {
+        "DOTFILES_THEME": name,
+        "BAT_THEME": values["bat"],
+        "HIGHLIGHT_STYLE": values["highlight"],
+        "NVIM_THEME": values["nvim"],
+        "XH_STYLE": values["xh"],
+        "FZF_DEFAULT_COLOR": values["fzf"],
+        "GLOW_STYLE": str(CONFIG / "glow/selected.json"),
+    }
+    return "".join(
+        f"export {key}={shlex.quote(value)}\n" for key, value in exports.items()
+    )
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+    sub.add_parser("get", help="Print the persisted theme")
+    sub.add_parser("list", help="List installed theme profiles")
+    value = sub.add_parser("value", help="Print an application mapping")
+    value.add_argument("key")
+    sub.add_parser("shell", help="Print shell exports for the selected theme")
+    apply = sub.add_parser("apply", help="Render managed configs")
+    apply.add_argument("--reload", action="store_true", help="Also reload running tmux")
+    select = sub.add_parser("set", help="Persist a theme and render managed configs")
+    select.add_argument("name")
+    select.add_argument(
+        "--reload", action="store_true", help="Also reload running tmux"
+    )
+    args = parser.parse_args()
+
+    if args.command == "list":
+        print("\n".join(sorted(path.stem for path in (ROOT / "themes").glob("*.json"))))
+        return
+    name, values = load_theme(args.name if args.command == "set" else None)
+    if args.command == "get":
+        print(name)
+    elif args.command == "value":
+        print(values[args.key])
+    elif args.command == "shell":
+        print(shell_exports(name, values), end="")
+    else:
+        outputs = render(values)
+        # Keep the generated descriptor consistent with a newly selected theme.
+        outputs[ROOT / "theme.json"] = (
+            json.dumps({"name": name, **values}, indent=2) + "\n"
+        )
+        outputs[ROOT / "theme.sh"] = shell_exports(name, values)
+        outputs[ROOT / "yazi-theme.lua"] = (
+            "-- Generated by dotfiles-theme apply.\nreturn {\n"
+            f"  yatline = {json.dumps(values['yatline'])},\n"
+            f"  style = {json.dumps(values['yatline_style'])},\n"
+            "}\n"
+        )
+        if args.command == "set":
+            outputs[ROOT / "theme"] = name + "\n"
+        for path in outputs:
+            if path.is_symlink():
+                raise ValueError(f"Refusing to replace symlink: {path}")
+        for path, content in outputs.items():
+            atomic_write(path, content)
+        if (
+            args.reload
+            and shutil.which("tmux")
+            and subprocess.run(
+                ["tmux", "has-session"], capture_output=True, check=False
+            ).returncode
+            == 0
+        ):
+            subprocess.run(
+                ["tmux", "source-file", str(CONFIG / "tmux/tmux.conf")], check=True
+            )
+        print(f"Applied {name}. Start a new shell and reopen running applications.")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (OSError, ValueError, KeyError, subprocess.CalledProcessError) as error:
+        print(f"dotfiles-theme: {error}", file=sys.stderr)
+        sys.exit(1)

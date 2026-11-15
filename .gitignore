@@ -26,6 +26,21 @@ Thumbs.db
 .config/lazy-mcp/clickhouse-password
 .config/mr-dashboard/env
 .config/dotfiles/gitlab/
+# Rendered by dotfiles-theme apply.
+/.config/dotfiles/theme.json
+/.config/dotfiles/theme.sh
+/.config/dotfiles/yazi-theme.lua
+/.config/bat/config
+/.config/atuin/config.toml
+/.config/btop/btop.conf
+/.config/lazygit/config.yml
+/.config/lnav/config.json
+/.config/yazi/theme.toml
+/.config/git/theme.conf
+/.config/glow/selected.json
+/.config/tmux/theme.conf
+/.config/tmux/theme-status.conf
+/.config/trippy/trippy.toml
 .config/sesh/caproni.toml
 # OpenCode owns cli.json; the tracked terminal config is cli.base.json.
 .config/opencode/cli.json

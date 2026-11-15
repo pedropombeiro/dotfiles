@@ -1,1 +1,1 @@
-style: "{{ env.HOME }}/.config/glow/gruvbox.json"
+style: "{{ env.HOME }}/.config/glow/selected.json"

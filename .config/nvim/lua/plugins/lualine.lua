@@ -128,7 +128,7 @@ return {
             },
           },
           globalstatus = true,
-          theme = "gruvbox",
+          theme = require("config").theme.lualine,
         },
         extensions = {
           "fugitive",

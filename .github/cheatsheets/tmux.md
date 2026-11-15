@@ -78,12 +78,12 @@ after a path at the end of a sentence.
 | Goal                                     | Keys                        | Notes                                         |
 | ---------------------------------------- | --------------------------- | --------------------------------------------- |
 | Copy the previous command's output       | `Prefix y`                  | Uses OSC 133 prompt markers                   |
-| Copy the command line you are typing     | `Prefix u`                  | `Prefix Y` is an alias                        |
-| Copy a SHA, URL, path, or MR on screen   | `Prefix v`, then a hint     | `F` is an alias; see [Hint copy](#hint-copy)  |
-| Open LazyGit in a zoomed pane            | `Prefix g`                  | `Prefix l` is an alias; YADM-aware            |
+| Copy the command line you are typing     | `Prefix u`                  |                                               |
+| Copy a SHA, URL, path, or MR on screen   | `Prefix v`, then a hint     | See [Hint copy](#hint-copy)                   |
+| Open LazyGit in a zoomed pane            | `Prefix g`                  | YADM-aware                                    |
 | Open Yazi through `fm` in a zoomed pane  | `Prefix f`                  | Starts in the pane's directory                |
 | Start or resume OpenCode in a side pane  | `Prefix o` or `Prefix O`    |                                               |
-| Open the sesh picker or the last session | `Prefix s` or ``Prefix ` `` | `T` opens the picker; `S` and `L` go back     |
+| Open the sesh picker or the last session | `Prefix s` or ``Prefix ` `` | `Prefix L` resizes the pane right             |
 | Open the native tmux session tree        | `Prefix C-s`                | See the [sesh sheet](sesh.md)                 |
 | Open the cheat sheet for the pane's app  | `Prefix h`                  | Picker for shells; see the [index](README.md) |
 

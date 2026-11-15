@@ -1,7 +1,7 @@
 # LazyGit cheat sheet
 
 Configuration: [`~/.config/lazygit/config.yml`](../../.config/lazygit/config.yml).
-Open it with `lg`, `Prefix l` in tmux, or `<leader>tg` in Neovim. All three use
+Open it with `lg`, `Prefix g` in tmux, or `<leader>tg` in Neovim. All three use
 YADM in `~` and `~/.config`. Press `?` in any panel for its bindings.
 
 ## Memorize first

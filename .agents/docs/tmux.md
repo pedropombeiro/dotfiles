@@ -50,7 +50,7 @@ The configuration uses TPM (Tmux Plugin Manager) with these plugins:
   - Previous: `M-^`. Don't bind `M-\` in the root table: its `ESC \` bytes terminate
     terminal responses, and intercepting them breaks Yazi's terminal probe.
 - `MunifTanjim/tmux-mode-indicator` - Shows WAIT/COPY/SYNC/TMUX mode in status bar
-- `Morantron/tmux-fingers` - Hint-based copy on `prefix + v`, with `prefix + F` as an alias. mise installs the binary
+- `Morantron/tmux-fingers` - Hint-based copy on `prefix + v`. mise installs the binary
   (`global.toml`), so `@fingers-skip-wizard` disables the plugin's interactive
   installer. `@fingers-enable-bindings 0` keeps `Prefix J` for tmux-pain-control.
   Copies use `load-buffer -w`, which reaches the local clipboard over SSH through OSC 52.
@@ -146,7 +146,7 @@ to leave both the clipboard write and buffer creation to `load-buffer`.
 **Note:** Only works in panes opened _after_ the shell integration is sourced. Pre-existing panes
 won't have OSC 133 markers in their scrollback.
 
-## Yank Current Command Text (`prefix + Y`)
+## Yank Current Command Text (`prefix + u`)
 
 Copies the text currently being typed on the zsh command line (`$BUFFER`) to the system clipboard.
 Unlike `prefix + y` (which uses tmux copy-mode and OSC 133 markers), this operates at the shell
@@ -154,13 +154,13 @@ level via a zle widget and works regardless of scrollback state.
 
 **How it works:**
 
-1. `prefix + Y` in tmux sends the custom escape sequence `\e[Y` to the pane
+1. `prefix + u` in tmux sends the custom escape sequence `\e[Y` to the pane
 2. zsh has a `yank-buffer-to-clipboard` zle widget bound to `\e[Y` in both `viins` and `vicmd` keymaps
 3. The widget pipes `$BUFFER` to `clipcopy` and displays a confirmation message
 
 **Files:**
 
-- `~/.config/tmux/tmux.conf` — the `prefix + Y` binding (`send-keys Escape '[Y'`)
+- `~/.config/tmux/tmux.conf` - the `prefix + u` binding (`send-keys Escape '[Y'`)
 - `~/.shellrc/zshrc.d/configs/695-common-bindings.zsh` - the zle widget and keybinding
 
 **Notes:**
@@ -269,15 +269,15 @@ To modify tmux settings:
 
 ## Frequent Action Keybindings
 
-Frequent actions use Shift-free prefix keys. The previous uppercase or
-lowercase keys remain aliases. Alias bindings dispatch with
-`send-keys -K C-b KEY` because `send-keys -K` doesn't expand `#{prefix}`.
-Update them if the prefix changes.
+Frequent actions use Shift-free prefix keys. The retired launcher keys
+`F`, `Y`, `l`, `T`, and `S` are unbound, including after a config reload.
+Menu actions dispatch with `send-keys -K C-b KEY` because `send-keys -K`
+doesn't expand `#{prefix}`. Update them if the prefix changes.
 
-- `prefix + g` opens Lazygit, with `prefix + l` retained as an alias. Native tmux
+- `prefix + g` opens Lazygit. Native tmux
   move mode uses `prefix + G` instead of `prefix + g`.
-- `prefix + v` starts visual hint copying, with `prefix + F` retained as an alias.
-- `prefix + u` copies the unfinished command line, with `prefix + Y` retained as an alias.
+- `prefix + v` starts visual hint copying.
+- `prefix + u` copies the unfinished command line.
 - `prefix + Space` lists Sesh, the previous session, Lazygit, files, copying,
   and app help directly in the which-key root menu. Menu letters match the
   prefix shortcuts. The config replaces `@wk_menu_root`, then refreshes
@@ -302,8 +302,7 @@ Tmux integrates with `sesh` for session discovery and switching.
   Search results sort by match quality. The preview uses `sesh preview --watch`
   to refresh active tmux sessions every 500 ms.
 - ``prefix + ` `` switches to the client's previous session using `switch-client -l`.
-- `prefix + T` remains an alias for the picker. `prefix + S` remains an alias
-  for the previous session. `prefix + L` resizes the pane to the right.
+- `prefix + L` resizes the pane to the right.
 - `prefix + C-s` opens the native tmux session tree.
 - `fn + Tab` and `Caps Lock + L` (iTerm2 only) are alternatives to ``prefix + ` ``, implemented in
   Hammerspoon. `Hyper + L` works too, via the same `hyperBind` registration.

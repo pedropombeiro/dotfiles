@@ -11,7 +11,7 @@ pickers live in the [fzf sheet](fzf.md).
 1. `!$` reuses the last argument, and `Space` expands it in place before you
    run the command.
 1. `^old^new` reruns the previous command with a substitution.
-1. `M-s` opens the sesh picker, and `Prefix Y` in tmux copies the command line.
+1. `M-s` opens the sesh picker, and `Prefix u` in tmux copies the command line.
 1. `ci"`, `da(`, and `cs"'` edit quoted and bracketed arguments in normal mode.
 
 ## Vi-mode editing

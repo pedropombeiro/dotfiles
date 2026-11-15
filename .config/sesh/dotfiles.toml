@@ -9,70 +9,94 @@ preview_command = "eza --all --git --icons --color=always {}"
 name = "Neovim config"
 path = "~/.config/nvim"
 startup_command = "nvim -c ':lua Snacks.picker.files()'"
-preview_command = "eza --all --git --icons --color=always {}"
+preview_command = "bat --color=always --paging=never ~/.config/nvim/init.lua"
 
 [[session]]
 name = "tmux config"
 path = "~/.config/tmux"
 startup_command = "nvim tmux.conf"
-preview_command = "bat --color=always ~/.config/tmux/tmux.conf"
+preview_command = "bat --color=always --paging=never ~/.config/tmux/tmux.conf"
 
 [[session]]
 name = "sesh config"
 path = "~/.config/sesh"
 startup_command = "nvim -c ':lua Snacks.picker.files()'"
-preview_command = "eza --all --git --icons --color=always --oneline {}"
+preview_command = "bat --color=always --paging=never ~/.config/sesh/sesh.toml ~/.config/sesh/dotfiles.toml"
 
 [[session]]
 name = "mise config"
 path = "~/.config/mise"
 startup_command = "nvim -c ':lua Snacks.picker.files()'"
-preview_command = "eza --all --git --icons --color=always {}"
+preview_command = "eza --tree --level=2 --all --git --icons --color=always {}"
 
 [[session]]
 name = "OpenCode config"
 path = "~/.config/opencode"
 startup_command = "nvim"
-preview_command = "eza --all --git --icons --color=always --oneline {}"
+preview_command = "eza --tree --level=2 --all --git --icons --color=always --ignore-glob=node_modules {}"
 
 [[session]]
 name = "Shell config"
 path = "~/.shellrc"
 startup_command = "nvim -c ':lua Snacks.picker.files()'"
-preview_command = "eza --all --git --icons --color=always {}"
+preview_command = "eza --tree --level=2 --all --git --icons --color=always {}"
 
 [[session]]
 name = "Git config"
 path = "~/.config/git"
 startup_command = "nvim -c ':lua Snacks.picker.files()'"
-preview_command = "eza --all --git --icons --color=always {}"
+preview_command = "bat --color=always --paging=never ~/.config/git/config"
 
 [[session]]
 name = "YADM config"
 path = "~/.config/yadm"
 startup_command = "nvim -c ':lua Snacks.picker.files()'"
-preview_command = "eza --all --git --icons --color=always {}"
+preview_command = "eza --tree --level=2 --all --git --icons --color=always {}"
 
 [[session]]
 name = "Agent instructions"
 path = "~/.agents"
 startup_command = "nvim -c ':lua Snacks.picker.files()'"
-preview_command = "eza --all --git --icons --color=always {}"
+preview_command = "eza --tree --level=2 --all --git --icons --color=always {}"
 
 [[session]]
 name = "Yazi config"
 path = "~/.config/yazi"
 startup_command = "nvim -c ':lua Snacks.picker.files()'"
-preview_command = "eza --all --git --icons --color=always {}"
+preview_command = "bat --color=always --paging=never ~/.config/yazi/yazi.toml ~/.config/yazi/keymap.toml"
 
 [[session]]
 name = "Lazygit config"
 path = "~/.config/lazygit"
 startup_command = "nvim -c ':lua Snacks.picker.files()'"
-preview_command = "eza --all --git --icons --color=always {}"
+preview_command = "bat --color=always --paging=never ~/.config/lazygit/config.yml"
 
 [[session]]
 name = "MCP config"
 path = "~/.config/lazy-mcp"
 startup_command = "nvim -c ':lua Snacks.picker.files()'"
 preview_command = "eza --all --git --icons --color=always {}"
+
+[[session]]
+name = "SSH config"
+path = "~/.ssh"
+startup_command = "nvim config"
+preview_command = "bat --color=always --paging=never ~/.ssh/config"
+
+[[session]]
+name = "Atuin config"
+path = "~/.config/atuin"
+startup_command = "nvim config.toml"
+preview_command = "bat --color=always --paging=never ~/.config/atuin/config.toml"
+
+[[session]]
+name = "Lazydocker config"
+path = "~/.config/lazydocker"
+startup_command = "nvim config.yml"
+preview_command = "bat --color=always --paging=never ~/.config/lazydocker/config.yml"
+
+[[session]]
+name = "lnav config"
+path = "~/.config/lnav"
+startup_command = "nvim -c ':lua Snacks.picker.files()'"
+preview_command = "bat --color=always --paging=never ~/.config/lnav/config.json"

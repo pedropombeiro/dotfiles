@@ -44,7 +44,9 @@ ITERM2_SUBTITLE_WRITE_TIMEOUT=3 test_expect_status 'readable terminal' 0 "$subti
 elapsed=$(( EPOCHREALTIME - start ))
 # A completed write must stop the watchdog instead of waiting out the timeout.
 (( elapsed < 2 )) || test_fail "readable terminal: took ${elapsed}s, expected the watchdog to stop"
-test_assert_equal 'no script output' '' "$(<"$TEST_SANDBOX/output")"
+# Assign before comparing: zsh -n still reads $(<file) in a command argument.
+output=$(<"$TEST_SANDBOX/output")
+test_assert_equal 'no script output' '' "$output"
 received=
 repeat 20; do
   zpty -r -t readable chunk 2>/dev/null && received+=$chunk
@@ -68,5 +70,6 @@ ITERM2_SUBTITLE_WRITE_TIMEOUT=1 test_expect_status 'unread terminal' 0 "$subtitl
 elapsed=$(( EPOCHREALTIME - start ))
 # Returning well before the timeout means the writer was killed without waiting.
 (( elapsed >= 0.9 && elapsed < 5 )) || test_fail "unread terminal: took ${elapsed}s, expected about 1s"
-test_assert_equal 'no kill notice' '' "$(<"$TEST_SANDBOX/output")"
+output=$(<"$TEST_SANDBOX/output")
+test_assert_equal 'no kill notice' '' "$output"
 print 'PASS: writes to unread terminals time out silently'

@@ -34,3 +34,45 @@ name = "OpenCode config"
 path = "~/.config/opencode"
 startup_command = "nvim"
 preview_command = "eza --all --git --icons --color=always --oneline {}"
+
+[[session]]
+name = "Shell config"
+path = "~/.shellrc"
+startup_command = "nvim -c ':lua Snacks.picker.files()'"
+preview_command = "eza --all --git --icons --color=always {}"
+
+[[session]]
+name = "Git config"
+path = "~/.config/git"
+startup_command = "nvim -c ':lua Snacks.picker.files()'"
+preview_command = "eza --all --git --icons --color=always {}"
+
+[[session]]
+name = "YADM config"
+path = "~/.config/yadm"
+startup_command = "nvim -c ':lua Snacks.picker.files()'"
+preview_command = "eza --all --git --icons --color=always {}"
+
+[[session]]
+name = "Agent instructions"
+path = "~/.agents"
+startup_command = "nvim -c ':lua Snacks.picker.files()'"
+preview_command = "eza --all --git --icons --color=always {}"
+
+[[session]]
+name = "Yazi config"
+path = "~/.config/yazi"
+startup_command = "nvim -c ':lua Snacks.picker.files()'"
+preview_command = "eza --all --git --icons --color=always {}"
+
+[[session]]
+name = "Lazygit config"
+path = "~/.config/lazygit"
+startup_command = "nvim -c ':lua Snacks.picker.files()'"
+preview_command = "eza --all --git --icons --color=always {}"
+
+[[session]]
+name = "MCP config"
+path = "~/.config/lazy-mcp"
+startup_command = "nvim -c ':lua Snacks.picker.files()'"
+preview_command = "eza --all --git --icons --color=always {}"

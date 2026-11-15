@@ -30,6 +30,9 @@ sesh-sessions() {
     session=$(~/.local/bin/sesh-list-waiting | fzf --height 40% --reverse --ansi \
       --delimiter '\t' --with-nth -1 --accept-nth 1 \
       --bind 'change:first' \
+      --header '^a all ^p projects' \
+      --bind 'ctrl-a:change-prompt(sesh> )+reload(~/.local/bin/sesh-list-waiting)' \
+      --bind 'ctrl-p:change-prompt(projects> )+reload(~/.local/bin/sesh-list-waiting --projects)' \
       --border-label ' sesh ' --border --prompt 'sesh> ')
     zle reset-prompt >/dev/null 2>&1 || true
     [[ -z "$session" ]] && return

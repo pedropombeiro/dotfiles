@@ -6,6 +6,12 @@ path = "~/Downloads"
 startup_command = "yazi"
 preview_command = "eza --all --icons --color=always --sort=modified --reverse {}"
 
+[[session]]
+name = "Hammerspoon config"
+path = "~/.hammerspoon"
+startup_command = "nvim -c ':lua Snacks.picker.files()'"
+preview_command = "eza --all --git --icons --color=always {}"
+
 [[wildcard]]
 pattern = "~/Developer/github.com/pedropombeiro/*"
 disable_startup_command = true

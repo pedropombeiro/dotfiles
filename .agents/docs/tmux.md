@@ -287,6 +287,8 @@ Tmux integrates with `sesh` for session discovery and switching.
 
 - `prefix + s` opens the sesh picker in a tmux popup (fzf-tmux), initially showing
   only tmux sessions. `Ctrl+A` shows all sources, and `Ctrl+T` returns to tmux only.
+  `Ctrl+P` shows only discovered `~/Developer` repositories and their running tmux
+  sessions, retaining waiting indicators.
   Search results sort by match quality. The preview uses `sesh preview --watch`
   to refresh active tmux sessions every 500 ms.
 - ``prefix + ` `` switches to the client's previous session using `switch-client -l`.
@@ -308,10 +310,12 @@ which have a single field, so `-1` and `1` both resolve to the directory.
 
 The display row includes the active tmux window name. Icons, waiting markers, and
 window labels stay out of connection targets. The all-sources view also discovers
-immediate child directories under `~/Developer/github.com/pedropombeiro/`, without
-relying on zoxide. Source-specific filters do not add these directories. The helper
-deduplicates paths against running tmux sessions while retaining separate tmux
-sessions that share a path. It requires `jq`.
+Git repositories throughout `~/Developer/`, including all forge hosts and nested
+GitLab groups, without relying on zoxide. Discovery recognizes `.git` directories
+and files, stops at repository roots, and skips directory symlinks. Source-specific
+filters do not add these repositories. The helper deduplicates paths against
+running tmux sessions while retaining separate tmux sessions that share a path.
+It requires `jq`.
 
 ### fn+Tab and Caps Lock+L last-session shortcuts
 
@@ -332,4 +336,5 @@ shortcuts don't synthesize `prefix + L` keystrokes.
 ### Shell Integration
 
 - `Alt + s` opens the sesh picker from the shell when not in tmux.
+  `Ctrl+P` shows projects only, and `Ctrl+A` returns to all sources.
 - Completion is generated via `sesh completion zsh` into `~/.config/zsh/site-functions/`.

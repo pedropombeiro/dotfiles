@@ -8,16 +8,19 @@
 #   2. the bare session name, for tmux commands such as `kill-session`
 #   3. the display row, with an orange bullet for waiting sessions and the active window
 #
-# Pickers use `--delimiter '\t' --with-nth 3 --accept-nth 1`. All arguments pass through
-# to `sesh list`. The all view also includes immediate child directories under
-# ~/Developer/github.com/pedropombeiro, independently of zoxide history.
+# Pickers use `--delimiter '\t' --with-nth 3 --accept-nth 1`. Except for --projects,
+# arguments pass through to `sesh list`. The all view also includes Git repositories under ~/Developer,
+# including nested forge groups, independently of zoxide history.
 
 set -o pipefail
 
 icons=false
 source_filter=false
+projects=false
+list_args=()
 for arg in "$@"; do
   case $arg in
+  --projects) projects=true; continue ;;
   --icons) icons=true ;;
   --config)
     source_filter=true
@@ -28,30 +31,47 @@ for arg in "$@"; do
     [[ $arg == *[tczTp]* ]] && source_filter=true
     ;;
   esac
+  list_args+=("$arg")
 done
+
+# Stop at repository roots to avoid scanning their contents. A .git file marks a
+# worktree or submodule. Skip directory symlinks to avoid loops and duplicate paths.
+discover_projects() {
+  local directory
+  for directory in "$1"/*/; do
+    directory=${directory%/}
+    [[ -L $directory ]] && continue
+    if [[ -d $directory/.git || -f $directory/.git ]]; then
+      printf '%s\0' "$directory"
+    else
+      discover_projects "$directory"
+    fi
+  done
+  return 0
+}
 
 # Pass waiting session names to jq without mixing them into the session JSON.
 SESH_WAITING=$(tmux list-windows -a -F '#{?@opencode-waiting,#{session_name},}' 2>/dev/null | sort -u)
 export SESH_WAITING
 
-sessions=$(sesh list "$@" --json) || exit
+sessions=$(sesh list "${list_args[@]}" --json) || exit
 {
   printf '%s\n' "$sessions"
-  if ! "$source_filter"; then
-    shopt -s nullglob
-    {
-      for project in "$HOME"/Developer/github.com/pedropombeiro/*/; do
-        printf '%s\0' "${project%/}"
-      done
-    } | jq -Rs 'split("\u0000") | map(select(length > 0) | {Src: "directory", Name: ., Path: .})'
+  if "$projects" || ! "$source_filter"; then
+    shopt -s nullglob dotglob
+    discover_projects "$HOME/Developer" | jq -Rs 'split("\u0000") | map(select(length > 0) | {Src: "directory", Name: ., Path: .})'
   fi
-} | jq -rs --argjson icons "$icons" '
+} | jq -rs --argjson icons "$icons" --argjson projects "$projects" '
   def home: if startswith(env.HOME + "/") then "~" + ltrimstr(env.HOME) else . end;
   def pathkey: sub("^~/"; env.HOME + "/") | sub("/+$"; "");
   def clean: gsub("[\t\r\n]"; " ");
   def glyph:
     {tmux: "", config: "", zoxide: "", tmuxinator: "", "tmux-pane": "", directory: "📁"}[.Src] // "";
-  add as $sessions
+  add
+  | (if $projects then
+      ([.[] | select(.Src == "directory") | .Path | pathkey]) as $projectpaths
+      | map(select(.Src == "directory" or (.Src == "tmux" and ((.Path // "" | pathkey) as $path | $projectpaths | index($path)) != null)))
+    else . end) as $sessions
   | (env.SESH_WAITING | split("\n")) as $waiting
   | ([$sessions[] | select(.Src == "tmux") | .Path // "" | select(length > 0) | pathkey]) as $tmuxpaths
   | reduce $sessions[] as $s ({seen: {}, rows: []};

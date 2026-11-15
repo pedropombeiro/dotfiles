@@ -1,0 +1,51 @@
+{
+  "profiles": [
+    {
+      "name": "Default",
+      "guid": "ACDA53C1-3A64-44B6-9B54-892FCDBD2E71",
+      "parent_guid": "63FE164B-7C44-45BD-8FB4-0224E056F4B5"
+    },
+    {
+      "name": "GDK",
+      "guid": "211D976A-6476-49E8-9E40-62421D250511",
+      "parent_guid": "BFFD6BF3-475A-4EF5-89D1-6EE93780400B",
+      "optional": true
+    },
+    {
+      "name": "GDK rails console",
+      "guid": "D4576428-F527-488D-ABCF-073E73953D7C",
+      "parent_guid": "3E3EC3C1-EDA5-496A-BEFB-66C8DC9C12C4",
+      "optional": true
+    },
+    {
+      "name": "GDK development logs",
+      "guid": "96FE0D66-941C-4540-B0F3-4259AF8B9C2D",
+      "parent_guid": "A22C42B6-1136-4601-811D-AE45A6A8A284",
+      "optional": true
+    },
+    {
+      "name": "GDK Postgres console",
+      "guid": "E543DA96-0DC8-47E7-90F2-A3B0CFAD8F36",
+      "parent_guid": "3F07979F-4741-4CBC-B1F5-5DAD4E991FEE",
+      "optional": true
+    },
+    {
+      "name": "Clickhouse client",
+      "guid": "FC1967EE-83EF-47C8-B1E4-E81C198B0D68",
+      "parent_guid": "11020018-B2A3-4B60-8117-A06BCCC0CBB3",
+      "optional": true
+    },
+    {
+      "name": "Postgres thin clone (CI)",
+      "guid": "471C1DE3-4AE4-4E87-BD12-352390184C0D",
+      "parent_guid": "19051FF4-DC83-45D5-89AF-89C72615A9B8",
+      "optional": true
+    },
+    {
+      "name": "Postgres thin clone (main)",
+      "guid": "F06058A7-4916-4D51-850E-357A316C4748",
+      "parent_guid": "F23F2DFC-CCEF-427D-9F58-0C0BEA8CA681",
+      "optional": true
+    }
+  ]
+}

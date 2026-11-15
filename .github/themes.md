@@ -91,7 +91,7 @@ use pinned assets from `folke/tokyonight.nvim`. Local adapters cover application
 without a built-in Tokyo Night theme. Neovim installs its theme through Lazy.
 
 Catppuccin Mocha uses pinned upstream ports for bat, Yazi, Glow, Atuin, btop, and
-the manual-import iTerm2 preset. Its `assets.json` lists each repository, revision,
+the iTerm2 preset. Its `assets.json` lists each repository, revision,
 and destination. `install` downloads all assets before writing them. `set` and
 `apply` reject missing runtime assets without changing the selection. Local
 adapters preserve the tmux, Powerlevel10k, Yatline, lnav, Trippy, VisiData, and
@@ -122,9 +122,51 @@ All tmux palettes use native configuration and share layout settings. No tmux
 theme plugin is required. Source the selected theme before TPM initializes the
 mode indicator, and apply host-specific status overrides afterward.
 
-iTerm2 profile colors and the WakaTime CLI theme are not applied by this command.
-iTerm2 preferences remain application-owned Work/Personal alternates. The profile's
-`iterm` mapping records the intended preset for a later integration. Applying
-terminal colors needs separate handling to preserve profile identities and live
-preferences. `install` downloads an iTerm2 color preset under
-`~/.config/iterm2/themes/` for manual import without modifying profiles.
+## iTerm2 Dynamic Profiles
+
+On macOS, `set` and `apply` generate
+`~/Library/Application Support/iTerm2/DynamicProfiles/dotfiles-theme.json`.
+iTerm2 watches this directory and loads the profiles without a restart. The
+generated file is ignored by YADM. Bootstrap and regular theme updates populate
+it through the same installer and renderer.
+
+`~/.config/iterm2/dynamic-profiles.json` defines stable child GUIDs, names, and
+parent GUIDs. Generated profiles use clean everyday names such as `Default` and
+`GDK rails console`. Keep the original parent profiles with a `· base` suffix
+to distinguish the editable bases from their generated children. Inheritance uses
+GUIDs, so renaming a parent does not break it.
+The GDK, Rails console, development logs, Postgres console, Postgres thin clone
+(CI and main), and ClickHouse client
+children inherit from their respective parents when present, so the same mapping
+works on Work and Personal machines. Profiles outside this mapping remain unchanged. Missing
+required parents and GUID collisions stop rendering before any output is written.
+
+The generated children override colors and disable separate light/dark palettes
+so the selected dark theme applies regardless of macOS appearance. Commands,
+fonts, key bindings, and layout preferences inherit from the parents. Edit those
+preferences in the parent profile, not in the generated child. Theme switching
+does not edit the application-owned Work/Personal preferences plist.
+
+### Start using the themed profiles
+
+1. Run `dotfiles-theme install`, then `dotfiles-theme apply`.
+1. Rename the original parent profiles with a `· base` suffix in iTerm2. Keep
+   their GUIDs unchanged. Do this before using the generated profiles so profile
+   names are unambiguous. Apply the same naming on each Mac.
+1. Open iTerm2 **Settings > Profiles** and select the generated `Default`.
+1. Use **Other Actions > Set as Default** if new windows should use it.
+1. Open a session with `Default` or `GDK`. Update shortcuts
+   or automation that explicitly selects the original profiles when appropriate.
+
+Existing sessions using the original profiles do not migrate automatically.
+`mise iterm:setup` applies the selected theme and opens themed children for every
+profile in its workspace, including the development logs split. It reuses existing
+themed tabs and splits. On the first run after migration, original-profile tabs
+remain open and separate themed tabs are created. Close the old tabs when ready.
+Test switching in a themed session before relying on live updates. If a session
+has local color overrides, reopen it with the themed profile. Profile identities
+stay fixed across switches. No Python API, background watcher, or manual color
+preset import is required. WakaTime's CLI theme remains outside the selector.
+
+Run `zsh -df ~/.config/yadm/scripts/tests/test-iterm2-themes.zsh` for isolated
+renderer tests. The test does not launch iTerm2 or modify real preferences.

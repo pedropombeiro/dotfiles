@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import os
+import plistlib
 import re
 import shlex
 import shutil
@@ -13,6 +14,7 @@ import sys
 import tempfile
 from pathlib import Path
 from urllib.request import urlopen
+from xml.parsers.expat import ExpatError
 
 CONFIG = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
 ROOT = CONFIG / "dotfiles"
@@ -92,8 +94,8 @@ def validate_assets(name):
     installed = json.loads(state.read_text()) if state.exists() else {}
     for spec in sources:
         for target in spec["files"]:
-            # iTerm2 presets are manual imports, not runtime dependencies.
-            if target.startswith("iterm2/"):
+            # iTerm2 palettes are runtime inputs only on configured Macs.
+            if target.startswith("iterm2/") and not iterm2_enabled():
                 continue
             path = CONFIG / target
             expected = installed.get(target, {})
@@ -206,7 +208,91 @@ def render(values):
         outputs[CONFIG / "lnav/config.json"] = json.dumps(config, indent=2) + "\n"
     opencode = CONFIG / "opencode/cli.json"
     outputs[opencode] = render_opencode(opencode, values["opencode"])
+    outputs.update(render_iterm2(values["iterm"]))
     return outputs
+
+
+def iterm2_enabled():
+    return (
+        sys.platform == "darwin" and (CONFIG / "iterm2/dynamic-profiles.json").is_file()
+    )
+
+
+def read_iterm2_plist(path):
+    try:
+        return plistlib.loads(path.read_bytes())
+    except (ExpatError, plistlib.InvalidFileException):
+        # Apple's plist reader accepts control characters in iTerm2 key bindings
+        # that strict XML parsers reject. Never rewrite the preferences to fix it.
+        result = subprocess.run(
+            ["plutil", "-convert", "json", "-o", "-", str(path)],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        return json.loads(result.stdout)
+
+
+def render_iterm2(theme):
+    if not iterm2_enabled():
+        return {}
+    preferences = CONFIG / "iterm2/config/com.googlecode.iterm2.plist"
+    # Bootstrap may render themes before iTerm2 preferences are installed.
+    if not preferences.exists():
+        return {}
+    target = (
+        Path.home()
+        / "Library/Application Support/iTerm2/DynamicProfiles/dotfiles-theme.json"
+    )
+    # iTerm2 can persist loaded Dynamic Profiles alongside regular bookmarks.
+    # Only our generated file's copies may reuse the managed child GUIDs.
+    parents = {
+        profile["Guid"]
+        for profile in read_iterm2_plist(preferences)["New Bookmarks"]
+        if not profile.get("Dynamic Profile Filename")
+        or Path(profile["Dynamic Profile Filename"]).resolve() != target.resolve()
+    }
+    mappings = json.loads((CONFIG / "iterm2/dynamic-profiles.json").read_text())
+    palette = read_iterm2_plist(CONFIG / "iterm2/themes" / f"{theme}.itermcolors")
+    required = {
+        "Background Color",
+        "Foreground Color",
+        "Cursor Color",
+        "Cursor Text Color",
+        "Selection Color",
+        "Selected Text Color",
+        *(f"Ansi {index} Color" for index in range(16)),
+    }
+    if not isinstance(palette, dict) or not required <= palette.keys():
+        raise ValueError(f"Incomplete iTerm2 palette: {theme}")
+    # Import colors only, never commands, fonts, identities, or layout preferences.
+    colors = {
+        key: value
+        for key, value in palette.items()
+        if key.endswith(" Color") and isinstance(value, dict)
+    }
+    profiles = []
+    guids = set(parents)
+    for mapping in mappings["profiles"]:
+        parent = mapping["parent_guid"]
+        if parent not in parents:
+            if mapping.get("optional", False):
+                continue
+            raise ValueError(f"Missing iTerm2 parent profile: {parent}")
+        guid = mapping["guid"]
+        if guid in guids:
+            raise ValueError(f"Duplicate iTerm2 profile GUID: {guid}")
+        guids.add(guid)
+        profiles.append(
+            {
+                "Name": mapping["name"],
+                "Guid": guid,
+                "Dynamic Profile Parent GUID": parent,
+                "Use Separate Colors for Light and Dark Mode": False,
+                **colors,
+            }
+        )
+    return {target: json.dumps({"Profiles": profiles}, indent=2) + "\n"}
 
 
 def render_opencode(opencode, theme):
@@ -378,6 +464,10 @@ def main():
             f"Applied {name}. Run theme-refresh in existing Zsh shells "
             "or start a new shell. OpenCode updates live; reopen other applications."
         )
+        if any(path.name == "dotfiles-theme.json" for path in outputs):
+            print(
+                "iTerm2 Dynamic Profiles updated. Use Default or GDK; edit their base profiles for non-color preferences."
+            )
 
 
 if __name__ == "__main__":

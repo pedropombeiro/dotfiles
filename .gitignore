@@ -53,6 +53,8 @@ Thumbs.db
 /.config/atuin/themes/catppuccin-mocha-blue.toml
 /.config/btop/themes/catppuccin_mocha.theme
 /.config/iterm2/themes/catppuccin-mocha.itermcolors
+/.config/iterm2/themes/gruvbox-dark.itermcolors
+/Library/Application Support/iTerm2/DynamicProfiles/dotfiles-theme.json
 /.config/tmux/theme.conf
 /.config/tmux/theme-status.conf
 /.config/trippy/trippy.toml

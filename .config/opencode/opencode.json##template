@@ -435,6 +435,15 @@
     { "action": "shell", "resource": "glab issue view *", "effect": "allow" },
     { "action": "shell", "resource": "glab auth status*", "effect": "allow" },
     { "action": "shell", "resource": "glab api *", "effect": "allow" },
+    // Explicit mutation flags still require approval after the broad API allow.
+    { "action": "shell", "resource": "glab api *--method*", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *--form*", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *--field*", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *--raw-field*", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *--input*", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *-X *", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *-f *", "effect": "ask" },
+    { "action": "shell", "resource": "glab api *-F *", "effect": "ask" },
     { "action": "shell", "resource": "glab mr create *", "effect": "allow" },
     { "action": "shell", "resource": "glab mr diff *", "effect": "allow" },
     { "action": "shell", "resource": "glab mr list *", "effect": "allow" },
@@ -651,17 +660,6 @@
     { "action": "shell", "resource": "*bundle exec rubocop * -A*", "effect": "ask" },
     { "action": "shell", "resource": "*bundle exec rubocop -x*", "effect": "ask" },
     { "action": "shell", "resource": "*bundle exec rubocop * -x*", "effect": "ask" },
-{% if yadm.class == "Work" %}
-    // Broad API reads, narrowed below so explicit mutation flags still require approval.
-    { "action": "shell", "resource": "glab api *--method*", "effect": "ask" },
-    { "action": "shell", "resource": "glab api *--form*", "effect": "ask" },
-    { "action": "shell", "resource": "glab api *--field*", "effect": "ask" },
-    { "action": "shell", "resource": "glab api *--raw-field*", "effect": "ask" },
-    { "action": "shell", "resource": "glab api *--input*", "effect": "ask" },
-    { "action": "shell", "resource": "glab api *-X *", "effect": "ask" },
-    { "action": "shell", "resource": "glab api *-f *", "effect": "ask" },
-    { "action": "shell", "resource": "glab api *-F *", "effect": "ask" },
-{% endif %}
     { "action": "execute", "resource": "*", "effect": "allow" },
     { "action": "external_directory", "resource": "~/.agents/docs/*", "effect": "allow" },
     { "action": "external_directory", "resource": "/tmp", "effect": "allow" },
@@ -687,12 +685,13 @@
     // lazy-mcp-permissions plugin re-evaluates these rules against `server/command`.
     // Web search tools keep asking, matching the native websearch and webfetch rules.
     { "action": "lazy-mcp_invoke_command", "resource": "*", "effect": "ask" },
+    { "action": "lazy-mcp_invoke_command", "resource": "context7/*", "effect": "allow" },
+    { "action": "lazy-mcp_invoke_command", "resource": "grep_app/searchGitHub", "effect": "allow" },
+    { "action": "lazy-mcp_invoke_command", "resource": "memos/*_get_*", "effect": "allow" },
+    { "action": "lazy-mcp_invoke_command", "resource": "memos/*_list_*", "effect": "allow" },
 {% if yadm.class == "Work" %}
     { "action": "lazy-mcp_invoke_command", "resource": "clickhouse/list_*", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "clickhouse/run_query", "effect": "allow" },
-{% endif %}
-    { "action": "lazy-mcp_invoke_command", "resource": "context7/*", "effect": "allow" },
-{% if yadm.class == "Work" %}
     { "action": "lazy-mcp_invoke_command", "resource": "esquery*/count", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "esquery*/esql", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "esquery*/list_fields", "effect": "allow" },
@@ -720,9 +719,6 @@
     { "action": "lazy-mcp_invoke_command", "resource": "glean_default/read_document", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "glean_default/search", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "glean_default/user_activity", "effect": "allow" },
-{% endif %}
-    { "action": "lazy-mcp_invoke_command", "resource": "grep_app/searchGitHub", "effect": "allow" },
-{% if yadm.class == "Work" %}
     { "action": "lazy-mcp_invoke_command", "resource": "incident_io/*_list", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "incident_io/*_show", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "incident_io/*_stats", "effect": "allow" },
@@ -739,10 +735,6 @@
     { "action": "lazy-mcp_invoke_command", "resource": "incident_io/investigation_read", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "incident_io/maintenance_window_alerts", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "incident_io/telemetry_inspect", "effect": "allow" },
-{% endif %}
-    { "action": "lazy-mcp_invoke_command", "resource": "memos/*_get_*", "effect": "allow" },
-    { "action": "lazy-mcp_invoke_command", "resource": "memos/*_list_*", "effect": "allow" },
-{% if yadm.class == "Work" %}
     // Page inspection only; navigation, input, cookies, and network routing keep asking.
     { "action": "lazy-mcp_invoke_command", "resource": "pinchtab/pinchtab_find", "effect": "allow" },
     { "action": "lazy-mcp_invoke_command", "resource": "pinchtab/pinchtab_get_text", "effect": "allow" },

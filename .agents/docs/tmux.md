@@ -124,7 +124,11 @@ tmux server restart is needed. Native `tmux -CC` integration stays disabled.
 ## Yank Last Command Output (`prefix + y`)
 
 Uses OSC 133 semantic prompt markers to select the output of the previous command and copy it
-to the system clipboard via `pbcopy`. Requires iTerm2 shell integration to be active inside tmux.
+to the tmux buffer and system clipboard through OSC 52. Requires iTerm2 shell integration to be active inside tmux.
+The binding pipes the selection to `tmux load-buffer -w -t CLIENT -`, targeting the client
+that pressed the key. This bypasses copy-mode's pane redraw path for clipboard writes and works
+on macOS and QNAP without an external clipboard utility. The copy-mode action uses `-C -P`
+to leave both the clipboard write and buffer creation to `load-buffer`.
 
 **Dependencies:**
 

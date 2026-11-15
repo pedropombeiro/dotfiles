@@ -193,3 +193,62 @@ preset import is required. WakaTime's CLI theme remains outside the selector.
 
 Run `zsh -df ~/.config/yadm/scripts/tests/test-iterm2-themes.zsh` for isolated
 renderer tests. The test does not launch iTerm2 or modify real preferences.
+
+### Generate thin-clone variants
+
+Thin-clone discovery uses the Ruby `pgai` client's local environment registry,
+not live clone sessions or the separate `postgresai` client. Refresh explicitly:
+
+```sh
+mise iterm:profiles:refresh --dry-run
+mise iterm:profiles:refresh
+mise iterm:profiles:preview
+# After reviewing the preview, activate the generated profiles:
+mise iterm:profiles:apply
+```
+
+Refresh can request 1Password access to decrypt pgai's registry. It runs only
+`mise x ruby -- pgai env list`, never `connect`, `use`, or `destroy`.
+The ignored `~/.config/iterm2/thin-clones.local.json` cache contains a schema
+version and aliases only, with file permissions `0600`. Hosts, ports, database
+names, tokens, and encryption keys remain in pgai. Public examples and tests use
+synthetic metadata. Theme rendering, completion, and `iterm:setup` do not discover
+environments or access credentials.
+
+`iterm:profiles:apply` writes only the iTerm2 Dynamic Profiles file, using the
+selected theme and cached inventory. It doesn't render other application configs,
+refresh metadata, reload tmux, or open sessions. Theme changes still update iTerm2
+through the same renderer. `iterm:setup` uses the iTerm2-only apply command before
+arranging its existing workspace.
+
+Before the first successful refresh, CI and main retain their original parent
+mappings. With a cache present, all thin-clone variants inherit from the existing
+main thin-clone base. The generator overrides only the launch mode, initial text,
+and shortcut in addition to the theme. It preserves the existing PATH adjustment,
+`pgai connect ALIAS; ... pgai destroy ALIAS` sequence, CI shortcut, clean names,
+and CI/main GUIDs. New aliases use UUIDv5 identities from a fixed namespace, so
+ordering and theme changes do not change their GUIDs. New variants do not inherit
+a base's shortcut. Fonts, key bindings, directory policy, and window settings
+continue to inherit from the shared base. Cells are outside this integration.
+
+Failed or invalid discovery leaves the last valid cache unchanged. Invalid caches
+stop rendering before outputs are written. Missing optional bases omit their
+children, as on Personal machines. Refresh requires configured iTerm2 on macOS.
+An empty successful inventory removes all generated thin-clone variants. Any
+removal requires review with `--dry-run`, followed by a refresh with
+`--allow-removed`. Refresh saves metadata but does not apply profiles. Other
+theme-apply entry points, including YADM alternate maintenance and `iterm:setup`,
+consume the saved cache on their next run.
+
+For migration, keep the original CI and main bases until you have validated the
+generated variants. Preview lists profile GUIDs, parents, explicit launch overrides,
+and changed inherited preference keys without writing settings or disclosing
+inherited values. Generated profile output uses file permissions `0600` too.
+Compare the CI and main bases in iTerm2
+before activating a shared parent, especially if you have edited either one.
+After activation, manually verify the CI shortcut, tab names, inherited font and
+key bindings, connection and cleanup behavior, and the existing workspace's tabs
+and logs split. Opening sessions and running `iterm:setup` start real commands -
+do this only when ready. The generator never edits the app-owned plist or deletes
+original profiles. To return to the original parent mappings, move the cache
+outside the iTerm2 configuration directory and apply the theme again.

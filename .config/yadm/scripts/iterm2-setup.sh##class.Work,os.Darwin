@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Populate the watched Dynamic Profiles file before opening themed sessions.
-"$HOME/.local/bin/dotfiles-theme" apply
+"$HOME/.local/bin/dotfiles-theme" iterm-apply
 
 osascript <<'APPLESCRIPT'
 on tabWithProfile(targetWindow, profileName)

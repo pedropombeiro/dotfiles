@@ -1,4 +1,19 @@
 {
+  "thin_clones": {
+    "parent_guid": "F23F2DFC-CCEF-427D-9F58-0C0BEA8CA681",
+    "namespace": "814478de-a331-4b99-b739-ae89982b8f97",
+    "legacy": {
+      "ci": {
+        "name": "Postgres thin clone (CI)",
+        "guid": "471C1DE3-4AE4-4E87-BD12-352390184C0D",
+        "shortcut": "C"
+      },
+      "main": {
+        "name": "Postgres thin clone (main)",
+        "guid": "F06058A7-4916-4D51-850E-357A316C4748"
+      }
+    }
+  },
   "profiles": [
     {
       "name": "Default",

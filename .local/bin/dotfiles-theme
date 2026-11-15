@@ -12,6 +12,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import uuid
 from pathlib import Path
 from urllib.request import urlopen
 from xml.parsers.expat import ExpatError
@@ -50,11 +51,13 @@ def load_theme(name=None):
     return name, values
 
 
-def atomic_write(path, content):
+def atomic_write(path, content, mode=0o644):
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.is_symlink():
         raise ValueError(f"Refusing to replace symlink: {path}")
     if path.exists() and path.read_text() == content:
+        if path.stat().st_mode & 0o777 != mode:
+            path.chmod(mode)
         return
     temporary = None
     try:
@@ -63,7 +66,7 @@ def atomic_write(path, content):
         ) as output:
             temporary = Path(output.name)
             output.write(content)
-        temporary.chmod(0o644)
+        temporary.chmod(mode)
         temporary.replace(path)
     finally:
         if temporary is not None:
@@ -233,6 +236,160 @@ def read_iterm2_plist(path):
         return json.loads(result.stdout)
 
 
+def thin_clone_aliases(data):
+    if (
+        not isinstance(data, list)
+        or not all(
+            isinstance(alias, str)
+            and re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9_-]{0,63}", alias)
+            for alias in data
+        )
+        or len(data) != len(set(data))
+    ):
+        raise ValueError("Invalid or duplicate pgai aliases")
+    return sorted(data)
+
+
+def thin_clone_inventory():
+    path = CONFIG / "iterm2/thin-clones.local.json"
+    if not path.exists():
+        return None
+    data = json.loads(path.read_text())
+    if (
+        not isinstance(data, dict)
+        or set(data) != {"version", "aliases"}
+        or data["version"] != 1
+    ):
+        raise ValueError("Invalid thin-clone inventory")
+    return thin_clone_aliases(data["aliases"])
+
+
+def refresh_thin_clones(dry_run=False, allow_removed=False):
+    if not iterm2_enabled():
+        raise ValueError("Thin-clone refresh requires configured iTerm2 on macOS")
+    # This is the only discovery path: pgai may unlock its local store via 1Password.
+    # Never forward raw output or errors, which can contain private connection data.
+    try:
+        result = subprocess.run(
+            ["mise", "x", "ruby", "--", "pgai", "env", "list"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=120,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        raise ValueError(
+            "pgai environment discovery unavailable; inventory unchanged"
+        ) from None
+    if result.returncode:
+        raise ValueError("pgai environment discovery failed; inventory unchanged")
+    try:
+        records = json.loads(result.stdout)
+        if not isinstance(records, list) or not all(
+            isinstance(row, dict) for row in records
+        ):
+            raise ValueError
+        aliases = thin_clone_aliases([row.get("alias") for row in records])
+    except (ValueError, TypeError):
+        raise ValueError(
+            "Invalid pgai environment output; inventory unchanged"
+        ) from None
+    mappings = json.loads((CONFIG / "iterm2/dynamic-profiles.json").read_text())
+    previous = thin_clone_inventory()
+    if previous is None:
+        previous = list(mappings["thin_clones"]["legacy"])
+    removed = sorted(set(previous) - set(aliases))
+    print("Thin-clone aliases: " + (", ".join(aliases) or "(none)"))
+    if removed:
+        print("Removed aliases: " + ", ".join(removed))
+        if not allow_removed and not dry_run:
+            raise ValueError(
+                "Review removals with --dry-run, then pass --allow-removed"
+            )
+    if not dry_run:
+        atomic_write(
+            CONFIG / "iterm2/thin-clones.local.json",
+            json.dumps({"version": 1, "aliases": aliases}, indent=2) + "\n",
+            mode=0o600,
+        )
+        print("Inventory saved. Preview before running mise iterm:profiles:apply.")
+
+
+def iterm2_mappings(mappings):
+    aliases = thin_clone_inventory() if "thin_clones" in mappings else None
+    if aliases is None:
+        return mappings["profiles"]
+    spec = mappings["thin_clones"]
+    legacy = spec["legacy"]
+    profiles = [
+        p
+        for p in mappings["profiles"]
+        if p["guid"] not in {item["guid"] for item in legacy.values()}
+    ]
+    for alias in aliases:
+        identity = legacy.get(alias, {})
+        quoted = shlex.quote(alias)
+        profiles.append(
+            {
+                "name": identity.get("name", f"Postgres thin clone ({alias})"),
+                "guid": identity.get("guid")
+                or str(uuid.uuid5(uuid.UUID(spec["namespace"]), alias)).upper(),
+                "parent_guid": spec["parent_guid"],
+                "optional": True,
+                "overrides": {
+                    "Custom Command": "No",
+                    "Initial Text": (
+                        'export PATH="$HOME/.shellrc/zshrc.d/functions/scripts:$PATH" && '
+                        f"mise x ruby -- pgai connect {quoted}; mise x ruby -- pgai destroy {quoted}"
+                    ),
+                    "Shortcut": identity.get("shortcut", ""),
+                },
+            }
+        )
+    return profiles
+
+
+def preview_iterm2(theme):
+    outputs = render_iterm2(theme)
+    if not outputs:
+        print("No configured iTerm2 profiles on this platform.")
+        return
+    preferences = read_iterm2_plist(
+        CONFIG / "iterm2/config/com.googlecode.iterm2.plist"
+    )
+    parents = {p["Guid"]: p for p in preferences["New Bookmarks"]}
+    mappings = json.loads((CONFIG / "iterm2/dynamic-profiles.json").read_text())
+    originals = {p["guid"]: p["parent_guid"] for p in mappings["profiles"]}
+    summaries = []
+    for content in outputs.values():
+        for profile in json.loads(content)["Profiles"]:
+            summary = {
+                key: profile[key]
+                for key in (
+                    "Name",
+                    "Guid",
+                    "Dynamic Profile Parent GUID",
+                    "Custom Command",
+                    "Initial Text",
+                    "Shortcut",
+                )
+                if key in profile
+            }
+            original = parents.get(originals.get(profile["Guid"]))
+            if original:
+                previous = {**original, **profile}
+                current = {**parents[profile["Dynamic Profile Parent GUID"]], **profile}
+                # Report preference keys only, never private inherited values.
+                summary["Changed inherited preference keys"] = sorted(
+                    key
+                    for key in previous.keys() | current.keys()
+                    if previous.get(key) != current.get(key)
+                    and key not in {"Guid", "Name", "Dynamic Profile Filename"}
+                )
+            summaries.append(summary)
+    print(json.dumps(summaries, indent=2))
+
+
 def render_iterm2(theme):
     if not iterm2_enabled():
         return {}
@@ -252,6 +409,19 @@ def render_iterm2(theme):
         if not profile.get("Dynamic Profile Filename")
         or Path(profile["Dynamic Profile Filename"]).resolve() != target.resolve()
     }
+    # Other watched files need not have been persisted into preferences yet.
+    external_names = set()
+    external_guids = set()
+    for path in target.parent.iterdir() if target.parent.exists() else ():
+        if path.resolve() == target.resolve() or not path.is_file():
+            continue
+        try:
+            document = json.loads(path.read_text())
+        except (ValueError, UnicodeError):
+            document = read_iterm2_plist(path)
+        for profile in document.get("Profiles", []):
+            external_guids.add(profile["Guid"])
+            external_names.add(profile["Name"])
     mappings = json.loads((CONFIG / "iterm2/dynamic-profiles.json").read_text())
     palette = read_iterm2_plist(CONFIG / "iterm2/themes" / f"{theme}.itermcolors")
     required = {
@@ -272,8 +442,14 @@ def render_iterm2(theme):
         if key.endswith(" Color") and isinstance(value, dict)
     }
     profiles = []
-    guids = set(parents)
-    for mapping in mappings["profiles"]:
+    guids = parents | external_guids
+    names = external_names | {
+        profile["Name"]
+        for profile in read_iterm2_plist(preferences)["New Bookmarks"]
+        if not profile.get("Dynamic Profile Filename")
+        or Path(profile["Dynamic Profile Filename"]).resolve() != target.resolve()
+    }
+    for mapping in iterm2_mappings(mappings):
         parent = mapping["parent_guid"]
         if parent not in parents:
             if mapping.get("optional", False):
@@ -283,11 +459,15 @@ def render_iterm2(theme):
         if guid in guids:
             raise ValueError(f"Duplicate iTerm2 profile GUID: {guid}")
         guids.add(guid)
+        if mapping["name"] in names:
+            raise ValueError("Duplicate generated iTerm2 profile name")
+        names.add(mapping["name"])
         profiles.append(
             {
                 "Name": mapping["name"],
                 "Guid": guid,
                 "Dynamic Profile Parent GUID": parent,
+                **mapping.get("overrides", {}),
                 "Use Separate Colors for Light and Dark Mode": False,
                 **colors,
             }
@@ -398,6 +578,24 @@ def main():
     value = sub.add_parser("value", help="Print an application mapping")
     value.add_argument("key")
     sub.add_parser("shell", help="Print shell exports for the selected theme")
+    refresh = sub.add_parser(
+        "iterm-refresh", help="Cache pgai aliases without opening connections"
+    )
+    refresh.add_argument(
+        "--dry-run", action="store_true", help="Discover and report without saving"
+    )
+    refresh.add_argument(
+        "--allow-removed",
+        action="store_true",
+        help="Accept removed aliases after review",
+    )
+    sub.add_parser(
+        "iterm-preview",
+        help="Preview generated identities and launch settings without writing",
+    )
+    sub.add_parser(
+        "iterm-apply", help="Write only iTerm2 profiles using the selected theme"
+    )
     apply = sub.add_parser("apply", help="Render managed configs")
     apply.add_argument("--reload", action="store_true", help="Also reload running tmux")
     select = sub.add_parser("set", help="Persist a theme and render managed configs")
@@ -410,8 +608,22 @@ def main():
     if args.command == "list":
         print("\n".join(sorted(path.stem for path in (ROOT / "themes").glob("*.json"))))
         return
+    if args.command == "iterm-refresh":
+        refresh_thin_clones(args.dry_run, args.allow_removed)
+        return
     name, values = load_theme(args.name if args.command in ("set", "install") else None)
-    if args.command == "get":
+    if args.command == "iterm-preview":
+        preview_iterm2(values["iterm"])
+    elif args.command == "iterm-apply":
+        outputs = render_iterm2(values["iterm"])
+        for path, content in outputs.items():
+            atomic_write(path, content, mode=0o600)
+        print(
+            "iTerm2 profiles updated."
+            if outputs
+            else "No configured iTerm2 profiles on this platform."
+        )
+    elif args.command == "get":
         print(name)
     elif args.command == "value":
         print(values[args.key])
@@ -448,7 +660,11 @@ def main():
             if path.is_symlink():
                 raise ValueError(f"Refusing to replace symlink: {path}")
         for path, content in outputs.items():
-            atomic_write(path, content)
+            atomic_write(
+                path,
+                content,
+                mode=0o600 if path.name == "dotfiles-theme.json" else 0o644,
+            )
         if (
             args.reload
             and shutil.which("tmux")

@@ -89,3 +89,24 @@ hs -c 'require("audio").setDockedAudioOutput()'
 [tasks."iterm:setup"]
 description = "Set up iTerm2 window with standard Work tabs and start GDK"
 run = "$HOME/.config/yadm/scripts/iterm2-setup.sh"
+
+[tasks."iterm:profiles:refresh"]
+description = "Refresh private pgai alias inventory without launching sessions"
+usage = '''
+flag "--dry-run" help="Discover aliases and report changes without saving"
+flag "--allow-removed" help="Accept removed aliases after reviewing a dry run"
+'''
+run = '''
+args=()
+[[ ${usage_dry_run:-false} == true ]] && args+=(--dry-run)
+[[ ${usage_allow_removed:-false} == true ]] && args+=(--allow-removed)
+"$HOME/.local/bin/dotfiles-theme" iterm-refresh "${args[@]}"
+'''
+
+[tasks."iterm:profiles:preview"]
+description = "Preview iTerm2 generated identities and launch overrides without writing"
+run = "$HOME/.local/bin/dotfiles-theme iterm-preview"
+
+[tasks."iterm:profiles:apply"]
+description = "Generate only iTerm2 profiles using the selected theme and cached inventory"
+run = "$HOME/.local/bin/dotfiles-theme iterm-apply"

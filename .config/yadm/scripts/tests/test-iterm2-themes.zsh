@@ -8,7 +8,7 @@ test_sandbox python3
 trap test_cleanup EXIT
 
 python3 - "$repo" <<'PY'
-import json, os, plistlib, re, runpy, sys
+import contextlib, io, json, os, plistlib, re, runpy, sys
 from pathlib import Path
 from unittest.mock import patch
 repo = Path(sys.argv[1])
@@ -32,7 +32,7 @@ used_names = set(re.findall(r'(?:ensureTab\(targetWindow, |with profile )"([^"\n
 assert used_names == expected_names - {
     'Postgres thin clone (CI)', 'Postgres thin clone (main)',
 }
-assert '"$HOME/.local/bin/dotfiles-theme" apply' in setup.split('osascript')[0]
+assert '"$HOME/.local/bin/dotfiles-theme" iterm-apply' in setup.split('osascript')[0]
 assert 'split horizontally with profile "GDK development logs"' in setup
 (directory / 'dynamic-profiles.json').write_text(json.dumps(mapping))
 preferences = directory / 'config/com.googlecode.iterm2.plist'
@@ -76,6 +76,146 @@ with patch.object(sys, 'platform', 'darwin'):
     else:
         raise AssertionError('another dynamic file can claim managed GUIDs')
     preferences.write_bytes(original)
+    # Discovery is explicit, local, and stores aliases only. No connection commands.
+    inventory = directory / 'thin-clones.local.json'
+    refresh = module['refresh_thin_clones']
+    records = [dict(alias=alias, id='private.invalid', port=9999,
+                    dbname='private_database', access_token='fixture-secret')
+               for alias in ('main', 'ci', 'review')]
+    with patch.object(module['subprocess'], 'run') as run:
+        run.return_value.returncode = 0
+        run.return_value.stdout = json.dumps(records)
+        refresh(dry_run=True)
+        assert not inventory.exists()
+        refresh()
+        assert run.call_args.args[0] == ['mise', 'x', 'ruby', '--', 'pgai', 'env', 'list']
+        assert run.call_args.kwargs['timeout'] == 120
+    assert json.loads(inventory.read_text()) == {'version': 1, 'aliases': ['ci', 'main', 'review']}
+    assert inventory.stat().st_mode & 0o777 == 0o600
+    before = inventory.read_bytes()
+    with patch.object(module['subprocess'], 'run') as run:
+        run.return_value.returncode = 0
+        run.return_value.stdout = json.dumps(records)
+        inventory.chmod(0o644)
+        refresh()
+        assert inventory.stat().st_mode & 0o777 == 0o600
+        for bad in ('not json', '{}', '[{}]', '[{"alias":"--help"}]',
+                    '[{"alias":"a;echo bad"}]', '[{"alias":"a"},{"alias":"a"}]'):
+            run.return_value.stdout = bad
+            try:
+                refresh()
+            except ValueError:
+                pass
+            else:
+                raise AssertionError('invalid inventory accepted')
+            assert inventory.read_bytes() == before
+        run.return_value.returncode = 1
+        try:
+            refresh()
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('failed discovery accepted')
+        assert inventory.read_bytes() == before
+        run.return_value.returncode = 0
+        run.return_value.stdout = '[{"alias":"ci"},{"alias":"main"}]'
+        try:
+            refresh()
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('unreviewed removal accepted')
+        assert inventory.read_bytes() == before
+        refresh(dry_run=True)
+        assert inventory.read_bytes() == before
+    for failure in (OSError('fixture'), module['subprocess'].TimeoutExpired('fixture', 120)):
+        with patch.object(module['subprocess'], 'run', side_effect=failure):
+            try:
+                refresh()
+            except ValueError:
+                pass
+            else:
+                raise AssertionError('unavailable discovery accepted')
+        assert inventory.read_bytes() == before
+    with patch.object(module['subprocess'], 'run', side_effect=AssertionError('implicit discovery')):
+        generated = json.loads(render('gruvbox-dark')[target])['Profiles']
+    by_name = {p['Name']: p for p in generated}
+    assert len(generated) == 9
+    common = mapping['thin_clones']['parent_guid']
+    for alias, identity in mapping['thin_clones']['legacy'].items():
+        child = by_name[identity['name']]
+        assert child['Guid'] == identity['guid']
+        assert child['Dynamic Profile Parent GUID'] == common
+        assert child['Custom Command'] == 'No'
+        assert child['Initial Text'].endswith(f'pgai connect {alias}; mise x ruby -- pgai destroy {alias}')
+        assert child['Shortcut'] == identity.get('shortcut', '')
+        assert 'Working Directory' not in child and 'Normal Font' not in child
+    assert by_name['Postgres thin clone (review)']['Shortcut'] == ''
+    with contextlib.redirect_stdout(io.StringIO()) as preview:
+        module['preview_iterm2']('gruvbox-dark')
+    summaries = json.loads(preview.getvalue())
+    assert len(summaries) == 9
+    assert all(not p.get('Changed inherited preference keys') for p in summaries)
+    changed_parents = [dict(p) for p in parents]
+    changed_parents[-2]['Normal Font'] = 'fixture-only-font'
+    preferences.write_bytes(plistlib.dumps({'New Bookmarks': changed_parents}))
+    with contextlib.redirect_stdout(io.StringIO()) as preview:
+        module['preview_iterm2']('gruvbox-dark')
+    assert 'fixture-only-font' not in preview.getvalue()
+    ci_summary = next(p for p in json.loads(preview.getvalue()) if p['Name'] == 'Postgres thin clone (CI)')
+    assert ci_summary['Changed inherited preference keys'] == ['Normal Font']
+    preferences.write_bytes(original)
+    assert render('gruvbox-dark') == render('gruvbox-dark')
+    cached = [{**p, 'Dynamic Profile Filename': str(target)} for p in generated]
+    preferences.write_bytes(plistlib.dumps({'New Bookmarks': parents + cached}))
+    assert json.loads(render('gruvbox-dark')[target])['Profiles'] == generated
+    preferences.write_bytes(original)
+    inventory.write_text(json.dumps({'version': 1, 'aliases': ['review', 'main', 'ci']}))
+    assert json.loads(render('gruvbox-dark')[target])['Profiles'] == generated
+    # A GUID claimed by an unrelated profile must fail even for a new alias.
+    preferences.write_bytes(plistlib.dumps({'New Bookmarks': parents + [
+        {'Guid': by_name['Postgres thin clone (review)']['Guid'], 'Name': 'unrelated'}]}))
+    try:
+        render('gruvbox-dark')
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('new alias GUID collision accepted')
+    preferences.write_bytes(plistlib.dumps({'New Bookmarks': parents[:1]}))
+    assert len(json.loads(render('gruvbox-dark')[target])['Profiles']) == 1
+    preferences.write_bytes(original)
+    with patch.object(module['subprocess'], 'run') as run:
+        run.return_value.returncode = 0
+        run.return_value.stdout = '[]'
+        refresh(allow_removed=True)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    other = target.with_name('unrelated.json')
+    inventory.write_bytes(before)
+    for collision in (
+        {'Guid': by_name['Postgres thin clone (review)']['Guid'], 'Name': 'unrelated'},
+        {'Guid': 'unrelated', 'Name': 'Postgres thin clone (review)'},
+    ):
+        other.write_text(json.dumps({'Profiles': [collision]}))
+        try:
+            render('gruvbox-dark')
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('unpersisted dynamic collision accepted')
+    other.unlink()
+    inventory.write_text(json.dumps({'version': 1, 'aliases': []}))
+    assert len(json.loads(render('gruvbox-dark')[target])['Profiles']) == 6
+    for invalid in ({'version': 2, 'aliases': []}, {'version': 1, 'aliases': ['a', 'a']},
+                    {'version': 1, 'aliases': [], 'host': 'private.invalid'}):
+        inventory.write_text(json.dumps(invalid))
+        try:
+            render('gruvbox-dark')
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('invalid cache accepted')
+    inventory.unlink()
+    assert preferences.read_bytes() == original
     saved_palette = (directory / 'themes/gruvbox-dark.itermcolors').read_bytes()
     (directory / 'themes/gruvbox-dark.itermcolors').write_bytes(plistlib.dumps({}))
     try:
@@ -101,6 +241,20 @@ with patch.object(sys, 'platform', 'darwin'):
     else:
         raise AssertionError('missing required parent accepted')
     preferences.write_bytes(original)
+    # The dedicated CLI renders only iTerm2, without discovery or other assets.
+    with patch.object(sys, 'argv', ['dotfiles-theme', 'iterm-apply']), \
+         patch.dict(module['main'].__globals__, {
+             'load_theme': lambda *_: ('fixture', {'iterm': 'gruvbox-dark'}),
+             'render': lambda *_: (_ for _ in ()).throw(AssertionError('rendered other apps')),
+             'validate_assets': lambda *_: (_ for _ in ()).throw(AssertionError('validated other apps')),
+         }), \
+         patch.object(module['subprocess'], 'run', side_effect=AssertionError('implicit discovery')):
+        module['main']()
+        saved = target.read_bytes()
+        assert target.stat().st_mode & 0o777 == 0o600
+        module['main']()
+        assert target.read_bytes() == saved
+    assert preferences.read_bytes() == original
     mapping['profiles'][0]['guid'] = parents[0]['Guid']
     (directory / 'dynamic-profiles.json').write_text(json.dumps(mapping))
     try:

@@ -69,6 +69,8 @@ Thumbs.db
 /.agents/skills/hk-configure
 /.agents/skills/hk-debug
 
+/.config/iterm2/thin-clones.local.json
+
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile
 .config/1Password/ssh/agent.toml

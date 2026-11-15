@@ -299,6 +299,8 @@
     { "action": "shell", "resource": "bundle exec danger *", "effect": "allow" },
     { "action": "shell", "resource": "bundle exec rake -T", "effect": "allow" },
     { "action": "shell", "resource": "bundle exec bin/*", "effect": "allow" },
+    { "action": "shell", "resource": "RAILS_ENV=test bundle exec rspec*", "effect": "allow" },
+    { "action": "shell", "resource": "RAILS_ENV=test bundle exec rubocop*", "effect": "allow" },
     { "action": "shell", "resource": "bundle install*", "effect": "allow" },
     { "action": "shell", "resource": "bundle show *", "effect": "allow" },
     { "action": "shell", "resource": "caproni helmctl get *", "effect": "allow" },
@@ -521,9 +523,7 @@
 {% endif %}
     { "action": "shell", "resource": "mkdir -p /private/tmp/*", "effect": "allow" },
     { "action": "shell", "resource": "mkdir -p /private/var/folders/*", "effect": "allow" },
-{% if yadm.class == "Work" %}
     { "action": "shell", "resource": "mkdir -p /tmp/*", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "more *", "effect": "allow" },
     { "action": "shell", "resource": "nl*", "effect": "allow" },
     { "action": "shell", "resource": "npm view *", "effect": "allow" },
@@ -545,10 +545,6 @@
     { "action": "shell", "resource": "printenv *", "effect": "allow" },
     { "action": "shell", "resource": "printf *", "effect": "allow" },
     { "action": "shell", "resource": "ps *", "effect": "allow" },
-{% if yadm.class == "Work" %}
-    { "action": "shell", "resource": "RAILS_ENV=test bundle exec rspec*", "effect": "allow" },
-    { "action": "shell", "resource": "RAILS_ENV=test bundle exec rubocop*", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "pwd*", "effect": "allow" },
     { "action": "shell", "resource": "readlink *", "effect": "allow" },
 {% if yadm.class == "Work" %}
@@ -667,13 +663,11 @@
     { "action": "external_directory", "resource": "/private/tmp/**/*", "effect": "allow" },
     { "action": "external_directory", "resource": "/private/tmp/*", "effect": "allow" },
     { "action": "external_directory", "resource": "/private/tmp", "effect": "allow" },
-{% if yadm.class == "Work" %}
-    // Denied: use Glean MCP instead (faster, more comprehensive, indexes more sources)
-    { "action": "gitlab_documentation_search", "resource": "*", "effect": "deny" },
-{% endif %}
     { "action": "glob", "resource": "*", "effect": "allow" },
     { "action": "grep", "resource": "*", "effect": "allow" },
 {% if yadm.class == "Work" %}
+    // Denied: use Glean MCP instead (faster, more comprehensive, indexes more sources)
+    { "action": "gitlab_documentation_search", "resource": "*", "effect": "deny" },
     { "action": "knowledge-graph_get_references", "resource": "*", "effect": "allow" },
     { "action": "knowledge-graph_list_projects", "resource": "*", "effect": "allow" },
     { "action": "knowledge-graph_read_definitions", "resource": "*", "effect": "allow" },

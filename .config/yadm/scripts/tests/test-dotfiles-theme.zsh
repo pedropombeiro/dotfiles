@@ -8,7 +8,7 @@ command_path=$repo/.local/bin/dotfiles-theme
 picker_path=$repo/.local/bin/dotfiles-fzf
 refresh_path=$repo/.shellrc/zshrc.d/functions/theme-refresh
 source "$scripts/tests/lib/test-helpers.zsh"
-test_sandbox python3 cp mkdir cmp bash uname
+test_sandbox python3 cp mkdir cmp bash uname cat
 trap test_cleanup EXIT
 
 mkdir -p "$XDG_CONFIG_HOME/dotfiles/themes" "$XDG_CONFIG_HOME/glow"
@@ -114,7 +114,7 @@ test_stub tmux <<'SH'
 printf '%s\n' "$*" >> "$THEME_TEST_LOG"
 SH
 test_expect_status 'explicit reload' 0 python3 "$command_path" apply --reload
-test_assert_equal 'reload sequence' $'has-session\nsource-file '"$XDG_CONFIG_HOME/tmux/tmux.conf" "$(<"$THEME_TEST_LOG")"
+test_assert_equal 'reload sequence' $'has-session\nsource-file '"$XDG_CONFIG_HOME/tmux/tmux.conf" "$(cat "$THEME_TEST_LOG")"
 
 cp "$XDG_CONFIG_HOME/bat/config" "$TEST_SANDBOX/before"
 rm "$XDG_CONFIG_HOME/bat/config"
@@ -267,7 +267,7 @@ print '{invalid' > "$XDG_CONFIG_HOME/opencode/cli.json"
 test_expect_status 'reject invalid OpenCode preferences' 1 python3 "$command_path" set tokyonight-night
 cmp "$XDG_CONFIG_HOME/bat/config" "$TEST_SANDBOX/before"
 test_assert_equal 'invalid OpenCode config preserves selection' gruvbox "$(python3 "$command_path" get)"
-test_assert_equal 'invalid OpenCode config remains untouched' '{invalid' "$(<"$XDG_CONFIG_HOME/opencode/cli.json")"
+test_assert_equal 'invalid OpenCode config remains untouched' '{invalid' "$(cat "$XDG_CONFIG_HOME/opencode/cli.json")"
 print 'PASS: OpenCode theme switching, preference preservation, and invalid-config safety'
 
 # Appearance failures must not prevent the existing alternate-file maintenance.
@@ -280,7 +280,7 @@ done
 print '#!/bin/sh\nexit 7' > "$HOME/.local/bin/dotfiles-theme"
 chmod +x "$HOME/.local/bin/dotfiles-theme"
 test_expect_status 'theme failure is nonfatal in post_alt' 0 zsh -df "$HOME/.config/yadm/hooks/post_alt"
-test_assert_equal 'alternate maintenance still runs' $'prune-dangling-alt-links\nrelink-dotfiles\nupdate-gitignore-alt' "$(<"$HOOK_TEST_LOG")"
+test_assert_equal 'alternate maintenance still runs' $'prune-dangling-alt-links\nrelink-dotfiles\nupdate-gitignore-alt' "$(cat "$HOOK_TEST_LOG")"
 [[ $(<"$TEST_SANDBOX/output") == *'Warning: theme settings were not updated.'* ]] || test_fail 'theme failure is not reported'
 print 'PASS: shell refresh and nonfatal post_alt theme failure'
 
@@ -327,7 +327,7 @@ SH
 cp "$TEST_SANDBOX/bin/dotfiles-theme" "$HOME/.local/bin/dotfiles-theme"
 : > "$THEME_TEST_LOG"
 test_expect_status 'bootstrap installs before rendering' 0 bash "$repo/.config/yadm/bootstrap.d/125-setup-theme.sh"
-test_assert_equal 'bootstrap theme sequence' $'install\napply' "$(<"$THEME_TEST_LOG")"
+test_assert_equal 'bootstrap theme sequence' $'install\napply' "$(cat "$THEME_TEST_LOG")"
 
 # Test mise wrappers with the harmless CLI stub, never real theme operations.
 python3 - "$repo/.config/mise/conf.d/tasks.toml" <<'PY'

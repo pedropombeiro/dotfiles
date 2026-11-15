@@ -282,32 +282,50 @@ The ignored `iterm2/caproni.local.json` cache stores private paths with permissi
 `0600`. Missing registered legacy environments stop refresh. Other removals require
 `--allow-removed` after a dry-run review. Theme rendering uses only the saved cache.
 
-### Prepare a shared GDK base
+### Maintain GDK role profiles
+
+The migration utility has been removed. The private, mode-`0600`
+`~/.config/iterm2/gdk.local.json` is now configuration, not a disposable cache.
+It preserves role-specific settings and existing generated GUIDs while all five
+roles inherit from `GDK · base`. Rendering never rebuilds or overwrites this file.
 
 ```sh
-mise iterm:profiles:gdk-prepare --dry-run
-mise iterm:profiles:gdk-prepare
 mise iterm:profiles:preview
-# Apply only after reviewing equivalent behavior:
 mise iterm:profiles:apply
 ```
 
-Preparation reads the app-owned bases without editing them. It snapshots differing
-role settings into the ignored, mode-`0600` `iterm2/gdk.local.json`, retaining all
-generated GUIDs and selecting the existing GDK base as the shared parent. Internal
-commands and paths stay local. Retain the original role bases during validation.
+Maintain inherited UI preferences in `GDK · base`. Explicit settings in
+`gdk.local.json` override that base, including commands, directories, shortcuts,
+title components, triggers, and the UI policies captured during migration. Edit
+those private overrides directly when needed, then preview and apply. Generated
+children and retired role bases are not sources of truth.
 
-Preparation explicitly standardizes Powerline glyph drawing, initial transparency,
-cursor guide, smart cursor color, automatic password-manager opening, and trigger-string interpolation
-to off. Mouse-reporting clicks and drags are enabled, and the session-close undo
-timeout is 20 seconds. These are intentional shared UI policies, not inferred app
-defaults. Existing role-specific triggers and title components remain explicit.
-Roles without stored triggers get an empty list, so they cannot inherit shell
-triggers. Roles without stored title components use the clean profile name.
+Back up this private configuration independently because YADM does not track it.
+For another Work machine, restore it through private configuration before applying
+profiles. Never place internal commands or connection paths in the public mapping.
 
-For other unspecified preferences, preparation still stops without saving rather
-than guessing application defaults. Preview reports the intentional UI changes
-alongside any unexpected inherited-setting differences.
-Snapshot files are not updated from subsequent edits to retired role bases.
-Move the snapshot outside the configuration directory and apply to restore the
-original parent mappings. Never delete original bases before validation.
+The file has this structure, with real generated and parent GUIDs from
+`iterm2/dynamic-profiles.json`:
+
+```json
+{
+  "version": 1,
+  "profiles": {
+    "GENERATED_PROFILE_GUID": {
+      "parent_guid": "SHARED_BASE_GUID",
+      "overrides": {
+        "Custom Command": "Yes",
+        "Command": "zsh -l",
+        "Triggers": [],
+        "Title Components": 2
+      }
+    }
+  }
+}
+```
+
+Keep `GDK · base` and `GDK QA`. Once the generated roles are validated, the
+original Rails, logs, Postgres, and ClickHouse role bases can be removed through
+iTerm2. Applying profiles continues to work without them. Removing the private
+configuration falls back to the original parent mappings, which requires restoring
+those original bases first.

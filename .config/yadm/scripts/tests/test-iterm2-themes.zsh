@@ -287,17 +287,21 @@ with patch.object(sys, 'platform', 'darwin'):
         refresh_caproni(allow_removed=True)
         assert len(module['caproni_mappings'](mapping)) == 2
     cap_cache.unlink()
-    # Shared-base migration preserves explicitly stored role settings, never guessing defaults.
-    role_parents = [dict(p) for p in parents]
-    role_parents[2]['Option Key Sends'] = 2
-    role_parents[1].update({'Triggers': [{'regex': 'FAIL:', 'action': 'BounceTrigger'}],
-                            'Title Components': 2, 'Use Cursor Guide': True})
-    role_parents[2]['Title Components'] = 32
-    preferences.write_bytes(plistlib.dumps({'New Bookmarks': role_parents}))
-    module['prepare_gdk'](dry_run=True)
-    assert not (directory / 'gdk.local.json').exists()
-    module['prepare_gdk']()
-    assert (directory / 'gdk.local.json').stat().st_mode & 0o777 == 0o600
+    # Private role settings remain authoritative after the original bases are retired.
+    shared_guid = mapping['profiles'][1]['parent_guid']
+    role_settings = {
+        p['guid']: {'parent_guid': shared_guid, 'overrides': {
+            'Command': 'fixture command', 'Initial Text': '', 'Triggers': [],
+            'Title Components': 2, 'Open Password Manager Automatically': False,
+        }} for p in mapping['profiles'][1:6]
+    }
+    role_settings[mapping['profiles'][2]['guid']]['overrides'].update({
+        'Option Key Sends': 2, 'Title Components': 32,
+    })
+    snapshot_path = directory / 'gdk.local.json'
+    snapshot_path.write_text(json.dumps({'version': 1, 'profiles': role_settings}))
+    snapshot = snapshot_path.read_bytes()
+    preferences.write_bytes(plistlib.dumps({'New Bookmarks': parents[:2] + parents[6:]}))
     migrated = json.loads(render('gruvbox-dark')[target])['Profiles']
     rails = next(p for p in migrated if p['Name'] == 'GDK rails console')
     assert rails['Option Key Sends'] == 2
@@ -305,23 +309,28 @@ with patch.object(sys, 'platform', 'darwin'):
     assert rails['Dynamic Profile Parent GUID'] == mapping['profiles'][1]['parent_guid']
     assert rails['Triggers'] == []
     assert rails['Title Components'] == 32
-    assert all(p[key] == value for p in migrated if p['Name'].startswith('GDK') or p['Name'] == 'Clickhouse client'
-               for key, value in module['GDK_UI_DEFAULTS'].items())
+    assert len(migrated) == 8
+    assert all(p['Dynamic Profile Parent GUID'] == shared_guid
+               for p in migrated if p['Name'].startswith('GDK') or p['Name'] == 'Clickhouse client')
     logs = next(p for p in migrated if p['Name'] == 'GDK development logs')
     assert logs['Title Components'] == 2 and logs['Triggers'] == []
-    shell = next(p for p in migrated if p['Name'] == 'GDK')
-    assert shell['Triggers'] == role_parents[1]['Triggers']
-    snapshot = (directory / 'gdk.local.json').read_bytes()
-    role_parents[1]['Unresolved preference'] = True
-    preferences.write_bytes(plistlib.dumps({'New Bookmarks': role_parents}))
-    try:
-        module['prepare_gdk']()
-    except ValueError:
-        pass
-    else:
-        raise AssertionError('unspecified role preference guessed')
-    assert (directory / 'gdk.local.json').read_bytes() == snapshot
-    (directory / 'gdk.local.json').unlink()
+    with patch.object(sys, 'argv', ['dotfiles-theme', 'iterm-apply']), \
+         patch.dict(module['main'].__globals__, {'load_theme': lambda *_: ('fixture', {'iterm': 'gruvbox-dark'})}):
+        module['main']()
+    assert snapshot_path.read_bytes() == snapshot
+    assert json.loads(target.read_text())['Profiles'] == migrated
+    for invalid in ({'version': 2, 'profiles': role_settings},
+                    {'version': 1, 'profiles': {'unrelated': role_settings[mapping['profiles'][1]['guid']]}},
+                    {'version': 1, 'profiles': {mapping['profiles'][1]['guid']: {
+                        'parent_guid': shared_guid, 'overrides': {'Guid': 'changed'}}}}):
+        snapshot_path.write_text(json.dumps(invalid))
+        try:
+            render('gruvbox-dark')
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('invalid private role settings accepted')
+    snapshot_path.unlink()
     preferences.write_bytes(original)
     mapping['profiles'][0]['guid'] = parents[0]['Guid']
     (directory / 'dynamic-profiles.json').write_text(json.dumps(mapping))

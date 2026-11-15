@@ -469,94 +469,6 @@ def caproni_mappings(mappings):
     return profiles
 
 
-GDK_UI_DEFAULTS = {
-    "Smart Cursor Color": False,
-    "Draw Powerline Glyphs": False,
-    "Initial Use Transparency": False,
-    "Mouse Reporting allow clicks and drags": True,
-    "Use Cursor Guide": False,
-    "Session Close Undo Timeout": 20,
-    "Open Password Manager Automatically": False,
-    "Triggers Use Interpolated Strings": False,
-}
-
-
-def prepare_gdk(dry_run=False):
-    if not iterm2_enabled():
-        raise ValueError("GDK preparation requires configured iTerm2 on macOS")
-    preferences = read_iterm2_plist(
-        CONFIG / "iterm2/config/com.googlecode.iterm2.plist"
-    )
-    parents = {
-        p["Guid"]: p
-        for p in preferences["New Bookmarks"]
-        if not p.get("Dynamic Profile Filename")
-    }
-    mappings = json.loads((CONFIG / "iterm2/dynamic-profiles.json").read_text())
-    roles = [
-        p
-        for p in mappings["profiles"]
-        if p["name"].startswith("GDK") or p["name"] == "Clickhouse client"
-    ]
-    shared_guid = next(p["parent_guid"] for p in roles if p["name"] == "GDK")
-    if shared_guid not in parents:
-        raise ValueError("Missing shared GDK base")
-    shared = parents[shared_guid]
-    excluded = {
-        "Guid",
-        "Name",
-        "Dynamic Profile Filename",
-        "Dynamic Profile Parent GUID",
-        "Dynamic Profile Parent Name",
-    }
-
-    def managed(key):
-        return (
-            key in excluded
-            or (key.endswith(" Color") and key != "Smart Cursor Color")
-            or key.endswith((" Color (Dark)", " Color (Light)"))
-            or key == "Use Separate Colors for Light and Dark Mode"
-        )
-
-    prepared = {}
-    for role in roles:
-        original = parents.get(role["parent_guid"])
-        if original is None:
-            continue
-        # These defaults are explicit policy choices, not inferred app defaults.
-        role_defaults = {
-            **GDK_UI_DEFAULTS,
-            "Triggers": original.get("Triggers", []),
-            "Title Components": original.get("Title Components", 2),
-        }
-        unresolved = [
-            key
-            for key in shared
-            if not managed(key) and key not in original and key not in role_defaults
-        ]
-        if unresolved:
-            raise ValueError(
-                "Cannot preserve unspecified GDK preferences for "
-                + role["name"]
-                + ": "
-                + ", ".join(sorted(unresolved))
-            )
-        overrides = {
-            key: value
-            for key, value in original.items()
-            if not managed(key) and shared.get(key) != value
-        }
-        overrides.update(role_defaults)
-        prepared[role["guid"]] = {"parent_guid": shared_guid, "overrides": overrides}
-        print(f"{role['name']}: {len(overrides)} preserved role overrides")
-    if not dry_run:
-        atomic_write(
-            CONFIG / "iterm2/gdk.local.json",
-            json.dumps({"version": 1, "profiles": prepared}, indent=2) + "\n",
-            mode=0o600,
-        )
-
-
 def workspace_mappings(mappings):
     profiles = iterm2_mappings(mappings)
     gdk = local_iterm2_data("gdk.local.json")
@@ -882,11 +794,6 @@ def main():
         action="store_true",
         help="Accept reviewed environment removals",
     )
-    gdk = sub.add_parser(
-        "iterm-gdk-prepare",
-        help="Snapshot private GDK role overrides for a shared base",
-    )
-    gdk.add_argument("--dry-run", action="store_true", help="Inspect without saving")
     apply = sub.add_parser("apply", help="Render managed configs")
     apply.add_argument("--reload", action="store_true", help="Also reload running tmux")
     select = sub.add_parser("set", help="Persist a theme and render managed configs")
@@ -904,9 +811,6 @@ def main():
         return
     if args.command == "iterm-caproni-refresh":
         refresh_caproni(args.root, args.legacy, args.dry_run, args.allow_removed)
-        return
-    if args.command == "iterm-gdk-prepare":
-        prepare_gdk(args.dry_run)
         return
     name, values = load_theme(args.name if args.command in ("set", "install") else None)
     if args.command == "iterm-preview":

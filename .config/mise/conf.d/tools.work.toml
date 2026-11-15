@@ -124,14 +124,6 @@ flag "--allow-removed" help="Accept reviewed removals"
 raw_args = true
 run = '"$HOME/.local/bin/dotfiles-theme" iterm-caproni-refresh "$@"'
 
-[tasks."iterm:profiles:gdk-prepare"]
-description = "Prepare private GDK role overrides without editing app-owned bases"
-usage = '''
-flag "--dry-run" help="Inspect without saving"
-'''
-raw_args = true
-run = '"$HOME/.local/bin/dotfiles-theme" iterm-gdk-prepare "$@"'
-
 [tasks."iterm:profiles:caproni-icon"]
 description = "Install the pinned official Caproni profile icon"
 run = '''

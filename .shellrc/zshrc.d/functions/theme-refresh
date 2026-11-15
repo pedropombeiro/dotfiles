@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+# Reload the selected palette in this shell after dotfiles-theme set/apply.
+emulate -L zsh
+local config_root=${XDG_CONFIG_HOME:-$HOME/.config}
+source "$config_root/dotfiles/theme.sh" || return
+source "$HOME/.shellrc/rc.d/fzf.sh" || return
+source "$config_root/dotfiles/prompt.zsh" || return
+if (( $+functions[p10k] )); then
+  p10k reload
+fi

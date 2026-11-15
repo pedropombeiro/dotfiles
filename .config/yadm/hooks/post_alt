@@ -2,8 +2,10 @@
 
 YADM_SCRIPTS=$( cd -- "$( dirname -- ${(%):-%x} )/../scripts" &>/dev/null && pwd )
 
-"${HOME}/.local/bin/dotfiles-theme" apply || exit $?
-
 source "${YADM_SCRIPTS}/prune-dangling-alt-links.zsh"
 source "${YADM_SCRIPTS}/relink-dotfiles.zsh"
 source "${YADM_SCRIPTS}/update-gitignore-alt.zsh"
+
+if ! "${HOME}/.local/bin/dotfiles-theme" apply; then
+  print -ru2 -- 'Warning: theme settings were not updated. Fix the reported error and run dotfiles-theme apply.'
+fi

@@ -37,5 +37,6 @@ typeset -g POWERLEVEL9K_VCS_MAX_SYNC_LATENCY_SECONDS=1.0
 typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
 
 # Load powerlevel10k via zinit (depth=1 for shallow clone)
+source "${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/prompt.zsh"
 zinit ice depth=1
 zinit light romkatv/powerlevel10k

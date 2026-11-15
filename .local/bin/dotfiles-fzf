@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Read current theme exports even when launched from an older shell/tmux server.
+
+set -euo pipefail
+# shellcheck source=/dev/null
+source "${XDG_CONFIG_HOME:-$HOME/.config}/dotfiles/theme.sh"
+picker=fzf
+if [[ ${1:-} == --tmux ]]; then
+  picker=fzf-tmux
+  shift
+fi
+# Explicit colors take precedence over stale colors in FZF_DEFAULT_OPTS.
+exec "$picker" "$@" "$FZF_DEFAULT_COLOR"

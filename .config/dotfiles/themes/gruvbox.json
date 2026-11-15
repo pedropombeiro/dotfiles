@@ -1,5 +1,7 @@
 {
   "nvim": "gruvbox",
+  "opencode": "gruvbox",
+  "zsh": "gruvbox/prompt.json",
   "lualine": "gruvbox",
   "bat": "gruvbox-dark",
   "delta_plus": "#bef2be #012800",

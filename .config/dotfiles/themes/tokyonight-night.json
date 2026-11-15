@@ -1,5 +1,7 @@
 {
   "nvim": "tokyonight-night",
+  "opencode": "tokyonight",
+  "zsh": "tokyonight-night/prompt.json",
   "lualine": "tokyonight",
   "bat": "tokyonight_night",
   "delta_plus": "syntax #243e4a",

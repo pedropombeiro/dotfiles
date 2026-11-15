@@ -16,4 +16,4 @@
     branchColorPatterns:
       "^\\^pedropombeiro/(/|$)": "#7aa2f7"
       "^\\^_pedropombeiro/(/|$)": "#565f89"
-      "^tmp(/|$)": "#3b4261"
+      "^tmp(/|$)": "#737aa2"

@@ -29,6 +29,7 @@ Thumbs.db
 # Rendered by dotfiles-theme apply.
 /.config/dotfiles/theme.json
 /.config/dotfiles/theme.sh
+/.config/dotfiles/prompt.zsh
 /.config/dotfiles/yazi-theme.lua
 /.config/bat/config
 /.config/atuin/config.toml

@@ -48,6 +48,27 @@ by hand. Shell startup sources generated exports without starting a process.
 
 ## Managed files
 
+### Mise shortcuts
+
+Mise tasks wrap the same CLI and complete theme names from the local profiles:
+
+```zsh
+mise theme:list
+mise theme:current
+mise theme:install catppuccin-mocha
+mise theme:set catppuccin-mocha
+theme-refresh
+mise theme:apply
+```
+
+`theme:set` and `theme:apply` reload tmux by default. Pass `--no-reload` to skip
+that reload. `theme:install` without a name installs the selected theme's assets.
+Mise runs in a child process, so run `theme-refresh` separately in each existing
+Zsh shell after setting or applying a theme. Bootstrap continues to use the CLI
+directly.
+
+### Configuration ownership
+
 Edit tracked `*.theme` sources for bat, Atuin, btop, lazygit, lnav, Glow, Trippy, and
 Yazi. `dotfiles-theme` renders their ordinary configuration paths. It also creates
 Git and tmux theme includes, the Glow config, and `dotfiles/theme.json`,

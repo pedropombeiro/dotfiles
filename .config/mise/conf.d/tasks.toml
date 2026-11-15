@@ -29,6 +29,56 @@ description = "Run dotfile health checks"
 run = "~/.config/yadm/scripts/run-checks.zsh"
 
 
+# ── Themes ────────────────────────────────────────────────────────────
+
+[tasks."theme:set"]
+description = "Select a dotfiles theme (run theme-refresh afterward)"
+usage = '''
+arg "<theme>" help="Theme to select"
+complete "theme" run="$HOME/.local/bin/dotfiles-theme list"
+flag "--no-reload" help="Skip reloading the running tmux server"
+'''
+run = '''
+if [ "${usage_no_reload:-false}" = "true" ]; then
+  "$HOME/.local/bin/dotfiles-theme" set "${usage_theme?}"
+else
+  "$HOME/.local/bin/dotfiles-theme" set "${usage_theme?}" --reload
+fi
+'''
+
+[tasks."theme:install"]
+description = "Install pinned assets for a theme (defaults to the selected theme)"
+usage = '''
+arg "[theme]" help="Theme whose assets to install"
+complete "theme" run="$HOME/.local/bin/dotfiles-theme list"
+'''
+run = '''
+if [ -n "${usage_theme:-}" ]; then
+  "$HOME/.local/bin/dotfiles-theme" install "${usage_theme?}"
+else
+  "$HOME/.local/bin/dotfiles-theme" install
+fi
+'''
+
+[tasks."theme:apply"]
+description = "Render the selected theme (run theme-refresh afterward)"
+usage = 'flag "--no-reload" help="Skip reloading the running tmux server"'
+run = '''
+if [ "${usage_no_reload:-false}" = "true" ]; then
+  "$HOME/.local/bin/dotfiles-theme" apply
+else
+  "$HOME/.local/bin/dotfiles-theme" apply --reload
+fi
+'''
+
+[tasks."theme:current"]
+description = "Show the selected dotfiles theme"
+run = '"$HOME/.local/bin/dotfiles-theme" get'
+
+[tasks."theme:list"]
+description = "List available dotfiles themes"
+run = '"$HOME/.local/bin/dotfiles-theme" list'
+
 # ── Network ───────────────────────────────────────────────────────────
 
 [tasks."geoip:update"]

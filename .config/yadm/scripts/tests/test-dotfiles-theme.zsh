@@ -328,3 +328,30 @@ cp "$TEST_SANDBOX/bin/dotfiles-theme" "$HOME/.local/bin/dotfiles-theme"
 : > "$THEME_TEST_LOG"
 test_expect_status 'bootstrap installs before rendering' 0 bash "$repo/.config/yadm/bootstrap.d/125-setup-theme.sh"
 test_assert_equal 'bootstrap theme sequence' $'install\napply' "$(<"$THEME_TEST_LOG")"
+
+# Test mise wrappers with the harmless CLI stub, never real theme operations.
+python3 - "$repo/.config/mise/conf.d/tasks.toml" <<'PY'
+import os, subprocess, sys, tomllib
+from pathlib import Path
+tasks = tomllib.loads(Path(sys.argv[1]).read_text())["tasks"]
+log = Path(os.environ["THEME_TEST_LOG"])
+cases = [
+    ("set", {"usage_theme": "catppuccin-mocha"}, "set catppuccin-mocha --reload"),
+    ("set", {"usage_theme": "gruvbox", "usage_no_reload": "true"}, "set gruvbox"),
+    ("install", {}, "install"),
+    ("install", {"usage_theme": "tokyonight-night"}, "install tokyonight-night"),
+    ("apply", {}, "apply --reload"),
+    ("apply", {"usage_no_reload": "true"}, "apply"),
+    ("current", {}, "get"),
+    ("list", {}, "list"),
+]
+for name, arguments, expected in cases:
+    log.write_text("")
+    env = {key: value for key, value in os.environ.items() if not key.startswith("usage_")}
+    subprocess.run(["bash", "-eu", "-c", tasks[f"theme:{name}"]["run"]],
+                   env={**env, **arguments}, check=True)
+    assert log.read_text().strip() == expected, name
+for name in ("set", "install"):
+    assert 'complete "theme" run="$HOME/.local/bin/dotfiles-theme list"' in tasks[f"theme:{name}"]["usage"]
+PY
+print 'PASS: mise theme wrappers, reload defaults, optional arguments, and completion metadata'

@@ -18,7 +18,6 @@ MAX_SHARED=50
 local -a EXCEPTIONS=(
   .Brewfile                                        # `mise run brew:dump`
   .config/iterm2/config/com.googlecode.iterm2.plist # iTerm2 preferences
-  .config/opencode/opencode.json                    # OpenCode config updates
   .config/pgcli/config                              # pgcli `\ns` named queries
 )
 

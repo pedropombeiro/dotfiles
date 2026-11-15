@@ -61,6 +61,12 @@ symlink, so writes through the link land in the tracked file and appear in
 `yadm diff`. A template renders a plain file, so the tool's writes stay
 untracked and yadm overwrites them on the next `yadm alt`.
 
+OpenCode's server config is an explicit managed-file exception: edit
+`opencode.json##template` and render it with `yadm alt`. Its config-writing actions
+are not the source of truth. Copy any shell-setting or `mcp add --global` changes
+into the template before rendering again. See
+[Managed server configuration](opencode.md#managed-server-configuration).
+
 Some tools save by writing a temporary file and renaming it over the original,
 which replaces the symlink instead of writing through it. Neither approach
 works for those files. Keep the tool's file untracked and put the tracked
@@ -252,7 +258,6 @@ them:
 
 - `.Brewfile`, written by `mise run brew:dump`
 - The iTerm2 preferences `.plist`
-- `.config/opencode/opencode.json`, updated by OpenCode
 - `.config/pgcli/config`, where pgcli saves `\ns` named queries
 
 Add a file to that list only for the same reason. OpenCode's

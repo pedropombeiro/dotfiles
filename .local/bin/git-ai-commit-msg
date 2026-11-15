@@ -45,7 +45,7 @@ while [ $# -gt 0 ]; do
 done
 
 # Use a small model for this text-only task.
-model="${OPENCODE_COMMIT_MODEL:-${OPENCODE_MODEL:-gitlab/duo-chat-gpt-5-4-mini}}"
+model="${OPENCODE_COMMIT_MODEL:-gitlab/duo-chat-gpt-5-4-mini}"
 
 # Fall back to local model when offline.
 _offline_model="${OPENCODE_OFFLINE_MODEL:-ollama/gemma4:e2b}"

@@ -4,8 +4,8 @@
 
 - Shared skills live in `~/.agents/skills`. OpenCode's global `skills` directory
   links there. OpenCode also discovers `~/.claude/skills` automatically.
-- Work-only skills live in `~/.agents/skills.work`. Only
-  `opencode.json##class.Work` adds that directory through `skills`.
+- Work-only skills live in `~/.agents/skills.work`. Only the Work branch of
+  `opencode.json##template` adds that directory through `skills`.
 - `AGENTS.md##template` adds the instruction to read `~/.agents/docs/work.md`
   only on Work machines, through a `{% if yadm.class == "Work" %}` block. OpenCode 2
   accepts the `instructions` config field but does not load its entries.
@@ -40,8 +40,8 @@ call actually prompted. A tool name without its own rule does not prove a prompt
   `lazy-mcp` calls. It re-evaluates the agent's `lazy-mcp_invoke_command` rules
   against the resource `server/command`, so allow a read-only command in
   `opencode.json` with a rule such as `"resource": "gitlab/get_*"`, placed after
-  the `"resource": "*"` ask rule. Add it to both alternates when both machines
-  have the server. **Allow always** saves an approval for the whole wrapper, which
+  the `"resource": "*"` ask rule. Put shared rules outside the template's Work
+  conditionals. **Allow always** saves an approval for the whole wrapper, which
   the plugin ignores, so per-command approvals belong in `opencode.json`.
 - Saved **Allow always** approvals live in the `permission` table of
   `~/.local/share/opencode/opencode.db` and apply on top of the config.
@@ -97,13 +97,13 @@ that contains a structured secret, so it cannot persist a marker over the origin
 
 ## OpenCode versions
 
-Every machine runs OpenCode 2. Both `opencode.json` alternates use the native V2 format:
+Every machine runs OpenCode 2. `opencode.json##template` uses the native V2 format:
 an ordered `permissions` array (last match wins), `providers`, `mcp.servers`, and
 `agents.title.model`. `enabled_providers` stays in V1 syntax until provider policies
 leave `experimental`. When migrating another config, compare `opencode debug config`
 output for the old and new files, loaded as project configs from scratch directories.
 The NAS (`distro.qts`) gets OpenCode 2 from the `opencode-legacy-glibc` build and uses
-the `##default` config alternates. Do not add
+the non-Work server configuration and `##default` terminal config. Do not add
 OpenCode 1 fallbacks (`plugin`, `tui.json`, `server()` plugin entrypoints, `--pure`).
 
 ## Plugins
@@ -211,20 +211,36 @@ plugin. Tab still cycles agents in reverse, and the agent picker remains availab
 
 ## Models
 
-`opencode.json` pins per-agent models: `plan` uses Opus 5.5 without a pinned reasoning
-variant, and `build` uses Sonnet 5.5 with `medium` reasoning. Select Plan's reasoning
-variant per session when needed. The top-level `model` covers other agents, and
-`agents.title.model` covers maintenance tasks.
-Per-agent models take precedence over the top-level `model`, so the `oc` wrapper's inline
-`$OPENCODE_MODEL` override (`OPENCODE_CONFIG_CONTENT` with `--standalone`) no longer changes
-the model for `plan` or `build`. An explicit `opencode run --model` still wins over the
-agent's model, so `oc run` is unaffected. `git-ai-commit-msg` selects its model
-separately through the generation API using `$OPENCODE_COMMIT_MODEL`.
+`opencode.json##template` references `OPENCODE_PLAN_MODEL` and `OPENCODE_BUILD_MODEL`
+through `{env:VARIABLE}` substitution. Shared defaults live in
+`~/.config/mise/conf.d/opencode.toml`. Machine-role overrides belong in the existing
+`env.<role>.toml` fragments. Plan defaults to Opus 5.5, and Build defaults to Sol 6.1.
+The NAS overrides Plan to Sol 6.1 as well. Neither agent pins a reasoning variant.
 
-Set the default model in `opencode.json`, not in `$OPENCODE_MODEL`. When the variable is set,
-every `oc` launch uses a private server instead of the shared service, and it diverges from
-tools that run plain `opencode`, such as `opencode.nvim`. Reserve `$OPENCODE_MODEL` for
-per-project overrides in a project's mise config.
+The top-level `model` uses `OPENCODE_PLAN_MODEL` for other agents, and
+`agents.title.model` keeps maintenance tasks on Luna. Per-agent models take precedence
+over the top-level `model`. `oc` is an alias for `opencode` and uses the shared service.
+For an explicit command-line override, use `opencode run --model`.
+`git-ai-commit-msg` selects its model separately through the generation API using
+`OPENCODE_COMMIT_MODEL`.
+
+The shared service must start with the mise environment so both variables are set.
+After changing model variables, run `mise exec -- opencode service restart` from a
+fresh interactive shell to preserve the telemetry environment too. Config reloads
+do not refresh the service's environment. Existing sessions can retain their
+explicitly selected model.
+
+## Managed server configuration
+
+Edit `~/.config/opencode/opencode.json##template`, then run `yadm alt` to render
+`opencode.json`. Work conditionals preserve its providers, automation, permissions,
+and metrics-only telemetry. Keep shared settings outside those conditionals.
+The rendered file is untracked and must not be staged.
+
+OpenCode 2.3.0 writes server config when `opencode mcp add --global` adds a server
+or `config.update` changes the shell. If you use either action, copy the resulting
+change into the template before running `yadm alt`, which overwrites the rendered
+file. Terminal preferences remain in the separately managed `cli.json`.
 
 ## Commit message generator
 
@@ -271,9 +287,9 @@ Renovate keeps the pins current via the `opencode npm plugins pinned in opencode
 (server) and cli.base.json (terminal)` custom manager in `~/.renovaterc.json` (grouped as
 `opencode plugins`).
 
-Both alternates of each file must be updated together: `opencode.json##default` and
-`opencode.json##class.Work` (and the matching `cli.base.json` pair) are self-contained and not
-additive.
+Update shared server plugin pins once in `opencode.json##template`. Preserve any
+intentional Work-specific pins. The `cli.base.json##default` and
+`cli.base.json##class.Work` alternates remain self-contained and are not additive.
 
 To update an unpinned entry, run `opencode plugin update <package>`.
 
@@ -285,12 +301,12 @@ dashboard on `grafana.pombei.ro`. LAN access uses an IP allowlist. External acce
 requires per-machine Basic Auth credentials, validated by Traefik before it forwards
 OTLP requests to Alloy.
 
-- `opencode.json##default` (Personal and NAS) exports metrics, events, and traces. Traces
+- The non-Work template branch (Personal and NAS) exports metrics, events, and traces. Traces
   include prompts, model output, tool arguments, and tool output. Tool output reaches the
   exporter through `session.tool.success`, after `env-protection` has redacted it, so traces
   hold the redacted text. The plugin doesn't redact prompts or model output. Tempo keeps
   traces for 7 days (`block_retention` in the NAS repo's `compose/grafana/tempo/tempo.yaml`).
-- `opencode.json##class.Work` exports metrics only. Traces carry content, and events carry
+- The Work template branch exports metrics only. Traces carry content, and events carry
   commands, paths, and error text, so keep Work content off personal infrastructure.
 - `~/.shellrc/rc.d/opencode.sh` sets `OPENCODE_RESOURCE_ATTRIBUTES` to the short host name.
   The background service inherits it from the client that starts the service, so run

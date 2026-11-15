@@ -28,5 +28,5 @@ OpenCode's Work-specific global `AGENTS.md` instructs the agent to read this fil
   synced into `$GDK_ROOT/gitlab`.
 
 Work-only skills live in `~/.agents/skills.work`, loaded through `skills`
-in `opencode.json##class.Work`. Keep their links out of the automatically
+in the Work branch of `opencode.json##template`. Keep their links out of the automatically
 discovered shared skill directories. See [skill loading](opencode.md#skill-loading).

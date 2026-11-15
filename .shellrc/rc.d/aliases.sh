@@ -23,30 +23,7 @@ alias la='eza --almost-all --long --group --classify=always --icons=always'
 
 alias docker_ip='docker inspect -f "{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}"'
 
-# opencode with optional per-project model via mise env
-oc() {
-  if [[ -z "$OPENCODE_MODEL" ]]; then
-    opencode "$@"
-    return
-  fi
-
-  case "$1" in
-  run)
-    shift
-    opencode run --model "$OPENCODE_MODEL" "$@"
-    ;;
-  upgrade | update | uninstall | acp | api | debug | auth | mcp | plugin | models | stats | mini | session | service | reload | pair | serve)
-    # --standalone is a root-only flag, so subcommands run unchanged.
-    opencode "$@"
-    ;;
-  *)
-    # The interactive TUI has no --model flag. The inline config overrides the
-    # top-level model, and --standalone runs a private server that sees this
-    # environment instead of the shared background service's.
-    OPENCODE_CONFIG_CONTENT="{\"model\":\"$OPENCODE_MODEL\"}" opencode --standalone "$@"
-    ;;
-  esac
-}
+alias oc='opencode'
 
 # Include custom aliases
 if [[ -f ~/.aliases.local ]]; then

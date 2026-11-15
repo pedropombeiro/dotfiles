@@ -1,4 +1,7 @@
 [env]
+OPENCODE_PLAN_MODEL = "gitlab/duo-chat-opus-5-5"
+OPENCODE_BUILD_MODEL = "gitlab/duo-chat-gpt-6-1-sol"
+
 # Per-machine credential stays outside yadm. Unprovisioned machines can still
 # export on the LAN. See ~/.agents/docs/opencode.md#configure-telemetry-authentication.
 OPENCODE_OTLP_HEADERS = { value = "{% set path = xdg_config_home ~ '/opencode/otel-headers' %}{% if path is file %}{{ read_file(path=path) | trim }}{% endif %}", redact = true }

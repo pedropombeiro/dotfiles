@@ -50,7 +50,7 @@ The configuration uses TPM (Tmux Plugin Manager) with these plugins:
   - Previous: `M-^`. Don't bind `M-\` in the root table: its `ESC \` bytes terminate
     terminal responses, and intercepting them breaks Yazi's terminal probe.
 - `MunifTanjim/tmux-mode-indicator` - Shows WAIT/COPY/SYNC/TMUX mode in status bar
-- `Morantron/tmux-fingers` - Hint-based copy on `Prefix F`. mise installs the binary
+- `Morantron/tmux-fingers` - Hint-based copy on `prefix + v`, with `prefix + F` as an alias. mise installs the binary
   (`global.toml`), so `@fingers-skip-wizard` disables the plugin's interactive
   installer. `@fingers-enable-bindings 0` keeps `Prefix J` for tmux-pain-control.
   Copies use `load-buffer -w`, which reaches the local clipboard over SSH through OSC 52.

@@ -1,0 +1,22 @@
+Description = "Tokyo Night"
+Categories = { "dark", "tokyonight" }
+Canvas = { Colour = "#1a1b26" }
+Default = { Colour = "#c0caf5" }
+Number = { Colour = "#ff9e64" }
+Operator = { Colour = "#89ddff" }
+String = { Colour = "#9ece6a" }
+Escape = { Colour = "#bb9af7" }
+StringPreProc = Escape
+Interpolation = Escape
+LineComment = { Colour = "#565f89", Italic = true }
+BlockComment = LineComment
+LineNum = { Colour = "#3b4261" }
+PreProcessor = { Colour = "#7dcfff" }
+Keywords = {
+  { Colour = "#bb9af7", Bold = true },
+  { Colour = "#2ac3de" },
+  { Colour = "#7aa2f7" },
+  { Colour = "#73daca" },
+  { Colour = "#7dcfff" },
+  { Colour = "#ff9e64" },
+}

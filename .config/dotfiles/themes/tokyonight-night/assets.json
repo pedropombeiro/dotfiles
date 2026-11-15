@@ -1,0 +1,10 @@
+{
+  "repository": "folke/tokyonight.nvim",
+  "_comment": "Pinned upstream assets. Refresh revision after validating native theme availability.",
+  "revision": "cdc07ac78467a233fd62c493de29a17e0cf2b2b6",
+  "files": {
+    "bat/themes/tokyonight_night.tmTheme": "extras/sublime/tokyonight_night.tmTheme",
+    "yazi/themes/tokyonight-night.toml": "extras/yazi/tokyonight_night.toml",
+    "iterm2/themes/tokyonight-night.itermcolors": "extras/iterm/tokyonight_night.itermcolors"
+  }
+}

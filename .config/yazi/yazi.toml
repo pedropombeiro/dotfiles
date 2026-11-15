@@ -44,8 +44,8 @@ prepend_fetchers = [
 ]
 
 prepend_previewers = [
-  { url = "*.md", run = 'piper -- glow -s "${XDG_CONFIG_HOME:-$HOME/.config}/glow/selected.json" -w "$w" "$1"' },
-  { url = "*.markdown", run = 'piper -- glow -s "${XDG_CONFIG_HOME:-$HOME/.config}/glow/selected.json" -w "$w" "$1"' },
+  { url = "*.md", run = 'piper -- glow -w "$w" "$1"' },
+  { url = "*.markdown", run = 'piper -- glow -w "$w" "$1"' },
   { url = "*.tar*", run = 'piper --format=url -- tar tf "$1"' },
   { url = "*.epub", run = 'piper -- epr -d "$1"' },
   { url = "*.yml.enc", run = 'piper -- bundle exec rails encrypted:show "$1" | bat --language yaml --force-colorization --paging=never --wrap=character --line-range :1000 --style=plain' },

@@ -46,6 +46,19 @@ GRUVBOX = {
 }
 # fmt: on
 
+theme_root = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "dotfiles"
+theme_profile = json.loads((theme_root / "theme.json").read_text())
+if theme_profile["visidata"] == "tokyonight-night":
+    # Closest xterm-256 colors for the Tokyo Night palette.
+    GRUVBOX.update(
+        bg0_h=233, bg0=234, bg0_s=235, bg1=236, bg2=238, bg3=239,
+        bg4=240, fg0=189, fg=189, fg1=189, fg2=146, fg3=146, fg4=103,
+        red=203, green=114, yellow=179, blue=111, purple=141, aqua=117,
+        orange=215, bright_red=210, bright_green=114, bright_yellow=179,
+        bright_blue=111, bright_purple=141, bright_aqua=117,
+        bright_orange=215, gray=60,
+    )
+
 # Plot colors for better visibility in graphs
 PLOT_COLORS = {
     "c1": 2,    # green
@@ -78,7 +91,7 @@ PLOT_COLORS = {
 
 _plot_colors_str = " ".join(map(str, PLOT_COLORS.values()))
 
-vd.themes["gruvbox-dark"] = dict(
+vd.themes[theme_profile["visidata"]] = dict(
     # Base colors
     color_default=f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0"]}',
     color_default_hdr=f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_s"]}',
@@ -127,8 +140,7 @@ vd.themes["gruvbox-dark"] = dict(
 )
 
 if options.theme == "":
-    theme_root = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "dotfiles"
-    options.theme = json.loads((theme_root / "theme.json").read_text())["visidata"]
+    options.theme = theme_profile["visidata"]
 
 ################################################################################
 # Set some UI preferences for better experience

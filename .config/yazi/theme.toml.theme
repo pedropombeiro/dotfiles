@@ -1,2 +1,1 @@
-[flavor]
-dark = "@THEME_yazi@"
+@THEME_yazi_config@

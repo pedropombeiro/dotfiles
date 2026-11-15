@@ -16,7 +16,7 @@ cp -R "$repo/.config/dotfiles/themes/gruvbox" "$XDG_CONFIG_HOME/dotfiles/themes/
 mkdir -p "$XDG_CONFIG_HOME/tmux"
 cp -R "$repo/.config/tmux/themes" "$XDG_CONFIG_HOME/tmux/"
 cp "$repo/.config/glow/gruvbox.json" "$XDG_CONFIG_HOME/glow/"
-for target in bat/config atuin/config.toml btop/btop.conf lazygit/config.yml lnav/config.json yazi/theme.toml git/theme.conf tmux/theme.conf tmux/theme-status.conf trippy/trippy.toml; do
+for target in bat/config atuin/config.toml btop/btop.conf lazygit/config.yml lnav/config.json yazi/theme.toml git/theme.conf tmux/theme.conf tmux/theme-status.conf trippy/trippy.toml glow/glow.yml; do
   mkdir -p "$XDG_CONFIG_HOME/${target:h}"
   cp "$repo/.config/$target.theme" "$XDG_CONFIG_HOME/$target.theme"
 done
@@ -24,14 +24,14 @@ done
 test_assert_equal 'default selection' gruvbox "$(python3 "$command_path" get)"
 test_assert_equal 'application mapping' gruvbox-dark "$(python3 "$command_path" value bat)"
 test_expect_status 'initial apply' 0 python3 "$command_path" apply
-cmp "$XDG_CONFIG_HOME/glow/gruvbox.json" "$XDG_CONFIG_HOME/glow/selected.json"
+[[ $(<"$XDG_CONFIG_HOME/glow/glow.yml") == *'/glow/gruvbox.json"'* ]] || test_fail 'Glow style'
 [[ $(<"$XDG_CONFIG_HOME/bat/config") == *'--theme="gruvbox-dark"'* ]] || test_fail 'bat rendering'
 [[ $(<"$XDG_CONFIG_HOME/yazi/theme.toml") == *'dark = "gruvbox-dark"'* ]] || test_fail 'Yazi flavor must be at the config root'
 test_expect_status 'idempotent apply' 0 python3 "$command_path" apply
 print 'interactive_fixture = true' >> "$XDG_CONFIG_HOME/btop/btop.conf"
 test_expect_status 'preserve btop preferences' 0 python3 "$command_path" apply
 [[ $(<"$XDG_CONFIG_HOME/btop/btop.conf") == *'interactive_fixture = true'* ]] || test_fail 'lost btop preferences'
-test_expect_status 'reject unknown theme' 1 python3 "$command_path" set tokyonight-night
+test_expect_status 'reject unknown theme' 1 python3 "$command_path" set missing-theme
 test_expect_status 'reject traversal' 1 python3 "$command_path" set ../gruvbox
 test_assert_equal 'invalid set preserves selection' gruvbox "$(python3 "$command_path" get)"
 
@@ -75,3 +75,19 @@ test_expect_status 'validate before writing' 1 python3 "$command_path" set gruvb
 cmp "$XDG_CONFIG_HOME/bat/config" "$TEST_SANDBOX/before"
 test_assert_equal 'failed render preserves selection' fixture "$(python3 "$command_path" get)"
 print 'PASS: theme selection, mappings, rendering, shell exports, and failure safety'
+
+# Render the real optional profile without downloads or changing the host theme.
+cp "$repo/.config/bat/config.theme" "$XDG_CONFIG_HOME/bat/config.theme"
+cp "$repo/.config/dotfiles/themes/tokyonight-night.json" "$XDG_CONFIG_HOME/dotfiles/themes/"
+cp -R "$repo/.config/dotfiles/themes/tokyonight-night" "$XDG_CONFIG_HOME/dotfiles/themes/"
+mkdir -p "$XDG_CONFIG_HOME/yazi/themes" "$XDG_CONFIG_HOME/bat/themes"
+print '[mgr]' > "$XDG_CONFIG_HOME/yazi/themes/tokyonight-night.toml"
+test_expect_status 'missing syntax asset' 1 python3 "$command_path" set tokyonight-night
+print 'fixture syntax asset' > "$XDG_CONFIG_HOME/bat/themes/tokyonight_night.tmTheme"
+test_expect_status 'real Tokyo Night profile' 0 python3 "$command_path" set tokyonight-night
+[[ $(<"$XDG_CONFIG_HOME/glow/glow.yml") == *'style: "tokyo-night"'* ]] || test_fail 'native Glow theme'
+[[ $(<"$XDG_CONFIG_HOME/btop/btop.conf") == *'color_theme = "tokyo-night"'* ]] || test_fail 'native btop theme'
+[[ $(<"$XDG_CONFIG_HOME/lnav/config.json") == *'"tokyonight-night": {'* ]] || test_fail 'lnav theme registration'
+test_assert_equal 'real selection' tokyonight-night "$(python3 "$command_path" get)"
+test_expect_status 'switch back' 0 python3 "$command_path" set gruvbox
+print 'PASS: Tokyo Night profile, native theme mappings, asset guard, and switching back'

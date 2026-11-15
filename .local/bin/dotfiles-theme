@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from urllib.request import urlopen
 
 CONFIG = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
 ROOT = CONFIG / "dotfiles"
@@ -26,6 +27,7 @@ TARGETS = (
     "tmux/theme.conf",
     "tmux/theme-status.conf",
     "trippy/trippy.toml",
+    "glow/glow.yml",
 )
 
 
@@ -68,6 +70,11 @@ def atomic_write(path, content):
 def render(values):
     # Render everything before writing anything, so invalid profiles fail early.
     values = dict(values)
+    if (
+        values["bat"] == "tokyonight_night"
+        and not (CONFIG / "bat/themes/tokyonight_night.tmTheme").is_file()
+    ):
+        raise ValueError("Run dotfiles-theme install tokyonight-night first")
     for key in ("lazygit_colors", "trippy_colors"):
         values[key] = (ROOT / "themes" / values[key]).read_text().rstrip("\n")
     # TPM scans only one level of sourced files for @plugin declarations.
@@ -76,6 +83,16 @@ def render(values):
     )
     values["trippy_platform"] = (
         "unprivileged = true" if sys.platform == "darwin" else ""
+    )
+    values["glow_style"] = (
+        str(CONFIG / "glow" / values["glow"])
+        if values["glow"].endswith(".json")
+        else values["glow"]
+    )
+    values["yazi_config"] = (
+        (CONFIG / "yazi/themes" / values["yazi"]).read_text().rstrip("\n")
+        if values["yazi"].endswith(".toml")
+        else f'[flavor]\ndark = "{values["yazi"]}"'
     )
     outputs = {}
     for target in TARGETS:
@@ -95,9 +112,33 @@ def render(values):
         if count != 1:
             raise ValueError(f"Expected one color_theme setting in {btop}")
         outputs[btop] = content
-    glow = CONFIG / "glow" / values["glow"]
-    outputs[CONFIG / "glow/selected.json"] = glow.read_text()
+    # lnav has no native Tokyo Night theme. Adapt our local semantic theme.
+    if values["lnav"] != "gruvbox-dark":
+        config = json.loads(outputs[CONFIG / "lnav/config.json"])
+        original = config["ui"]["theme-defs"]["gruvbox-dark"]
+        colors = json.loads((ROOT / "themes" / values["color_map"]).read_text())
+        config["ui"]["theme-defs"][values["lnav"]] = json.loads(
+            replace_colors(json.dumps(original), colors)
+        )
+        outputs[CONFIG / "lnav/config.json"] = json.dumps(config, indent=2) + "\n"
     return outputs
+
+
+def replace_colors(content, colors):
+    return re.sub(r"#[0-9a-fA-F]{6}", lambda m: colors.get(m[0].lower(), m[0]), content)
+
+
+def install_assets(name):
+    manifest = ROOT / "themes" / name / "assets.json"
+    if not manifest.exists():
+        return
+    spec = json.loads(manifest.read_text())
+    base = f"https://raw.githubusercontent.com/{spec['repository']}/{spec['revision']}/"
+    for target, source in spec["files"].items():
+        with urlopen(base + source, timeout=30) as response:
+            atomic_write(CONFIG / target, response.read().decode())
+    if shutil.which("bat"):
+        subprocess.run(["bat", "cache", "--build"], check=True)
 
 
 def shell_exports(name, values):
@@ -108,7 +149,6 @@ def shell_exports(name, values):
         "NVIM_THEME": values["nvim"],
         "XH_STYLE": values["xh"],
         "FZF_DEFAULT_COLOR": values["fzf"],
-        "GLOW_STYLE": str(CONFIG / "glow/selected.json"),
     }
     return "".join(
         f"export {key}={shlex.quote(value)}\n" for key, value in exports.items()
@@ -120,6 +160,10 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("get", help="Print the persisted theme")
     sub.add_parser("list", help="List installed theme profiles")
+    install = sub.add_parser(
+        "install", help="Fetch pinned assets missing from native tools"
+    )
+    install.add_argument("name")
     value = sub.add_parser("value", help="Print an application mapping")
     value.add_argument("key")
     sub.add_parser("shell", help="Print shell exports for the selected theme")
@@ -135,13 +179,16 @@ def main():
     if args.command == "list":
         print("\n".join(sorted(path.stem for path in (ROOT / "themes").glob("*.json"))))
         return
-    name, values = load_theme(args.name if args.command == "set" else None)
+    name, values = load_theme(args.name if args.command in ("set", "install") else None)
     if args.command == "get":
         print(name)
     elif args.command == "value":
         print(values[args.key])
     elif args.command == "shell":
         print(shell_exports(name, values), end="")
+    elif args.command == "install":
+        install_assets(name)
+        print(f"Installed assets for {name}.")
     else:
         outputs = render(values)
         # Keep the generated descriptor consistent with a newly selected theme.

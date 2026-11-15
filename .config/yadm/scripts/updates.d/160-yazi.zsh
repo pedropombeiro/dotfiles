@@ -2,7 +2,11 @@
 
 step_yazi() {
   # Restore tracked configuration before upgrading plugins.
-  rm -rf ~/.config/yazi/plugins/* ~/.config/yazi/flavors/*
+  # Remove package-managed payloads only; preserve tracked local adapters.
+  local entry
+  for entry in ~/.config/yazi/{plugins,flavors}/*(N); do
+    [[ -n $(yadm ls-files -- "$entry") ]] || rm -rf -- "$entry"
+  done
   yadm checkout -- ~/.config/yazi/
   ya pkg upgrade
   "${HOME}/.local/bin/dotfiles-theme" apply

@@ -1,20 +1,24 @@
 # Dotfiles theme selection
 
 `~/.config/dotfiles/theme` is the authoritative theme choice. It currently contains
-`gruvbox`. Tokyo Night is not installed yet.
+`gruvbox`. `tokyonight-night` is available as an opt-in alternative.
 
 ```sh
 dotfiles-theme get
 dotfiles-theme list
 dotfiles-theme set gruvbox
 dotfiles-theme apply --reload
+
+# Install missing upstream assets once, then opt in.
+dotfiles-theme install tokyonight-night
+dotfiles-theme set tokyonight-night --reload
 ```
 
 `set` validates the profile, renders managed settings, and saves the selection.
 `apply` regenerates settings after editing a profile or template. Add `--reload`
 to either command to reload a running tmux server. Start a new shell and reopen
-other applications after applying changes. The command does not install themes
-or rebuild bat's theme cache.
+other applications after applying changes. `install` fetches pinned upstream
+assets and rebuilds bat's theme cache. Applying a theme does not download anything.
 
 Application mappings live in `.config/dotfiles/themes/<name>.json`. Native theme
 assets and intentional application overrides remain in their owning application
@@ -25,9 +29,9 @@ by hand. Shell startup sources generated exports without starting a process.
 
 ## Managed files
 
-Edit tracked `*.theme` sources for bat, Atuin, btop, lazygit, lnav, Trippy, and
+Edit tracked `*.theme` sources for bat, Atuin, btop, lazygit, lnav, Glow, Trippy, and
 Yazi. `dotfiles-theme` renders their ordinary configuration paths. It also creates
-Git and tmux theme includes, the selected Glow style, and `dotfiles/theme.json`,
+Git and tmux theme includes, the Glow config, and `dotfiles/theme.json`,
 `dotfiles/theme.sh`, and `dotfiles/yazi-theme.lua`. These outputs are ignored by YADM.
 
 btop writes interactive preferences to its config. After the initial render,
@@ -40,6 +44,11 @@ after refreshing plugins and flavors. Its flavor selection now lives at
 `.config/yazi/theme.toml`, outside the downloaded `flavors/` directory.
 
 ## Add another theme
+
+Prefer native themes before adding assets. Tokyo Night uses Glow's built-in
+`tokyo-night` style and btop's packaged `tokyo-night` theme. bat/delta and Yazi
+use pinned assets from `folke/tokyonight.nvim`. Local adapters cover applications
+without a built-in Tokyo Night theme. Neovim installs its theme through Lazy.
 
 1. Add an application-mapping JSON file under `.config/dotfiles/themes/`.
 1. Install the referenced native themes. Add a Neovim plugin specification and
@@ -54,4 +63,5 @@ iTerm2 profile colors and the WakaTime CLI theme are not applied by this command
 iTerm2 preferences remain application-owned Work/Personal alternates. The profile's
 `iterm` mapping records the intended preset for a later integration. Applying
 terminal colors needs separate handling to preserve profile identities and live
-preferences.
+preferences. `install` downloads an iTerm2 color preset under
+`~/.config/iterm2/themes/` for manual import without modifying profiles.

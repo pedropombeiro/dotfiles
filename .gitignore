@@ -38,6 +38,10 @@ Thumbs.db
 /.config/yazi/theme.toml
 /.config/git/theme.conf
 /.config/glow/selected.json
+/.config/glow/glow.yml
+/.config/bat/themes/tokyonight_night.tmTheme
+/.config/yazi/themes/tokyonight-night.toml
+/.config/iterm2/themes/tokyonight-night.itermcolors
 /.config/tmux/theme.conf
 /.config/tmux/theme-status.conf
 /.config/trippy/trippy.toml

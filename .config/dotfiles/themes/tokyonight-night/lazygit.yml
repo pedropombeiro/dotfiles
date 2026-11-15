@@ -1,0 +1,19 @@
+  theme:
+    activeBorderColor: ["#7aa2f7", bold]
+    inactiveBorderColor: ["#3b4261"]
+    searchingActiveBorderColor: ["#ff9e64", bold]
+    optionsTextColor: ["#7dcfff"]
+    selectedLineBgColor: ["#292e42"]
+    inactiveViewSelectedLineBgColor: [bold]
+    cherryPickedCommitFgColor: ["#7aa2f7"]
+    cherryPickedCommitBgColor: ["#283457"]
+    markedBaseCommitFgColor: ["#bb9af7"]
+    markedBaseCommitBgColor: ["#292e42"]
+    unstagedChangesColor: ["#f7768e"]
+    defaultFgColor: ["#c0caf5"]
+    authorColors:
+      "Pedro Pombeiro": "#7aa2f7"
+    branchColorPatterns:
+      "^\\^pedropombeiro/(/|$)": "#7aa2f7"
+      "^\\^_pedropombeiro/(/|$)": "#565f89"
+      "^tmp(/|$)": "#3b4261"

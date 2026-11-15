@@ -266,6 +266,12 @@ layer the global config.
 
 ## Third-party content
 
+Prefer an application's built-in theme when it provides the requested color
+scheme. Map the shared theme identifier to the native theme name instead of
+copying or generating a palette. Download an upstream theme or maintain a local
+adapter only when built-in support is missing. Check the installed version's
+support before choosing an integration.
+
 Fetch upstream files instead of tracking copies, and pin the version so
 Renovate proposes updates. For example, the QTS `grc-rs:sync` mise task
 downloads a pinned grc release, and Renovate reads the pin from its

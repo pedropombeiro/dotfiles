@@ -62,18 +62,20 @@ require("git"):setup()
 
 local theme_root = (os.getenv("XDG_CONFIG_HOME") or (os.getenv("HOME") .. "/.config")) .. "/dotfiles"
 local theme_profile = dofile(theme_root .. "/yazi-theme.lua")
-local gruvbox_theme = require(theme_profile.yatline):setup(theme_profile.style)
-gruvbox_theme.branch_color = "#ebdbb2"
-gruvbox_theme.commit_color = "#d3869b"
-gruvbox_theme.behind_color = "#af3a03"
-gruvbox_theme.ahead_color = "#427b58"
-gruvbox_theme.stashes_color = "#d3869b"
-gruvbox_theme.state_color = "#cc241d"
-gruvbox_theme.unstaged_color = "#af3a03"
-gruvbox_theme.untracked_color = "#427b58"
+local selected_theme = require(theme_profile.yatline):setup(theme_profile.style)
+if theme_profile.yatline == "yatline-gruvbox" then
+  selected_theme.branch_color = "#ebdbb2"
+  selected_theme.commit_color = "#d3869b"
+  selected_theme.behind_color = "#af3a03"
+  selected_theme.ahead_color = "#427b58"
+  selected_theme.stashes_color = "#d3869b"
+  selected_theme.state_color = "#cc241d"
+  selected_theme.unstaged_color = "#af3a03"
+  selected_theme.untracked_color = "#427b58"
+end
 
 require("yatline"):setup({
-  theme = gruvbox_theme,
+  theme = selected_theme,
   show_background = true,
   display_header_line = true,
   display_status_line = true,
@@ -171,38 +173,38 @@ end
 require("yatline-githead"):setup({
   show_branch = true,
   branch_prefix = "",
-  branch_color = gruvbox_theme.branch_color,
+  branch_color = selected_theme.branch_color,
   branch_symbol = "",
   branch_borders = "",
 
-  commit_color = gruvbox_theme.commit_color,
+  commit_color = selected_theme.commit_color,
   commit_symbol = "",
 
   show_behind_ahead = true,
-  behind_color = gruvbox_theme.behind_color,
+  behind_color = selected_theme.behind_color,
   behind_symbol = " ",
-  ahead_color = gruvbox_theme.ahead_color,
+  ahead_color = selected_theme.ahead_color,
   ahead_symbol = " ",
 
   show_stashes = true,
-  stashes_color = gruvbox_theme.stashes_color,
+  stashes_color = selected_theme.stashes_color,
   stashes_symbol = " ",
 
   show_state = true,
   show_state_prefix = true,
-  state_color = gruvbox_theme.state_color,
+  state_color = selected_theme.state_color,
   state_symbol = "~",
 
   show_staged = true,
-  staged_color = gruvbox_theme.staged_color,
+  staged_color = selected_theme.staged_color,
   staged_symbol = " ",
 
   show_unstaged = true,
-  unstaged_color = gruvbox_theme.unstaged_color,
+  unstaged_color = selected_theme.unstaged_color,
   unstaged_symbol = " ",
 
   show_untracked = true,
-  untracked_color = gruvbox_theme.untracked_color,
+  untracked_color = selected_theme.untracked_color,
   untracked_symbol = " ",
 })
 

@@ -8,7 +8,6 @@
 set -o pipefail
 
 SHEETS_DIR=${CHEAT_SHEETS_DIR:-$HOME/.github/cheatsheets}
-GLOW_STYLE=${XDG_CONFIG_HOME:-$HOME/.config}/glow/selected.json
 REPO_URL=https://github.com/pedropombeiro/dotfiles/blob/master/.github/cheatsheets
 # Picker height. The tmux popup sets 100%, so the picker fills the popup.
 FZF_HEIGHT=${CHEAT_FZF_HEIGHT:-40%}
@@ -82,7 +81,7 @@ pick_sheet() {
   local selection
   selection=$(list_sheets | fzf --height "$FZF_HEIGHT" --reverse --border \
     --border-label ' cheat sheets ' --prompt 'cheat> ' \
-    --preview "glow -s $(printf '%q' "$GLOW_STYLE") -w \"\${FZF_PREVIEW_COLUMNS:-80}\" $(printf '%q' "$SHEETS_DIR")/\$( [ {} = index ] && echo README || echo {} ).md" \
+    --preview "glow -w \"\${FZF_PREVIEW_COLUMNS:-80}\" $(printf '%q' "$SHEETS_DIR")/\$( [ {} = index ] && echo README || echo {} ).md" \
     --preview-window 'right:80%:nohidden') || return 130
   [[ -n $selection ]] || return 130
   printf '%s\n' "$selection"
@@ -96,7 +95,7 @@ can_open_browser() {
 show_local() {
   local file
   file=$(sheet_file "$1")
-  glow -s "$GLOW_STYLE" -w "$(tput cols)" -p "$file"
+  glow -w "$(tput cols)" -p "$file"
 }
 
 open_sheet() {

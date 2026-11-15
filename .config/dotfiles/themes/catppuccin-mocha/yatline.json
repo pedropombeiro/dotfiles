@@ -1,0 +1,18 @@
+{
+  "background": "#181825",
+  "normal": "#89b4fa",
+  "remote": "#89b4fa",
+  "select": "#89dceb",
+  "waiting": "#fab387",
+  "surface": "#313244",
+  "border": "#45475a",
+  "text": "#cdd6f4",
+  "foreground": "#bac2de",
+  "muted": "#7f849c",
+  "yellow": "#f9e2af",
+  "red": "#f38ba8",
+  "green": "#a6e3a1",
+  "cyan": "#89dceb",
+  "commit": "#89b4fa",
+  "stashes": "#89dceb"
+}

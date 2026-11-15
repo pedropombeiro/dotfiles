@@ -1,0 +1,4 @@
+# Orange denotes waiting; active windows remain blue.
+set -gw window-status-bell-style default
+set -gw window-status-format "#{?@opencode-waiting,#[bg=#@THEME_waiting@#,fg=#@THEME_background@#,nobold#,noitalics#,nounderscore],#[bg=#@THEME_surface@#,fg=#@THEME_background@#,nobold#,noitalics#,nounderscore]}#{?@opencode-waiting,#[fg=#@THEME_background@],#[fg=#@THEME_foreground@]} #I  #{?@opencode-waiting,● ,}#W#{?window_zoomed_flag,*Z,} #[bg=@THEME_background@]#{?@opencode-waiting,#[fg=#@THEME_waiting@],#[fg=#@THEME_surface@]}"
+set -gw window-status-current-format "#[bg=@THEME_active@,fg=@THEME_background@,nobold,noitalics,nounderscore]#[fg=@THEME_background@] #I  #[bold]#{?@opencode-waiting,#[bg=#@THEME_background@#,fg=#@THEME_waiting@]●#[bg=#@THEME_active@#,fg=#@THEME_background@] ,}#W#{?window_zoomed_flag,*Z,} #[bg=@THEME_background@,fg=@THEME_active@,nobold,noitalics,nounderscore]"

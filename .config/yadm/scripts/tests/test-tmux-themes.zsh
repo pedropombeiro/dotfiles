@@ -5,11 +5,13 @@ emulate -LR zsh
 setopt err_exit pipe_fail
 repo=${0:A:h:h:h:h:h}
 if ! (( $+commands[tmux] )); then
+  [[ ${REQUIRE_TMUX_THEME_TESTS:-0} != 1 ]] || exit 1
   print 'SKIP: tmux theme integration requires tmux'
   exit 0
 fi
 indicator=$HOME/.local/share/tmux/plugins/tmux-mode-indicator/mode_indicator.tmux
 if [[ ! -x $indicator ]]; then
+  [[ ${REQUIRE_TMUX_THEME_TESTS:-0} != 1 ]] || exit 1
   print 'SKIP: tmux theme integration requires the installed tmux-mode-indicator plugin'
   exit 0
 fi
@@ -25,15 +27,21 @@ load_theme() {
   local theme=$1
   python3 - "$repo" "$theme" "$TEST_SANDBOX/theme.conf" <<'PY'
 from pathlib import Path
-import sys
+import sys, runpy
 repo, theme, target = Path(sys.argv[1]), sys.argv[2], Path(sys.argv[3])
 template = (repo / ".config/tmux/theme.conf.theme").read_text()
-palette = (repo / f".config/tmux/themes/{theme}.conf").read_text()
+module = runpy.run_path(str(repo / ".local/bin/dotfiles-theme"))
+render = module["render_tmux"]
+render.__globals__.update(CONFIG=repo / ".config", ROOT=repo / ".config/dotfiles")
+values = {"tmux": theme}
+render(values)
+palette = values["tmux_config"]
 assert "@plugin" not in palette, "theme plugin would change initialization order"
 target.write_text(template.replace("@THEME_tmux_config@", palette))
+target.with_name("status.conf").write_text(values["tmux_status"])
 PY
   tmux source-file "$TEST_SANDBOX/theme.conf"
-  tmux source-file "$repo/.config/tmux/themes/$theme-status.conf"
+  tmux source-file "$TEST_SANDBOX/status.conf"
   # Production TPM expands this after the native theme has been sourced.
   "$indicator"
   local right=$(tmux show-options -gqv status-right)
@@ -47,6 +55,8 @@ PY
   [[ $active == *'●'* ]] || test_fail 'waiting indicator missing'
   if [[ $theme == tokyonight-night ]]; then
     [[ $active == *'#[bg=#16161e,fg=#ff9e64]●'* ]] || test_fail 'waiting bullet has no dark contrast patch'
+  elif [[ $theme == catppuccin-mocha ]]; then
+    [[ $active == *'#[bg=#181825,fg=#fab387]●'* ]] || test_fail 'Catppuccin waiting bullet has no dark contrast patch'
   fi
   tmux set-option -wu @opencode-waiting
 }
@@ -56,20 +66,19 @@ snapshot() {
   tmux show-options -gw
 }
 
-for theme in gruvbox tokyonight-night; do
+for theme in gruvbox tokyonight-night catppuccin-mocha; do
   # Establish a fresh baseline, then switch away and back on the same server.
   tmux kill-server
   tmux -S "$socket" -f /dev/null new-session -d -s theme-test
   load_theme "$theme"
   snapshot > "$TEST_SANDBOX/before"
-  if [[ $theme == gruvbox ]]; then
-    load_theme tokyonight-night
-  else
-    load_theme gruvbox
-  fi
-  load_theme "$theme"
-  snapshot > "$TEST_SANDBOX/after"
-  diff -u "$TEST_SANDBOX/before" "$TEST_SANDBOX/after" || test_fail "$theme depends on previous theme"
+  for other in gruvbox tokyonight-night catppuccin-mocha; do
+    [[ $other != $theme ]] || continue
+    load_theme "$other"
+    load_theme "$theme"
+    snapshot > "$TEST_SANDBOX/after"
+    diff -u "$TEST_SANDBOX/before" "$TEST_SANDBOX/after" || test_fail "$theme depends on $other"
+  done
   tmux source-file "$repo/.config/tmux/tmux.platform.conf##distro.qts"
   [[ $(tmux show-options -gqv status-left) == *'bg=colour124'*'#S'* ]] || test_fail 'NAS session identity lost'
 done

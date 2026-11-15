@@ -1,0 +1,22 @@
+Description = "Catppuccin Mocha"
+Categories = { "dark", "catppuccin" }
+Canvas = { Colour = "#1e1e2e" }
+Default = { Colour = "#cdd6f4" }
+Number = { Colour = "#fab387" }
+Operator = { Colour = "#89dceb" }
+String = { Colour = "#a6e3a1" }
+Escape = { Colour = "#cba6f7" }
+StringPreProc = Escape
+Interpolation = Escape
+LineComment = { Colour = "#7f849c", Italic = true }
+BlockComment = LineComment
+LineNum = { Colour = "#45475a" }
+PreProcessor = { Colour = "#89dceb" }
+Keywords = {
+  { Colour = "#cba6f7", Bold = true },
+  { Colour = "#89dceb" },
+  { Colour = "#89b4fa" },
+  { Colour = "#94e2d5" },
+  { Colour = "#89dceb" },
+  { Colour = "#fab387" },
+}

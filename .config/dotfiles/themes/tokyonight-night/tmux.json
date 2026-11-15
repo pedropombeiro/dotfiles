@@ -1,0 +1,12 @@
+{
+  "background": "#16161e",
+  "foreground": "#a9b1d6",
+  "active": "#7aa2f7",
+  "surface": "#292e42",
+  "border": "#3b4261",
+  "text": "#c0caf5",
+  "muted": "#565f89",
+  "waiting": "#ff9e64",
+  "select": "#bb9af7",
+  "hint": "#e0af68"
+}

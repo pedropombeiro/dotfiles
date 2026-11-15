@@ -251,12 +251,20 @@ jobs:
 
       - name: Install test dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y zsh jq rsync python3 nodejs npm
+          sudo apt-get update && sudo apt-get install -y zsh jq rsync python3 nodejs npm tmux
           npm ci --prefix .config/yadm/scripts --ignore-scripts
           sudo curl -fsSL --retry 3 --retry-delay 5 -o /usr/local/bin/yadm \
             "https://raw.githubusercontent.com/yadm-dev/yadm/${YADM_VERSION}/yadm"
           sudo chmod +x /usr/local/bin/yadm
           yadm version
+
+      - name: Install tmux mode indicator test dependency
+        run: |
+          plugin="$HOME/.local/share/tmux/plugins/tmux-mode-indicator"
+          git init "$plugin"
+          git -C "$plugin" remote add origin https://github.com/MunifTanjim/tmux-mode-indicator.git
+          git -C "$plugin" fetch --depth 1 origin 7027903adca37c54cb8f5fa99fc113b11c23c2c4
+          git -C "$plugin" checkout --detach FETCH_HEAD
 
       - name: Check Zsh syntax
         shell: zsh {0}
@@ -266,6 +274,8 @@ jobs:
           done
 
       - name: Run isolated regression tests
+        env:
+          REQUIRE_TMUX_THEME_TESTS: "1"
         run: zsh -df .config/yadm/scripts/tests/run-tests.zsh
 
   # Job 6: Secret scanning

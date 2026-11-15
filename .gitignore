@@ -27,10 +27,14 @@ Thumbs.db
 .config/mr-dashboard/env
 .config/dotfiles/gitlab/
 # Rendered by dotfiles-theme apply.
+/.config/dotfiles/assets/
+/.config/dotfiles/btop-rendered.conf
+/.config/btop/local.json
 /.config/dotfiles/theme.json
 /.config/dotfiles/theme.sh
 /.config/dotfiles/prompt.zsh
 /.config/dotfiles/yazi-theme.lua
+/.config/dotfiles/yatline.lua
 /.config/bat/config
 /.config/atuin/config.toml
 /.config/btop/btop.conf
@@ -43,6 +47,12 @@ Thumbs.db
 /.config/bat/themes/tokyonight_night.tmTheme
 /.config/yazi/themes/tokyonight-night.toml
 /.config/iterm2/themes/tokyonight-night.itermcolors
+/.config/yazi/themes/catppuccin-mocha.toml
+/.config/bat/themes/Catppuccin Mocha.tmTheme
+/.config/glow/catppuccin-mocha.json
+/.config/atuin/themes/catppuccin-mocha-blue.toml
+/.config/btop/themes/catppuccin_mocha.theme
+/.config/iterm2/themes/catppuccin-mocha.itermcolors
 /.config/tmux/theme.conf
 /.config/tmux/theme-status.conf
 /.config/trippy/trippy.toml

@@ -1,0 +1,20 @@
+  # Based on catppuccin/lazygit mocha/blue; retain local branch conventions.
+  theme:
+    activeBorderColor: ["#89b4fa", bold]
+    inactiveBorderColor: ["#a6adc8"]
+    searchingActiveBorderColor: ["#f9e2af", bold]
+    optionsTextColor: ["#89b4fa"]
+    selectedLineBgColor: ["#313244"]
+    inactiveViewSelectedLineBgColor: ["#6c7086"]
+    cherryPickedCommitFgColor: ["#89b4fa"]
+    cherryPickedCommitBgColor: ["#45475a"]
+    markedBaseCommitFgColor: ["#89b4fa"]
+    markedBaseCommitBgColor: ["#f9e2af"]
+    unstagedChangesColor: ["#f38ba8"]
+    defaultFgColor: ["#cdd6f4"]
+    authorColors:
+      "Pedro Pombeiro": "#89b4fa"
+    branchColorPatterns:
+      "^\\^pedropombeiro/(/|$)": "#89b4fa"
+      "^\\^_pedropombeiro/(/|$)": "#7f849c"
+      "^tmp(/|$)": "#9399b2"

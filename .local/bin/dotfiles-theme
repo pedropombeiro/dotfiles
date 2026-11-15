@@ -2,6 +2,7 @@
 """Resolve and apply the persisted dotfiles theme without shell initialization."""
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -67,19 +68,76 @@ def atomic_write(path, content):
             temporary.unlink(missing_ok=True)
 
 
+def asset_sources(name):
+    manifest = ROOT / "themes" / name / "assets.json"
+    if not manifest.exists():
+        return []
+    spec = json.loads(manifest.read_text())
+    return spec["sources"]
+
+
+def asset_revision(spec):
+    return {key: spec[key] for key in ("repository", "revision")}
+
+
+def asset_state_path(name):
+    return ROOT / "assets" / f"{name}.json"
+
+
+def validate_assets(name):
+    sources = asset_sources(name)
+    if not sources:
+        return
+    state = asset_state_path(name)
+    installed = json.loads(state.read_text()) if state.exists() else {}
+    for spec in sources:
+        for target in spec["files"]:
+            # iTerm2 presets are manual imports, not runtime dependencies.
+            if target.startswith("iterm2/"):
+                continue
+            path = CONFIG / target
+            expected = installed.get(target, {})
+            if (
+                not path.is_file()
+                or expected.get("source") != asset_revision(spec)
+                or expected.get("sha256")
+                != hashlib.sha256(path.read_bytes()).hexdigest()
+            ):
+                raise ValueError(
+                    f"Missing or outdated theme asset: {target}. "
+                    f"Run dotfiles-theme install {name}, then dotfiles-theme apply"
+                )
+
+
+def render_tmux(values):
+    tmux_palette = ROOT / "themes" / values["tmux"] / "tmux.json"
+    if tmux_palette.exists():
+        colors = json.loads(tmux_palette.read_text())
+        for key, template in (
+            ("tmux_config", "palette.conf.theme"),
+            ("tmux_status", "status.conf.theme"),
+        ):
+            values[key] = TOKEN.sub(
+                lambda match: colors[match[1]],
+                (CONFIG / "tmux" / template).read_text(),
+            ).rstrip("\n")
+    else:
+        values["tmux_config"] = (
+            (CONFIG / "tmux/themes" / f"{values['tmux']}.conf").read_text().rstrip("\n")
+        )
+        values["tmux_status"] = (
+            (CONFIG / "tmux/themes" / f"{values['tmux']}-status.conf")
+            .read_text()
+            .rstrip("\n")
+        )
+
+
 def render(values):
     # Render everything before writing anything, so invalid profiles fail early.
     values = dict(values)
-    if (
-        values["bat"] == "tokyonight_night"
-        and not (CONFIG / "bat/themes/tokyonight_night.tmTheme").is_file()
-    ):
-        raise ValueError("Run dotfiles-theme install tokyonight-night first")
     for key in ("lazygit_colors", "trippy_colors"):
         values[key] = (ROOT / "themes" / values[key]).read_text().rstrip("\n")
-    values["tmux_config"] = (
-        (CONFIG / "tmux/themes" / f"{values['tmux']}.conf").read_text().rstrip("\n")
-    )
+    render_tmux(values)
     values["trippy_platform"] = (
         "unprivileged = true" if sys.platform == "darwin" else ""
     )
@@ -99,19 +157,45 @@ def render(values):
         outputs[CONFIG / target] = TOKEN.sub(
             lambda match: values[match[1]], template.read_text()
         )
-    # btop saves interactive preferences. Preserve them on subsequent applies.
+    # The tracked template owns defaults. A local overlay owns interactive edits.
     btop = CONFIG / "btop/btop.conf"
+    previous = ROOT / "btop-rendered.conf"
+    overlay_path = CONFIG / "btop/local.json"
+    overlay = json.loads(overlay_path.read_text()) if overlay_path.exists() else {}
+    if not isinstance(overlay, dict):
+        raise TypeError(f"Expected a settings object in {overlay_path}")
+
+    def settings(content):
+        return dict(re.findall(r"^([a-z_]+)\s*=\s*(.*)$", content, re.MULTILINE))
+
     if btop.exists():
+        baseline = settings(
+            previous.read_text() if previous.exists() else outputs[btop]
+        )
+        for key, value in settings(btop.read_text()).items():
+            if key != "color_theme" and baseline.get(key) != value:
+                overlay[key] = value
+    overlay.pop("color_theme", None)
+    content = outputs[btop]
+    for key, value in overlay.items():
+        if (
+            not re.fullmatch(r"[a-z_]+", key)
+            or not isinstance(value, str)
+            or "\n" in value
+        ):
+            raise ValueError(f"Invalid btop preference in {overlay_path}: {key}")
         content, count = re.subn(
-            r"^color_theme\s*=.*$",
-            lambda _: f'color_theme = "{values["btop"]}"',
-            btop.read_text(),
+            rf"^{key}\s*=.*$",
+            lambda _, k=key, v=value: f"{k} = {v}",
+            content,
             flags=re.MULTILINE,
         )
-        if count != 1:
-            raise ValueError(f"Expected one color_theme setting in {btop}")
-        outputs[btop] = content
-    # lnav has no native Tokyo Night theme. Adapt our local semantic theme.
+        if not count:
+            content += f"\n{key} = {value}\n"
+    outputs[btop] = content
+    outputs[previous] = content
+    outputs[overlay_path] = json.dumps(overlay, indent=2) + "\n"
+    # Adapt the local semantic lnav theme for palettes without a native theme.
     if values["lnav"] != "gruvbox-dark":
         config = json.loads(outputs[CONFIG / "lnav/config.json"])
         original = config["ui"]["theme-defs"]["gruvbox-dark"]
@@ -144,17 +228,35 @@ def replace_colors(content, colors):
     return re.sub(r"#[0-9a-fA-F]{6}", lambda m: colors.get(m[0].lower(), m[0]), content)
 
 
+def lua_table(values):
+    return (
+        "{\n"
+        + "".join(
+            f"  [{json.dumps(key)}] = {json.dumps(value)},\n"
+            for key, value in values.items()
+        )
+        + "}"
+    )
+
+
 def install_assets(name):
-    manifest = ROOT / "themes" / name / "assets.json"
-    if not manifest.exists():
-        return
-    spec = json.loads(manifest.read_text())
-    base = f"https://raw.githubusercontent.com/{spec['repository']}/{spec['revision']}/"
-    for target, source in spec["files"].items():
-        with urlopen(base + source, timeout=30) as response:
-            atomic_write(CONFIG / target, response.read().decode())
+    outputs = {}
+    installed = {}
+    for spec in asset_sources(name):
+        base = f"https://raw.githubusercontent.com/{spec['repository']}/{spec['revision']}/"
+        for target, source in spec["files"].items():
+            with urlopen(base + source, timeout=30) as response:
+                content = response.read().decode()
+                outputs[CONFIG / target] = content
+                installed[target] = {
+                    "source": asset_revision(spec),
+                    "sha256": hashlib.sha256(content.encode()).hexdigest(),
+                }
+    for target, content in outputs.items():
+        atomic_write(target, content)
     if shutil.which("bat"):
         subprocess.run(["bat", "cache", "--build"], check=True)
+    atomic_write(asset_state_path(name), json.dumps(installed, indent=2) + "\n")
 
 
 def shell_exports(name, values):
@@ -206,7 +308,7 @@ def main():
     install = sub.add_parser(
         "install", help="Fetch pinned assets missing from native tools"
     )
-    install.add_argument("name")
+    install.add_argument("name", nargs="?", help="Defaults to the selected theme")
     value = sub.add_parser("value", help="Print an application mapping")
     value.add_argument("key")
     sub.add_parser("shell", help="Print shell exports for the selected theme")
@@ -233,6 +335,7 @@ def main():
         install_assets(name)
         print(f"Installed assets for {name}.")
     else:
+        validate_assets(name)
         outputs = render(values)
         # Keep the generated descriptor consistent with a newly selected theme.
         outputs[ROOT / "theme.json"] = (
@@ -246,6 +349,13 @@ def main():
             f"  style = {json.dumps(values['yatline_style'])},\n"
             "}\n"
         )
+        yatline = ROOT / "themes" / name / "yatline.json"
+        if yatline.exists():
+            outputs[ROOT / "yatline.lua"] = (
+                "-- Generated by dotfiles-theme apply.\nreturn "
+                + lua_table(json.loads(yatline.read_text()))
+                + "\n"
+            )
         if args.command == "set":
             outputs[ROOT / "theme"] = name + "\n"
         for path in outputs:

@@ -1,0 +1,46 @@
+{
+  "sources": [
+    {
+      "repository": "catppuccin/bat",
+      "revision": "6810349b28055dce54076712fc05fc68da4b8ec0",
+      "files": {
+        "bat/themes/Catppuccin Mocha.tmTheme": "themes/Catppuccin%20Mocha.tmTheme"
+      }
+    },
+    {
+      "repository": "catppuccin/yazi",
+      "revision": "d62802be39210ea10e54b3e3b09735c6cb9e57c1",
+      "files": {
+        "yazi/themes/catppuccin-mocha.toml": "themes/mocha/catppuccin-mocha-blue.toml"
+      }
+    },
+    {
+      "repository": "catppuccin/glamour",
+      "revision": "00c97fa3823d272d9d041d5d872ae6335555a776",
+      "files": {
+        "glow/catppuccin-mocha.json": "themes/catppuccin-mocha.json"
+      }
+    },
+    {
+      "repository": "catppuccin/atuin",
+      "revision": "68aa64b77573c235044b614e752a781701af4eec",
+      "files": {
+        "atuin/themes/catppuccin-mocha-blue.toml": "themes/mocha/catppuccin-mocha-blue.toml"
+      }
+    },
+    {
+      "repository": "catppuccin/btop",
+      "revision": "f437574b600f1c6d932627050b15ff5153b58fa3",
+      "files": {
+        "btop/themes/catppuccin_mocha.theme": "themes/catppuccin_mocha.theme"
+      }
+    },
+    {
+      "repository": "catppuccin/iterm",
+      "revision": "b2936a6e55270fcc55421b1bb7d5fd194a489591",
+      "files": {
+        "iterm2/themes/catppuccin-mocha.itermcolors": "colors/catppuccin-mocha.itermcolors"
+      }
+    }
+  ]
+}

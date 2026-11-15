@@ -59,6 +59,17 @@ if theme_profile["visidata"] == "tokyonight-night":
         bright_orange=215, gray=60,
     )
 
+elif theme_profile["visidata"] == "catppuccin-mocha":
+    # Closest xterm-256 colors; retain the existing semantic layout.
+    GRUVBOX.update(
+        bg0_h=234, bg0=235, bg0_s=236, bg1=237, bg2=238, bg3=240,
+        bg4=242, fg0=189, fg=189, fg1=189, fg2=146, fg3=146, fg4=103,
+        red=211, green=151, yellow=223, blue=111, purple=183, aqua=117,
+        orange=216, bright_red=211, bright_green=151, bright_yellow=223,
+        bright_blue=111, bright_purple=183, bright_aqua=117,
+        bright_orange=216, gray=103,
+    )
+
 # Plot colors for better visibility in graphs
 PLOT_COLORS = {
     "c1": 2,    # green

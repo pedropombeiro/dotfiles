@@ -18,7 +18,7 @@
           }
         }
       },
-      "gruvbox-dark": {
+      "@THEME_lnav@": {
         "vars": {
           "aqua": "#8ec07c",
           "aqua_dim": "#689d6a",

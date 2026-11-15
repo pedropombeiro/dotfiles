@@ -49,7 +49,6 @@ The configuration uses TPM (Tmux Plugin Manager) with these plugins:
   - Down: `M-j`
   - Previous: `M-^`. Don't bind `M-\` in the root table: its `ESC \` bytes terminate
     terminal responses, and intercepting them breaks Yazi's terminal probe.
-- `egel/tmux-gruvbox` - Gruvbox theme (dark256)
 - `MunifTanjim/tmux-mode-indicator` - Shows WAIT/COPY/SYNC/TMUX mode in status bar
 - `Morantron/tmux-fingers` - Hint-based copy on `Prefix F`. mise installs the binary
   (`global.toml`), so `@fingers-skip-wizard` disables the plugin's interactive
@@ -57,6 +56,11 @@ The configuration uses TPM (Tmux Plugin Manager) with these plugins:
   Copies use `load-buffer -w`, which reaches the local clipboard over SSH through OSC 52.
 
 ### Related Files
+
+- Theme colors use native generated includes, not a TPM theme plugin.
+  `dotfiles-theme` renders `theme.conf` and `theme-status.conf`. Gruvbox retains
+  its original 256-color layout, while Tokyo Night and Mocha share templates with
+  separate palettes. `mise theme:set <theme>` reloads the running server.
 
 - `opencode.nvim` selects its tmux provider when `$TMUX` is set.
 
@@ -168,8 +172,9 @@ level via a zle widget and works regardless of scrollback state.
 
 The opencode plugin `opencode-tmux-indicator` sets a per-window user option
 `@opencode-waiting` when an opencode instance is waiting for user input (permission or question).
-The presentation is handled in `tmux.conf` via `#{?@opencode-waiting,...}` conditionals in
-`window-status-format`, which turns inactive tabs gruvbox orange (`colour214`) and prefixes waiting window names with `●`.
+The generated `theme-status.conf` uses `#{?@opencode-waiting,...}` conditionals in
+`window-status-format` to apply the selected palette's waiting color and prefix
+waiting window names with `●`.
 
 The plugin also writes a BEL to the pane TTY so tmux sets `window_bell_flag`, enabling
 `Prefix + M-n` (`next-window -a`) to jump to windows waiting for input. To prevent the bell

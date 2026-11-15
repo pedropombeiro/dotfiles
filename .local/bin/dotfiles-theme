@@ -197,10 +197,10 @@ def render(values):
     outputs[btop] = content
     outputs[previous] = content
     outputs[overlay_path] = json.dumps(overlay, indent=2) + "\n"
-    # Adapt the local semantic lnav theme for palettes without a native theme.
-    if values["lnav"] != "gruvbox-dark":
+    # Adapt the shared semantic lnav layout when a color map is supplied.
+    if "color_map" in values:
         config = json.loads(outputs[CONFIG / "lnav/config.json"])
-        original = config["ui"]["theme-defs"]["gruvbox-dark"]
+        original = config["ui"]["theme-defs"][values["lnav"]]
         colors = json.loads((ROOT / "themes" / values["color_map"]).read_text())
         config["ui"]["theme-defs"][values["lnav"]] = json.loads(
             replace_colors(json.dumps(original), colors)

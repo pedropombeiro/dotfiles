@@ -1,7 +1,8 @@
 # lnav cheat sheet
 
-Configuration: [`~/.config/lnav/config.json`](../../.config/lnav/config.json), with the
-Gruvbox theme and highlights for IP addresses, color literals, and XML.
+Configuration: [`~/.config/lnav/config.json.theme`](../../.config/lnav/config.json.theme).
+Colors follow the shared dotfiles theme, with highlights for IP addresses, color
+literals, and XML.
 Open several logs with `lnav FILE1 FILE2`, or include rotations with
 `lnav -R FILE`. The file arguments are your input paths. Recognized logs merge
 into a timestamp-ordered view. Open this sheet with `cheat lnav`.
@@ -16,35 +17,35 @@ into a timestamp-ordered view. Open this sheet with `cheat lnav`.
 
 ## Navigate an incident
 
-| Goal | Keys or command | Notes |
-| --- | --- | --- |
-| Search by regex | `/` | `n` and `N` move between matches |
-| Jump to the next or previous error | `e` or `E` | Recognized log levels |
-| Jump to the next or previous warning | `w` or `W` | |
-| Jump to a timestamp | `:goto 2026-10-06T14:30:00` | Replace with the incident time |
-| Move forward or backward a day | `d` or `D` | Time-based views |
-| Find a slowdown in message rate | `s` or `S` | Next or previous |
-| Show the message-rate histogram | `i` | `z` zooms in, `Z` zooms out |
-| Switch to the histogram at the same time | `I` | Keeps the focused timestamp in sync |
-| Show parsed fields | `p` | Check the format and available SQL columns |
-| Pretty-print displayed content | `P` | Useful for JSON embedded in logs |
-| Focus files and filters | `Tab` | Opens the configuration panel |
-| Pause or resume loading new data | `=` | Useful while reading a live stream |
-| Toggle word wrapping | `C-w` | |
-| Return to the previous view | `q` | At the outermost view, quits lnav |
+| Goal                                     | Keys or command             | Notes                                      |
+| ---------------------------------------- | --------------------------- | ------------------------------------------ |
+| Search by regex                          | `/`                         | `n` and `N` move between matches           |
+| Jump to the next or previous error       | `e` or `E`                  | Recognized log levels                      |
+| Jump to the next or previous warning     | `w` or `W`                  |                                            |
+| Jump to a timestamp                      | `:goto 2026-10-06T14:30:00` | Replace with the incident time             |
+| Move forward or backward a day           | `d` or `D`                  | Time-based views                           |
+| Find a slowdown in message rate          | `s` or `S`                  | Next or previous                           |
+| Show the message-rate histogram          | `i`                         | `z` zooms in, `Z` zooms out                |
+| Switch to the histogram at the same time | `I`                         | Keeps the focused timestamp in sync        |
+| Show parsed fields                       | `p`                         | Check the format and available SQL columns |
+| Pretty-print displayed content           | `P`                         | Useful for JSON embedded in logs           |
+| Focus files and filters                  | `Tab`                       | Opens the configuration panel              |
+| Pause or resume loading new data         | `=`                         | Useful while reading a live stream         |
+| Toggle word wrapping                     | `C-w`                       |                                            |
+| Return to the previous view              | `q`                         | At the outermost view, quits lnav          |
 
 ## Filter without losing context
 
-| Goal | Command or keys | Notes |
-| --- | --- | --- |
-| Include messages matching a regex | `:filter-in request_id=abc123` | Replace the regex with your identifier |
-| Exclude repetitive messages | `:filter-out healthcheck` | Preview highlights matches before you execute |
-| Disable or delete one regex filter | `:disable-filter healthcheck` or `:delete-filter healthcheck` | Use the original pattern |
-| Toggle all filters | `C-f` | Compare filtered messages with surrounding context |
-| Filter by parsed values | `:filter-expr :log_level = 'error'` | SQL expression with colon-prefixed column names |
-| Clear the SQL expression filter | `:clear-filter-expr` | Regex filters remain separate |
-| Hide messages before or after a time | `:hide-lines-before 14:30` or `:hide-lines-after 15:00` | Absolute or relative dates |
-| Clear time bounds | `:show-lines-before-and-after` | |
+| Goal                                 | Command or keys                                               | Notes                                              |
+| ------------------------------------ | ------------------------------------------------------------- | -------------------------------------------------- |
+| Include messages matching a regex    | `:filter-in request_id=abc123`                                | Replace the regex with your identifier             |
+| Exclude repetitive messages          | `:filter-out healthcheck`                                     | Preview highlights matches before you execute      |
+| Disable or delete one regex filter   | `:disable-filter healthcheck` or `:delete-filter healthcheck` | Use the original pattern                           |
+| Toggle all filters                   | `C-f`                                                         | Compare filtered messages with surrounding context |
+| Filter by parsed values              | `:filter-expr :log_level = 'error'`                           | SQL expression with colon-prefixed column names    |
+| Clear the SQL expression filter      | `:clear-filter-expr`                                          | Regex filters remain separate                      |
+| Hide messages before or after a time | `:hide-lines-before 14:30` or `:hide-lines-after 15:00`       | Absolute or relative dates                         |
+| Clear time bounds                    | `:show-lines-before-and-after`                                |                                                    |
 
 Press `:` and double-tap `Tab` for command completion. Filters, bookmarks, and
 other view state can persist between sessions. `C-r` resets session state,
@@ -94,17 +95,17 @@ before assuming the `unifi_log` SQL table is available.
 
 ## Bookmarks and export
 
-| Goal | Keys or command | Notes |
-| --- | --- | --- |
-| Mark or unmark the focused message | `m` | `C-x` toggles cursor mode to focus another visible line |
-| Mark a range from the previous bookmark | `M` | |
-| Visit the next or previous bookmark | `u` or `U` | |
-| Copy marked lines | `c` | Clipboard |
-| Clear marked lines | `C` | |
-| Write marked lines | `:write-to incident.txt` | Overwrites the destination |
-| Write the current view | `:write-view-to filtered.txt` | Use from the log view for a filtered log export |
-| Export SQL results as CSV | `:write-csv-to results.csv` | Exports query results, not marked messages |
-| Export SQL results as JSON | `:write-json-to results.json` | |
+| Goal                                    | Keys or command               | Notes                                                   |
+| --------------------------------------- | ----------------------------- | ------------------------------------------------------- |
+| Mark or unmark the focused message      | `m`                           | `C-x` toggles cursor mode to focus another visible line |
+| Mark a range from the previous bookmark | `M`                           |                                                         |
+| Visit the next or previous bookmark     | `u` or `U`                    |                                                         |
+| Copy marked lines                       | `c`                           | Clipboard                                               |
+| Clear marked lines                      | `C`                           |                                                         |
+| Write marked lines                      | `:write-to incident.txt`      | Overwrites the destination                              |
+| Write the current view                  | `:write-view-to filtered.txt` | Use from the log view for a filtered log export         |
+| Export SQL results as CSV               | `:write-csv-to results.csv`   | Exports query results, not marked messages              |
+| Export SQL results as JSON              | `:write-json-to results.json` |                                                         |
 
 Use a new output path to preserve existing files. Review exported logs for
 credentials and private information before sharing them. The write commands

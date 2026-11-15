@@ -175,7 +175,7 @@ ssh -T git@gitlab.com
 
 ## Configuration
 
-See [theme selection](themes.md) for the shared Gruvbox setting, application
+See [theme selection](themes.md) for the shared theme setting, application
 mappings, and the apply command.
 
 ### macOS Settings

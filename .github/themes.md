@@ -130,7 +130,9 @@ conventions. OpenCode's native theme name is `catppuccin`.
    Define prompt variables in `<name>/prompt.json`; the renderer clears all
    managed prompt variables before applying the selected palette.
    Set `yatline` to `yatline-local` and add `<name>/yatline.json` colors for the
-   shared Yatline adapter. Register any VisiData or lnav themes needed.
+   shared Yatline adapter. Add `<name>/visidata.json` with xterm-256 palette
+   values for VisiData's shared layout. lnav's shared semantic layout uses the
+   profile's `lnav` identifier and optional `color_map` to adapt its base colors.
 1. Run `zsh -df ~/.config/yadm/scripts/tests/test-dotfiles-theme.zsh` and check
    the applications visually before changing the default.
 1. Run `zsh -df ~/.config/yadm/scripts/tests/test-tmux-themes.zsh` with tmux and

@@ -15,7 +15,7 @@ with `cheat btop` or `Prefix h` in tmux.
 
 ## How this setup behaves
 
-- The theme is Gruvbox Dark, with CPU, memory, network, and process boxes shown.
+- Colors follow the shared dotfiles theme, with CPU, memory, network, and process boxes shown.
 - Updates run every two seconds. Processes start sorted by **cpu lazy**, which
   favors sustained CPU use over momentary spikes. Choose **cpu direct** to
   sort by the current sample instead.
@@ -32,50 +32,50 @@ with `cheat btop` or `Prefix h` in tmux.
 
 ## Find and inspect processes
 
-| Goal | Keys | Notes |
-| --- | --- | --- |
-| Filter processes | `/` or `f` | Start the filter with `!` for a regular expression |
-| Apply or cancel a filter edit | `Enter` or `Esc` | `Esc` restores the previous filter |
-| Clear the filter | `Delete` | Outside the filter editor |
-| Select a process | `j` or `k` | Arrow keys also work |
-| Jump through the list | `PageUp`, `PageDown`, `g`, `G` | `g` and `G` jump to the first and last pages |
-| Change the sort column | `h` or `l` | Left and Right also work |
-| Reverse the sort order | `r` | |
-| Open or close process details | `Enter` | Select a process first |
-| Follow a process as its rank changes | `F` | Press again on the followed process to stop |
-| Pause or resume the process list | `u` | Doesn't suspend the processes themselves |
-| Toggle the process tree | `e` | |
-| Collapse or expand a branch | `Space` | In tree view, with a process selected |
-| Collapse or expand all branches | `E` | Tree view only |
-| Switch total-capacity or per-core CPU usage | `c` | Changes process CPU percentages |
-| Switch memory bytes or percentages | `%` | Process list only |
+| Goal                                        | Keys                           | Notes                                              |
+| ------------------------------------------- | ------------------------------ | -------------------------------------------------- |
+| Filter processes                            | `/` or `f`                     | Start the filter with `!` for a regular expression |
+| Apply or cancel a filter edit               | `Enter` or `Esc`               | `Esc` restores the previous filter                 |
+| Clear the filter                            | `Delete`                       | Outside the filter editor                          |
+| Select a process                            | `j` or `k`                     | Arrow keys also work                               |
+| Jump through the list                       | `PageUp`, `PageDown`, `g`, `G` | `g` and `G` jump to the first and last pages       |
+| Change the sort column                      | `h` or `l`                     | Left and Right also work                           |
+| Reverse the sort order                      | `r`                            |                                                    |
+| Open or close process details               | `Enter`                        | Select a process first                             |
+| Follow a process as its rank changes        | `F`                            | Press again on the followed process to stop        |
+| Pause or resume the process list            | `u`                            | Doesn't suspend the processes themselves           |
+| Toggle the process tree                     | `e`                            |                                                    |
+| Collapse or expand a branch                 | `Space`                        | In tree view, with a process selected              |
+| Collapse or expand all branches             | `E`                            | Tree view only                                     |
+| Switch total-capacity or per-core CPU usage | `c`                            | Changes process CPU percentages                    |
+| Switch memory bytes or percentages          | `%`                            | Process list only                                  |
 
 ## Change the view
 
-| Goal | Keys | Notes |
-| --- | --- | --- |
-| Cycle layout presets | `p` or `P` | Forward or backward |
-| Toggle CPU, memory, network, or process boxes | `1`, `2`, `3`, `4` | Each key toggles one box |
-| Toggle disks in the memory box | `d` | |
-| Switch disks to I/O graphs | `i` | Compare read and write activity |
-| Change the network interface | `b` or `n` | Previous or next interface |
-| Toggle automatic network scaling | `a` | Enabled initially |
-| Toggle shared upload/download scaling | `y` | Enabled initially to keep the graph scales comparable |
-| Open options | `o` or `F2` | Includes theme, sensors, and process settings |
-| Open help | `H`, `?`, or `F1` | Lowercase `h` changes sorting in this setup |
-| Reload the configuration from disk | `C-r` | |
-| Quit | `q` | Saves current settings |
+| Goal                                          | Keys               | Notes                                                 |
+| --------------------------------------------- | ------------------ | ----------------------------------------------------- |
+| Cycle layout presets                          | `p` or `P`         | Forward or backward                                   |
+| Toggle CPU, memory, network, or process boxes | `1`, `2`, `3`, `4` | Each key toggles one box                              |
+| Toggle disks in the memory box                | `d`                |                                                       |
+| Switch disks to I/O graphs                    | `i`                | Compare read and write activity                       |
+| Change the network interface                  | `b` or `n`         | Previous or next interface                            |
+| Toggle automatic network scaling              | `a`                | Enabled initially                                     |
+| Toggle shared upload/download scaling         | `y`                | Enabled initially to keep the graph scales comparable |
+| Open options                                  | `o` or `F2`        | Includes theme, sensors, and process settings         |
+| Open help                                     | `H`, `?`, or `F1`  | Lowercase `h` changes sorting in this setup           |
+| Reload the configuration from disk            | `C-r`              |                                                       |
+| Quit                                          | `q`                | Saves current settings                                |
 
 ## Send signals safely
 
 Select a process and verify its PID, user, and command in the details view
 before sending a signal. Each action opens a signal dialog for confirmation.
 
-| Goal | Keys | Notes |
-| --- | --- | --- |
-| Request a graceful shutdown | `t` | SIGTERM, signal 15 |
-| Force termination | `K` | SIGKILL, signal 9. The process can't clean up |
-| Choose another signal | `s` | Select or enter the signal in the dialog |
+| Goal                        | Keys | Notes                                         |
+| --------------------------- | ---- | --------------------------------------------- |
+| Request a graceful shutdown | `t`  | SIGTERM, signal 15                            |
+| Force termination           | `K`  | SIGKILL, signal 9. The process can't clean up |
+| Choose another signal       | `s`  | Select or enter the signal in the dialog      |
 
 Prefer SIGTERM first. Use SIGKILL only when necessary, and avoid launching
 btop with elevated privileges just to inspect ordinary processes.

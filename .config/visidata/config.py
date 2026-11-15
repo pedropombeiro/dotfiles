@@ -9,66 +9,12 @@ import dateutil
 from visidata import BaseSheet, DirSheet, GraphSheet, Sheet, colors, options, vd
 
 ################################################################################
-# visidata gruvbox dark theme configuration
-
-# Gruvbox Dark color palette mapped to 256-color terminal codes
-# Using the closest matches to original Gruvbox colors
-# fmt: off
-GRUVBOX = {
-    "bg0_h":         234,   # #1d2021 (hard dark)
-    "bg0":           235,   # #282828 (main dark)
-    "bg0_s":         236,   # #32302f
-    "bg1":           237,   # #3c3836
-    "bg2":           239,   # #504945
-    "bg3":           241,   # #665c54
-    "bg4":           243,   # #7c6f64
-    "fg0":           229,   # #fbf1c7 (hard light)
-    "fg":            223,   # #ebdbb2 (main light)
-    "fg1":           223,   # #ebdbb2 (main light)
-    "fg2":           250,   # #d5c4a1
-    "fg3":           248,   # #bdae93
-    "fg4":           246,   # #a89984
-    "red":           124,   # #cc241d (red)
-    "green":         106,   # #98971a (green)
-    "yellow":        172,   # #d79921 (yellow)
-    "blue":          66,    # #458588 (blue)
-    "purple":        132,   # #b16286 (purple)
-    "aqua":          108,   # #689d6a (aqua)
-    "orange":        166,   # #d65d0e (orange)
-    "bright_red":    167,   # #fb4934 (bright red)
-    "bright_green":  142,   # #b8bb26 (bright green)
-    "bright_yellow": 214,   # #fabd2f (bright yellow)
-    "bright_blue":   109,   # #83a598 (bright blue)
-    "bright_purple": 175,   # #d3869b (bright purple)
-    "bright_aqua":   108,   # #8ec07c (bright aqua)
-    "bright_orange": 208,   # #fe8019 (bright orange)
-    "gray":          245,   # #928374 (gray)
-}
-# fmt: on
-
+# Shared VisiData layout with per-theme xterm-256 palettes.
 theme_root = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "dotfiles"
 theme_profile = json.loads((theme_root / "theme.json").read_text())
-if theme_profile["visidata"] == "tokyonight-night":
-    # Closest xterm-256 colors for the Tokyo Night palette.
-    GRUVBOX.update(
-        bg0_h=233, bg0=234, bg0_s=235, bg1=236, bg2=238, bg3=239,
-        bg4=240, fg0=189, fg=189, fg1=189, fg2=146, fg3=146, fg4=103,
-        red=203, green=114, yellow=179, blue=111, purple=141, aqua=117,
-        orange=215, bright_red=210, bright_green=114, bright_yellow=179,
-        bright_blue=111, bright_purple=141, bright_aqua=117,
-        bright_orange=215, gray=60,
-    )
-
-elif theme_profile["visidata"] == "catppuccin-mocha":
-    # Closest xterm-256 colors; retain the existing semantic layout.
-    GRUVBOX.update(
-        bg0_h=234, bg0=235, bg0_s=236, bg1=237, bg2=238, bg3=240,
-        bg4=242, fg0=189, fg=189, fg1=189, fg2=146, fg3=146, fg4=103,
-        red=211, green=151, yellow=223, blue=111, purple=183, aqua=117,
-        orange=216, bright_red=211, bright_green=151, bright_yellow=223,
-        bright_blue=111, bright_purple=183, bright_aqua=117,
-        bright_orange=216, gray=103,
-    )
+palette = json.loads(
+    (theme_root / "themes" / theme_profile["name"] / "visidata.json").read_text()
+)
 
 # Plot colors for better visibility in graphs
 PLOT_COLORS = {
@@ -104,48 +50,48 @@ _plot_colors_str = " ".join(map(str, PLOT_COLORS.values()))
 
 vd.themes[theme_profile["visidata"]] = dict(
     # Base colors
-    color_default=f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0"]}',
-    color_default_hdr=f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_s"]}',
+    color_default=f'{palette["fg1"]} on {palette["bg0"]}',
+    color_default_hdr=f'bold {palette["bright_yellow"]} on {palette["bg0_s"]}',
     # Key column highlighting with good contrast
-    color_key_col=f'{GRUVBOX["bright_green"]} on {GRUVBOX["bg0"]}',
+    color_key_col=f'{palette["bright_green"]} on {palette["bg0"]}',
     # Current column/row (cursor position)
-    color_current_row=f'bold {GRUVBOX["bg0"]} on {GRUVBOX["blue"]}',  # Inverted for visibility
-    color_current_col=f'{GRUVBOX["bright_blue"]} on {GRUVBOX["bg0_s"]}',
-    color_current_cell=f'bold {GRUVBOX["bg0"]} on {GRUVBOX["bright_blue"]}',
+    color_current_row=f'bold {palette["bg0"]} on {palette["blue"]}',  # Inverted for visibility
+    color_current_col=f'{palette["bright_blue"]} on {palette["bg0_s"]}',
+    color_current_cell=f'bold {palette["bg0"]} on {palette["bright_blue"]}',
     # Selected rows - high contrast for readability
-    color_selected_row=f'{GRUVBOX["bg0"]} on {GRUVBOX["bright_green"]}',  # Inverted green background
+    color_selected_row=f'{palette["bg0"]} on {palette["bright_green"]}',  # Inverted green background
     # Column separators
-    color_column_sep=f'{GRUVBOX["bg2"]} on {GRUVBOX["bg0"]}',
+    color_column_sep=f'{palette["bg2"]} on {palette["bg0"]}',
     # Aggregator
-    color_aggregator=f'bold {GRUVBOX["fg0"]} on {GRUVBOX["bg0_h"]}',
+    color_aggregator=f'bold {palette["fg0"]} on {palette["bg0_h"]}',
     # Status bars and messages
-    color_status=f'{GRUVBOX["fg1"]} on {GRUVBOX["bg0_h"]}',
-    color_active_status=f'{GRUVBOX["fg2"]} on {GRUVBOX["bg0_s"]}',
-    color_error=f'bold {GRUVBOX["bright_red"]} on {GRUVBOX["bg0_h"]}',
-    color_warning=f'{GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_h"]}',
+    color_status=f'{palette["fg1"]} on {palette["bg0_h"]}',
+    color_active_status=f'{palette["fg2"]} on {palette["bg0_s"]}',
+    color_error=f'bold {palette["bright_red"]} on {palette["bg0_h"]}',
+    color_warning=f'{palette["bright_yellow"]} on {palette["bg0_h"]}',
     # Sidebar
-    color_sidebar=f'{GRUVBOX["fg0"]} on {GRUVBOX["bg2"]}',
-    color_sidebar_title=f'{GRUVBOX["bright_orange"]} on {GRUVBOX["bg2"]}',
-    color_longname_guide=f'{GRUVBOX["fg4"]} on {GRUVBOX["bg2"]}',
-    color_heading=f'{GRUVBOX["bright_orange"]} on {GRUVBOX["bg2"]}',
+    color_sidebar=f'{palette["fg0"]} on {palette["bg2"]}',
+    color_sidebar_title=f'{palette["bright_orange"]} on {palette["bg2"]}',
+    color_longname_guide=f'{palette["fg4"]} on {palette["bg2"]}',
+    color_heading=f'{palette["bright_orange"]} on {palette["bg2"]}',
     # Cell content types
-    color_note_row=f'{GRUVBOX["bright_blue"]} on {GRUVBOX["bg0"]}',
+    color_note_row=f'{palette["bright_blue"]} on {palette["bg0"]}',
     # Graph colors
-    color_graph_hidden=f'{GRUVBOX["blue"]}',
+    color_graph_hidden=f'{palette["blue"]}',
     plot_colors=_plot_colors_str,
     # Bottom sheet colors
-    color_bottom_hdr=f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_h"]}',
+    color_bottom_hdr=f'bold {palette["bright_yellow"]} on {palette["bg0_h"]}',
     # Command palette and menus
-    color_cmdpalette=f'{GRUVBOX["fg1"]} on {GRUVBOX["bg3"]}',
-    color_menu=f'{GRUVBOX["fg1"]} on {GRUVBOX["bg3"]}',
-    color_menu_active=f'bold {GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0_s"]}',
-    color_menu_help=f'italic {GRUVBOX["bg0_h"]} on {GRUVBOX["blue"]}',
+    color_cmdpalette=f'{palette["fg1"]} on {palette["bg3"]}',
+    color_menu=f'{palette["fg1"]} on {palette["bg3"]}',
+    color_menu_active=f'bold {palette["bright_yellow"]} on {palette["bg0_s"]}',
+    color_menu_help=f'italic {palette["bg0_h"]} on {palette["blue"]}',
     # Hidden columns
-    color_hidden_col=f'{GRUVBOX["gray"]} on {GRUVBOX["bg0"]}',
+    color_hidden_col=f'{palette["gray"]} on {palette["bg0"]}',
     # Add-on status colors
-    color_add_pending=f'{GRUVBOX["bright_yellow"]} on {GRUVBOX["bg0"]}',
-    color_change_pending=f'{GRUVBOX["bright_purple"]} on {GRUVBOX["bg0"]}',
-    color_delete_pending=f'{GRUVBOX["bright_red"]} on {GRUVBOX["bg0"]}',
+    color_add_pending=f'{palette["bright_yellow"]} on {palette["bg0"]}',
+    color_change_pending=f'{palette["bright_purple"]} on {palette["bg0"]}',
+    color_delete_pending=f'{palette["bright_red"]} on {palette["bg0"]}',
     disp_status_fmt="{sheet.sheetlist} ",
     disp_rstatus_fmt="{sheet.threadStatus} {sheet.keystrokeStatus}   {sheet.longname}[/]   {sheet.nRows} {sheet.rowtype} {sheet.modifiedStatus}{sheet.selectedStatus}{vd.replayStatus} [:longname_status]{sheet.cursorRowIndex1}:{sheet.cursorVisibleColIndex1} {sheet.vertPos}[/] {vd.sidebarStatus}",
 )

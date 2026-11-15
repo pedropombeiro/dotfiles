@@ -13,6 +13,7 @@
 #   - no broken untracked symlinks in directories that hold tracked files
 #   - rendered templates contain no leftover `{{` or `{%` markers
 #   - rendered `.json` parses with jq and rendered `.lua` compiles with luac
+#     OpenCode's server config accepts JSONC comments and trailing commas.
 #
 # It implements only the yadm conditions this repository uses. An unknown
 # condition is reported as an error instead of being guessed at.
@@ -131,6 +132,9 @@ for template in ${(M)tracked:#*\#\#*}; do
     errors+=("leftover template markers: ${target#${HOME}/}")
   fi
   case ${target} in
+    "${HOME}/.config/opencode/opencode.json")
+      jq -Rs -f "${YADM_SCRIPTS}/lib/validate-jsonc.jq" "${target}" 2>/dev/null || errors+=("invalid JSONC: ${target#${HOME}/}")
+      ;;
     *.json)
       jq empty "${target}" 2>/dev/null || errors+=("invalid JSON: ${target#${HOME}/}")
       ;;

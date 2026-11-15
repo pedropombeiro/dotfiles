@@ -252,3 +252,62 @@ and logs split. Opening sessions and running `iterm:setup` start real commands -
 do this only when ready. The generator never edits the app-owned plist or deletes
 original profiles. To return to the original parent mappings, move the cache
 outside the iTerm2 configuration directory and apply the theme again.
+
+### Discover Caproni shell profiles
+
+```sh
+mise iterm:profiles:caproni-icon
+mise iterm:profiles:caproni-refresh --dry-run
+# Register a legacy checkout explicitly when it is outside cap-<id> discovery:
+mise iterm:profiles:caproni-refresh --legacy /path/to/legacy-environment --dry-run
+mise iterm:profiles:caproni-refresh --legacy /path/to/legacy-environment
+mise iterm:profiles:preview
+mise iterm:profiles:apply
+```
+
+Discovery follows the existing Caproni directory convention: `cap-<id>` below
+`CAPRONI_ENV_ROOT`, or your home directory by default, containing `caproni.yaml`.
+Use `--root` to select another root. Explicit legacy registrations persist across
+refreshes. No Caproni, Colima, Kubernetes, or credential commands run. Profiles
+open only a login Zsh shell at the environment root, inheriting UI settings from
+the Default base while overriding its tmux command and directory-reuse policy.
+GUIDs derive from canonical environment paths. Workspace layouts stay separate.
+
+`iterm:profiles:caproni-icon` downloads the official Caproni favicon pinned to a
+source commit into the ignored `iterm2/icons/caproni.ico` asset. Generated Caproni
+profiles explicitly select this icon instead of inheriting the Default icon.
+Icon installation is explicit and network access is never part of rendering.
+
+The ignored `iterm2/caproni.local.json` cache stores private paths with permissions
+`0600`. Missing registered legacy environments stop refresh. Other removals require
+`--allow-removed` after a dry-run review. Theme rendering uses only the saved cache.
+
+### Prepare a shared GDK base
+
+```sh
+mise iterm:profiles:gdk-prepare --dry-run
+mise iterm:profiles:gdk-prepare
+mise iterm:profiles:preview
+# Apply only after reviewing equivalent behavior:
+mise iterm:profiles:apply
+```
+
+Preparation reads the app-owned bases without editing them. It snapshots differing
+role settings into the ignored, mode-`0600` `iterm2/gdk.local.json`, retaining all
+generated GUIDs and selecting the existing GDK base as the shared parent. Internal
+commands and paths stay local. Retain the original role bases during validation.
+
+Preparation explicitly standardizes Powerline glyph drawing, initial transparency,
+cursor guide, smart cursor color, automatic password-manager opening, and trigger-string interpolation
+to off. Mouse-reporting clicks and drags are enabled, and the session-close undo
+timeout is 20 seconds. These are intentional shared UI policies, not inferred app
+defaults. Existing role-specific triggers and title components remain explicit.
+Roles without stored triggers get an empty list, so they cannot inherit shell
+triggers. Roles without stored title components use the clean profile name.
+
+For other unspecified preferences, preparation still stops without saving rather
+than guessing application defaults. Preview reports the intentional UI changes
+alongside any unexpected inherited-setting differences.
+Snapshot files are not updated from subsequent edits to retired role bases.
+Move the snapshot outside the configuration directory and apply to restore the
+original parent mappings. Never delete original bases before validation.

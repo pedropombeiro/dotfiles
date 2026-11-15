@@ -70,6 +70,9 @@ Thumbs.db
 /.agents/skills/hk-debug
 
 /.config/iterm2/thin-clones.local.json
+/.config/iterm2/caproni.local.json
+/.config/iterm2/icons/caproni.ico
+/.config/iterm2/gdk.local.json
 
 # BEGIN yadm-alt (auto-generated, do not edit)
 .Brewfile

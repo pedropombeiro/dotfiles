@@ -110,3 +110,37 @@ run = "$HOME/.local/bin/dotfiles-theme iterm-preview"
 [tasks."iterm:profiles:apply"]
 description = "Generate only iTerm2 profiles using the selected theme and cached inventory"
 run = "$HOME/.local/bin/dotfiles-theme iterm-apply"
+
+[tasks."iterm:profiles:caproni-refresh"]
+description = "Discover Caproni directories without starting environments"
+usage = '''
+flag "--root <root>" help="Environment root"
+flag "--legacy <legacy>" var=#true help="Register a legacy environment path"
+complete "root" type="dir"
+complete "legacy" type="dir"
+flag "--dry-run" help="Inspect without saving"
+flag "--allow-removed" help="Accept reviewed removals"
+'''
+raw_args = true
+run = '"$HOME/.local/bin/dotfiles-theme" iterm-caproni-refresh "$@"'
+
+[tasks."iterm:profiles:gdk-prepare"]
+description = "Prepare private GDK role overrides without editing app-owned bases"
+usage = '''
+flag "--dry-run" help="Inspect without saving"
+'''
+raw_args = true
+run = '"$HOME/.local/bin/dotfiles-theme" iterm-gdk-prepare "$@"'
+
+[tasks."iterm:profiles:caproni-icon"]
+description = "Install the pinned official Caproni profile icon"
+run = '''
+set -eu
+directory="${XDG_CONFIG_HOME:-$HOME/.config}/iterm2/icons"
+mkdir -p "$directory"
+temporary=$(mktemp "$directory/.caproni.XXXXXX")
+trap 'rm -f "$temporary"' EXIT
+curl --fail --silent --show-error --location 'https://gitlab.com/gitlab-org/caproni/-/raw/82e53175182e9c9fa1b5118fe129bdcaf111131a/doc-site/static/favicon.ico' --output "$temporary"
+chmod 644 "$temporary"
+mv "$temporary" "$directory/caproni.ico"
+'''

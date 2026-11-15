@@ -255,6 +255,74 @@ with patch.object(sys, 'platform', 'darwin'):
         module['main']()
         assert target.read_bytes() == saved
     assert preferences.read_bytes() == original
+    cap_root = Path.home() / 'environments'
+    cap_root.mkdir()
+    for name in ('cap-123', 'cap-456', 'cap-invalid', 'legacy'):
+        (cap_root / name).mkdir()
+        (cap_root / name / 'caproni.yaml').write_text('version: 2\n')
+    refresh_caproni = module['refresh_caproni']
+    cap_cache = directory / 'caproni.local.json'
+    with patch.object(module['subprocess'], 'run', side_effect=AssertionError('live Caproni command')):
+        refresh_caproni(str(cap_root), [str(cap_root / 'legacy')], dry_run=True)
+        assert not cap_cache.exists()
+        refresh_caproni(str(cap_root), [str(cap_root / 'legacy')])
+        cap_profiles = module['caproni_mappings'](mapping)
+        assert len(cap_profiles) == 3
+        assert cap_cache.stat().st_mode & 0o777 == 0o600
+        assert all(p['overrides']['Command'] == '/bin/zsh -l' and p['overrides']['Initial Text'] == '' for p in cap_profiles)
+        assert all(p['overrides']['Shortcut'] == '' for p in cap_profiles)
+        assert all(p['overrides']['Icon'] == 2 for p in cap_profiles)
+        assert all(p['overrides']['Custom Icon Path'] == str(directory / 'icons/caproni.ico') for p in cap_profiles)
+        assert module['caproni_mappings'](mapping) == cap_profiles
+        assert len(json.loads(render('gruvbox-dark')[target])['Profiles']) == 11
+        saved_inventory = cap_cache.read_bytes()
+        (cap_root / 'cap-123/caproni.yaml').unlink()
+        try:
+            refresh_caproni()
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('unreviewed Caproni removal accepted')
+        assert cap_cache.read_bytes() == saved_inventory
+        refresh_caproni(allow_removed=True)
+        assert len(module['caproni_mappings'](mapping)) == 2
+    cap_cache.unlink()
+    # Shared-base migration preserves explicitly stored role settings, never guessing defaults.
+    role_parents = [dict(p) for p in parents]
+    role_parents[2]['Option Key Sends'] = 2
+    role_parents[1].update({'Triggers': [{'regex': 'FAIL:', 'action': 'BounceTrigger'}],
+                            'Title Components': 2, 'Use Cursor Guide': True})
+    role_parents[2]['Title Components'] = 32
+    preferences.write_bytes(plistlib.dumps({'New Bookmarks': role_parents}))
+    module['prepare_gdk'](dry_run=True)
+    assert not (directory / 'gdk.local.json').exists()
+    module['prepare_gdk']()
+    assert (directory / 'gdk.local.json').stat().st_mode & 0o777 == 0o600
+    migrated = json.loads(render('gruvbox-dark')[target])['Profiles']
+    rails = next(p for p in migrated if p['Name'] == 'GDK rails console')
+    assert rails['Option Key Sends'] == 2
+    assert rails['Guid'] == mapping['profiles'][2]['guid']
+    assert rails['Dynamic Profile Parent GUID'] == mapping['profiles'][1]['parent_guid']
+    assert rails['Triggers'] == []
+    assert rails['Title Components'] == 32
+    assert all(p[key] == value for p in migrated if p['Name'].startswith('GDK') or p['Name'] == 'Clickhouse client'
+               for key, value in module['GDK_UI_DEFAULTS'].items())
+    logs = next(p for p in migrated if p['Name'] == 'GDK development logs')
+    assert logs['Title Components'] == 2 and logs['Triggers'] == []
+    shell = next(p for p in migrated if p['Name'] == 'GDK')
+    assert shell['Triggers'] == role_parents[1]['Triggers']
+    snapshot = (directory / 'gdk.local.json').read_bytes()
+    role_parents[1]['Unresolved preference'] = True
+    preferences.write_bytes(plistlib.dumps({'New Bookmarks': role_parents}))
+    try:
+        module['prepare_gdk']()
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('unspecified role preference guessed')
+    assert (directory / 'gdk.local.json').read_bytes() == snapshot
+    (directory / 'gdk.local.json').unlink()
+    preferences.write_bytes(original)
     mapping['profiles'][0]['guid'] = parents[0]['Guid']
     (directory / 'dynamic-profiles.json').write_text(json.dumps(mapping))
     try:

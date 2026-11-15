@@ -13,8 +13,8 @@ in [`tmux.conf`](../../.config/tmux/tmux.conf) and
 1. An orange `●` marks a session with an OpenCode agent waiting for input.
 1. `M-s` opens the picker from a plain shell outside tmux.
 
-`Prefix T` remains an alias for the picker. `Prefix S` and `Prefix L` remain
-aliases for the previous session.
+`Prefix T` remains an alias for the picker. `Prefix S` remains an alias for the
+previous session.
 `Prefix C-s` opens the native tmux session tree.
 
 ## Picker controls

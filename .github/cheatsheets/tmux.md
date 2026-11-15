@@ -27,7 +27,7 @@ Configuration: [`~/.config/tmux/tmux.conf`](../../.config/tmux/tmux.conf).
 | Swap the active pane with a neighbor    | `Prefix {` or `Prefix }`      |                                 |
 | Jump to a pane by number                | `Prefix q`, then the digit    |                                 |
 | Return to the previous pane             | `M-^` or `Prefix ;`           |                                 |
-| Resize in steps of five cells           | `Prefix H` `J` `K`            | `Prefix M-Right` resizes right  |
+| Resize in steps of five cells           | `Prefix H` `J` `K` `L`        | Left, down, up, right           |
 | Apply a preset layout                   | `Prefix M-1` to `Prefix M-7`  | `Prefix E` spreads panes evenly |
 | Move a pane into another window         | `Prefix m`, then `:join-pane` | Joins the marked pane           |
 | Kill a pane without confirmation        | `Prefix x`                    |                                 |

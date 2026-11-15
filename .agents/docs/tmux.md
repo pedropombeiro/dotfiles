@@ -39,7 +39,8 @@ The configuration uses TPM (Tmux Plugin Manager) with these plugins:
 
 - `tmux-plugins/tpm` - Plugin manager itself
 - `tmux-plugins/tmux-sensible` - Sensible defaults
-- `tmux-plugins/tmux-pain-control` - Better pane control
+- `tmux-plugins/tmux-pain-control` - Better pane control. `Prefix H/J/K/L` resize
+  left, down, up, and right by five cells. The bindings are repeatable.
 - `alexwforsythe/tmux-which-key` - Keybinding helper
 - `christoomey/vim-tmux-navigator` - Seamless vim/tmux navigation with custom mappings:
   - Left: `M-h`
@@ -292,8 +293,8 @@ Tmux integrates with `sesh` for session discovery and switching.
   Search results sort by match quality. The preview uses `sesh preview --watch`
   to refresh active tmux sessions every 500 ms.
 - ``prefix + ` `` switches to the client's previous session using `switch-client -l`.
-- `prefix + T` remains an alias for the picker. `prefix + S` and `prefix + L`
-  remain aliases for the previous session.
+- `prefix + T` remains an alias for the picker. `prefix + S` remains an alias
+  for the previous session. `prefix + L` resizes the pane to the right.
 - `prefix + C-s` opens the native tmux session tree.
 - `fn + Tab` and `Caps Lock + L` (iTerm2 only) are alternatives to ``prefix + ` ``, implemented in
   Hammerspoon. `Hyper + L` works too, via the same `hyperBind` registration.
@@ -320,7 +321,7 @@ It requires `jq`.
 ### fn+Tab and Caps Lock+L last-session shortcuts
 
 Both live in `~/.hammerspoon/hotkeys/sesh.lua`. They run
-`tmux switch-client -c <frontmost iTerm2 tty> -l`, which is what `prefix + L` ends up doing.
+`tmux switch-client -c <frontmost iTerm2 tty> -l`, which is what ``prefix + ` `` ends up doing.
 
 All three shortcuts use per-client history. Avoid `sesh last` here: it selects
 from server-wide session recency, so activity in another terminal can change the
@@ -330,8 +331,8 @@ has no fallback.
 macOS consumes the `fn`/Globe modifier, so it **cannot** be bound in `tmux.conf`. Both
 shortcuts are scoped to iTerm2. `-c <tty>` is required because each tmux client tracks its own
 `client_last_session`. `fn` exists only on Apple keyboards; on other keyboards use
-`Caps Lock + L` or `prefix + L`. The Hammerspoon skill covers the event tap and why the
-shortcuts don't synthesize `prefix + L` keystrokes.
+`Caps Lock + L` or ``prefix + ` ``. The Hammerspoon skill covers the event tap and why the
+shortcuts don't synthesize tmux prefix keystrokes.
 
 ### Shell Integration
 

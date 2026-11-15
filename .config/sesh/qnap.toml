@@ -12,6 +12,54 @@ path = "/share/Container/compose"
 startup_command = "nvim -c ':lua Snacks.picker.files({ args = { \"-g\", \"docker-compose.yml\" } })'"
 preview_command = "eza --all --git --icons --color=always --oneline {}"
 
+[[session]]
+name = "Immich config snapshot"
+path = "/share/Container/config/immich"
+startup_command = "nvim immich-config.json"
+preview_command = "printf '%s\\n' 'Saved export only. Live settings are managed in Immich administration.'; eza --git --icons --color=always --oneline {}"
+
+[[session]]
+name = "Backrest config"
+path = "/share/Container/config/backrest/sets"
+startup_command = "nvim -c ':lua Snacks.picker.files()'"
+preview_command = "eza --git --icons --color=always --oneline {}"
+
+[[session]]
+name = "Recyclarr config"
+path = "/share/Container/config/recyclarr"
+startup_command = "nvim recyclarr.yml"
+preview_command = "eza --git --icons --color=always --oneline {}"
+
+[[session]]
+name = "Homepage config"
+path = "/share/Container/config/homepage"
+startup_command = "nvim -c ':lua Snacks.picker.files({ cmd = \"rg\", args = { \"-g\", \"*.yaml\", \"-g\", \"*.js\" } })'"
+preview_command = "eza --git --icons --color=always --oneline {}"
+
+[[session]]
+name = "Grafana stack config"
+path = "/share/Container/compose/grafana"
+startup_command = "nvim -c ':lua Snacks.picker.files({ cmd = \"rg\", dirs = { \"alloy\", \"prometheus\", \"loki\", \"tempo\", \"grafana\" }, args = { \"-g\", \"!**/dashboards/**\", \"-g\", \"!**/*.test.yml\", \"-g\", \"!**/contact-points.yaml\" } })'"
+preview_command = "eza --git --icons --color=always --oneline {}"
+
+[[session]]
+name = "Traefik config"
+path = "/share/Container/compose/traefik"
+startup_command = "nvim traefik.yml -c ':lua Snacks.picker.files({ cmd = \"rg\", args = { \"-g\", \"traefik.yml\", \"-g\", \"rules/**\" } })'"
+preview_command = "eza --git --icons --color=always --oneline {}"
+
+[[session]]
+name = "CrowdSec config"
+path = "/share/Container/config/crowdsec"
+startup_command = "nvim -c ':lua Snacks.picker.files({ cmd = \"rg\", args = { \"-g\", \"config.yaml\", \"-g\", \"acquis.yaml\", \"-g\", \"acquis.d/**\", \"-g\", \"parsers/**\", \"-g\", \"scenarios/**\", \"-g\", \"profiles.yaml\", \"-g\", \"postoverflows/**\", \"-g\", \"appsec-configs/**\" } })'"
+preview_command = "eza --git --icons --color=always --oneline {}"
+
+[[session]]
+name = "NAS service configs"
+path = "/share/Container"
+startup_command = "nvim -c ':lua Snacks.picker.git_files({ untracked = false, cmd_args = { \"--\", \"config/immich/*.json\", \"config/backrest/sets/*.yml\", \"config/recyclarr/*.yml\", \"config/homepage/*.yaml\", \"config/homepage/*.js\", \"config/atuin/server.toml\", \"config/mosquitto/*.conf\", \"config/gitlab-dashboard/**/*.yml\", \"compose/database/postgresql/*.conf\", \"compose/database/postgresql/pg_hba.conf\", \"compose/immich/postgresql/pg_hba.conf\", \"compose/traefik/traefik.yml\", \"compose/traefik/rules/**\", \"compose/grafana/alloy/*\", \"compose/grafana/prometheus/*.yml\", \"compose/grafana/loki/*.yaml\", \"compose/grafana/tempo/*.yaml\", \"compose/grafana/grafana/grafana.ini\", \"compose/grafana/grafana/provisioning/alerting/rules*.yaml\", \"config/crowdsec/config.yaml\", \"config/crowdsec/acquis*\", \"config/crowdsec/profiles.yaml\", \"config/crowdsec/parsers/**\", \"config/crowdsec/scenarios/**\", \"config/crowdsec/postoverflows/**\", \"config/crowdsec/appsec-configs/**\" } })'"
+preview_command = "eza --git --icons --color=always --oneline /share/Container/config"
+
 [[wildcard]]
 pattern = "/share/Container/compose/*"
 startup_command = "nvim docker-compose.yml"

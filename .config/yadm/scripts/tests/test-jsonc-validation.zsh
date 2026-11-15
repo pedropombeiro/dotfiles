@@ -4,9 +4,9 @@ emulate -LR zsh
 setopt err_exit
 
 scripts=${0:A:h:h}
-filter="$scripts/lib/validate-jsonc.jq"
+validator_jsonc="$scripts/lib/validate-jsonc.cjs"
 source "$scripts/tests/lib/test-helpers.zsh"
-test_sandbox jq
+test_sandbox jq node
 trap test_cleanup EXIT
 
 cat > "$TEST_SANDBOX/valid.jsonc" <<'JSONC'
@@ -22,7 +22,7 @@ cat > "$TEST_SANDBOX/valid.jsonc" <<'JSONC'
   "nested": {"enabled": true,},
 }
 JSONC
-test_expect_status 'comments, strings, and trailing commas' 0 jq -Rs -f "$filter" "$TEST_SANDBOX/valid.jsonc"
+test_expect_status 'comments, strings, and trailing commas' 0 node "$validator_jsonc" "$TEST_SANDBOX/valid.jsonc"
 if jq empty "$TEST_SANDBOX/valid.jsonc" >/dev/null 2>&1; then
   test_fail 'strict JSON unexpectedly accepted JSONC'
 fi
@@ -36,9 +36,14 @@ for invalid in \
   '{"value": 1} extra' \
   '{"value": undefined}' \
   '{"value": 1 2}' \
+  '[,]' \
+  '{,}' \
+  '{"value": [,]}' \
+  '{"value": 01}' \
+  '{"value": NaN}' \
   ''; do
   print -r -- "$invalid" > "$TEST_SANDBOX/invalid.jsonc"
-  test_expect_status "reject malformed input: $invalid" 5 jq -Rs -f "$filter" "$TEST_SANDBOX/invalid.jsonc"
+  test_expect_status "reject malformed input: $invalid" 1 node "$validator_jsonc" "$TEST_SANDBOX/invalid.jsonc"
 done
 
 print 'PASS: JSONC validation accepts supported syntax and rejects malformed input'

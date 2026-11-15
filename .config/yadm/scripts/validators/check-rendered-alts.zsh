@@ -133,7 +133,7 @@ for template in ${(M)tracked:#*\#\#*}; do
   fi
   case ${target} in
     "${HOME}/.config/opencode/opencode.json")
-      jq -Rs -f "${YADM_SCRIPTS}/lib/validate-jsonc.jq" "${target}" 2>/dev/null || errors+=("invalid JSONC: ${target#${HOME}/}")
+      node "${YADM_SCRIPTS}/lib/validate-jsonc.cjs" "${target}" || errors+=("invalid JSONC: ${target#${HOME}/}")
       ;;
     *.json)
       jq empty "${target}" 2>/dev/null || errors+=("invalid JSON: ${target#${HOME}/}")

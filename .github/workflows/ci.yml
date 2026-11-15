@@ -193,9 +193,9 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: Install zsh, Lua, and yadm
+      - name: Install zsh, Lua, Node.js, and yadm
         run: |
-          sudo apt-get update && sudo apt-get install -y zsh lua5.4
+          sudo apt-get update && sudo apt-get install -y zsh lua5.4 nodejs npm
           command -v luac >/dev/null || sudo ln -s "$(command -v luac5.4)" /usr/local/bin/luac
           sudo curl -fsSL --retry 3 --retry-delay 5 -o /usr/local/bin/yadm \
             "https://raw.githubusercontent.com/yadm-dev/yadm/${YADM_VERSION}/yadm"
@@ -228,6 +228,9 @@ jobs:
           fi
           yadm alt
 
+      - name: Install rendered validator dependencies
+        run: npm ci --prefix "${HOME}/.config/yadm/scripts" --ignore-scripts
+
       - name: Validate rendered files
         run: zsh "${HOME}/.config/yadm/scripts/validators/check-rendered-alts.zsh"
 
@@ -244,7 +247,8 @@ jobs:
 
       - name: Install test dependencies
         run: |
-          sudo apt-get update && sudo apt-get install -y zsh jq rsync python3
+          sudo apt-get update && sudo apt-get install -y zsh jq rsync python3 nodejs npm
+          npm ci --prefix .config/yadm/scripts --ignore-scripts
           sudo curl -fsSL --retry 3 --retry-delay 5 -o /usr/local/bin/yadm \
             "https://raw.githubusercontent.com/yadm-dev/yadm/${YADM_VERSION}/yadm"
           sudo chmod +x /usr/local/bin/yadm

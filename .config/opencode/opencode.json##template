@@ -55,14 +55,8 @@
       },
     },
     {
-{% if yadm.class == "Work" %}
-      // Sends metrics only to Alloy on the NAS. Traces carry prompts, code, and
-      // tool output, and events carry commands and paths, so Work content stays
-      // off personal infrastructure. See ~/.agents/docs/opencode.md#telemetry.
-{% else %}
-      // Sends metrics, events, and traces to Alloy on the NAS. otel.pombei.ro only
-      // answers on the home network; see ~/.agents/docs/opencode.md#telemetry.
-{% endif %}
+      // Exports to Alloy on the NAS. Work disables events and traces below.
+      // See ~/.agents/docs/opencode.md#telemetry.
       "package": "@devtheops/opencode-plugin-otel@2.1.0",
       "options": {
         "enabled": true,
@@ -124,28 +118,18 @@
     "ollama": {
       "name": "Ollama (local)",
       "package": "aisdk:@ai-sdk/openai-compatible",
-{% else %}
-    "anthropic": {
-{% endif %}
-      "settings": {
-{% if yadm.class == "Work" %}
-        "baseURL": "http://localhost:11434/v1"
-      },
+      "settings": { "baseURL": "http://localhost:11434/v1" },
       "models": {
-        "gemma4": {
-          "name": "Gemma 4"
-        },
-        "gemma4:26b": {
-          "name": "Gemma 4 26B MoE"
-        },
-        "gemma4:e2b": {
-          "name": "Gemma 4:e2b"
-        }
-{% else %}
-        "setCacheKey": true
-{% endif %}
+        "gemma4": { "name": "Gemma 4" },
+        "gemma4:26b": { "name": "Gemma 4 26B MoE" },
+        "gemma4:e2b": { "name": "Gemma 4:e2b" }
       }
     },
+{% else %}
+    "anthropic": {
+      "settings": { "setCacheKey": true }
+    },
+{% endif %}
     "gitlab": {
       "package": "aisdk:gitlab-ai-provider@6.24.0",
 {% if yadm.class == "Work" %}
@@ -273,11 +257,7 @@
     }
   },
   "share": "disabled",
-{% if yadm.class == "Work" %}
   "update": "disable",
-{% else %}
-  "update": "auto",
-{% endif %}
   "snapshots": false,
   // The last matching rule wins, so each broad default precedes its exceptions.
   "permissions": [
@@ -286,19 +266,15 @@
     { "action": "read", "resource": "*.env", "effect": "deny" },
     { "action": "read", "resource": "*.env.*", "effect": "deny" },
     { "action": "read", "resource": "*.env.example", "effect": "allow" },
-{% if yadm.class == "Work" %}
-{% else %}
+{% if yadm.class == "NAS" %}
     { "action": "read", "resource": "/share/Container/secrets/**", "effect": "deny" },
     { "action": "read", "resource": "/share/CACHEDEV1_DATA/Container/secrets/**", "effect": "deny" },
 {% endif %}
     { "action": "read", "resource": "~/.agents/docs/*", "effect": "allow" },
     { "action": "read", "resource": "~/.aws/*", "effect": "deny" },
     { "action": "read", "resource": "~/.config/opencode/*", "effect": "ask" },
-{% if yadm.class == "Work" %}
-{% else %}
     { "action": "read", "resource": "~/.garminconnect/*", "effect": "deny" },
     { "action": "read", "resource": "~/.garminconnect_base64", "effect": "deny" },
-{% endif %}
     { "action": "read", "resource": "~/.gnupg/*", "effect": "deny" },
     { "action": "read", "resource": "~/.netrc", "effect": "deny" },
     { "action": "read", "resource": "~/.ssh/*", "effect": "deny" },
@@ -307,42 +283,32 @@
     { "action": "edit", "resource": "*.env.*", "effect": "deny" },
     { "action": "edit", "resource": "*.env.example", "effect": "allow" },
     { "action": "edit", "resource": "~/.aws/*", "effect": "deny" },
-{% if yadm.class == "Work" %}
-    { "action": "edit", "resource": "~/.config/opencode/*", "effect": "ask" },
-{% else %}
-    // { "action": "edit", "resource": "~/.config/opencode/*", "effect": "deny" },
+    { "action": "edit", "resource": "~/.config/opencode/*", "effect": "deny" },
     { "action": "edit", "resource": "~/.garminconnect/*", "effect": "deny" },
     { "action": "edit", "resource": "~/.garminconnect_base64", "effect": "deny" },
-{% endif %}
     { "action": "edit", "resource": "~/.gnupg/*", "effect": "deny" },
     { "action": "edit", "resource": "~/.netrc", "effect": "deny" },
     { "action": "edit", "resource": "~/.ssh/*", "effect": "deny" },
     { "action": "shell", "resource": "*", "effect": "ask" },
-{% if yadm.class == "Work" %}
-    { "action": "shell", "resource": "brew bundle check *", "effect": "allow" },
-    { "action": "shell", "resource": "brew info *", "effect": "allow" },
-{% else %}
     { "action": "shell", "resource": "ag *", "effect": "allow" },
     { "action": "shell", "resource": "bat *", "effect": "allow" },
-{% endif %}
+    { "action": "shell", "resource": "brew bundle check *", "effect": "allow" },
+    { "action": "shell", "resource": "brew info *", "effect": "allow" },
+    { "action": "shell", "resource": "bundle config get *", "effect": "allow" },
     { "action": "shell", "resource": "bundle exec rspec*", "effect": "allow" },
     { "action": "shell", "resource": "bundle exec rubocop*", "effect": "allow" },
+    { "action": "shell", "resource": "bundle list*", "effect": "allow" },
+    { "action": "shell", "resource": "bundle info *", "effect": "allow" },
 {% if yadm.class == "Work" %}
     { "action": "shell", "resource": "bundle exec danger *", "effect": "allow" },
     { "action": "shell", "resource": "bundle exec rake -T", "effect": "allow" },
     { "action": "shell", "resource": "bundle exec bin/*", "effect": "allow" },
     { "action": "shell", "resource": "bundle install*", "effect": "allow" },
-    { "action": "shell", "resource": "bundle list*", "effect": "allow" },
-    { "action": "shell", "resource": "bundle info *", "effect": "allow" },
     { "action": "shell", "resource": "bundle show *", "effect": "allow" },
-    { "action": "shell", "resource": "bundle config get *", "effect": "allow" },
     { "action": "shell", "resource": "caproni helmctl get *", "effect": "allow" },
-{% else %}
+{% endif %}
     { "action": "shell", "resource": "base64 *", "effect": "allow" },
     { "action": "shell", "resource": "bash -n *", "effect": "allow" },
-    { "action": "shell", "resource": "brew bundle check *", "effect": "allow" },
-    { "action": "shell", "resource": "brew info *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "cat *", "effect": "allow" },
 {% if yadm.class == "Work" %}
     { "action": "shell", "resource": "clickhouse client --port 9001 --query *", "effect": "allow" },
@@ -351,8 +317,6 @@
     { "action": "shell", "resource": "comm *", "effect": "allow" },
     { "action": "shell", "resource": "command -v *", "effect": "allow" },
     { "action": "shell", "resource": "cut *", "effect": "allow" },
-{% if yadm.class == "Work" %}
-{% else %}
     { "action": "shell", "resource": "curl *", "effect": "allow" },
     { "action": "shell", "resource": "curl *-d*", "effect": "ask" },
     { "action": "shell", "resource": "curl *--data*", "effect": "ask" },
@@ -367,9 +331,7 @@
     { "action": "shell", "resource": "curl *-XGET*", "effect": "allow" },
     { "action": "shell", "resource": "curl *--request GET*", "effect": "allow" },
     { "action": "shell", "resource": "curl *--request=GET*", "effect": "allow" },
-    { "action": "shell", "resource": "date *", "effect": "allow" },
-    { "action": "shell", "resource": "date", "effect": "allow" },
-{% endif %}
+    { "action": "shell", "resource": "date*", "effect": "allow" },
     { "action": "shell", "resource": "diff *", "effect": "allow" },
     { "action": "shell", "resource": "colima list *", "effect": "allow" },
     { "action": "shell", "resource": "colima status*", "effect": "allow" },
@@ -377,10 +339,7 @@
     { "action": "shell", "resource": "docker context ls*", "effect": "allow" },
     { "action": "shell", "resource": "docker context show*", "effect": "allow" },
     { "action": "shell", "resource": "docker image ls*", "effect": "allow" },
-{% if yadm.class == "Work" %}
-{% else %}
     { "action": "shell", "resource": "docker image inspect *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "docker images*", "effect": "allow" },
     { "action": "shell", "resource": "docker info*", "effect": "allow" },
     { "action": "shell", "resource": "docker inspect *", "effect": "allow" },
@@ -389,24 +348,15 @@
     { "action": "shell", "resource": "docker network ls *", "effect": "allow" },
     { "action": "shell", "resource": "docker ps*", "effect": "allow" },
     { "action": "shell", "resource": "docker stats*", "effect": "allow" },
-{% if yadm.class == "Work" %}
-{% else %}
     { "action": "shell", "resource": "docker top *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "docker version*", "effect": "allow" },
     { "action": "shell", "resource": "docker volume ls *", "effect": "allow" },
     { "action": "shell", "resource": "du *", "effect": "allow" },
     { "action": "shell", "resource": "echo *", "effect": "allow" },
     { "action": "shell", "resource": "env *", "effect": "allow" },
-{% if yadm.class == "Work" %}
-{% else %}
     { "action": "shell", "resource": "fd *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "file *", "effect": "allow" },
     { "action": "shell", "resource": "find *", "effect": "allow" },
-{% if yadm.class == "Work" %}
-    { "action": "shell", "resource": "date*", "effect": "allow" },
-{% else %}
     { "action": "shell", "resource": "free *", "effect": "allow" },
     { "action": "shell", "resource": "fzf *", "effect": "allow" },
     { "action": "shell", "resource": "gh api *", "effect": "allow" },
@@ -415,9 +365,9 @@
     { "action": "shell", "resource": "gh api *--method*", "effect": "ask" },
     { "action": "shell", "resource": "gh api *--raw-field*", "effect": "ask" },
     { "action": "shell", "resource": "gh api *-F *", "effect": "ask" },
-    { "action": "shell", "resource": "gh api *-X GET *", "effect": "allow" },
     { "action": "shell", "resource": "gh api *-X *", "effect": "ask" },
     { "action": "shell", "resource": "gh api *-f *", "effect": "ask" },
+    { "action": "shell", "resource": "gh api *-X GET *", "effect": "allow" },
     { "action": "shell", "resource": "gh issue view *", "effect": "allow" },
     { "action": "shell", "resource": "gh pr checks *", "effect": "allow" },
     { "action": "shell", "resource": "gh pr diff *", "effect": "allow" },
@@ -430,6 +380,9 @@
     { "action": "shell", "resource": "gh run watch *", "effect": "allow" },
     { "action": "shell", "resource": "gh search code *", "effect": "allow" },
     { "action": "shell", "resource": "gh search issues *", "effect": "allow" },
+    { "action": "shell", "resource": "gh auth status*", "effect": "allow" },
+{% if yadm.class == "Work" %}
+    { "action": "shell", "resource": "gh auth token*", "effect": "allow" },
 {% endif %}
     { "action": "shell", "resource": "git add *", "effect": "allow" },
     { "action": "shell", "resource": "git blame *", "effect": "allow" },
@@ -454,10 +407,6 @@
     { "action": "shell", "resource": "git merge-base *", "effect": "allow" },
     { "action": "shell", "resource": "git merge-tree *", "effect": "allow" },
     { "action": "shell", "resource": "git name-rev *", "effect": "allow" },
-{% if yadm.class == "Work" %}
-{% else %}
-    { "action": "shell", "resource": "git push *", "effect": "ask" },
-{% endif %}
     { "action": "shell", "resource": "git push*", "effect": "ask" },
     { "action": "shell", "resource": "git range-diff *", "effect": "allow" },
     { "action": "shell", "resource": "git reflog *", "effect": "allow" },
@@ -498,41 +447,14 @@
     { "action": "shell", "resource": "glab mr list *", "effect": "allow" },
     { "action": "shell", "resource": "glab mr note list *", "effect": "allow" },
     { "action": "shell", "resource": "glab mr view *", "effect": "allow" },
-{% else %}
-    { "action": "shell", "resource": "yadm add *", "effect": "allow" },
-    { "action": "shell", "resource": "yadm commit *", "effect": "allow" },
-    { "action": "shell", "resource": "yadm commit *--amend*", "effect": "ask" },
-{% endif %}
     { "action": "shell", "resource": "glab skills get glab", "effect": "allow" },
+{% endif %}
     { "action": "shell", "resource": "go build*", "effect": "allow" },
     { "action": "shell", "resource": "go test*", "effect": "allow" },
     { "action": "shell", "resource": "go vet*", "effect": "allow" },
-{% if yadm.class == "Work" %}
-    { "action": "shell", "resource": "gh api *", "effect": "allow" },
-    { "action": "shell", "resource": "gh api *--field*", "effect": "ask" },
-    { "action": "shell", "resource": "gh api *--input*", "effect": "ask" },
-    { "action": "shell", "resource": "gh api *--method*", "effect": "ask" },
-    { "action": "shell", "resource": "gh api *--raw-field*", "effect": "ask" },
-    { "action": "shell", "resource": "gh api *-F *", "effect": "ask" },
-    { "action": "shell", "resource": "gh api *-X *", "effect": "ask" },
-    { "action": "shell", "resource": "gh api *-X GET *", "effect": "allow" },
-    { "action": "shell", "resource": "gh api *-f *", "effect": "ask" },
-    { "action": "shell", "resource": "gh auth status*", "effect": "allow" },
-    { "action": "shell", "resource": "gh auth token*", "effect": "allow" },
-    { "action": "shell", "resource": "gh issue view *", "effect": "allow" },
-    { "action": "shell", "resource": "gh pr checks *", "effect": "allow" },
-    { "action": "shell", "resource": "gh pr diff *", "effect": "allow" },
-    { "action": "shell", "resource": "gh pr view *", "effect": "allow" },
-    { "action": "shell", "resource": "gh release view *", "effect": "allow" },
-    { "action": "shell", "resource": "gh run list*", "effect": "allow" },
-    { "action": "shell", "resource": "gh run view*", "effect": "allow" },
-    { "action": "shell", "resource": "gh run watch *", "effect": "allow" },
-    { "action": "shell", "resource": "gh search code *", "effect": "allow" },
-    { "action": "shell", "resource": "gh search issues *", "effect": "allow" },
     { "action": "shell", "resource": "gem contents *", "effect": "allow" },
     { "action": "shell", "resource": "gem list*", "effect": "allow" },
     { "action": "shell", "resource": "gem which *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "golangci-lint run*", "effect": "allow" },
     { "action": "shell", "resource": "grep *", "effect": "allow" },
 {% if yadm.class == "Work" %}
@@ -540,20 +462,13 @@
     { "action": "shell", "resource": "hass-cli raw post /api/services/rest/reload --json '{}'", "effect": "allow" },
 {% endif %}
     { "action": "shell", "resource": "head *", "effect": "allow" },
-{% if yadm.class == "Work" %}
     { "action": "shell", "resource": "helm get *", "effect": "allow" },
     { "action": "shell", "resource": "helm show values *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "hk check *", "effect": "allow" },
-{% if yadm.class == "Work" %}
     { "action": "shell", "resource": "hk run pre-commit *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "hostname", "effect": "allow" },
     { "action": "shell", "resource": "jq *", "effect": "allow" },
-{% if yadm.class == "Work" %}
-{% else %}
     { "action": "shell", "resource": "less *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "ls *", "effect": "allow" },
     { "action": "shell", "resource": "man *", "effect": "deny" }, // Context7 should be used instead
     { "action": "shell", "resource": "md5 *", "effect": "allow" },
@@ -574,12 +489,7 @@
     { "action": "shell", "resource": "mise fmt --check*", "effect": "allow" },
     { "action": "shell", "resource": "mise help*", "effect": "allow" },
     { "action": "shell", "resource": "mise latest *", "effect": "allow" },
-{% if yadm.class == "Work" %}
     { "action": "shell", "resource": "mise ls*", "effect": "allow" },
-{% else %}
-    { "action": "shell", "resource": "mise ls", "effect": "allow" },
-    { "action": "shell", "resource": "mise ls *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "mise ls-remote *", "effect": "allow" },
     { "action": "shell", "resource": "mise outdated*", "effect": "allow" },
     { "action": "shell", "resource": "mise plugins ls*", "effect": "allow" },
@@ -612,9 +522,8 @@
     { "action": "shell", "resource": "mkdir -p /private/var/folders/*", "effect": "allow" },
 {% if yadm.class == "Work" %}
     { "action": "shell", "resource": "mkdir -p /tmp/*", "effect": "allow" },
-{% else %}
-    { "action": "shell", "resource": "more *", "effect": "allow" },
 {% endif %}
+    { "action": "shell", "resource": "more *", "effect": "allow" },
     { "action": "shell", "resource": "nl*", "effect": "allow" },
     { "action": "shell", "resource": "npm view *", "effect": "allow" },
 {% if yadm.class == "Work" %}
@@ -631,35 +540,27 @@
     { "action": "shell", "resource": "pgrep *", "effect": "allow" },
 {% if yadm.class == "Work" %}
     { "action": "shell", "resource": "pinchtab *", "effect": "allow" },
-{% else %}
-    { "action": "shell", "resource": "ping *", "effect": "allow" },
 {% endif %}
+    { "action": "shell", "resource": "ping *", "effect": "allow" },
     { "action": "shell", "resource": "pre-commit *", "effect": "allow" },
     { "action": "shell", "resource": "printenv *", "effect": "allow" },
     { "action": "shell", "resource": "printf *", "effect": "allow" },
     { "action": "shell", "resource": "ps *", "effect": "allow" },
 {% if yadm.class == "Work" %}
-    { "action": "shell", "resource": "pwd", "effect": "allow" },
     { "action": "shell", "resource": "RAILS_ENV=test bundle exec rspec*", "effect": "allow" },
     { "action": "shell", "resource": "RAILS_ENV=test bundle exec rubocop*", "effect": "allow" },
-{% else %}
-    { "action": "shell", "resource": "pwd*", "effect": "allow" },
 {% endif %}
+    { "action": "shell", "resource": "pwd*", "effect": "allow" },
     { "action": "shell", "resource": "readlink *", "effect": "allow" },
 {% if yadm.class == "Work" %}
     { "action": "shell", "resource": "redis-cli ping*", "effect": "allow" },
-    { "action": "shell", "resource": "rm -rf *", "effect": "deny" },
     { "action": "shell", "resource": "run-in-tmux-pane bundle exec rspec*", "effect": "allow" },
     { "action": "shell", "resource": "run-in-tmux-pane fgdku*", "effect": "allow" },
-    { "action": "shell", "resource": "run-in-tmux-pane gpsup*", "effect": "allow" },
     { "action": "shell", "resource": "run-in-tmux-pane test_mr*", "effect": "allow" },
 {% endif %}
     { "action": "shell", "resource": "rg *", "effect": "allow" },
-{% if yadm.class == "Work" %}
-{% else %}
     { "action": "shell", "resource": "rm -rf *", "effect": "deny" },
     { "action": "shell", "resource": "run-in-tmux-pane gpsup*", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "ruby -c *", "effect": "allow" },
     { "action": "shell", "resource": "seq *", "effect": "allow" },
     { "action": "shell", "resource": "sed *", "effect": "allow" },
@@ -684,36 +585,16 @@
     { "action": "shell", "resource": "tr *", "effect": "allow" },
     { "action": "shell", "resource": "true", "effect": "allow" },
     { "action": "shell", "resource": "type *", "effect": "allow" },
-{% if yadm.class == "Work" %}
-{% else %}
     { "action": "shell", "resource": "uname *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "uniq *", "effect": "allow" },
-{% if yadm.class == "Work" %}
     { "action": "shell", "resource": "uv run ruff *", "effect": "allow" },
     { "action": "shell", "resource": "uv run pytest *", "effect": "allow" },
-    { "action": "shell", "resource": "uv sync *", "effect": "allow" },
-{% else %}
-    { "action": "shell", "resource": "uptime *", "effect": "allow" },
-{% endif %}
-    { "action": "shell", "resource": "wc *", "effect": "allow" },
 {% if yadm.class == "Work" %}
-    { "action": "shell", "resource": "which *", "effect": "allow" },
-    { "action": "shell", "resource": "curl *", "effect": "allow" },
-    { "action": "shell", "resource": "curl *-d*", "effect": "ask" },
-    { "action": "shell", "resource": "curl *--data*", "effect": "ask" },
-    { "action": "shell", "resource": "curl *-F *", "effect": "ask" },
-    { "action": "shell", "resource": "curl *--form*", "effect": "ask" },
-    { "action": "shell", "resource": "curl *-T *", "effect": "ask" },
-    { "action": "shell", "resource": "curl *--upload-file*", "effect": "ask" },
-    { "action": "shell", "resource": "curl *--json*", "effect": "ask" },
-    { "action": "shell", "resource": "curl *-X*", "effect": "ask" },
-    { "action": "shell", "resource": "curl *--request*", "effect": "ask" },
-    { "action": "shell", "resource": "curl *-X GET*", "effect": "allow" },
-    { "action": "shell", "resource": "curl *-XGET*", "effect": "allow" },
-    { "action": "shell", "resource": "curl *--request GET*", "effect": "allow" },
-    { "action": "shell", "resource": "curl *--request=GET*", "effect": "allow" },
+    { "action": "shell", "resource": "uv sync *", "effect": "allow" },
 {% endif %}
+    { "action": "shell", "resource": "uptime *", "effect": "allow" },
+    { "action": "shell", "resource": "wc *", "effect": "allow" },
+    { "action": "shell", "resource": "which *", "effect": "allow" },
     { "action": "shell", "resource": "wget *", "effect": "allow" },
     { "action": "shell", "resource": "wget *--post-data*", "effect": "ask" },
     { "action": "shell", "resource": "wget *--post-file*", "effect": "ask" },
@@ -722,14 +603,9 @@
     { "action": "shell", "resource": "wget *--method*", "effect": "ask" },
     { "action": "shell", "resource": "wget *--method GET*", "effect": "allow" },
     { "action": "shell", "resource": "wget *--method=GET*", "effect": "allow" },
-{% if yadm.class == "Work" %}
-{% else %}
     { "action": "shell", "resource": "whereis *", "effect": "allow" },
-    { "action": "shell", "resource": "which *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "xxd *", "effect": "allow" },
     { "action": "shell", "resource": "yamllint *", "effect": "allow" },
-{% if yadm.class == "Work" %}
     { "action": "shell", "resource": "yadm add *", "effect": "allow" },
     { "action": "shell", "resource": "yadm blame *", "effect": "allow" },
     { "action": "shell", "resource": "yadm commit *", "effect": "allow" },
@@ -745,12 +621,9 @@
     { "action": "shell", "resource": "yadm rev-parse*", "effect": "allow" },
     { "action": "shell", "resource": "yadm show*", "effect": "allow" },
     { "action": "shell", "resource": "yadm status*", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "zsh -n *", "effect": "allow" },
 {% if yadm.class == "Work" %}
     { "action": "shell", "resource": "awk *", "effect": "allow" },
-    { "action": "shell", "resource": "base64 *", "effect": "allow" },
-    { "action": "shell", "resource": "bash -n *", "effect": "allow" },
     { "action": "shell", "resource": "chmod +x /private/tmp/*", "effect": "allow" },
     { "action": "shell", "resource": "chmod +x /tmp/*", "effect": "allow" },
 {% endif %}
@@ -759,15 +632,11 @@
     { "action": "shell", "resource": "markdownlint-cli2 *", "effect": "allow" },
     { "action": "shell", "resource": "npx markdownlint *", "effect": "allow" },
     { "action": "shell", "resource": "npx markdownlint-cli2 *", "effect": "allow" },
-{% if yadm.class == "Work" %}
     { "action": "shell", "resource": "uv run markdownlint-cli2 *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "prettier *", "effect": "allow" },
     { "action": "shell", "resource": "npx prettier *", "effect": "allow" },
     { "action": "shell", "resource": "vale *", "effect": "allow" },
-{% if yadm.class == "Work" %}
     { "action": "shell", "resource": "uv run vale *", "effect": "allow" },
-{% endif %}
     { "action": "shell", "resource": "markdownlint *--fix*", "effect": "ask" },
     { "action": "shell", "resource": "markdownlint -f*", "effect": "ask" },
     { "action": "shell", "resource": "markdownlint * -f*", "effect": "ask" },
@@ -776,9 +645,7 @@
     { "action": "shell", "resource": "npx markdownlint -f*", "effect": "ask" },
     { "action": "shell", "resource": "npx markdownlint * -f*", "effect": "ask" },
     { "action": "shell", "resource": "npx markdownlint-cli2 *--fix*", "effect": "ask" },
-{% if yadm.class == "Work" %}
     { "action": "shell", "resource": "uv run markdownlint-cli2 *--fix*", "effect": "ask" },
-{% endif %}
     { "action": "shell", "resource": "prettier *--write*", "effect": "ask" },
     { "action": "shell", "resource": "prettier -w*", "effect": "ask" },
     { "action": "shell", "resource": "prettier * -w*", "effect": "ask" },
@@ -789,7 +656,6 @@
     { "action": "shell", "resource": "shfmt -w*", "effect": "ask" },
     { "action": "shell", "resource": "shfmt * -w*", "effect": "ask" },
     { "action": "shell", "resource": "golangci-lint run*--fix*", "effect": "ask" },
-{% if yadm.class == "Work" %}
     // RuboCop autocorrect (-a, -A, -x, --autocorrect*, --auto-correct*, --fix-layout) and
     // --auto-gen-config, which writes .rubocop_todo.yml.
     { "action": "shell", "resource": "*bundle exec rubocop*--auto*", "effect": "ask" },
@@ -800,6 +666,7 @@
     { "action": "shell", "resource": "*bundle exec rubocop * -A*", "effect": "ask" },
     { "action": "shell", "resource": "*bundle exec rubocop -x*", "effect": "ask" },
     { "action": "shell", "resource": "*bundle exec rubocop * -x*", "effect": "ask" },
+{% if yadm.class == "Work" %}
     // Broad API reads, narrowed below so explicit mutation flags still require approval.
     { "action": "shell", "resource": "glab api *--method*", "effect": "ask" },
     { "action": "shell", "resource": "glab api *--form*", "effect": "ask" },

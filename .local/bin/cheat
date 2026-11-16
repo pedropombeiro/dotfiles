@@ -78,10 +78,16 @@ sheet_for_command() {
 }
 
 pick_sheet() {
-  local selection
+  local selection style
+  # Glow 3 ignores its configured style when fzf captures stdout. Passing --style
+  # explicitly keeps Markdown styling in the preview without requiring a TTY.
+  style=$(dotfiles-theme value glow 2>/dev/null) || style=dark
+  case $style in
+    *.json) style="${XDG_CONFIG_HOME:-$HOME/.config}/glow/$style" ;;
+  esac
   selection=$(list_sheets | fzf --height "$FZF_HEIGHT" --reverse --border \
     --border-label ' cheat sheets ' --prompt 'cheat> ' \
-    --preview "glow -w \"\${FZF_PREVIEW_COLUMNS:-80}\" $(printf '%q' "$SHEETS_DIR")/\$( [ {} = index ] && echo README || echo {} ).md" \
+    --preview "glow --style $(printf '%q' "$style") -w \"\${FZF_PREVIEW_COLUMNS:-80}\" $(printf '%q' "$SHEETS_DIR")/\$( [ {} = index ] && echo README || echo {} ).md" \
     --preview-window 'right:80%:nohidden') || return 130
   [[ -n $selection ]] || return 130
   printf '%s\n' "$selection"
@@ -147,7 +153,7 @@ EOF
 
 # Rerun cheat in a tmux popup, for steps that need a terminal. The picker draws its
 # own fzf border, so its popup drops the tmux border (-B). The local view keeps it,
-# because bat draws none.
+# because glow's pager draws none.
 open_in_popup() {
   local command border=(-B)
   [[ ${1:-} == --local ]] && border=()

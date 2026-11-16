@@ -1,3 +1,11 @@
 [bootstrap.repos]
 # GoPro overlay scripts; relink-dotfiles.zsh links bin/* into ~/.local/bin.
 "~/Developer/github.com/pedropombeiro/gopro-graphics" = { url = "https://github.com/pedropombeiro/gopro-graphics.git" }
+
+[bootstrap.macos.launchd.agents.otelcol]
+program = "{{ xdg_config_home }}/yadm/scripts/run-otelcol.sh"
+run_at_load = true
+keep_alive = true
+throttle_interval = 30
+environment = { PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin", XDG_CONFIG_HOME = "{{ xdg_config_home }}" }
+working_directory = "~"

@@ -336,6 +336,12 @@ OTLP requests to Alloy.
 
 ### Local persistent relay on macOS
 
+The OTel plugin keeps process-wide provider state. Changing its endpoint can leave
+it failed with `OpenCode OTel plugin instances must use identical telemetry
+configuration within one process`, even when the separate status probe succeeds.
+Check `opencode api get /api/plugin` for the `devtheops.otel` state. If it reports
+this error, restart the shared service once after active sessions finish.
+
 Mise installs `otelcol-contrib` and declares the `dev.mise.otelcol` LaunchAgent in
 `~/.config/mise/conf.d/bootstrap.macos.toml`. The agent starts at login and restarts
 after exit. Apply it with `mise bootstrap macos launchd-agents apply --yes` after

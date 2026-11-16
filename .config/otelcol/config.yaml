@@ -1,0 +1,61 @@
+# No batch processor: acknowledge requests only after the exporter persists them.
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 127.0.0.1:4318
+
+extensions:
+  file_storage:
+    directory: ${env:OTELCOL_STORAGE_DIR}
+    create_directory: true
+    fsync: true
+    # Per database file. Each signal has its own persistent queue.
+    max_size: 268435456
+    compaction:
+      on_start: true
+      directory: ${env:OTELCOL_STORAGE_DIR}
+  health_check:
+    endpoint: 127.0.0.1:13133
+
+exporters:
+  otlp_http/remote:
+    endpoint: https://otel.pombei.ro
+    headers:
+      Authorization: ${env:OTELCOL_AUTHORIZATION}
+    timeout: 15s
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 60s
+      max_elapsed_time: 0s
+    sending_queue:
+      enabled: true
+      storage: file_storage
+      sizer: bytes
+      queue_size: 268435456
+      # Preserve order within each signal, including while draining a backlog.
+      num_consumers: 1
+
+service:
+  extensions: [file_storage, health_check]
+  telemetry:
+    logs:
+      level: warn
+    metrics:
+      readers:
+        - pull:
+            exporter:
+              prometheus:
+                host: 127.0.0.1
+                port: 8888
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      exporters: [otlp_http/remote]
+    logs:
+      receivers: [otlp]
+      exporters: [otlp_http/remote]
+    traces:
+      receivers: [otlp]
+      exporters: [otlp_http/remote]

@@ -51,12 +51,16 @@
       },
     },
     {
-      // Exports to Alloy on the NAS. Work disables events and traces below.
+      // macOS uses a disk-backed local relay. NAS exports directly to Alloy.
       // See ~/.agents/docs/opencode.md#telemetry.
       "package": "@devtheops/opencode-plugin-otel@2.1.0",
       "options": {
         "enabled": true,
+{% if yadm.os != "Darwin" %}
         "endpoint": "https://otel.pombei.ro",
+{% else %}
+        "endpoint": "http://127.0.0.1:4318",
+{% endif %}
         "protocol": "http/protobuf",
 {% if yadm.class == "Work" %}
         "logsEnabled": false,
@@ -68,7 +72,11 @@
       // Shows whether the OTEL endpoint above accepts OTLP requests in the CLI
       // footer. Keep the endpoint and protocol in sync with the exporter's.
       "package": "./local-plugins/server/otel-status",
+{% if yadm.os != "Darwin" %}
       "options": { "endpoint": "https://otel.pombei.ro", "protocol": "http/protobuf" }
+{% else %}
+      "options": { "endpoint": "http://127.0.0.1:4318", "protocol": "http/protobuf" }
+{% endif %}
     },
     "opencode-cache-coach@0.3.0"
   ],

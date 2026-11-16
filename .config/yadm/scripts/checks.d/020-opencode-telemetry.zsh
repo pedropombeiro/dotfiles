@@ -42,6 +42,27 @@ function print_warn() {
 fix=0
 [[ $1 == --fix ]] && fix=1
 
+# A successful localhost probe says nothing about delivery to the NAS. Report
+# the persistent queues as well, without treating an ordinary outage as fatal.
+function check_local_relay() {
+  [[ $1 == http://127.0.0.1:4318 ]] || return 0
+  local metrics
+  if ! metrics=$(curl -fsS --max-time 5 http://127.0.0.1:8888/metrics 2>/dev/null); then
+    print_warn "Local relay metrics unavailable; can't inspect the forwarding queue"
+    return 0
+  fi
+  local queued=$(awk '/^otelcol_exporter_queue_size[{ ]/ {total += $NF} END {printf "%.0f", total}' <<<"$metrics")
+  if (( queued > 0 )); then
+    print_warn "Local relay has ${queued} queued bytes awaiting delivery to otel.pombei.ro"
+  else
+    print_ok "(local relay forwarding queues empty)"
+  fi
+  local failed=$(awk '/^otelcol_exporter_send_failed_/ {total += $NF} END {printf "%.0f", total}' <<<"$metrics")
+  if (( failed > 0 )); then
+    print_warn "Local relay reports ${failed} failed export items since startup; inspect ~/.local/state/otelcol/collector.log"
+  fi
+}
+
 # Asks the service to probe the collector now. Prints the status JSON.
 function service_check() {
   opencode api post /api/rpc/otel-status/check --data '{"input":{}}' 2>/dev/null | jq -ce '.output | objects'
@@ -106,6 +127,11 @@ function restart_service() {
 
 function print_context_advice() {
   [[ $(uname -s) == Darwin ]] || return 0
+  if [[ ${endpoint:-} == http://127.0.0.1:4318 ]]; then
+    print_warn "Check the local relay: launchctl print gui/$(id -u)/dev.mise.otelcol"
+    print_warn "Collector log: ~/.local/state/otelcol/collector.log"
+    return 0
+  fi
   print_warn "macOS Local Network Privacy may block the service's launch context."
   print_warn "Check tmux with mise run dotfiles:checkhealth, then restart the service from a new terminal:"
   print_warn "  mise exec -- opencode service restart"
@@ -153,6 +179,7 @@ function check_opencode_telemetry() {
         print_ok
         print_warn "The service exports telemetry without host.name; restart it from a new shell"
       fi
+      check_local_relay "$endpoint"
       return 0
       ;;
   esac

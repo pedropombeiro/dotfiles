@@ -18,6 +18,9 @@ footer shows the result as `● 🔭`:
 also in the command palette.
 
 An accepted empty request doesn't prove that real exports succeed.
+On macOS the target is the local disk-backed relay, so green confirms local
+acceptance, not remote delivery. `mise run dotfiles:checkhealth` also reports the
+relay's queued bytes. Inspect the Collector logs for remote rejection errors.
 
 The probe sends the headers from `OPENCODE_OTLP_HEADERS`, parsed the same way as the
 exporter, and keeps them out of the status, RPC responses, and `/otel`.

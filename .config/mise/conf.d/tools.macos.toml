@@ -1,4 +1,6 @@
 [tools]
+# Local disk-backed OTLP relay. GitHub releases contain several distributions.
+"github:open-telemetry/opentelemetry-collector-releases" = { version = "latest", matching = "otelcol-contrib_", filter_bins = "otelcol-contrib" }
 # ── Video editing tools ────────────────────────────────────────────────
 # Programs to process GoPro MP4 & Generic GPX/FIT files and create video dashboards & maps.
 # Required by the gopro-graphics scripts, which bootstrap.macos.toml clones.

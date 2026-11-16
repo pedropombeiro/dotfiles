@@ -1,5 +1,7 @@
 # OpenCode Policies
 
+For everyday controls and common tasks, see the [OpenCode cheat sheet](../../.github/cheatsheets/opencode.md).
+
 ## Skill loading
 
 - Shared skills live in `~/.agents/skills`. OpenCode's global `skills` directory
@@ -295,8 +297,10 @@ To update an unpinned entry, run `opencode plugin update <package>`.
 
 ## Telemetry
 
-`@devtheops/opencode-plugin-otel` exports OTLP/HTTP to `https://otel.pombei.ro`, which
-Alloy on the NAS routes to Prometheus, Loki, and Tempo. View the data in the **OpenCode**
+On macOS, `@devtheops/opencode-plugin-otel` exports OTLP/HTTP to a local Collector at
+`http://127.0.0.1:4318`. The Collector persists requests before acknowledging them,
+then forwards them to `https://otel.pombei.ro`. OpenCode on the NAS exports directly
+to that remote endpoint. Alloy on the NAS routes data to Prometheus, Loki, and Tempo. View the data in the **OpenCode**
 dashboard on `grafana.pombei.ro`. LAN access uses an IP allowlist. External access
 requires per-machine Basic Auth credentials, validated by Traefik before it forwards
 OTLP requests to Alloy.
@@ -315,14 +319,14 @@ OTLP requests to Alloy.
   telemetry with no host, which hides it from host-filtered dashboard panels.
 - Alloy drops `session.id` from metrics to keep Prometheus series bounded. Filter by
   session in the dashboard's log and trace panels.
-- On macOS, a service started inside tmux can't reach the NAS unless tmux is re-signed.
-  The plugin's exports then fail with `EHOSTUNREACH`, and the plugin logs only to the
-  console, which OpenCode discards. See
+- The macOS Collector runs independently under launchd, so OpenCode needs only
+  loopback access. For direct LAN access from tmux, see
   [Local network access on macOS](tmux.md#local-network-access-on-macos).
 - The [`otel-status`](../../.config/opencode/local-plugins/server/otel-status/README.md)
   plugin shows in the CLI footer whether the collector accepts OTLP requests. Its
   `endpoint` and `protocol` options must match the exporter's in both `opencode.json`
-  alternates.
+  template branches. On macOS, green means the local relay accepts requests, not
+  that the NAS has received them.
 - `~/.config/yadm/scripts/checks.d/020-opencode-telemetry.zsh` runs that plugin's probe in the
   service and, when it fails, sends the same request from the shell. Success from the
   shell means only the service's launch context fails. `mise run dotfiles:checkhealth`
@@ -330,9 +334,54 @@ OTLP requests to Alloy.
   checks again, unless a session is running. Tests that stub `opencode` or `mise` must
   run them with `zsh -f`; otherwise `.zshenv` restores the real binaries on `PATH`.
 
+### Local persistent relay on macOS
+
+Mise installs `otelcol-contrib` and declares the `dev.mise.otelcol` LaunchAgent in
+`~/.config/mise/conf.d/bootstrap.macos.toml`. The agent starts at login and restarts
+after exit. Apply it with `mise bootstrap macos launchd-agents apply --yes` after
+installing the tool with `mise install github:open-telemetry/opentelemetry-collector-releases`.
+
+`~/.config/yadm/scripts/run-otelcol.sh` reads this machine's credential from
+`~/.config/opencode/otel-headers` without placing it in arguments or the plist.
+It runs `~/.config/otelcol/config.yaml` with owner-only state under
+`${XDG_STATE_HOME:-~/.local/state}/otelcol/`. Queues can contain trace content on
+Personal machines, so treat this directory as sensitive. The Work exporter remains
+metrics-only.
+
+- Each signal has a disk-backed queue capped at 256 MiB of serialized payload and
+  a 256 MiB database-file limit. Database overhead can exhaust storage before the
+  payload limit. Startup compaction can temporarily require extra disk space.
+- Requests are fsynced to disk. There is no in-memory batch processor before the
+  queue. One consumer per signal preserves batch order while draining the backlog.
+- Temporary failures retry with backoff indefinitely. Permanent rejections,
+  including HTTP 401 and 403, are dropped. Full queues, disk errors, and a stopped
+  local Collector can still cause loss. Delivery is at least once, not exactly once.
+- Queues survive Collector crashes and restarts. Restarting OpenCode is not required
+  to drain them. This does not recover telemetry lost before the local receiver
+  acknowledged it, and remote retention or timestamp limits still apply.
+- Health is at `http://127.0.0.1:13133`. Internal metrics are at
+  `http://127.0.0.1:8888/metrics`. The telemetry health check reports queued bytes;
+  an empty queue alone does not prove delivery because permanent failures also drain it.
+- Collector logs are in `~/.local/state/otelcol/collector.log`, or the corresponding
+  XDG state directory. The launcher rotates files larger than 10 MiB at startup;
+  it does not rotate a continuously running process's log.
+
+After changing the Collector config or rotating its credential, restart only the relay:
+
+```sh
+launchctl kickstart -k gui/$(id -u)/dev.mise.otelcol
+```
+
+Run launcher fixture tests with
+`zsh -df ~/.config/yadm/scripts/tests/test-otelcol.zsh`. Run the real-binary crash
+and recovery test with
+`mise exec -- python3 ~/.config/yadm/tests/otelcol-persistence.py`.
+The latter sends synthetic metrics, logs, and traces only to isolated localhost
+listeners, kills the Collector abruptly, and verifies forwarding after recovery.
+
 ### Configure telemetry authentication
 
-`~/.config/mise/conf.d/opencode.toml` reads `OPENCODE_OTLP_HEADERS` from
+For direct NAS exports, `~/.config/mise/conf.d/opencode.toml` reads `OPENCODE_OTLP_HEADERS` from
 `~/.config/opencode/otel-headers`, respecting `XDG_CONFIG_HOME`. The credential
 file contains one `Authorization=Basic ...` line. Mise marks the variable with
 `redact = true` to mask it in captured task output. Treat it as a password because
@@ -350,13 +399,19 @@ If it is missing, mise sets the variable to an empty string and LAN exports stil
    chmod 600 ~/.config/opencode/otel-headers
    ```
 
-3. Verify that mise provides the variable without displaying its value:
+3. On macOS, restart the relay to load the credential:
+
+   ```sh
+   launchctl kickstart -k gui/$(id -u)/dev.mise.otelcol
+   ```
+
+   For direct NAS exports, verify that mise provides the variable without displaying its value:
 
    ```sh
    mise exec -- sh -c 'test -n "$OPENCODE_OTLP_HEADERS" && echo "OTLP authentication is set"'
    ```
 
-4. Restart the background service from a fresh interactive shell to retain
+4. For direct NAS exports, restart the background service from a fresh interactive shell to retain
    `OPENCODE_RESOURCE_ATTRIBUTES` and load the credential:
 
    ```sh
@@ -368,9 +423,10 @@ output or dump the service environment because it can expose the credential.
 Redaction does not mask `mise env`, `mise exec`, or tasks with `raw = true`.
 The work configuration must remain metrics-only.
 
-The `otel-status` probe sends the same headers, so an external `401` from `/otel`
+For direct exports, the `otel-status` probe sends the same headers, so an external `401` from `/otel`
 means the service has no credential or a rejected one. Restart the service as
-shown above to load a new credential.
+shown above to load a new credential. With the local relay, inspect Collector logs
+for remote authentication failures instead.
 
 ## Model availability
 

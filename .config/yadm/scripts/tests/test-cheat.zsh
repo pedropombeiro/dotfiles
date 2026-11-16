@@ -14,6 +14,7 @@ export CHEAT_TEST_ARGS="$temporary/glow-args"
 export CHEAT_TEST_SHEET=tmux CHEAT_TEST_STYLE=gruvbox.json
 print '# Fixture' > "$CHEAT_SHEETS_DIR/tmux.md"
 print '# Index' > "$CHEAT_SHEETS_DIR/README.md"
+print '# OpenCode' > "$CHEAT_SHEETS_DIR/opencode.md"
 
 cat > "$temporary/bin/dotfiles-theme" <<'EOF'
 #!/bin/bash
@@ -57,3 +58,30 @@ for style in gruvbox.json catppuccin-mocha.json tokyo-night missing; do
 done
 
 print 'PASS: cheat preview styles, width, index mapping, and paths with spaces'
+
+cat > "$temporary/bin/tput" <<'EOF'
+#!/bin/bash
+printf '80\n'
+EOF
+chmod +x "$temporary/bin/tput"
+
+for command in opencode oc opencode.exe; do
+  SSH_CONNECTION=fixture "$root/.local/bin/cheat" --for-command "$command"
+  expected=$(printf '%s\n' -w 80 -p "$CHEAT_SHEETS_DIR/opencode.md")
+  [[ $(<"$CHEAT_TEST_ARGS") == $expected ]] || fail "Incorrect sheet for command: $command"
+done
+
+sheets=$("$root/.local/bin/cheat" --list)
+[[ $'\n'$sheets$'\n' == *$'\nopencode\n'* ]] || fail 'OpenCode missing from picker list'
+print 'PASS: OpenCode command lookup, alias, and picker listing'
+
+cat > "$temporary/bin/open" <<'EOF'
+#!/bin/bash
+printf '%s\n' "$@" > "$CHEAT_TEST_ARGS"
+EOF
+chmod +x "$temporary/bin/open"
+
+SSH_CONNECTION= "$root/.local/bin/cheat" --tmux --for-command opencode.exe
+expected=https://github.com/pedropombeiro/dotfiles/blob/master/.github/cheatsheets/opencode.md
+[[ $(<"$CHEAT_TEST_ARGS") == $expected ]] || fail 'Incorrect tmux OpenCode browser lookup'
+print 'PASS: tmux OpenCode process name opens its sheet without the picker'

@@ -269,6 +269,25 @@ To modify tmux settings:
 
 ## Frequent Action Keybindings
 
+### App cheat sheets
+
+`Prefix h` calls `~/.local/bin/cheat --tmux --for-command` with tmux's
+`pane_current_command`. Recognized programs open their sheet directly. Shells
+and unrecognized programs open the picker.
+
+- Put new sheets in `~/.github/cheatsheets/NAME.md` and add them to that
+  directory's `README.md`. Files under `~/.agents/docs/` don't appear in the picker.
+- Add app-specific lookup to `normalize` and `sheet_for_command` in
+  `~/.local/bin/cheat`. Check the actual process name with
+  `tmux display-message -p '#{pane_current_command}'` in the target pane.
+  OpenCode can report `opencode.exe` on macOS, so both spellings map to `opencode`.
+- Add lookup fixtures to `~/.config/yadm/scripts/tests/test-cheat.zsh` and run
+  them with `zsh -df`. Script and sheet edits need no tmux reload.
+- The browser opens the pushed GitHub version. Use `cheat --local NAME` to read
+  unpublished edits.
+
+### Frequent shortcuts
+
 Frequent actions use Shift-free prefix keys. The retired launcher keys
 `F`, `Y`, `l`, `T`, and `S` are unbound, including after a config reload.
 Menu actions dispatch with `send-keys -K C-b KEY` because `send-keys -K`

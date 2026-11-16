@@ -11,6 +11,7 @@ configuration, so the sheets describe this setup rather than upstream defaults.
 | [sesh](sesh.md) | Session sources, project discovery, waiting-agent indicator |
 | [Yazi](yazi.md) | Git-aware browsing, bulk operations, bookmarks, archives |
 | [Neovim](neovim.md) | Pickers, LSP refactoring, quickfix, hunks, tests, OpenCode |
+| [OpenCode](opencode.md) | Agents, models, sessions, queued prompts, local extensions, diagnostics |
 | [LazyGit](lazygit.md) | Line staging, fixups, commit surgery, custom patches |
 | [LazyDocker](lazydocker.md) | Container inspection, logs, shells, Compose lifecycle, cleanup |
 | [btop](btop.md) | Process sorting, filters, trees, CPU interpretation, signals, resource graphs |
@@ -33,7 +34,8 @@ configuration, so the sheets describe this setup rather than upstream defaults.
 | Read a sheet in the terminal                   | `cheat --local yazi` |
 | Open this index                                | `cheat index`        |
 
-`Prefix h` recognizes Neovim, Yazi, LazyGit, LazyDocker, btop, lnav, jless, Atuin,
+`Prefix h` recognizes OpenCode (`opencode` or `opencode.exe`), Neovim, Yazi,
+LazyGit, LazyDocker, btop, lnav, jless, Atuin,
 fzf, sesh, Trippy (`trip`), and VisiData when tmux reports `vd` or `visidata`.
 The Homebrew VisiData installation on
 macOS reports `Python`, so use the picker or `cheat vd` there. In a shell or

@@ -1,5 +1,9 @@
 # OpenCode cheat sheet
 
+Configuration: [server config](../../.config/opencode/opencode.json%23%23template),
+[Work terminal config](../../.config/opencode/cli.base.json%23%23class.Work), and
+[default terminal config](../../.config/opencode/cli.base.json%23%23default).
+
 Quick reference for Pedro's OpenCode V2 setup. `Leader` means press `Ctrl+X`,
 release it, then press the next key. `Alt` is Option on macOS.
 Open this sheet with tmux `Prefix h` or `cheat --local opencode`.
@@ -16,7 +20,7 @@ The tmux prefix is `Ctrl+B`, separate from OpenCode's leader.
 | Toggle permission mode | `Shift+Tab` or `/permission-mode` | Global `prompt` / `autoaccept` preference, not an agent switch |
 | Interrupt a running turn | `Esc` | |
 | Edit the prompt externally | `Leader e` | |
-| Add a newline | `Ctrl+J` | `Enter` submits |
+| Add a newline | `Ctrl+J` or `Alt+Enter` | `Enter` submits |
 | Show or hide the sidebar | `Leader b` | `Ctrl+Alt+T` toggles the scrollbar |
 | Page through the transcript | `Page Up` / `Page Down` | Work also maps `Home` / `End` to paging |
 | Jump to the first / last message | `Ctrl+G` / `Ctrl+Alt+G` | Same on every machine |
@@ -30,6 +34,7 @@ for other defaults.
 | Task | Shortcut or instruction | Note |
 | --- | --- | --- |
 | Create / find a session | `Leader n` / `Leader l` | `Ctrl+O` opens recent sessions and projects |
+| Search past session content | `Leader f` or `/search-session QUERY` | Searches titles and messages. `Enter` opens a same-project result. `Ctrl+S` requests a summary here. |
 | Switch session tabs | `Alt+Down` / `Alt+Up` | |
 | Close / reopen a tab | `Leader w` / `Ctrl+Shift+T` | Closing a tab doesn't delete the session |
 | Fork a session | `Ctrl+P`, search for fork | Choose the message to branch from |
@@ -44,16 +49,35 @@ for other defaults.
 | Task | Command | Note |
 | --- | --- | --- |
 | Inspect timing and reported cache reuse | `/session-metrics` | `c` toggles descendants, `r` refreshes, and `f` toggles fullscreen |
+| Inspect cache expiry and estimated costs | `/cache` | Cache Coach. No default shortcut. |
+| Inspect the telemetry collector | `/otel` | No default shortcut. |
 | Follow a temporary output file in tmux | `Leader o` | Selects the most recently modified qualifying session-written file. Toggle off/on to reselect. |
 | Inspect PR/MR status | `/forge-status` | `/forge-open` opens it in the browser |
 | Browse review and lifecycle updates | `/forge-feedback` | Configured summaries arrive after active work finishes |
 | Track issues or PRs/MRs | Give the agent their URLs | Say `Return to the checked-out branch` to restore branch-based targeting |
 
-Details: [session metrics](../../.config/opencode/local-plugins/tui/session-metrics/README.md),
+Details: [Session Finder](https://github.com/pedropombeiro/opencode-plugins/tree/main/packages/session-finder),
+[session metrics](../../.config/opencode/local-plugins/tui/session-metrics/README.md),
 [temp-file tail](../../.config/opencode/local-plugins/tui/temp-file-tail/README.md),
 [permission mode](../../.config/opencode/local-plugins/tui/permission-mode/README.md),
 [queue command](../../.config/opencode/local-plugins/tui/queue-command/README.md),
 and [Forgekeeper](https://github.com/pedropombeiro/opencode-plugins/tree/main/packages/forgekeeper).
+
+### Plugin dialog shortcuts
+
+These keys apply only inside the named dialog.
+
+| Dialog | Keys | Action |
+| --- | --- | --- |
+| `/forge-status` | `Ctrl+R` | Refresh status |
+| `/forge-feedback` | `Ctrl+A` | Start work on the selected feedback. Can edit files. |
+| `/forge-feedback` | `Ctrl+T` | Retry feedback work after confirmation. Can repeat earlier changes. |
+| `/forge-feedback` | `Ctrl+D` | Acknowledge the update locally, without replying or resolving a remote thread |
+| `/forge-feedback` | `Ctrl+R` | Summarize the update in its session |
+| `/forge-feedback` | `Ctrl+S` | Pause or resume monitoring |
+| `/forge-feedback` | `Enter` | Choose a link from the selected update |
+| `/forge-status` or `/otel` | `Tab`, `Shift+Tab`, `Left`, `Right` | Select an action, then press `Enter` to activate it |
+| Compaction history or multi-PR/MR open picker | `Ctrl+W` | Close the picker |
 
 ## Configuration and troubleshooting
 

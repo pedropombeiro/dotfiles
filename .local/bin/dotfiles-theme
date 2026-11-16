@@ -882,9 +882,7 @@ def main():
             "or start a new shell. OpenCode updates live; reopen other applications."
         )
         if any(path.name == "dotfiles-theme.json" for path in outputs):
-            print(
-                "iTerm2 Dynamic Profiles updated. Use Default or GDK; edit their base profiles for non-color preferences."
-            )
+            print("iTerm2 Dynamic Profiles updated.")
 
 
 if __name__ == "__main__":

@@ -21,8 +21,11 @@ directory = config / 'iterm2'
 (directory / 'config').mkdir()
 mapping = json.loads((repo / '.config/iterm2/dynamic-profiles.json').read_text())
 # Both machine classes must keep base names distinct from generated children.
+# Ignore XML-invalid key-binding controls in memory: this check only needs names
+# and GUIDs, and must run on Linux without Apple's plutil. Never alter the source.
 for source in (repo / '.config/iterm2/config').glob('com.googlecode.iterm2.plist##*'):
-    bookmarks = module['read_iterm2_plist'](source)['New Bookmarks']
+    data = re.sub(rb'[\x00-\x08\x0b\x0c\x0e-\x1f]', b'', source.read_bytes())
+    bookmarks = plistlib.loads(data)['New Bookmarks']
     bases = {p['Guid']: p for p in bookmarks if not p.get('Dynamic Profile Filename')}
     for item in mapping['profiles']:
         if item['parent_guid'] in bases:

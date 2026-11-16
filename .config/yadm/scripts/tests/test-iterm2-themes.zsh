@@ -32,12 +32,14 @@ expected_names = {
     'GDK development logs', 'GDK Postgres console',
     'Clickhouse client',
     'Postgres thin clone (CI)', 'Postgres thin clone (main)',
+    'nas', 'unifi',
 }
 assert {p['name'] for p in mapping['profiles']} == expected_names
 setup = (repo / '.config/yadm/scripts/iterm2-setup.sh##class.Work,os.Darwin').read_text()
 used_names = set(re.findall(r'(?:ensureTab\(targetWindow, |with profile )"([^"\n]+)"', setup))
 assert used_names == expected_names - {
     'Postgres thin clone (CI)', 'Postgres thin clone (main)',
+    'nas', 'unifi',
 }
 assert '"$HOME/.local/bin/dotfiles-theme" iterm-apply' in setup.split('osascript')[0]
 assert 'split horizontally with profile "GDK development logs"' in setup
@@ -56,6 +58,23 @@ target = Path.home() / 'Library/Application Support/iTerm2/DynamicProfiles/dotfi
 with patch.object(sys, 'platform', 'linux'):
     assert render('missing') == {}
 with patch.object(sys, 'platform', 'darwin'):
+    # Personal connection profiles inherit commands and settings, changing colors only.
+    personal_source = next((repo / '.config/iterm2/config').glob('*##*class.Personal*'))
+    personal = module['read_iterm2_plist'](personal_source)
+    preferences.write_bytes(personal_source.read_bytes())
+    personal_original = preferences.read_bytes()
+    personal_parents = {p['Guid']: p for p in personal['New Bookmarks']}
+    for theme in ('gruvbox-dark', 'tokyonight-night', 'catppuccin-mocha'):
+        (directory / f'themes/{theme}.itermcolors').write_bytes(plistlib.dumps(palette))
+        children = json.loads(render(theme)[target])['Profiles']
+        assert {p['Name'] for p in children} == {'Default', 'nas', 'unifi'}
+        for child in children:
+            parent = personal_parents[child['Dynamic Profile Parent GUID']]
+            assert parent['Name'] == child['Name'] + ' · base'
+            assert 'Command' not in child and 'Initial Text' not in child
+            assert child['Background Color'] == color
+        assert preferences.read_bytes() == personal_original
+    preferences.write_bytes(original)
     identities = None
     for theme in ('gruvbox-dark', 'tokyonight-night', 'catppuccin-mocha'):
         (directory / f'themes/{theme}.itermcolors').write_bytes(plistlib.dumps(palette))
@@ -147,7 +166,7 @@ with patch.object(sys, 'platform', 'darwin'):
     with patch.object(module['subprocess'], 'run', side_effect=AssertionError('implicit discovery')):
         generated = json.loads(render('gruvbox-dark')[target])['Profiles']
     by_name = {p['Name']: p for p in generated}
-    assert len(generated) == 9
+    assert len(generated) == len(expected_names) + 1
     common = mapping['thin_clones']['parent_guid']
     for alias, identity in mapping['thin_clones']['legacy'].items():
         child = by_name[identity['name']]
@@ -161,10 +180,11 @@ with patch.object(sys, 'platform', 'darwin'):
     with contextlib.redirect_stdout(io.StringIO()) as preview:
         module['preview_iterm2']('gruvbox-dark')
     summaries = json.loads(preview.getvalue())
-    assert len(summaries) == 9
+    assert len(summaries) == len(generated)
     assert all(not p.get('Changed inherited preference keys') for p in summaries)
     changed_parents = [dict(p) for p in parents]
-    changed_parents[-2]['Normal Font'] = 'fixture-only-font'
+    next(p for p in changed_parents
+         if p['Guid'] == mapping['profiles'][6]['parent_guid'])['Normal Font'] = 'fixture-only-font'
     preferences.write_bytes(plistlib.dumps({'New Bookmarks': changed_parents}))
     with contextlib.redirect_stdout(io.StringIO()) as preview:
         module['preview_iterm2']('gruvbox-dark')
@@ -211,7 +231,7 @@ with patch.object(sys, 'platform', 'darwin'):
             raise AssertionError('unpersisted dynamic collision accepted')
     other.unlink()
     inventory.write_text(json.dumps({'version': 1, 'aliases': []}))
-    assert len(json.loads(render('gruvbox-dark')[target])['Profiles']) == 6
+    assert len(json.loads(render('gruvbox-dark')[target])['Profiles']) == len(expected_names) - 2
     for invalid in ({'version': 2, 'aliases': []}, {'version': 1, 'aliases': ['a', 'a']},
                     {'version': 1, 'aliases': [], 'host': 'private.invalid'}):
         inventory.write_text(json.dumps(invalid))
@@ -281,7 +301,7 @@ with patch.object(sys, 'platform', 'darwin'):
         assert all(p['overrides']['Icon'] == 2 for p in cap_profiles)
         assert all(p['overrides']['Custom Icon Path'] == str(directory / 'icons/caproni.ico') for p in cap_profiles)
         assert module['caproni_mappings'](mapping) == cap_profiles
-        assert len(json.loads(render('gruvbox-dark')[target])['Profiles']) == 11
+        assert len(json.loads(render('gruvbox-dark')[target])['Profiles']) == len(expected_names) + 3
         saved_inventory = cap_cache.read_bytes()
         (cap_root / 'cap-123/caproni.yaml').unlink()
         try:
@@ -316,7 +336,7 @@ with patch.object(sys, 'platform', 'darwin'):
     assert rails['Dynamic Profile Parent GUID'] == mapping['profiles'][1]['parent_guid']
     assert rails['Triggers'] == []
     assert rails['Title Components'] == 32
-    assert len(migrated) == 8
+    assert len(migrated) == len(expected_names)
     assert all(p['Dynamic Profile Parent GUID'] == shared_guid
                for p in migrated if p['Name'].startswith('GDK') or p['Name'] == 'Clickhouse client')
     logs = next(p for p in migrated if p['Name'] == 'GDK development logs')

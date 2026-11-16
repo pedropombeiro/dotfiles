@@ -2783,7 +2783,7 @@ The script should do this: \(ai.prompt)</string>
 			<key>Mouse Reporting allow clicks and drags</key>
 			<true/>
 			<key>Name</key>
-			<string>nas</string>
+			<string>nas · base</string>
 			<key>Non Ascii Font</key>
 			<string>Menlo-Regular 11</string>
 			<key>Non-ASCII Anti Aliased</key>
@@ -5121,7 +5121,7 @@ The script should do this: \(ai.prompt)</string>
 			<key>Mouse Reporting</key>
 			<true/>
 			<key>Name</key>
-			<string>unifi</string>
+			<string>unifi · base</string>
 			<key>Non Ascii Font</key>
 			<string>Menlo-Regular 11</string>
 			<key>Non-ASCII Anti Aliased</key>

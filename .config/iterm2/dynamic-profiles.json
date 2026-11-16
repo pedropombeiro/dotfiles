@@ -61,6 +61,18 @@
       "guid": "F06058A7-4916-4D51-850E-357A316C4748",
       "parent_guid": "F23F2DFC-CCEF-427D-9F58-0C0BEA8CA681",
       "optional": true
+    },
+    {
+      "name": "nas",
+      "guid": "3BE2A71C-6F97-46F3-AD9E-AEB6BB491600",
+      "parent_guid": "23346F43-83A0-451E-AA37-72535F86426F",
+      "optional": true
+    },
+    {
+      "name": "unifi",
+      "guid": "F8B8A1FE-AB8C-4430-917C-D17349B3C902",
+      "parent_guid": "1ED1B313-0567-4C13-A83F-A10CC72DD42F",
+      "optional": true
     }
   ]
 }

@@ -6,6 +6,12 @@ repo=${scripts:h:h:h}
 source "$scripts/tests/lib/test-helpers.zsh"
 test_sandbox python3
 trap test_cleanup EXIT
+# Keep macOS runs honest about the Linux runner's missing Apple tools.
+test_stub plutil <<'SH'
+#!/bin/sh
+echo 'Unexpected unmocked plutil call in portable iTerm2 tests' >&2
+exit 1
+SH
 
 python3 - "$repo" <<'PY'
 import contextlib, io, json, os, plistlib, re, runpy, sys
@@ -20,12 +26,15 @@ directory = config / 'iterm2'
 (directory / 'themes').mkdir(parents=True)
 (directory / 'config').mkdir()
 mapping = json.loads((repo / '.config/iterm2/dynamic-profiles.json').read_text())
-# Both machine classes must keep base names distinct from generated children.
-# Ignore XML-invalid key-binding controls in memory: this check only needs names
-# and GUIDs, and must run on Linux without Apple's plutil. Never alter the source.
-for source in (repo / '.config/iterm2/config').glob('com.googlecode.iterm2.plist##*'):
+# Ignore XML-invalid key-binding controls only in test fixtures. Production uses
+# Apple's plist reader; these tests must also run on Linux without plutil.
+def read_preferences_fixture(source):
     data = re.sub(rb'[\x00-\x08\x0b\x0c\x0e-\x1f]', b'', source.read_bytes())
-    bookmarks = plistlib.loads(data)['New Bookmarks']
+    return plistlib.loads(data)
+
+# Both machine classes must keep base names distinct from generated children.
+for source in (repo / '.config/iterm2/config').glob('com.googlecode.iterm2.plist##*'):
+    bookmarks = read_preferences_fixture(source)['New Bookmarks']
     bases = {p['Guid']: p for p in bookmarks if not p.get('Dynamic Profile Filename')}
     for item in mapping['profiles']:
         if item['parent_guid'] in bases:
@@ -63,8 +72,8 @@ with patch.object(sys, 'platform', 'linux'):
 with patch.object(sys, 'platform', 'darwin'):
     # Personal connection profiles inherit commands and settings, changing colors only.
     personal_source = next((repo / '.config/iterm2/config').glob('*##*class.Personal*'))
-    personal = module['read_iterm2_plist'](personal_source)
-    preferences.write_bytes(personal_source.read_bytes())
+    personal = read_preferences_fixture(personal_source)
+    preferences.write_bytes(plistlib.dumps(personal))
     personal_original = preferences.read_bytes()
     personal_parents = {p['Guid']: p for p in personal['New Bookmarks']}
     for theme in ('gruvbox-dark', 'tokyonight-night', 'catppuccin-mocha'):

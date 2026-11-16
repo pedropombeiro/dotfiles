@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+backup_dir="${HOME}/Sync/pedro/Briefcase/Backups/raycast"
+backup=""
+shopt -s nullglob
+for candidate in "${backup_dir}"/*.rayconfig; do
+  [[ -f ${candidate} ]] || continue
+  if [[ -z ${backup} || ${candidate} -nt ${backup} ]]; then
+    backup="${candidate}"
+  fi
+done
+
+if [[ -z ${backup} ]]; then
+  echo "Skipping Raycast import: no .rayconfig backup found in ${backup_dir}"
+  exit 0
+fi
+
+# Only a confirmed import records the hash. Opening the file doesn't report
+# whether Raycast imported it, and a rerun must preserve subsequent local edits.
+marker="${XDG_STATE_HOME:-${HOME}/.local/state}/yadm/raycast-imported.sha256"
+backup_hash="$(shasum -a 256 "${backup}" | cut -d' ' -f1)"
+if [[ ${RAYCAST_FORCE_IMPORT:-} != 1 && -f ${marker} && $(<"${marker}") == "${backup_hash}" ]]; then
+  echo "Skipping Raycast import: this backup was already imported (set RAYCAST_FORCE_IMPORT=1 to import it again)"
+  exit 0
+fi
+
+if [[ ! -t 0 ]]; then
+  echo "Skipping Raycast import: no terminal to confirm; it will be offered again on the next run"
+  exit 0
+fi
+
+if ! osascript -e 'id of app "Raycast"' &>/dev/null; then
+  echo "Skipping Raycast import: app not found"
+  exit 0
+fi
+
+echo "Latest Raycast backup: ${backup}"
+if ! read -r -p "Open this backup in Raycast to import settings? [y/N] " answer || [[ ${answer} != [yY] && ${answer} != [yY][eE][sS] ]]; then
+  echo "Skipping Raycast import; it will be offered again on the next run"
+  exit 0
+fi
+
+echo "Enter the export passphrase in Raycast and select the categories to import."
+open -a "Raycast" "${backup}"
+
+if read -r -p "Did Raycast finish importing the settings? [y/N] " answer && [[ ${answer} == [yY] || ${answer} == [yY][eE][sS] ]]; then
+  mkdir -p "${marker%/*}"
+  printf '%s\n' "${backup_hash}" >"${marker}"
+else
+  echo "Not recording the import; it will be offered again on the next run"
+fi

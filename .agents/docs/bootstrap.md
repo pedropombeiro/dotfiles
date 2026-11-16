@@ -119,10 +119,11 @@ undo changes made in System Settings.
 - `007-check-authentication.sh` waits for the 1Password SSH agent and CLI, GitLab
   SSH access, and `gh`/`glab` logins before `010` clones private repositories.
 - `100-wait-for-synced-data.sh` waits for `~/Sync/pedro` before `110`, `120`,
-  and `938` restore from it. Syncthing isn't allowed on Work machines, so copy
+  `938`, and `942` restore from it. Syncthing isn't allowed on Work machines, so copy
   `~/Sync/pedro/.dotfiles/Home/MBP.Work`,
   `~/Sync/pedro/Briefcase/Backups/MBP.Work`, and
-  `~/Sync/pedro/Briefcase/Backups/dash` from the previous Work machine.
+  `~/Sync/pedro/Briefcase/Backups/dash` from the previous Work machine. Copy
+  `~/Sync/pedro/Briefcase/Backups/raycast` too if you want to restore Raycast.
   Don't add Syncthing to the Work Brewfile.
 - Relinking preserves restored histories. Differing local histories are saved in
   `${XDG_STATE_HOME:-~/.local/state}/yadm/history-backups/restore.*` before linking.
@@ -133,6 +134,13 @@ undo changes made in System Settings.
   The file holds only overrides, because Hex replaces `settings.json` on each
   save and mixes it with machine state. After changing Hex settings, run
   `mise run hex:dump` to copy them into the file, then commit it.
+- `942` offers to open the most recently modified `.rayconfig` file in
+  `~/Sync/pedro/Briefcase/Backups/raycast`. Enter its passphrase and choose the
+  import categories in Raycast, then confirm success in the terminal. Only a
+  confirmed import records the backup hash, so reruns skip that export without
+  overwriting later local changes. Set `RAYCAST_FORCE_IMPORT=1` to offer it again.
+  Non-interactive runs skip the import. Keep the export passphrase in 1Password
+  and refresh the backup manually or with Raycast Pro's scheduled exports.
 - Checkpoints that wait for a manual step use `wait_for` from
   `scripts/lib/wait-for.sh`.
 - Scripts must be safe to re-run. Guard one-time steps, such as restoring

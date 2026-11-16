@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 #
 # Wait for ~/Sync/pedro before the steps that restore from it: 110 points iTerm2
-# and Dash at backups, 120 links shell histories and pgcli state, and 938 imports
-# Input Source Pro settings. Personal machines receive the folder through
-# Syncthing. Syncthing isn't allowed on Work machines, so copy it by hand.
+# and Dash at backups, 120 links shell histories and pgcli state, 938 imports
+# Input Source Pro settings, and 942 imports Raycast. Personal machines receive
+# the folder through Syncthing. Syncthing isn't allowed on Work machines, so
+# copy it by hand.
 
 YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null && pwd)
 
@@ -15,13 +16,14 @@ sync_root="${HOME}/Sync/pedro"
 dotfiles_dir="${sync_root}/.dotfiles/Home/MBP.${class}"
 backups_dir="${sync_root}/Briefcase/Backups/MBP.${class}"
 dash_dir="${sync_root}/Briefcase/Backups/dash"
+raycast_dir="${sync_root}/Briefcase/Backups/raycast"
 
 synced_data_ready() {
   [[ -d ${dotfiles_dir} && -d ${backups_dir} && -d ${dash_dir} ]]
 }
 
 if [[ ${class} == Work ]]; then
-  instructions="Syncthing isn't allowed on Work machines. Finish copying ${dotfiles_dir}, ${backups_dir}, and ${dash_dir} from the previous Work machine before continuing."
+  instructions="Syncthing isn't allowed on Work machines. Finish copying ${dotfiles_dir}, ${backups_dir}, and ${dash_dir} from the previous Work machine before continuing. Also copy ${raycast_dir} if you want to restore Raycast settings."
 else
   instructions="Set up Syncthing and wait for the ${sync_root} folder to finish syncing."
 fi

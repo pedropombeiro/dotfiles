@@ -20,6 +20,13 @@ directory = config / 'iterm2'
 (directory / 'themes').mkdir(parents=True)
 (directory / 'config').mkdir()
 mapping = json.loads((repo / '.config/iterm2/dynamic-profiles.json').read_text())
+# Both machine classes must keep base names distinct from generated children.
+for source in (repo / '.config/iterm2/config').glob('com.googlecode.iterm2.plist##*'):
+    bookmarks = module['read_iterm2_plist'](source)['New Bookmarks']
+    bases = {p['Guid']: p for p in bookmarks if not p.get('Dynamic Profile Filename')}
+    for item in mapping['profiles']:
+        if item['parent_guid'] in bases:
+            assert item['name'] not in {p['Name'] for p in bases.values()}, source.name
 expected_names = {
     'Default', 'GDK', 'GDK rails console',
     'GDK development logs', 'GDK Postgres console',

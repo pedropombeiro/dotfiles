@@ -14,6 +14,9 @@ step_tmux_plugins() {
 
   # The CLI installer does not initialize plugins in an already running server.
   if tmux has-session 2>/dev/null; then
+    # A fresh checkout may not have the generated includes sourced by tmux.conf.
+    "${HOME}/.local/bin/dotfiles-theme" install || return $?
+    "${HOME}/.local/bin/dotfiles-theme" apply || return $?
     tmux source-file "$config"
   fi
 }

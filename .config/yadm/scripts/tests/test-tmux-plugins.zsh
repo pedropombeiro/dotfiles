@@ -10,8 +10,15 @@ fail() { print -ru2 -- "FAIL: $*"; exit 1; }
 export XDG_DATA_HOME="$sandbox/data with spaces"
 export XDG_CONFIG_HOME="$sandbox/config with spaces"
 export TMUX_TEST_LOG="$sandbox/commands"
-mkdir -p "$sandbox/bin" "$XDG_DATA_HOME/tmux/plugins/tpm/bin"
+export HOME="$sandbox/home"
+mkdir -p "$sandbox/bin" "$XDG_DATA_HOME/tmux/plugins/tpm/bin" "$HOME/.local/bin"
 export PATH="$sandbox/bin:$PATH"
+cat > "$HOME/.local/bin/dotfiles-theme" <<'SCRIPT'
+#!/bin/sh
+printf '%s\n' "dotfiles-theme $*" >> "$TMUX_TEST_LOG"
+if [ "$TMUX_TEST_FAIL" = "theme-$1" ]; then exit 7; fi
+SCRIPT
+chmod +x "$HOME/.local/bin/dotfiles-theme"
 for name in install_plugins update_plugins clean_plugins; do
   cat > "$XDG_DATA_HOME/tmux/plugins/tpm/bin/$name" <<'SCRIPT'
 #!/bin/sh
@@ -41,7 +48,7 @@ run_step() {
 
 expected=$'install_plugins\nupdate_plugins all\nclean_plugins\ntmux has-session'
 run_step
-[[ $(<"$TMUX_TEST_LOG") == "$expected"$'\n'"tmux source-file $XDG_CONFIG_HOME/tmux/tmux.conf" ]] || fail 'install/update/clean/reload order'
+[[ $(<"$TMUX_TEST_LOG") == "$expected"$'\n'"dotfiles-theme install"$'\n'"dotfiles-theme apply"$'\n'"tmux source-file $XDG_CONFIG_HOME/tmux/tmux.conf" ]] || fail 'install/update/clean/theme/reload order'
 print 'PASS: newly installed plugins are initialized after updates'
 
 : > "$TMUX_TEST_LOG"
@@ -59,6 +66,17 @@ for name in install_plugins update_plugins clean_plugins; do
   [[ $log != *'tmux '* && $lines[-1] == "$name"* ]] || fail "continued after $name failed"
 done
 print 'PASS: TPM failures stop the step before reload'
+
+for name in install apply; do
+  : > "$TMUX_TEST_LOG"
+  rc=0
+  TMUX_TEST_FAIL=theme-$name run_step || rc=$?
+  (( rc == 7 )) || fail "theme $name failure status lost"
+  log=$(<"$TMUX_TEST_LOG")
+  lines=("${(@f)log}")
+  [[ $log != *'tmux source-file '* && $lines[-1] == "dotfiles-theme $name" ]] || fail "continued after theme $name failed"
+done
+print 'PASS: theme failures stop the step before reload'
 
 rc=0
 TMUX_TEST_RELOAD_RC=9 run_step || rc=$?

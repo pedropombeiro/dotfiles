@@ -33,6 +33,8 @@ Requests go through Kibana's Dev Tools console proxy as the logged-in user. The 
 
 If no browser has a valid Kibana session either, queries fail with `log in to ... in your browser or run esquery login`. Ask the user to run `esquery login`, which opens Kibana in the default browser (or the `--chrome-profile` profile) and waits for the Okta sign-in. Don't run it yourself unless asked: it opens a browser window and may show a Keychain prompt. For other browsers or headless machines: copy the `sid` cookie from the browser's developer tools into a file, then `esquery login --sid-stdin < file`.
 
+With `--browser none` (or `ESQUERY_BROWSER=none`) esquery never reads browser cookie files, so a missing or expired session fails with `run esquery login` and nothing is retried. Ask the user to run `esquery login`, which then (as with `--devtools`) opens Kibana in a Chrome with a temporary profile, takes the session after the sign-in, and deletes the profile.
+
 Kibana sessions expire after 3 days without use.
 
 With Elasticsearch credentials you can skip Kibana: `export ELASTICSEARCH_URL='https://<user>:<pw>@<host>:9243'`. `KIBANA_URL` / `--kibana-url` takes precedence when both are set.

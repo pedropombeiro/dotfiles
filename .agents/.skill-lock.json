@@ -35,9 +35,10 @@
       "sourceType": "gitlab",
       "sourceUrl": "https://gitlab.com/gitlab-com/gl-infra/esquery.git",
       "skillPath": "skill/SKILL.md",
-      "skillFolderHash": "9ae707b90de6271e65b67bf85cd9d894958f0ce1bfb175cf2727d65789e65560",
+      "skillFolderHash": "d311d42d4c785a96a9534204bf77910d1f62b941e335a8f4de97972091e7412a",
       "installedAt": "2026-10-26T16:37:23.866Z",
-      "updatedAt": "2026-11-13T08:40:41.681Z"
+      "updatedAt": "2026-11-16T15:16:49.570Z",
+      "commit": "20c13ad560644f8ac9fd72e6264947589789fdcb"
     }
   },
   "dismissed": {

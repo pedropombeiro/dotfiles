@@ -112,6 +112,9 @@ export async function otlpProbe(
         "Content-Type": target.contentType,
       },
       body: target.body,
+      // Each infrequent health check needs a fresh connection. A pooled socket
+      // can become stale during laptop sleep and fail once with ECONNRESET.
+      keepalive: false,
       redirect: "manual",
       signal: AbortSignal.timeout(timeoutMs),
     })

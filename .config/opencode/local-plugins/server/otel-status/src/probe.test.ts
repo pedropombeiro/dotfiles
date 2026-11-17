@@ -104,6 +104,24 @@ test("sends configured headers without letting them override the content type", 
   expect(collector.received[0]).toMatchObject({ authorization, contentType: "application/x-protobuf" })
 })
 
+test("disables connection pooling on every check after idle or sleep", async () => {
+  const requests: RequestInit[] = []
+  const deps = {
+    fetch: (async (_url: unknown, init: RequestInit) => {
+      requests.push(init)
+      return new Response(null, { status: 200 })
+    }) as unknown as typeof fetch,
+    tcp: async () => {
+      throw new Error("successful HTTP checks must not need a TCP fallback")
+    },
+  }
+  const collector = target("http://127.0.0.1:4318")
+  expect((await otlpProbe(collector, 1000, deps)).ok).toBe(true)
+  expect((await otlpProbe(collector, 1000, deps)).ok).toBe(true)
+  expect(requests).toHaveLength(2)
+  for (const request of requests) expect(request.keepalive).toBe(false)
+})
+
 test("does not include headers in error messages", async () => {
   const authorization = ["Basic", btoa("ab:c")].join(" ")
   const collector = serve(() => new Response("no", { status: 401 }))
@@ -169,5 +187,6 @@ test("TCP probe reports open, refused, unresolvable, and silent hosts", async ()
   expect(await tcpProbe({ host: "otel-status.invalid", port: 443 }, 2000)).toMatchObject({ ok: false })
   const silent = await tcpProbe({ host: "10.255.255.1", port: 443 }, 50)
   expect(silent.ok).toBe(false)
-  expect(silent.error).toMatch(/timed out after 50ms|EHOSTUNREACH|ENETUNREACH/)
+  // Networks can actively reject this address rather than silently drop it.
+  expect(silent.error).toMatch(/timed out after 50ms|EHOSTUNREACH|ENETUNREACH|ECONNREFUSED/)
 })

@@ -400,6 +400,8 @@ cask "muzzle"
 cask "neovide-app"
 # WiFi site survey software and WiFi scanner
 cask "netspot"
+# AI coding agent desktop client
+cask "opencode-desktop"
 # Replacement for Docker Desktop
 cask "orbstack"
 # Visual client for Helix Core

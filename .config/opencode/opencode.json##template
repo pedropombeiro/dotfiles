@@ -197,6 +197,22 @@
             { "tier": { "type": "context", "size": 100000 }, "input": 0.50, "output": 2.50, "cache": { "read": 0.05, "write": 0.625 } }
           ]
         },
+        // Enable GPT 6.2 after the GitLab provider adds and verifies its model mappings.
+        // Standard API rates: https://developers.openai.com/api/docs/pricing
+        "duo-chat-gpt-6-2-astra": {
+          "disabled": true,
+          "cost": [
+            { "input": 8, "output": 40, "cache": { "read": 0.40, "write": 10 } },
+            { "tier": { "type": "context", "size": 272000 }, "input": 16, "output": 60, "cache": { "read": 0.80, "write": 20 } }
+          ]
+        },
+        "duo-chat-gpt-6-2-sol": {
+          "disabled": true,
+          "cost": [
+            { "input": 2, "output": 10, "cache": { "read": 0.10, "write": 2.50 } },
+            { "tier": { "type": "context", "size": 272000 }, "input": 4, "output": 15, "cache": { "read": 0.20, "write": 5 } }
+          ]
+        },
         "duo-chat-gpt-6-astra": {
           "cost": [
             { "input": 10, "output": 50, "cache": { "read": 1, "write": 12.5 } },

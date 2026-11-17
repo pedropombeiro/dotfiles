@@ -7,8 +7,6 @@ YADM_SCRIPTS=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../scripts" &>/dev/null 
 # shellcheck source=../scripts/lib/colors.sh
 source "${YADM_SCRIPTS}/lib/colors.sh"
 
-app_dir="${HOME}/Developer/gitlab.com/narendran-kannan/mr-dashboard"
-app_ref="837e312f3afe78a7002bccc6be80332c5a863541"
 config_dir="${HOME}/.config/mr-dashboard"
 config_file="${config_dir}/env"
 service_label="com.mr-dashboard.agent"
@@ -19,16 +17,7 @@ op_vault_id="mjxzs6kzr37xpofym72k274g2u"   # Employee
 op_item_id="t6e2zrzfisxdiibcb7iwji63km"    # Narendran's MR dashboard API token
 mise_bin=$(command -v mise)
 
-if [[ ! -d "${app_dir}" ]]; then
-  mkdir -p "$(dirname "${app_dir}")"
-  git clone git@gitlab.com:narendran-kannan/mr-dashboard.git "${app_dir}"
-  (cd "${app_dir}" && git switch --detach "${app_ref}")
-fi
-
-if [[ ! -f "${app_dir}/bin/cli.js" ]]; then
-  printf '%s\n' "MR Dashboard checkout is incomplete: ${app_dir}" >&2
-  exit 1
-fi
+"${mise_bin}" install npm:gitlab-mr-dashboard
 
 umask 077
 mkdir -p "${config_dir}"
@@ -71,10 +60,10 @@ cat >"${service_file}" <<EOF
   <key>ProgramArguments</key>
   <array>
     <string>${mise_bin}</string>
-    <string>exec</string><string>node@22</string><string>--</string>
-    <string>node</string><string>${app_dir}/bin/cli.js</string>
+    <string>exec</string><string>node@22</string><string>npm:gitlab-mr-dashboard</string><string>--</string>
+    <string>gitlab-mr-dashboard</string>
   </array>
-  <key>WorkingDirectory</key><string>${app_dir}</string>
+  <key>WorkingDirectory</key><string>${HOME}</string>
   <key>EnvironmentVariables</key>
   <dict>
     <key>MRDASH_CONFIG</key><string>${config_file}</string>

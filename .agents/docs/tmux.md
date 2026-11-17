@@ -98,17 +98,28 @@ option over `pane_title`, bypassing OpenCode's terminal-title truncation. The
 plugin refreshes subtitles after writes and removes the override on the home
 screen or plugin cleanup. iTerm2 can still shorten text to fit the tab width.
 
+The plugin also publishes `@opencode-attention` for conversations shown in the
+TUI, including background tabs and their child sessions. Pending permission
+prompts and questions set `waiting`. Failed runs set `error`, which remains
+until that conversation starts another run. Busy and idle states have no color.
+The subtitle text is amber (`#ff9f0a`) when its active pane needs input, or red
+(`#ff453a`) after a failure. A separate dot aggregates every pane in the client's
+tmux session, including background windows. Waiting takes priority over errors.
+Resolving attention restores the default text color and removes the dot.
+
 The shared tmux config registers hooks for pane title changes, pane and
-window selection, client attachment, and session switches. Each update queries
+window selection, pane exits, window removal, client attachment, and session
+switches. Each update queries
 the clients' current panes, so background panes don't replace the displayed
-description. Empty pane titles clear the subtitle, and detaching clears it too.
+description. Empty pane titles clear the subtitle. Detaching clears the subtitle,
+text color, and dot.
 The hooks use index `21337` so reloads don't duplicate them or replace other hooks.
 
 The helper supports macOS `/dev/tty*` and Linux `/dev/pts/*` client terminals,
 including NAS clients connected over SSH. It skips non-iTerm2 and control-mode
-clients. It changes only the status text, leaving dot and text colors alone.
-This reserves iTerm2's Session Status text for the pane title: another program
-setting that text can overwrite it until the next hook runs. Semicolons become
+clients. Main titles and tab background colors stay unchanged. This reserves
+iTerm2's Session Status text, text color, and dot for the bridge: another program
+setting those fields can overwrite them until the next refresh. Semicolons become
 commas, and ASCII control characters are
 removed before titles are sent to the terminal. The helper uses `tr -d '[:cntrl:]'`
 because BusyBox `tr` on the NAS ignores most of an octal range and lets `ESC` through.

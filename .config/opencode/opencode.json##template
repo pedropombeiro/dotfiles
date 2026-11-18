@@ -64,7 +64,7 @@
       "package": "@devtheops/opencode-plugin-otel@2.1.0",
       "options": {
         "enabled": true,
-{% if yadm.os != "Darwin" %}
+{% if yadm.class != "Work" %}
         "endpoint": "https://otel.pombei.ro",
 {% else %}
         "endpoint": "http://127.0.0.1:4318",

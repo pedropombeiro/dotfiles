@@ -19,7 +19,7 @@
     "@nm156/opencode-wakatime@1.4.0",     // Tracks AI coding activity in WakaTime
     "opencode-atuin-history@1.1.0",       // Records the agent's shell commands in Atuin history
     "opencode-homeassistant@1.1.0",       // Sends agent status to Home Assistant and answers permissions from it
-    "opencode-session-finder@1.1.1",      // Searches past sessions from the palette, and adds search_sessions and open_session
+    "opencode-session-finder@1.2.0",      // Searches past sessions from the palette, and adds search_sessions and open_session
     {
       "package": "/Users/pedropombeiro/Developer/github.com/pedropombeiro/opencode-plugins/packages/forgekeeper",
       "options": {
@@ -89,7 +89,7 @@
     },
     {
       // GPT-5.6 and later cache for 30 minutes. Other models keep the 5-minute default.
-      "package": "opencode-cache-coach@0.5.0",
+      "package": "opencode-cache-coach@0.5.1",
       "options": { "ttl": { "gitlab/duo-chat-gpt-6*": "30m" } }
     }
   ],

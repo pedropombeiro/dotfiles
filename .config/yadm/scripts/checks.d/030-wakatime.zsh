@@ -41,6 +41,10 @@ wakatime_project_from_heartbeat() {
     --heartbeat-rate-limit-seconds 0 --disable-offline \
     --timeout 5 --sync-ai-disabled --verbose --log-to-stdout 2>&1)
   rc=$?
+  # API backoff is unrelated to local project detection.
+  if (( rc == 112 )); then
+    return 112
+  fi
   if (( rc != 0 )); then
     print -ru2 -- "WakaTime CLI failed (exit ${rc}) for ${entity}: ${output}"
     return 1
@@ -80,13 +84,16 @@ wakatime_probe_file() {
   return 1
 }
 
-# Retry failed probes, preserving the final diagnostic for the caller.
+# Retry failed probes, but let callers skip API backoff without retrying.
 wakatime_project_from_heartbeat_retry() {
-  local entity=$1 folder=$2 result i
+  local entity=$1 folder=$2 result i rc
   for i in 1 2 3; do
     if result=$(wakatime_project_from_heartbeat "$entity" "$folder" 2>&1); then
       printf '%s\n' "$result"
       return 0
+    else
+      rc=$?
+      (( rc == 112 )) && return 112
     fi
     (( i < 3 )) && sleep 1
   done
@@ -95,8 +102,11 @@ wakatime_project_from_heartbeat_retry() {
 }
 
   print_op_stay "Checking wakatime project detection for dotfiles"
-  wakatime_project=$(wakatime_project_from_heartbeat_retry "$HOME/.zshrc" "$HOME")
-  if [[ "$wakatime_project" == "dotfiles" ]]; then
+  probe_rc=0
+  wakatime_project=$(wakatime_project_from_heartbeat_retry "$HOME/.zshrc" "$HOME") || probe_rc=$?
+  if (( probe_rc == 112 )); then
+    print_warn "(skipped: API backoff)"
+  elif [[ "$wakatime_project" == "dotfiles" ]]; then
     print_ok "$wakatime_project"
   else
     print_failure "Expected 'dotfiles', got '${wakatime_project:-<empty>}'"
@@ -112,8 +122,11 @@ wakatime_project_from_heartbeat_retry() {
   fi
   if [[ -n "$test_repo" ]]; then
     if test_entity=$(wakatime_probe_file "$test_repo"); then
-      wakatime_project=$(wakatime_project_from_heartbeat_retry "$test_entity" "$test_repo")
-      if [[ -n "$wakatime_project" && "$wakatime_project" != "dotfiles" ]]; then
+      probe_rc=0
+      wakatime_project=$(wakatime_project_from_heartbeat_retry "$test_entity" "$test_repo") || probe_rc=$?
+      if (( probe_rc == 112 )); then
+        print_warn "(skipped: API backoff)"
+      elif [[ -n "$wakatime_project" && "$wakatime_project" != "dotfiles" ]]; then
         print_ok "$wakatime_project"
       else
         print_failure "Expected a non-dotfiles project name for ${test_entity}, got '${wakatime_project:-<empty>}'"

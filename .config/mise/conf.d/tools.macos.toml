@@ -1,4 +1,6 @@
 [tools]
+# Plan approval and manual local code review. No installer-managed agent hooks.
+"github:backnotprop/plannotator" = { version = "0.29.0", asset_pattern = 'plannotator-darwin-{{ arch() }}.tar.xz', rename_exe = "plannotator" }
 # Local Markdown review for substantial agent output requiring approval.
 # aube cannot resolve its bundled file:packages/rfm dependency. Install/update only
 # this tool with MISE_NPM_PACKAGE_MANAGER=npm mise install npm:roughdraft

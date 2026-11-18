@@ -13,7 +13,7 @@ the task needs them.
 - Do not preflight MCP servers unless you actually plan to use them.
 - In unfamiliar repos, read local `AGENTS.md`, `CLAUDE.md`, and task-index docs before broad exploration.
 - Prefer repo-local skills over rediscovering documented workflows.
-- Use the `roughdraft` skill by default for long agent output that requires user approval, and whenever the user requests Roughdraft. Keep short approvals and informational answers in chat. Completing a local review does not authorize external posting.
+- Use Plannotator for implementation-plan approval and requested code/diff review. Use the `roughdraft` skill for long prose drafts requiring approval, such as MR descriptions and documentation. Explicit tool requests override these defaults. Review each artifact in one tool, not both. Keep short approvals and informational answers in chat. Plan approval authorizes only the agreed implementation, not committing, pushing, or external posting.
 - Never post or reply to issues, MRs/PRs, comments, discussions, chat, or any external channel without explicit user approval. Draft the content and ask for confirmation first.
 - When authorized to post a comment or reply, save it as a pending/draft comment first unless the user explicitly requests immediate publication or the platform does not support pending comments. Leave pending comments unpublished and report their status.
 - Before drafting technical prose or a multi-line commit message body, read `~/.agents/docs/writing-style.md` first.

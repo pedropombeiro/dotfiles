@@ -5,6 +5,12 @@
   "skills": ["~/.agents/skills.work"],
 {% endif %}
   "plugins": [
+{% if yadm.os == "Darwin" %}
+    {
+      "package": "@plannotator/opencode@0.29.0",
+      "options": { "workflow": "plan-agent", "planningAgents": ["plan"] }
+    },
+{% endif %}
 {% if yadm.class == "Work" %}
     "opencode-gitlab-plugin@3.2.2",       // GitLab API tools for MRs, issues, pipelines, and more
 {% endif %}

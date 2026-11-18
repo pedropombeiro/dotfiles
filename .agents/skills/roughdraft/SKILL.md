@@ -1,14 +1,18 @@
 ---
 name: roughdraft
-description: Review a local Markdown file with the user in Roughdraft. Use by default for long agent output requiring user approval, or whenever the user requests Roughdraft. Keep short approvals and informational answers in chat.
+description: Review local prose drafts in Roughdraft. Use for long MR descriptions, proposals, documentation, and agent instructions requiring approval, or on explicit request. Use Plannotator for implementation plans and code review.
 license: MIT
 ---
 
 # Roughdraft
 
-Use Roughdraft by default for long agent output that requires user approval,
-including substantial plans, technical drafts, and proposed agent instructions.
-Also use it whenever the user explicitly requests it. Keep short approvals,
+Use Roughdraft by default for long prose drafts that require user approval,
+including MR descriptions, proposals, documentation, and agent instructions.
+Use Plannotator for implementation-plan approval and requested code/diff review.
+Explicit tool requests override these defaults. Never send the same artifact
+through both tools for duplicate approval, or move an annotated draft between
+tools without resolving its review metadata first.
+Also use Roughdraft whenever the user explicitly requests it. Keep short approvals,
 routine progress updates, and informational answers in chat. Do not invent a
 hard word-count threshold or open every Markdown file automatically.
 This is a locally maintained workflow, not a vendored upstream skill.

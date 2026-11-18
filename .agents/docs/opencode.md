@@ -110,6 +110,22 @@ OpenCode 1 fallbacks (`plugin`, `tui.json`, `server()` plugin entrypoints, `--pu
 
 ## Plugins
 
+### Plan and prose review
+
+On macOS, the Plannotator plugin uses `plan-agent` mode for the built-in `plan`
+agent. Submit implementation plans with `submit_plan`. The plugin registers
+`/plannotator-review`, `/plannotator-annotate`, and `/plannotator-last` natively,
+so no installer-managed command files or hooks are needed. Use code review
+manually when requested, rather than adding another automatic approval step.
+The standalone CLI is mise-managed from GitHub releases.
+
+Use Roughdraft for substantial prose drafts requiring approval, including MR
+descriptions, documentation, and proposed agent instructions. Explicit requests
+override this split. Do not review the same artifact in both tools. Keep their
+annotation formats separate. Plan approval permits the agreed implementation,
+but does not authorize commits, pushes, or external posting. Closing a review
+without approval does not authorize implementation.
+
 OpenCode 2 splits plugins by where they run:
 
 - Server plugins go in `plugins` in `opencode.json`. They run in the background service,

@@ -418,4 +418,19 @@ step_gdk() {
   git -C ${GDK_ROOT}/gitlab config --add remote.origin.fetch '+refs/heads/pedropombeiro/*:refs/remotes/origin/pedropombeiro/*'
 }
 
+step_gdkbox_image() {
+  if ! command -v gdkbox >/dev/null 2>&1; then
+    _update_note 'skipped: gdkbox is not installed'
+    return 0
+  fi
+
+  if ! command -v docker >/dev/null 2>&1 || ! docker info >/dev/null 2>&1; then
+    _update_note 'skipped: Docker is unavailable or stopped'
+    return 0
+  fi
+
+  gdkbox update-image
+}
+
 _update_register "gdk config" step_gdk
+_update_register "gdkbox image" step_gdkbox_image

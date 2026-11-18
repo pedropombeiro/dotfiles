@@ -170,7 +170,7 @@ for identity in Darwin:Personal Darwin:Work Linux:Personal Linux:Work Linux:NAS:
   case $identity in
     Darwin:*)
       expected=$'relink dotfiles\nbrew\napprove downloads\ntmux signature\nmise bootstrap\nmac app store\nmise tools\n'"$common"
-      [[ $identity != Darwin:Work ]] || expected+=$'\ngitlab dotfiles\nwork skill repos\ngdk config\nchecks'
+      [[ $identity != Darwin:Work ]] || expected+=$'\ngitlab dotfiles\nwork skill repos\ngdk config\ngdkbox image\nchecks'
       expected+=$'\nbrew dump'
       ;;
     Linux:Personal) expected=$'apt\nbrew\n'"$common" ;;
@@ -198,3 +198,44 @@ for identity in Darwin:Personal Darwin:Work Linux:Personal Linux:Work Linux:NAS:
   [[ $actual_managers == "$expected_managers" ]] || fail "$identity package tracking"
   print -r -- "PASS: $identity update selection and step order"
 done
+
+(
+  _update_register() { :; }
+  source "$scripts/updates.d/200-work.zsh##os.Darwin,class.Work"
+  _update_note() { notes+=("$*"); }
+  command() {
+    [[ $1 == -v ]] || return 99
+    case $2 in
+      gdkbox) [[ $has_gdkbox == yes ]] ;;
+      docker) [[ $has_docker == yes ]] ;;
+      *) return 99 ;;
+    esac
+  }
+  docker() { [[ $* == info && $docker_running == yes ]]; }
+  gdkbox() { calls+=("$*"); return $pull_status; }
+
+  has_gdkbox=no has_docker=yes docker_running=yes pull_status=0
+  notes=() calls=()
+  step_gdkbox_image
+  [[ ${#calls} == 0 && $notes == *'gdkbox is not installed'* ]] || fail 'missing gdkbox skip'
+
+  has_gdkbox=yes has_docker=no
+  notes=()
+  step_gdkbox_image
+  [[ ${#calls} == 0 && $notes == *'Docker is unavailable or stopped'* ]] || fail 'missing Docker skip'
+
+  has_docker=yes docker_running=no
+  notes=()
+  step_gdkbox_image
+  [[ ${#calls} == 0 && $notes == *'Docker is unavailable or stopped'* ]] || fail 'stopped Docker skip'
+
+  docker_running=yes
+  step_gdkbox_image
+  [[ ${(j:,:)calls} == update-image ]] || fail 'image pull command'
+
+  pull_status=7
+  rc=0
+  step_gdkbox_image || rc=$?
+  [[ $rc == 7 ]] || fail 'image pull failure status lost'
+) || fail 'gdkbox image fixtures'
+print 'PASS: gdkbox image prerequisites, pull, and failure propagation'

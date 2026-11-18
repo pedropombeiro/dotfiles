@@ -240,6 +240,8 @@ plugin. Tab still cycles agents in reverse, and the agent picker remains availab
 through `{env:VARIABLE}` substitution. Shared defaults live in
 `~/.config/mise/conf.d/opencode.toml`. Machine-role overrides belong in the existing
 `env.<role>.toml` fragments. Plan defaults to Opus 5.5, and Build defaults to Sol 6.1.
+The Work server config selects Sol 6.2 explicitly for Build while it depends on
+a local provider build, so the change reloads without refreshing the service environment.
 The NAS overrides Plan to Sol 6.1 as well. Neither agent pins a reasoning variant.
 
 The top-level `model` uses `OPENCODE_PLAN_MODEL` for other agents, and

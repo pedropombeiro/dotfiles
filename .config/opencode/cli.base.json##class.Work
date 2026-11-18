@@ -26,7 +26,7 @@
     {
       "package": "opencode-cache-coach@0.5.0",
       "options": {
-        "compactionModel": "gitlab/duo-chat-gpt-6-1-sol",
+        "compactionModel": "gitlab/duo-chat-gpt-6-2-sol",
         "ttl": { "gitlab/duo-chat-gpt-6*": "30m" } // GPT-5.6 and later cache for 30 minutes
       }
     }

@@ -86,7 +86,7 @@
       "options": { "endpoint": "http://127.0.0.1:4318", "protocol": "http/protobuf" }
 {% endif %}
     },
-    "opencode-cache-coach@0.3.0"
+    "opencode-cache-coach@0.4.0"
   ],
   // Mise supplies shared model defaults and machine-role overrides.
   "model": "{env:OPENCODE_PLAN_MODEL}",

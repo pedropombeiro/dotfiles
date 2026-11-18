@@ -86,7 +86,11 @@
       "options": { "endpoint": "http://127.0.0.1:4318", "protocol": "http/protobuf" }
 {% endif %}
     },
-    "opencode-cache-coach@0.4.0"
+    {
+      // GPT-5.6 and later cache for 30 minutes. Other models keep the 5-minute default.
+      "package": "opencode-cache-coach@0.5.0",
+      "options": { "ttl": { "gitlab/duo-chat-gpt-6*": "30m" } }
+    }
   ],
   // Mise supplies shared model defaults and machine-role overrides.
   "model": "{env:OPENCODE_PLAN_MODEL}",

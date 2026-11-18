@@ -10,7 +10,7 @@ Source: `~/code/esquery` (<https://gitlab.com/gitlab-com/gl-infra/esquery>). Ins
 
 ## Version
 
-This skill describes esquery **1.11.0 or later**. Older versions have no `--async` / `--async-timeout` flags and no MCP `async` argument (see Long-running queries). Run `esquery version` before the first query:
+This skill describes esquery **1.11.0 or later**. Older versions have no `--async` / `--async-timeout` flags and no MCP `async` argument (see Long-running queries). The MCP tools `kibana_vega_link`, `kibana_vega_list` and `kibana_vega_delete` need **1.14.0 or later**; on an older version, update before calling them. Run `esquery version` before the first query:
 
 - Below 1.11.0, or `unknown command "version"`: update with one of the commands above, run `esquery version` again, and tell the user you updated it. If the update fails (no Go toolchain, no network), say so and don't use `--async`.
 - `dev`: a build without version information. `esquery count --help | grep -- --async` shows whether it supports async.
@@ -205,13 +205,15 @@ One line per field and type: name, type, aggregatable. `text` fields are for `ma
 
 ## MCP
 
-When the `esquery` MCP server is registered in pi (`pi mcp add esquery --env KIBANA_URL=https://log.gprd.gitlab.net -- ~/go/bin/esquery mcp`), the same operations are available from codemode as `mcp__esquery__count`, `search`, `esql`, `export`, `list_indices`, `list_fields` and `kibana_link`. The RED data rule applies to the MCP tools too.
+When the `esquery` MCP server is registered in pi (`pi mcp add esquery --env KIBANA_URL=https://log.gprd.gitlab.net -- ~/go/bin/esquery mcp`), the same operations are available from codemode as `mcp__esquery__count`, `search`, `esql`, `export`, `list_indices`, `list_fields`, `kibana_link`, `kibana_vega_link`, `kibana_vega_list` and `kibana_vega_delete`. The RED data rule applies to the MCP tools too.
 
 - Every tool returns structured output: read `result.structuredContent`, for example `total` and `aggregations` from `search`, or `rows[0].n` from `esql` (rows are objects keyed by column name).
 - `esql` takes `params: {name: value}` for `?name` and `??name` placeholders.
 - `count` and `search` take `async: true` for long-running queries (see Long-running queries), and `async_timeout_s` (default 600, `0` for no limit). Progress goes out as MCP progress notifications, so pi's 60s per-request timeout does not apply; a timed-out call returns an error.
 - `export` writes to a file and returns only the path and count. Read the file with `jq`.
 - `kibana_link` returns a Discover `url` for the user. Pass the same `index` and either the conditions as `filters` (`{field, value}`, `{field, values}`, `{field, range}`, `{field, exists}`, one Discover filter pill each), the same `query` DSL for anything else, or `esql` with parameter values written into the query. Set the time range with `from`/`to` (the Discover time picker), not with a `@timestamp` filter.
+- `kibana_vega_link` saves a Vega or Vega-Lite `spec` (a JSON or HJSON string) as a visualization in Kibana and returns its `url`, for a chart or a custom table. Kibana runs the query in the spec, so check it with `search` first. To follow the time picker set by `from`/`to` (default the last hour), put `{"range": {"@timestamp": {"%timefilter%": true}}}` into `body.query`, or leave `body.query` out and set `"%context%": true` and `"%timefield%": "@timestamp"` in `data.url`; Kibana rejects `%context%` together with `body.query`. A query with neither runs over all retained logs each time the chart opens, whatever the time picker says, so never save a spec with an index and no time bound. Give it a `title` that says what the chart shows; it is required, and the user picks slots by it. To change a chart you made, pass its `slot` again, with the title.
+- A user has ten Vega slots. When `kibana_vega_link` fails because all are used, show the user the list from the error (or from `kibana_vega_list`) and ask which slot to overwrite or delete. Never pick one yourself, and call `kibana_vega_delete` only for slots the user named. Overwriting a slot changes its chart on dashboards too, so tell a user who wants a chart on a dashboard to save a copy under a new name in Kibana first.
 
 ## Workflow
 

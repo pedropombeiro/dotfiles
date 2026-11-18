@@ -6,10 +6,11 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/ClickHouse/agent-skills.git",
       "skillPath": "skills/clickhouse-best-practices/SKILL.md",
-      "skillFolderHash": "2a8db28b640349bec00c258b77840928ced7f187",
+      "skillFolderHash": "0dd0af522c5ce2fd56af99b8b6ecbf1d56d1e099",
       "pluginName": "clickhouse-best-practices",
       "installedAt": "2026-09-07T08:03:05.918Z",
-      "updatedAt": "2026-11-13T08:40:41.651Z"
+      "updatedAt": "2026-11-17T22:38:47.401Z",
+      "commit": "19b32426959fe67b692aa1ed944e2259c0a82a9e"
     },
     "grill-me": {
       "source": "mattpocock/skills",
@@ -35,10 +36,10 @@
       "sourceType": "gitlab",
       "sourceUrl": "https://gitlab.com/gitlab-com/gl-infra/esquery.git",
       "skillPath": "skill/SKILL.md",
-      "skillFolderHash": "d311d42d4c785a96a9534204bf77910d1f62b941e335a8f4de97972091e7412a",
+      "skillFolderHash": "7caa26c9fc0dbcfe9188362749148fa62d2963eab5fa6ba380b6ad2d59159687",
       "installedAt": "2026-10-26T16:37:23.866Z",
-      "updatedAt": "2026-11-16T15:16:49.570Z",
-      "commit": "20c13ad560644f8ac9fd72e6264947589789fdcb"
+      "updatedAt": "2026-11-17T22:38:47.458Z",
+      "commit": "77653ce1320295e5f861165f31d645978b13faeb"
     }
   },
   "dismissed": {

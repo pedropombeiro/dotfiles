@@ -34,6 +34,8 @@ teleport-community = "17"
 # ── GitLab tooling ────────────────────────────────────────────────────
 # GitLab CLI
 glab = "latest"
+# Isolated GDK boxes, managed independently of the active Ruby's gems.
+"gem:gdkbox" = "latest"
 # Personal merge request triage dashboard
 "npm:gitlab-mr-dashboard" = { version = "0.17.1", allow_low_downloads = true }
 # Local Kubernetes environments for GitLab development

@@ -419,8 +419,8 @@ step_gdk() {
 }
 
 step_gdkbox_image() {
-  if ! command -v gdkbox >/dev/null 2>&1; then
-    _update_note 'skipped: gdkbox is not installed'
+  if ! command -v gdkbox >/dev/null 2>&1 || ! gdkbox version >/dev/null 2>&1; then
+    _update_note 'skipped: gdkbox is not installed or unavailable for the active runtime'
     return 0
   fi
 

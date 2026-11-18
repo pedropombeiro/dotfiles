@@ -212,14 +212,23 @@ done
     esac
   }
   docker() { [[ $* == info && $docker_running == yes ]]; }
-  gdkbox() { calls+=("$*"); return $pull_status; }
+  gdkbox() {
+    [[ $* != version ]] || return $version_status
+    calls+=("$*")
+    return $pull_status
+  }
 
-  has_gdkbox=no has_docker=yes docker_running=yes pull_status=0
+  has_gdkbox=no has_docker=yes docker_running=yes pull_status=0 version_status=0
   notes=() calls=()
   step_gdkbox_image
   [[ ${#calls} == 0 && $notes == *'gdkbox is not installed'* ]] || fail 'missing gdkbox skip'
 
-  has_gdkbox=yes has_docker=no
+  has_gdkbox=yes version_status=1
+  notes=()
+  step_gdkbox_image
+  [[ ${#calls} == 0 && $notes == *'unavailable for the active runtime'* ]] || fail 'broken gdkbox shim skip'
+
+  version_status=0 has_docker=no
   notes=()
   step_gdkbox_image
   [[ ${#calls} == 0 && $notes == *'Docker is unavailable or stopped'* ]] || fail 'missing Docker skip'

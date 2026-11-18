@@ -112,8 +112,15 @@ OpenCode 1 fallbacks (`plugin`, `tui.json`, `server()` plugin entrypoints, `--pu
 
 ### Plan and prose review
 
-On macOS, the Plannotator plugin uses `plan-agent` mode for the built-in `plan`
-agent. Submit implementation plans with `submit_plan`. The plugin registers
+On macOS, the Plannotator plugin uses `user-managed` mode to retain `submit_plan`
+without injecting its planning prompts or changing agent permissions. From the
+built-in `plan` agent, submit completed implementation plans with `submit_plan`.
+Always ask clarifications, preferences, and choices through the native `question`
+tool first, preserving Home Assistant notifications. Do not substitute Plannotator
+question blocks, Inbox questions, or review gates for native questions. The
+upstream planning prompt includes question-block guidance, so keep prompt
+injection disabled even though it also mentions the native question tool.
+The plugin registers
 `/plannotator-review`, `/plannotator-annotate`, and `/plannotator-last` natively,
 so no installer-managed command files or hooks are needed. Use code review
 manually when requested, rather than adding another automatic approval step.

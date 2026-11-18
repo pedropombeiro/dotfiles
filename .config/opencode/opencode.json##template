@@ -8,7 +8,8 @@
 {% if yadm.os == "Darwin" %}
     {
       "package": "@plannotator/opencode@0.29.0",
-      "options": { "workflow": "plan-agent", "planningAgents": ["plan"] }
+      // Keep submit_plan, but do not inject Plannotator's question-block guidance.
+      "options": { "workflow": "user-managed" }
     },
 {% endif %}
 {% if yadm.class == "Work" %}
@@ -209,17 +210,21 @@
             { "tier": { "type": "context", "size": 100000 }, "input": 0.50, "output": 2.50, "cache": { "read": 0.05, "write": 0.625 } }
           ]
         },
-        // Enable GPT 6.2 after the GitLab provider adds and verifies its model mappings.
+        // Local provider adds GPT 6.2 mappings and native Gemini direct access.
         // Standard API rates: https://developers.openai.com/api/docs/pricing
         "duo-chat-gpt-6-2-astra": {
-          "disabled": true,
+          "package": "aisdk:file:///Users/pedropombeiro/Developer/gitlab.com/vglafirov/gitlab-ai-provider/dist/index.mjs",
+          "name": "Agentic Chat (GPT-6.2 Astra)",
+          "limit": { "context": 1050000, "output": 128000 },
           "cost": [
             { "input": 8, "output": 40, "cache": { "read": 0.40, "write": 10 } },
             { "tier": { "type": "context", "size": 272000 }, "input": 16, "output": 60, "cache": { "read": 0.80, "write": 20 } }
           ]
         },
         "duo-chat-gpt-6-2-sol": {
-          "disabled": true,
+          "package": "aisdk:file:///Users/pedropombeiro/Developer/gitlab.com/vglafirov/gitlab-ai-provider/dist/index.mjs",
+          "name": "Agentic Chat (GPT-6.2 Sol)",
+          "limit": { "context": 1050000, "output": 128000 },
           "cost": [
             { "input": 2, "output": 10, "cache": { "read": 0.10, "write": 2.50 } },
             { "tier": { "type": "context", "size": 272000 }, "input": 4, "output": 15, "cache": { "read": 0.20, "write": 5 } }
@@ -277,10 +282,24 @@
         // Carbon uses the standard price that starts Dec 1, 2026. The introductory
         // price before then is $2 / $10, with cache reads at $0.10.
         "duo-chat-gemini-4-carbon": {
+          "package": "aisdk:file:///Users/pedropombeiro/Developer/gitlab.com/vglafirov/gitlab-ai-provider/dist/index.mjs",
+          "name": "Agentic Chat (Gemini 4 Carbon)",
+          "limit": { "context": 1000000, "output": 65536 },
+          "capabilities": { "tools": true, "temperature": false, "input": ["text", "image", "pdf"], "output": ["text"], "reasoning": { "supported": true } },
           "cost": [{ "input": 4, "output": 20, "cache": { "read": 0.20 } }]
         },
         "duo-chat-gemini-4-hydrogen": {
+          "package": "aisdk:file:///Users/pedropombeiro/Developer/gitlab.com/vglafirov/gitlab-ai-provider/dist/index.mjs",
+          "name": "Agentic Chat (Gemini 4 Hydrogen)",
+          "limit": { "context": 1000000, "output": 65536 },
+          "capabilities": { "tools": true, "temperature": false, "input": ["text", "image", "pdf"], "output": ["text"], "reasoning": { "supported": true } },
           "cost": [{ "input": 1.50, "output": 7.50, "cache": { "read": 0.075 } }]
+        },
+        "duo-chat-gemini-4-argon": {
+          "package": "aisdk:file:///Users/pedropombeiro/Developer/gitlab.com/vglafirov/gitlab-ai-provider/dist/index.mjs",
+          "name": "Agentic Chat (Gemini 4 Argon)",
+          "limit": { "context": 1000000, "output": 65536 },
+          "capabilities": { "tools": true, "temperature": false, "input": ["text", "image", "pdf"], "output": ["text"], "reasoning": { "supported": true } }
         },
         "duo-chat-kimi-k3-1-pro": {
           "cost": [{ "input": 2, "output": 10, "cache": { "read": 0.20, "write": 2 } }]

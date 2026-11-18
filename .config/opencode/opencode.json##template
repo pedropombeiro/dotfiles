@@ -89,7 +89,7 @@
     },
     {
       // GPT-5.6 and later cache for 30 minutes. Other models keep the 5-minute default.
-      "package": "opencode-cache-coach@0.5.1",
+      "package": "opencode-cache-coach@0.6.0",
       "options": { "ttl": { "gitlab/duo-chat-gpt-6*": "30m" } }
     }
   ],

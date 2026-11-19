@@ -56,8 +56,15 @@ unset gopro_graphics
 class="$(yadm config local.class)"
 
 "${YADM_SCRIPTS}/link-private-work-files.zsh"
-if [[ "$(yadm config local.class)" == Work ]]; then
+if [[ ${class} == Work ]]; then
   python3 "${YADM_SCRIPTS}/link-gitlab-agent-skills.py"
+  source "${YADM_SCRIPTS}/lib/link-duo-defaults.sh"
+  for duo_dir in "${GDK_ROOT:-${HOME}/gitlab-development-kit}" "${CAPRONI_ENV_ROOT:-${HOME}}"/cap-<->(N/) "${CAPRONI_ENV_ROOT:-${HOME}}"/gitlab-caproni*(N/); do
+    [[ -d ${duo_dir} ]] || continue
+    [[ -f ${duo_dir}/gdk.yml || -f ${duo_dir}/caproni.yaml ]] || continue
+    link_duo_defaults "${duo_dir}" || print -ru2 -- "Could not install Duo defaults in ${duo_dir}."
+  done
+  unset duo_dir
 fi
 
 if [[ ${class} == 'Personal' || ${class} == 'Work' ]]; then

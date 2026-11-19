@@ -6,4 +6,8 @@ set -eu
 
 # mise defines usage_* variables from the #USAGE directives.
 # shellcheck disable=SC2154
-exec "$HOME/.agents/skills.work/caproni/scripts/create-env.sh" "$usage_work_item_id" "$usage_branch_description"
+"$HOME/.agents/skills.work/caproni/scripts/create-env.sh" "$usage_work_item_id" "$usage_branch_description"
+# shellcheck source=/dev/null
+. "$HOME/.config/yadm/scripts/lib/link-duo-defaults.sh"
+caproni_root=${CAPRONI_ENV_ROOT:-$HOME}
+link_duo_defaults "${caproni_root%/}/cap-$usage_work_item_id"

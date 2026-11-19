@@ -93,18 +93,15 @@
       "options": { "ttl": { "gitlab/duo-chat-gpt-6*": "30m" } }
     }
   ],
-  // Mise supplies shared model defaults and machine-role overrides.
   "model": "{env:OPENCODE_PLAN_MODEL}",
   "default_agent": "plan",
   "agents": {
-    // The built-in title agent handles maintenance tasks such as session titles.
-    "title": { "model": "gitlab/duo-chat-gpt-6-luna" },
     "plan": { "model": "{env:OPENCODE_PLAN_MODEL}" },
+    "build": { "model": "{env:OPENCODE_BUILD_MODEL}" },
 {% if yadm.class == "Work" %}
-    // Local provider build supplies GPT 6.2. Explicit selection reloads live.
-    "build": { "model": "gitlab/duo-chat-gpt-6-2-sol" }
+    "title": { "model": "google-vertex/gemini-4-hydrogen" }
 {% else %}
-    "build": { "model": "{env:OPENCODE_BUILD_MODEL}" }
+    "title": { "model": "gitlab/duo-chat-gpt-6-luna" }
 {% endif %}
   },
   "mcp": {

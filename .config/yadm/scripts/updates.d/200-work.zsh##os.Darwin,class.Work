@@ -397,6 +397,8 @@ step_gdk() {
   ensure_spring_binstubs_skip_worktree "${GDK_ROOT}"
 
   # Populate opencode configuration
+  source "${YADM_SCRIPTS}/lib/link-duo-defaults.sh"
+  link_duo_defaults "${GDK_ROOT}"
   write_opencode_config "${GDK_ROOT}"
 
   # Populate wakatime project files for GDK root and all subprojects

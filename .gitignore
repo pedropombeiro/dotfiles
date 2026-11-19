@@ -208,4 +208,5 @@ Thumbs.db
 .shellrc/zshrc.d/functions/wait_gdk_mr_merged
 .ssh/config
 .vale.ini
+Developer/gitlab.com/opencode.jsonc
 # END yadm-alt

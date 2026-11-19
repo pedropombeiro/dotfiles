@@ -17,11 +17,8 @@ if [[ ! -x $indicator ]]; then
 fi
 source "$repo/.config/yadm/scripts/tests/lib/test-helpers.zsh"
 test_sandbox tmux cp mkdir python3
-socket=$TEST_SANDBOX/tmux.sock
-trap 'tmux -S "$socket" kill-server 2>/dev/null || true; test_cleanup' EXIT
-unset TMUX
-tmux -S "$socket" -f /dev/null new-session -d -s theme-test
-export TMUX="$socket,0,0"
+socket=
+trap '[[ -n $socket ]] && tmux -S "$socket" kill-server 2>/dev/null || true; test_cleanup' EXIT
 
 load_theme() {
   local theme=$1
@@ -67,9 +64,12 @@ snapshot() {
 }
 
 for theme in gruvbox tokyonight-night catppuccin-mocha; do
-  # Establish a fresh baseline, then switch away and back on the same server.
-  tmux kill-server
+  # Use a fresh socket per server: tmux 3.6a's systemd pane child can still hold
+  # the previous server's listening socket briefly after kill-server.
+  socket=$TEST_SANDBOX/tmux-$theme.sock
+  unset TMUX
   tmux -S "$socket" -f /dev/null new-session -d -s theme-test
+  export TMUX="$socket,0,0"
   load_theme "$theme"
   snapshot > "$TEST_SANDBOX/before"
   for other in gruvbox tokyonight-night catppuccin-mocha; do
@@ -81,5 +81,7 @@ for theme in gruvbox tokyonight-night catppuccin-mocha; do
   done
   tmux source-file "$repo/.config/tmux/tmux.platform.conf##distro.qts"
   [[ $(tmux show-options -gqv status-left) == *'bg=colour124'*'#S'* ]] || test_fail 'NAS session identity lost'
+  tmux kill-server
+  socket=
 done
 print 'PASS: fresh tmux themes, both switch directions, mode expansion, layout, and waiting indicators'

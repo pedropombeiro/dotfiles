@@ -44,8 +44,24 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-# Use a small model for this text-only task.
-model="${OPENCODE_COMMIT_MODEL:-gitlab/duo-chat-gpt-5-4-mini}"
+# The stateless generation API does not load project config.
+default_model=gitlab/duo-chat-gpt-5-4-mini
+duo_config="$HOME/Developer/gitlab.com/opencode.jsonc##class.Work"
+if [ "$HOME/Developer/gitlab.com/opencode.jsonc" -ef "$duo_config" ]; then
+  default_model=google-vertex/gemini-4-hydrogen
+  model_dir=$(pwd -P)
+  while [ "$model_dir" != / ]; do
+    if [ "$model_dir" -ef "$HOME/Developer/gitlab.com" ] ||
+      [ "$model_dir/opencode.jsonc" -ef "$duo_config" ] ||
+      [ -f "$model_dir/gdk.yml" ] || [ -f "$model_dir/caproni.yaml" ]; then
+      default_model=gitlab/duo-chat-gpt-5-4-mini
+      break
+    fi
+    model_dir=${model_dir%/*}
+    model_dir=${model_dir:-/}
+  done
+fi
+model="${OPENCODE_COMMIT_MODEL:-$default_model}"
 
 # Fall back to local model when offline.
 _offline_model="${OPENCODE_OFFLINE_MODEL:-ollama/gemma4:e2b}"

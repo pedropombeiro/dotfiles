@@ -24,15 +24,8 @@ write_with_timeout() {
   return 0
 }
 
-attention_color() {
-  case $1 in
-    waiting) printf '#ff9f0a' ;;
-    error) printf '#ff453a' ;;
-  esac
-}
-
 write_subtitle() {
-  local tty=$1 title=$2 color=${3-} indicator=${4-}
+  local tty=$1 title=$2
   # Only write to terminal devices, never to an arbitrary path from a caller.
   [[ ($tty == /dev/tty* || $tty == /dev/pts/*) && -c $tty && -w $tty ]] || return 0
   # OSC fields are separated by semicolons. Strip terminal controls and replace
@@ -40,7 +33,7 @@ write_subtitle() {
   # Use [:cntrl:]: BusyBox tr on the NAS ignores most of an octal range such as
   # '\000-\037', which let ESC through.
   title=$(printf '%s' "$title" | LC_ALL=C tr -d '[:cntrl:]' | tr ';' ',')
-  write_with_timeout "$tty" $'\033]21337;status='"$title;status-color=$color;indicator=$indicator"$'\007'
+  write_with_timeout "$tty" $'\033]21337;status='"$title"$'\007'
 }
 
 if [[ ${1-} == --clear ]]; then
@@ -50,17 +43,8 @@ fi
 
 # Query titles separately: titles may contain tabs/newlines and are data, never
 # interpolated into a shell command. Control-mode and non-iTerm2 clients opt out.
-while IFS=$'\t' read -r tty pane session; do
-  [[ -n $tty && -n $pane && -n $session ]] || continue
+while IFS=$'\t' read -r tty pane; do
+  [[ -n $tty && -n $pane ]] || continue
   title=$(tmux display-message -p -t "$pane" '#{?@opencode-full-title,#{@opencode-full-title},#{pane_title}}' 2>/dev/null) || continue
-  attention=$(tmux display-message -p -t "$pane" '#{@opencode-attention}' 2>/dev/null) || continue
-  color=$(attention_color "$attention")
-  indicator=
-  while IFS= read -r state; do
-    case $state in
-      waiting) indicator=$(attention_color waiting); break ;;
-      error) indicator=$(attention_color error) ;;
-    esac
-  done < <(tmux list-panes -s -t "$session" -F '#{@opencode-attention}' 2>/dev/null)
-  write_subtitle "$tty" "$title" "$color" "$indicator"
-done < <(tmux list-clients -F $'#{?#{&&:#{m:iTerm2*,#{client_termtype}},#{==:#{client_control_mode},0}},#{client_tty}\t#{pane_id}\t#{session_id},}' 2>/dev/null)
+  write_subtitle "$tty" "$title"
+done < <(tmux list-clients -F $'#{?#{&&:#{m:iTerm2*,#{client_termtype}},#{==:#{client_control_mode},0}},#{client_tty}\t#{pane_id},}' 2>/dev/null)

@@ -35,19 +35,10 @@ tty=$REPLY
 test_stub tmux <<SCRIPT
 #!/bin/sh
 case "\$1" in
-  list-clients) printf '%s\t%s\t%s\n' '$tty' '%1' '\$1' ;;
-  display-message)
-    case "\$5" in
-      '#{@opencode-attention}') cat '$TEST_SANDBOX/attention' 2>/dev/null ;;
-      *) printf 'build; \033[31mdeploy\001\177\n' ;;
-    esac ;;
-  list-panes)
-    [ "\$2" = '-s' ] && [ "\$3" = '-t' ] && [ "\$4" = '\$1' ] || exit 1
-    cat '$TEST_SANDBOX/session-attention' 2>/dev/null ;;
+  list-clients) printf '%s\t%s\n' '$tty' '%1' ;;
+  display-message) printf 'build; \033[31mdeploy\001\177\n' ;;
 esac
 SCRIPT
-print -rn '' > "$TEST_SANDBOX/attention"
-print -rn '' > "$TEST_SANDBOX/session-attention"
 start=$EPOCHREALTIME
 ITERM2_SUBTITLE_WRITE_TIMEOUT=3 test_expect_status 'readable terminal' 0 "$subtitle"
 elapsed=$(( EPOCHREALTIME - start ))
@@ -62,45 +53,11 @@ repeat 20; do
   [[ $received == *$'\007'* ]] && break
   sleep 0.1
 done
-expected=$'\033]21337;status=build, [31mdeploy;status-color=;indicator=\007'
+expected=$'\033]21337;status=build, [31mdeploy\007'
 received=${received//$'\r'/}
 # Compare quoted forms so a failure shows the control characters.
 test_assert_equal 'subtitle sequence' "${(q+)expected}" "${(q+)received}"
 print 'PASS: subtitles reach readable terminals'
-
-check_colors() {
-  local label=$1 pane_state=$2 session_states=$3 color=$4 indicator=$5
-  print -rn -- "$pane_state" > "$TEST_SANDBOX/attention"
-  print -r -- "$session_states" > "$TEST_SANDBOX/session-attention"
-  test_expect_status "$label" 0 "$subtitle"
-  local received= chunk expected
-  repeat 20; do
-    zpty -r -t readable chunk 2>/dev/null && received+=$chunk
-    [[ $received == *$'\007'* ]] && break
-    sleep 0.1
-  done
-  received=${received//$'\r'/}
-  expected=$'\033]21337;status=build, [31mdeploy;status-color='"$color;indicator=$indicator"$'\007'
-  test_assert_equal "$label" "${(q+)expected}" "${(q+)received}"
-}
-check_colors 'waiting pane' waiting waiting '#ff9f0a' '#ff9f0a'
-check_colors 'failed pane' error error '#ff453a' '#ff453a'
-check_colors 'background waiting outranks active error' error $'error\nwaiting' '#ff453a' '#ff9f0a'
-check_colors 'background failure, neutral active pane' '' $'\nerror' '' '#ff453a'
-check_colors 'waiting remains higher priority in either order' '' $'waiting\nerror' '' '#ff9f0a'
-check_colors 'unknown pane state cannot inject colors' 'error;indicator=#ffffff' '' '' ''
-check_colors 'clear resolved attention' '' '' '' ''
-test_expect_status 'detach clear' 0 "$subtitle" --clear "$tty"
-received=
-repeat 20; do
-  zpty -r -t readable chunk 2>/dev/null && received+=$chunk
-  [[ $received == *$'\007'* ]] && break
-  sleep 0.1
-done
-received=${received//$'\r'/}
-expected=$'\033]21337;status=;status-color=;indicator=\007'
-test_assert_equal 'detach clears text and colors' "${(q+)expected}" "${(q+)received}"
-print 'PASS: active-pane colors, session-wide dot priority, sanitization, and detach clearing'
 
 # Fill an unread terminal's output buffer. The filler blocks once it is full.
 open_tty unread

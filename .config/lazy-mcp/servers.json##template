@@ -98,7 +98,8 @@
       }
     },
 {% endif %}
-{% if yadm.class != "NAS" %}
+{% if yadm.class == "NAS" %}
+{% else %}
     {
       "name": "websearch",
       "description": "Web search via Exa AI",

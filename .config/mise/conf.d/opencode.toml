@@ -1,6 +1,6 @@
 [env]
-OPENCODE_PLAN_MODEL = "gitlab/duo-chat-opus-5-5"
-OPENCODE_BUILD_MODEL = "gitlab/duo-chat-gpt-6-1-sol"
+OPENCODE_PLAN_MODEL = "gitlab/duo-chat-gpt-6-2-astra"
+OPENCODE_BUILD_MODEL = "gitlab/duo-chat-gpt-6-2-sol"
 
 # Per-machine credential stays outside yadm. Unprovisioned machines can still
 # export on the LAN. See ~/.agents/docs/opencode.md#configure-telemetry-authentication.

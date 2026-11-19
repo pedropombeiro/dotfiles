@@ -78,7 +78,6 @@ Thumbs.db
 .Brewfile
 .config/1Password/ssh/agent.toml
 .config/git/config-specific
-.config/glow/glow.yml
 .config/iterm2/config/com.googlecode.iterm2.plist
 .config/iterm2/icons/gitlab.ico
 .config/lazy-mcp/servers.json
@@ -93,14 +92,12 @@ Thumbs.db
 .config/opencode/env-protection.json
 .config/opencode/opencode-homeassistant.json
 .config/opencode/opencode-notifier.json
-.config/yadm/scripts/node_modules/
 .config/opencode/opencode.json
 .config/opencode/plugins/remind-issue-state.js
 .config/opencode/plugins/require-gpsup.js
 .config/pgcli/config
 .config/sesh/sesh.toml
 .config/tmux/tmux.platform.conf
-.config/trippy/trippy.toml
 .config/yadm/bootstrap.d/001-enable-touchid-on-terminal.sh
 .config/yadm/bootstrap.d/003-install-launch-daemons.sh
 .config/yadm/bootstrap.d/005-software-install.sh

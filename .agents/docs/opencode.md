@@ -101,9 +101,10 @@ that contains a structured secret, so it cannot persist a marker over the origin
 
 Every machine runs OpenCode 2. `opencode.json##template` uses the native V2 format:
 an ordered `permissions` array (last match wins), `providers`, `mcp.servers`, and
-`agents.title.model`. `enabled_providers` stays in V1 syntax until provider policies
-leave `experimental`. When migrating another config, compare `opencode debug config`
-output for the old and new files, loaded as project configs from scratch directories.
+`agents.title.model`. The Work provider allowlist uses top-level `policies` with a
+`provider.use` deny rule followed by explicit allows. When migrating another config,
+compare `opencode debug config` output for the old and new files, loaded as project
+configs from scratch directories.
 The NAS (`distro.qts`) gets OpenCode 2 from the `opencode-legacy-glibc` build and uses
 the non-Work server configuration and `##default` terminal config. Do not add
 OpenCode 1 fallbacks (`plugin`, `tui.json`, `server()` plugin entrypoints, `--pure`).
@@ -236,18 +237,18 @@ plugin. Tab still cycles agents in reverse, and the agent picker remains availab
 
 ## Models
 
-`opencode.json##template` references `OPENCODE_PLAN_MODEL` and `OPENCODE_BUILD_MODEL`
-through `{env:VARIABLE}` substitution. Shared defaults live in
-`~/.config/mise/conf.d/opencode.toml`. Machine-role overrides belong in the existing
-`env.<role>.toml` fragments. Plan defaults to Opus 5.5, and Build defaults to Sol 6.1.
-The Work server config selects Sol 6.2 explicitly for Build while it depends on
-a local provider build, so the change reloads without refreshing the service environment.
-The NAS overrides Plan to Sol 6.1 as well. Neither agent pins a reasoning variant.
+The top-level default and Plan use `OPENCODE_PLAN_MODEL` from mise, and Build
+uses `OPENCODE_BUILD_MODEL`. On Work, `~/.config/mise/conf.d/env.work.toml`
+sets Gemini 4 Argon and Neon, respectively. The Work template uses Hydrogen
+for titles. YADM links the Work
+alternate at `~/Developer/gitlab.com/opencode.jsonc` to set Duo defaults for
+all checkouts below that directory. Relinking also installs the same override
+at the GDK and Caproni roots. New Caproni environments get it at creation.
+These are defaults, not provider restrictions. Existing sessions can retain
+their selected model, and explicit model selections still take precedence.
 
-The top-level `model` uses `OPENCODE_PLAN_MODEL` for other agents, and
-`agents.title.model` keeps maintenance tasks on Luna. Per-agent models take precedence
-over the top-level `model`. `oc` is an alias for `opencode` and uses the shared service.
-For an explicit command-line override, use `opencode run --model`.
+On other machines, the shared mise defaults and any role overrides still apply,
+and titles use Duo Luna. To select a model for a single run, use `opencode run --model`.
 `git-ai-commit-msg` selects its model separately through the generation API using
 `OPENCODE_COMMIT_MODEL`.
 
@@ -298,9 +299,9 @@ are not part of the request. No archiving or session deletion is needed.
   `~/.local/share/yadm/repo.git` takes about 35 ms. Read-only commands in the script use `git
   --git-dir ... --work-tree "$HOME"`. Only the commit itself calls `yadm`. Avoid `yadm` in any
   interactive hot path.
-- **Model**: `gitlab/duo-chat-gpt-5-4-mini`. `haiku-5-5` performs the same, `gpt-6-luna` is
-  slower, and `haiku-4-5` is erratic and skips the scope. A trivial prompt still takes about
-  1.4 s on the model side, so the model request sets the floor.
+- **Model**: Gemini 4 Hydrogen on Work outside the Duo-default directories.
+  Duo GPT-5.4 Mini remains the default inside those directories and on other
+  machines. `OPENCODE_COMMIT_MODEL` overrides both.
 
 ## Plugin Version Pinning
 

@@ -65,10 +65,10 @@
       "package": "@devtheops/opencode-plugin-otel@2.1.0",
       "options": {
         "enabled": true,
-{% if yadm.os != "Darwin" %}
-        "endpoint": "https://otel.pombei.ro",
-{% else %}
+{% if yadm.os == "Darwin" %}
         "endpoint": "http://127.0.0.1:4318",
+{% else %}
+        "endpoint": "https://otel.pombei.ro",
 {% endif %}
         "protocol": "http/protobuf",
 {% if yadm.class == "Work" %}
@@ -81,10 +81,10 @@
       // Shows whether the OTEL endpoint above accepts OTLP requests in the CLI
       // footer. Keep the endpoint and protocol in sync with the exporter's.
       "package": "./local-plugins/server/otel-status",
-{% if yadm.os != "Darwin" %}
-      "options": { "endpoint": "https://otel.pombei.ro", "protocol": "http/protobuf" }
-{% else %}
+{% if yadm.os == "Darwin" %}
       "options": { "endpoint": "http://127.0.0.1:4318", "protocol": "http/protobuf" }
+{% else %}
+      "options": { "endpoint": "https://otel.pombei.ro", "protocol": "http/protobuf" }
 {% endif %}
     },
     {

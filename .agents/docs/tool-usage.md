@@ -10,6 +10,10 @@ Tool discovery and recovery from failed file operations.
 
 ## Shell approval prompts
 
+When using GitLab Duo models, batch independent checks into one turn. Use parallel
+tool calls when possible, and separate checks only when a later check needs an
+earlier result.
+
 Shell commands that aren't pre-approved, such as multi-line scripts and heredocs,
 each trigger a separate security prompt. Combine related steps, for example
 build, upload, and commit, into one command chained with `&&`, rather than

@@ -1,27 +1,32 @@
-# Run gdkbox on Compute Engine
+# Run GDK jobs on Compute Engine
 
-Use one reusable VM in an approved sandbox project.
-**Stop on timeout. Delete only after the host verifies the artifacts and restores any checkpoint, or the user explicitly
-abandons recovery.** Use the `gdkbox-fleet` skill for container ownership and dispatch rules. The VM runtime limit and
-the container claim are separate.
+Use one reusable VM in an approved sandbox project. Use `gcloud compute` to manage the VM, disk, and networking.
+`gdkbox` does not manage these resources.
+
+The verified setup runs `gdkbox` inside the VM to manage a Docker container. Use `gdkbox-fleet` for that container's
+claim, lifecycle, and dispatch. If you have a separately provisioned VM-native GDK, skip the container-specific steps.
+This runbook does not cover installing GDK directly on the VM.
+
+**Stop the VM on timeout. Delete it only after the host verifies the artifacts and restores any checkpoint, or the
+user explicitly abandons recovery.** A container claim does not set the VM runtime limit or stop the VM.
 
 ## Provision and smoke-test
 
 1. Pass the approved `--project` and `--zone` explicitly. Use Standard provisioning and a persistent boot disk. The
    verified starting point was Ubuntu 24.04 amd64, `e2-standard-8`, and an 80 GB balanced persistent disk. Record the
    project, zone, VM name, and names of any dedicated network resources outside the VM. Pin the workload's Git commit
-   and record the GDK image digest.
-2. Install Docker, Ruby, and gdkbox on the VM. Pull the official GDK-in-a-box image as a distinct, timed stage. Make
-   bootstrap safe to rerun: reuse the existing image, container, and checkout on restart. Keep startup output in the
-   guest journal or serial stream instead of redirecting straight to `/dev/ttyS0`, which lost diagnostics in the first
-   run.
-3. Use a plain box without `--docker`. Keep GDK ports on loopback. For startup-script-only tests, use no inbound
-   firewall rule and no VM service account. If you need remote administration, use an approved private access path or
+   and record the GDK image digest if using a container.
+2. For the container setup, install Docker, Ruby, and `gdkbox` on the VM. Pull the official GDK-in-a-box image as a
+   distinct, timed stage. Make bootstrap safe to rerun: reuse the existing image, container, and checkout on restart.
+   Keep startup output in the guest journal or serial stream. Redirecting straight to `/dev/ttyS0` lost diagnostics in
+   the first run.
+3. If using a container, use a plain box without `--docker`. Keep GDK ports on loopback. For startup-script-only tests,
+   use no inbound firewall rule and no VM service account. For remote administration, use an approved private path or
    narrowly scoped SSH with a pinned host key. The smoke test used a temporary SSH key and a firewall rule limited to
    the operator's source IP. Allow outbound access for package, image, and provider requests.
-4. Test one layer at a time: `gdkbox up`, SSH into the container, and, if the task needs Rails, `/-/health` returning
+4. If using a container, verify `gdkbox up` and container SSH. If the task needs Rails, verify `/-/health` returns
    HTTP 200 with `GitLab OK`. Allow time for startup `502`s to clear. This endpoint verifies the app server responds,
-   not database readiness. Then run a no-tools agent dispatch before attempting a full workload.
+   not database readiness. For an agent job, smoke-test the model and one harmless tool command in the job checkout.
 
 ## Preserve work across timeouts
 
@@ -37,7 +42,7 @@ the container claim are separate.
 - Write stage logs, exit codes, and private work-in-progress checkpoints to persistent storage as work proceeds. Follow
   `gdkbox-workflows` for what to capture and how to verify restore. Save edits before starting verification, not only
   if verification passes. Mark a phase complete only after its checkpoint and phase record are complete. Resume from
-  the latest complete checkpoint. A validation-only workload can run directly in the box without an agent or Duo token.
+  the latest complete checkpoint. Run validation commands in the job checkout without an agent or Duo token.
 - Copy logs and artifacts off the VM incrementally to a private, durable host directory. Transfer patches and reports
   through an approved artifact path, not guest attributes or serial output. Use
   [GCE guest attributes](https://cloud.google.com/compute/docs/metadata/manage-guest-attributes) for short, non-secret
@@ -52,6 +57,8 @@ the container claim are separate.
   proof that results have arrived.
 
 ## Configure OpenCode with Duo
+
+These steps apply to agent dispatch through `gdkbox` inside the VM.
 
 - Check `opencode --version` **inside** the box. gdkbox 0.1.21 installed `opencode-ai` 1.19.6; a fresh box did not
   inherit the prior fix. The verified workaround in [gdkbox #20](https://gitlab.com/jotolo_gl/gdkbox/-/work_items/20)
@@ -75,11 +82,11 @@ the container claim are separate.
    non-correcting repo-wide scan that inspects files and reports zero offenses.
 2. Verify the host copy and restore the latest checkpoint in a disposable checkout before destructive cleanup. A
    terminal guest status, summary, or exit code does not prove recovery. In an automated runner, make stop and retain
-   the default exit path. Enable deletion only after the host checks pass. If collection or restore fails, stop the box
-   and VM without deleting them. Keep the persistent disk for the agreed recovery window. Record the project, zone,
-   VM, disk, checkpoint path, next step, owner, and retention deadline outside the VM. Remove any saved token from a
-   retained box when it is no longer needed. If the deadline approaches and work is still unverified, ask whether to
-   extend retention or abandon recovery.
+   the default exit path. Enable deletion only after the host checks pass. If collection or restore fails, stop the
+   container if present, then stop the VM without deleting it. Keep the persistent disk for the agreed recovery window.
+   Record the project, zone, VM, disk, checkpoint path, next step, owner, and retention deadline outside the VM. Remove
+   any saved agent token when it is no longer needed. If the deadline approaches and work is still unverified, ask
+   whether to extend retention or abandon recovery.
 3. Once the host verifies recovery or the user explicitly abandons it, delete the VM and boot disk. Verify they're
    gone before deleting any dedicated firewall rule, subnet, and VPC, then verify each is absent by name. A killed
    shell can skip its exit trap, and a failed CLI request can leave an operation running. Recheck resource state

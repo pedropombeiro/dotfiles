@@ -26,7 +26,7 @@ OpenCode's Work-specific global `AGENTS.md` instructs the agent to read this fil
   [MCP discovery rules](tool-usage.md#mcp-server-names).
 - Load [GDK dotfiles guidance](gdk-dotfiles.md) when working with personal files
   synced into `$GDK_ROOT/gitlab`.
-- For running gdkbox on Compute Engine, load the [GCP gdkbox runbook](gdkbox-gcp.md)
+- For GDK jobs on Compute Engine, load the [Compute Engine runbook](gdkbox-gcp.md)
   before provisioning. Stop on timeout, recover results, then delete resources.
 
 Work-only skills live in `~/.agents/skills.work`, loaded through `skills`

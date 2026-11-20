@@ -1,4 +1,4 @@
-# gdkbox job: JOB_ID
+# GDK job: JOB_ID
 
 Use the same fields for local and GCP jobs. Mark fields that don't apply as `N/A`.
 
@@ -6,7 +6,8 @@ Use the same fields for local and GCP jobs. Mark fields that don't apply as `N/A
 
 - Job ID:
 - Mode (`implement`, `test`, `review`, or `investigate`):
-- Backend and host (local by default; record GCP approval if applicable):
+- Execution environment (`local gdkbox`, `Compute Engine with gdkbox`, or `Compute Engine with VM-native GDK`):
+- Compute Engine project, zone, VM, boot disk, and approval, if applicable:
 - Source locator (repository and issue, MR, branch, commit, or patch):
 - Base SHA (for an MR, the diff base):
 - Source head SHA:
@@ -17,13 +18,14 @@ Use the same fields for local and GCP jobs. Mark fields that don't apply as `N/A
 
 ## Execution
 
-- Box name and job checkout path:
+- `gdkbox` container name and claim owner, if applicable:
+- Job checkout path:
 - Required runtimes, dependencies, services, and setup checks:
 - Ordered commands or one agent task:
 - Shell and working directory for each command:
 - Agent harness, provider, and pinned model, if applicable:
 - Per-command budgets and overall budget:
-- Output directory in box and required artifacts:
+- Job output directory and required artifacts:
 - Private, durable host artifact destination (outside `$TMPDIR`):
 - Checkpoint phases, persistent source path, and approved files to preserve:
 - Recovery owner and retention deadline, if needed:
@@ -41,4 +43,6 @@ Use the same fields for local and GCP jobs. Mark fields that don't apply as `N/A
 - Host restore result (`verified`, `failed`, or `N/A` for jobs with no changes to preserve):
 - Checks not run and why:
 - Watcher or transport failure, if any:
-- Cleanup state (released, deleted, or stopped and retained with recovery location, owner, and deadline):
+- Container cleanup state, if applicable (released, deleted, or stopped and still claimed):
+- Compute Engine cleanup state, if applicable (deleted, or stopped with disk retained):
+- Recovery location, owner, and deadline, if retained:

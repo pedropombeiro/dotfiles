@@ -1,9 +1,9 @@
 # Run gdkbox on Compute Engine
 
 Use one reusable VM in an approved sandbox project.
-**Stop on timeout and delete only after collecting the results or explicitly abandoning recovery.** Use the
-`gdkbox-fleet` skill for container ownership and dispatch rules. The VM runtime limit and the container claim are
-separate.
+**Stop on timeout. Delete only after the host verifies the artifacts and restores any checkpoint, or the user explicitly
+abandons recovery.** Use the `gdkbox-fleet` skill for container ownership and dispatch rules. The VM runtime limit and
+the container claim are separate.
 
 ## Provision and smoke-test
 
@@ -34,11 +34,12 @@ separate.
   connection. Use separate deadlines for the workload, dispatch, and VM. Leave time for artifact collection before the
   VM stops. Log the phase and exact exit code before validating it so a timeout isn't reduced to a generic shell
   failure.
-- Write stage logs, exit codes, and artifacts to persistent storage as work proceeds. Key checkpoints by base commit and
-  task. Mark a phase complete only after its result is recorded. Resume verification from completed autocorrection; if
-  autocorrection was interrupted, retry from a clean worktree. A validation-only workload can run directly in the box
-  without an agent or Duo token.
-- Copy logs and artifacts off the VM incrementally. Use
+- Write stage logs, exit codes, and private work-in-progress checkpoints to persistent storage as work proceeds. Follow
+  `gdkbox-workflows` for what to capture and how to verify restore. Save edits before starting verification, not only
+  if verification passes. Mark a phase complete only after its checkpoint and phase record are complete. Resume from
+  the latest complete checkpoint. A validation-only workload can run directly in the box without an agent or Duo token.
+- Copy logs and artifacts off the VM incrementally to a private, durable host directory. Transfer patches and reports
+  through an approved artifact path, not guest attributes or serial output. Use
   [GCE guest attributes](https://cloud.google.com/compute/docs/metadata/manage-guest-attributes) for short, non-secret
   stage and result summaries; keep serial output as a fallback. The tested
   `gcloud ... get-guest-attributes --format=json` returned a top-level array. Accept that and the API wrapper:
@@ -69,20 +70,25 @@ separate.
 
 ## Collect results and clean up
 
-1. Confirm the workload exit code and inspect the actual result. For RuboCop TODO removal, require safe `-a`, followed
-   by a separate non-correcting repo-wide scan that inspects files and reports zero offenses before exporting a patch.
-   Neither a passing resolver test suite nor a timed-out scan qualifies.
-2. Preserve local artifacts before teardown. Stop the box and release its claim when finished. On failure, stop the VM
-   and keep it only for the agreed recovery window. Remove any saved token from a retained box when it is no longer
-   needed.
-3. Delete the VM and boot disk when recovery is complete, then any dedicated firewall rule, subnet, and VPC. Verify each
-   is absent by name. A killed shell may skip its exit trap; a failed CLI request can also leave an operation running.
-   Recheck the resource state before retrying cleanup.
+1. Confirm the workload exit code and inspect the actual result. For RuboCop TODO removal, keep the private recovery
+   checkpoint and full scan report even when offenses remain. Mark a patch ready only after safe `-a` and a separate
+   non-correcting repo-wide scan that inspects files and reports zero offenses.
+2. Verify the host copy and restore the latest checkpoint in a disposable checkout before destructive cleanup. A
+   terminal guest status, summary, or exit code does not prove recovery. In an automated runner, make stop and retain
+   the default exit path. Enable deletion only after the host checks pass. If collection or restore fails, stop the box
+   and VM without deleting them. Keep the persistent disk for the agreed recovery window. Record the project, zone,
+   VM, disk, checkpoint path, next step, owner, and retention deadline outside the VM. Remove any saved token from a
+   retained box when it is no longer needed. If the deadline approaches and work is still unverified, ask whether to
+   extend retention or abandon recovery.
+3. Once the host verifies recovery or the user explicitly abandons it, delete the VM and boot disk. Verify they're
+   gone before deleting any dedicated firewall rule, subnet, and VPC, then verify each is absent by name. A killed
+   shell can skip its exit trap, and a failed CLI request can leave an operation running. Recheck resource state
+   before retrying cleanup.
 
 ## Verified baseline
 
 The November 2026 sandbox runs verified container SSH, HTTP 200 on `/-/health` after about eight minutes from boot, a
 GPT-6.1 Sol no-tools dispatch, and 24 passing resolver specs for
-[GitLab #602181](https://gitlab.com/gitlab-org/gitlab/-/work_items/602181). The direct `Style/EmptyElse` run stopped at
-its six-minute autocorrection limit. It did not produce a verified offense count or patch. The stop-and-resume workflow
-above is the recommended next setup, not a completed recovery test.
+[GitLab #602181](https://gitlab.com/gitlab-org/gitlab/-/work_items/602181). A later direct `Style/EmptyElse` run
+inspected 56,407 files and verified that eight offenses remained after safe autocorrection. The scan result was
+collected, but the partially corrected worktree was not. GCP stop-and-resume recovery remains untested.

@@ -4,6 +4,7 @@ typeset -ga work_skills=(
   devex-clickhouse
   esquery
   fpf-report
+  gdkbox-workflows
   gitlab-babysit-mr
   gitlab-pipeline-watch
   gitlab-query-plans

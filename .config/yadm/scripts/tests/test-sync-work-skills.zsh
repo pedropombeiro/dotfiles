@@ -9,7 +9,7 @@ trap test_cleanup EXIT
 sandbox=$TEST_SANDBOX
 fail() { print -ru2 -- "FAIL: $*"; exit 1; }
 
-mkdir -p "$HOME/.agents/skills.work/esquery"
+mkdir -p "$HOME/.agents/skills.work/"{esquery,gdkbox-workflows}
 export FIXTURE_CLASS=Work FIXTURE_MODE=noop
 export FIXTURE_TRACE="$sandbox/trace"
 lock="$HOME/.agents/.skill-lock.json"
@@ -17,6 +17,7 @@ shared="$HOME/.agents/skills/esquery"
 work="$HOME/.agents/skills.work/esquery"
 print original > "$work/SKILL.md"
 print stale > "$work/removed.md"
+print authored > "$HOME/.agents/skills.work/gdkbox-workflows/SKILL.md"
 print '{"version":3,"skills":{"esquery":{"skillFolderHash":"original"},"grilling":{"skillFolderHash":"personal"}}}' > "$lock"
 cp "$lock" "$sandbox/lock-before"
 
@@ -29,6 +30,8 @@ test_stub npx <<'EOF'
 set -eu
 print -r -- "$*" >> "$FIXTURE_TRACE"
 shared="$HOME/.agents/skills/esquery"
+local_skill="$HOME/.agents/skills/gdkbox-workflows"
+[[ "$*" != *gdkbox-workflows* && ! -e "$local_skill" && ! -L "$local_skill" ]] || exit 93
 if [[ "$FIXTURE_CLASS" != Work ]]; then
   [[ "$*" != *esquery* && ! -e "$shared" && ! -L "$shared" ]] || exit 91
   exit 0
@@ -51,13 +54,17 @@ EOF
 
 mkdir -p "$HOME/.agents/skills/orbit-cli"
 print local-cli > "$HOME/.agents/skills/orbit-cli/SKILL.md"
+local_shared="$HOME/.agents/skills/gdkbox-workflows"
+ln -s "$HOME/.agents/skills.work/gdkbox-workflows" "$local_shared"
 test_expect_status 'initial skill relocation' 0 zsh -df "$scripts/sync-work-skills.zsh"
 [[ ! -e "$HOME/.agents/skills/orbit-cli" && ! -L "$HOME/.agents/skills/orbit-cli" ]] || fail 'orbit-cli left in shared discovery directory'
 [[ $(<"$HOME/.agents/skills.work/orbit-cli/SKILL.md") == local-cli ]] || fail 'orbit-cli snapshot not relocated'
+[[ ! -e "$local_shared" && ! -L "$local_shared" ]] || fail 'locally authored skill left in shared discovery directory'
 
 run_sync() {
   test_expect_status "sync $FIXTURE_CLASS/$FIXTURE_MODE" "$1" zsh -df "$scripts/sync-work-skills.zsh" --update
   [[ ! -e "$shared" && ! -L "$shared" ]] || fail 'work skill left in shared discovery directory'
+  [[ $(<"$HOME/.agents/skills.work/gdkbox-workflows/SKILL.md") == authored ]] || fail 'locally authored skill modified'
 }
 
 run_sync 0

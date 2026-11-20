@@ -18,7 +18,7 @@ includes = ["~/.config/mise/tasks", "~/.config/mise/tasks-work"]
 [tools]
 # ── Runtimes & infra ──────────────────────────────────────────────────
 # Global Ruby runtime, installed from mise's precompiled binaries.
-ruby = "4.0.9"
+ruby = "4.0.10"
 # Go toolchain
 go = "1.27.4"
 # OLAP database

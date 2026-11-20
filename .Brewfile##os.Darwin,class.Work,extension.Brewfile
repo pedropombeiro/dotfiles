@@ -8,6 +8,7 @@ tap "jarred-sumner/git-peek", trusted: true
 tap "jdx/tap", "https://github.com/jdx/homebrew-tap.git", trusted: true
 tap "jstkdng/programs", trusted: true
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git", trusted: true
+tap "libracoder/kiri"
 tap "lihaoyun6/tap", trusted: true
 tap "mike-engel/jwt-cli", trusted: true
 tap "minio/stable", trusted: true
@@ -63,7 +64,7 @@ brew "difftastic"
 # Tool for exploring each layer in a docker image
 brew "dive"
 # Pack, ship and run any application as a lightweight container
-brew "docker", link: false
+brew "docker"
 # Docker CLI plugin for extended build capabilities with BuildKit
 brew "docker-buildx"
 # Platform keystore credential helper for Docker
@@ -382,6 +383,8 @@ cask "jetbrains-toolbox"
 cask "kap"
 # Visualize your keystrokes && mouse actions in real-time
 cask "brewforge/extras/keyviz", trusted: true
+# Container runtime compatible with the Docker CLI, Compose and buildx
+cask "libracoder/kiri/kiri", trusted: true
 # Utility that shows the latest app updates
 cask "latest"
 # Free cross-platform office suite, fresh version
@@ -402,8 +405,6 @@ cask "neovide-app"
 cask "netspot"
 # AI coding agent desktop client
 cask "opencode-desktop"
-# Replacement for Docker Desktop
-cask "orbstack"
 # Visual client for Helix Core
 cask "p4v"
 # Home media player

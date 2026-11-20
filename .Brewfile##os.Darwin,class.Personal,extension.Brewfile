@@ -8,6 +8,7 @@ tap "jarred-sumner/git-peek", trusted: true
 tap "jdx/tap", "https://github.com/jdx/homebrew-tap.git", trusted: true
 tap "jstkdng/programs", trusted: true
 tap "leipert-projects/git-recon", "https://gitlab.com/leipert-projects/git-recon.git", trusted: true
+tap "libracoder/kiri"
 tap "showwin/speedtest", trusted: true
 tap "zaquestion/tap", trusted: true
 # Arduino command-line interface
@@ -41,7 +42,7 @@ brew "sqlite"
 # Diff that understands syntax
 brew "difftastic"
 # Pack, ship and run any application as a lightweight container
-brew "docker", link: false
+brew "docker"
 # Docker CLI plugin for extended build capabilities with BuildKit
 brew "docker-buildx"
 # Isolated development environments using Docker
@@ -282,6 +283,8 @@ cask "istat-menus"
 cask "iterm2"
 # Open-source screen recorder built with web technology
 cask "kap"
+# Container runtime compatible with the Docker CLI, Compose and buildx
+cask "libracoder/kiri/kiri", trusted: true
 # Utility that shows the latest app updates
 cask "latest"
 # Wallet desktop application to maintain multiple cryptocurrencies
@@ -310,8 +313,6 @@ cask "muzzle"
 cask "neovide-app"
 # WiFi site survey software and WiFi scanner
 cask "netspot"
-# Replacement for Docker Desktop
-cask "orbstack"
 # Visual client for Helix Core
 cask "p4v"
 # Home media player

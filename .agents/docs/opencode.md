@@ -162,7 +162,7 @@ is outside the discovery paths, so a plugin there loads only through a path entr
 OpenCode resolves these relative paths against `~/.config/opencode/`. Local `.tsx`
 plugins can import `solid-js`, `@opentui/solid`, and `@opencode/plugin/tui` without a
 `package.json`; OpenCode provides them at runtime. Run a local plugin's tests with
-`mise exec bun@1.3.10 -- bun test` from its directory.
+`mise exec bun -- bun test` from its directory.
 
 Each local plugin documents its behavior, options, and tests in its own README:
 
@@ -180,6 +180,10 @@ Each local plugin documents its behavior, options, and tests in its own README:
   descendants, with a global fallback restricted to `$TMPDIR/opencode`.
 - [`otel-status`](../../.config/opencode/local-plugins/server/otel-status/README.md):
   shows in the CLI footer whether the collector accepts OTLP requests.
+- [`vent`](../../.config/opencode/local-plugins/server/vent/README.md):
+  exposes a `vent` tool to record tooling, documentation, skill, and workflow
+  frictions to configurable destinations (GitLab epics, GitHub issues, or a
+  Markdown log) with automatic deduplication.
 
 ### Plugins meant for publishing
 

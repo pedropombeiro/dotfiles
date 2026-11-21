@@ -45,6 +45,8 @@ brew "difftastic"
 brew "docker"
 # Docker CLI plugin for extended build capabilities with BuildKit
 brew "docker-buildx"
+# Platform keystore credential helper for Docker
+brew "docker-credential-helper"
 # Isolated development environments using Docker
 brew "docker-compose"
 # Command-line DNS Client for Humans

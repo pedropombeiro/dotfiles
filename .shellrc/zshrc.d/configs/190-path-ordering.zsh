@@ -2,9 +2,10 @@
 
 # macOS path_helper (/etc/zprofile) reorders PATH after .zshenv, pushing
 # Homebrew and mise entries behind /usr/bin. Re-prepend them so that:
-#   mise installs > mise shims > ~/.local/bin > Homebrew > system
+#   mise installs > mise shims > ~/.local/bin > Kiri > Homebrew > system
 # This ensures tools like git resolve to Homebrew (matching the _git
-# completion loaded via fpath) rather than Apple's system copy.
+# completion loaded via fpath) rather than Apple's system copy, and that
+# docker resolves to Kiri's CLI rather than Homebrew's.
 
 # typeset -gU deduplicates the path array (first occurrence wins).
 # -g is required because this file is sourced inside a function chain
@@ -13,6 +14,7 @@ typeset -gU path
 path=(
   "${HOME}/.local/share/mise/shims"
   "${HOME}/.local/bin"
+  "${HOME}/.kiri/bin"
   ${HOMEBREW_PREFIX:+${HOMEBREW_PREFIX}/bin}
   ${HOMEBREW_PREFIX:+${HOMEBREW_PREFIX}/sbin}
   $path

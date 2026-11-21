@@ -39,7 +39,7 @@ glab = "latest"
 # Personal merge request triage dashboard
 "npm:gitlab-mr-dashboard" = { version = "0.17.1", allow_low_downloads = true }
 # Local Kubernetes environments for GitLab development
-"gitlab:gitlab-org/caproni" = "v4.57.0"
+"gitlab:gitlab-org/caproni" = "v4.56.0"
 # VM and container runtime used by Caproni on macOS
 colima = "0.10.3"
 lima = "2.3.0"

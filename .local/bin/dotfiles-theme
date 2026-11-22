@@ -569,6 +569,13 @@ def preview_iterm2(theme):
     print(json.dumps(summaries, indent=2))
 
 
+def is_generated_iterm2_profile(profile, target):
+    # Compare by file name: exported preferences keep the absolute path of the
+    # machine that wrote them, which differs on CI and other home directories.
+    filename = profile.get("Dynamic Profile Filename")
+    return bool(filename) and Path(filename).name == target.name
+
+
 def render_iterm2(theme):
     if not iterm2_enabled():
         return {}
@@ -585,8 +592,7 @@ def render_iterm2(theme):
     parents = {
         profile["Guid"]
         for profile in read_iterm2_plist(preferences)["New Bookmarks"]
-        if not profile.get("Dynamic Profile Filename")
-        or Path(profile["Dynamic Profile Filename"]).resolve() != target.resolve()
+        if not is_generated_iterm2_profile(profile, target)
     }
     # Other watched files need not have been persisted into preferences yet.
     external_names = set()
@@ -625,8 +631,7 @@ def render_iterm2(theme):
     names = external_names | {
         profile["Name"]
         for profile in read_iterm2_plist(preferences)["New Bookmarks"]
-        if not profile.get("Dynamic Profile Filename")
-        or Path(profile["Dynamic Profile Filename"]).resolve() != target.resolve()
+        if not is_generated_iterm2_profile(profile, target)
     }
     for mapping in workspace_mappings(mappings):
         parent = mapping["parent_guid"]

@@ -185,6 +185,15 @@ Each local plugin documents its behavior, options, and tests in its own README:
   frictions to configurable destinations (GitLab epics, GitHub issues, or a
   Markdown log) with automatic deduplication.
 
+### Vent routing
+
+For friction that belongs to the dotfiles repository, set `destination` to
+`local`, even if you encounter it while working in a GitLab checkout.
+For other actionable work-related friction, omit `destination` so `vent`
+uses the configured Work routing. Finding a workaround or observing the
+friction only once does not justify routing it to `local`. Get explicit
+user approval before creating or updating a GitLab issue.
+
 ### Plugins meant for publishing
 
 Some local plugins are trials of plugins that will be published from

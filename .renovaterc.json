@@ -34,9 +34,9 @@
       "commitMessageSuffix": "- `AUTOMERGE`"
     },
     {
-      "description": "Delay GitHub-sourced mise updates for the 24-hour release-age gate plus a 2-day buffer for Packslip publication",
+      "description": "Delay GitHub- and GitLab-sourced mise updates for the 24-hour release-age gate plus a 2-day buffer for Packslip publication",
       "matchManagers": ["mise", "custom.regex"],
-      "matchDatasources": ["github-releases", "github-tags"],
+      "matchDatasources": ["github-releases", "github-tags", "gitlab-releases", "gitlab-tags"],
       "matchFileNames": [".config/mise/config.toml**", ".config/mise/conf.d/**"],
       "minimumReleaseAge": "3 days",
       "minimumReleaseAgeBehaviour": "timestamp-required",

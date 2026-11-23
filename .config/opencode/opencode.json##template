@@ -125,8 +125,8 @@
   "model": "{env:OPENCODE_PLAN_MODEL}",
   "default_agent": "plan",
   "agents": {
-    "plan": { "model": "{env:OPENCODE_PLAN_MODEL}" },
-    "build": { "model": "{env:OPENCODE_BUILD_MODEL}" },
+    "plan": { "model": "{env:OPENCODE_PLAN_MODEL}", "color": "#fb4934" },
+    "build": { "model": "{env:OPENCODE_BUILD_MODEL}", "color": "#b8bb26" },
 {% if yadm.class == "Work" %}
     "title": { "model": "google-vertex/gemini-4-hydrogen" }
 {% else %}

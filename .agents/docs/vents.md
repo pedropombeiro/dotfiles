@@ -91,3 +91,29 @@ When pre-push hooks select files outside the intended MR diff after a server-sid
 - **Session**: `ses_e078f5dbbffeKyMV2iCmGWE42E`
 
 </details>
+
+## Historical RuboCop replays require unavailable application gems
+
+### Friction
+
+The historical parent of a merged RuboCop cleanup could not run the resolver despite the required RuboCop gems being installed. `bundle check` stopped on missing application dependencies unrelated to lint, including older Gitaly and Rack versions. Reversing the known cleanup in a disposable fixture at a revision with a satisfied bundle let the resolver run without updating the main GDK checkout.
+
+### Context
+
+Local success-path replay for the RuboCop TODO resolver in GitLab #602181.
+
+### Suggested Improvement
+
+For resolver replay fixtures, first verify the pinned bundle is available. Prefer a disposable fixture that reverses a known cleanup on an already supported base, and compare code changes separately from human comment edits.
+
+<details>
+<summary>Session metadata</summary>
+
+- **Recorded**: 2026-11-23T14:27:43.427Z
+- **Category**: `workflow`
+- **Directory**: `/Users/pedropombeiro/gitlab-development-kit/gitlab`
+- **Repository**: `git@gitlab.com:gitlab-org/gitlab.git`
+- **Branch**: `master`
+- **Session**: `ses_e078f5dbbffeKyMV2iCmGWE42E`
+
+</details>

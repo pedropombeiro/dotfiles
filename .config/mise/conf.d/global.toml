@@ -25,7 +25,7 @@ MISE_RUSTUP_HOME = "{{env.HOME}}/.local/share/rustup"
 atuin = "latest"
 # Completions with descriptions and error messages, for commands with no other
 # completion (see ~/.shellrc/zshrc.d/configs/595-carapace.zsh)
-carapace = "latest"
+"aqua:carapace-sh/carapace-bin" = "1.8.3"
 # Render Markdown cheat sheets in terminal popups
 "aqua:charmbracelet/glow" = "latest"
 # Interactive disk usage treemap

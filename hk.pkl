@@ -157,6 +157,8 @@ local fast_steps = new Mapping<String, Step> {
     ["markdownlint-cli2"] {
         glob = List("*.md")
         exclude = List(
+            // Generated append-only log written by the OpenCode vent plugin
+            ".agents/docs/vents.md",
             ".agents/skills.work/clickhouse-best-practices/*",
             ".agents/skills.work/esquery/*",
             ".agents/skills/hk-configure/*",

@@ -61,3 +61,33 @@ Compare runner-side received bytes and checksum against the stored archive, and 
 - **Session**: `ses_e078f5dbbffeKyMV2iCmGWE42E`
 
 </details>
+
+## Stale origin/master makes pre-push hooks lint unrelated changes
+
+### Friction
+
+After a server-side rebase, the worktree's stale origin/master made pre-push hooks include unrelated upstream documentation and JavaScript changes. Fetching the current master ref corrected the merge base and the same push passed with hooks enabled.
+
+### Context
+
+Pushing a targeted revert to GitLab MR !273458 after a UI rebase.
+
+### Evidence / Reproduction
+
+The hook file selection uses git merge-base origin/master HEAD. Before refreshing origin/master, markdownlint, rumdl, and dependency-rules ran on unrelated files and failed. After refreshing it, the MR diff contained 26 files and no Markdown or JavaScript files.
+
+### Suggested Improvement
+
+When pre-push hooks select files outside the intended MR diff after a server-side rebase, check whether origin/master contains the rebase base before investigating the unrelated lint failures.
+
+<details>
+<summary>Session metadata</summary>
+
+- **Recorded**: 2026-11-23T11:52:28.874Z
+- **Category**: `tooling`
+- **Directory**: `/Users/pedropombeiro/gitlab-development-kit/gitlab`
+- **Repository**: `git@gitlab.com:gitlab-org/gitlab.git`
+- **Branch**: `pedropombeiro/641897/fix-distilled-curl-option-docs`
+- **Session**: `ses_e078f5dbbffeKyMV2iCmGWE42E`
+
+</details>

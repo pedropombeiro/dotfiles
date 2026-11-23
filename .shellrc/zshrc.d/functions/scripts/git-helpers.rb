@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require "open3"
+
 # Assuming that you have branches named "${GITLAB_USERNAME}/${MR_ID}/${SEQ_ID}-branch_description"
 # this script will ensure that branches from the same MR will be rebased correctly, keeping the chain order
 
@@ -113,6 +115,12 @@ def rebase_all_per_capture_info(local_branch_info_hash)
 
     if info.is_a?(Hash) && info[:squash_merged]
       puts "  Skipping ".brown + branch.cyan + " (already squash-merged into #{compute_default_branch})".brown
+      next
+    end
+
+    if info.is_a?(Hash) && info[:ambiguous_parents]&.any?
+      puts "  Skipping ".brown + branch.cyan +
+        " (ambiguous stack parent: #{info[:ambiguous_parents].join(", ")}; rebase manually)".red
       next
     end
 
@@ -293,6 +301,7 @@ def rebase_mappings
 
     rebase_onto = nil
     fork_point = nil
+    ambiguous_parents = nil
     if current_mr_seq_nr
       seq_map = mr_seq_branches[current_mr_id]
       prev_seq_nr = seq_map.keys.select { |seq| seq < current_mr_seq_nr }.max
@@ -305,15 +314,20 @@ def rebase_mappings
             rebase_onto = default_branch
           else
             # Capture the old parent boundary now: a plain rebase replays rewritten parent commits.
-            fork_point = stacked_fork_point(prev_branch, branch)
+            fork_point = stacked_fork_point(prev_branch, branch, default_branch)
             rebase_onto = prev_branch
           end
         else
           rebase_onto = default_branch
         end
-      elsif (base_branch = unnumbered_stack_base(branch, mr_unnumbered_branches[current_mr_id], default_branch))
-        fork_point = stacked_fork_point(base_branch, branch)
-        rebase_onto = base_branch
+      elsif (stack_base = resolve_unnumbered_stack_base(branch, mr_unnumbered_branches[current_mr_id], default_branch))
+        if stack_base[:ambiguous]
+          ambiguous_parents = stack_base[:candidates]
+          rebase_onto = default_branch
+        else
+          rebase_onto = stack_base[:branch]
+          fork_point = stack_base[:fork_point]
+        end
       else
         prev_seq_pattern = "#{user_name}/#{current_mr_id}/#{current_mr_seq_nr - 1}-"
         old_tip = deleted_branch_tip_from_reflog(prev_seq_pattern, branch)
@@ -339,11 +353,11 @@ def rebase_mappings
     rebase_target = rebase_onto || parent_branch
     if rebase_target != default_branch && branch_exists?(rebase_target) &&
         branch_squash_merged_into?(rebase_target, default_branch)
-      fork_point ||= stacked_fork_point(rebase_target, branch) || resolve_ref(rebase_target)
+      fork_point ||= stacked_fork_point(rebase_target, branch, default_branch) || resolve_ref(rebase_target)
       rebase_onto = default_branch
     end
 
-    if fork_point.nil? && (rebase_onto || parent_branch) == default_branch
+    if fork_point.nil? && ambiguous_parents.nil? && (rebase_onto || parent_branch) == default_branch
       fp_result = compute_fork_point(default_branch, branch)
       fp = fp_result[:value]
       mb = merge_base(default_branch, branch)
@@ -361,7 +375,8 @@ def rebase_mappings
       parent_branch: parent_branch,
       rebase_onto: rebase_onto || parent_branch,
       fork_point: fork_point,
-      squash_merged: branch_squash_merged_into?(branch, default_branch)
+      squash_merged: branch_squash_merged_into?(branch, default_branch),
+      ambiguous_parents: ambiguous_parents
     }
   end
 end
@@ -376,11 +391,43 @@ def unnumbered_mr_branches(branches, mr_pattern, excluded_patterns)
 end
 
 # The first numbered branch of a stack may sit on an unnumbered branch of the same MR,
-# because only stacked branches get a sequence prefix. Prefer the closest such ancestor.
-def unnumbered_stack_base(branch, candidates, default_branch)
-  candidates
-    .select { |candidate| branch_merged_into?(candidate, branch) && !branch_merged_into?(candidate, default_branch) }
-    .max_by { |candidate| branch_distance(candidate, default_branch) }
+# because only stacked branches get a sequence prefix. Prefer the closest direct ancestor,
+# then a reflog fork point, then a uniquely matching patch-equivalent parent prefix.
+def resolve_unnumbered_stack_base(branch, candidates, default_branch)
+  unmerged = candidates.reject { |candidate| branch_merged_into?(candidate, default_branch) }
+  return if unmerged.empty?
+
+  ancestors = unmerged.select { |candidate| branch_merged_into?(candidate, branch) }
+  unless ancestors.empty?
+    base = ancestors.max_by { |candidate| branch_distance(candidate, default_branch) }
+    return {branch: base, fork_point: resolve_ref(base)}
+  end
+
+  reflog_matches = unmerged.filter_map do |candidate|
+    fp = reflog_fork_point(candidate, branch, default_branch)
+    {branch: candidate, fork_point: fp, distance: branch_distance(candidate, default_branch)} if fp
+  end
+  unless reflog_matches.empty?
+    max_distance = reflog_matches.map { |match| match[:distance] }.max
+    closest = reflog_matches.select { |match| match[:distance] == max_distance }
+    return {ambiguous: true, candidates: closest.map { |match| match[:branch] }} if closest.size > 1
+
+    match = closest.first
+    return {branch: match[:branch], fork_point: match[:fork_point]}
+  end
+
+  patch_matches = unmerged.filter_map do |candidate|
+    match = patch_prefix_match(candidate, branch, default_branch)
+    {branch: candidate, fork_point: match[:fork_point], prefix_length: match[:prefix_length]} if match
+  end
+  return if patch_matches.empty?
+
+  max_prefix = patch_matches.map { |match| match[:prefix_length] }.max
+  closest = patch_matches.select { |match| match[:prefix_length] == max_prefix }
+  return {ambiguous: true, candidates: closest.map { |match| match[:branch] }} if closest.size > 1
+
+  match = closest.first
+  {branch: match[:branch], fork_point: match[:fork_point]}
 end
 
 def branch_sort_key(branch_info)
@@ -488,13 +535,69 @@ def compute_fork_point(default_branch, branch)
   @fork_point_cache[key] = {value: result, success: Process.last_status.success?}
 end
 
-def stacked_fork_point(parent_branch, branch)
+def reflog_fork_point(parent_branch, branch, default_branch = compute_default_branch)
   result = compute_fork_point(parent_branch, branch)
   value = result[:value]
   return unless result[:success] && !value.empty?
   return unless branch_merged_into?(value, branch)
+  return if branch_merged_into?(value, default_branch)
 
   value
+end
+
+def branch_patch_commits(branch, default_branch = compute_default_branch)
+  @branch_patch_commits_cache ||= {}
+  key = "#{default_branch}:#{branch}"
+  return @branch_patch_commits_cache[key] if @branch_patch_commits_cache.key?(key)
+
+  mb = merge_base(default_branch, branch)
+  return @branch_patch_commits_cache[key] = [] if mb.empty?
+
+  commits = IO.popen(%W[git rev-list --reverse #{mb}..#{branch}], err: File::NULL, &:read).lines.map(&:strip)
+  return @branch_patch_commits_cache[key] = [] if commits.empty? || !Process.last_status.success?
+
+  patch_ids = {}
+  pipeline_ok = true
+  Open3.pipeline_r(
+    ["git", "log", "--no-merges", "--no-ext-diff", "--no-color", "--pretty=format:commit %H", "-p", "#{mb}..#{branch}"],
+    %w[git patch-id --stable]
+  ) do |out, wait_threads|
+    out.each_line do |line|
+      patch_id, sha = line.split
+      patch_ids[sha] = patch_id if patch_id && sha
+    end
+    pipeline_ok = wait_threads.all? { |t| t.value.success? }
+  end
+  return @branch_patch_commits_cache[key] = [] unless pipeline_ok
+
+  @branch_patch_commits_cache[key] = commits.map { |sha| {sha: sha, patch_id: patch_ids[sha]} }
+end
+
+def patch_prefix_match(parent_branch, branch, default_branch = compute_default_branch)
+  parent_commits = branch_patch_commits(parent_branch, default_branch)
+  return if parent_commits.empty?
+  return unless parent_commits.all? { |commit| commit[:patch_id] }
+
+  branch_commits = branch_patch_commits(branch, default_branch)
+  return if branch_commits.size < parent_commits.size
+
+  parent_patch_ids = parent_commits.map { |commit| commit[:patch_id] }
+  branch_prefix_ids = branch_commits.first(parent_commits.size).map { |commit| commit[:patch_id] }
+  return unless branch_prefix_ids == parent_patch_ids
+
+  {
+    fork_point: branch_commits[parent_commits.size - 1][:sha],
+    prefix_length: parent_commits.size
+  }
+end
+
+def stacked_fork_point(parent_branch, branch, default_branch = compute_default_branch)
+  if branch_merged_into?(parent_branch, branch) && !branch_merged_into?(parent_branch, default_branch)
+    return resolve_ref(parent_branch)
+  end
+
+  reflog_fork_point(parent_branch, branch, default_branch) ||
+    patch_prefix_match(parent_branch, branch, default_branch)&.fetch(:fork_point)
 end
 
 def branch_merged_into?(branch, target)
@@ -589,12 +692,34 @@ def branch_distance(branch, parent_branch)
   @branch_distance_cache[key] = `git rev-list --count #{parent_branch}..#{branch}`.strip.to_i
 end
 
+def sort_rebase_mappings(mappings, default_branch)
+  ordered = mappings.sort_by { |b| [branch_distance(b[:branch], default_branch), branch_sort_key(b)] }
+  by_branch = ordered.to_h { |b| [b[:branch], b] }
+  visited = Set.new
+  visiting = Set.new
+  result = []
+
+  visit = lambda do |entry|
+    branch = entry[:branch]
+    return if visited.include?(branch) || visiting.include?(branch)
+
+    visiting << branch
+    parent = by_branch[entry[:rebase_onto]]
+    visit.call(parent) if parent && parent[:branch] != branch
+    visiting.delete(branch)
+    visited << branch
+    result << entry
+  end
+
+  ordered.each { |entry| visit.call(entry) }
+  result
+end
+
 def rebase_all
   require "json"
   default_branch = compute_default_branch
-  mappings = rebase_mappings
-    .sort_by { |b| [branch_distance(b[:branch], default_branch), branch_sort_key(b)] }
-    .to_h { |b| [b[:branch], b.slice(:rebase_onto, :fork_point, :squash_merged)] }
+  mappings = sort_rebase_mappings(rebase_mappings, default_branch)
+    .to_h { |b| [b[:branch], b.slice(:rebase_onto, :fork_point, :squash_merged, :ambiguous_parents)] }
   exit(1) if rebase_all_per_capture_info(mappings) == false
 end
 

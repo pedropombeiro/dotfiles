@@ -66,6 +66,8 @@ palette = {key: color for key in ['Background Color', 'Foreground Color', 'Curso
            'Cursor Text Color', 'Selection Color', 'Selected Text Color',
            *(f'Ansi {i} Color' for i in range(16))]}
 palette['Command'] = 'must not import'
+# A palette-wide tab color must never replace a parent's own tab color.
+palette['Tab Color'] = color
 target = Path.home() / 'Library/Application Support/iTerm2/DynamicProfiles/dotfiles-theme.json'
 with patch.object(sys, 'platform', 'linux'):
     assert render('missing') == {}
@@ -85,6 +87,7 @@ with patch.object(sys, 'platform', 'darwin'):
             assert parent['Name'] == child['Name'] + ' · base'
             assert 'Command' not in child and 'Initial Text' not in child
             assert child['Background Color'] == color
+            assert 'Tab Color' not in child
         assert preferences.read_bytes() == personal_original
     preferences.write_bytes(original)
     identities = None
@@ -95,6 +98,7 @@ with patch.object(sys, 'platform', 'darwin'):
         assert len(profiles) == len(expected_names)
         assert all('Command' not in p and 'Normal Font' not in p for p in profiles)
         assert all(p['Background Color'] == color for p in profiles)
+        assert all('Tab Color' not in p for p in profiles)
         assert all(p['Use Separate Colors for Light and Dark Mode'] is False for p in profiles)
         current = [p['Guid'] for p in profiles]
         assert identities is None or current == identities

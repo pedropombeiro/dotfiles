@@ -621,10 +621,14 @@ def render_iterm2(theme):
     if not isinstance(palette, dict) or not required <= palette.keys():
         raise ValueError(f"Incomplete iTerm2 palette: {theme}")
     # Import colors only, never commands, fonts, identities, or layout preferences.
+    # Skip "Tab Color": profiles use it to tell sessions apart, such as the red
+    # nas tab, and a palette-wide value would replace each parent's own color.
     colors = {
         key: value
         for key, value in palette.items()
-        if key.endswith(" Color") and isinstance(value, dict)
+        if key.endswith(" Color")
+        and key != "Tab Color"
+        and isinstance(value, dict)
     }
     profiles = []
     guids = parents | external_guids

@@ -24,7 +24,10 @@ Use the same fields for local and GCP jobs. Mark fields that don't apply as `N/A
 - Ordered commands or one agent task:
 - Shell and working directory for each command:
 - Agent harness, provider, and pinned model, if applicable:
+- Required instruction files, skill IDs, exact read-only probes, and allowed edit paths:
+- Pinned image digest and pre-provision platform check, if applicable:
 - Per-command budgets and overall budget:
+- Independent verification commands and expected coverage:
 - Job output directory and required artifacts:
 - Private, durable host artifact destination (outside `$TMPDIR`):
 - Checkpoint phases, persistent source path, and approved files to preserve:

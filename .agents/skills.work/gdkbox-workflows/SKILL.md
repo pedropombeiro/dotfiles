@@ -64,10 +64,11 @@ needed to proceed.
    state, required runtimes and dependencies, needed services, and the output
    directory. For linked worktrees, adapt `gitlab-worktree` guidance to the
    environment's Linux paths. Supply required untracked config without copying host
-   secrets. For agent jobs, verify the pinned model and run one harmless tool
-   command in the actual task checkout. A no-tools sentinel checks authentication
-   only. Scope permissions to the job, honor denials, and don't mount the Docker
-   socket for routine jobs.
+    secrets. For agent jobs, verify the pinned harness, provider, and model, then
+    probe every required skill and exact read-only shell command in the task
+    checkout. A no-tools sentinel checks authentication only. Match the configured
+    edit permissions to the job's paths, honor denials, and don't mount the Docker
+    socket for routine jobs. See the [manifest and runner](assets/runner.md).
 4. **Execute within the budget.** Use direct commands for deterministic checks
    and an agent for implementation, review, or open-ended investigation. Run one
    active job per execution environment and serialize jobs that share databases
@@ -87,8 +88,9 @@ needed to proceed.
    phase, and next step. Finish writing
    the checkpoint before marking it complete or starting the next phase. Copy
    it incrementally to a private, durable host directory outside `$TMPDIR`.
-   Collect full verification reports and exit codes even on failure. A recovery
-   checkpoint isn't a validated deliverable and must not be published.
+    Collect verification reports and exit codes even if an independent gate fails,
+    when it is safe to continue. On verification timeout, resume from the saved
+    tree without rerunning the agent. A checkpoint isn't a validated deliverable.
 6. **Verify on the host before handing back.** Match the job ID and tested
    revision, inspect the logs, and verify required artifacts. Restore the latest
    checkpoint in a disposable host checkout at its exact base: for a patch, run

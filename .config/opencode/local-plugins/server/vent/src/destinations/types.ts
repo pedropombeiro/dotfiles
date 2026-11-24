@@ -1,11 +1,11 @@
 export const VENT_CATEGORIES = [
-  'tooling',
-  'documentation',
-  'skill',
-  'permissions',
-  'environment',
-  'workflow',
-  'other',
+  "tooling",
+  "documentation",
+  "skill",
+  "permissions",
+  "environment",
+  "workflow",
+  "other",
 ] as const;
 
 export type VentCategory = (typeof VENT_CATEGORIES)[number];
@@ -19,6 +19,7 @@ export interface VentInput {
   category?: VentCategory;
   labels?: string[];
   destination?: string;
+  localReason?: string;
 }
 
 export interface VentMetadata {
@@ -32,9 +33,9 @@ export interface VentMetadata {
 }
 
 export interface VentResult {
-  action: 'created' | 'commented';
+  action: "created" | "commented";
   destination: string;
-  destinationType: 'gitlab' | 'github' | 'file';
+  destinationType: "gitlab" | "github" | "file";
   url?: string;
   path?: string;
   title: string;

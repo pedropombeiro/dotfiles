@@ -99,6 +99,12 @@
       "options": {
 {% if yadm.class == "Work" %}
         "defaultDestination": "gitlab",
+        "routes": [
+          { "directoryPrefix": "~/gitlab-development-kit", "destination": "gitlab", "enforced": true },
+          { "directoryPrefix": "{env:GDK_ROOT}", "destination": "gitlab", "enforced": true },
+          { "remoteRepository": "gitlab.com/gitlab-org/gitlab", "destination": "gitlab", "enforced": true },
+          { "remoteRepository": "gitlab.com/gitlab-org/gitlab-development-kit", "destination": "gitlab", "enforced": true }
+        ],
         "destinations": {
           "local": {
             "type": "file",

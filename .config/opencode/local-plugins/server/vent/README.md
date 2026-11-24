@@ -28,7 +28,8 @@ skill, permission, and workflow frictions encountered during routine work.
 | `suggestion` | No | Proposed fix or improvement. |
 | `category` | No | One of `tooling`, `documentation`, `skill`, `permissions`, `environment`, `workflow`, `other`. |
 | `labels` | No | Extra labels merged with the destination's configured `labels` (GitLab and GitHub). |
-| `destination` | No | Named destination key to override route matching and `defaultDestination`. |
+| `destination` | No | Named destination key. Enforced routes restrict overrides. |
+| `localReason` | No | Why an explicitly selected file entry is unrelated personal friction. Required to override an enforced route with a file destination. |
 
 ## Options
 
@@ -74,9 +75,16 @@ Configure destinations and optional routing rules in `opencode.json`:
 
 ### Destination resolution order
 
-1. Explicit `destination` tool argument.
-2. First matching entry in `routes` (`directoryPrefix` and/or `remoteContains`).
-3. `defaultDestination`, or the sole destination when only one is configured.
+1. First matching route with `enforced: true`. A different destination is rejected unless it is a file destination and `localReason` explains the unrelated personal friction.
+2. Explicit `destination` tool argument.
+3. First matching non-enforced route.
+4. `defaultDestination`, or the sole destination when only one is configured.
+
+Routes match by `directoryPrefix`, `remoteContains`, or `remoteRepository`. If
+you specify more than one condition on a route, all must match. Remote rules
+check fetch URLs, including remotes other than `origin`. `remoteRepository`
+matches a full `host/namespace/project` identity across HTTPS and SSH URLs.
+An issue destination failure never falls back to a file.
 
 ### Destination types
 

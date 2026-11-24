@@ -187,12 +187,14 @@ Each local plugin documents its behavior, options, and tests in its own README:
 
 ### Vent routing
 
-For friction that belongs to the dotfiles repository, set `destination` to
-`local`, even if you encounter it while working in a GitLab checkout.
-For other actionable work-related friction, omit `destination` so `vent`
-uses the configured Work routing. Finding a workaround or observing the
-friction only once does not justify routing it to `local`. Get explicit
+For GDK or GitLab monorepo friction, omit `destination`. The Work config enforces
+the confidential GitLab route by checkout path or fetch remote. Get explicit
 user approval before creating or updating a GitLab issue.
+
+For unrelated personal or dotfiles friction, set `destination` to `local`.
+In a checkout with an enforced route, also provide `localReason` explaining why
+the friction is unrelated to the checkout. Never use the local log as a fallback
+when GitLab filing fails.
 
 ### Plugins meant for publishing
 

@@ -36,6 +36,7 @@
               "on": "review",
               "host": "gitlab.com",
               "projects": ["gitlab-org/gitlab"],
+              "authors": ["service-modelops-agent-principles-distiller"],
               "reviewers": [
                 "GitLabDuo",
                 "ai-appsec-security-mr-reviewer-gitlab-org",

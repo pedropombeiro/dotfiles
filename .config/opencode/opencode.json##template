@@ -106,7 +106,7 @@
           },
           "gitlab": {
             "type": "gitlab",
-            "project": "gitlab-org/gitlab",
+            "project": "pedropombeiro/work-friction",
             "epic": "https://gitlab.com/groups/gitlab-org/-/epics/24897",
             "confidential": true
           }

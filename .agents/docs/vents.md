@@ -117,3 +117,55 @@ For resolver replay fixtures, first verify the pinned bundle is available. Prefe
 - **Session**: `ses_e078f5dbbffeKyMV2iCmGWE42E`
 
 </details>
+
+## Cloud agent preflight missed a required read-only checkout check
+
+### Friction
+
+The skill and pinned revision preflight passed, but the job stopped before the formatter because its default-deny shell policy did not allow git status --short. The agent exited zero after stopping; the nonempty patch gate correctly rejected the run.
+
+### Context
+
+Bounded GDK cloud lint repair pilot; checkpoint recovery passed but no lint ran on this retry.
+
+### Suggested Improvement
+
+Run deterministic formatting directly without agent credentials. For agent tasks, exercise the exact required read-only commands during preflight without broadening the allowlist.
+
+<details>
+<summary>Session metadata</summary>
+
+- **Recorded**: 2026-11-23T17:13:43.067Z
+- **Category**: `workflow`
+- **Directory**: `/Users/pedropombeiro/gitlab-development-kit/gitlab`
+- **Repository**: `git@gitlab.com:gitlab-org/gitlab.git`
+- **Branch**: `master`
+- **Session**: `ses_e078f5dbbffeKyMV2iCmGWE42E`
+
+</details>
+
+## RuboCop safe formatting leaves whitespace that blocks verification
+
+### Friction
+
+The bounded direct formatter exited zero but left nine trailing-whitespace lines after block rewrites. The supervisor saved the exact checkpoint and correctly rejected the diff, but that gate ran before either non-correcting scan, so neither diagnostic report was produced.
+
+### Context
+
+Direct, credential-free GDK cloud run for a RuboCop TODO cleanup.
+
+### Suggested Improvement
+
+Include a narrowly scoped safe trailing-whitespace correction for the changed Ruby paths, and consider collecting both lint reports even when a whitespace gate fails while still rejecting the patch.
+
+<details>
+<summary>Session metadata</summary>
+
+- **Recorded**: 2026-11-23T17:20:27.042Z
+- **Category**: `workflow`
+- **Directory**: `/Users/pedropombeiro/gitlab-development-kit/gitlab`
+- **Repository**: `git@gitlab.com:gitlab-org/gitlab.git`
+- **Branch**: `master`
+- **Session**: `ses_e078f5dbbffeKyMV2iCmGWE42E`
+
+</details>

@@ -22,6 +22,15 @@ fail() {
   exit 1
 }
 
+typeset -a ruby_cmd
+if (( $+commands[ruby] )) && ruby -e 'exit((RUBY_VERSION.split(".").map(&:to_i) <=> [3, 2]) >= 0 ? 0 : 1)' 2>/dev/null; then
+  ruby_cmd=(ruby)
+elif (( $+commands[mise] )); then
+  ruby_cmd=(mise x ruby -- ruby)
+else
+  fail 'requires Ruby >= 3.2 or mise'
+fi
+
 init_repo() {
   local repo=$1
   mkdir -p "$repo"
@@ -44,7 +53,7 @@ run_mappings() {
   local repo=$1
   (
     cd "$repo"
-    mise x ruby -- ruby -r json -r "$helper" -e 'puts JSON.generate(rebase_mappings)'
+    "${ruby_cmd[@]}" -r json -r "$helper" -e 'puts JSON.generate(rebase_mappings)'
   )
 }
 
@@ -52,7 +61,7 @@ run_rebase_all() {
   local repo=$1
   (
     cd "$repo"
-    mise x ruby -- ruby -r "$helper" -e 'rebase_all'
+    "${ruby_cmd[@]}" -r "$helper" -e 'rebase_all'
   )
 }
 

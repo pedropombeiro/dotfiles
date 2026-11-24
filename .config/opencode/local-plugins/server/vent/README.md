@@ -91,7 +91,10 @@ An issue destination failure never falls back to a file.
 - **`gitlab`**: uses `glab api` to list open issues under `epic` (accepting legacy epic
   URLs, work item epic URLs, or `<group>&<iid>` shorthand) or `project`. Comments on a matching
   open issue, or creates a new issue in `project` linked to `epic` via the `/epic` quick action
-  with a REST link fallback. `confidential` defaults to `true`.
+  with a REST link fallback. If no open issue matches, checks closed issues in the configured
+  project and epic for the same title, ignoring case and surrounding whitespace. Returns the
+  closed issue link without creating, commenting on, or reopening an issue. `confidential`
+  defaults to `true`.
 - **`github`**: uses `gh api` to list open issues in `repo` (ignoring pull requests). Comments on a
   matching open issue, or creates a new issue.
 - **`file`**: reads and updates a local Markdown file (supporting leading `~/`). Appends a

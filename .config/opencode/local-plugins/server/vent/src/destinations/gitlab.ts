@@ -1,8 +1,8 @@
-import type { Exec } from '../exec.ts';
-import { formatCommentBody, formatIssueBody } from '../format.ts';
-import { buildMatchQuery, findBestMatch } from '../match.ts';
-import type { GitLabDestination } from '../options.ts';
-import type { VentInput, VentMetadata, VentResult } from './types.ts';
+import type { Exec } from "../exec.ts";
+import { formatCommentBody, formatIssueBody } from "../format.ts";
+import { buildMatchQuery, findBestMatch } from "../match.ts";
+import type { GitLabDestination } from "../options.ts";
+import type { VentInput, VentMetadata, VentResult } from "./types.ts";
 
 export interface GitLabEpicRef {
   host: string;
@@ -26,7 +26,10 @@ interface GitLabNote {
   id: number;
 }
 
-export function parseGitLabEpicRef(epic: string, defaultHost: string): GitLabEpicRef {
+export function parseGitLabEpicRef(
+  epic: string,
+  defaultHost: string,
+): GitLabEpicRef {
   const trimmed = epic.trim();
 
   const urlMatch = trimmed.match(
@@ -44,7 +47,9 @@ export function parseGitLabEpicRef(epic: string, defaultHost: string): GitLabEpi
     };
   }
 
-  const refMatch = trimmed.match(/^([A-Za-z0-9_.-]+(?:\/[A-Za-z0-9_.-]+)*)&(\d+)$/);
+  const refMatch = trimmed.match(
+    /^([A-Za-z0-9_.-]+(?:\/[A-Za-z0-9_.-]+)*)&(\d+)$/,
+  );
   if (refMatch) {
     const groupPath = refMatch[1]!;
     const iid = refMatch[2]!;
@@ -61,7 +66,10 @@ export function parseGitLabEpicRef(epic: string, defaultHost: string): GitLabEpi
   );
 }
 
-function mergeLabels(base: readonly string[], extra: readonly string[] | undefined): string[] {
+function mergeLabels(
+  base: readonly string[],
+  extra: readonly string[] | undefined,
+): string[] {
   const seen = new Set<string>();
   const merged: string[] = [];
   for (const label of [...base, ...(extra ?? [])]) {
@@ -78,24 +86,26 @@ async function glabApi<T>(
   host: string,
   endpoint: string,
   options: {
-    method?: 'GET' | 'POST';
+    method?: "GET" | "POST";
+    paginate?: boolean;
     body?: Record<string, unknown>;
     cwd: string;
     signal?: AbortSignal;
   },
 ): Promise<T> {
-  const args = ['api', '--hostname', host];
-  if (options.method && options.method !== 'GET') {
-    args.push('--method', options.method);
+  const args = ["api", "--hostname", host];
+  if (options.paginate) args.push("--paginate");
+  if (options.method && options.method !== "GET") {
+    args.push("--method", options.method);
   }
   let stdin: string | undefined;
   if (options.body !== undefined) {
-    args.push('--input', '-');
+    args.push("--input", "-");
     stdin = JSON.stringify(options.body);
   }
   args.push(endpoint);
 
-  const result = await run('glab', args, {
+  const result = await run("glab", args, {
     cwd: options.cwd,
     stdin,
     signal: options.signal,
@@ -103,7 +113,9 @@ async function glabApi<T>(
 
   if (result.code !== 0) {
     const detail = (result.stderr || result.stdout).trim();
-    throw new Error(`glab api ${options.method ?? 'GET'} ${endpoint} failed: ${detail}`);
+    throw new Error(
+      `glab api ${options.method ?? "GET"} ${endpoint} failed: ${detail}`,
+    );
   }
 
   const trimmed = result.stdout.trim();
@@ -126,11 +138,12 @@ export async function ventToGitLab(
 
   const labelFilter =
     !epicRef && destination.labels.length > 0
-      ? `&labels=${encodeURIComponent(destination.labels.join(','))}`
-      : '';
-  const listEndpoint = epicRef
-    ? `groups/${encodeURIComponent(epicRef.groupPath)}/epics/${epicRef.iid}/issues?state=opened&per_page=100`
-    : `projects/${encodedProject}/issues?state=opened&per_page=100${labelFilter}`;
+      ? `&labels=${encodeURIComponent(destination.labels.join(","))}`
+      : "";
+  const listPath = epicRef
+    ? `groups/${encodeURIComponent(epicRef.groupPath)}/epics/${epicRef.iid}/issues`
+    : `projects/${encodedProject}/issues`;
+  const listEndpoint = `${listPath}?state=opened&per_page=100${labelFilter}`;
 
   const issues = await glabApi<GitLabIssue[]>(deps.exec, host, listEndpoint, {
     cwd: metadata.directory,
@@ -138,15 +151,19 @@ export async function ventToGitLab(
   });
 
   const openCandidates = (Array.isArray(issues) ? issues : [])
-    .filter((issue) => !issue.state || issue.state === 'opened')
+    .filter((issue) => !issue.state || issue.state === "opened")
     .map((issue) => ({
       id: `${issue.project_id}#${issue.iid}`,
       title: issue.title,
-      body: issue.description ?? '',
+      body: issue.description ?? "",
       issue,
     }));
 
-  const match = findBestMatch(buildMatchQuery(input), openCandidates, deps.threshold);
+  const match = findBestMatch(
+    buildMatchQuery(input),
+    openCandidates,
+    deps.threshold,
+  );
 
   if (match) {
     const matchedIssue = match.item.issue;
@@ -156,22 +173,60 @@ export async function ventToGitLab(
       host,
       `projects/${matchedIssue.project_id}/issues/${matchedIssue.iid}/notes`,
       {
-        method: 'POST',
+        method: "POST",
         body: { body: noteBody },
         cwd: metadata.directory,
         signal: deps.signal,
       },
     );
 
-    const url = note.id ? `${matchedIssue.web_url}#note_${note.id}` : matchedIssue.web_url;
+    const url = note.id
+      ? `${matchedIssue.web_url}#note_${note.id}`
+      : matchedIssue.web_url;
     return {
-      action: 'commented',
+      action: "commented",
       destination: destinationName,
-      destinationType: 'gitlab',
+      destinationType: "gitlab",
       url,
       title: input.title,
       matchedTitle: matchedIssue.title,
       matchScore: Number(match.score.toFixed(2)),
+    };
+  }
+
+  const closed = await glabApi<GitLabIssue[]>(
+    deps.exec,
+    host,
+    `${listPath}?state=closed&per_page=100${labelFilter}`,
+    {
+      cwd: metadata.directory,
+      signal: deps.signal,
+      paginate: true,
+    },
+  );
+  if (!Array.isArray(closed))
+    throw new Error("GitLab closed issue lookup did not return a list.");
+
+  const title = input.title.trim().toLowerCase();
+  const projectPath = `/${destination.project.toLowerCase()}/-/`;
+  const closedMatch = closed.find(
+    (issue) =>
+      issue.state === "closed" &&
+      issue.title.trim().toLowerCase() === title &&
+      (!epicRef ||
+        (URL.canParse(issue.web_url) &&
+          new URL(issue.web_url).pathname
+            .toLowerCase()
+            .startsWith(projectPath))),
+  );
+  if (closedMatch) {
+    return {
+      action: "skipped",
+      destination: destinationName,
+      destinationType: "gitlab",
+      title: input.title,
+      matchedTitle: closedMatch.title,
+      url: closedMatch.web_url,
     };
   }
 
@@ -181,17 +236,22 @@ export async function ventToGitLab(
   }
 
   const labels = mergeLabels(destination.labels, input.labels);
-  const created = await glabApi<GitLabIssue>(deps.exec, host, `projects/${encodedProject}/issues`, {
-    method: 'POST',
-    body: {
-      title: input.title.trim(),
-      description,
-      confidential: destination.confidential,
-      ...(labels.length > 0 ? { labels: labels.join(',') } : {}),
+  const created = await glabApi<GitLabIssue>(
+    deps.exec,
+    host,
+    `projects/${encodedProject}/issues`,
+    {
+      method: "POST",
+      body: {
+        title: input.title.trim(),
+        description,
+        confidential: destination.confidential,
+        ...(labels.length > 0 ? { labels: labels.join(",") } : {}),
+      },
+      cwd: metadata.directory,
+      signal: deps.signal,
     },
-    cwd: metadata.directory,
-    signal: deps.signal,
-  });
+  );
 
   let note: string | undefined;
   if (epicRef && !created.epic && created.id) {
@@ -201,23 +261,26 @@ export async function ventToGitLab(
         host,
         `groups/${encodeURIComponent(epicRef.groupPath)}/epics/${epicRef.iid}/issues/${created.id}`,
         {
-          method: 'POST',
+          method: "POST",
           cwd: metadata.directory,
           signal: deps.signal,
         },
       );
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      if (!message.includes('409') && !message.toLowerCase().includes('already')) {
+      if (
+        !message.includes("409") &&
+        !message.toLowerCase().includes("already")
+      ) {
         note = `Issue created, but fallback epic link failed: ${message}`;
       }
     }
   }
 
   return {
-    action: 'created',
+    action: "created",
     destination: destinationName,
-    destinationType: 'gitlab',
+    destinationType: "gitlab",
     url: created.web_url,
     title: input.title,
     ...(note ? { note } : {}),

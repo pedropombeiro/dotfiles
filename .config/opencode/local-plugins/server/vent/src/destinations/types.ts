@@ -33,7 +33,7 @@ export interface VentMetadata {
 }
 
 export interface VentResult {
-  action: "created" | "commented";
+  action: "created" | "commented" | "skipped";
   destination: string;
   destinationType: "gitlab" | "github" | "file";
   url?: string;

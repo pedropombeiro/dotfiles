@@ -485,8 +485,8 @@ describe("GitLab destination", () => {
       title: sampleInput.title,
     });
 
-    expect(calls).toHaveLength(2);
-    const payload = JSON.parse(calls[1]!.stdin!) as Record<string, unknown>;
+    expect(calls).toHaveLength(3);
+    const payload = JSON.parse(calls[2]!.stdin!) as Record<string, unknown>;
     expect(payload.confidential).toBe(true);
     expect(payload.labels).toBe("workflow,agent-friction");
     expect(payload.description).toContain(
@@ -540,9 +540,65 @@ describe("GitLab destination", () => {
     expect(result.note).toBeUndefined();
     expect(endpoints).toEqual([
       "groups/gitlab-org/epics/100/issues?state=opened&per_page=100",
+      "groups/gitlab-org/epics/100/issues?state=closed&per_page=100",
       "projects/gitlab-org%2Fgitlab/issues",
       "groups/gitlab-org/epics/100/issues/8888",
     ]);
+  });
+
+  test("returns the exact closed match in the destination project without writing", async () => {
+    const title = "glab draft update help reverses positional arguments";
+    const url = "https://gitlab.com/dev/friction/-/work_items/8";
+    const mockExec: Exec = async (_file, args, options) => {
+      expect(args).not.toContain("--method");
+      expect(options?.stdin).toBeUndefined();
+      if (args.at(-1)?.includes("state=opened")) {
+        return { stdout: "[]", stderr: "", code: 0 };
+      }
+      expect(args).toContain("--paginate");
+      expect(args.at(-1)).toBe(
+        "groups/org/epics/42/issues?state=closed&per_page=100",
+      );
+      return {
+        stdout: JSON.stringify([
+          {
+            title,
+            state: "closed",
+            web_url: "https://gitlab.com/org/other/-/issues/1",
+          },
+          {
+            title: `${title} in old versions`,
+            state: "closed",
+            web_url: "https://gitlab.com/dev/friction/-/issues/7",
+          },
+          { title, state: "closed", web_url: url },
+        ]),
+        stderr: "",
+        code: 0,
+      };
+    };
+    const result = await ventToGitLab(
+      "gitlab",
+      {
+        type: "gitlab",
+        project: "dev/friction",
+        epic: "org&42",
+        host: "gitlab.com",
+        confidential: true,
+        labels: [],
+      },
+      { ...sampleInput, title: ` ${title.toUpperCase()} ` },
+      sampleMetadata,
+      { exec: mockExec, threshold: 0.45 },
+    );
+    expect(result).toMatchObject({
+      action: "skipped",
+      url,
+      matchedTitle: title,
+    });
+    expect(formatVentResult(result)).toContain(
+      "No issue or comment was created.",
+    );
   });
 
   test("filters project issues by destination labels when no epic is configured", async () => {

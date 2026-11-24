@@ -196,6 +196,10 @@ export function formatVentResult(result: VentResult): string {
     lines.push(
       `Recorded new occurrence on existing ${result.destinationType} entry "${result.matchedTitle ?? result.title}"${score}: ${target}`,
     );
+  } else if (result.action === "skipped") {
+    lines.push(
+      `Found closed GitLab issue "${result.matchedTitle}": ${target}. No issue or comment was created.`,
+    );
   } else {
     lines.push(
       `Created new ${result.destinationType} vent "${result.title}" in destination "${result.destination}": ${target}`,

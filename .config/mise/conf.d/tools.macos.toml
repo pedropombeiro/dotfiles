@@ -1,12 +1,6 @@
 [tools]
-# Plan approval and manual local code review. No installer-managed agent hooks.
+# Plan approval, prose annotation, and manual local code review. No installer-managed agent hooks.
 "github:backnotprop/plannotator" = { version = "0.29.0", asset_pattern = 'plannotator-darwin-{{ arch() }}.tar.xz', rename_exe = "plannotator" }
-# Local Markdown review for substantial agent output requiring approval.
-# aube cannot resolve its bundled file:packages/rfm dependency. Install/update only
-# this tool with MISE_NPM_PACKAGE_MANAGER=npm mise install npm:roughdraft
-# or MISE_NPM_PACKAGE_MANAGER=npm mise upgrade npm:roughdraft.
-# npm also omits the bundled package's yaml dependency; install its runtime deps.
-"npm:roughdraft" = { version = "latest", postinstall = 'npm install --prefix "$MISE_TOOL_INSTALL_PATH/lib/node_modules/roughdraft/packages/rfm" --omit=dev --ignore-scripts --package-lock=false' }
 # Local disk-backed OTLP relay. GitHub releases contain several distributions.
 "github:open-telemetry/opentelemetry-collector-releases" = { version = "latest", matching = "otelcol-contrib_", filter_bins = "otelcol-contrib" }
 # ── Video editing tools ────────────────────────────────────────────────

@@ -127,11 +127,11 @@ so no installer-managed command files or hooks are needed. Use code review
 manually when requested, rather than adding another automatic approval step.
 The standalone CLI is mise-managed from GitHub releases.
 
-Use Roughdraft for substantial prose drafts requiring approval, including MR
-descriptions, documentation, and proposed agent instructions. Explicit requests
-override this split. Do not review the same artifact in both tools. Keep their
-annotation formats separate. Plan approval permits the agreed implementation,
-but does not authorize commits, pushes, or external posting. Closing a review
+Use `plannotator annotate` (or `/plannotator-annotate`) for substantial prose
+drafts requiring approval, including MR descriptions, proposals, documentation,
+and proposed agent instructions. Keep short approvals and informational answers
+in chat. Plan approval permits the agreed implementation, and neither plan nor
+draft approval authorizes commits, pushes, or external posting. Closing a review
 without approval does not authorize implementation.
 
 OpenCode 2 splits plugins by where they run:

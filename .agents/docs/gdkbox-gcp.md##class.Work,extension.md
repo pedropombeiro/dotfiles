@@ -15,9 +15,12 @@ user explicitly abandons recovery.** A container claim does not set the VM runti
 1. Pass the approved `--project` and `--zone` explicitly. Use Standard provisioning and a persistent boot disk. The
    verified starting point was Ubuntu 24.04 amd64, `e2-standard-8`, and an 80 GB balanced persistent disk. Record the
    project, zone, VM name, and names of any dedicated network resources outside the VM. Pin the workload's Git commit
-   and record the GDK image digest if using a container.
+    and record the GDK image digest if using a container. Before provisioning,
+    run the companion's `image` phase against the exact digest for `linux/amd64`.
+    Stop on a missing digest or platform mismatch. Never fall back to a tag.
 2. For the container setup, install Docker, Ruby, and `gdkbox` on the VM. Pull the official GDK-in-a-box image as a
-   distinct, timed stage. Make bootstrap safe to rerun: reuse the existing image, container, and checkout on restart.
+    distinct, timed stage. Make bootstrap safe to rerun: reuse a container only if its image and claim match the job.
+    Use a fresh isolated checkout for each attempt. Check source ownership and access as the job user.
    Keep startup output in the guest journal or serial stream. Redirecting straight to `/dev/ttyS0` lost diagnostics in
    the first run.
 3. If using a container, use a plain box without `--docker`. Keep GDK ports on loopback. For startup-script-only tests,
@@ -26,7 +29,8 @@ user explicitly abandons recovery.** A container claim does not set the VM runti
    the operator's source IP. Allow outbound access for package, image, and provider requests.
 4. If using a container, verify `gdkbox up` and container SSH. If the task needs Rails, verify `/-/health` returns
    HTTP 200 with `GitLab OK`. Allow time for startup `502`s to clear. This endpoint verifies the app server responds,
-   not database readiness. For an agent job, smoke-test the model and one harmless tool command in the job checkout.
+    not database readiness. For an agent job, use the manifest preflight to verify the required skills and exact
+    read-only commands in the job checkout. Match the default-deny edit allowlist to the job before dispatch.
 
 ## Preserve work across timeouts
 
@@ -42,7 +46,9 @@ user explicitly abandons recovery.** A container claim does not set the VM runti
 - Write stage logs, exit codes, and private work-in-progress checkpoints to persistent storage as work proceeds. Follow
   `gdkbox-workflows` for what to capture and how to verify restore. Save edits before starting verification, not only
   if verification passes. Mark a phase complete only after its checkpoint and phase record are complete. Resume from
-  the latest complete checkpoint. Run validation commands in the job checkout without an agent or Duo token.
+  the latest complete checkpoint. For a verification timeout, use the companion's `verify-only` phase in a clean
+  checkout from that checkpoint, without an agent or Duo token. Budget large scans separately and allow time
+  for recovery inside the VM deadline. A partial JSON report with zero offenses does not pass.
 - Copy logs and artifacts off the VM incrementally to a private, durable host directory. Transfer patches and reports
   through an approved artifact path, not guest attributes or serial output. Use
   [GCE guest attributes](https://cloud.google.com/compute/docs/metadata/manage-guest-attributes) for short, non-secret
@@ -79,7 +85,8 @@ These steps apply to agent dispatch through `gdkbox` inside the VM.
 
 1. Confirm the workload exit code and inspect the actual result. For RuboCop TODO removal, keep the private recovery
    checkpoint and full scan report even when offenses remain. Mark a patch ready only after safe `-a` and a separate
-   non-correcting repo-wide scan that inspects files and reports zero offenses.
+   non-correcting repo-wide scan and an all-cops check on the changed Ruby files. Require successful exits,
+   expected coverage, and zero offenses. Flag protected migration paths for human review before publication.
 2. Verify the host copy and restore the latest checkpoint in a disposable checkout before destructive cleanup. A
    terminal guest status, summary, or exit code does not prove recovery. In an automated runner, make stop and retain
    the default exit path. Enable deletion only after the host checks pass. If collection or restore fails, stop the
@@ -98,4 +105,6 @@ The November 2026 sandbox runs verified container SSH, HTTP 200 on `/-/health` a
 GPT-6.1 Sol no-tools dispatch, and 24 passing resolver specs for
 [GitLab #602181](https://gitlab.com/gitlab-org/gitlab/-/work_items/602181). A later direct `Style/EmptyElse` run
 inspected 56,407 files and verified that eight offenses remained after safe autocorrection. The scan result was
-collected, but the partially corrected worktree was not. GCP stop-and-resume recovery remains untested.
+collected, but the partially corrected worktree was not. A later `Style/EndlessMethod` pilot recovered an exact
+OpenCode repair from GCP. The VM's repo-wide scan timed out and the host completed both checks on the restored
+tree. End-to-end cloud verification and the reusable runner's live GCP integration still need a fresh pilot.

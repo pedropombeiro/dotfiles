@@ -100,7 +100,8 @@ async function glabApi<T>(
   }
   let stdin: string | undefined;
   if (options.body !== undefined) {
-    args.push("--input", "-");
+    // glab < 1.123 sends --input bodies without a Content-Type, which GitLab rejects (HTTP 415).
+    args.push("--header", "Content-Type: application/json", "--input", "-");
     stdin = JSON.stringify(options.body);
   }
   args.push(endpoint);

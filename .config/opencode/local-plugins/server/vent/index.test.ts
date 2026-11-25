@@ -425,6 +425,8 @@ describe("GitLab destination", () => {
       "gitlab.com",
       "--method",
       "POST",
+      "--header",
+      "Content-Type: application/json",
       "--input",
       "-",
       "projects/278964/issues/42/notes",

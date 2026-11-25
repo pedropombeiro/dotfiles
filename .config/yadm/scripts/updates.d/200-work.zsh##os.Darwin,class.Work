@@ -331,6 +331,9 @@ write_opencode_config() {
   ],
   // Disable formatter to preserve project's existing code style
   "formatter": {
+    "rubocop": {
+      "disabled": true
+    },
     "standardrb": {
       "disabled": true
     },

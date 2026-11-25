@@ -5,5 +5,13 @@
     "plan": { "model": "gitlab/duo-chat-gpt-6-2-astra" },
     "build": { "model": "gitlab/duo-chat-gpt-6-2-sol" },
     "title": { "model": "gitlab/duo-chat-gpt-6-luna" }
+  },
+  "formatter": {
+    "rubocop": {
+      "disabled": true
+    },
+    "standardrb": {
+      "disabled": true
+    }
   }
 }

@@ -28,6 +28,9 @@ SCRIPT
 
 test_stub plutil <<'SCRIPT'
 #!/bin/sh
+# Drain stdin like real `plutil -extract ... -` so upstream `ioreg` does not
+# hit SIGPIPE under `set -o pipefail`.
+cat >/dev/null
 printf '%s\n' "${TEST_CONSOLE_LOCKED:-false}"
 SCRIPT
 

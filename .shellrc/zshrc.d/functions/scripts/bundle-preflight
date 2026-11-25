@@ -23,3 +23,18 @@ if ! (cd "$top" && mise exec -- bundle check >/dev/null 2>&1); then
   echo "Run 'mise exec -- bundle install' in $top (or 'fgdku' in the GDK checkout), then retry." >&2
   exit 1
 fi
+
+# Lefthook pre-push hooks in GitLab compute changed files from
+# $(git merge-base origin/master HEAD)..HEAD. When HEAD was rebased onto or
+# branched from a master commit newer than the local origin/master tracking ref,
+# the merge base falls back to an older ancestor and hooks lint unrelated
+# upstream files.
+if grep -q 'origin/master' "$top/lefthook.yml" && git -C "$top" remote get-url origin >/dev/null 2>&1; then
+  user_email="$(git -C "$top" config user.email || true)"
+  if ! git -C "$top" rev-parse --verify --quiet refs/remotes/origin/master >/dev/null ||
+    [[ -n "$(git -C "$top" rev-list --merges -n 1 origin/master..HEAD 2>/dev/null)" ]] ||
+    [[ -n "$user_email" && -n "$(git -C "$top" log --format='%ae' origin/master..HEAD 2>/dev/null | grep -Fxv "$user_email" | head -1)" ]]; then
+    echo "bundle-preflight: origin/master is behind the branch base; refreshing origin/master..." >&2
+    git -C "$top" fetch --no-tags origin refs/heads/master:refs/remotes/origin/master
+  fi
+fi

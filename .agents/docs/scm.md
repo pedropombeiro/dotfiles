@@ -181,6 +181,11 @@ update it.
 When committing/pushing code, first attempt without output (e.g., `git push > /dev/null 2>&1`) to minimize token usage.
 Only display output if the operation fails and diagnostics are needed.
 
+Redirect stdin from `/dev/null` when running `commit`, `push`, or `pull` with `git` or `yadm`,
+for example `yadm commit -m "..." </dev/null`. Hooks and signing tools run inside these
+commands, and the shell tool leaves stdin open. Without the redirect, a step that waits for
+input hangs until the shell times out instead of failing.
+
 ### Shared trunks
 
 Renovate and other machines push to the YADM `master` branch and to the `main` branch of plugin

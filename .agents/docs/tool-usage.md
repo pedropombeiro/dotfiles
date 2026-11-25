@@ -40,9 +40,12 @@ Keep harness-specific workarounds here rather than copying them into project doc
 
 OpenCode's edit and write tools run the configured formatter on save. In the GitLab
 repository, RuboCop autocorrect rewrites lines that `.rubocop_todo` exempts, so a
-one-line factory edit can reformat unrelated code. After editing Ruby files there,
-check `git diff --stat`. If unrelated lines changed, restore the file and apply the
-edit from the shell with an exact-match Ruby `sub!` that aborts when nothing matches.
+one-line factory edit can reformat unrelated code. `Developer/gitlab.com/opencode.jsonc##class.Work`
+and `$GDK_ROOT/gitlab/opencode.jsonc` disable the `rubocop` and `standardrb`
+formatters on save. In isolated checkouts without those configs, check
+`git diff --stat` after editing Ruby files; if unrelated lines changed, restore the
+file and apply the edit from the shell with an exact-match Ruby `sub!` that aborts
+when nothing matches.
 
 ## Preserve non-ASCII characters
 

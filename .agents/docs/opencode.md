@@ -226,13 +226,11 @@ user approval before creating or updating a GitLab issue.
 For personal or dotfiles friction, use the private GitHub repository
 [`pedropombeiro/agent-friction`](https://github.com/pedropombeiro/agent-friction).
 It's the default destination on personal machines. On Work machines, set
-`destination` to `github`. Get explicit user approval before creating or
-updating an issue there.
+`destination` to `github`. In a GitLab or GDK checkout, also set
+`unrelatedReason` to explain why the friction is unrelated to the checkout.
+Get explicit user approval before creating or updating an issue there.
 
-The `local` file destination, `~/.agents/docs/vents.md`, is only for friction
-that can't go to either repository. Never use it as a fallback when GitLab or
-GitHub filing fails. In a checkout with an enforced route, it also needs a
-`localReason` explaining why the friction is unrelated to the checkout.
+Never switch destinations when GitLab or GitHub filing fails.
 
 ### Plugins meant for publishing
 

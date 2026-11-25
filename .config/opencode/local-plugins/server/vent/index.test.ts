@@ -142,13 +142,17 @@ describe("options and routing", () => {
     expect(selectDestination(options, {}).name).toBe("only");
   });
 
-  test("enforces project routes with a deliberate exception for unrelated file entries", () => {
+  test("enforces project routes with an exception for opted-in destinations", () => {
     const options = resolveOptions({
       defaultDestination: "local",
       destinations: {
         local: { type: "file", path: "~/vents.md" },
         gitlab: { type: "gitlab", project: "dev/friction" },
-        github: { type: "github", repo: "dev/friction" },
+        github: {
+          type: "github",
+          repo: "dev/friction",
+          acceptsUnrelated: true,
+        },
       },
       routes: [
         { directoryPrefix: "~/gdk", destination: "gitlab", enforced: true },
@@ -179,26 +183,37 @@ describe("options and routing", () => {
         selectDestination(options, { ...location, requested: "gitlab" }).name,
       ).toBe("gitlab");
       expect(() =>
-        selectDestination(options, { ...location, requested: "local" }),
-      ).toThrow("localReason");
+        selectDestination(options, { ...location, requested: "github" }),
+      ).toThrow('set destination to one of "github"');
+      expect(() =>
+        selectDestination(options, {
+          ...location,
+          requested: "github",
+          unrelatedReason: " ",
+        }),
+      ).toThrow("unrelatedReason");
       expect(() =>
         selectDestination(options, {
           ...location,
           requested: "local",
-          localReason: " ",
+          unrelatedReason: "The file destination hasn't opted in.",
         }),
-      ).toThrow("localReason");
-      expect(() =>
-        selectDestination(options, { ...location, requested: "github" }),
       ).toThrow("This checkout routes");
       expect(
         selectDestination(options, {
           ...location,
-          requested: "local",
-          localReason: "SSH signing fails in personal repositories too.",
+          requested: "github",
+          unrelatedReason: "SSH signing fails in personal repositories too.",
         }).name,
-      ).toBe("local");
+      ).toBe("github");
     }
+    expect(() =>
+      selectDestination(options, {
+        directory: "/home/dev/gdk/gitlab",
+        home: "/home/dev",
+        unrelatedReason: "No destination was given.",
+      }),
+    ).toThrow("requires an explicit destination");
     expect(
       selectDestination(options, {
         directory: "/home/dev/gdk-backup",
@@ -908,7 +923,7 @@ describe("executeVent and input parsing", () => {
     const options = resolveOptions({
       defaultDestination: "local",
       destinations: {
-        local: { type: "file", path: targetPath },
+        local: { type: "file", path: targetPath, acceptsUnrelated: true },
         gitlab: { type: "gitlab", project: "dev/friction", epic: "org&42" },
       },
       routes: [
@@ -933,7 +948,7 @@ describe("executeVent and input parsing", () => {
     const runtime = { sessionID: "ses_999", directory: dir, exec: mockExec };
     await expect(
       executeVent({ ...sampleInput, destination: "local" }, options, runtime),
-    ).rejects.toThrow("localReason");
+    ).rejects.toThrow("unrelatedReason");
     await expect(executeVent(sampleInput, options, runtime)).rejects.toThrow(
       "authorization failed",
     );
@@ -942,12 +957,22 @@ describe("executeVent and input parsing", () => {
       {
         ...sampleInput,
         destination: "local",
-        localReason: "An unrelated user-wide tool failed.",
+        unrelatedReason: "An unrelated user-wide tool failed.",
       },
       options,
       runtime,
     );
     expect(personal.destinationType).toBe("file");
     expect(await Bun.file(targetPath).exists()).toBe(true);
+    const legacy = await executeVent(
+      {
+        ...sampleInput,
+        destination: "local",
+        localReason: "The deprecated alias still works.",
+      },
+      options,
+      runtime,
+    );
+    expect(legacy.destinationType).toBe("file");
   });
 });

@@ -109,10 +109,6 @@
           { "remoteRepository": "gitlab.com/gitlab-org/gitlab-development-kit", "destination": "gitlab", "enforced": true }
         ],
         "destinations": {
-          "local": {
-            "type": "file",
-            "path": "~/.agents/docs/vents.md"
-          },
           "gitlab": {
             "type": "gitlab",
             "project": "pedropombeiro/work-friction",
@@ -122,16 +118,14 @@
           "github": {
             "type": "github",
             "repo": "pedropombeiro/agent-friction",
-            "labels": ["agent-friction"]
+            "labels": ["agent-friction"],
+            // Personal friction found in an enforced GitLab checkout, with an `unrelatedReason`.
+            "acceptsUnrelated": true
           }
         }
 {% else %}
         "defaultDestination": "github",
         "destinations": {
-          "local": {
-            "type": "file",
-            "path": "~/.agents/docs/vents.md"
-          },
           "github": {
             "type": "github",
             "repo": "pedropombeiro/agent-friction",

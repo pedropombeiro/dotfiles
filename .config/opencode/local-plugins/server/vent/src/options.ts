@@ -1,7 +1,12 @@
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 
-export interface GitLabDestination {
+interface DestinationBase {
+  /** Accept vents redirected from an enforced route with an `unrelatedReason`. */
+  acceptsUnrelated?: boolean;
+}
+
+export interface GitLabDestination extends DestinationBase {
   type: "gitlab";
   project: string;
   epic?: string;
@@ -10,14 +15,14 @@ export interface GitLabDestination {
   labels: string[];
 }
 
-export interface GitHubDestination {
+export interface GitHubDestination extends DestinationBase {
   type: "github";
   repo: string;
   host: string;
   labels: string[];
 }
 
-export interface FileDestination {
+export interface FileDestination extends DestinationBase {
   type: "file";
   path: string;
 }
@@ -73,6 +78,8 @@ function parseDestination(raw: unknown): DestinationConfig | undefined {
   if (!raw || typeof raw !== "object") return undefined;
   const record = raw as Record<string, unknown>;
   const type = stringValue(record.type);
+  const base: DestinationBase =
+    record.acceptsUnrelated === true ? { acceptsUnrelated: true } : {};
 
   if (type === "gitlab") {
     const project = stringValue(record.project);
@@ -86,6 +93,7 @@ function parseDestination(raw: unknown): DestinationConfig | undefined {
       confidential:
         typeof record.confidential === "boolean" ? record.confidential : true,
       labels: stringArray(record.labels),
+      ...base,
     };
   }
 
@@ -97,6 +105,7 @@ function parseDestination(raw: unknown): DestinationConfig | undefined {
       repo,
       host: stringValue(record.host) ?? "github.com",
       labels: stringArray(record.labels),
+      ...base,
     };
   }
 
@@ -106,6 +115,7 @@ function parseDestination(raw: unknown): DestinationConfig | undefined {
     return {
       type: "file",
       path: filePath,
+      ...base,
     };
   }
 
@@ -222,7 +232,7 @@ export function selectDestination(
     directory?: string;
     remote?: string;
     fetchRemotes?: readonly string[];
-    localReason?: string;
+    unrelatedReason?: string;
     home?: string;
   },
 ): ResolvedDestination {
@@ -262,8 +272,8 @@ export function selectDestination(
       `Unknown vent destination "${context.requested}". Configured destinations: ${names.join(", ")}.`,
     );
   }
-  if (context.localReason && requested?.type !== "file") {
-    throw new Error("`localReason` requires an explicit file destination.");
+  if (context.unrelatedReason && !requested) {
+    throw new Error("`unrelatedReason` requires an explicit destination.");
   }
   if (enforced) {
     const config = options.destinations[enforced.destination];
@@ -273,11 +283,20 @@ export function selectDestination(
       );
     }
     if (requested && context.requested !== enforced.destination) {
-      if (requested.type === "file" && context.localReason?.trim()) {
+      if (requested.acceptsUnrelated && context.unrelatedReason?.trim()) {
         return { name: context.requested!, config: requested };
       }
+      const accepting = names.filter(
+        (name) =>
+          name !== enforced.destination &&
+          options.destinations[name]!.acceptsUnrelated,
+      );
+      const hint =
+        accepting.length > 0
+          ? `For friction unrelated to this checkout, set destination to one of ${accepting.map((name) => `"${name}"`).join(", ")} and explain why in unrelatedReason.`
+          : "No configured destination accepts unrelated friction (`acceptsUnrelated`).";
       throw new Error(
-        `This checkout routes vents to "${enforced.destination}". Omit destination, or provide a localReason with a file destination only for unrelated personal friction.`,
+        `This checkout routes vents to "${enforced.destination}". Omit destination for project friction. ${hint}`,
       );
     }
     return { name: enforced.destination, config };

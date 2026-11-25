@@ -29,7 +29,8 @@ skill, permission, and workflow frictions encountered during routine work.
 | `category` | No | One of `tooling`, `documentation`, `skill`, `permissions`, `environment`, `workflow`, `other`. |
 | `labels` | No | Extra labels merged with the destination's configured `labels` (GitLab and GitHub). |
 | `destination` | No | Named destination key. Enforced routes restrict overrides. |
-| `localReason` | No | Why an explicitly selected file entry is unrelated personal friction. Required to override an enforced route with a file destination. |
+| `unrelatedReason` | No | Why the friction is unrelated to the current checkout. Requires an explicit `destination`. Required to override an enforced route, and only destinations with `acceptsUnrelated: true` accept the override. |
+| `localReason` | No | Deprecated alias for `unrelatedReason`. |
 
 ## Options
 
@@ -60,11 +61,12 @@ Configure destinations and optional routing rules in `opencode.json`:
             "type": "github",
             "repo": "owner/repo",
             "host": "github.com",
-            "labels": ["agent-friction"]
+            "labels": ["agent-friction"],
+            "acceptsUnrelated": true
           }
         },
         "routes": [
-          { "directoryPrefix": "~/work", "destination": "gitlab" },
+          { "directoryPrefix": "~/work", "destination": "gitlab", "enforced": true },
           { "remoteContains": "github.com/owner/", "destination": "github" }
         ]
       }
@@ -75,7 +77,7 @@ Configure destinations and optional routing rules in `opencode.json`:
 
 ### Destination resolution order
 
-1. First matching route with `enforced: true`. A different destination is rejected unless it is a file destination and `localReason` explains the unrelated personal friction.
+1. First matching route with `enforced: true`. A different destination is rejected unless it sets `acceptsUnrelated: true` and `unrelatedReason` explains why the friction is unrelated to the checkout.
 2. Explicit `destination` tool argument.
 3. First matching non-enforced route.
 4. `defaultDestination`, or the sole destination when only one is configured.
@@ -84,7 +86,11 @@ Routes match by `directoryPrefix`, `remoteContains`, or `remoteRepository`. If
 you specify more than one condition on a route, all must match. Remote rules
 check fetch URLs, including remotes other than `origin`. `remoteRepository`
 matches a full `host/namespace/project` identity across HTTPS and SSH URLs.
-An issue destination failure never falls back to a file.
+An issue destination failure never falls back to another destination.
+
+Any destination can set `acceptsUnrelated: true`. It then accepts vents that an
+enforced route would otherwise send elsewhere, as long as the call names it in
+`destination` and gives an `unrelatedReason`.
 
 ### Destination types
 

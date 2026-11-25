@@ -30,8 +30,8 @@ export const VENT_GUIDANCE = [
   "rules, or repeated workarounds), call the `vent` tool to record it.",
   "Do not call `vent` for normal bugs in the feature or fix you are actively implementing, or for",
   "transient user typos. Never include secrets, credentials, or sensitive production data in vents.",
-  "Omit destination for project friction. Use a file destination with localReason only for personal",
-  "friction unrelated to the project, never when issue filing fails.",
+  "Omit destination for project friction. For friction unrelated to the project, set destination",
+  "and explain why in unrelatedReason. Never use another destination when issue filing fails.",
 ].join(" ");
 
 export const ventInputSchema = {
@@ -82,11 +82,16 @@ export const ventInputSchema = {
       description:
         "Optional configured destination name. An enforced route restricts overrides.",
     },
-    localReason: {
+    unrelatedReason: {
       type: "string",
       minLength: 1,
       description:
-        "With a file destination, explain why this is unrelated personal friction. Never use this to bypass failed issue filing.",
+        "With an explicit destination, explain why this friction is unrelated to the current checkout. Required to override an enforced route. Never use this to bypass failed issue filing.",
+    },
+    localReason: {
+      type: "string",
+      minLength: 1,
+      description: "Deprecated alias for unrelatedReason.",
     },
   },
   required: ["title", "friction", "context"],
@@ -139,7 +144,9 @@ export function parseVentInput(raw: unknown): VentInput {
   const category = optionalCategory(record.category);
   const labels = optionalStringArray(record.labels);
   const destination = optionalString(record.destination);
-  const localReason = optionalString(record.localReason);
+  const unrelatedReason =
+    optionalString(record.unrelatedReason) ??
+    optionalString(record.localReason);
 
   return {
     title: requiredString(record.title, "title"),
@@ -150,7 +157,7 @@ export function parseVentInput(raw: unknown): VentInput {
     ...(category ? { category } : {}),
     ...(labels ? { labels } : {}),
     ...(destination ? { destination } : {}),
-    ...(localReason ? { localReason } : {}),
+    ...(unrelatedReason ? { unrelatedReason } : {}),
   };
 }
 
@@ -243,7 +250,7 @@ export async function executeVent(
       ...(runtime.remote ? [runtime.remote] : []),
       ...(git.fetchRemotes ?? []),
     ],
-    localReason: input.localReason,
+    unrelatedReason: input.unrelatedReason,
     home: runtime.home,
   });
 

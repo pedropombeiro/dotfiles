@@ -19,7 +19,7 @@ export interface VentInput {
   category?: VentCategory;
   labels?: string[];
   destination?: string;
-  localReason?: string;
+  unrelatedReason?: string;
 }
 
 export interface VentMetadata {

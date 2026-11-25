@@ -118,6 +118,13 @@
       "extractVersion": "^v?(?<version>.*)$",
       "groupName": "mise version pin",
       "groupSlug": "mise-version-pin"
+    },
+    {
+      "description": "Group Plannotator CLI and OpenCode plugin updates together to keep their versions in lockstep",
+      "matchManagers": ["custom.regex", "mise"],
+      "matchPackageNames": ["/^([a-z]+:)?backnotprop/plannotator$/", "@plannotator/opencode"],
+      "groupName": "plannotator",
+      "groupSlug": "plannotator"
     }
   ],
   "mise": {

@@ -67,6 +67,8 @@ hostname: gdk.test
 listen_address: 172.16.123.1
 mise:
   enabled: true
+tool_version_manager:
+  enabled: true
 nats:
   enabled: true
 nginx:

@@ -154,6 +154,11 @@ Prefer mise-managed tools over system packages. Use `latest` where appropriate
 and document QTS compatibility constraints. Prefer `github:` or `aqua:` over
 compiler-backed backends when suitable cross-platform release artifacts exist.
 
+mise derives its config, data, cache, and state directories from the XDG variables. When a
+command overrides them, for example to isolate a test, also set `MISE_CONFIG_DIR`,
+`MISE_DATA_DIR`, `MISE_CACHE_DIR`, and `MISE_STATE_DIR` to their real paths. See
+[Testing with an isolated server](opencode.md#testing-with-an-isolated-server).
+
 ## Tool postinstall hooks
 
 Attach tool-specific setup to that tool's `postinstall` option. It runs after

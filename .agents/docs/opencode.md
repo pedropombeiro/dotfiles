@@ -264,6 +264,27 @@ every tool call, including the edits that would fix it.
 - If an agent is locked out, fix or revert the file from a terminal, for example
   with `yadm checkout -- ~/.config/opencode/plugins/<plugin>.js`.
 
+### Testing with an isolated server
+
+To test a plugin or bundle against a throwaway `opencode serve`, point the XDG variables at a
+temporary directory. OpenCode has no documented variable that moves only its own config and data.
+
+`opencode` and the tools that plugins spawn resolve through mise shims, and mise derives its own
+directories from the same XDG variables. Pin mise to its real directories, or it finds no config,
+fails to resolve tools, and can start installing them:
+
+```sh
+root="$TMPDIR/opencode/<test>"
+XDG_CONFIG_HOME="$root/config" XDG_DATA_HOME="$root/data" \
+  XDG_CACHE_HOME="$root/cache" XDG_STATE_HOME="$root/state" \
+  MISE_CONFIG_DIR="$HOME/.config/mise" MISE_DATA_DIR="$HOME/.local/share/mise" \
+  MISE_CACHE_DIR="$HOME/Library/Caches/mise" MISE_STATE_DIR="$HOME/.local/state/mise" \
+  opencode serve --hostname 127.0.0.1 --port <port> </dev/null
+```
+
+On Linux, `MISE_CACHE_DIR` is `$HOME/.cache/mise`. Run `mise cache path` to confirm it. Pass
+the same variables in the `env` of a spawned process, such as `Bun.spawn`.
+
 ## Terminal config
 
 OpenCode rewrites `~/.config/opencode/cli.json` through a temp file and a rename whenever

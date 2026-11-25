@@ -425,3 +425,5 @@ cask "spotify"
 cask "wakatime"
 # Native desktop client for WhatsApp
 cask "whatsapp"
+# Voice-to-text dictation with AI-powered auto-editing
+cask "wispr-flow"

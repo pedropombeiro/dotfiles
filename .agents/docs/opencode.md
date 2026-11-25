@@ -285,6 +285,13 @@ XDG_CONFIG_HOME="$root/config" XDG_DATA_HOME="$root/data" \
 On Linux, `MISE_CACHE_DIR` is `$HOME/.cache/mise`. Run `mise cache path` to confirm it. Pass
 the same variables in the `env` of a spawned process, such as `Bun.spawn`.
 
+Commands that use the managed service, such as `opencode api` and `opencode reload`, start an
+isolated service under these variables. It defaults to the shared service's port and fails to
+start. With the variables exported, run `opencode service set port <port>` with a free port first.
+The setting is stored in the isolated config. Run `opencode service stop` when done. Never run
+`opencode reload` without the isolated variables during a test, because it reloads the shared
+service that other sessions use.
+
 ## Terminal config
 
 OpenCode rewrites `~/.config/opencode/cli.json` through a temp file and a rename whenever

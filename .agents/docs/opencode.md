@@ -223,10 +223,16 @@ For GDK or GitLab monorepo friction, omit `destination`. The Work config enforce
 the confidential GitLab route by checkout path or fetch remote. Get explicit
 user approval before creating or updating a GitLab issue.
 
-For unrelated personal or dotfiles friction, set `destination` to `local`.
-In a checkout with an enforced route, also provide `localReason` explaining why
-the friction is unrelated to the checkout. Never use the local log as a fallback
-when GitLab filing fails.
+For personal or dotfiles friction, use the private GitHub repository
+[`pedropombeiro/agent-friction`](https://github.com/pedropombeiro/agent-friction).
+It's the default destination on personal machines. On Work machines, set
+`destination` to `github`. Get explicit user approval before creating or
+updating an issue there.
+
+The `local` file destination, `~/.agents/docs/vents.md`, is only for friction
+that can't go to either repository. Never use it as a fallback when GitLab or
+GitHub filing fails. In a checkout with an enforced route, it also needs a
+`localReason` explaining why the friction is unrelated to the checkout.
 
 ### Plugins meant for publishing
 

@@ -118,14 +118,24 @@
             "project": "pedropombeiro/work-friction",
             "epic": "https://gitlab.com/groups/gitlab-org/-/epics/24897",
             "confidential": true
+          },
+          "github": {
+            "type": "github",
+            "repo": "pedropombeiro/agent-friction",
+            "labels": ["agent-friction"]
           }
         }
 {% else %}
-        "defaultDestination": "local",
+        "defaultDestination": "github",
         "destinations": {
           "local": {
             "type": "file",
             "path": "~/.agents/docs/vents.md"
+          },
+          "github": {
+            "type": "github",
+            "repo": "pedropombeiro/agent-friction",
+            "labels": ["agent-friction"]
           }
         }
 {% endif %}

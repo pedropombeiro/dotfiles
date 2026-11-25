@@ -1,4 +1,3 @@
-tap "anomalyco/tap", trusted: true
 tap "brewforge/extras"
 tap "derailed/k9s", trusted: true
 tap "dteoh/sqa", trusted: true
@@ -365,8 +364,6 @@ cask "gimp"
 cask "google-chrome"
 # Desktop automation application
 cask "hammerspoon"
-# Local voice dictation
-cask "anomalyco/tap/hex", trusted: true
 # Companion app for Home Assistant home automation software
 cask "home-assistant"
 # Tool to optimise images to a smaller size

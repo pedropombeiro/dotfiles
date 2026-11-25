@@ -66,7 +66,8 @@ When the user approves a change that touches this directory, deliver it as a pat
    protected directory too, so the user reviews and applies the change set at once.
 1. Edit only the copies under `b/`. Create new files only under `b/`.
 1. From the scratch directory, run `git diff --no-index --no-prefix a b > change.patch`.
-   Exit status 1 means the trees differ.
+   Exit status 1 means the trees differ. Don't use plain `diff -u`: Plannotator shows a
+   patch without `diff --git` headers as empty, and still reports "no changes requested".
 1. With the shell tool's `workdir` set to `~`, run `yadm apply --check change.patch`
    using the patch's absolute path. `yadm apply` resolves patch paths against the
    current directory, so it fails from anywhere else.

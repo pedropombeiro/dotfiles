@@ -11,6 +11,10 @@ source "$scripts/tests/lib/test-helpers.zsh"
 test_sandbox bash perl sleep
 trap test_cleanup EXIT
 
+# Skip host /etc/zprofile, /etc/zshrc (Ubuntu's global compinit fails without a
+# TTY), and /etc/zlogin when run-in-tmux-pane spawns `zsh -ilc`.
+print -r -- 'setopt no_global_rcs' > "$ZDOTDIR/.zshenv"
+
 test_stub tmux <<'SCRIPT'
 #!/bin/sh
 state_dir="${TMUX_TEST_STATE_DIR:?}"

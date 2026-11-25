@@ -46,6 +46,12 @@ would otherwise apply that repository's config to `$HOME`. Without the dotfiles 
 the NAS. Checks read the selected files from the working tree, so uncommitted edits to those files
 can still affect the result. Bypass it with `HK=0 yadm push`.
 
+Before hk runs, the wrapper passes the same ref lines to `~/.local/bin/git-check-upstream`. The
+script fails when a remote branch has commits that the local branch lacks, lists those commits when
+they are available locally, and suggests `pull --rebase --autostash`. This rejects the push before
+the slower hk checks run. Bypass it with `SKIP_UPSTREAM_CHECK=1` for an intended force push.
+`HK=0` doesn't skip it.
+
 After changing a formatter or linter config, such as `.editorconfig`, `.markdownlint.jsonc`, or a
 step's options in `hk.pkl`, run `yadm enter hk check --all` before committing. Commit hooks only
 check staged files, so they cannot see files that the new config reformats.

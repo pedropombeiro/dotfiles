@@ -181,6 +181,21 @@ update it.
 When committing/pushing code, first attempt without output (e.g., `git push > /dev/null 2>&1`) to minimize token usage.
 Only display output if the operation fails and diagnostics are needed.
 
+### Shared trunks
+
+Renovate and other machines push to the YADM `master` branch and to the `main` branch of plugin
+repositories often, so the remote is frequently ahead.
+
+1. Before committing on a shared trunk, run `pull --rebase --autostash`. Rebasing before the
+   commit exists avoids re-signing it, which would prompt 1Password again.
+1. Review the incoming commits, then commit and push.
+1. If the push is still rejected with `fetch first`, run `pull --rebase --autostash` once, review
+   the incoming commits, and push again.
+
+In the YADM repository, the `check-push` pre-push hook runs `~/.local/bin/git-check-upstream`
+first. The hook fails fast and lists the incoming commits when the remote branch is ahead. See
+[Pre-push check](hk.md#pre-push-check).
+
 ### 1Password SSH commit signing
 
 `gpg.ssh.program` points to `~/.local/bin/op-ssh-sign-wrapper`, which wraps 1Password's `op-ssh-sign` to fail fast when

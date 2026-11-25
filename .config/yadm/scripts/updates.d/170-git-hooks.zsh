@@ -19,7 +19,7 @@ step_git_hooks() {
   git config --file "${yadm_config}" --remove-section hook.check-all 2>/dev/null || true
   git config --file "${yadm_config}" hook.check-push.event pre-push
   git config --file "${yadm_config}" hook.check-push.command \
-    'check_push() { [ "${HK:-1}" = "0" ] || ! command -v hk >/dev/null 2>&1 || { command -v standardrb >/dev/null 2>&1 || export HK_SKIP_STEPS="${HK_SKIP_STEPS:+$HK_SKIP_STEPS,}standardrb"; cd "$(git rev-parse --show-toplevel)" && hk run pre-push --from-hook "$@"; }; }; check_push "$@"'
+    'check_push() { refs=$(cat); ! command -v git-check-upstream >/dev/null 2>&1 || printf "%s\n" "$refs" | git-check-upstream || return 1; [ "${HK:-1}" = "0" ] || ! command -v hk >/dev/null 2>&1 || { command -v standardrb >/dev/null 2>&1 || export HK_SKIP_STEPS="${HK_SKIP_STEPS:+$HK_SKIP_STEPS,}standardrb"; cd "$(git rev-parse --show-toplevel)" && printf "%s\n" "$refs" | hk run pre-push --from-hook "$@"; }; }; check_push "$@"'
 }
 
 _update_register "git hooks" step_git_hooks

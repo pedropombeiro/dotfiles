@@ -1,0 +1,154 @@
+#!/bin/bash
+# Wrap 1Password's op-ssh-sign to fail fast when signing cannot succeed and
+# classify opaque "agent returned an error" failures with actionable diagnostics.
+
+set -o pipefail
+
+SIGN_BIN="${OP_SSH_SIGN_BIN:-/Applications/1Password.app/Contents/MacOS/op-ssh-sign}"
+DEFAULT_AGENT_SOCK="$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+AGENT_SOCK="${OP_SSH_AGENT_SOCK:-${SSH_AUTH_SOCK:-$DEFAULT_AGENT_SOCK}}"
+LOG_FILE="${OP_LOG_FILE:-$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/Library/Application Support/1Password/Data/logs/1Password_rCURRENT.log}"
+
+is_sign_mode() {
+  local prev="" arg
+  for arg in "$@"; do
+    if [[ $prev == "-Y" ]]; then
+      [[ $arg == "sign" ]]
+      return
+    fi
+    case $arg in
+    --) return 1 ;;
+    -Y) prev="-Y" ;;
+    -Ysign | -Y=sign) return 0 ;;
+    -Y*) return 1 ;;
+    *) prev="" ;;
+    esac
+  done
+  return 1
+}
+
+is_screen_locked() {
+  command -v ioreg >/dev/null 2>&1 && command -v plutil >/dev/null 2>&1 || return 1
+  local locked
+  locked=$(ioreg -n Root -d1 -a </dev/null 2>/dev/null | plutil -extract IOConsoleLocked raw - 2>/dev/null) || return 1
+  [[ $locked == "true" ]]
+}
+
+file_size() {
+  local file=$1 size
+  [[ -r $file ]] || {
+    printf '0\n'
+    return 0
+  }
+  size=$(wc -c <"$file" 2>/dev/null | tr -d '[:space:]') || size=0
+  printf '%s\n' "${size:-0}"
+}
+
+read_new_logs() {
+  local file=$1 offset=$2 size
+  [[ -r $file ]] || return 0
+  size=$(file_size "$file")
+  if ((size < offset)); then
+    offset=0
+  fi
+  if ((size > offset)); then
+    tail -c +$((offset + 1)) "$file" </dev/null 2>/dev/null || true
+  fi
+}
+
+emit_diagnostic() {
+  local reason=$1 action=$2
+  cat >&2 <<EOF
+1Password signing blocked: ${reason}
+Action: ${action}
+Agent guidance: Do not retry in run-in-tmux-pane (it shares the same 1Password SSH agent socket and can trigger 15s rate-limiting), and do not bypass commit signing. Ask the user via the \`question\` tool to resolve this, then retry \`git commit\` (using \`--no-verify\` if pre-commit hooks already passed and staged files are unchanged).
+EOF
+}
+
+preflight_check() {
+  if is_screen_locked; then
+    emit_diagnostic \
+      "macOS screen is locked (Touch ID / Secure Enclave cannot prompt while locked)." \
+      "Unlock the Mac screen and 1Password, then retry the commit."
+    return 1
+  fi
+
+  if [[ ! -e $AGENT_SOCK ]]; then
+    emit_diagnostic \
+      "1Password SSH agent socket is missing (${AGENT_SOCK})." \
+      "Open 1Password and ensure 'Use the SSH agent' is enabled in Settings > Developer, then retry the commit."
+    return 1
+  fi
+
+  if command -v ssh-add >/dev/null 2>&1; then
+    local add_status=0
+    SSH_AUTH_SOCK="$AGENT_SOCK" ssh-add -l </dev/null >/dev/null 2>&1 || add_status=$?
+    if ((add_status == 2)); then
+      emit_diagnostic \
+        "1Password SSH agent is not responding at ${AGENT_SOCK}." \
+        "Open 1Password and ensure the SSH agent is running, then retry the commit."
+      return 1
+    elif ((add_status == 1)); then
+      emit_diagnostic \
+        "1Password SSH agent has no SSH keys loaded (1Password has not been unlocked since launch)." \
+        "Unlock 1Password so it loads your SSH keys, then retry the commit."
+      return 1
+    fi
+  fi
+
+  return 0
+}
+
+classify_failure() {
+  local new_logs=$1 elapsed=$2
+
+  if [[ $new_logs == *"Suppressing Automated Unlock"* ]]; then
+    emit_diagnostic \
+      "1Password automated unlock is rate-limited for 15s after repeated failed attempts." \
+      "Wait 15 seconds, unlock your Mac and 1Password, then retry the commit."
+  elif is_screen_locked || [[ $new_logs == *"FailedToCreatePrivateKey"* ]]; then
+    emit_diagnostic \
+      "macOS screen is locked (Secure Enclave challenge failed because Touch ID cannot prompt while locked)." \
+      "Unlock the Mac screen and 1Password, then retry the commit."
+  elif [[ $new_logs == *"ssh authorization prompt timed out"* ]] || ((elapsed >= 55)); then
+    emit_diagnostic \
+      "1Password SSH authorization prompt timed out without a response." \
+      "Be ready at the screen to approve the 1Password Touch ID / authorization prompt, then retry the commit."
+  elif [[ $new_logs == *"AuthenticationFailed"* ]]; then
+    emit_diagnostic \
+      "1Password Touch ID / authorization prompt was canceled or denied." \
+      "Approve the 1Password prompt when retrying the commit."
+  elif [[ $new_logs == *"failed to unlock app"* ]] || [[ $new_logs == *"failed to get private key from session"* ]]; then
+    emit_diagnostic \
+      "1Password is locked and could not be unlocked automatically." \
+      "Unlock 1Password, then retry the commit."
+  else
+    emit_diagnostic \
+      "1Password SSH agent returned an error (no specific cause recorded in 1Password logs)." \
+      "Verify 1Password is running, unlocked, and exposes the configured signing key, then retry the commit."
+  fi
+}
+
+main() {
+  if ! is_sign_mode "$@"; then
+    exec "$SIGN_BIN" "$@"
+  fi
+
+  preflight_check || exit 1
+
+  local log_offset start_time status=0 elapsed new_logs
+  log_offset=$(file_size "$LOG_FILE")
+  start_time=$SECONDS
+
+  "$SIGN_BIN" "$@" || status=$?
+  if ((status == 0)); then
+    exit 0
+  fi
+
+  elapsed=$((SECONDS - start_time))
+  new_logs=$(read_new_logs "$LOG_FILE" "$log_offset")
+  classify_failure "$new_logs" "$elapsed"
+  exit "$status"
+}
+
+main "$@"

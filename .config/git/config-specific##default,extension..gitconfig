@@ -52,7 +52,7 @@
 [gpg "ssh"]
 
   allowedSignersFile = ~/.config/git/allowed-signers
-  program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+  program = ~/.local/bin/op-ssh-sign-wrapper
 
 [rerere]
 

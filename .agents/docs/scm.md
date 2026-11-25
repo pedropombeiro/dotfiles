@@ -180,3 +180,20 @@ update it.
 
 When committing/pushing code, first attempt without output (e.g., `git push > /dev/null 2>&1`) to minimize token usage.
 Only display output if the operation fails and diagnostics are needed.
+
+### 1Password SSH commit signing
+
+`gpg.ssh.program` points to `~/.local/bin/op-ssh-sign-wrapper`, which wraps 1Password's `op-ssh-sign` to fail fast when
+the macOS screen is locked or the agent is unavailable, and classifies signing failures from 1Password's log.
+
+When commit signing fails:
+
+1. Read the wrapper's diagnostic line to identify whether the Mac screen is locked, 1Password is locked, the Touch ID
+   prompt timed out or was denied, or automated unlock is rate-limited for 15 seconds.
+2. Skip retrying in `run-in-tmux-pane`. Both shells use the same 1Password SSH agent socket, so retrying immediately
+   hits the same failure and can trigger 1Password's 15-second rate limit.
+3. Keep commit signing enabled. Never pass `--no-gpg-sign` or `-c commit.gpgsign=false`.
+4. Ask the user via the `question` tool to complete the specific unlock or approval step so Home Assistant sends a
+   notification.
+5. After the user confirms, retry `git commit`. Pass `--no-verify` if pre-commit hooks already succeeded on the exact
+   staged tree.

@@ -18,6 +18,7 @@ the task needs them.
 - Never post or reply to issues, MRs/PRs, comments, discussions, chat, or any external channel without explicit user approval. Draft the content and ask for confirmation first.
 - When authorized to post a comment or reply, save it as a pending/draft comment first unless the user explicitly requests immediate publication or the platform does not support pending comments. Leave pending comments unpublished and report their status.
 - Before drafting technical prose or a multi-line commit message body, read `~/.agents/docs/writing-style.md` first.
+- Edit rules deny every path under `~/.config/opencode/`, in every workspace. For approved changes that touch it, follow [Protected OpenCode config](~/.agents/docs/opencode.md#protected-opencode-config): build one patch for the whole change set, show it with `plannotator review --patch-file`, and give the user the commands to apply it. Never write those files through shell commands.
 
 ## Grilling Skill Override
 

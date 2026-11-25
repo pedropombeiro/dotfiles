@@ -50,6 +50,38 @@ call actually prompted. A tool name without its own rule does not prove a prompt
 - Session history stores calls in `session_message` (V2) and `part` (legacy). The
   same calls can appear in both, so count from one table.
 
+## Protected OpenCode config
+
+`opencode.json##template` denies the `edit` action for `~/.config/opencode/*`, so an
+agent can't change its own instructions, permissions, or plugins. The rule applies
+in every workspace, including `~`. A multi-file edit that includes one denied path
+fails with `permission.rejected` and applies nothing, even when the other paths are
+allowed.
+
+When the user approves a change that touches this directory, deliver it as a patch:
+
+1. Create a scratch directory under `${TMPDIR:-/tmp}/opencode/`. Copy every file in
+   the change set into both `a/` and `b/`, keeping each path relative to `$HOME`,
+   for example `a/.config/opencode/AGENTS.md##template`. Include files outside the
+   protected directory too, so the user reviews and applies the change set at once.
+1. Edit only the copies under `b/`. Create new files only under `b/`.
+1. From the scratch directory, run `git diff --no-index --no-prefix a b > change.patch`.
+   Exit status 1 means the trees differ.
+1. With the shell tool's `workdir` set to `~`, run `yadm apply --check change.patch`
+   using the patch's absolute path. `yadm apply` resolves patch paths against the
+   current directory, so it fails from anywhere else.
+1. Show the patch with `plannotator review --patch-file <path> --title "<summary>"`.
+   For annotations, edit `b/`, regenerate the patch, and review it again.
+1. After approval, give the user these commands, and name the protected paths:
+
+   ```sh
+   cd ~ && yadm apply <path>/change.patch
+   yadm alt  # only when the patch changes a ##template file
+   ```
+
+Don't apply the patch yourself, and don't write protected files through shell
+commands. The deny rule exists so the user applies these changes.
+
 ## Secret Protection
 
 `~/.config/opencode/plugins/env-protection.js` is a plain tracked file, so it is active on

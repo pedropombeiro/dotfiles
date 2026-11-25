@@ -62,7 +62,7 @@ pane_id=$(tmux split-window -v -l 30% -d -P -F '#{pane_id}' -t "${TMUX_PANE}" \
   "zsh -ilc '${escaped_cmd}; echo \"${_sentinel}:\$?\"' 2>&1 | tee '${tmpfile}'; sleep ${linger}")
 
 _deadline=$(($(date +%s) + _timeout))
-while tmux list-panes -F '#{pane_id}' 2>/dev/null | grep -q "^${pane_id}$"; do
+while tmux list-panes -a -F '#{pane_id}' 2>/dev/null | grep -qxF "${pane_id}"; do
   sleep 0.5
   if [[ $(date +%s) -ge $_deadline ]]; then
     tmux kill-pane -t "$pane_id" 2>/dev/null || true
@@ -70,18 +70,21 @@ while tmux list-panes -F '#{pane_id}' 2>/dev/null | grep -q "^${pane_id}$"; do
     exit 124
   fi
 done
+pane_id=""
 
 strip_escape_sequences() {
   perl -pe 's/\e\].*?(?:\a|\e\\)//g; s/\e\[[0-9;? ]*[a-zA-Z]//g'
 }
 
-exit_code=0
+exit_code=1
+missing_sentinel=0
 last_line=$(tail -n 1 "$tmpfile" | strip_escape_sequences || true)
 
 if [[ "$last_line" == "${_sentinel}:"* ]]; then
   exit_code="${last_line#"${_sentinel}:"}"
   sed '$d' "$tmpfile" >"${tmpfile}.out"
 else
+  missing_sentinel=1
   cp "$tmpfile" "${tmpfile}.out"
 fi
 [[ "$exit_code" =~ ^[0-9]+$ ]] || exit_code=1
@@ -92,6 +95,10 @@ if [[ "$exit_code" -eq 0 && "$total" -gt "$TAIL_LINES" ]]; then
   tail -n "$TAIL_LINES" "${tmpfile}.out" | strip_escape_sequences
 else
   strip_escape_sequences <"${tmpfile}.out"
+fi
+
+if [[ "$missing_sentinel" -eq 1 ]]; then
+  echo "Error: pane exited without exit sentinel" >&2
 fi
 
 exit "${exit_code}"

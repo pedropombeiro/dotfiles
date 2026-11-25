@@ -24,7 +24,7 @@
     { "package": "./local-plugins/server/title-mr-author" },
 {% endif %}
     {
-      "package": "opencode-forgekeeper@5.1.1",
+      "package": "opencode-forgekeeper@5.2.0",
       "options": {
         "delivery": { "reviews": "summary", "lifecycle": "summary" },
         "lifecycleExecution": { "parentMerged": { "mode": "prepare", "actions": ["retarget"] } },

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#
+# Fail fast before a push when the repo's lefthook pre-push hooks need Bundler
+# but the local gems don't match Gemfile.lock. The hooks run in parallel, so
+# without this check they all start and report raw Bundler::GemNotFound errors.
+#
+# Usage: bundle-preflight [git push args...]
+#
+
+set -euo pipefail
+
+for arg in "$@"; do
+  [[ "$arg" == "--no-verify" ]] && exit 0
+done
+[[ "${LEFTHOOK:-}" == "0" ]] && exit 0
+
+top="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+[[ -f "$top/Gemfile.lock" && -f "$top/lefthook.yml" ]] || exit 0
+grep -q 'bundle exec' "$top/lefthook.yml" || exit 0
+
+if ! (cd "$top" && mise exec -- bundle check >/dev/null 2>&1); then
+  echo "bundle-preflight: local gems don't match Gemfile.lock, so pre-push hooks would fail." >&2
+  echo "Run 'mise exec -- bundle install' in $top (or 'fgdku' in the GDK checkout), then retry." >&2
+  exit 1
+fi

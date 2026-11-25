@@ -11,6 +11,8 @@
 local git_cmd=git
 if [[ "$PWD" == "$HOME" ]]; then
   git_cmd=yadm
+else
+  "${HOME}/.shellrc/zshrc.d/functions/scripts/bundle-preflight" "$@" || return 1
 fi
 
 $git_cmd push --force-with-lease "$@"

@@ -30,8 +30,10 @@ The "Vent routing" section of `~/.agents/docs/opencode.md` decides where new ven
    call and its error. Note what the agent was doing, which call failed, and
    whether the user had approved the action.
 1. **Look for duplicates.** List open items in the project with
-   `gitlab_list_work_items` and read `vents.md`. Resolve items with the same root
-   cause together, and set all of them as session targets.
+   `gitlab_list_issues` (`gitlab_list_work_items` currently fails with GraphQL
+   schema type errors on `WorkItemTypeEnum` and `IssuableState`) and read
+   `vents.md`. Resolve items with the same root cause together, and set all of
+   them as session targets.
 1. **Find the root cause.** Reproduce the failure, or confirm it in the config,
    plugin code, skill, or doc involved. Permission rules live in
    `~/.config/opencode/opencode.json##template`. Then decide whether the behavior

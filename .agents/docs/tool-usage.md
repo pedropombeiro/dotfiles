@@ -4,7 +4,12 @@ Tool discovery and recovery from failed file operations.
 
 ## MCP server names
 
-- When a server name is unknown, discover it with `lazy-mcp_list_servers` rather than guessing from the product name.
+- When a server name is unknown, discover it with
+  `tools["lazy-mcp"].list_servers({ filter })` rather than guessing from the product
+  name.
+- When discovering an undocumented server's commands in Code Mode, chain
+  `list_commands({ server })` and `describe_commands({ server, command_names })` in
+  one `execute` call by filtering the returned command names before describing them.
 - A `describe_commands` batch containing an invalid name can fail to return schemas
   for valid names too. Rediscover the command names before retrying.
 

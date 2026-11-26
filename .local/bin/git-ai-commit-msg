@@ -15,7 +15,7 @@ set -e
 # Progress indicators are cosmetic, so a missing helper must not abort the commit.
 _iterm2_helpers="${HOME}/.config/yadm/scripts/lib/iterm2.sh"
 if [ -r "${_iterm2_helpers}" ]; then
-  # shellcheck source=../../.config/yadm/scripts/lib/iterm2.sh
+  # shellcheck source-path=SCRIPTDIR source=../../.config/yadm/scripts/lib/iterm2.sh disable=SC1091
   . "${_iterm2_helpers}"
 else
   iterm2_progress() { :; }
@@ -44,32 +44,96 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-# The stateless generation API does not load project config.
-default_model=gitlab/duo-chat-gpt-5-4-mini
-duo_config="$HOME/Developer/gitlab.com/opencode.jsonc##class.Work"
-if [ "$HOME/Developer/gitlab.com/opencode.jsonc" -ef "$duo_config" ]; then
-  default_model=google-vertex/gemini-4-hydrogen
-  model_dir=$(pwd -P)
-  while [ "$model_dir" != / ]; do
-    if [ "$model_dir" -ef "$HOME/Developer/gitlab.com" ] ||
-      [ "$model_dir/opencode.jsonc" -ef "$duo_config" ] ||
-      [ -f "$model_dir/gdk.yml" ] || [ -f "$model_dir/caproni.yaml" ]; then
-      default_model=gitlab/duo-chat-gpt-5-4-mini
-      break
-    fi
-    model_dir=${model_dir%/*}
-    model_dir=${model_dir:-/}
-  done
-fi
-model="${OPENCODE_COMMIT_MODEL:-$default_model}"
+is_confidential_gitlab_ref() {
+  case "$1" in
+  *gitlab-org/security* | *gitlab-com/gl-security* | *pedropombeiro/work-friction*)
+    return 0
+    ;;
+  *)
+    return 1
+    ;;
+  esac
+}
 
-# Fall back to local model when offline.
-_offline_model="${OPENCODE_OFFLINE_MODEL:-ollama/gemma4:e2b}"
-if [ "$model" != "$_offline_model" ] && ! ping -c 1 -W 2 1.1.1.1 >/dev/null 2>&1; then
-  echo "offline: falling back to $_offline_model" >&2
-  model="$_offline_model"
+extract_gitlab_project() {
+  printf '%s\n' "$1" | sed -nE 's#^(https?://|ssh://git@|git@)gitlab\.com[:/]([^[:space:]]+)(\.git)?/?$#\2#p' | sed -E 's#\.git$##; s#/$##'
+}
+
+is_confidential_branch_issue() {
+  _project="$1"
+  _iid="$2"
+  [ -n "$_project" ] && [ -n "$_iid" ] || return 1
+  # Fail closed to Duo if glab is unavailable or the issue lookup fails.
+  command -v glab >/dev/null 2>&1 || return 0
+  _encoded_project=$(printf '%s' "$_project" | sed 's#/#%2F#g')
+  _issue_json=$(glab api --hostname gitlab.com "projects/${_encoded_project}/issues/${_iid}" 2>/dev/null || true)
+  [ -n "$_issue_json" ] || return 0
+  if ! printf '%s' "$_issue_json" | jq -e 'type == "object" and ((.confidential | type) == "boolean") and ((.labels | type) == "array")' >/dev/null 2>&1; then
+    return 0
+  fi
+  printf '%s' "$_issue_json" | jq -e '
+    .confidential == true or
+    (
+      ((.labels // []) | map(if type == "object" then .name else . end | ascii_downcase)) as $l |
+      ($l | index("security") != null) and ($l | index("security-fix-in-public") == null)
+    )
+  ' >/dev/null 2>&1
+}
+
+is_confidential_checkout() {
+  model_dir=$(pwd -P)
+  if is_confidential_gitlab_ref "$model_dir"; then
+    return 0
+  fi
+  if git rev-parse --git-dir >/dev/null 2>&1; then
+    origin_url=$(git remote get-url origin 2>/dev/null || true)
+    branch_name=$(git symbolic-ref --short -q HEAD 2>/dev/null || true)
+    branch_remote=""
+    branch_push_remote=""
+    if [ -n "$branch_name" ]; then
+      branch_remote=$(git config --get "branch.$branch_name.remote" 2>/dev/null || true)
+      branch_push_remote=$(git config --get "branch.$branch_name.pushRemote" 2>/dev/null || true)
+    fi
+    branch_remote_url=""
+    branch_push_url=""
+    [ -n "$branch_remote" ] && branch_remote_url=$(git remote get-url "$branch_remote" 2>/dev/null || true)
+    [ -n "$branch_push_remote" ] && branch_push_url=$(git remote get-url "$branch_push_remote" 2>/dev/null || true)
+    if is_confidential_gitlab_ref "$origin_url" ||
+      is_confidential_gitlab_ref "$branch_remote_url" ||
+      is_confidential_gitlab_ref "$branch_push_url"; then
+      return 0
+    fi
+    case "$branch_name" in
+    security-* | */security-*)
+      return 0
+      ;;
+    esac
+    branch_iid=$(printf '%s\n' "$branch_name" | sed -nE 's#^[A-Za-z0-9._-]+/([1-9][0-9]*)(/.*|$)#\1#p')
+    if [ -n "$branch_iid" ]; then
+      origin_project=$(extract_gitlab_project "$origin_url")
+      if is_confidential_branch_issue "$origin_project" "$branch_iid"; then
+        return 0
+      fi
+    fi
+  fi
+  return 1
+}
+
+# Load unset model variables from mise once so non-interactive shells stay in
+# sync with ~/.config/mise/conf.d/ without hardcoding model names here.
+if [ -z "${OPENCODE_FAST_MODEL:-}" ] || [ -z "${OPENCODE_DUO_FAST_MODEL:-}" ] || [ "${OPENCODE_OFFLINE_MODEL+x}" != "x" ]; then
+  if command -v mise >/dev/null 2>&1; then
+    _mise_env_json=$(mise env --json 2>/dev/null || mise -C "$HOME" env --json 2>/dev/null || true)
+    if [ -n "$_mise_env_json" ]; then
+      [ -z "${OPENCODE_FAST_MODEL:-}" ] && OPENCODE_FAST_MODEL=$(printf '%s' "$_mise_env_json" | jq -r '.OPENCODE_FAST_MODEL // empty' 2>/dev/null || true)
+      [ -z "${OPENCODE_DUO_FAST_MODEL:-}" ] && OPENCODE_DUO_FAST_MODEL=$(printf '%s' "$_mise_env_json" | jq -r '.OPENCODE_DUO_FAST_MODEL // empty' 2>/dev/null || true)
+      if [ "${OPENCODE_OFFLINE_MODEL+x}" != "x" ] && printf '%s' "$_mise_env_json" | jq -e 'has("OPENCODE_OFFLINE_MODEL")' >/dev/null 2>&1; then
+        OPENCODE_OFFLINE_MODEL=$(printf '%s' "$_mise_env_json" | jq -r '.OPENCODE_OFFLINE_MODEL // empty' 2>/dev/null || true)
+      fi
+    fi
+    unset _mise_env_json
+  fi
 fi
-unset _offline_model
 
 # Use yadm when running from the home directory (dotfiles repo).
 yadm_repo="${XDG_DATA_HOME:-$HOME/.local/share}/yadm/repo.git"
@@ -127,6 +191,74 @@ if [ ! -s "$tmpfile" ]; then
   echo "error: no diff provided on stdin and no staged changes" >&2
   exit 1
 fi
+
+# Classify the checkout and diff before selecting a model so OPENCODE_COMMIT_MODEL
+# or offline fallbacks cannot send confidential diffs to non-gitlab providers.
+confidential_checkout=0
+if is_confidential_checkout ||
+  LC_ALL=C grep -qiE 'gitlab-org/security|gitlab-com/gl-security|pedropombeiro/work-friction' "$tmpfile" "$statusfile" 2>/dev/null; then
+  confidential_checkout=1
+fi
+
+if [ "$confidential_checkout" -eq 1 ]; then
+  if [ -n "${OPENCODE_COMMIT_MODEL:-}" ]; then
+    case "$OPENCODE_COMMIT_MODEL" in
+    gitlab/*)
+      model="$OPENCODE_COMMIT_MODEL"
+      ;;
+    *)
+      echo "error: OPENCODE_COMMIT_MODEL must use the gitlab/ provider in confidential checkouts (got '$OPENCODE_COMMIT_MODEL')" >&2
+      exit 1
+      ;;
+    esac
+  else
+    model="${OPENCODE_DUO_FAST_MODEL:-}"
+  fi
+  case "$model" in
+  gitlab/?*) ;;
+  *)
+    echo "error: confidential checkout requires a gitlab/* commit model (set OPENCODE_DUO_FAST_MODEL in mise)" >&2
+    exit 1
+    ;;
+  esac
+else
+  if [ -n "${OPENCODE_COMMIT_MODEL:-}" ]; then
+    model="$OPENCODE_COMMIT_MODEL"
+  else
+    model="${OPENCODE_FAST_MODEL:-}"
+  fi
+  if [ -z "$model" ]; then
+    echo "error: no commit model configured (set OPENCODE_COMMIT_MODEL or OPENCODE_FAST_MODEL in mise)" >&2
+    exit 1
+  fi
+fi
+
+# Fall back to local model when offline, unless OPENCODE_COMMIT_MODEL was
+# explicitly set. Confidential checkouts never fall back to non-gitlab models.
+if [ -z "${OPENCODE_COMMIT_MODEL:-}" ] && ! ping -c 1 -W 2 1.1.1.1 >/dev/null 2>&1; then
+  if [ "$confidential_checkout" -eq 1 ]; then
+    echo "error: offline commit generation is unavailable for confidential checkouts" >&2
+    exit 1
+  fi
+  _offline_model="${OPENCODE_OFFLINE_MODEL:-}"
+  if [ -z "$_offline_model" ]; then
+    echo "error: offline commit generation is unavailable (no approved OPENCODE_OFFLINE_MODEL configured)" >&2
+    exit 1
+  fi
+  if [ "$model" != "$_offline_model" ]; then
+    echo "offline: falling back to $_offline_model" >&2
+    model="$_offline_model"
+  fi
+  unset _offline_model
+fi
+
+case "$model" in
+?*/?*) ;;
+*)
+  echo "error: invalid commit model '$model' (expected <provider>/<model>)" >&2
+  exit 1
+  ;;
+esac
 
 # Keep minified bundles and source maps out of the prompt. Otherwise retain
 # lines up to 4 KB per file and 12 KB overall, plus up to 4 KB of file headers.

@@ -68,9 +68,9 @@ When the user approves a change that touches this directory, deliver it as a pat
 1. From the scratch directory, run `git diff --no-index --no-prefix a b > change.patch`.
    Exit status 1 means the trees differ. Don't use plain `diff -u`: Plannotator shows a
    patch without `diff --git` headers as empty, and still reports "no changes requested".
-1. With the shell tool's `workdir` set to `~`, run `yadm apply --check change.patch`
-   using the patch's absolute path. `yadm apply` resolves patch paths against the
-   current directory, so it fails from anywhere else.
+1. Run `~/.config/yadm/scripts/validators/check-yadm-patch.sh <path>/change.patch`
+   using the patch's absolute path. The helper rejects option flags and checks the
+   patch against `$HOME` without applying it (`yadm apply` is denied for agents).
 1. Show the patch with `plannotator review --patch-file <path> --title "<summary>"`.
    For annotations, edit `b/`, regenerate the patch, and review it again. On a machine
    without `plannotator`, such as the NAS, run `command -v plannotator` first. If it's
@@ -232,6 +232,11 @@ Each local plugin documents its behavior, options, and tests in its own README:
   names sessions after the GitHub PR or GitLab MR (`@<author> - Review <topic>`)
   or issue, work item, or epic they work on, supporting full URLs and shorthand
   references (`!123`, `#123`).
+- [`confidential-guard`](../../.config/opencode/local-plugins/server/confidential-guard/README.md):
+  loaded on Work machines to detect confidential GitLab items, security repos,
+  and RED production tools, withholding confidential output from upstream models
+  and automatically switching and locking the session (and its subagents and
+  Forgekeeper linked sessions) to GitLab Duo.
 
 ### Vent routing
 
@@ -339,20 +344,28 @@ plugin. Tab still cycles agents in reverse, and the agent picker remains availab
 
 ## Models
 
-The top-level default and Plan use `OPENCODE_PLAN_MODEL` from mise, and Build
-uses `OPENCODE_BUILD_MODEL`. On Work, `~/.config/mise/conf.d/env.work.toml`
-sets Gemini 4 Argon and Neon, respectively. The Work template uses Hydrogen
-for titles. YADM links the Work
-alternate at `~/Developer/gitlab.com/opencode.jsonc` to set Duo defaults for
-all checkouts below that directory. Relinking also installs the same override
-at the GDK and Caproni roots. New Caproni environments get it at creation.
-These are defaults, not provider restrictions. Existing sessions can retain
-their selected model, and explicit model selections still take precedence.
+Model selections are defined once in `~/.config/mise/conf.d/` and referenced by
+`opencode.json##template`, `confidential-guard`, and `git-ai-commit-msg`:
 
-On other machines, the shared mise defaults and any role overrides still apply,
-and titles use Duo Luna. To select a model for a single run, use `opencode run --model`.
-`git-ai-commit-msg` selects its model separately through the generation API using
-`OPENCODE_COMMIT_MODEL`.
+- `OPENCODE_PLAN_MODEL`, `OPENCODE_BUILD_MODEL`, and `OPENCODE_FAST_MODEL`
+  control the top-level default/Plan, Build, and Explore/Title/commit models
+  (`general` inherits the parent session's model). Shared defaults live in
+  `~/.config/mise/conf.d/opencode.toml`; Work overrides them to Vertex Gemini 4
+  in `~/.config/mise/conf.d/env.work.toml`.
+- `OPENCODE_DUO_PLAN_MODEL`, `OPENCODE_DUO_BUILD_MODEL`, and
+  `OPENCODE_DUO_FAST_MODEL` in `~/.config/mise/conf.d/opencode.toml` name the
+  canonical GitLab Duo models used when
+  [`confidential-guard`](../../.config/opencode/local-plugins/server/confidential-guard/README.md)
+  or `git-ai-commit-msg` switches a confidential/security session to Duo.
+- `OPENCODE_OFFLINE_MODEL` in `~/.config/mise/conf.d/opencode.toml` configures
+  the offline fallback for `git-ai-commit-msg` on personal machines;
+  `~/.config/mise/conf.d/env.work.toml` clears it on Work machines where
+  `provider.use` policy denies `ollama`.
+
+YADM links `~/Developer/gitlab.com/opencode.jsonc` (plus the GDK and Caproni
+roots) for formatter overrides without forcing GitLab Duo globally. To select a
+model for a single run, use `opencode run --model`; `OPENCODE_COMMIT_MODEL`
+overrides `git-ai-commit-msg` (and must use `gitlab/*` in confidential checkouts).
 
 The shared service must start with the mise environment so both variables are set.
 After changing model variables, run `mise exec -- opencode service restart` from a
@@ -401,9 +414,11 @@ are not part of the request. No archiving or session deletion is needed.
   `~/.local/share/yadm/repo.git` takes about 35 ms. Read-only commands in the script use `git
   --git-dir ... --work-tree "$HOME"`. Only the commit itself calls `yadm`. Avoid `yadm` in any
   interactive hot path.
-- **Model**: Gemini 4 Hydrogen on Work outside the Duo-default directories.
-  Duo GPT-5.4 Mini remains the default inside those directories and on other
-  machines. `OPENCODE_COMMIT_MODEL` overrides both.
+- **Model**: uses `OPENCODE_FAST_MODEL` from mise (`OPENCODE_DUO_FAST_MODEL` in
+  confidential/security repos, branches, or unverified GitLab branch issues, and
+  `OPENCODE_OFFLINE_MODEL` when offline on machines that allow it).
+  `OPENCODE_COMMIT_MODEL` overrides default and offline selection, and is
+  validated to use `gitlab/*` in confidential checkouts.
 
 ## Plugin Version Pinning
 

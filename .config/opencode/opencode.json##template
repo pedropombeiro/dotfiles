@@ -28,9 +28,21 @@
         "lifecycleExecution": { "parentMerged": { "mode": "prepare", "actions": ["retarget"] } },
 {% if yadm.class == "Work" %}
         "automation": {
-          // Models trusted to prepare fixes from review feedback.
+          // Models trusted to prepare fixes from review feedback and investigate jobs.
           "modelGroups": {
-            "coding": ["gitlab/duo-chat-opus-5-5", "gitlab/duo-chat-gpt-6-2-astra"],
+            "coding": [
+              "{env:OPENCODE_PLAN_MODEL}",
+              "{env:OPENCODE_BUILD_MODEL}",
+              "{env:OPENCODE_DUO_PLAN_MODEL}",
+              "{env:OPENCODE_DUO_BUILD_MODEL}",
+              "gitlab/duo-chat-opus-5-5",
+            ],
+            "duo": [
+              "{env:OPENCODE_DUO_PLAN_MODEL}",
+              "{env:OPENCODE_DUO_BUILD_MODEL}",
+              "gitlab/duo-chat-opus-5-5",
+              "gitlab/duo-chat-sonnet-5-5",
+            ],
           },
           "rules": [
             {
@@ -49,18 +61,42 @@
               "allowedModelGroup": "coding",
             },
             {
-              // Investigates failed jobs on MRs you wrote or review. Changes nothing.
+              // Investigates failed jobs on public MRs you wrote or review. Changes nothing.
               "on": "job-failed",
               "host": "gitlab.com",
-              "projects": ["gitlab-org/gitlab", "gitlab-org/security/gitlab"],
+              "projects": ["gitlab-org/gitlab"],
               "action": "investigate",
               "execution": "environment",
+            },
+            {
+              // Investigates failed jobs on security MRs using Duo models only. Changes nothing.
+              "on": "job-failed",
+              "host": "gitlab.com",
+              "projects": ["gitlab-org/security/gitlab"],
+              "action": "investigate",
+              "execution": "environment",
+              "allowedModelGroup": "duo",
             },
           ],
         },
 {% endif %}
       },
     },
+{% if yadm.class == "Work" %}
+    {
+      // Registered after forge-session-title and opencode-forgekeeper so their
+      // title and prompt hooks run first.
+      "package": "./local-plugins/server/confidential-guard",
+      "options": {
+        "models": {
+          "plan": "{env:OPENCODE_DUO_PLAN_MODEL}",
+          "build": "{env:OPENCODE_DUO_BUILD_MODEL}",
+          "explore": "{env:OPENCODE_DUO_FAST_MODEL}",
+          "title": "{env:OPENCODE_DUO_FAST_MODEL}"
+        }
+      }
+    },
+{% endif %}
     {
       // macOS uses a disk-backed local relay. NAS exports directly to Alloy.
       // See ~/.agents/docs/opencode.md#telemetry.
@@ -146,11 +182,8 @@
   "agents": {
     "plan": { "model": "{env:OPENCODE_PLAN_MODEL}", "color": "#fb4934" },
     "build": { "model": "{env:OPENCODE_BUILD_MODEL}", "color": "#b8bb26" },
-{% if yadm.class == "Work" %}
-    "title": { "model": "google-vertex/gemini-4-hydrogen" }
-{% else %}
-    "title": { "model": "gitlab/duo-chat-gpt-6-luna" }
-{% endif %}
+    "explore": { "model": "{env:OPENCODE_FAST_MODEL}" },
+    "title": { "model": "{env:OPENCODE_FAST_MODEL}" }
   },
   "mcp": {
     "servers": {
@@ -409,6 +442,7 @@
     { "action": "edit", "resource": "*.env.tpl", "effect": "allow" },
     { "action": "edit", "resource": "~/.aws/*", "effect": "deny" },
     { "action": "edit", "resource": "~/.config/opencode/*", "effect": "deny" },
+    { "action": "edit", "resource": "~/.config/yadm/scripts/validators/*", "effect": "deny" },
     { "action": "edit", "resource": "~/.garminconnect/*", "effect": "deny" },
     { "action": "edit", "resource": "~/.garminconnect_base64", "effect": "deny" },
     { "action": "edit", "resource": "~/.gnupg/*", "effect": "deny" },
@@ -698,6 +732,8 @@
     { "action": "shell", "resource": "*/.agents/skills.work/*/scripts/*", "effect": "allow" },
 {% endif %}
     { "action": "shell", "resource": "*/.config/opencode/skills/*/scripts/*", "effect": "allow" },
+    { "action": "shell", "resource": "~/.config/yadm/scripts/validators/check-yadm-patch.sh *", "effect": "allow" },
+    { "action": "shell", "resource": "/Users/pedropombeiro/.config/yadm/scripts/validators/check-yadm-patch.sh *", "effect": "allow" },
     { "action": "shell", "resource": "stat *", "effect": "allow" },
     { "action": "shell", "resource": "strings *", "effect": "allow" },
     { "action": "shell", "resource": "tail *", "effect": "allow" },
@@ -731,6 +767,8 @@
     { "action": "shell", "resource": "xxd *", "effect": "allow" },
     { "action": "shell", "resource": "yamllint *", "effect": "allow" },
     { "action": "shell", "resource": "yadm add *", "effect": "allow" },
+    { "action": "shell", "resource": "yadm apply*", "effect": "deny" },
+    { "action": "shell", "resource": "*yadm apply*", "effect": "deny" },
     { "action": "shell", "resource": "yadm blame *", "effect": "allow" },
     { "action": "shell", "resource": "yadm commit *", "effect": "allow" },
     { "action": "shell", "resource": "yadm commit *--amend*", "effect": "ask" },

@@ -78,6 +78,7 @@ interface SessionChain {
   readonly session?: DirectorySessionLike;
   readonly ancestors: readonly DirectorySessionLike[];
   readonly forkAncestors: readonly string[];
+  readonly ownerAncestors: readonly string[];
   readonly rootSessionID: string;
   readonly ownerSessionID?: string;
   readonly inheritedDuoModel?: ModelRef;
@@ -156,18 +157,24 @@ export function createPlugin(options: CreatePluginOptions = {}) {
       async function resolveChain(sessionID: string): Promise<SessionChain> {
         const session = await getSessionSafe(sessionID);
         if (!session) {
-          return { ancestors: [], forkAncestors: [], rootSessionID: sessionID };
+          return {
+            ancestors: [],
+            forkAncestors: [],
+            ownerAncestors: [],
+            rootSessionID: sessionID,
+          };
         }
 
         const ancestors: DirectorySessionLike[] = [];
         const forkAncestors: string[] = [];
+        const ownerAncestors: string[] = [];
         const seen = new Set<string>([session.id]);
         let ownerSessionID: string | undefined = linkedOwner(session);
         let inheritedDuoModel: ModelRef | undefined;
         let current: DirectorySessionLike | undefined = session;
 
-        for (let depth = 0; depth < MAX_CHAIN_DEPTH && current; depth += 1) {
-          let forkID = forkSource(current);
+        const collectForks = async (start?: DirectorySessionLike) => {
+          let forkID = start ? forkSource(start) : undefined;
           while (
             forkID &&
             !seen.has(forkID) &&
@@ -185,14 +192,14 @@ export function createPlugin(options: CreatePluginOptions = {}) {
             }
             forkID = forkSource(forkedSession) ?? forkedSession.parentID;
           }
+        };
 
-          const nextID = current.parentID ?? linkedOwner(current);
+        for (let depth = 0; depth < MAX_CHAIN_DEPTH && current; depth += 1) {
+          await collectForks(current);
+
+          const nextID = current.parentID;
           if (!nextID || seen.has(nextID)) break;
           seen.add(nextID);
-
-          if (!ownerSessionID && !current.parentID) {
-            ownerSessionID = nextID;
-          }
 
           const parent = await getSessionSafe(nextID);
           if (!parent) {
@@ -209,6 +216,23 @@ export function createPlugin(options: CreatePluginOptions = {}) {
           current = parent;
         }
 
+        let ownerCursor = ownerSessionID;
+        for (
+          let depth = 0;
+          depth < MAX_CHAIN_DEPTH && ownerCursor && !seen.has(ownerCursor);
+          depth += 1
+        ) {
+          seen.add(ownerCursor);
+          ownerAncestors.push(ownerCursor);
+          const ownerSession = await getSessionSafe(ownerCursor);
+          if (!ownerSession) break;
+          if (!inheritedDuoModel && isDuoModel(ownerSession.model)) {
+            inheritedDuoModel = ownerSession.model;
+          }
+          await collectForks(ownerSession);
+          ownerCursor = ownerSession.parentID ?? linkedOwner(ownerSession);
+        }
+
         const rootSessionID =
           ancestors.length > 0
             ? ancestors[ancestors.length - 1].id
@@ -218,6 +242,7 @@ export function createPlugin(options: CreatePluginOptions = {}) {
           session,
           ancestors,
           forkAncestors,
+          ownerAncestors,
           rootSessionID,
           ownerSessionID,
           inheritedDuoModel,
@@ -232,6 +257,7 @@ export function createPlugin(options: CreatePluginOptions = {}) {
         if (chain.ownerSessionID) ids.add(chain.ownerSessionID);
         for (const ancestor of chain.ancestors) ids.add(ancestor.id);
         for (const forkID of chain.forkAncestors) ids.add(forkID);
+        for (const ownerID of chain.ownerAncestors) ids.add(ownerID);
 
         for (const id of ids) {
           const inMemory = memoryLocks.get(id);
@@ -274,18 +300,14 @@ export function createPlugin(options: CreatePluginOptions = {}) {
           markedAt: now(),
         };
         const ids = new Set<string>([sessionID, chain.rootSessionID]);
-        if (chain.ownerSessionID) ids.add(chain.ownerSessionID);
         for (const ancestor of chain.ancestors) ids.add(ancestor.id);
 
         for (const id of ids) {
           memoryLocks.set(id, lock);
         }
 
-        const persistedIDs = new Set<string>([sessionID, chain.rootSessionID]);
-        if (chain.ownerSessionID) persistedIDs.add(chain.ownerSessionID);
-
         await Promise.all(
-          [...persistedIDs].map((id) => ctx.storage.set(storageKey(id), lock)),
+          [...ids].map((id) => ctx.storage.set(storageKey(id), lock)),
         );
         return lock;
       }
@@ -322,11 +344,13 @@ export function createPlugin(options: CreatePluginOptions = {}) {
           ? true
           : await switchToDuo(sessionID, targetModel);
 
-        // Propagate Duo switch to the owning/root session so Forgekeeper
-        // turns and subsequent parent steps run on Duo too.
+        // Propagate Duo switch to parent/root sessions in the same parentID
+        // tree (subagents return their output directly to their parent).
+        // Forgekeeper linked sessions run in isolated session transcripts and
+        // must not lock or switch their owning session.
         const relatedIDs = new Set<string>();
-        if (chain.ownerSessionID && chain.ownerSessionID !== sessionID) {
-          relatedIDs.add(chain.ownerSessionID);
+        for (const ancestor of chain.ancestors) {
+          if (ancestor.id !== sessionID) relatedIDs.add(ancestor.id);
         }
         if (chain.rootSessionID !== sessionID) {
           relatedIDs.add(chain.rootSessionID);

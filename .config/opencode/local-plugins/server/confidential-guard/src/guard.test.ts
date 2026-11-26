@@ -604,6 +604,20 @@ describe("confidential-guard plugin integration", () => {
     if (endpoint === "projects/gitlab-org%2Fgitlab/issues/111") {
       return JSON.stringify({ confidential: false, labels: [] });
     }
+    if (endpoint === "projects/gitlab-org%2Fgitlab/merge_requests/111") {
+      return JSON.stringify({
+        iid: 111,
+        labels: [],
+        source_branch: "pedropombeiro/111/public-fix",
+        description: "Fixes #111",
+      });
+    }
+    if (
+      endpoint ===
+      "projects/gitlab-org%2Fgitlab/merge_requests/111/closes_issues"
+    ) {
+      return JSON.stringify([{ iid: 111, confidential: false, labels: [] }]);
+    }
     if (endpoint === "projects/gitlab-org%2Fgitlab/merge_requests/777") {
       return JSON.stringify({
         labels: [],
@@ -653,20 +667,20 @@ describe("confidential-guard plugin integration", () => {
     ]);
   });
 
-  test("Forgekeeper linked worktree session switches both linked and owner sessions to Duo before turn", async () => {
+  test("Forgekeeper linked worktree session inherits owner confidentiality and switches only the linked session without locking the owner", async () => {
     const harness = createMockContext({
       directory: "/worktrees/wt-1",
       sessions: {
         ses_owner: {
           id: "ses_owner",
-          agent: "plan",
-          model: VERTEX_PLAN,
+          agent: "build",
+          model: VERTEX_BUILD,
           location: { directory: "/gdk/gitlab" },
         },
         ses_linked: {
           id: "ses_linked",
-          agent: "plan",
-          model: VERTEX_PLAN,
+          agent: "build",
+          model: VERTEX_BUILD,
           location: { directory: "/worktrees/wt-1" },
           metadata: {
             forgekeeper: {
@@ -682,13 +696,85 @@ describe("confidential-guard plugin integration", () => {
     await harness.emitSession("prompt", {
       sessionID: "ses_linked",
       prompt: {
-        text: "Forgekeeper failed-job investigation task for https://gitlab.com/gitlab-org/gitlab/-/merge_requests/777.",
+        text: "Forgekeeper failed-job investigation task for https://gitlab.com/gitlab-org/gitlab/-/merge_requests/111.",
       },
     });
+    expect(harness.switched).toEqual([]);
+
+    // Incidental confidential item in tool output inside the linked session
+    // switches and locks only the linked session, leaving the owning session on Vertex.
+    const toolEvent: any = {
+      sessionID: "ses_linked",
+      agent: "build",
+      tool: "gitlab_list_issues",
+      input: {
+        project_id: "gitlab-org/quality/analytics/ci-health-systemic",
+        state: "opened",
+      },
+      status: "completed",
+      result: {
+        content: [
+          {
+            type: "text",
+            text: '[{"iid": 245, "confidential": true, "title": "secret incident"}]',
+          },
+        ],
+      },
+    };
+    await harness.emitTool("execute.after", toolEvent);
 
     expect(harness.switched).toEqual([
-      { sessionID: "ses_linked", model: DUO_MODELS.plan },
-      { sessionID: "ses_owner", model: DUO_MODELS.plan },
+      { sessionID: "ses_linked", model: DUO_MODELS.build },
+    ]);
+    expect(
+      harness.storage.get("confidential-guard/sessions/ses_linked"),
+    ).toBeDefined();
+    expect(
+      harness.storage.get("confidential-guard/sessions/ses_owner"),
+    ).toBeUndefined();
+
+    // If the owning session itself is locked, a new linked session inherits that lock.
+    const harness2 = createMockContext({
+      directory: "/worktrees/wt-2",
+      sessions: {
+        ses_owner_locked: {
+          id: "ses_owner_locked",
+          agent: "plan",
+          model: DUO_MODELS.plan,
+          location: { directory: "/gdk/gitlab" },
+        },
+        ses_linked_child: {
+          id: "ses_linked_child",
+          agent: "plan",
+          model: VERTEX_PLAN,
+          location: { directory: "/worktrees/wt-2" },
+          metadata: {
+            forgekeeper: {
+              linked: {
+                owner: "ses_owner_locked",
+                session: "ses_linked_child",
+              },
+            },
+          },
+        },
+      },
+    });
+    harness2.storage.set("confidential-guard/sessions/ses_owner_locked", {
+      confidential: true,
+      reason: "confidential issue gitlab-org/gitlab#555",
+      markedAt: 1,
+    });
+    const plugin2 = createPlugin({ git: defaultGit, glab: defaultGlab });
+    await plugin2.setup(harness2.ctx);
+
+    await harness2.emitSession("prompt", {
+      sessionID: "ses_linked_child",
+      prompt: {
+        text: "Forgekeeper failed-job investigation task for https://gitlab.com/gitlab-org/gitlab/-/merge_requests/111.",
+      },
+    });
+    expect(harness2.switched).toEqual([
+      { sessionID: "ses_linked_child", model: DUO_MODELS.plan },
     ]);
   });
 

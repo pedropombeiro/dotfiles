@@ -10,7 +10,10 @@ A session is locked to GitLab Duo when any of the following occur:
 
 1. **Ancestor, fork, or Forgekeeper owner inheritance**: a parent session
    (`parentID`), fork source (`fork.sessionID`), or Forgekeeper linked owner
-   (`metadata.forgekeeper.linked.owner`) is already locked.
+   (`metadata.forgekeeper.linked.owner`) is already locked. Subagents
+   (`parentID`) also propagate locks up to their parent/root session;
+   Forgekeeper linked sessions inherit from their owner without locking or
+   switching the owning session.
 2. **Confidential repository or branch remote**: the working directory, `origin`
    remote, or current branch's tracking remote points to
    `gitlab-org/security/*`, `gitlab-com/gl-security/*`, or
@@ -23,7 +26,7 @@ A session is locked to GitLab Duo when any of the following occur:
    `glab api` checks for `"confidential": true`, `~security` (without
    `~security-fix-in-public`), or MRs linked to confidential issues. Unverified
    references fail closed to GitLab Duo without caching as public. Switches the
-   session (and any Forgekeeper linked owner) before the turn resolves its
+   session (and any parent session) before the turn resolves its
    model.
 4. **Pre-execution RED/confidential tools** (`tool.hook("execute.before")`):
    classifies `esquery`, `esquery-staging`, `incident_io`,

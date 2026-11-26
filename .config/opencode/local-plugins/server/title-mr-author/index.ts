@@ -7,7 +7,7 @@ const mrURL =
 const workItemURL =
   /\bhttps:\/\/gitlab\.com\/((?:[\w.-]+\/)+[\w.-]+)\/-\/(?:issues|work_items|epics)\/([1-9]\d*)(?![\w-])/i;
 const issueRequest =
-  /^\s*(?:(?:can|could|would) you\s+)?(?:please\s+)?(?:(?:address|fix|implement|resolve|work on)\b|(?:create|open)\s+(?:(?:a|an)\s+)?(?:draft\s+)?(?:mr|merge request)\s+(?:to\s+(?:address|fix|implement|resolve)|for)\b)/i;
+  /^\s*(?:(?:let['’]?s|let us|go ahead and|i(?:['’]d| would) like (?:you )?to|i want (?:you )?to|(?:can|could|would) you)\s+)?(?:please\s+)?(?:(?:address|fix|implement|resolve|work on)\b|(?:create|open)\s+(?:(?:a|an)\s+)?(?:draft\s+)?(?:mr|merge request)\s+(?:to\s+(?:address|fix|implement|resolve)|for)\b)/i;
 // Forgekeeper's reference prefix, such as `[#123, !456]`.
 const forgePrefix = /^\[[^\]\r\n]*[#!&]\d+[^\]\r\n]*\](?=\s|$)/;
 const workItemQuery =

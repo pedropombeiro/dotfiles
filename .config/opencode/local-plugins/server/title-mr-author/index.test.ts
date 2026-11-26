@@ -44,6 +44,10 @@ describe("isIssueRequest", () => {
     `Please fix ${issue}`,
     `Can you implement ${issue}`,
     `Work on ${issue}`,
+    `Let's address ${issue}`,
+    `Let’s fix ${issue}`,
+    `Go ahead and implement ${issue}`,
+    `I'd like you to resolve ${issue}`,
     `Create a draft MR for ${issue}`,
     `Open an MR to resolve ${issue}`,
   ])("accepts %p", (text) => expect(isIssueRequest(text)).toBe(true));
@@ -53,6 +57,7 @@ describe("isIssueRequest", () => {
     `What does ${issue} ask for?`,
     `Review ${mr}`,
     `This fixes ${issue}`,
+    `Let's summarize ${issue}`,
   ])("rejects %p", (text) => expect(isIssueRequest(text)).toBe(false));
 });
 

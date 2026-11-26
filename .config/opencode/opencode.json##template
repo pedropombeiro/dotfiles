@@ -193,7 +193,7 @@
     },
 {% endif %}
     "gitlab": {
-      "package": "aisdk:gitlab-ai-provider@6.24.0",
+      "package": "aisdk:gitlab-ai-provider@6.25.0",
       "settings": {
         "instanceUrl": "https://gitlab.com",
         "featureFlags": {
@@ -261,10 +261,8 @@
             { "tier": { "type": "context", "size": 100000 }, "input": 0.50, "output": 2.50, "cache": { "read": 0.05, "write": 0.625 } }
           ]
         },
-        // Local provider adds GPT 6.2 mappings and native Gemini direct access.
         // Standard API rates: https://developers.openai.com/api/docs/pricing
         "duo-chat-gpt-6-2-astra": {
-          "package": "aisdk:file:///Users/pedropombeiro/Developer/gitlab.com/vglafirov/gitlab-ai-provider/dist/index.mjs",
           "name": "Agentic Chat (GPT-6.2 Astra)",
           "limit": { "context": 1050000, "output": 128000 },
           "cost": [
@@ -273,7 +271,6 @@
           ]
         },
         "duo-chat-gpt-6-2-sol": {
-          "package": "aisdk:file:///Users/pedropombeiro/Developer/gitlab.com/vglafirov/gitlab-ai-provider/dist/index.mjs",
           "name": "Agentic Chat (GPT-6.2 Sol)",
           "limit": { "context": 1050000, "output": 128000 },
           "cost": [
@@ -296,8 +293,8 @@
             { "tier": { "type": "context", "size": 200000 }, "input": 4, "output": 15, "cache": { "read": 0.40, "write": 5 } }
           ]
         },
+        // Superseded by GPT 6.2 Sol.
         "duo-chat-gpt-6-1-sol": {
-          // GPT 6.2 uses a local provider build. Other machines retain 6.1.
           "disabled": true,
           "cost": [
             { "input": 2, "output": 10, "cache": { "read": 0.10, "write": 2.50 } },
@@ -332,6 +329,7 @@
             { "tier": { "type": "context", "size": 200000 }, "input": 0.40, "output": 1.80, "cache": { "read": 0.04, "write": 0.50 } }
           ]
         },
+        // Local provider adds native Gemini direct access.
         // Gemini 4 uses implicit caching only, so it has no cache write price.
         // Carbon uses the standard price that starts Dec 1, 2026. The introductory
         // price before then is $2 / $10, with cache reads at $0.10.

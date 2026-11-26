@@ -19,7 +19,7 @@
     "./local-plugins/tui/session-metrics",     // Shows compaction, cache, and timing metrics
     {
       "package": "opencode-cache-coach@0.7.0",
-      "options": { "compactionModel": "gitlab/duo-chat-gpt-6-1-sol" }
+      "options": { "compactionModel": "gitlab/duo-chat-gpt-6-2-sol" }
     }
   ]
 }

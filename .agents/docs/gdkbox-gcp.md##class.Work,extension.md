@@ -74,8 +74,8 @@ These steps apply to agent dispatch through `gdkbox` inside the VM.
 - Use the fleet skill's `scripts/export-opencode-config.mjs` if available. Include only the needed provider, model, and
   portable permission settings. Omit host-only plugins and telemetry endpoints for cloud runs. Check both the host model
   configuration and the provider's model mapping. `gitlab/duo-chat-gpt-6-1-sol` worked with `gitlab-ai-provider` 6.24.0;
-  that provider did not recognize `duo-chat-gpt-6-2-sol`. Scope any explicitly requested model override to the box. A
-  generic server error alone doesn't identify a provider outage.
+  `gitlab-ai-provider` 6.25.0 added `duo-chat-gpt-6-2-astra` and `duo-chat-gpt-6-2-sol`. Scope any explicitly requested
+  model override to the box. A generic server error alone doesn't identify a provider outage.
 - Use only the dedicated short-lived `GITLAB_GDKBOX_TOKEN`. For remote seeding, send it over authenticated SSH stdin and
   map it to `GITLAB_TOKEN` for `gdkbox set-key` on the VM. Never put it in startup scripts, VM metadata, command
   arguments, or logs. Pre-create the task worktree or allow only the specific operations the task needs. Verify the

@@ -42,7 +42,8 @@ zsh -df -c '
   source "$1/update-gitignore-alt.zsh" >/dev/null
   [[ $LC_ALL == en_US.UTF-8 ]] || { print -ru2 "LC_ALL leaked: $LC_ALL"; exit 1; }
 ' _ "$scripts_dir"
-test_assert_equal 'C-locale sort under LC_ALL=en_US.UTF-8' "$expected" "$(<"$HOME/.gitignore")"
+# Use cat instead of $(<file) so zsh -n won't open the fixture before setup.
+test_assert_equal 'C-locale sort under LC_ALL=en_US.UTF-8' "$expected" "$(cat -- "$HOME/.gitignore")"
 
 # Run again with LC_ALL unset and LC_COLLATE=en_US.UTF-8 to confirm idempotence and no leak.
 zsh -df -c '
@@ -53,6 +54,6 @@ zsh -df -c '
   (( ! ${+LC_ALL} )) || { print -ru2 "LC_ALL leaked when originally unset: $LC_ALL"; exit 1; }
   [[ $LC_COLLATE == en_US.UTF-8 ]] || { print -ru2 "LC_COLLATE changed: $LC_COLLATE"; exit 1; }
 ' _ "$scripts_dir"
-test_assert_equal 'idempotent under LC_COLLATE=en_US.UTF-8' "$expected" "$(<"$HOME/.gitignore")"
+test_assert_equal 'idempotent under LC_COLLATE=en_US.UTF-8' "$expected" "$(cat -- "$HOME/.gitignore")"
 
 print 'PASS: update-gitignore-alt sorts deterministically under C locale without leaking locale vars'

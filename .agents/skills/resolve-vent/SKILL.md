@@ -12,8 +12,9 @@ friction.
 ## Where vents live
 
 - **GitLab**: confidential work items in `pedropombeiro/work-friction`, under the
-  [friction epic](https://gitlab.com/groups/gitlab-org/-/epics/24897). Work machines
-  only.
+  [friction epic](https://gitlab.com/groups/gitlab-org/-/epics/24897), labeled
+  `agent-friction` and a category label (`tooling`, `documentation`, `skill`,
+  `permissions`, `environment`, `workflow`, `other`). Work machines only.
 - **GitHub**: private issues in
   [`pedropombeiro/agent-friction`](https://github.com/pedropombeiro/agent-friction)
   for personal and dotfiles friction, labeled `agent-friction`.
@@ -88,18 +89,17 @@ The "Vent routing" section of `~/.agents/docs/opencode.md` decides where new ven
       - `resolution::cannot-reproduce`: the failure couldn't be reproduced or confirmed,
         and nothing changed. Reason: not planned (Won't do).
 
-      Close duplicates as duplicates, with no label. GitHub has no scoped labels, so the
-      label name is plain text there. On GitLab, a scoped label allows only one
-      resolution. The GitLab steps are unverified: check the schema of
-      `gitlab_update_work_item` for label and status parameters, and if the label
-      doesn't exist in the project, ask the user to create it rather than skipping it.
+      Close duplicates as duplicates, with no `resolution::` label. GitHub has no scoped
+      labels, so the label name is plain text there. On GitLab, the `resolution::*` labels
+      exist in `pedropombeiro/work-friction`, and scoped labels allow only one resolution.
    1. Ask with the `question` tool whether to post the comment and close the item.
       Neither work item notes nor issue comments have a draft state, so posting
       publishes immediately.
    1. For GitLab, post the comment with `gitlab_create_work_item_note`, then close
-      the item with `gitlab_update_work_item` and `state_event: "close"`, adding the
-      resolution label in the same update. For GitHub, add the label with
-      `gh issue edit <number> --add-label <label>`, then run
+      the item and add the resolution label via
+      `glab api --method PUT projects/pedropombeiro%2Fwork-friction/issues/<iid> -f state_event=close -f add_labels=<label>`
+      (`gitlab_update_work_item` silently ignores its `labels` parameter). For GitHub,
+      add the label with `gh issue edit <number> --add-label <label>`, then run
       `gh issue close <number> -R pedropombeiro/agent-friction --comment <text>`.
       Add `--reason "not planned"` for `resolution::cannot-reproduce`, and `--reason duplicate`
       for duplicates. Close each duplicate with a short comment that links the main item.

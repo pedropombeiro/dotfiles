@@ -65,12 +65,29 @@ The "Vent routing" section of `~/.agents/docs/opencode.md` decides where new ven
 1. **Close out after approval.** Once the fix is in place:
    1. Draft a closing comment that states the root cause, what changed, and the
       changed file paths. Read `~/.agents/docs/writing-style.md` first.
+   1. Pick the resolution. It takes one `resolution::<name>` label and a native close
+      reason, so a closed item says why it closed:
+      - `resolution::fixed`: the root cause is fixed. Reason: completed (GitLab status: Done).
+      - `resolution::mitigated`: a workaround or agent rule is in place, and the root
+        cause is unknown or outside the dotfiles. Reason: completed (Done).
+      - `resolution::intended`: the behavior is deliberate, and the change documents the
+        supported workflow. Reason: completed (Done).
+      - `resolution::cannot-reproduce`: the failure couldn't be reproduced or confirmed,
+        and nothing changed. Reason: not planned (Won't do).
+
+      Close duplicates as duplicates, with no label. GitHub has no scoped labels, so the
+      label name is plain text there. On GitLab, a scoped label allows only one
+      resolution. The GitLab steps are unverified: check the schema of
+      `gitlab_update_work_item` for label and status parameters, and if the label
+      doesn't exist in the project, ask the user to create it rather than skipping it.
    1. Ask with the `question` tool whether to post the comment and close the item.
       Neither work item notes nor issue comments have a draft state, so posting
       publishes immediately.
    1. For GitLab, post the comment with `gitlab_create_work_item_note`, then close
-      the item with `gitlab_update_work_item` and `state_event: "close"`. For
-      GitHub, run
+      the item with `gitlab_update_work_item` and `state_event: "close"`, adding the
+      resolution label in the same update. For GitHub, add the label with
+      `gh issue edit <number> --add-label <label>`, then run
       `gh issue close <number> -R pedropombeiro/agent-friction --comment <text>`.
-      Close each duplicate with a short comment that links the main item.
+      Add `--reason "not planned"` for `resolution::cannot-reproduce`, and `--reason duplicate`
+      for duplicates. Close each duplicate with a short comment that links the main item.
    1. Report which files are uncommitted. Don't commit unless the user asks.

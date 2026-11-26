@@ -280,7 +280,9 @@ hooks {
     ["commit-msg"] {
         steps {
             ["commitlint"] {
-                check = "npx --yes --package @commitlint/cli -- commitlint < {{commit_msg_file}}"
+                // mise installs and caches the CLI. `npx --yes` re-resolved it on every commit,
+                // which took over a minute on the NAS and sometimes failed on an npm lock.
+                check = "mise x npm:@commitlint/cli -- commitlint < {{commit_msg_file}}"
             }
         }
     }

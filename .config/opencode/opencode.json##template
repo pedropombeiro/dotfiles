@@ -114,6 +114,7 @@
             "project": "pedropombeiro/work-friction",
             "epic": "https://gitlab.com/groups/gitlab-org/-/epics/24897",
             "confidential": true,
+            "labels": ["agent-friction"],
             "reopenLabels": ["resolution::cannot-reproduce", "resolution::mitigated"],
             "resolutionLabelPrefix": "resolution::"
           },

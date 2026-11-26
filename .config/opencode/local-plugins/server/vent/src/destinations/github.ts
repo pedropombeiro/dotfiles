@@ -209,7 +209,10 @@ export async function ventToGitHub(
     }
   }
 
-  const labels = mergeLabels(destination.labels, input.labels);
+  const labels = mergeLabels(destination.labels, [
+    ...(input.category ? [input.category] : []),
+    ...(input.labels ?? []),
+  ]);
   const created = await ghApi<GitHubIssue>(
     deps.exec,
     destination.host,

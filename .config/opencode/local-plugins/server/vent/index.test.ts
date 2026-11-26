@@ -505,7 +505,7 @@ describe("GitLab destination", () => {
     expect(calls).toHaveLength(3);
     const payload = JSON.parse(calls[2]!.stdin!) as Record<string, unknown>;
     expect(payload.confidential).toBe(true);
-    expect(payload.labels).toBe("workflow,agent-friction");
+    expect(payload.labels).toBe("workflow,permissions,agent-friction");
     expect(payload.description).toContain(
       "/epic https://gitlab.com/groups/gitlab-org/-/epics/100",
     );
@@ -757,7 +757,7 @@ describe("GitHub destination", () => {
       "repos/owner/repo/issues?state=closed&per_page=100&labels=friction",
     );
     const payload = JSON.parse(calls[2]!.stdin!) as { labels: string[] };
-    expect(payload.labels).toEqual(["friction", "agent-friction"]);
+    expect(payload.labels).toEqual(["friction", "permissions", "agent-friction"]);
   });
 });
 

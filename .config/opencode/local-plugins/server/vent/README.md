@@ -29,8 +29,8 @@ skill, permission, and workflow frictions encountered during routine work.
 | `context` | Yes | Task or investigation underway when the friction occurred. |
 | `evidence` | No | Error messages, commands, file paths, or reproduction details. |
 | `suggestion` | No | Proposed fix or improvement. |
-| `category` | No | One of `tooling`, `documentation`, `skill`, `permissions`, `environment`, `workflow`, `other`. |
-| `labels` | No | Extra labels merged with the destination's configured `labels` (GitLab and GitHub). |
+| `category` | No | One of `tooling`, `documentation`, `skill`, `permissions`, `environment`, `workflow`, `other`. Applied as a label on GitLab and GitHub issues. |
+| `labels` | No | Extra labels merged with the destination's configured `labels` and `category` (GitLab and GitHub). |
 | `destination` | No | Named destination key. Enforced routes restrict overrides. |
 | `unrelatedReason` | No | Why the friction is unrelated to the current checkout. Requires an explicit `destination`. Required to override an enforced route, and only destinations with `acceptsUnrelated: true` accept the override. |
 | `localReason` | No | Deprecated alias for `unrelatedReason`. |

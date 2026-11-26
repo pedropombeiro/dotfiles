@@ -315,7 +315,10 @@ export async function ventToGitLab(
     description = `${description}\n\n/epic ${epicRef.url}`;
   }
 
-  const labels = mergeLabels(destination.labels, input.labels);
+  const labels = mergeLabels(destination.labels, [
+    ...(input.category ? [input.category] : []),
+    ...(input.labels ?? []),
+  ]);
   const created = await glabApi<GitLabIssue>(
     deps.exec,
     host,

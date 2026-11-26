@@ -96,6 +96,11 @@ mise run dotfiles:fix
 yadm enter hk check --plan
 ```
 
+On a machine without `standardrb`, such as the NAS, `hk check --all` fails in that step. Skip it, as
+the pre-push wrapper does: `HK_SKIP_STEPS=standardrb yadm enter hk check --all`. That passes on the NAS
+(checked 2026-11-26). The run is slow, so start it in the background. The step only matches `*.rb` files, so commit
+hooks rarely reach it.
+
 ## Configured Steps
 
 Do not mirror the step list here — it drifts from `hk.pkl`. List the live plan with

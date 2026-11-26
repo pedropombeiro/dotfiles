@@ -163,12 +163,45 @@ const fileFormat = (filePath) => {
 
 const unquote = (value) => value.trim().replace(/^(["'])([\s\S]*)\1$/, "$2");
 
+// JSON keys whose string values are identifiers, timestamps, or labels, not secrets.
+const NON_SECRET_JSON_KEY = /(?:^|_)(?:id|ids|at|ip|type|name|icon|version)$/i;
+
+/**
+ * The secret values of a JSON document, such as Home Assistant's .storage/auth: string values
+ * under keys that look secret. The rest (entity IDs, timestamps, names) isn't secret, and
+ * indexing it would redact ordinary text, such as every entity ID, from tool output.
+ */
+const jsonSecretValues = (value, key = "") => {
+  if (typeof value === "string") {
+    return SECRET_ENV_KEY.test(key) && !NON_SECRET_ENV_KEY.test(key) && !NON_SECRET_JSON_KEY.test(key) ? [value] : [];
+  }
+  if (Array.isArray(value)) return value.flatMap((item) => jsonSecretValues(item, key));
+  if (value && typeof value === "object") {
+    return Object.entries(value).flatMap(([name, item]) => jsonSecretValues(item, name));
+  }
+  return [];
+};
+
+/** Parses a document that starts like JSON. Returns undefined for anything else. */
+const parseJson = (text) => {
+  if (!/^\s*[{[]/.test(text)) return undefined;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return undefined;
+  }
+};
+
 /** The secret values a file holds, by format. Never throws. */
 export const fileSecretValues = (filePath, { whole = false } = {}) => {
   try {
     if (statSync(filePath).size > MAX_FILE_SIZE) return [];
     const text = readFileSync(filePath, "utf8");
     const format = whole ? "whole" : fileFormat(filePath);
+    if (format === "whole" && !whole) {
+      const document = parseJson(text);
+      if (document !== undefined) return jsonSecretValues(document).filter(Boolean);
+    }
     if (format === "whole") {
       if (NON_SECRET_NAME.test(basename(filePath))) return [];
       const value = text.trim();
@@ -496,6 +529,8 @@ export const createGuards = ({ directory, worktree, config = loadConfig(), now =
     for (const raw of command.split(/[\s|&;<>()[\]{}`=]+/)) {
       const token = raw.replace(/^["']+|["']+$/g, "");
       if (!token || SAFE_SUFFIXES.test(token)) continue;
+      // An escaped dot, as in the grep pattern `\.env`, marks a regular expression, not a path.
+      if (/\\\./.test(token)) continue;
       if (ENV_FILE_TOKEN_PATTERN.test(token) || inSecretDir(token, commandBases(workdir))) paths.add(token);
     }
     return [...paths];

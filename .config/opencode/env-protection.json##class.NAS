@@ -1,7 +1,9 @@
 {
   "secretDirs": [
     "/share/Container/secrets",
+    "/share/Container/.secrets",
     "/share/CACHEDEV1_DATA/Container/secrets",
+    "/share/CACHEDEV1_DATA/Container/.secrets",
     "~/.config/op"
   ],
   "manifests": ["/share/CACHEDEV1_DATA/Container/secrets.manifest.toml"],

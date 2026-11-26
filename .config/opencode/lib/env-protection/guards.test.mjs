@@ -171,6 +171,26 @@ test("parses .pgpass and YAML secret files", () => {
   expect(output).toContain("homeassistant");
 });
 
+test("indexes only the secret values of a JSON file, not entity IDs, names or timestamps", () => {
+  const token = fake("json-token", 64, "hex");
+  const entityId = "cover.guest_bedroom_blind_2";
+  const stamp = "2026-11-05T12:34:56.789012+00:00";
+  const path = join(root, "repo/config/home-assistant/.storage/auth");
+  write(
+    path,
+    JSON.stringify({
+      data: {
+        groups: [{ policy: { entities: { entity_ids: { [entityId]: true }, entity_id: entityId } } }],
+        refresh_tokens: [{ id: fake("id", 32, "hex"), client_name: "Home Assistant 2026.11.1", created_at: stamp, token }],
+      },
+    }),
+  );
+  const output = redacted(`token ${token} entity ${entityId} created ${stamp}`, guards({ secretFiles: [path] }));
+  expect(output).not.toContain(token);
+  expect(output).toContain(entityId);
+  expect(output).toContain(stamp);
+});
+
 test("redacts every line of a multi-line .env value, and keeps parsing after it", () => {
   // Armor lines are built at runtime, so gitleaks doesn't see a key block in the source.
   const armor = (word) => `-----${word} PGP ${["PRIVATE", "KEY", "BLOCK"].join(" ")}-----`;
@@ -256,6 +276,8 @@ test("allows metadata commands on protected paths and dumps of other files", () 
     "test -r secrets/grafana_db_password",
     "xxd compose/readeck/.env.tpl",
     "mise run secrets:sync -- --check",
+    // `\.env` is a regular expression, not a path
+    String.raw`grep -n -E "README|\.env" README.md | cut -c1-80`,
   ]) {
     expect(() => g.checkToolCall({ tool: "shell", args: { command, workdir } })).not.toThrow();
   }

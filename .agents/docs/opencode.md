@@ -94,15 +94,21 @@ on the NAS.
 `env-protection.json` lists the protected paths per machine. `secretDirs` holds directories
 whose every file is one secret. `secretFiles` holds individual files, parsed by format:
 `.pgpass` (password field), `.env` (keys that look secret, not `*_HEADER`), YAML (every key
-except `*user`), and anything else as one value. Both lists accept `~/` and `*` path
-segments. The plugin:
+except `*user`), JSON (string values under keys that look secret, such as `token` and
+`jwt_key`, so entity IDs and timestamps in Home Assistant's `.storage/auth` aren't redacted),
+and anything else as one value. Both lists accept `~/` and `*` path segments. When a
+directory is renamed, such as `secrets/` to `.secrets/`, update the paths here, because a path
+that no longer exists is silently ignored. The plugin:
 
 - Blocks file tools on protected paths and `.env` files. `.env.example`, `.sample`,
-  `.template`, and `.tpl` stay readable.
+  `.template`, and `.tpl` stay readable and editable, both here and in the permission rules,
+  because they hold placeholders and `op://` references, not values.
 - Refuses shell commands that dump or encode a protected path, such as `xxd`, `od`,
   `strings`, `base64`, `head -c`, `tail -c`, `dd`, and `cut -c`. Relative paths resolve
   against the shell tool's `workdir`. Metadata commands such as `ls -l`, `stat`, and
-  `test -r` still work.
+  `test -r` still work. The check covers the whole command, so a dump tool anywhere in it
+  blocks a protected path anywhere else in it. Run the two in separate commands. An escaped
+  dot, as in the grep pattern `\.env`, isn't read as a path.
 - Redacts every protected value from all tool output and from replayed history, whether or
   not the command named the file. It matches each value and its hex, base64, base64url, and
   URL-encoded forms, plus any 12-character run of a high-entropy value or its hex form,

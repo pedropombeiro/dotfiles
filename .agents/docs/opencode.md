@@ -72,7 +72,12 @@ When the user approves a change that touches this directory, deliver it as a pat
    using the patch's absolute path. `yadm apply` resolves patch paths against the
    current directory, so it fails from anywhere else.
 1. Show the patch with `plannotator review --patch-file <path> --title "<summary>"`.
-   For annotations, edit `b/`, regenerate the patch, and review it again.
+   For annotations, edit `b/`, regenerate the patch, and review it again. On a machine
+   without `plannotator`, such as the NAS, run `command -v plannotator` first. If it's
+   missing, paste the patch (without the `index` lines) in chat, then ask for approval
+   with the `question` tool and offer to show the full diff. Request changes the same way:
+   edit `b/`, regenerate the patch, and ask again. The NAS has no Plannotator because its
+   remote mode listens on every interface without a login.
 1. After approval, give the user these commands, and name the protected paths:
 
    ```sh

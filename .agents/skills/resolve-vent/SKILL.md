@@ -53,7 +53,9 @@ The "Vent routing" section of `~/.agents/docs/opencode.md` decides where new ven
    ask with the `question` tool before building it.
 1. **Review the fix in Plannotator.** Build the change as one patch, following
    steps 1-5 of the "Protected OpenCode config" section in
-   `~/.agents/docs/opencode.md`, and review it with `plannotator review --patch-file`. After approval:
+   `~/.agents/docs/opencode.md`, and review it with `plannotator review --patch-file`.
+   When `plannotator` isn't installed, as on the NAS, show the patch in chat and ask
+   for approval with the `question` tool, as that section describes. After approval:
    - If the patch touches `~/.config/opencode/`, give the user the apply commands
      from that section.
    - Otherwise, apply it with `yadm apply` from `~` and confirm the result.

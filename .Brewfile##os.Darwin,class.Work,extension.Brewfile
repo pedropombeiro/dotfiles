@@ -320,8 +320,6 @@ cask "airbuddy"
 cask "apparency"
 # Application uninstaller
 cask "appcleaner"
-# Menu bar icon organiser
-cask "bartender"
 # Compare files and folders
 cask "beyond-compare@4"
 # Prevents your sleeping computer from connecting to Bluetooth accessories

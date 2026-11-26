@@ -230,8 +230,6 @@ cask "appcleaner"
 cask "applepi-baker"
 # Tool to flash OS images to SD cards & USB drives
 cask "balenaetcher"
-# Menu bar icon organiser
-cask "bartender"
 # Compare files and folders
 cask "beyond-compare"
 # Prevents your sleeping computer from connecting to Bluetooth accessories

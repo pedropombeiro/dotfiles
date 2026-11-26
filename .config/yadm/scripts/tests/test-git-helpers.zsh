@@ -241,3 +241,64 @@ run_rebase_all "$repo" >/dev/null
 child_count=$(git -C "$repo" rev-list --count master..tester/106/2-child)
 [[ $child_count == '1' ]] || fail "squash-merged patch-equiv after rebase_all: expected 1 commit, got $child_count"
 print -r -- 'PASS: multi-commit patch-equivalent squash-merged parent'
+
+# 8. Stale local branch behind upstream squash-merged with follow-up commits (work-friction#28)
+repo="$sandbox/squash-merged-with-followups"
+remote="$sandbox/squash-merged-with-followups-remote.git"
+git init -q --bare -b master "$remote"
+init_repo "$repo"
+git -C "$repo" remote add origin "$remote"
+add_commit "$repo" app.rb $'if cond\n  :ok\nelse\n  nil\nend' 'Add app.rb'
+git -C "$repo" push -q -u origin master
+
+git -C "$repo" checkout -q -b tester/107/remove-empty-else
+GIT_COMMITTER_DATE='2026-11-25T10:00:00Z' add_commit "$repo" app.rb $'if cond\n  :ok\nend' 'Remove empty else'
+local_stale_sha=$(git -C "$repo" rev-parse HEAD)
+git -C "$repo" push -q -u origin tester/107/remove-empty-else
+
+# Follow-up commit on upstream edits the same lines before squash-merging into master
+GIT_COMMITTER_DATE='2026-11-25T10:05:00Z' add_commit "$repo" app.rb $'# explain nil return\nif cond\n  :ok_v2\nend' 'Apply review suggestion'
+git -C "$repo" push -q origin tester/107/remove-empty-else
+git -C "$repo" reset -q --hard "$local_stale_sha"
+
+git -C "$repo" checkout -q master
+git -C "$repo" checkout -q -b squash-temp
+git -C "$repo" merge -q --squash origin/tester/107/remove-empty-else
+GIT_COMMITTER_DATE='2026-11-25T10:10:00Z' git -C "$repo" commit -q -m 'Remove empty else (squashed)'
+git -C "$repo" checkout -q master
+GIT_COMMITTER_DATE='2026-11-25T10:10:05Z' git -C "$repo" merge -q --no-ff squash-temp -m "Merge branch 'tester/107/remove-empty-else' into 'master'"
+git -C "$repo" branch -D -q squash-temp
+
+git -C "$repo" checkout -q -b tester/108/active-feature master~1
+add_commit "$repo" active.txt 'active' 'Active feature'
+git -C "$repo" checkout -q master
+add_commit "$repo" master_next.txt 'next' 'Advance master'
+
+json=$(run_mappings "$repo")
+stale_squashed=$(print -r -- "$json" | jq -r '.[] | select(.branch == "tester/107/remove-empty-else") | .squash_merged')
+active_squashed=$(print -r -- "$json" | jq -r '.[] | select(.branch == "tester/108/active-feature") | .squash_merged')
+[[ $stale_squashed == 'true' && $active_squashed == 'false' ]] || \
+  fail "squash-merged with follow-ups (live upstream): stale=$stale_squashed active=$active_squashed"
+
+run_rebase_all "$repo" >/dev/null
+after_stale_sha=$(git -C "$repo" rev-parse tester/107/remove-empty-else)
+[[ $after_stale_sha == "$local_stale_sha" ]] || fail 'squash-merged with follow-ups: stale branch should have been skipped'
+git -C "$repo" merge-base --is-ancestor master tester/108/active-feature || \
+  fail 'squash-merged with follow-ups: active branch was not rebased onto master'
+print -r -- 'PASS: stale local branch behind upstream squash-merged with follow-up commits'
+
+# 9. Pruned upstream ([gone]) still detects verified merge commit unless new local work follows
+git -C "$remote" branch -D -q tester/107/remove-empty-else
+git -C "$repo" fetch -q --prune origin
+
+json=$(run_mappings "$repo")
+pruned_squashed=$(print -r -- "$json" | jq -r '.[] | select(.branch == "tester/107/remove-empty-else") | .squash_merged')
+[[ $pruned_squashed == 'true' ]] || fail "pruned upstream merge record: expected squash_merged=true, got $pruned_squashed"
+
+git -C "$repo" checkout -q tester/107/remove-empty-else
+GIT_COMMITTER_DATE='2026-11-25T10:20:00Z' add_commit "$repo" new_work.txt 'new work' 'Post-merge local commit'
+json=$(run_mappings "$repo")
+post_merge_squashed=$(print -r -- "$json" | jq -r '.[] | select(.branch == "tester/107/remove-empty-else") | .squash_merged')
+[[ $post_merge_squashed == 'false' ]] || \
+  fail "post-merge local work: expected squash_merged=false, got $post_merge_squashed"
+print -r -- 'PASS: verified merge commit with pruned upstream and post-merge local work guard'

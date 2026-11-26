@@ -226,10 +226,12 @@ def rebase_mappings
 
   preload_threads = [
     Thread.new { branch_distance_map(default_branch, local_branches) },
-    Thread.new { preload_merge_bases!(default_branch, local_branches) },
+    Thread.new do
+      preload_merge_bases!(default_branch, local_branches)
+      preload_squash_merged!(default_branch, local_branches)
+    end,
     Thread.new { preload_fork_points!(default_branch, local_branches) },
-    Thread.new { preload_parent_branches!(non_seq_branches) },
-    Thread.new { preload_squash_merged!(default_branch, local_branches) }
+    Thread.new { preload_parent_branches!(non_seq_branches) }
   ]
   preload_threads.each(&:join)
 
@@ -436,12 +438,34 @@ end
 
 def preload_local_branches!
   @branch_exists_cache ||= {}
+  @branch_upstream_cache ||= {}
+  @resolve_ref_cache ||= {}
   return if @branch_exists_preloaded
 
-  `git for-each-ref --format='%(refname:short)' refs/heads/`.lines.each do |line|
-    @branch_exists_cache[line.strip] = true
+  `git for-each-ref --format='%(objectname)%09%(refname:short)%09%(upstream:short)%09%(upstream:track)' refs/heads/`.lines.each do |line|
+    sha, branch, upstream, track = line.chomp.split("\t", 4)
+    next unless sha && branch && !branch.empty?
+
+    @resolve_ref_cache[branch] = sha
+    @branch_exists_cache[branch] = true
+    @branch_upstream_cache[branch] = {
+      upstream: (upstream && !upstream.empty?) ? upstream : nil,
+      gone: track == "[gone]"
+    }
   end
   @branch_exists_preloaded = true
+end
+
+def branch_upstream_info(branch)
+  preload_local_branches!
+  @branch_upstream_cache[branch] ||= begin
+    out = `git for-each-ref --format='%(upstream:short)%09%(upstream:track)' refs/heads/#{branch}`.chomp
+    upstream, track = out.split("\t", 2)
+    {
+      upstream: (upstream && !upstream.empty?) ? upstream : nil,
+      gone: track == "[gone]"
+    }
+  end
 end
 
 def worktree_branches
@@ -605,10 +629,16 @@ def branch_merged_into?(branch, target)
   key = "#{branch}:#{target}"
   return @branch_merged_cache[key] if @branch_merged_cache.key?(key)
 
+  if @merge_base_cache&.key?("#{target}:#{branch}") && @resolve_ref_cache&.key?(branch)
+    return @branch_merged_cache[key] = (@merge_base_cache["#{target}:#{branch}"] == @resolve_ref_cache[branch])
+  end
+
   @branch_merged_cache[key] = system(*%W[git merge-base --is-ancestor #{branch} #{target}])
 end
 
 def preload_squash_merged!(target, branches)
+  preload_target_merge_commits!(target, branches)
+  resolve_ref("#{target}^{tree}")
   branches.map { |branch| Thread.new { branch_squash_merged_into?(branch, target) } }.each(&:join)
 end
 
@@ -620,15 +650,134 @@ def branch_squash_merged_into?(branch, target)
   @branch_squash_merged_cache[key] = compute_branch_squash_merged(branch, target)
 end
 
-# Squash merges leave no ancestry link. Treat the branch as merged when merging it
-# cleanly into the target leaves the target tree unchanged.
-def compute_branch_squash_merged(branch, target)
-  return false if branch_merged_into?(branch, target)
-
-  merged_tree = IO.popen(%W[git merge-tree --write-tree --no-messages #{target} #{branch}], err: File::NULL, &:read)
+def tree_merged_into?(branch_ref, target_ref)
+  merged_tree = IO.popen(%W[git merge-tree --write-tree --no-messages #{target_ref} #{branch_ref}], err: File::NULL, &:read)
   return false unless Process.last_status.success?
 
-  merged_tree.lines.first&.strip == resolve_ref("#{target}^{tree}")
+  merged_tree.lines.first&.strip == resolve_ref("#{target_ref}^{tree}")
+end
+
+def commit_timestamp(ref)
+  out = IO.popen(%W[git log -1 --format=%ct #{ref}], err: File::NULL, &:read).strip
+  return unless Process.last_status.success? && !out.empty?
+
+  out.to_i
+end
+
+def changed_files_between(base_ref, tip_ref)
+  out = IO.popen(%W[git diff --name-only #{base_ref} #{tip_ref}], err: File::NULL, &:read)
+  return [] unless Process.last_status.success?
+
+  out.lines.map(&:strip).reject(&:empty?)
+end
+
+def preload_target_merge_commits!(target, branches)
+  @target_merge_commits_cache ||= {}
+  return if @target_merge_commits_cache.key?(target)
+
+  preload_merge_bases!(target, branches)
+  mbs = branches.map { |branch| merge_base(target, branch) }.reject(&:empty?).uniq
+  if mbs.empty?
+    @target_merge_commits_cache[target] = {}
+    return
+  end
+
+  root_mb = if mbs.size == 1
+    mbs.first
+  else
+    out = IO.popen(["git", "merge-base", "--octopus", *mbs], err: File::NULL, &:read).strip
+    (Process.last_status.success? && !out.empty?) ? out : mbs.first
+  end
+
+  commits_by_branch = {}
+  pattern = /\AMerge branch '([^']+)'(?: into '?#{Regexp.escape(target)}'?)?\z/
+  IO.popen(
+    ["git", "log", "--first-parent", "--merges", "--format=%H\t%ct\t%s", "#{root_mb}..#{target}"],
+    err: File::NULL
+  ) do |io|
+    io.each_line do |line|
+      sha, timestamp, subject = line.chomp.split("\t", 3)
+      next unless sha && timestamp && subject
+
+      match = pattern.match(subject)
+      next unless match
+
+      merged_branch = match[1]
+      commits_by_branch[merged_branch] ||= {sha: sha, timestamp: timestamp.to_i}
+    end
+  end
+
+  @target_merge_commits_cache[target] = commits_by_branch
+end
+
+def find_branch_merge_commit(branch, target)
+  mb = merge_base(target, branch)
+  return if mb.empty? || mb == resolve_ref(branch)
+
+  if @target_merge_commits_cache&.key?(target)
+    commit = @target_merge_commits_cache[target][branch]
+    return unless commit
+    return commit if branch_merged_into?(mb, commit[:sha])
+  end
+
+  subject_prefix = "Merge branch '#{branch}'"
+  allowed_subjects = [
+    subject_prefix,
+    "#{subject_prefix} into '#{target}'",
+    "#{subject_prefix} into #{target}"
+  ]
+
+  IO.popen(
+    ["git", "log", "--first-parent", "--merges", "--fixed-strings", "--grep=#{subject_prefix}", "--format=%H\t%ct\t%s", "#{mb}..#{target}"],
+    err: File::NULL
+  ) do |io|
+    io.each_line do |line|
+      sha, timestamp, subject = line.chomp.split("\t", 3)
+      next unless sha && timestamp && subject
+      next unless allowed_subjects.include?(subject)
+
+      return {sha: sha, timestamp: timestamp.to_i}
+    end
+  end
+
+  nil
+end
+
+# Squash merges leave no ancestry link, and follow-up commits on the MR can make the local branch's merge-tree differ.
+# Check the local branch, its upstream when no local commits are unpushed, and verified first-parent merge commits on
+# the target.
+def compute_branch_squash_merged(branch, target)
+  return false if branch_merged_into?(branch, target)
+  return true if tree_merged_into?(branch, target)
+
+  upstream_info = branch_upstream_info(branch)
+  upstream = upstream_info[:upstream]
+  has_live_upstream = upstream && !upstream_info[:gone] && branch_exists?(upstream)
+
+  if has_live_upstream
+    return false unless branch_merged_into?(branch, upstream)
+    if resolve_ref(branch) != resolve_ref(upstream) &&
+        (branch_merged_into?(upstream, target) || tree_merged_into?(upstream, target))
+      return true
+    end
+  end
+
+  merge_commit = find_branch_merge_commit(branch, target)
+  return false unless merge_commit
+
+  merge_sha = merge_commit[:sha]
+  return true if tree_merged_into?(branch, merge_sha)
+  if has_live_upstream && resolve_ref(branch) != resolve_ref(upstream) && tree_merged_into?(upstream, merge_sha)
+    return true
+  end
+
+  branch_ts = commit_timestamp(branch)
+  return false unless branch_ts && branch_ts <= merge_commit[:timestamp]
+
+  mb = merge_base(target, branch)
+  branch_files = changed_files_between(mb, branch)
+  merge_files = changed_files_between("#{merge_sha}^1", merge_sha)
+  !branch_files.empty? && (branch_files - merge_files).empty?
 end
 
 def deleted_branch_tip_from_reflog(branch_name_prefix, descendant_branch = nil)

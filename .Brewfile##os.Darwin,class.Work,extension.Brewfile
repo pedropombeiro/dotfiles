@@ -362,6 +362,8 @@ cask "gimp"
 cask "google-chrome"
 # Desktop automation application
 cask "hammerspoon"
+# Speech to text application
+cask "handy"
 # Companion app for Home Assistant home automation software
 cask "home-assistant"
 # Tool to optimise images to a smaller size
@@ -420,5 +422,3 @@ cask "spotify"
 cask "wakatime"
 # Native desktop client for WhatsApp
 cask "whatsapp"
-# Voice-to-text dictation with AI-powered auto-editing
-cask "wispr-flow"

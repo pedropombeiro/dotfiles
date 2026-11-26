@@ -272,6 +272,8 @@ cask "google-earth-pro"
 cask "gyroflow"
 # Desktop automation application
 cask "hammerspoon"
+# Speech to text application
+cask "handy"
 # Tool for multi-language users
 cask "input-source-pro"
 # System monitoring app
@@ -353,7 +355,5 @@ cask "b00y0h/wakadash/wakadash"
 cask "wakatime"
 # Native desktop client for WhatsApp
 cask "whatsapp"
-# Voice-to-text dictation with AI-powered auto-editing
-cask "wispr-flow"
 # Video communication and virtual meeting platform
 cask "zoom"

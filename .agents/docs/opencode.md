@@ -228,9 +228,9 @@ Each local plugin documents its behavior, options, and tests in its own README:
   exposes a `vent` tool to record tooling, documentation, skill, and workflow
   frictions to configurable destinations (GitLab epics, GitHub issues, or a
   Markdown log) with automatic deduplication.
-- [`gitlab-session-title`](../../.config/opencode/local-plugins/server/gitlab-session-title/README.md):
-  names Work sessions after the GitLab MR (`@<author> - Review <topic>`) or
-  issue, work item, or epic they work on, supporting full URLs and shorthand
+- [`forge-session-title`](../../.config/opencode/local-plugins/server/forge-session-title/README.md):
+  names sessions after the GitHub PR or GitLab MR (`@<author> - Review <topic>`)
+  or issue, work item, or epic they work on, supporting full URLs and shorthand
   references (`!123`, `#123`).
 
 ### Vent routing

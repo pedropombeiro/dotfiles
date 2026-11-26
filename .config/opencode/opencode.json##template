@@ -21,7 +21,7 @@
     "opencode-homeassistant@1.1.0",       // Sends agent status to Home Assistant and answers permissions from it
     "opencode-session-finder@1.2.0",      // Searches past sessions from the palette, and adds search_sessions and open_session
 {% if yadm.class == "Work" %}
-    { "package": "./local-plugins/server/title-mr-author" },
+    { "package": "./local-plugins/server/gitlab-session-title" },
 {% endif %}
     {
       "package": "opencode-forgekeeper@5.2.0",

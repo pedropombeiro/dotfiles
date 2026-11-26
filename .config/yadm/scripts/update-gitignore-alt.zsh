@@ -9,10 +9,15 @@ BEGIN_MARKER="# BEGIN yadm-alt (auto-generated, do not edit)"
 END_MARKER="# END yadm-alt"
 
 # (f) splits on newlines, (M) keeps only matching elements, (u) deduplicates, (o) sorts
-local -a alt_lines=( "${(@fo)$(yadm ls-files)}" )
+local -a alt_lines=( "${(@f)$(yadm ls-files)}" )
 alt_lines=( ${(M)alt_lines:#*\#\#*} )
-# Strip ##... suffix from each element and deduplicate+sort
-local -a alt_basenames=( "${(@ou)alt_lines/\#\#*/}" )
+# Strip ##... suffix, deduplicate, and sort under the C locale so macOS and Linux
+# produce identical byte-order output regardless of LC_COLLATE.
+local -a alt_basenames
+() {
+  local LC_ALL=C
+  alt_basenames=( "${(@ou)alt_lines/\#\#*/}" )
+}
 
 if (( ${#alt_basenames} == 0 )); then
   return 0 2>/dev/null || exit 0

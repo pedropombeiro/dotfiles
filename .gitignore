@@ -75,8 +75,8 @@ Thumbs.db
 /.config/iterm2/gdk.local.json
 
 # BEGIN yadm-alt (auto-generated, do not edit)
-.agents/docs/gdkbox-gcp.md
 .Brewfile
+.agents/docs/gdkbox-gcp.md
 .config/1Password/ssh/agent.toml
 .config/git/config-specific
 .config/iterm2/config/com.googlecode.iterm2.plist
@@ -92,8 +92,8 @@ Thumbs.db
 .config/opencode/cli.base.json
 .config/opencode/env-protection.json
 .config/opencode/opencode-homeassistant.json
-.config/opencode/opencode.json
 .config/opencode/opencode-notifier.json
+.config/opencode/opencode.json
 .config/opencode/plugins/remind-issue-state.js
 .config/opencode/plugins/require-gpsup.js
 .config/pgcli/config
@@ -147,7 +147,6 @@ Thumbs.db
 .config/yadm/scripts/updates.d/800-work-checks.zsh
 .config/yadm/scripts/updates.d/900-brew-dump.zsh
 .default-gems
-Developer/gitlab.com/opencode.jsonc
 .hammerspoon/audio.lua
 .hammerspoon/busylight.lua
 .hammerspoon/httpserver/triggers.lua
@@ -181,11 +180,11 @@ Developer/gitlab.com/opencode.jsonc
 .shellrc/zshrc.d/configs/593-grc-rs.zsh
 .shellrc/zshrc.d/configs/690-bindings.zsh
 .shellrc/zshrc.d/configs/tmux.platform.zsh
+.shellrc/zshrc.d/functions/_fgdku
+.shellrc/zshrc.d/functions/_git_parent
 .shellrc/zshrc.d/functions/diff_structure
 .shellrc/zshrc.d/functions/docker_whois
 .shellrc/zshrc.d/functions/fgdku
-.shellrc/zshrc.d/functions/_fgdku
-.shellrc/zshrc.d/functions/_git_parent
 .shellrc/zshrc.d/functions/git_parent
 .shellrc/zshrc.d/functions/glt_info
 .shellrc/zshrc.d/functions/gpif
@@ -206,4 +205,5 @@ Developer/gitlab.com/opencode.jsonc
 .shellrc/zshrc.d/functions/wait_gdk_mr_merged
 .ssh/config
 .vale.ini
+Developer/gitlab.com/opencode.jsonc
 # END yadm-alt

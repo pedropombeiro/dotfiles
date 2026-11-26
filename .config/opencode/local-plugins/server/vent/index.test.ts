@@ -563,7 +563,7 @@ describe("GitLab destination", () => {
     ]);
   });
 
-  test("returns the exact closed match in the destination project without writing", async () => {
+  test("reports the closest closed match in the destination project without writing", async () => {
     const title = "glab draft update help reverses positional arguments";
     const url = "https://gitlab.com/dev/friction/-/work_items/8";
     const mockExec: Exec = async (_file, args, options) => {
@@ -609,13 +609,12 @@ describe("GitLab destination", () => {
       { exec: mockExec, threshold: 0.45 },
     );
     expect(result).toMatchObject({
-      action: "skipped",
+      action: "closed-match",
       url,
       matchedTitle: title,
     });
-    expect(formatVentResult(result)).toContain(
-      "No issue or comment was created.",
-    );
+    expect(result.note).toContain("No issue or comment was created.");
+    expect(formatVentResult(result)).toContain("similar closed gitlab issue");
   });
 
   test("filters project issues by destination labels when no epic is configured", async () => {
@@ -754,7 +753,10 @@ describe("GitHub destination", () => {
     expect(calls[0]!.args).toContain(
       "repos/owner/repo/issues?state=open&per_page=100&labels=friction",
     );
-    const payload = JSON.parse(calls[1]!.stdin!) as { labels: string[] };
+    expect(calls[1]!.args).toContain(
+      "repos/owner/repo/issues?state=closed&per_page=100&labels=friction",
+    );
+    const payload = JSON.parse(calls[2]!.stdin!) as { labels: string[] };
     expect(payload.labels).toEqual(["friction", "agent-friction"]);
   });
 });
@@ -974,5 +976,190 @@ describe("executeVent and input parsing", () => {
       runtime,
     );
     expect(legacy.destinationType).toBe("file");
+  });
+});
+
+describe("closed matches", () => {
+  const closedIssue = (labels: string[]) => ({
+    number: 5,
+    title: sampleInput.title,
+    body: sampleInput.friction,
+    html_url: "https://github.com/owner/repo/issues/5",
+    labels: labels.map((name) => ({ name })),
+  });
+  const githubDestination = {
+    type: "github" as const,
+    repo: "owner/repo",
+    host: "github.com",
+    labels: ["agent-friction"],
+    reopenLabels: ["resolution::cannot-reproduce", "resolution::mitigated"],
+    resolutionLabelPrefix: "resolution::",
+  };
+
+  const githubExec = (closed: unknown[]) => {
+    const calls: Array<{ args: string[]; stdin?: string }> = [];
+    const exec: Exec = async (_file, args, options?: ExecOptions) => {
+      calls.push({ args, stdin: options?.stdin });
+      if (!args.includes("--method")) {
+        const list = args.at(-1)!.includes("state=closed") ? closed : [];
+        return { stdout: JSON.stringify(list), stderr: "", code: 0 };
+      }
+      return {
+        stdout: JSON.stringify({
+          html_url: "https://github.com/owner/repo/issues/6",
+        }),
+        stderr: "",
+        code: 0,
+      };
+    };
+    return { exec, calls };
+  };
+
+  test("reports a closed match without writing, and advises reopening when it had no fix", async () => {
+    const { exec, calls } = githubExec([
+      closedIssue(["agent-friction", "resolution::cannot-reproduce"]),
+    ]);
+    const result = await ventToGitHub(
+      "github",
+      githubDestination,
+      sampleInput,
+      sampleMetadata,
+      { exec, threshold: 0.45 },
+    );
+    expect(result.action).toBe("closed-match");
+    expect(result.closedLabels).toEqual([
+      "agent-friction",
+      "resolution::cannot-reproduce",
+    ]);
+    expect(result.note).toContain('onClosedMatch: "reopen"');
+    expect(calls.some((call) => call.args.includes("--method"))).toBe(false);
+  });
+
+  test("advises a new linked issue when the closed match was fixed", async () => {
+    const { exec } = githubExec([
+      closedIssue(["agent-friction", "resolution::fixed"]),
+    ]);
+    const result = await ventToGitHub(
+      "github",
+      githubDestination,
+      sampleInput,
+      sampleMetadata,
+      { exec, threshold: 0.45 },
+    );
+    expect(result.action).toBe("closed-match");
+    expect(result.note).toContain('onClosedMatch: "create"');
+    expect(result.note).toContain("regression");
+  });
+
+  test("reopens a closed GitHub issue, drops its resolution label, and comments", async () => {
+    const { exec, calls } = githubExec([
+      closedIssue(["agent-friction", "resolution::cannot-reproduce"]),
+    ]);
+    const result = await ventToGitHub(
+      "github",
+      githubDestination,
+      { ...sampleInput, onClosedMatch: "reopen" },
+      sampleMetadata,
+      { exec, threshold: 0.45 },
+    );
+    expect(result.action).toBe("reopened");
+    const writes = calls.filter((call) => call.args.includes("--method"));
+    expect(writes).toHaveLength(2);
+    expect(writes[0]!.args).toContain("PATCH");
+    expect(writes[0]!.args).toContain("repos/owner/repo/issues/5");
+    expect(JSON.parse(writes[0]!.stdin!)).toEqual({
+      state: "open",
+      state_reason: "reopened",
+      labels: ["agent-friction"],
+    });
+    expect(writes[1]!.args).toContain("repos/owner/repo/issues/5/comments");
+    expect(formatVentResult(result)).toContain("Reopened closed github issue");
+  });
+
+  test("files a new GitHub issue that links the closed match", async () => {
+    const { exec, calls } = githubExec([
+      closedIssue(["agent-friction", "resolution::fixed"]),
+    ]);
+    const result = await ventToGitHub(
+      "github",
+      githubDestination,
+      { ...sampleInput, onClosedMatch: "create" },
+      sampleMetadata,
+      { exec, threshold: 0.45 },
+    );
+    expect(result.action).toBe("created");
+    expect(result.note).toContain("https://github.com/owner/repo/issues/5");
+    const writes = calls.filter((call) => call.args.includes("--method"));
+    expect(writes).toHaveLength(1);
+    const payload = JSON.parse(writes[0]!.stdin!) as { body: string };
+    expect(payload.body).toContain(
+      "Related to the closed issue https://github.com/owner/repo/issues/5.",
+    );
+  });
+
+  test("reopens a closed GitLab issue and removes its resolution label", async () => {
+    const calls: Array<{ args: string[]; stdin?: string }> = [];
+    const exec: Exec = async (_file, args, options?: ExecOptions) => {
+      calls.push({ args, stdin: options?.stdin });
+      if (!args.includes("--method")) {
+        const closed = args.at(-1)!.includes("state=closed");
+        return {
+          stdout: JSON.stringify(
+            closed
+              ? [
+                  {
+                    id: 1,
+                    iid: 7,
+                    project_id: 99,
+                    title: sampleInput.title,
+                    description: sampleInput.friction,
+                    state: "closed",
+                    labels: ["agent-friction", "resolution::cannot-reproduce"],
+                    web_url: "https://gitlab.com/dev/friction/-/issues/7",
+                  },
+                ]
+              : [],
+          ),
+          stderr: "",
+          code: 0,
+        };
+      }
+      return { stdout: JSON.stringify({ id: 55 }), stderr: "", code: 0 };
+    };
+    const result = await ventToGitLab(
+      "gitlab",
+      {
+        type: "gitlab",
+        project: "dev/friction",
+        host: "gitlab.com",
+        confidential: true,
+        labels: [],
+        resolutionLabelPrefix: "resolution::",
+      },
+      { ...sampleInput, onClosedMatch: "reopen" },
+      sampleMetadata,
+      { exec, threshold: 0.45 },
+    );
+    expect(result.action).toBe("reopened");
+    expect(result.url).toBe(
+      "https://gitlab.com/dev/friction/-/issues/7#note_55",
+    );
+    const writes = calls.filter((call) => call.args.includes("--method"));
+    expect(writes[0]!.args).toContain("PUT");
+    expect(writes[0]!.args).toContain("projects/99/issues/7");
+    expect(JSON.parse(writes[0]!.stdin!)).toEqual({
+      state_event: "reopen",
+      remove_labels: "resolution::cannot-reproduce",
+    });
+    expect(writes[1]!.args).toContain("projects/99/issues/7/notes");
+  });
+
+  test("validates onClosedMatch", () => {
+    expect(
+      parseVentInput({ ...sampleInput, onClosedMatch: "reopen" }).onClosedMatch,
+    ).toBe("reopen");
+    expect(() =>
+      parseVentInput({ ...sampleInput, onClosedMatch: "delete" }),
+    ).toThrow("Invalid `onClosedMatch`");
   });
 });

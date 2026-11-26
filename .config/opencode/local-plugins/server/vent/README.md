@@ -14,6 +14,9 @@ skill, permission, and workflow frictions encountered during routine work.
 - Checks existing open items at the target destination before creating a new entry. When an open
   item matches above `similarityThreshold`, `vent` appends a comment or occurrence subsection
   instead of filing a duplicate.
+- When no open item matches but a similar closed GitHub or GitLab issue does, `vent` writes
+  nothing and returns the closed issue with its labels. The agent asks the user, then calls
+  `vent` again with `onClosedMatch`.
 - Uses standard OpenCode tool permissions. Keep `vent` on `ask` if you want to review and approve
   the payload before an issue is created or updated.
 
@@ -31,6 +34,7 @@ skill, permission, and workflow frictions encountered during routine work.
 | `destination` | No | Named destination key. Enforced routes restrict overrides. |
 | `unrelatedReason` | No | Why the friction is unrelated to the current checkout. Requires an explicit `destination`. Required to override an enforced route, and only destinations with `acceptsUnrelated: true` accept the override. |
 | `localReason` | No | Deprecated alias for `unrelatedReason`. |
+| `onClosedMatch` | No | Only after a result reported a similar closed issue, and after asking the user. `reopen` reopens it, removes its resolution labels, and adds this occurrence as a comment. `create` files a new issue that links the closed one. |
 
 ## Options
 
@@ -55,7 +59,9 @@ Configure destinations and optional routing rules in `opencode.json`:
             "epic": "https://gitlab.com/groups/group/-/epics/123",
             "host": "gitlab.com",
             "confidential": true,
-            "labels": ["agent-friction"]
+            "labels": ["agent-friction"],
+            "reopenLabels": ["resolution::cannot-reproduce", "resolution::mitigated"],
+            "resolutionLabelPrefix": "resolution::"
           },
           "github": {
             "type": "github",
@@ -97,15 +103,30 @@ enforced route would otherwise send elsewhere, as long as the call names it in
 - **`gitlab`**: uses `glab api` to list open issues under `epic` (accepting legacy epic
   URLs, work item epic URLs, or `<group>&<iid>` shorthand) or `project`. Comments on a matching
   open issue, or creates a new issue in `project` linked to `epic` via the `/epic` quick action
-  with a REST link fallback. If no open issue matches, checks closed issues in the configured
-  project and epic for the same title, ignoring case and surrounding whitespace. Returns the
-  closed issue link without creating, commenting on, or reopening an issue. `confidential`
-  defaults to `true`.
+  with a REST link fallback. If no open issue matches, compares closed issues in the configured
+  project and epic and returns the closest one without writing. See "Closed matches".
+  `confidential` defaults to `true`.
 - **`github`**: uses `gh api` to list open issues in `repo` (ignoring pull requests). Comments on a
-  matching open issue, or creates a new issue.
+  matching open issue. If none matches, compares closed issues and returns the closest one without
+  writing (see "Closed matches"), or creates a new issue.
 - **`file`**: reads and updates a local Markdown file (supporting leading `~/`). Appends a
   `### Occurrence (YYYY-MM-DD)` subsection to a matching `##` section, or appends a new `##`
   section.
+
+## Closed matches
+
+`vent` never writes to a closed issue on its own. When a similar closed issue exists, the result
+has `action: "closed-match"`, the issue URL, its labels, and advice. The agent then asks the user
+and calls `vent` again with `onClosedMatch`:
+
+- `reopen` sets the issue to open, removes labels that start with `resolutionLabelPrefix`, and
+  adds the new occurrence as a comment.
+- `create` files a new issue that links the closed one.
+
+`reopenLabels` lists labels that mark an issue as closed without a confirmed fix, such as
+`resolution::cannot-reproduce`. The advice recommends `reopen` for those. For any other closed
+issue it recommends `create`, because a recurrence is likely a regression. Without `reopenLabels`,
+the advice offers both. The file destination is unaffected.
 
 ## Tests
 

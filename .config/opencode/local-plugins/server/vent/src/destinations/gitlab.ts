@@ -1,5 +1,10 @@
 import type { Exec } from "../exec.ts";
 import { formatCommentBody, formatIssueBody } from "../format.ts";
+import {
+  describeClosedMatch,
+  relatedToClosed,
+  withoutResolutionLabels,
+} from "../closed.ts";
 import { buildMatchQuery, findBestMatch } from "../match.ts";
 import type { GitLabDestination } from "../options.ts";
 import type { VentInput, VentMetadata, VentResult } from "./types.ts";
@@ -18,6 +23,7 @@ interface GitLabIssue {
   title: string;
   description?: string | null;
   state?: string;
+  labels?: string[];
   web_url: string;
   epic?: { id?: number; iid?: number } | null;
 }
@@ -86,7 +92,7 @@ async function glabApi<T>(
   host: string,
   endpoint: string,
   options: {
-    method?: "GET" | "POST";
+    method?: "GET" | "POST" | "PUT";
     paginate?: boolean;
     body?: Record<string, unknown>;
     cwd: string;
@@ -208,30 +214,103 @@ export async function ventToGitLab(
   if (!Array.isArray(closed))
     throw new Error("GitLab closed issue lookup did not return a list.");
 
-  const title = input.title.trim().toLowerCase();
   const projectPath = `/${destination.project.toLowerCase()}/-/`;
-  const closedMatch = closed.find(
-    (issue) =>
-      issue.state === "closed" &&
-      issue.title.trim().toLowerCase() === title &&
-      (!epicRef ||
-        (URL.canParse(issue.web_url) &&
-          new URL(issue.web_url).pathname
-            .toLowerCase()
-            .startsWith(projectPath))),
+  const closedCandidates = closed
+    .filter(
+      (issue) =>
+        issue.state === "closed" &&
+        (!epicRef ||
+          (URL.canParse(issue.web_url) &&
+            new URL(issue.web_url).pathname
+              .toLowerCase()
+              .startsWith(projectPath))),
+    )
+    .map((issue) => ({
+      id: `${issue.project_id}#${issue.iid}`,
+      title: issue.title,
+      body: issue.description ?? "",
+      issue,
+    }));
+  const closedMatch = findBestMatch(
+    buildMatchQuery(input),
+    closedCandidates,
+    deps.threshold,
   );
+
+  let linkedClosedUrl: string | undefined;
   if (closedMatch) {
-    return {
-      action: "skipped",
-      destination: destinationName,
-      destinationType: "gitlab",
-      title: input.title,
-      matchedTitle: closedMatch.title,
-      url: closedMatch.web_url,
-    };
+    const closedIssue = closedMatch.item.issue;
+    const closedLabels = closedIssue.labels ?? [];
+
+    if (input.onClosedMatch === "reopen") {
+      const kept = withoutResolutionLabels(
+        closedLabels,
+        destination.resolutionLabelPrefix,
+      );
+      const resolutionLabels = closedLabels.filter(
+        (label) => !kept.includes(label),
+      );
+      await glabApi<GitLabIssue>(
+        deps.exec,
+        host,
+        `projects/${closedIssue.project_id}/issues/${closedIssue.iid}`,
+        {
+          method: "PUT",
+          body: {
+            state_event: "reopen",
+            ...(resolutionLabels.length > 0
+              ? { remove_labels: resolutionLabels.join(",") }
+              : {}),
+          },
+          cwd: metadata.directory,
+          signal: deps.signal,
+        },
+      );
+      const note = await glabApi<GitLabNote>(
+        deps.exec,
+        host,
+        `projects/${closedIssue.project_id}/issues/${closedIssue.iid}/notes`,
+        {
+          method: "POST",
+          body: { body: formatCommentBody(input, metadata) },
+          cwd: metadata.directory,
+          signal: deps.signal,
+        },
+      );
+      return {
+        action: "reopened",
+        destination: destinationName,
+        destinationType: "gitlab",
+        url: note.id
+          ? `${closedIssue.web_url}#note_${note.id}`
+          : closedIssue.web_url,
+        title: input.title,
+        matchedTitle: closedIssue.title,
+        matchScore: Number(closedMatch.score.toFixed(2)),
+      };
+    }
+
+    if (input.onClosedMatch === "create") {
+      linkedClosedUrl = closedIssue.web_url;
+    } else {
+      return {
+        action: "closed-match",
+        destination: destinationName,
+        destinationType: "gitlab",
+        url: closedIssue.web_url,
+        title: input.title,
+        matchedTitle: closedIssue.title,
+        matchScore: Number(closedMatch.score.toFixed(2)),
+        closedLabels,
+        note: describeClosedMatch(closedLabels, destination.reopenLabels),
+      };
+    }
   }
 
   let description = formatIssueBody(input, metadata);
+  if (linkedClosedUrl) {
+    description = `${description}\n\n${relatedToClosed(linkedClosedUrl)}`;
+  }
   if (epicRef) {
     description = `${description}\n\n/epic ${epicRef.url}`;
   }
@@ -254,7 +333,9 @@ export async function ventToGitLab(
     },
   );
 
-  let note: string | undefined;
+  let note: string | undefined = linkedClosedUrl
+    ? `Linked the closed issue ${linkedClosedUrl}.`
+    : undefined;
   if (epicRef && !created.epic && created.id) {
     try {
       await glabApi(
@@ -273,7 +354,7 @@ export async function ventToGitLab(
         !message.includes("409") &&
         !message.toLowerCase().includes("already")
       ) {
-        note = `Issue created, but fallback epic link failed: ${message}`;
+        note = `${note ? `${note} ` : ""}Issue created, but fallback epic link failed: ${message}`;
       }
     }
   }

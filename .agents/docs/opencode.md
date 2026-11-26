@@ -244,6 +244,13 @@ Get explicit user approval before creating or updating an issue there.
 
 Never switch destinations when GitLab or GitHub filing fails.
 
+When a vent matches only a closed issue, `vent` writes nothing and returns the issue with its
+labels. Ask the user, then call `vent` again with `onClosedMatch`: `reopen` for an issue closed
+as `resolution::cannot-reproduce` or `resolution::mitigated`, which reopens it, removes its
+resolution label, and adds the new occurrence. Use `create` for a `resolution::fixed` or
+`resolution::intended` one, which files a new issue that links the closed one. The destinations
+in `opencode.json##template` set `reopenLabels` and `resolutionLabelPrefix` to drive that advice.
+
 ### Plugins meant for publishing
 
 Some local plugins are trials of plugins that will be published from

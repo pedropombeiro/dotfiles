@@ -18,6 +18,9 @@ export const VENT_DESCRIPTION = [
   "Routes to a configured destination (such as a GitLab issue under an epic, a GitHub issue, or a",
   "local Markdown log). Automatically checks open items at the destination and appends a comment or",
   "occurrence entry when a matching friction already exists instead of creating a duplicate.",
+  "When only a closed GitHub or GitLab item matches, nothing is written: the result names it, and you",
+  "ask the user whether to call `vent` again with `onClosedMatch` to reopen it or to file a new item",
+  "that links it.",
   "",
   "Include concrete details: what failed or slowed you down, what you were doing, evidence (commands,",
   "paths, error text), and a suggested improvement when clear. Never include secret values, tokens,",
@@ -93,6 +96,12 @@ export const ventInputSchema = {
       minLength: 1,
       description: "Deprecated alias for unrelatedReason.",
     },
+    onClosedMatch: {
+      type: "string",
+      enum: ["reopen", "create"],
+      description:
+        "Only after a result reported a similar closed item, and after asking the user: `reopen` reopens it and adds this occurrence, `create` files a new item that links it.",
+    },
   },
   required: ["title", "friction", "context"],
   additionalProperties: false,
@@ -134,6 +143,14 @@ function optionalStringArray(value: unknown): string[] | undefined {
   return items.length > 0 ? items : undefined;
 }
 
+function optionalClosedMatchAction(
+  value: unknown,
+): VentInput["onClosedMatch"] | undefined {
+  if (value === undefined) return undefined;
+  if (value === "reopen" || value === "create") return value;
+  throw new Error("Invalid `onClosedMatch`. Expected `reopen` or `create`.");
+}
+
 export function parseVentInput(raw: unknown): VentInput {
   if (!raw || typeof raw !== "object") {
     throw new Error("Vent input must be an object.");
@@ -147,6 +164,7 @@ export function parseVentInput(raw: unknown): VentInput {
   const unrelatedReason =
     optionalString(record.unrelatedReason) ??
     optionalString(record.localReason);
+  const onClosedMatch = optionalClosedMatchAction(record.onClosedMatch);
 
   return {
     title: requiredString(record.title, "title"),
@@ -158,6 +176,7 @@ export function parseVentInput(raw: unknown): VentInput {
     ...(labels ? { labels } : {}),
     ...(destination ? { destination } : {}),
     ...(unrelatedReason ? { unrelatedReason } : {}),
+    ...(onClosedMatch ? { onClosedMatch } : {}),
   };
 }
 
@@ -203,9 +222,17 @@ export function formatVentResult(result: VentResult): string {
     lines.push(
       `Recorded new occurrence on existing ${result.destinationType} entry "${result.matchedTitle ?? result.title}"${score}: ${target}`,
     );
-  } else if (result.action === "skipped") {
+  } else if (result.action === "reopened") {
     lines.push(
-      `Found closed GitLab issue "${result.matchedTitle}": ${target}. No issue or comment was created.`,
+      `Reopened closed ${result.destinationType} issue "${result.matchedTitle}" and recorded a new occurrence: ${target}`,
+    );
+  } else if (result.action === "closed-match") {
+    const score =
+      result.matchScore !== undefined
+        ? ` (similarity ${result.matchScore})`
+        : "";
+    lines.push(
+      `Found a similar closed ${result.destinationType} issue "${result.matchedTitle}"${score}: ${target}`,
     );
   } else {
     lines.push(

@@ -1,5 +1,6 @@
 import type { Exec } from '../exec.ts';
 import { formatCommentBody, formatIssueBody } from '../format.ts';
+import { describeClosedMatch, relatedToClosed, withoutResolutionLabels } from '../closed.ts';
 import { buildMatchQuery, findBestMatch } from '../match.ts';
 import type { GitHubDestination } from '../options.ts';
 import type { VentInput, VentMetadata, VentResult } from './types.ts';
@@ -10,6 +11,7 @@ interface GitHubIssue {
   body?: string | null;
   html_url: string;
   pull_request?: unknown;
+  labels?: Array<string | { name?: string }>;
 }
 
 interface GitHubComment {
@@ -33,7 +35,7 @@ async function ghApi<T>(
   host: string,
   endpoint: string,
   options: {
-    method?: 'GET' | 'POST';
+    method?: 'GET' | 'POST' | 'PATCH';
     body?: Record<string, unknown>;
     cwd: string;
     signal?: AbortSignal;
@@ -123,6 +125,90 @@ export async function ventToGitHub(
     };
   }
 
+  let body = formatIssueBody(input, metadata);
+  let note: string | undefined;
+
+  const closed = await ghApi<GitHubIssue[]>(
+    deps.exec,
+    destination.host,
+    `repos/${destination.repo}/issues?state=closed&per_page=100${labelFilter}`,
+    {
+      cwd: metadata.directory,
+      signal: deps.signal,
+    },
+  );
+  const closedCandidates = (Array.isArray(closed) ? closed : [])
+    .filter((issue) => !issue.pull_request)
+    .map((issue) => ({
+      id: `#${issue.number}`,
+      title: issue.title,
+      body: issue.body ?? '',
+      issue,
+    }));
+  const closedMatch = findBestMatch(buildMatchQuery(input), closedCandidates, deps.threshold);
+
+  if (closedMatch) {
+    const closedIssue = closedMatch.item.issue;
+    const closedLabels = (closedIssue.labels ?? [])
+      .map((label) => (typeof label === 'string' ? label : label.name))
+      .filter((label): label is string => Boolean(label));
+
+    if (input.onClosedMatch === 'reopen') {
+      await ghApi<GitHubIssue>(
+        deps.exec,
+        destination.host,
+        `repos/${destination.repo}/issues/${closedIssue.number}`,
+        {
+          method: 'PATCH',
+          body: {
+            state: 'open',
+            state_reason: 'reopened',
+            labels: withoutResolutionLabels(closedLabels, destination.resolutionLabelPrefix),
+          },
+          cwd: metadata.directory,
+          signal: deps.signal,
+        },
+      );
+      const comment = await ghApi<GitHubComment>(
+        deps.exec,
+        destination.host,
+        `repos/${destination.repo}/issues/${closedIssue.number}/comments`,
+        {
+          method: 'POST',
+          body: { body: formatCommentBody(input, metadata) },
+          cwd: metadata.directory,
+          signal: deps.signal,
+        },
+      );
+      return {
+        action: 'reopened',
+        destination: destinationName,
+        destinationType: 'github',
+        url: comment.html_url ?? closedIssue.html_url,
+        title: input.title,
+        matchedTitle: closedIssue.title,
+        matchScore: Number(closedMatch.score.toFixed(2)),
+      };
+    }
+
+    if (input.onClosedMatch === 'create') {
+      body = `${body}\n\n${relatedToClosed(closedIssue.html_url)}`;
+      note = `Linked the closed issue ${closedIssue.html_url}.`;
+    } else {
+      return {
+        action: 'closed-match',
+        destination: destinationName,
+        destinationType: 'github',
+        url: closedIssue.html_url,
+        title: input.title,
+        matchedTitle: closedIssue.title,
+        matchScore: Number(closedMatch.score.toFixed(2)),
+        closedLabels,
+        note: describeClosedMatch(closedLabels, destination.reopenLabels),
+      };
+    }
+  }
+
   const labels = mergeLabels(destination.labels, input.labels);
   const created = await ghApi<GitHubIssue>(
     deps.exec,
@@ -132,7 +218,7 @@ export async function ventToGitHub(
       method: 'POST',
       body: {
         title: input.title.trim(),
-        body: formatIssueBody(input, metadata),
+        body,
         ...(labels.length > 0 ? { labels } : {}),
       },
       cwd: metadata.directory,
@@ -146,5 +232,6 @@ export async function ventToGitHub(
     destinationType: 'github',
     url: created.html_url,
     title: input.title,
+    ...(note ? { note } : {}),
   };
 }

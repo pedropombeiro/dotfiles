@@ -20,6 +20,11 @@ export interface VentInput {
   labels?: string[];
   destination?: string;
   unrelatedReason?: string;
+  /**
+   * How to proceed after a result reported a similar closed item: `reopen` reopens it and
+   * adds this occurrence, `create` files a new item that links it.
+   */
+  onClosedMatch?: "reopen" | "create";
 }
 
 export interface VentMetadata {
@@ -33,7 +38,7 @@ export interface VentMetadata {
 }
 
 export interface VentResult {
-  action: "created" | "commented" | "skipped";
+  action: "created" | "commented" | "reopened" | "closed-match";
   destination: string;
   destinationType: "gitlab" | "github" | "file";
   url?: string;
@@ -41,5 +46,7 @@ export interface VentResult {
   title: string;
   matchedTitle?: string;
   matchScore?: number;
+  /** Labels of the closed item that matched, when `action` is `closed-match`. */
+  closedLabels?: string[];
   note?: string;
 }

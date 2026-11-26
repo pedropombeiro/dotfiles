@@ -113,12 +113,16 @@
             "type": "gitlab",
             "project": "pedropombeiro/work-friction",
             "epic": "https://gitlab.com/groups/gitlab-org/-/epics/24897",
-            "confidential": true
+            "confidential": true,
+            "reopenLabels": ["resolution::cannot-reproduce", "resolution::mitigated"],
+            "resolutionLabelPrefix": "resolution::"
           },
           "github": {
             "type": "github",
             "repo": "pedropombeiro/agent-friction",
             "labels": ["agent-friction"],
+            "reopenLabels": ["resolution::cannot-reproduce", "resolution::mitigated"],
+            "resolutionLabelPrefix": "resolution::",
             // Personal friction found in an enforced GitLab checkout, with an `unrelatedReason`.
             "acceptsUnrelated": true
           }
@@ -129,7 +133,9 @@
           "github": {
             "type": "github",
             "repo": "pedropombeiro/agent-friction",
-            "labels": ["agent-friction"]
+            "labels": ["agent-friction"],
+            "reopenLabels": ["resolution::cannot-reproduce", "resolution::mitigated"],
+            "resolutionLabelPrefix": "resolution::"
           }
         }
 {% endif %}

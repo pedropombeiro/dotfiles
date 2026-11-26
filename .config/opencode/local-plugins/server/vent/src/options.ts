@@ -6,7 +6,15 @@ interface DestinationBase {
   acceptsUnrelated?: boolean;
 }
 
-export interface GitLabDestination extends DestinationBase {
+/** Settings for a similar item that was already closed. */
+interface ClosedMatchOptions {
+  /** Closed items with one of these labels were closed without a confirmed fix: reopen them. */
+  reopenLabels?: string[];
+  /** Labels starting with this prefix describe how an item was resolved. Reopening removes them. */
+  resolutionLabelPrefix?: string;
+}
+
+export interface GitLabDestination extends DestinationBase, ClosedMatchOptions {
   type: "gitlab";
   project: string;
   epic?: string;
@@ -15,7 +23,7 @@ export interface GitLabDestination extends DestinationBase {
   labels: string[];
 }
 
-export interface GitHubDestination extends DestinationBase {
+export interface GitHubDestination extends DestinationBase, ClosedMatchOptions {
   type: "github";
   repo: string;
   host: string;
@@ -80,6 +88,12 @@ function parseDestination(raw: unknown): DestinationConfig | undefined {
   const type = stringValue(record.type);
   const base: DestinationBase =
     record.acceptsUnrelated === true ? { acceptsUnrelated: true } : {};
+  const reopenLabels = stringArray(record.reopenLabels);
+  const resolutionLabelPrefix = stringValue(record.resolutionLabelPrefix);
+  const closedMatch: ClosedMatchOptions = {
+    ...(reopenLabels.length > 0 ? { reopenLabels } : {}),
+    ...(resolutionLabelPrefix ? { resolutionLabelPrefix } : {}),
+  };
 
   if (type === "gitlab") {
     const project = stringValue(record.project);
@@ -93,6 +107,7 @@ function parseDestination(raw: unknown): DestinationConfig | undefined {
       confidential:
         typeof record.confidential === "boolean" ? record.confidential : true,
       labels: stringArray(record.labels),
+      ...closedMatch,
       ...base,
     };
   }
@@ -105,6 +120,7 @@ function parseDestination(raw: unknown): DestinationConfig | undefined {
       repo,
       host: stringValue(record.host) ?? "github.com",
       labels: stringArray(record.labels),
+      ...closedMatch,
       ...base,
     };
   }

@@ -53,7 +53,9 @@ const check = (rawCommand = "") => {
     `Commit messages must not contain shortened GitLab references. Found: \`${reference}\`. ` +
       "Use the full canonical URL instead: `https://gitlab.com/<group>/<project>/-/issues/<iid>`, " +
       "`https://gitlab.com/<group>/<project>/-/merge_requests/<iid>`, or " +
-      "`https://gitlab.com/groups/<group>/-/epics/<iid>`. Rewrite the message; DO NOT bypass " +
+      "`https://gitlab.com/groups/<group>/-/epics/<iid>`. For a GitHub reference such as `owner/repo#N`, use " +
+      "`https://github.com/<owner>/<repo>/issues/<number>` or `https://github.com/<owner>/<repo>/pull/<number>`. " +
+      "Rewrite the message; DO NOT bypass " +
       "this check with `--no-verify` or by writing the message to a file. A human may set " +
       "`OPENCODE_ALLOW_SHORT_GITLAB_REFS=1` in OpenCode's environment for an explicit exception.",
   )

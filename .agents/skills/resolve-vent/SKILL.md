@@ -33,12 +33,23 @@ The "Vent routing" section of `~/.agents/docs/opencode.md` decides where new ven
    query taken from the friction text, and `include: ["tools"]` to see the failing
    call and its error. Note what the agent was doing, which call failed, and
    whether the user had approved the action.
-1. **Look for duplicates.** List open items in the project with
+1. **Look for duplicates.** List open and closed items in the project with
    `gitlab_list_issues` (`gitlab_list_work_items` currently fails with GraphQL
    schema type errors on `WorkItemTypeEnum` and `IssuableState`), or with
-   `gh issue list -R pedropombeiro/agent-friction` for GitHub.
+   `gh issue list -R pedropombeiro/agent-friction --state all` for GitHub.
+   For GitLab, include closed items too: check the tool's schema for the state filter.
    Resolve items with the same root cause together, and set all of them as
    session targets.
+
+   If the matching item is closed, its `resolution::` label says what to do:
+   - `resolution::cannot-reproduce` or `resolution::mitigated`: it was closed without a
+     confirmed fix, so the new report is the missing evidence. Ask the user, then reopen
+     it. Calling `vent` with `onClosedMatch: "reopen"` does that, and manually it means
+     reopening the item, removing the `resolution::` label, and commenting with the new
+     evidence. Start from what the earlier closing comment says was already tried.
+   - `resolution::fixed` or `resolution::intended`: a recurrence is likely a regression.
+     File a new item that links the closed one, and check why the earlier fix or
+     documentation didn't hold.
 1. **Find the root cause.** Reproduce the failure, or confirm it in the config,
    plugin code, skill, or doc involved. Permission rules live in
    `~/.config/opencode/opencode.json##template`. Then decide whether the behavior
@@ -65,6 +76,8 @@ The "Vent routing" section of `~/.agents/docs/opencode.md` decides where new ven
 1. **Close out after approval.** Once the fix is in place:
    1. Draft a closing comment that states the root cause, what changed, and the
       changed file paths. Read `~/.agents/docs/writing-style.md` first.
+      For `resolution::cannot-reproduce`, state instead what you tried, the OpenCode
+      version and date, and what evidence would let someone pick it up again.
    1. Pick the resolution. It takes one `resolution::<name>` label and a native close
       reason, so a closed item says why it closed:
       - `resolution::fixed`: the root cause is fixed. Reason: completed (GitLab status: Done).

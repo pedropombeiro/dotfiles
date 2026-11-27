@@ -10,6 +10,9 @@ OpenCode's Work-specific global `AGENTS.md` instructs the agent to read this fil
     `before`, `from`, `owner`, `sort_by_recency`, `num_results`, `cursor`
   - `read_document`: `{ urls, _user_goal, query?, page_selections? }`
   - `code_search`: `{ query, _user_goal, extension?, exhaustive? }`
+- Forgekeeper linked sessions cannot answer permission prompts. If Glean is
+  blocked, use checked-out sources for repository-local questions. For other
+  questions, tell the owning session what to look up in Glean.
 - For GitLab.com log questions in Kibana, load the `esquery` skill. Use the
   `esquery` MCP server for production (`log.gprd.gitlab.net`) and
   `esquery-staging` for staging (`nonprod-log.gitlab.net`). The skill's `pi`

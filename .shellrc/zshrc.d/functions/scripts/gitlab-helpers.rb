@@ -3,6 +3,7 @@
 
 require "English"
 require "json"
+require "shellwords"
 
 REJECTED_LABELS = /^(workflow:|missed:|estimate:|Effort:|\[Deprecated|auto updated).*/
 
@@ -282,16 +283,23 @@ def gpsup(remote, issue_iid)
   options = [
     "create",
     "squash",
-    "target='#{parent_branch}'",
-    "assign='#{ENV.fetch("USER", nil)}'"
+    "target=#{parent_branch}",
+    "assign=#{ENV.fetch("USER", nil)}"
   ]
-  options += TEAM_LABELS.map { |label| "label='#{label}'" } if TEAM_LABEL_PROJECTS.include?(project_path)
-  options += labels&.map { |label| "label='#{label}'" } || []
-  options << "milestone='#{milestone}'" if milestone
-  cmd = <<~SHELL.lines(chomp: true).join(" ")
-    git push --set-upstream "#{remote}" "#{branch}" #{options.uniq.map { |option| "-o merge_request.#{option}" }.join(" ")} #{ARGV.join(" ")}
-  SHELL
+  options += TEAM_LABELS.map { |label| "label=#{label}" } if TEAM_LABEL_PROJECTS.include?(project_path)
+  options += labels&.map { |label| "label=#{label}" } || []
+  options << "milestone=#{milestone}" if milestone
+  push_options = options.uniq.flat_map { |option| ["-o", "merge_request.#{option}"] }
+  extra_args = ARGV.map do |arg|
+    # Git rejects literal newlines in push options. GitLab decodes \n in descriptions.
+    if arg.match?(/\A(?:-o|--push-option=)?merge_request\.description=/)
+      arg.gsub(/\r\n|\n/) { '\n' }
+    else
+      arg
+    end
+  end
+  cmd = ["git", "push", "--set-upstream", remote, branch, *push_options, *extra_args]
 
-  puts cmd
-  exit(1) unless system(cmd)
+  puts cmd.shelljoin
+  exit(1) unless system(*cmd)
 end

@@ -208,6 +208,11 @@
     { "action": "provider.use", "resource": "claude-agent", "effect": "allow" },
     { "action": "provider.use", "resource": "google-vertex", "effect": "allow" }
   ],
+{% else %}
+  "policies": [
+    { "action": "provider.use", "resource": "*", "effect": "deny" },
+    { "action": "provider.use", "resource": "opencode-go", "effect": "allow" },
+  ],
 {% endif %}
   "providers": {
 {% if yadm.class == "Work" %}

@@ -1,13 +1,7 @@
 [env]
-# Canonical GitLab Duo models (also used as defaults on non-Work machines and
-# as confidential/security fallbacks on Work machines).
-OPENCODE_DUO_PLAN_MODEL = "gitlab/duo-chat-gpt-6-2-astra"
-OPENCODE_DUO_BUILD_MODEL = "gitlab/duo-chat-gpt-6-2-sol"
-OPENCODE_DUO_FAST_MODEL = "gitlab/duo-chat-gpt-6-luna"
-
-OPENCODE_PLAN_MODEL = "gitlab/duo-chat-gpt-6-2-astra"
-OPENCODE_BUILD_MODEL = "gitlab/duo-chat-gpt-6-2-sol"
-OPENCODE_FAST_MODEL = "gitlab/duo-chat-gpt-6-luna"
+OPENCODE_PLAN_MODEL = "opencode-go/kimi-k3.1-pro"
+OPENCODE_BUILD_MODEL = "opencode-go/minimax-m3.1-flash"
+OPENCODE_FAST_MODEL = "opencode-go/claude-haiku-5-5"
 OPENCODE_OFFLINE_MODEL = "ollama/gemma4:e2b"
 
 # Per-machine credential stays outside yadm. Unprovisioned machines can still

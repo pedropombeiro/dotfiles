@@ -7,7 +7,7 @@
   "plugins": [
 {% if yadm.os == "Darwin" %}
     {
-      "package": "@plannotator/opencode@0.29.2",
+      "package": "@plannotator/opencode@0.29.3",
       // Keep submit_plan, but do not inject Plannotator's question-block guidance.
       "options": { "workflow": "user-managed" }
     },

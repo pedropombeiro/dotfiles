@@ -1,6 +1,6 @@
 [tools]
 # Plan approval, prose annotation, and manual local code review. No installer-managed agent hooks.
-"github:backnotprop/plannotator" = { version = "0.29.2", asset_pattern = 'plannotator-darwin-{{ arch() }}.tar.xz', rename_exe = "plannotator" }
+"github:backnotprop/plannotator" = { version = "0.29.3", asset_pattern = 'plannotator-darwin-{{ arch() }}.tar.xz', rename_exe = "plannotator" }
 # Local disk-backed OTLP relay. GitHub releases contain several distributions.
 "github:open-telemetry/opentelemetry-collector-releases" = { version = "latest", matching = "otelcol-contrib_", filter_bins = "otelcol-contrib" }
 # ── Video editing tools ────────────────────────────────────────────────

@@ -6,6 +6,28 @@
 
 **Validate changes**: `yadm enter hk check --step renovate-config-validator`
 
+### Validate with RE2 on QTS
+
+If the `hk` step reports `RE2 not usable, falling back to RegExp`, a passing
+result doesn't confirm that Renovate's RE2 engine accepts the patterns. Before
+committing regex changes on QTS, run the strict validator in the NAS stack's
+pinned Renovate image. From the NAS checkout at `/share/Container`, run:
+
+```sh
+image=$(awk '$1 == "image:" && $2 ~ /^renovate\/renovate:.*@sha256:/ { print $2; exit }' \
+  compose/renovate/docker-compose.yml)
+test -n "$image" && \
+  docker run --rm --pull=never --network=none \
+    --mount "type=bind,source=$HOME/.renovaterc.json,target=/tmp/dotfiles-renovate.json,readonly" \
+    --entrypoint renovate-config-validator "$image" \
+    --strict --no-global /tmp/dotfiles-renovate.json
+```
+
+The command requires the pinned image to be present locally. It validates the
+working copy as repository configuration without starting a bot run or using
+the service's credentials. Confirm that validation succeeds without an RE2
+fallback warning.
+
 ## Managers Configured
 
 | Manager          | Files                                           | Purpose                |

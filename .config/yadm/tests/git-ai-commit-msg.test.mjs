@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
-import { chmodSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import {
+  chmodSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -17,6 +23,7 @@ function setupTestEnv(t, opts = {}) {
   const binDir = path.join(dir, "bin");
   const repoDir = path.join(dir, "repo");
   const captureFile = path.join(dir, "captured-request.json");
+  const attemptsFile = path.join(dir, "attempts.jsonl");
   execFileSync("mkdir", ["-p", binDir, repoDir]);
 
   // Stub opencode CLI to record the JSON payload passed to `--data`.
@@ -27,10 +34,20 @@ function setupTestEnv(t, opts = {}) {
 while [ $# -gt 0 ]; do
   if [ "$1" = "--data" ]; then
     printf '%s' "$2" > "${captureFile}"
+    printf '%s\\n' "$2" >> "${attemptsFile}"
     break
   fi
   shift
 done
+attempt=$(wc -l < "${attemptsFile}" | tr -d ' ')
+if [ "$attempt" -le ${opts.modelNotFoundAttempts ?? 0} ]; then
+  printf '%s\\n' '{"_tag":"ModelNotFoundError","providerID":"gitlab","modelID":"duo-chat-gpt-6-luna","message":"Model not found: gitlab/duo-chat-gpt-6-luna"}' 'HTTP 404 Not Found' >&2
+  exit 1
+fi
+if [ "${opts.routeNotFound ? 1 : 0}" -eq 1 ]; then
+  printf '%s\\n' 'HTTP 404 Not Found' >&2
+  exit 1
+fi
 printf '%s\\n' '{"data":{"text":"feat(scope): test commit message"}}'
 `,
   );
@@ -84,7 +101,7 @@ printf '%s\\n' '{"iid":111,"confidential":false,"labels":[]}'
     });
   }
 
-  return { dir, binDir, repoDir, captureFile };
+  return { dir, binDir, repoDir, captureFile, attemptsFile };
 }
 
 function runCommitMsg({ binDir, repoDir }, diffText, extraEnv = {}) {
@@ -116,6 +133,51 @@ index 1111111..2222222 100644
 +  # change
  end
 `;
+
+test("retries ModelNotFoundError with the same confidential request", (t) => {
+  const ctx = setupTestEnv(t, {
+    branch: "security-fix",
+    modelNotFoundAttempts: 1,
+  });
+  const res = runCommitMsg(ctx, SAMPLE_DIFF);
+  assert.equal(res.status, 0, res.stderr);
+  assert.match(res.stdout, /^feat\(scope\): test commit message\n$/);
+  assert.doesNotMatch(res.stderr, /ModelNotFoundError/);
+
+  const attempts = readFileSync(ctx.attemptsFile, "utf8").trimEnd().split("\n");
+  assert.equal(attempts.length, 2);
+  assert.equal(attempts[0], attempts[1]);
+  assert.deepEqual(JSON.parse(attempts[0]).model, {
+    providerID: "gitlab",
+    id: "duo-chat-gpt-6-luna",
+  });
+});
+
+test("reports ModelNotFoundError after exhausting retries", (t) => {
+  const ctx = setupTestEnv(t, {
+    branch: "security-fix",
+    modelNotFoundAttempts: 10,
+  });
+  const res = runCommitMsg(ctx, SAMPLE_DIFF);
+  assert.equal(res.status, 1);
+  assert.equal(res.stdout, "");
+  assert.match(res.stderr, /ModelNotFoundError/);
+  assert.equal(
+    readFileSync(ctx.attemptsFile, "utf8").trimEnd().split("\n").length,
+    4,
+  );
+});
+
+test("does not retry a 404 without ModelNotFoundError", (t) => {
+  const ctx = setupTestEnv(t, { routeNotFound: true });
+  const res = runCommitMsg(ctx, SAMPLE_DIFF);
+  assert.equal(res.status, 1);
+  assert.match(res.stderr, /HTTP 404 Not Found/);
+  assert.equal(
+    readFileSync(ctx.attemptsFile, "utf8").trimEnd().split("\n").length,
+    1,
+  );
+});
 
 test("routes public branch with verified public issue to OPENCODE_FAST_MODEL", async (t) => {
   const ctx = setupTestEnv(t, {

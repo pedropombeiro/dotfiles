@@ -351,24 +351,39 @@ responsefile="$run_dir/response.json"
 errfile="$run_dir/stderr"
 progress_active=1
 iterm2_progress -i || :
-opencode api post /api/experimental/generate/text \
-  --data "$(cat "$run_dir/request.json")" </dev/null >"$responsefile" 2>"$errfile" &
-run_pid=$!
 deadline=$(($(date +%s) + 90))
 timed_out=0
-while kill -0 "$run_pid" 2>/dev/null; do
-  if [ "$(date +%s)" -ge "$deadline" ]; then
-    timed_out=1
-    kill "$run_pid" 2>/dev/null || :
+retries_left=3
+while :; do
+  opencode api post /api/experimental/generate/text \
+    --data "$(cat "$run_dir/request.json")" </dev/null >"$responsefile" 2>"$errfile" &
+  run_pid=$!
+  while kill -0 "$run_pid" 2>/dev/null; do
+    if [ "$(date +%s)" -ge "$deadline" ]; then
+      timed_out=1
+      kill "$run_pid" 2>/dev/null || :
+      break
+    fi
+    sleep 1
+  done
+  result=0
+  wait "$run_pid" 2>/dev/null || result=$?
+  run_pid=""
+
+  # A newly loaded OpenCode location can return ModelNotFoundError before its
+  # provider catalog is ready. Retry the same request within the original deadline.
+  if [ "$timed_out" -eq 1 ] || [ "$result" -eq 0 ] || [ "$retries_left" -eq 0 ] ||
+    ! grep -Eq '^\{.*"_tag"[[:space:]]*:[[:space:]]*"ModelNotFoundError"' "$errfile"; then
     break
   fi
+  retries_left=$((retries_left - 1))
   sleep 1
+  if [ "$(date +%s)" -ge "$deadline" ]; then
+    timed_out=1
+    break
+  fi
 done
-if wait "$run_pid" 2>/dev/null && [ "$timed_out" -eq 0 ]; then
-  run_pid=""
-else
-  result=$?
-  run_pid=""
+if [ "$result" -ne 0 ] || [ "$timed_out" -eq 1 ]; then
   if [ "$timed_out" -eq 1 ]; then
     result=1
     echo "error: opencode did not respond within 90 seconds; the server request may still be running." >&2

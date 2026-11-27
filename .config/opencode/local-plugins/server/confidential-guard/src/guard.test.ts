@@ -4,6 +4,7 @@ import {
   checkToolCallBefore,
   confidentialReasonForDirectory,
   createPlugin,
+  defaultModelForAgent,
   detectConfidentialOutput,
   DUO_MODELS,
   duoModelForAgent,
@@ -17,8 +18,11 @@ import {
   isGitLabOutputTool,
   linkedOwner,
   parseModelRef,
+  parseRecentContextEntries,
   redactToolResult,
+  resolveDefaultModels,
   resolveDuoModels,
+  splitCompactionCheckpoint,
 } from "../index.ts";
 
 const VERTEX_PLAN = { providerID: "google-vertex", id: "gemini-4-argon" };
@@ -65,6 +69,95 @@ describe("duoModelForAgent", () => {
       explore: { providerID: "gitlab", id: "duo-chat-env-fast" },
       title: { providerID: "gitlab", id: "duo-chat-env-fast" },
     });
+
+    const defaults = resolveDefaultModels(
+      {},
+      {
+        OPENCODE_PLAN_MODEL: "google-vertex/gemini-4-neon",
+        OPENCODE_BUILD_MODEL: "google-vertex/gemini-4-argon",
+        OPENCODE_FAST_MODEL: "google-vertex/gemini-4-hydrogen",
+      },
+    );
+    expect(defaultModelForAgent("plan", defaults)).toEqual({
+      providerID: "google-vertex",
+      id: "gemini-4-neon",
+    });
+    expect(defaultModelForAgent("build", defaults)).toEqual({
+      providerID: "google-vertex",
+      id: "gemini-4-argon",
+    });
+    expect(defaultModelForAgent("explore", defaults)).toEqual({
+      providerID: "google-vertex",
+      id: "gemini-4-hydrogen",
+    });
+  });
+
+  test("splitCompactionCheckpoint and parseRecentContextEntries parse checkpoint blocks", () => {
+    const checkpoint = [
+      "<conversation-checkpoint>",
+      "<summary>",
+      "Investigated gitlab-org/gitlab#111.",
+      "</summary>",
+      "",
+      "<recent-context>",
+      "[User]: Check gitlab-org/gitlab#111",
+      "[Assistant]: Looking at gitlab-org/gitlab#111 now.",
+      '[Assistant tool call]: patch({"patchText":"Check gitlab-org/gitlab#555"})',
+      "[Tool result]: Updated test file",
+      '[Assistant tool call]: gitlab_get_issue({\n  "project_id": "gitlab-org/gitlab",\n  "issue_iid": 555\n})',
+      '[Tool result]:\n{"iid":555,"confidential":true}',
+      '[Assistant tool call]: gitlab_get_issue({"project_id":"gitlab-org/gitlab","issue_iid":555})',
+      "[Tool error]: confidential issue gitlab-org/gitlab#555",
+      "[Shell]: glab issue view 555\nconfidential: true",
+      "</recent-context>",
+      "</conversation-checkpoint>",
+    ].join("\n");
+
+    const { summaryText, recentText } = splitCompactionCheckpoint(checkpoint);
+    expect(summaryText).toBe("Investigated gitlab-org/gitlab#111.");
+    const entries = parseRecentContextEntries(recentText);
+    expect(entries).toEqual([
+      { kind: "user", text: "Check gitlab-org/gitlab#111" },
+      { kind: "assistant", text: "Looking at gitlab-org/gitlab#111 now." },
+      {
+        kind: "tool_call",
+        tool: "patch",
+        input: { patchText: "Check gitlab-org/gitlab#555" },
+      },
+      {
+        kind: "tool_result",
+        tool: "patch",
+        input: { patchText: "Check gitlab-org/gitlab#555" },
+        text: "Updated test file",
+      },
+      {
+        kind: "tool_call",
+        tool: "gitlab_get_issue",
+        input: { project_id: "gitlab-org/gitlab", issue_iid: 555 },
+      },
+      {
+        kind: "tool_result",
+        tool: "gitlab_get_issue",
+        input: { project_id: "gitlab-org/gitlab", issue_iid: 555 },
+        text: '{"iid":555,"confidential":true}',
+      },
+      {
+        kind: "tool_call",
+        tool: "gitlab_get_issue",
+        input: { project_id: "gitlab-org/gitlab", issue_iid: 555 },
+      },
+      {
+        kind: "tool_error",
+        tool: "gitlab_get_issue",
+        input: { project_id: "gitlab-org/gitlab", issue_iid: 555 },
+        text: "confidential issue gitlab-org/gitlab#555",
+      },
+      {
+        kind: "shell",
+        command: "glab issue view 555",
+        output: "confidential: true",
+      },
+    ]);
   });
 });
 
@@ -492,10 +585,12 @@ function createMockContext(opts: {
   directory?: string;
   sessions: Record<string, MockSession>;
   instructions?: Record<string, Array<{ key: string; value: string }>>;
+  contextMessages?: Record<string, Array<Record<string, unknown>>>;
   branch?: string;
   generatedTitle?: string;
 }) {
   const storage = new Map<string, unknown>();
+  const rpc: Record<string, (input: any, context: any) => Promise<any>> = {};
   const sessionHooks = new Map<
     string,
     Array<(event: any) => Promise<void> | void>
@@ -504,6 +599,7 @@ function createMockContext(opts: {
     string,
     Array<(event: any) => Promise<void> | void>
   >();
+  const eventQueue: Array<(event: any) => void> = [];
   const switched: Array<{
     sessionID: string;
     model: { providerID: string; id: string };
@@ -511,6 +607,46 @@ function createMockContext(opts: {
 
   const ctx: any = {
     location: { directory: opts.directory ?? "/gdk/gitlab" },
+    agent: {
+      async get({ agentID }: { agentID: string }) {
+        if (agentID === "build") return { data: { model: VERTEX_BUILD } };
+        if (agentID === "explore" || agentID === "title") {
+          return { data: { model: VERTEX_FAST } };
+        }
+        return { data: { model: VERTEX_PLAN } };
+      },
+    },
+    event: {
+      subscribe(subOpts?: { signal?: AbortSignal }) {
+        return {
+          [Symbol.asyncIterator]() {
+            return {
+              next() {
+                if (subOpts?.signal?.aborted) {
+                  return Promise.resolve({ done: true, value: undefined });
+                }
+                return new Promise<IteratorResult<any>>((resolve) => {
+                  const onAbort = () =>
+                    resolve({ done: true, value: undefined });
+                  subOpts?.signal?.addEventListener("abort", onAbort, {
+                    once: true,
+                  });
+                  eventQueue.push((value) => {
+                    subOpts?.signal?.removeEventListener("abort", onAbort);
+                    resolve({ done: false, value });
+                  });
+                });
+              },
+            };
+          },
+        };
+      },
+    },
+    rpc: {
+      async register(_definition: unknown, handlers: typeof rpc) {
+        Object.assign(rpc, handlers);
+      },
+    },
     storage: {
       async get(key: string) {
         return storage.get(key);
@@ -537,6 +673,9 @@ function createMockContext(opts: {
         const s = opts.sessions[sessionID];
         if (!s) throw new Error(`missing session ${sessionID}`);
         return s;
+      },
+      async context({ sessionID }: { sessionID: string }) {
+        return opts.contextMessages?.[sessionID] ?? [];
       },
       async switchModel({
         sessionID,
@@ -575,7 +714,15 @@ function createMockContext(opts: {
   return {
     ctx,
     storage,
+    call(name: string, input: unknown) {
+      return rpc[name](input, { signal: new AbortController().signal });
+    },
     switched,
+    async emitEvent(event: any) {
+      const waiter = eventQueue.shift();
+      if (waiter) waiter(event);
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    },
     async emitSession(name: string, event: any) {
       for (const fn of sessionHooks.get(name) ?? []) await fn(event);
     },
@@ -627,6 +774,164 @@ describe("confidential-guard plugin integration", () => {
     }
     return JSON.stringify({ confidential: false, labels: [] });
   };
+
+  test("clears a local legacy lock without clearing inherited or new findings", async () => {
+    const sessionID = "ses_legacy";
+    const forkID = "ses_legacy_fork";
+    const harness = createMockContext({
+      sessions: {
+        [sessionID]: { id: sessionID, model: DUO_MODELS.plan },
+        [forkID]: { id: forkID, fork: { sessionID }, model: DUO_MODELS.plan },
+      },
+    });
+    harness.storage.set(`confidential-guard/sessions/${sessionID}`, {
+      confidential: true,
+      markedAt: 1,
+      reason: "legacy reason",
+    });
+    await createPlugin({ git: defaultGit, glab: defaultGlab }).setup(
+      harness.ctx,
+    );
+    const {
+      findings: [finding],
+    } = await harness.call("status", { sessionID });
+    expect(finding).toMatchObject({ source: "legacy", canDismiss: true });
+    await expect(
+      harness.call("dismissPromptFinding", {
+        sessionID: forkID,
+        findingID: finding.id,
+      }),
+    ).rejects.toThrow(/cannot be dismissed/);
+    await harness.call("dismissPromptFinding", {
+      sessionID,
+      findingID: finding.id,
+    });
+    await expect(
+      harness.emitSession("context", { sessionID, model: VERTEX_PLAN }),
+    ).resolves.toBeUndefined();
+    await expect(
+      harness.emitSession("context", { sessionID: forkID, model: VERTEX_PLAN }),
+    ).rejects.toThrow(/legacy reason/);
+    await harness.emitSession("prompt", {
+      sessionID,
+      prompt: { text: "Check gitlab-org/gitlab#555" },
+    });
+    await expect(
+      harness.emitSession("context", { sessionID, model: VERTEX_PLAN }),
+    ).rejects.toThrow(/confidential issue.*555/);
+  });
+
+  test("dismisses one prompt reference without disabling tool checks or future prompt checks", async () => {
+    const sessionID = "ses_override";
+    const harness = createMockContext({
+      sessions: {
+        [sessionID]: { id: sessionID, agent: "plan", model: VERTEX_PLAN },
+        ses_fork: { id: "ses_fork", fork: { sessionID }, model: VERTEX_PLAN },
+      },
+    });
+    await createPlugin({ git: defaultGit, glab: defaultGlab }).setup(
+      harness.ctx,
+    );
+    const text = "Fixture: https://gitlab.com/gitlab-org/security/example";
+    const prompt = () =>
+      harness.emitSession("prompt", { sessionID, prompt: { text } });
+    const getStatus = (id = sessionID) =>
+      harness.call("status", { sessionID: id });
+    const upstream = {
+      sessionID,
+      model: VERTEX_PLAN,
+      agent: "plan",
+      messages: [],
+      system: [],
+    };
+    await prompt();
+    const [finding] = (await getStatus()).findings;
+    expect(finding).toMatchObject({ source: "prompt", canDismiss: true });
+    expect((await getStatus("ses_fork")).findings[0]).toMatchObject({
+      inherited: true,
+      canDismiss: false,
+    });
+    await harness.call("dismissPromptFinding", {
+      sessionID,
+      findingID: finding.id,
+    });
+    await expect(
+      harness.emitSession("context", upstream),
+    ).resolves.toBeUndefined();
+    await prompt();
+    const refreshed = (await getStatus()).findings.find(
+      (entry: any) => !entry.dismissed,
+    );
+    expect(refreshed.id).not.toBe(finding.id);
+    await harness.call("dismissPromptFinding", {
+      sessionID,
+      findingID: refreshed.id,
+    });
+    await expect(
+      harness.emitTool("execute.before", {
+        sessionID,
+        agent: "plan",
+        tool: "gitlab_get_issue",
+        input: { project_id: "gitlab-org/gitlab", issue_iid: 555 },
+      }),
+    ).rejects.toThrow(/blocked on upstream model/);
+    expect(
+      (await getStatus()).findings.find(
+        (entry: any) => entry.source === "tool input",
+      ),
+    ).toMatchObject({ canDismiss: false });
+    await expect(harness.emitSession("context", upstream)).rejects.toThrow(
+      /Blocked upstream model/,
+    );
+  });
+
+  test("uses current labels to recheck an item and retains other findings", async () => {
+    const sessionID = "ses_labels";
+    let publicFix = false;
+    const harness = createMockContext({
+      sessions: {
+        [sessionID]: { id: sessionID, agent: "plan", model: VERTEX_PLAN },
+      },
+    });
+    const glab = async (args: string[]) =>
+      args[0].endsWith("/888")
+        ? JSON.stringify({
+            iid: 888,
+            confidential: false,
+            labels: publicFix
+              ? ["security", "security-fix-in-public"]
+              : ["security"],
+          })
+        : defaultGlab(args);
+    await createPlugin({ git: defaultGit, glab }).setup(harness.ctx);
+    await harness.emitSession("prompt", {
+      sessionID,
+      prompt: {
+        text: "See gitlab-org/gitlab#888 and gitlab-org/gitlab#555",
+      },
+    });
+    const { findings } = await harness.call("status", { sessionID });
+    expect(findings).toHaveLength(2);
+    const request = {
+      sessionID,
+      findingID: findings.find((entry: any) => entry.reason.includes("#888"))
+        .id,
+    };
+    await expect(harness.call("dismissPromptFinding", request)).rejects.toThrow(
+      /verify this item is public/,
+    );
+    publicFix = true;
+    expect(await harness.call("recheck", request)).toEqual({
+      status: "public",
+    });
+    const updated = await harness.call("dismissPromptFinding", request);
+    expect(
+      updated.findings.filter((entry: any) => !entry.dismissed),
+    ).toHaveLength(1);
+    await expect(
+      harness.emitSession("context", { sessionID, model: VERTEX_PLAN }),
+    ).rejects.toThrow(/confidential issue.*555/);
+  });
 
   test("switches session on prompt hook for confidential issue and leaves public issues on Vertex", async () => {
     const harness = createMockContext({
@@ -1448,5 +1753,366 @@ describe("confidential-guard plugin integration", () => {
       writeFailHarness.emitTool("execute.after", leakAttempt),
     ).rejects.toThrow(/readonly database/);
     expect(leakAttempt.result.content[0].text).not.toContain("MUST REDACT");
+  });
+
+  test("post-compaction re-evaluation clears stale findings, switches back to default model, and preserves dismissed refs", async () => {
+    const sessionID = "ses_compact_unlock";
+    let issue888Public = false;
+    const contextMessages: Record<string, Array<Record<string, unknown>>> = {
+      [sessionID]: [],
+    };
+    const harness = createMockContext({
+      sessions: {
+        [sessionID]: {
+          id: sessionID,
+          agent: "build",
+          model: VERTEX_BUILD,
+          location: { directory: "/gdk/gitlab" },
+        },
+      },
+      contextMessages,
+    });
+    const glab = async (args: string[]) =>
+      args[0].endsWith("/888")
+        ? JSON.stringify({
+            iid: 888,
+            confidential: false,
+            labels: issue888Public
+              ? ["security", "security-fix-in-public"]
+              : ["security"],
+          })
+        : defaultGlab(args);
+
+    const cleanup = await createPlugin({
+      git: defaultGit,
+      glab,
+      now: () => 1000,
+    }).setup(harness.ctx);
+
+    // 1. Lock session via a tool input finding and a prompt finding, plus dismiss an incidental ref.
+    await harness.emitSession("prompt", {
+      sessionID,
+      prompt: {
+        text: "See gitlab-org/gitlab#888 and fixture https://gitlab.com/gitlab-org/security/example",
+      },
+    });
+    expect(harness.switched.at(-1)?.model).toEqual(DUO_MODELS.build);
+
+    const initialFindings = (await harness.call("status", { sessionID }))
+      .findings;
+    const fixtureFinding = initialFindings.find((entry: any) =>
+      entry.reason.includes("gitlab-org/security/example"),
+    );
+    await harness.call("dismissPromptFinding", {
+      sessionID,
+      findingID: fixtureFinding.id,
+    });
+
+    // Also add a non-dismissible tool input finding before compaction.
+    await harness.emitTool("execute.before", {
+      sessionID,
+      agent: "build",
+      tool: "lazy-mcp_invoke_command",
+      input: { server: "esquery", command_name: "search", parameters: {} },
+    });
+    expect(
+      (await harness.call("status", { sessionID })).findings.some(
+        (entry: any) => !entry.dismissed,
+      ),
+    ).toBe(true);
+
+    // 2. Issue #888 gets ~security-fix-in-public before compaction, and the
+    //    compacted context drops the esquery call while keeping #888 and the
+    //    already-dismissed fixture URL in the summary.
+    issue888Public = true;
+    contextMessages[sessionID] = [
+      {
+        type: "compaction",
+        id: "msg_compact_1",
+        status: "completed",
+        time: { created: 2000 },
+        summary:
+          "Working on public fix gitlab-org/gitlab#888. Dismissed fixture https://gitlab.com/gitlab-org/security/example.",
+        metadata: {
+          recent: [
+            "[User]: Continue with gitlab-org/gitlab#111",
+            '[Assistant tool call]: patch({"patchText":"test fixture gitlab-org/gitlab#555"})',
+            "[Tool result]: Updated spec",
+          ].join("\n"),
+        },
+      },
+    ];
+
+    harness.switched.length = 0;
+    await harness.emitEvent({
+      id: "evt_compact_1",
+      created: 2000,
+      type: "session.compaction.ended",
+      data: {
+        sessionID,
+        inputID: "msg_compact_1",
+        text: contextMessages[sessionID][0].summary,
+      },
+    });
+
+    // Session should now be unlocked and switched back to VERTEX_BUILD.
+    expect(harness.switched).toEqual([{ sessionID, model: VERTEX_BUILD }]);
+    const postStatus = await harness.call("status", { sessionID });
+    expect(
+      postStatus.findings.filter((entry: any) => !entry.dismissed),
+    ).toHaveLength(0);
+    expect(
+      postStatus.findings.find((entry: any) =>
+        entry.reason.includes("gitlab-org/security/example"),
+      ),
+    ).toMatchObject({ dismissed: true });
+
+    await expect(
+      harness.emitSession("context", {
+        sessionID,
+        agent: "build",
+        model: VERTEX_BUILD,
+        messages: [],
+        system: [],
+      }),
+    ).resolves.toBeUndefined();
+
+    await cleanup?.();
+  });
+
+  test("post-compaction re-evaluation keeps session locked when compacted context or ancestor remains confidential", async () => {
+    const parentID = "ses_parent_locked";
+    const childID = "ses_child_compacted";
+    const directID = "ses_direct_compacted";
+    const contextMessages: Record<string, Array<Record<string, unknown>>> = {
+      [childID]: [
+        {
+          type: "compaction",
+          id: "msg_compact_child",
+          status: "completed",
+          time: { created: 2000 },
+          summary: "Clean summary in child session.",
+        },
+      ],
+      [directID]: [
+        {
+          type: "compaction",
+          id: "msg_compact_direct",
+          status: "completed",
+          time: { created: 2000 },
+          summary: "Summary without confidential URLs.",
+          metadata: {
+            recent: [
+              '[Assistant tool call]: gitlab_get_issue({"project_id":"gitlab-org/gitlab","issue_iid":555})',
+              '[Tool result]: {"iid":555,"confidential":true}',
+            ].join("\n"),
+          },
+        },
+      ],
+    };
+
+    const harness = createMockContext({
+      sessions: {
+        [parentID]: {
+          id: parentID,
+          agent: "plan",
+          model: DUO_MODELS.plan,
+          location: { directory: "/gdk/gitlab" },
+        },
+        [childID]: {
+          id: childID,
+          parentID,
+          agent: "build",
+          model: DUO_MODELS.build,
+          location: { directory: "/gdk/gitlab" },
+        },
+        [directID]: {
+          id: directID,
+          agent: "plan",
+          model: DUO_MODELS.plan,
+          location: { directory: "/gdk/gitlab" },
+        },
+      },
+      contextMessages,
+    });
+
+    harness.storage.set(`confidential-guard/sessions/${parentID}`, {
+      confidential: true,
+      markedAt: 500,
+      reason: "confidential issue gitlab-org/gitlab#555",
+    });
+    harness.storage.set(`confidential-guard/sessions/${directID}`, {
+      confidential: true,
+      markedAt: 500,
+      reason: "legacy reason before compaction",
+    });
+
+    await createPlugin({
+      git: defaultGit,
+      glab: defaultGlab,
+      now: () => 2000,
+    }).setup(harness.ctx);
+
+    // 1. Reconciling directID replaces the legacy lock with the recent-context findings and stays locked.
+    const directStatus = await harness.call("status", { sessionID: directID });
+    expect(directStatus.findings.map((f: any) => f.source)).toEqual(
+      expect.arrayContaining(["tool input", "tool output"]),
+    );
+    await expect(
+      harness.emitSession("context", {
+        sessionID: directID,
+        agent: "plan",
+        model: VERTEX_PLAN,
+      }),
+    ).rejects.toThrow(/Blocked upstream model/);
+
+    // 2. Compacting childID does not bypass parentID's lock.
+    const childStatus = await harness.call("status", { sessionID: childID });
+    expect(childStatus.findings).toEqual([
+      expect.objectContaining({
+        inherited: true,
+        reason: "confidential issue gitlab-org/gitlab#555",
+      }),
+    ]);
+    await expect(
+      harness.emitSession("context", {
+        sessionID: childID,
+        agent: "build",
+        model: VERTEX_BUILD,
+      }),
+    ).rejects.toThrow(/Blocked upstream model/);
+  });
+
+  test("post-compaction fails closed without checkpoint, re-locks dismissed item made confidential again, and preserves active Duo turn", async () => {
+    const sessionID = "ses_compact_edge";
+    let issue888Confidential = true;
+    const contextMessages: Record<string, Array<Record<string, unknown>>> = {
+      [sessionID]: [],
+    };
+    const harness = createMockContext({
+      sessions: {
+        [sessionID]: {
+          id: sessionID,
+          agent: "build",
+          model: VERTEX_BUILD,
+          location: { directory: "/gdk/gitlab" },
+        },
+      },
+      contextMessages,
+    });
+
+    const glab = async (args: string[]) =>
+      args[0].endsWith("/888")
+        ? JSON.stringify({
+            iid: 888,
+            confidential: issue888Confidential,
+            labels: [],
+          })
+        : defaultGlab(args);
+
+    let clock = 1000;
+    const cleanup = await createPlugin({
+      git: defaultGit,
+      glab,
+      now: () => clock,
+    }).setup(harness.ctx);
+
+    await harness.emitSession("prompt", {
+      sessionID,
+      prompt: { text: "Investigate gitlab-org/gitlab#888" },
+    });
+    const [finding888] = (await harness.call("status", { sessionID })).findings;
+
+    // 1. If compaction event fires before the checkpoint message is in context,
+    //    do NOT unlock based only on event.data.text.
+    harness.switched.length = 0;
+    await harness.emitEvent({
+      id: "evt_premature",
+      created: 1500,
+      type: "session.compaction.ended",
+      data: {
+        sessionID,
+        inputID: "msg_compact_premature",
+        text: "Clean summary without refs.",
+      },
+    });
+    expect(harness.switched).toEqual([]);
+    await expect(
+      harness.emitSession("context", {
+        sessionID,
+        agent: "build",
+        model: VERTEX_BUILD,
+      }),
+    ).rejects.toThrow(/Blocked upstream model/);
+
+    // 2. Make #888 temporarily public so the user can dismiss it, then make it
+    //    confidential again before compaction. Post-compaction re-evaluation must
+    //    re-lock instead of carrying forward the stale dismissal.
+    issue888Confidential = false;
+    await harness.call("dismissPromptFinding", {
+      sessionID,
+      findingID: finding888.id,
+    });
+    issue888Confidential = true;
+
+    contextMessages[sessionID] = [
+      {
+        type: "compaction",
+        id: "msg_compact_relock",
+        status: "completed",
+        time: { created: 2000 },
+        summary: "Still working on gitlab-org/gitlab#888.",
+      },
+    ];
+    await harness.emitEvent({
+      id: "evt_relock",
+      created: 2000,
+      type: "session.compaction.ended",
+      data: {
+        sessionID,
+        inputID: "msg_compact_relock",
+      },
+    });
+
+    const relocked = await harness.call("status", { sessionID });
+    expect(relocked.findings).toEqual([
+      expect.objectContaining({
+        source: "prompt",
+        dismissed: false,
+      }),
+    ]);
+
+    // 3. Reconciling a clean ID-less hookMessages checkpoint during an active Duo
+    //    turn switches the session default model back for future turns without
+    //    unmasking in-flight Duo tool calls in the current turn.
+    clock = 3000;
+    contextMessages[sessionID] = [];
+    harness.switched.length = 0;
+    await harness.emitSession("context", {
+      sessionID,
+      agent: "build",
+      model: DUO_MODELS.build,
+      messages: [
+        {
+          role: "user",
+          content:
+            "<conversation-checkpoint>\n<summary>\nAll confidential work finished.\n</summary>\n</conversation-checkpoint>",
+        },
+      ],
+    });
+    expect(harness.switched).toEqual([{ sessionID, model: VERTEX_BUILD }]);
+
+    // An in-flight confidential tool call on the current Duo turn still succeeds
+    // because activeTurnModel was preserved for this turn.
+    await expect(
+      harness.emitTool("execute.before", {
+        sessionID,
+        agent: "build",
+        tool: "gitlab_get_issue",
+        input: { project_id: "gitlab-org/gitlab", issue_iid: 555 },
+      }),
+    ).resolves.toBeUndefined();
+
+    await cleanup?.();
   });
 });

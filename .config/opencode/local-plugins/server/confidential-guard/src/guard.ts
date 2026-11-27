@@ -100,6 +100,53 @@ export function resolveDuoModels(
   };
 }
 
+export interface DefaultModels {
+  readonly plan?: ModelRef;
+  readonly build?: ModelRef;
+  readonly explore?: ModelRef;
+  readonly title?: ModelRef;
+}
+
+export function resolveDefaultModels(
+  options?: unknown,
+  env: Record<string, string | undefined> = process.env,
+): DefaultModels {
+  const rawModels =
+    options &&
+    typeof options === "object" &&
+    "defaultModels" in options &&
+    options.defaultModels &&
+    typeof options.defaultModels === "object"
+      ? (options.defaultModels as Record<string, unknown>)
+      : {};
+
+  const plan =
+    parseModelRef(rawModels.plan) ?? parseModelRef(env.OPENCODE_PLAN_MODEL);
+  const build =
+    parseModelRef(rawModels.build) ?? parseModelRef(env.OPENCODE_BUILD_MODEL);
+  const fast = parseModelRef(env.OPENCODE_FAST_MODEL);
+  const explore = parseModelRef(rawModels.explore) ?? fast;
+  const title = parseModelRef(rawModels.title) ?? fast;
+
+  return {
+    ...(plan && { plan }),
+    ...(build && { build }),
+    ...(explore && { explore }),
+    ...(title && { title }),
+  };
+}
+
+export function defaultModelForAgent(
+  agent?: string,
+  models?: DefaultModels,
+): ModelRef | undefined {
+  if (agent === "build") return models?.build ?? models?.plan;
+  if (agent === "explore") return models?.explore ?? models?.plan;
+  if (agent === "title")
+    return models?.title ?? models?.explore ?? models?.plan;
+  return models?.plan;
+}
+
 export interface ConfidentialLock {
   readonly confidential: true;
   readonly reason: string;
@@ -230,7 +277,7 @@ export function normalizeGitLabProject(raw: string): string {
     .replace(/^\/+/, "")
     .replace(/\/-\/.*$/, "")
     .replace(/\.git$/i, "")
-    .replace(/\/+$/, "");
+    .replace(/[./]+$/, "");
   if (cleaned.toLowerCase().startsWith("groups/")) {
     cleaned = cleaned.slice("groups/".length);
   }
@@ -1107,6 +1154,151 @@ export function extractMessageText(content: unknown): string {
   return "";
 }
 
+export type RecentContextEntry =
+  | { readonly kind: "user"; readonly text: string }
+  | { readonly kind: "assistant"; readonly text: string }
+  | {
+      readonly kind: "tool_call";
+      readonly tool: string;
+      readonly input: unknown;
+    }
+  | {
+      readonly kind: "tool_result";
+      readonly tool: string;
+      readonly input: unknown;
+      readonly text: string;
+    }
+  | {
+      readonly kind: "tool_error";
+      readonly tool?: string;
+      readonly input?: unknown;
+      readonly text: string;
+    }
+  | {
+      readonly kind: "shell";
+      readonly command: string;
+      readonly output: string;
+    };
+
+export function splitCompactionCheckpoint(
+  text: string,
+  recentMetadata?: string,
+): { readonly summaryText: string; readonly recentText: string } {
+  const summaryMatch = /<summary>\r?\n?([\s\S]*?)\r?\n?<\/summary>/i.exec(text);
+  const recentMatch =
+    /<recent-context>\r?\n?([\s\S]*?)\r?\n?<\/recent-context>/i.exec(text);
+  const summaryText = summaryMatch
+    ? summaryMatch[1].trim()
+    : recentMatch
+      ? text.replace(recentMatch[0], "").trim()
+      : text.trim();
+  const fromTag = recentMatch ? recentMatch[1].trim() : "";
+  const fromMeta =
+    typeof recentMetadata === "string" ? recentMetadata.trim() : "";
+  const recentText =
+    fromTag && fromMeta && fromTag !== fromMeta
+      ? `${fromTag}\n\n${fromMeta}`
+      : fromTag || fromMeta;
+  return { summaryText, recentText };
+}
+
+const RECENT_MARKER_SPLIT =
+  /^(?=\[(?:User|Synthetic context|Skill activated: [^\]]+|Assistant|Assistant tool call|Tool result|Tool error|Shell)\]:?\s)/m;
+
+export function parseRecentContextEntries(
+  recentText: string,
+): RecentContextEntry[] {
+  if (!recentText) return [];
+  const entries: RecentContextEntry[] = [];
+  let lastTool: { tool: string; input: unknown } | undefined;
+
+  for (const rawChunk of recentText.split(RECENT_MARKER_SPLIT)) {
+    const chunk = rawChunk.trim();
+    if (!chunk) continue;
+
+    const userMatch = /^\[(?:User|Synthetic context)\]:?\s*([\s\S]*)$/.exec(
+      chunk,
+    );
+    if (userMatch) {
+      lastTool = undefined;
+      entries.push({ kind: "user", text: userMatch[1].trim() });
+      continue;
+    }
+
+    const toolCallMatch = /^\[Assistant tool call\]:?\s*([\s\S]*)$/.exec(chunk);
+    if (toolCallMatch) {
+      const body = toolCallMatch[1].trim();
+      const callMatch = /^([A-Za-z0-9_.:/-]+)\(([\s\S]*?)\)?$/.exec(body);
+      if (callMatch) {
+        const tool = callMatch[1];
+        const rawInput = callMatch[2].trim();
+        let input: unknown = rawInput;
+        try {
+          input = JSON.parse(rawInput);
+        } catch {
+          // Keep raw string when JSON is truncated or non-JSON.
+        }
+        lastTool = { tool, input };
+        entries.push({ kind: "tool_call", tool, input });
+      } else {
+        lastTool = undefined;
+        entries.push({ kind: "assistant", text: body });
+      }
+      continue;
+    }
+
+    const assistantMatch = /^\[Assistant\]:?\s*([\s\S]*)$/.exec(chunk);
+    if (assistantMatch) {
+      lastTool = undefined;
+      entries.push({ kind: "assistant", text: assistantMatch[1].trim() });
+      continue;
+    }
+
+    const toolResultMatch = /^\[Tool result\]:?\s*([\s\S]*)$/.exec(chunk);
+    if (toolResultMatch) {
+      const text = toolResultMatch[1].trim();
+      if (lastTool) {
+        entries.push({
+          kind: "tool_result",
+          tool: lastTool.tool,
+          input: lastTool.input,
+          text,
+        });
+      } else {
+        entries.push({ kind: "assistant", text });
+      }
+      lastTool = undefined;
+      continue;
+    }
+
+    const toolErrorMatch = /^\[Tool error\]:?\s*([\s\S]*)$/.exec(chunk);
+    if (toolErrorMatch) {
+      entries.push({
+        kind: "tool_error",
+        ...(lastTool && { tool: lastTool.tool, input: lastTool.input }),
+        text: toolErrorMatch[1].trim(),
+      });
+      lastTool = undefined;
+      continue;
+    }
+
+    const shellMatch = /^\[Shell\]:?\s*([\s\S]*)$/.exec(chunk);
+    if (shellMatch) {
+      lastTool = undefined;
+      const body = shellMatch[1];
+      const newline = body.indexOf("\n");
+      const command = (newline === -1 ? body : body.slice(0, newline)).trim();
+      const output = newline === -1 ? "" : body.slice(newline + 1).trim();
+      entries.push({ kind: "shell", command, output });
+      continue;
+    }
+
+    lastTool = undefined;
+  }
+
+  return entries;
+}
+
 export type ConfidentialityStatus = "public" | "confidential" | "unknown";
 
 export interface ConfidentialityAssessment {
@@ -1134,6 +1326,42 @@ export class GitLabConfidentialityChecker {
   ): Promise<string | undefined> {
     const assessment = await this.checkRefsAssessment(refs, signal);
     return assessment.status === "public" ? undefined : assessment.reason;
+  }
+
+  createFreshChecker(): GitLabConfidentialityChecker {
+    return new GitLabConfidentialityChecker(this.glab, this.now);
+  }
+
+  mergeCacheFrom(other: GitLabConfidentialityChecker): void {
+    for (const [key, entry] of other.cache) {
+      this.cache.set(key, entry);
+    }
+  }
+
+  async checkRefsFresh(
+    refs: readonly GitLabRef[],
+    signal?: AbortSignal,
+  ): Promise<string | undefined> {
+    const fresh = this.createFreshChecker();
+    const assessment = await fresh.checkRefsAssessment(refs, signal);
+    for (const ref of refs) {
+      if (ref.iid) {
+        this.cache.delete(`${ref.kind}:${ref.path.toLowerCase()}:${ref.iid}`);
+      }
+    }
+    this.mergeCacheFrom(fresh);
+    return assessment.status === "public" ? undefined : assessment.reason;
+  }
+
+  recheck(
+    ref: GitLabRef,
+    signal?: AbortSignal,
+  ): Promise<ConfidentialityAssessment> {
+    // Include linked issues in the fresh assessment without evicting live cache entries.
+    return new GitLabConfidentialityChecker(
+      this.glab,
+      this.now,
+    ).checkRefsAssessment([ref], signal);
   }
 
   async checkRefsAssessment(

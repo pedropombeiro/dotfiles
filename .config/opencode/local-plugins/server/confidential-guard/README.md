@@ -43,6 +43,34 @@ A session is locked to GitLab Duo when any of the following occur:
 6. **Request backstops** (`context`, `generate`, `compaction`, `title`): blocks
    any non-`gitlab` LLM request on a locked session and routes confidential
    title generation through `gitlab/duo-chat-gpt-6-luna`.
+7. **Post-compaction re-evaluation** (`session.compaction.ended` and active
+   context reconciliation): rescans the compacted checkpoint (`<summary>` and
+   `<recent-context>`), remaining post-compaction messages/tool calls, repository
+   checkout, branch, and Forgekeeper session target. Pre-compaction findings are
+   replaced with the post-compaction scan (preserving previously dismissed
+   prompt findings). When no active findings remain, the session unlocks and
+   switches back to the agent's configured default model.
+
+## Inspect and dismiss a finding
+
+Run `/confidential-status` in the terminal session to see the recorded reasons
+for a lock. The command opens a local dialog without sending a prompt to a model.
+Select a GitLab issue, work item, or merge request finding and choose
+**Recheck GitLab** to see the current assessment without using cached results.
+Rechecking doesn't clear the finding.
+
+If a reference in a prompt was incidental, choose **Mark as false positive**
+on that finding and confirm. For GitLab items, GitLab must currently report
+the item as public. Only dismiss a finding if the conversation is safe to send
+to the next model. The action applies to this session and this finding. Future
+prompts and tool calls still go through the guard.
+
+When no active findings remain, use `/models` to choose another provider.
+Findings from tools, checkouts, branches, session targets, or related sessions
+can't be dismissed. If an older lock shows **History incomplete**, review the
+entire conversation, including tool results, before choosing **Clear legacy
+lock after reviewing session**. This clears only the selected session's legacy
+finding. Other findings and future guard checks still apply.
 
 ## Duo Model Mapping
 

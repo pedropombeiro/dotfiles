@@ -129,6 +129,21 @@ test("redacts the password inside a URI without redacting the host", () => {
 
 // False positives ──────────────────────────────────────────────────────────────
 
+test("does not mistake a Google Calendar feed account for part of its private token", () => {
+  const owner = "exampleperson";
+  const target = `https://github.com/${owner}/project/issues/21`;
+  const token = fake("calendar-token", 32, "hex");
+  const feed = `https://calendar.google.com/calendar/ical/${owner}%40mail.example/private-${token}/basic.ics`;
+  write(join(root, "repo/secrets/calendar_url"), feed);
+  const g = guards();
+
+  expect(redacted(target, g)).toBe(target);
+  expect(() => g.checkToolCall({ tool: "set_session_target", args: { target } })).not.toThrow();
+  expect(redacted(feed, g)).toBe("[REDACTED:secret]");
+  expect(redacted(token.slice(8, 20), g)).toBe("[REDACTED:secret-fragment]");
+  expect(() => g.checkToolCall({ tool: "set_session_target", args: { target: feed } })).toThrow(EXPOSURE_ERROR_MSG);
+});
+
 test("leaves user names, short values, and ordinary text alone", () => {
   const text =
     "role postgres_exporter, user admin, commit 6d73a1f63665f623541589bd0525a5c3c9bf0c52, path /share/Multimedia/Readeck";

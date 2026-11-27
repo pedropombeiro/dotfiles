@@ -147,7 +147,15 @@ const isRedactableValue = (value) =>
 const SEPARATORS = /[\s:@/=&?,;'"]+/;
 
 /** Splits a composite value, such as a URI, DSN, or header line, into its secret-looking parts. */
-const secretTokens = (value) => value.split(SEPARATORS).filter((token) => token !== value && isHighEntropy(token));
+const secretTokens = (value) => {
+  // In a private Google Calendar feed, the encoded email identifies the account;
+  // only the private path segment grants access. The full URL is indexed separately.
+  const calendarFeed = value.match(
+    /^https:\/\/calendar\.google\.com\/calendar\/ical\/[^/\s?#]+%40[^/\s?#]+\/(private-[A-Za-z0-9]+)\/basic\.ics$/i,
+  );
+  const tokens = calendarFeed ? [calendarFeed[1]] : value.split(SEPARATORS);
+  return tokens.filter((token) => token !== value && isHighEntropy(token));
+};
 
 // Fragments of a composite value would include its host names and paths, so only
 // single-token values, and the tokens of composite ones, are matched by fragment.

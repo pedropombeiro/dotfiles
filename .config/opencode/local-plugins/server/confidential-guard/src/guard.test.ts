@@ -482,6 +482,17 @@ describe("pre-execution & post-execution tool checks", () => {
         command: "run-in-tmux-pane 'pgai query SELECT 1'",
       }),
     ).toBeDefined();
+    expect(
+      checkToolCallBefore("shell", {
+        command: "scripts/orbit-chq status",
+      }),
+    ).toBeDefined();
+    expect(
+      checkToolCallBefore("shell", {
+        command:
+          'uv run --with websockets /tmp/skills/orbit-ch-query/scripts/orbit-chq orbit-prod "SELECT version()"',
+      }),
+    ).toBeDefined();
 
     // Non-confidential / benign calls must pass.
     expect(
@@ -493,6 +504,11 @@ describe("pre-execution & post-execution tool checks", () => {
     expect(
       checkToolCallBefore("shell", {
         command: "git grep esquery docs/",
+      }),
+    ).toBeUndefined();
+    expect(
+      checkToolCallBefore("shell", {
+        command: "git grep orbit-chq skills/",
       }),
     ).toBeUndefined();
     expect(

@@ -218,16 +218,29 @@ const CONFIDENTIAL_DIR_PATTERNS = [
 const RED_MCP_SERVER_PATTERN = /^(?:esquery(?:-staging)?|incident(?:_io)?)$/i;
 const RED_DIRECT_TOOL_PATTERN =
   /^(?:(?:esquery(?:-staging)?|incident(?:_io)?)[_/:.-]|gitlab_.*(?:vulnerabilit|audit_event))/i;
-const COMMAND_PREFIX =
-  String.raw`(?:^|[;&|(\n` +
-  "`" +
-  String.raw`])\s*(?:(?:[A-Za-z_]\w*=\S*\s+)*(?:mise\s+(?:x|exec)\s+[^;&|\n]*?--\s+|env\s+(?:-[^\s]+\s+)*(?:[A-Za-z_]\w*=\S*\s+)*|run-in-tmux-pane\s+(?:-[^\s]+\s+)*["']?|(?:sh|zsh|bash)\s+(?:-[a-zA-Z]+\s+)*["']?|bundle\s+exec\s+)*)["']?(?:[^\s;&|\n"'()]*\/)?`;
+// Matches the start of a shell subcommand after optional inline env assignments,
+// command wrappers (mise, uv, env, run-in-tmux-pane, subshells, bundle exec),
+// and a directory path prefix.
+const COMMAND_BOUNDARY = String.raw`(?:^|[;&|(\n` + "`" + String.raw`])\s*`;
+const ENV_ASSIGNMENTS = String.raw`(?:[A-Za-z_]\w*=\S*\s+)*`;
+const COMMAND_WRAPPERS = [
+  String.raw`mise\s+(?:x|exec)\s+[^;&|\n]*?--\s+`,
+  String.raw`uv\s+run\s+(?:(?:--with|--python|-p)\s+\S+\s+|-[^\s]+\s+)*`,
+  String.raw`env\s+(?:-[^\s]+\s+)*(?:[A-Za-z_]\w*=\S*\s+)*`,
+  String.raw`run-in-tmux-pane\s+(?:-[^\s]+\s+)*["']?`,
+  String.raw`(?:sh|zsh|bash)\s+(?:-[a-zA-Z]+\s+)*["']?`,
+  String.raw`bundle\s+exec\s+`,
+].join("|");
+const OPTIONAL_PATH_PREFIX = String.raw`["']?(?:[^\s;&|\n"'()]*\/)?`;
+const COMMAND_PREFIX = `${COMMAND_BOUNDARY}(?:${ENV_ASSIGNMENTS}(?:(?:${COMMAND_WRAPPERS})\\s*)*)${OPTIONAL_PATH_PREFIX}`;
+const COMMAND_SUFFIX = String.raw`["']?(?=$|[\s;&|)\n` + "`" + String.raw`"'])`;
+const RED_SHELL_TOOLS = ["esquery", "postgresai", "pgai", "dblab", "orbit-chq"];
 const RED_SHELL_CMD_PATTERN = new RegExp(
-  `${COMMAND_PREFIX}(esquery|postgresai|pgai|dblab)["']?(?=$|[\\s;&|)\\n\`"'])`,
+  `${COMMAND_PREFIX}(${RED_SHELL_TOOLS.join("|")})${COMMAND_SUFFIX}`,
   "i",
 );
 const GLAB_SHELL_CMD_PATTERN = new RegExp(
-  `${COMMAND_PREFIX}glab["']?(?=$|[\\s;&|)\\n\`"'])`,
+  `${COMMAND_PREFIX}glab${COMMAND_SUFFIX}`,
   "i",
 );
 

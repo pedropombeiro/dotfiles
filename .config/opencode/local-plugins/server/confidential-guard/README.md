@@ -30,7 +30,7 @@ A session is locked to GitLab Duo when any of the following occur:
    model.
 4. **Pre-execution RED/confidential tools** (`tool.hook("execute.before")`):
    classifies `esquery`, `esquery-staging`, `incident_io`,
-   `dblab`/`postgresai`/`pgai`, `gitlab_*(vulnerabilit|audit_event)*`,
+   `dblab`/`postgresai`/`pgai`, `orbit-chq`, `gitlab_*(vulnerabilit|audit_event)*`,
    cross-directory access into confidential checkouts, and GitLab API/CLI calls
    targeting confidential projects, issues, work items (`work_item_id` /
    `work_item_iid`), MRs, or epics on all providers—locking the session when

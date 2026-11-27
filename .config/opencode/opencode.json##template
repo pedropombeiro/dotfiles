@@ -132,7 +132,7 @@
     },
     {
       // Exposes the `vent` tool and `resolve-vent` skill for recording and resolving friction.
-      "package": "/Users/pedropombeiro/Developer/github.com/pedropombeiro/opencode-plugins/packages/vent",
+      "package": "opencode-vent@0.2.0",
       "options": {
 {% if yadm.class == "Work" %}
         "defaultDestination": "gitlab",

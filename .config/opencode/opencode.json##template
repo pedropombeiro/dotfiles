@@ -131,8 +131,8 @@
       "options": { "ttl": { "gitlab/duo-chat-gpt-6*": "30m" } }
     },
     {
-      // Exposes the `vent` tool for recording tooling, docs, and workflow frictions.
-      "package": "./local-plugins/server/vent",
+      // Exposes the `vent` tool and `resolve-vent` skill for recording and resolving friction.
+      "package": "opencode-vent@0.1.0",
       "options": {
 {% if yadm.class == "Work" %}
         "defaultDestination": "gitlab",

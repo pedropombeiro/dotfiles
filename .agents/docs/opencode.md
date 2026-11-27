@@ -224,10 +224,6 @@ Each local plugin documents its behavior, options, and tests in its own README:
   descendants, with a global fallback restricted to `$TMPDIR/opencode`.
 - [`otel-status`](../../.config/opencode/local-plugins/server/otel-status/README.md):
   shows in the CLI footer whether the collector accepts OTLP requests.
-- [`vent`](../../.config/opencode/local-plugins/server/vent/README.md):
-  exposes a `vent` tool to record tooling, documentation, skill, and workflow
-  frictions to configurable destinations (GitLab epics, GitHub issues, or a
-  Markdown log) with automatic deduplication.
 - [`forge-session-title`](../../.config/opencode/local-plugins/server/forge-session-title/README.md):
   names sessions after the GitHub PR or GitLab MR (`@<author> - Review <topic>`)
   or issue, work item, or epic they work on, supporting full URLs and shorthand
@@ -240,7 +236,9 @@ Each local plugin documents its behavior, options, and tests in its own README:
 
 ### Vent routing
 
-For GDK or GitLab monorepo friction, omit `destination`. The Work config enforces
+[`opencode-vent`](https://github.com/pedropombeiro/opencode-plugins/tree/main/packages/vent)
+provides the `vent` tool and the `resolve-vent` skill. For GDK or GitLab
+monorepo friction, omit `destination`. The Work config enforces
 the confidential GitLab route by checkout path or fetch remote. Get explicit
 user approval before creating or updating a GitLab issue.
 

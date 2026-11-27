@@ -112,12 +112,29 @@
       "enabled": false
     },
     {
+      "description": "Let the regex manager own the mise-action version input so it stays grouped with min_version. Keep the action commit SHA managed separately.",
+      "matchManagers": ["github-actions"],
+      "matchDatasources": ["github-release-attachments"],
+      "matchPackageNames": ["jdx/mise"],
+      "enabled": false
+    },
+    {
+      "description": "Track the Carapace pin through the regex manager so Renovate updates it once, using the GitHub release publish date",
+      "matchManagers": ["mise"],
+      "matchDepNames": ["aqua:carapace-sh/carapace-bin"],
+      "matchFileNames": [".config/mise/conf.d/global.toml"],
+      "enabled": false
+    },
+    {
       "description": "Bump the CI mise pin and the min_version floor in global.toml together. mise tags releases as vX.Y.Z; both pins omit the prefix.",
       "matchManagers": ["custom.regex"],
       "matchPackageNames": ["jdx/mise"],
       "extractVersion": "^v?(?<version>.*)$",
       "groupName": "mise version pin",
-      "groupSlug": "mise-version-pin"
+      "groupSlug": "mise-version-pin",
+      "minimumReleaseAge": "3 days",
+      "minimumReleaseAgeBehaviour": "timestamp-required",
+      "internalChecksFilter": "strict"
     },
     {
       "description": "Group Plannotator CLI and OpenCode plugin updates together to keep their versions in lockstep",
@@ -138,15 +155,15 @@
   },
   "customManagers": [
     {
-      "description": "Pinned theme assets from upstream main branches",
+      "description": "Pinned theme assets from upstream branches (main unless the source sets branch)",
       "customType": "regex",
       "managerFilePatterns": ["/(^|/)\\.config/dotfiles/themes/[^/]+/assets\\.json$/"],
       "matchStrings": [
-        "\"repository\":\\s*\"(?<depName>[^\"]+)\"[\\s\\S]*?\"revision\":\\s*\"(?<currentDigest>[a-f0-9]{40})\""
+        "\"repository\":\\s*\"(?<depName>[^\"]+)\"\\s*,(?:\\s*\"branch\":\\s*\"(?<branch>[^\"]+)\"\\s*,)?[^{}]*?\"revision\":\\s*\"(?<currentDigest>[a-f0-9]{40})\""
       ],
       "datasourceTemplate": "git-refs",
       "packageNameTemplate": "https://github.com/{{{depName}}}.git",
-      "currentValueTemplate": "main"
+      "currentValueTemplate": "{{#if branch}}{{{branch}}}{{else}}main{{/if}}"
     },
     {
       "description": "mise github/aqua backend packages",

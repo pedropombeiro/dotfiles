@@ -215,6 +215,9 @@ Each local plugin documents its behavior, options, and tests in its own README:
   the sidebar, with a timing-only footer fallback and a details panel.
 - [`permission-mode`](../../.config/opencode/local-plugins/tui/permission-mode/README.md):
   toggles the global permission preference with Shift+Tab.
+- [`last-session-tab`](../../.config/opencode/local-plugins/tui/last-session-tab/README.md):
+  switches to the previously active session tab with `` <leader>` `` (configurable via
+  `options.bind`).
 - [`queue-command`](../../.config/opencode/local-plugins/tui/queue-command/README.md):
   adds `/queue <message>`, which queues a message for the current session instead of
   sending it right away.

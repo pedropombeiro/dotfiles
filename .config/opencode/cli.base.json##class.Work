@@ -17,6 +17,7 @@
   },
   "plugins": [
     "./local-plugins/tui/permission-mode",     // Shift+Tab toggles the global permission preference
+    "./local-plugins/tui/last-session-tab",    // Leader+` alternates between the last two session tabs
     "./local-plugins/tui/queue-command",       // Adds /queue to queue a message for later
     "./local-plugins/tui/temp-file-tail",      // Leader+o toggles a session-aware tmux temp-file tail
     "./local-plugins/tui/full-pane-title",     // Publishes full session titles for iTerm2 subtitles

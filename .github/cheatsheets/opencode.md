@@ -35,7 +35,7 @@ for other defaults.
 | --- | --- | --- |
 | Create / find a session | `Leader n` / `Leader l` | `Ctrl+O` opens recent sessions and projects |
 | Search past session content | `Leader f` or `/search-session QUERY` | Searches titles and messages. `Enter` opens a same-project result. `Ctrl+S` requests a summary here. |
-| Switch session tabs | `Alt+Down` / `Alt+Up` | |
+| Switch session tabs | `Alt+Down` / `Alt+Up` | ``Leader ` `` toggles the last active tab |
 | Close / reopen a tab | `Leader w` / `Ctrl+Shift+T` | Closing a tab doesn't delete the session |
 | Fork a session | `Ctrl+P`, search for fork | Choose the message to branch from |
 | Compact context | `Leader c` | Read summaries with `/compaction-history` |
@@ -60,6 +60,7 @@ Details: [Session Finder](https://github.com/pedropombeiro/opencode-plugins/tree
 [session metrics](../../.config/opencode/local-plugins/tui/session-metrics/README.md),
 [temp-file tail](../../.config/opencode/local-plugins/tui/temp-file-tail/README.md),
 [permission mode](../../.config/opencode/local-plugins/tui/permission-mode/README.md),
+[last session tab](../../.config/opencode/local-plugins/tui/last-session-tab/README.md),
 [queue command](../../.config/opencode/local-plugins/tui/queue-command/README.md),
 and [Forgekeeper](https://github.com/pedropombeiro/opencode-plugins/tree/main/packages/forgekeeper).
 

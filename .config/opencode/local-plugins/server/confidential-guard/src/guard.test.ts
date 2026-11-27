@@ -518,6 +518,24 @@ describe("pre-execution & post-execution tool checks", () => {
     ).toBeUndefined();
   });
 
+  test("distinguishes a GitLab URL in shell text from a checkout path", () => {
+    const url =
+      "https://gitlab.com/pedropombeiro/work-friction/-/work_items/30";
+    const path = "/tmp/gitlab.com/pedropombeiro/work-friction/README.md";
+    expect(
+      checkToolCallBefore("shell", { command: `printf '%s' '${url}'` })?.reason,
+    ).toContain("confidential GitLab reference");
+    expect(
+      checkToolCallBefore("shell", { command: `glab issue view '${url}'` })
+        ?.reason,
+    ).toContain("glab command targets confidential project");
+    expect(
+      checkToolCallBefore("shell", {
+        command: `printf '%s' '${url}'; cat '${path}'`,
+      })?.reason,
+    ).toContain("confidential repository directory");
+  });
+
   test("detectConfidentialOutput and redactToolResult catch confidential responses", () => {
     expect(
       detectConfidentialOutput('{"iid": 1, "confidential": true}'),

@@ -736,11 +736,6 @@ export function checkToolCallBefore(
     const command = typeof args.command === "string" ? args.command : "";
     if (!command) return undefined;
 
-    const dirReason = confidentialReasonForDirectory(command);
-    if (dirReason) {
-      return { reason: `shell command accesses ${dirReason}` };
-    }
-
     const redMatch = RED_SHELL_CMD_PATTERN.exec(command);
     if (redMatch) {
       return { reason: `RED shell tool "${redMatch[1]}" requires GitLab Duo` };
@@ -768,6 +763,23 @@ export function checkToolCallBefore(
           reason: `glab command targets confidential project (${bareConfidential[1]})`,
         };
       }
+    }
+
+    const dirReason = confidentialReasonForDirectory(command);
+    if (dirReason) {
+      const urlHit = CONFIDENTIAL_TEXT_URL_PATTERN.exec(command);
+      // Strip URLs only for the diagnostic; the original match still locks the session.
+      const gitLabUrls =
+        /\b(?:https?:\/\/|ssh:\/\/git@|git@)gitlab\.com[/:][^\s"'`<>;&|()]+/gi;
+      if (
+        urlHit &&
+        !confidentialReasonForDirectory(command.replace(gitLabUrls, " "))
+      ) {
+        return {
+          reason: `shell command contains a confidential GitLab reference (${urlHit[1]})`,
+        };
+      }
+      return { reason: `shell command text matches a ${dirReason} pattern` };
     }
   }
 

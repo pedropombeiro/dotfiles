@@ -15,6 +15,15 @@ working_directory = "~"
 program = "{{ xdg_config_home }}/yadm/scripts/run-opencode-go-cost-proxy.sh"
 run_at_load = true
 keep_alive = true
-throttle_interval = 30
+# The proxy is on the path to the provider, so it comes back fast.
+throttle_interval = 5
+environment = { PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin", XDG_CONFIG_HOME = "{{ xdg_config_home }}" }
+working_directory = "~"
+
+# Restarts the proxy when it stops answering, because a process that is alive
+# but no longer serving stays alive.
+[bootstrap.macos.launchd.agents.opencode-go-cost-proxy-watchdog]
+program = "{{ xdg_config_home }}/yadm/scripts/run-opencode-go-cost-proxy-watchdog.sh"
+start_interval = 30
 environment = { PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin", XDG_CONFIG_HOME = "{{ xdg_config_home }}" }
 working_directory = "~"

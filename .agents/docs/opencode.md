@@ -434,9 +434,26 @@ A local proxy closes the gap:
   host OpenCode service reaches it. A `yadm pull` on the NAS updates the
   script, but the running container keeps the old one until it restarts.
 
-Removing the `baseURL` override restores direct access to OpenCode Go. While the
-override is in place, Go requests fail if the proxy is down; launchd and the
-container's restart policy bring it back.
+Removing the `baseURL` override restores direct access to OpenCode Go. The
+override puts the proxy on the path to the provider, so OpenCode has no other
+way to reach it while the proxy is down. The proxy and its supervision are
+built for that:
+
+- The upstream request is retried when the network is briefly gone, which is
+  what happens right after a wake-up, and when the upstream answers with a
+  temporary error. The retries stop as soon as the client goes away.
+- The process survives an unhandled error and a busy port. An error is logged
+  and the proxy keeps serving, because a restart takes every request in
+  between with it.
+- launchd restarts the proxy within five seconds of a crash, through
+  `bootstrap.macos.launchd.agents.opencode-go-cost-proxy`.
+- The `bootstrap.macos.launchd.agents.opencode-go-cost-proxy-watchdog`
+  LaunchAgent probes `GET /healthz` every 30 seconds and restarts the proxy
+  after two failed probes, which catches a process that runs but no longer
+  serves. Its log is in `$XDG_STATE_HOME/opencode-go-cost-proxy/watchdog.log`.
+- On the NAS, Docker restarts the container after a crash, and
+  `scripts/cron.d/check-opencode-go-cost-proxy.sh` restarts a container that
+  Docker reports as unhealthy.
 
 The proxy has its own tests:
 

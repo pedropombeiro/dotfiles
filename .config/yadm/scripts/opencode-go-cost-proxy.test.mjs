@@ -3,15 +3,20 @@ import assert from "node:assert/strict"
 import http from "node:http"
 import { createServer, rewriteFrame, rewriteUsage } from "./opencode-go-cost-proxy.mjs"
 
+// The retry waits for real in production, and the tests skip the waiting.
+const FAST_RETRY = { retries: 3, retryDelaysMs: [0, 0, 0], sleep: () => Promise.resolve() }
+
 // Runs a stub upstream and the proxy in front of it, then hands the ports to
 // the test body.
-async function withProxy(handler, run) {
+async function withProxy(handler, run, options = {}) {
   const upstream = http.createServer(handler)
   await new Promise((resolve) => upstream.listen(0, "127.0.0.1", resolve))
   const upstreamPort = upstream.address().port
   const proxy = createServer({
     upstream: "https://upstream.test",
     fetchImpl: (url, init) => fetch(url.replace("https://upstream.test", `http://127.0.0.1:${upstreamPort}`), init),
+    ...FAST_RETRY,
+    ...options,
   })
   await new Promise((resolve) => proxy.listen(0, "127.0.0.1", resolve))
   const proxyPort = proxy.address().port
@@ -128,20 +133,138 @@ test("a stream separated by carriage returns is rewritten", async () => {
   )
 })
 
-test("an error response keeps its status and body", async () => {
+test("a client error keeps its status and body without a retry", async () => {
+  let calls = 0
   await withProxy(
     (_req, res) => {
-      res.writeHead(429, { "content-type": "application/json" })
-      res.end(JSON.stringify({ error: { message: "slow down" } }))
+      calls += 1
+      res.writeHead(400, { "content-type": "application/json" })
+      res.end(JSON.stringify({ error: { message: "bad request" } }))
     },
     async ({ proxyPort }) => {
       const response = await fetch(`http://127.0.0.1:${proxyPort}/openai/v1/chat/completions`, { method: "POST", body: "{}" })
-      assert.equal(response.status, 429)
-      assert.deepEqual((await response.json()).error, { message: "slow down" })
+      assert.equal(response.status, 400)
+      assert.deepEqual((await response.json()).error, { message: "bad request" })
+      assert.equal(calls, 1)
     },
   )
 })
 
+test("a temporary upstream failure is retried", async () => {
+  let calls = 0
+  await withProxy(
+    (_req, res) => {
+      calls += 1
+      if (calls === 1) {
+        res.writeHead(503, { "content-type": "application/json" })
+        res.end(JSON.stringify({ error: { message: "try later" } }))
+        return
+      }
+      res.writeHead(200, { "content-type": "application/json" })
+      res.end(JSON.stringify({ usage: { cost: 0, opencode: { list_cost: 5 } } }))
+    },
+    async ({ proxyPort }) => {
+      const response = await fetch(`http://127.0.0.1:${proxyPort}/openai/v1/chat/completions`, { method: "POST", body: "{}" })
+      assert.equal(response.status, 200)
+      assert.equal((await response.json()).usage.cost, 5)
+      assert.equal(calls, 2)
+    },
+  )
+})
+
+test("a request that never reaches the upstream is retried", async () => {
+  let calls = 0
+  await withProxy(
+    (_req, res) => {
+      res.writeHead(200, { "content-type": "application/json" })
+      res.end("{}")
+    },
+    async ({ proxyPort }) => {
+      const proxy = createServer({
+        upstream: "https://upstream.test",
+        fetchImpl: () => {
+          calls += 1
+          return Promise.reject(Object.assign(new TypeError("fetch failed"), { cause: { code: "ENETDOWN" } }))
+        },
+        ...FAST_RETRY,
+      })
+      await new Promise((resolve) => proxy.listen(0, "127.0.0.1", resolve))
+      try {
+        const response = await fetch(`http://127.0.0.1:${proxy.address().port}/openai/v1/chat/completions`, {
+          method: "POST",
+          body: "{}",
+        })
+        assert.equal(response.status, 502)
+        assert.equal(calls, 4)
+      } finally {
+        proxy.closeAllConnections()
+        await new Promise((resolve) => proxy.close(resolve))
+      }
+    },
+  )
+})
+
+test("a request that never reaches the upstream gives up after the retries", async () => {
+  const proxy = createServer({
+    upstream: "http://127.0.0.1:1",
+    fetchImpl: () => Promise.reject(new Error("connection refused")),
+    ...FAST_RETRY,
+  })
+  await new Promise((resolve) => proxy.listen(0, "127.0.0.1", resolve))
+  const proxyPort = proxy.address().port
+  try {
+    const response = await fetch(`http://127.0.0.1:${proxyPort}/openai/v1/chat/completions`, { method: "POST", body: "{}" })
+    assert.equal(response.status, 502)
+  } finally {
+    proxy.closeAllConnections()
+    await new Promise((resolve) => proxy.close(resolve))
+  }
+})
+
+test("a request is not retried once the client goes away", async () => {
+  let calls = 0
+  const controller = new AbortController()
+  const proxy = createServer({
+    upstream: "https://upstream.test",
+    fetchImpl: (_url, init) => {
+      calls += 1
+      return new Promise((_resolve, reject) => {
+        init.signal.addEventListener("abort", () => reject(Object.assign(new Error("aborted"), { name: "AbortError" })))
+      })
+    },
+    ...FAST_RETRY,
+  })
+  await new Promise((resolve) => proxy.listen(0, "127.0.0.1", resolve))
+  try {
+    const request = fetch(`http://127.0.0.1:${proxy.address().port}/openai/v1/chat/completions`, {
+      method: "POST",
+      body: "{}",
+      signal: controller.signal,
+    })
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    controller.abort()
+    await assert.rejects(() => request)
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    assert.equal(calls, 1)
+  } finally {
+    proxy.closeAllConnections()
+    await new Promise((resolve) => proxy.close(resolve))
+  }
+})
+
+test("a busy port does not take the proxy down", async () => {
+  const first = createServer()
+  await new Promise((resolve) => first.listen(0, "127.0.0.1", resolve))
+  const port = first.address().port
+  const second = createServer()
+  const error = await new Promise((resolve) => {
+    second.once("error", resolve)
+    second.listen(port, "127.0.0.1")
+  })
+  assert.equal(error.code, "EADDRINUSE")
+  first.closeAllConnections()
+  await new Promise((resolve) => first.close(resolve))
+})
 test("a non-JSON body passes through unchanged", async () => {
   await withProxy(
     (_req, res) => {
@@ -153,22 +276,6 @@ test("a non-JSON body passes through unchanged", async () => {
       assert.equal(await response.text(), "plain text")
     },
   )
-})
-
-test("an unreachable upstream becomes a bad gateway", async () => {
-  const proxy = createServer({
-    upstream: "http://127.0.0.1:1",
-    fetchImpl: () => Promise.reject(new Error("connection refused")),
-  })
-  await new Promise((resolve) => proxy.listen(0, "127.0.0.1", resolve))
-  const proxyPort = proxy.address().port
-  try {
-    const response = await fetch(`http://127.0.0.1:${proxyPort}/openai/v1/chat/completions`, { method: "POST", body: "{}" })
-    assert.equal(response.status, 502)
-  } finally {
-    proxy.closeAllConnections()
-    await new Promise((resolve) => proxy.close(resolve))
-  }
 })
 
 test("a client that goes away cancels the upstream request", async () => {

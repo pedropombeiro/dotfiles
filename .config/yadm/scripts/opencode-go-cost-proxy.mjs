@@ -18,6 +18,34 @@ const PORT = Number(process.env.OPENCODE_GO_PROXY_PORT ?? 47990)
 const UPSTREAM = (process.env.OPENCODE_GO_PROXY_UPSTREAM ?? "https://opencode.ai/inference/go").replace(/\/+$/, "")
 const MAX_BODY_BYTES = 64 * 1024 * 1024
 
+// A laptop that just woke up has no network for a moment, and the upstream
+// occasionally answers with a temporary error. OpenCode has no other way to
+// reach the provider, so a request is retried before it is given up on.
+const RETRY_DELAYS_MS = [250, 1000, 3000]
+// The upstream has to send its headers within this window, so a black-holed
+// connection fails instead of hanging the session forever.
+const UPSTREAM_TIMEOUT_MS = 120_000
+
+// Statuses that mean "ask again" rather than "the request is wrong".
+const RETRYABLE_STATUS = new Set([408, 425, 429, 500, 502, 503, 504])
+
+// Socket and resolver failures that a later attempt can get past.
+const RETRYABLE_CODES = new Set([
+  "EAI_AGAIN",
+  "ECONNREFUSED",
+  "ECONNRESET",
+  "EHOSTUNREACH",
+  "ENETUNREACH",
+  "ENOTFOUND",
+  "EPIPE",
+  "ETIMEDOUT",
+  "UND_ERR_CONNECT_TIMEOUT",
+  "UND_ERR_HEADERS_TIMEOUT",
+  "UND_ERR_SOCKET",
+])
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
 // Headers that describe the hop rather than the request.
 const DROPPED_REQUEST_HEADERS = new Set([
   "host",
@@ -109,6 +137,55 @@ class HttpError extends Error {
   }
 }
 
+// A failure that a later attempt can still get past.
+export function isRetryableError(error) {
+  if (error?.name === "AbortError") return true
+  const code = error?.cause?.code ?? error?.code
+  if (typeof code === "string" && RETRYABLE_CODES.has(code)) return true
+  if (error instanceof TypeError) return true
+  return /fetch failed|socket hang up|network|timed? ?out/i.test(error?.message ?? "")
+}
+
+// Sends the request upstream and retries the failures that a later attempt
+// can get past. The retry stops as soon as the client goes away, because then
+// there is nobody left to answer.
+export async function fetchUpstream(fetchImpl, url, init, options = {}) {
+  const {
+    retries = RETRY_DELAYS_MS.length,
+    retryDelaysMs = RETRY_DELAYS_MS,
+    timeoutMs = UPSTREAM_TIMEOUT_MS,
+    sleep: wait = sleep,
+  } = options
+  let lastError
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    const controller = new AbortController()
+    let timedOut = false
+    const timer = timeoutMs > 0
+      ? setTimeout(() => {
+          timedOut = true
+          controller.abort()
+        }, timeoutMs)
+      : undefined
+    const signal = init.signal ? AbortSignal.any([init.signal, controller.signal]) : controller.signal
+    try {
+      const response = await fetchImpl(url, { ...init, signal })
+      if (!RETRYABLE_STATUS.has(response.status) || attempt === retries) return response
+      await response.body?.cancel().catch(() => {})
+      lastError = new Error(`the upstream answered ${response.status}`)
+    } catch (error) {
+      // The client left, so there is nobody left to answer.
+      if (init.signal?.aborted) throw error
+      if (attempt === retries || !(timedOut || isRetryableError(error))) throw error
+      lastError = error
+    } finally {
+      if (timer) clearTimeout(timer)
+    }
+    console.error(`opencode-go-cost-proxy: ${lastError?.message ?? "upstream failure"}, retrying`)
+    await wait(retryDelaysMs[Math.min(attempt, retryDelaysMs.length - 1)])
+  }
+  throw lastError ?? new Error("the upstream request failed")
+}
+
 function readBody(req, limit) {
   return new Promise((resolve, reject) => {
     const chunks = []
@@ -137,7 +214,8 @@ function readBody(req, limit) {
   })
 }
 
-async function handle(req, res, upstream, fetchImpl, maxBodyBytes) {
+async function handle(req, res, options) {
+  const { upstream, fetchImpl, maxBodyBytes, retry } = options
   const url = new URL(req.url ?? "/", "http://127.0.0.1")
   if (url.pathname === "/healthz") {
     res.writeHead(200, { "content-type": "application/json" })
@@ -176,12 +254,12 @@ async function handle(req, res, upstream, fetchImpl, maxBodyBytes) {
   // Identity keeps the body readable, so the proxy can rewrite it.
   headers["accept-encoding"] = "identity"
 
-  const response = await fetchImpl(`${upstream}${url.pathname}${url.search}`, {
+  const response = await fetchUpstream(fetchImpl, `${upstream}${url.pathname}${url.search}`, {
     method: req.method,
     headers,
     body: req.method === "GET" || req.method === "HEAD" ? undefined : body,
     signal: controller.signal,
-  })
+  }, retry)
 
   const outHeaders = {}
   for (const [name, value] of response.headers) {
@@ -237,9 +315,23 @@ async function handle(req, res, upstream, fetchImpl, maxBodyBytes) {
   res.end()
 }
 
-export function createServer({ upstream = UPSTREAM, fetchImpl = fetch, maxBodyBytes = MAX_BODY_BYTES } = {}) {
-  return http.createServer((req, res) => {
-    handle(req, res, upstream, fetchImpl, maxBodyBytes).catch((error) => {
+export function createServer(options = {}) {
+  const {
+    upstream = UPSTREAM,
+    fetchImpl = fetch,
+    maxBodyBytes = MAX_BODY_BYTES,
+    retries = RETRY_DELAYS_MS.length,
+    retryDelaysMs = RETRY_DELAYS_MS,
+    timeoutMs = UPSTREAM_TIMEOUT_MS,
+    sleep: wait = sleep,
+  } = options
+  const server = http.createServer((req, res) => {
+    handle(req, res, {
+      upstream,
+      fetchImpl,
+      maxBodyBytes,
+      retry: { retries, retryDelaysMs, timeoutMs, sleep: wait },
+    }).catch((error) => {
       // The client is gone, so there is nobody to answer.
       if (res.writableEnded || res.destroyed) return
       if (error?.name === "AbortError") {
@@ -257,14 +349,45 @@ export function createServer({ upstream = UPSTREAM, fetchImpl = fetch, maxBodyBy
       res.end(JSON.stringify({ error: "upstream request failed" }))
     })
   })
+  // A busy port or a socket error must not take the proxy down, because
+  // OpenCode has no other way to reach the provider.
+  server.on("error", (error) => {
+    console.error(`opencode-go-cost-proxy: ${error?.message ?? error}`)
+  })
+  return server
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const server = createServer()
+  // One failed request must not end the process. launchd restarts it, but
+  // every request in between fails.
+  process.on("uncaughtException", (error) => {
+    console.error(`opencode-go-cost-proxy: uncaught exception: ${error?.message ?? error}`)
+  })
+  process.on("unhandledRejection", (reason) => {
+    console.error(`opencode-go-cost-proxy: unhandled rejection: ${reason?.message ?? reason}`)
+  })
+  // The port is busy while the previous process is still shutting down, which
+  // happens on every restart.
+  let attempts = 0
+  server.on("error", (error) => {
+    if (error?.code !== "EADDRINUSE") return
+    attempts += 1
+    if (attempts > 5) {
+      console.error("opencode-go-cost-proxy: the port stays busy, giving up")
+      process.exit(1)
+    }
+    console.error("opencode-go-cost-proxy: the port is busy, retrying")
+    setTimeout(() => server.listen(PORT, HOST), 1000)
+  })
   server.listen(PORT, HOST, () => {
     console.log(`opencode-go-cost-proxy listening on ${HOST}:${PORT} -> ${UPSTREAM}`)
   })
   for (const signal of ["SIGINT", "SIGTERM"]) {
-    process.on(signal, () => server.close(() => process.exit(0)))
+    process.on(signal, () => {
+      server.close(() => process.exit(0))
+      // A client that keeps its socket open would hold the close open.
+      setTimeout(() => process.exit(0), 2000).unref()
+    })
   }
 }

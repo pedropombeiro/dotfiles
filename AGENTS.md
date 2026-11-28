@@ -5,12 +5,20 @@ This file contains core instructions applicable to most tasks. For specialized t
 ## Specialized Topics
 
 - [Shell](~/.agents/docs/shell.md) - Zsh configuration, zinit plugins, functions
-- [SSH](~/.agents/docs/ssh.md) - Persistent NAS SSH sessions after macOS sleep
+- [SSH](~/.agents/docs/ssh.md) - Remote access needs the user's agreement; persistent NAS sessions after macOS sleep
 - [Bootstrap](~/.agents/docs/bootstrap.md) - YADM bootstrap scripts for system setup
 - [Health checks](~/.agents/docs/yadm-layout.md#add-a-health-check) - Check ownership, modules, machine selection, and tests
 - [Tmux](~/.agents/docs/tmux.md) - Configuration structure, plugins, and shell integration
 - [OpenCode](~/.agents/docs/opencode.md) - Policy overrides and runtime behaviors
 - [Architecture Decisions](~/.agents/docs/adr/) - ADRs for key tool choices
+
+## Remote Machines
+
+Never open an SSH connection to another machine without the user's prior
+agreement. Read-only work counts as well: reading a file, checking a service
+status, or pulling a repository. Ask first, name the host and the commands, and
+wait for the answer. Agreement covers the machine and the task it was given
+for. See [SSH](~/.agents/docs/ssh.md).
 
 ## Dotfiles (YADM)
 

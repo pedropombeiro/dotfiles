@@ -1,5 +1,16 @@
 # SSH Configuration
 
+## Remote access needs agreement
+
+An agent must not open an SSH connection to another machine without the user's
+prior agreement. Read-only work counts: reading a file, checking a service
+status, or pulling a repository. Ask first, name the host and the commands you
+intend to run, and wait for the answer.
+
+Agreement covers the machine and the task it was given for. "Go ahead" on a
+local change doesn't cover the remote half of a rollout, and a task that ends
+on one machine doesn't extend to the next.
+
 ## NAS Session Persistence
 
 `ssh_persist` reconnects an SSH session after a transport failure. The NAS iTerm2

@@ -185,6 +185,11 @@
     "explore": { "model": "{env:OPENCODE_FAST_MODEL}" },
     "title": { "model": "{env:OPENCODE_FAST_MODEL}" }
   },
+  // Compact around 170k-178k tokens on 1M-context models to stay below the 200k
+  // long-context pricing tier.
+  "compaction": {
+    "buffer": "83%"
+  },
   "mcp": {
     "servers": {
       "lazy-mcp": {

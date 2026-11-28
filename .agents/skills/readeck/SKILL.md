@@ -21,6 +21,8 @@ KOReader Readeck plugin, shows the content as sent.
   Docs **Web Page (.html, zipped)** export and a Markdown file.
 - Another skill, such as `video-takeaways`, needs to post content or list labels.
 - The user asks which labels already exist in Readeck.
+- The user asks about a bookmark that already exists, such as listing, reading,
+  labeling, or deleting one.
 
 ## When not to use
 
@@ -33,14 +35,32 @@ KOReader Readeck plugin, shows the content as sent.
 ## Helpers
 
 - [`scripts/readeck`](scripts/readeck): posts a Markdown or HTML file, uploads its
-  local images, and lists labels. [`references/API.md`](references/API.md) covers
-  credentials, options, output, and troubleshooting.
+  local images, and lists labels. It also lists, reads, labels, and deletes
+  bookmarks. [`references/API.md`](references/API.md) covers credentials,
+  options, output, and troubleshooting.
 - [`scripts/prepare-document`](scripts/prepare-document): converts a local
   document into Readeck-ready Markdown and copies its local images next to it.
   [`references/DOCUMENTS.md`](references/DOCUMENTS.md) describes the conversion.
 
 Other skills call `scripts/readeck` through the sibling path
 `../readeck/scripts/readeck` relative to their own skill directory.
+
+## Inspect and manage bookmarks
+
+Use these when the task is about a bookmark that already exists, such as
+marking a shared video as handled or checking what Readeck holds.
+
+- `scripts/readeck list` prints the bookmarks as JSON, newest first. Use
+  `--since TIMESTAMP` to narrow the result to a time range and `--limit N` to
+  cap it.
+- `scripts/readeck get ID` prints one bookmark as JSON.
+- `scripts/readeck label ID --add LABEL` adds a label, and
+  `scripts/readeck label ID --remove LABEL` removes one. Repeat the option for
+  more than one label.
+- `scripts/readeck delete ID` removes a bookmark.
+
+The ID is the short UID from the API, not the internal numeric ID. Readeck
+finds a bookmark to replace by its URL, so an exact URL match matters.
 
 ## Send a local document
 

@@ -8,12 +8,20 @@ usage() {
   cat <<'EOF'
 Usage: readeck post [OPTIONS] FILE
   or:  readeck tags [--env-file PATH]
+  or:  readeck list [--since TIMESTAMP] [--limit N] [--env-file PATH]
+  or:  readeck get ID [--env-file PATH]
+  or:  readeck label ID (--add LABEL | --remove LABEL) [--env-file PATH]
+  or:  readeck delete ID [--env-file PATH]
 
 Commands:
   post    Send a Markdown (.md) or HTML (.html) file to Readeck as a bookmark.
           Readeck doesn't deduplicate URLs, so an existing bookmark with the same
           URL makes the command fail unless you pass --replace.
   tags    Print existing labels with bookmark counts, most used first.
+  list    Print bookmarks as JSON, newest first.
+  get     Print one bookmark as JSON.
+  label   Add or remove a label on a bookmark.
+  delete  Delete a bookmark.
 
 Post options:
   --url URL            Bookmark URL (required). Used to find existing bookmarks
@@ -25,6 +33,15 @@ Post options:
   --expect TEXT        Fail unless the stored article contains TEXT
   --replace            Replace bookmarks with the same URL, keeping their state
   --timeout SECONDS    Time to wait for Readeck to process the page (default: 60)
+
+List options:
+  --since TIMESTAMP    Only bookmarks created at or after this time. The value
+                        is a Readeck time token, such as 2026-11-27T08:00:00Z
+  --limit N            Maximum number of bookmarks to return (default: 50, max: 100)
+
+Label options:
+  --add LABEL          Label to add; repeat for more than one
+  --remove LABEL       Label to remove; repeat for more than one
 
 Common options:
   --env-file PATH      Credentials file (or READECK_ENV_FILE)
@@ -60,7 +77,7 @@ fi
 command=$1
 shift
 case "$command" in
-post | tags) ;;
+post | tags | list | get | label | delete) ;;
 -h | --help)
   usage
   exit 0
@@ -82,33 +99,82 @@ expect=""
 replace=false
 wait_seconds=60
 tag_args=()
+add_labels=()
+remove_labels=()
+bookmark_id=""
+since=""
+list_limit=50
+positional=()
+
+# Options that only make sense for one command.
+require_command() {
+  local option=$1 wanted=$2
+  if [[ $command != "$wanted" ]]; then
+    die 64 "$option is only valid with the $wanted command"
+  fi
+}
 
 while (($# > 0)); do
   case "$1" in
-  --env-file | --url | --title | --author | --lang | --tag | --thumbnail | --expect | --timeout)
+  --env-file | --url | --title | --author | --lang | --tag | --thumbnail | --expect | --timeout | --add | --remove | --since | --limit)
     if (($# < 2)); then
       die 64 "$1 requires a value"
     fi
-    if [[ $command == tags && $1 != --env-file ]]; then
-      die 64 "$1 is only valid with the post command"
-    fi
     case "$1" in
     --env-file) env_file=$2 ;;
-    --url) entry_url=$2 ;;
-    --title) title=$2 ;;
-    --author) author=$2 ;;
-    --lang) language=$2 ;;
-    --tag) tag_args+=("$2") ;;
-    --thumbnail) thumbnail=$2 ;;
-    --expect) expect=$2 ;;
-    --timeout) wait_seconds=$2 ;;
+    --url)
+      require_command --url post
+      entry_url=$2
+      ;;
+    --title)
+      require_command --title post
+      title=$2
+      ;;
+    --author)
+      require_command --author post
+      author=$2
+      ;;
+    --lang)
+      require_command --lang post
+      language=$2
+      ;;
+    --tag)
+      require_command --tag post
+      tag_args+=("$2")
+      ;;
+    --thumbnail)
+      require_command --thumbnail post
+      thumbnail=$2
+      ;;
+    --expect)
+      require_command --expect post
+      expect=$2
+      ;;
+    --timeout)
+      require_command --timeout post
+      wait_seconds=$2
+      ;;
+    --add)
+      require_command --add label
+      add_labels+=("$2")
+      ;;
+    --remove)
+      require_command --remove label
+      remove_labels+=("$2")
+      ;;
+    --since)
+      require_command --since list
+      since=$2
+      ;;
+    --limit)
+      require_command --limit list
+      list_limit=$2
+      ;;
     esac
     shift 2
     ;;
   --replace)
-    if [[ $command == tags ]]; then
-      die 64 "--replace is only valid with the post command"
-    fi
+    require_command --replace post
     replace=true
     shift
     ;;
@@ -118,6 +184,7 @@ while (($# > 0)); do
     ;;
   --)
     shift
+    positional+=("$@")
     break
     ;;
   -*)
@@ -126,23 +193,67 @@ while (($# > 0)); do
     exit 64
     ;;
   *)
-    break
+    positional+=("$1")
+    shift
+    # post takes the file last, so every option is already parsed. label takes
+    # its ID first and keeps parsing, so that --add and --remove can follow it.
+    if [[ $command != label ]]; then
+      break
+    fi
     ;;
   esac
 done
 
-if [[ $command == tags ]]; then
-  if (($# != 0)); then
-    usage >&2
-    exit 64
-  fi
-  dependencies=(curl jq)
-else
-  if (($# != 1)); then
+case "$command" in
+post)
+  if ((${#positional[@]} != 1)); then
     usage >&2
     exit 64
   fi
   dependencies=(curl jq perl)
+  ;;
+tags)
+  if ((${#positional[@]} != 0)); then
+    usage >&2
+    exit 64
+  fi
+  dependencies=(curl jq)
+  ;;
+list)
+  if ((${#positional[@]} != 0)); then
+    usage >&2
+    exit 64
+  fi
+  if [[ ! $list_limit =~ ^[0-9]+$ ]] || ((list_limit < 1 || list_limit > 100)); then
+    die 64 "--limit must be a number between 1 and 100"
+  fi
+  dependencies=(curl jq)
+  ;;
+get | label | delete)
+  if ((${#positional[@]} != 1)); then
+    usage >&2
+    exit 64
+  fi
+  bookmark_id=${positional[0]}
+  if [[ ! $bookmark_id =~ ^[A-Za-z0-9]+$ ]]; then
+    die 64 "bookmark ID must be alphanumeric: $bookmark_id"
+  fi
+  dependencies=(curl jq)
+  ;;
+esac
+
+if [[ $command == label ]]; then
+  if ((${#add_labels[@]} == 0 && ${#remove_labels[@]} == 0)); then
+    die 64 "label requires --add or --remove"
+  fi
+  if ((${#add_labels[@]} > 0 && ${#remove_labels[@]} > 0)); then
+    die 64 "label accepts --add or --remove, not both"
+  fi
+  for label in "${add_labels[@]}" "${remove_labels[@]}"; do
+    if [[ -z $label || $label == *[[:cntrl:]]* ]]; then
+      die 64 "a label must not be empty or contain control characters"
+    fi
+  done
 fi
 
 for dependency in "${dependencies[@]}"; do
@@ -162,7 +273,7 @@ check_plain() {
 
 # Validate post arguments before touching credentials or the network.
 if [[ $command == post ]]; then
-  readonly input=$1
+  readonly input=${positional[0]}
   if [[ ! -r $input ]]; then
     die 1 "input file is not readable: $input"
   fi
@@ -360,6 +471,54 @@ if [[ $command == tags ]]; then
     exit 0
   fi
   jq -r 'sort_by(-(.count // 0), .name) | .[] | "\(.count // 0)\t\(.name)"' "$tags_response"
+  exit 0
+fi
+
+if [[ $command == list ]]; then
+  query="limit=$list_limit"
+  if [[ -n $since ]]; then
+    encoded_since=$(jq -rn --arg value "$since" '$value | @uri')
+    query="$query&range_start=$encoded_since"
+  fi
+  list_file="$work_dir/bookmarks.json"
+  api_ok "Readeck bookmark list" 200 GET "/api/bookmarks?$query" "$list_file"
+  if ! jq -e 'type == "array"' "$list_file" >/dev/null 2>&1; then
+    die 1 "Readeck bookmark list response is not a JSON array"
+  fi
+  jq . "$list_file"
+  exit 0
+fi
+
+if [[ $command == get ]]; then
+  bookmark_file="$work_dir/bookmark.json"
+  api_ok "Readeck bookmark request" 200 GET "/api/bookmarks/$bookmark_id" "$bookmark_file"
+  if ! jq -e . "$bookmark_file" >/dev/null 2>&1; then
+    die 1 "Readeck bookmark response is not JSON"
+  fi
+  jq . "$bookmark_file"
+  exit 0
+fi
+
+if [[ $command == label ]]; then
+  request_file="$work_dir/labels.json"
+  if ((${#add_labels[@]} > 0)); then
+    jq -n --args '{add_labels: $ARGS.positional}' "${add_labels[@]}" >"$request_file"
+  else
+    jq -n --args '{remove_labels: $ARGS.positional}' "${remove_labels[@]}" >"$request_file"
+  fi
+  response_file="$work_dir/label-response.json"
+  api_ok "Readeck bookmark update" 200 PATCH "/api/bookmarks/$bookmark_id" "$response_file" \
+    --header 'Content-Type: application/json' --data-binary @"$request_file"
+  if ! jq -e . "$response_file" >/dev/null 2>&1; then
+    die 1 "Readeck bookmark update response is not JSON"
+  fi
+  jq . "$response_file"
+  exit 0
+fi
+
+if [[ $command == delete ]]; then
+  api_ok "Readeck bookmark removal" "200 204" DELETE "/api/bookmarks/$bookmark_id" "$work_dir/delete.json"
+  printf 'deleted_id=%s\n' "$bookmark_id"
   exit 0
 fi
 

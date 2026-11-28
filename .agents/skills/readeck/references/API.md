@@ -108,6 +108,52 @@ scripts/readeck tags
 Each line has the form `COUNT<TAB>LABEL`, most used first. Labels without
 bookmarks don't appear.
 
+## List bookmarks
+
+```bash
+scripts/readeck list [--since TIMESTAMP] [--limit N]
+```
+
+Prints the bookmarks as a JSON array, newest first. `--limit` caps the result
+at 100 bookmarks and defaults to 50. `--since` narrows the result to the
+bookmarks created at or after a time.
+
+The `--since` value is a Readeck time token. An absolute value is a UTC
+timestamp written as `YYYY-MM-DD` or `YYYY-MM-DD HH:MM:SS`. The ISO form with
+a `T` and a `Z` is rejected. Relative tokens such as `now` and `-1d` work too.
+
+```bash
+scripts/readeck list --since "2026-11-27 22:00:00" --limit 20
+```
+
+## Read a bookmark
+
+```bash
+scripts/readeck get ID
+```
+
+Prints one bookmark as JSON. The ID is the short UID, such as
+`uqGgEGMGKk6HK1yd5RAmf`, not the internal numeric ID that appears in the
+Readeck server log.
+
+## Label a bookmark
+
+```bash
+scripts/readeck label ID --add LABEL
+scripts/readeck label ID --remove LABEL
+```
+
+Adds or removes labels and prints the updated bookmark. Repeat the option for
+more than one label. The two options can't be combined in one call.
+
+## Delete a bookmark
+
+```bash
+scripts/readeck delete ID
+```
+
+Deletes a bookmark and prints `deleted_id=ID`.
+
 ## Re-send a bookmark
 
 Readeck doesn't deduplicate URLs. Posting an existing URL again would create a

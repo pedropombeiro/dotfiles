@@ -379,8 +379,8 @@
         },
         // Local provider adds native Gemini direct access.
         // Gemini 4 uses implicit caching only, so it has no cache write price.
-        // Carbon uses the standard price that starts Dec 1, 2026. The introductory
-        // price before then is $2 / $10, with cache reads at $0.10.
+        // Carbon and Argon use the standard price that starts Dec 1, 2026. The
+        // introductory price before then is $2 / $10, with cache reads at $0.10.
         "duo-chat-gemini-4-carbon": {
           "package": "aisdk:file:///Users/pedropombeiro/Developer/gitlab.com/vglafirov/gitlab-ai-provider/dist/index.mjs",
           "name": "Agentic Chat (Gemini 4 Carbon)",
@@ -399,7 +399,8 @@
           "package": "aisdk:file:///Users/pedropombeiro/Developer/gitlab.com/vglafirov/gitlab-ai-provider/dist/index.mjs",
           "name": "Agentic Chat (Gemini 4 Argon)",
           "limit": { "context": 1000000, "output": 65536 },
-          "capabilities": { "tools": true, "temperature": false, "input": ["text", "image", "pdf"], "output": ["text"], "reasoning": { "supported": true } }
+          "capabilities": { "tools": true, "temperature": false, "input": ["text", "image", "pdf"], "output": ["text"], "reasoning": { "supported": true } },
+          "cost": [{ "input": 4, "output": 20, "cache": { "read": 0.20 } }]
         },
         "duo-chat-kimi-k3-1-pro": {
           "cost": [{ "input": 2, "output": 10, "cache": { "read": 0.20, "write": 2 } }]
@@ -414,7 +415,10 @@
       },
       "models": {
         // Gemini 4 is available in the EU multi-region, not europe-west6.
-        "gemini-4-argon": { "settings": { "location": "eu" } },
+        "gemini-4-argon": {
+          "settings": { "location": "eu" },
+          "cost": [{ "input": 4, "output": 20, "cache": { "read": 0.20 } }]
+        },
         "gemini-4-carbon": { "settings": { "location": "eu" } },
         "gemini-4-hydrogen": { "settings": { "location": "eu" } },
         "gemini-4-neon": { "settings": { "location": "eu" } }

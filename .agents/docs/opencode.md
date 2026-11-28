@@ -88,6 +88,26 @@ When the user approves a change that touches this directory, deliver it as a pat
 Don't apply the patch yourself, and don't write protected files through shell
 commands. The deny rule exists so the user applies these changes.
 
+## Unattended agents
+
+An agent that runs without anybody at the keyboard needs its own permissions, because the global ones ask before a shell
+command and allow every question. Rules combine in order: lower-priority configuration first, global rules next, agent
+rules last, and the last match wins. A rule in an agent therefore overrides a global rule of the same action.
+
+- A request that no rule matches resolves to `ask`. A non-interactive run (`opencode run`) rejects such a request instead
+  of prompting, and the model continues without the tool.
+- `external_directory` is checked before `read` and `edit`, so the global ask covers every path outside the project
+  directory. A file the run needs outside the project needs an `external_directory` allow and a `read` allow for the same
+  path, and a deny for the same path wins over both.
+- `{env:VAR}` in a config file resolves in the OpenCode service process, not in the client that started the run, and the
+  service doesn't carry the client's environment. A model reference that uses one resolves to nothing, so the run has to
+  name the model on the command line, or the caller has to write the resolved value into the config it deploys.
+- An agent can set `hidden: true`, which keeps it out of the agent picker and the subagent catalog while
+  `opencode run --agent <id>` still selects it.
+- A project config can define agents, and one in the session's own directory is the narrowest place for an agent that
+  only that session needs. The Readeck video takeaways pipeline on the NAS works that way: the NAS repository holds
+  `compose/readeck/video-takeaways-agent.jsonc`, and the daemon copies it into the pipeline's work directory at startup.
+
 ## Secret Protection
 
 `~/.config/opencode/plugins/env-protection.js` is a plain tracked file, so it is active on

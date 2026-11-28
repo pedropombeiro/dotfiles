@@ -9,3 +9,12 @@ keep_alive = true
 throttle_interval = 30
 environment = { PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin", XDG_CONFIG_HOME = "{{ xdg_config_home }}" }
 working_directory = "~"
+
+# Rewrites the OpenCode Go cost, so the provider has to reach the proxy.
+[bootstrap.macos.launchd.agents.opencode-go-cost-proxy]
+program = "{{ xdg_config_home }}/yadm/scripts/run-opencode-go-cost-proxy.sh"
+run_at_load = true
+keep_alive = true
+throttle_interval = 30
+environment = { PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin", XDG_CONFIG_HOME = "{{ xdg_config_home }}" }
+working_directory = "~"

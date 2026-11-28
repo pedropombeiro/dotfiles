@@ -394,6 +394,60 @@ fresh interactive shell to preserve the telemetry environment too. Config reload
 do not refresh the service's environment. Existing sessions can retain their
 explicitly selected model.
 
+## Go subscription cost
+
+OpenCode Go reports `usage.cost = 0` for requests that the Go subscription covers.
+OpenCode prefers the provider-reported cost over its own catalog estimate, and a
+reported zero is authoritative, so every Go session records a cost of zero and the
+Grafana cost panels stay empty for Go models. The same payload carries the list
+price in `usage.opencode.list_cost`.
+
+A local proxy closes the gap:
+
+- `~/.config/yadm/scripts/opencode-go-cost-proxy.mjs` is a dependency-free Node
+  script that listens on `127.0.0.1:47990` and forwards to
+  `https://opencode.ai/inference/go`. It sets `usage.cost` to the reported list
+  price, but only when the response reports zero. A real charge, which happens
+  when Go's Extra Usage falls back to Console credits, is left untouched, and a
+  response without a list price drops the zero so OpenCode falls back to the
+  catalog price. It rewrites JSON bodies and streamed frames, passes errors and
+  non-JSON bodies through, answers `GET /healthz` with `{"status":"ok"}`, and
+  returns 502 when the upstream is unreachable. It logs no headers, tokens, or
+  prompt content.
+  - A client that goes away cancels the upstream request, so a stopped request
+    doesn't keep generating and burning allowance.
+  - A failure that arrives after the response started drops the connection
+    instead of ending it, so OpenCode sees an error rather than a truncated
+    success.
+  - A request body over the limit gets a 413 instead of a reset.
+  - A stream frame is rewritten whatever its line terminator is, and a frame
+    that carries several data lines is joined before it is parsed.
+- `opencode.json##template` points the `opencode-go` provider at
+  `http://127.0.0.1:47990/openai/v1` in the non-Work branch, so the Mac and the
+  NAS use it. Only the `baseURL` changes; the credentials and the
+  `x-opencode-org-id` header still come from the `opencode` integration.
+- On macOS, `~/.config/yadm/scripts/run-opencode-go-cost-proxy.sh` starts the
+  proxy through the `bootstrap.macos.launchd.agents.opencode-go-cost-proxy`
+  LaunchAgent. The log is in `$XDG_STATE_HOME/opencode-go-cost-proxy/proxy.log`.
+- On the NAS, the `opencode-go-cost-proxy` Compose stack runs the same script
+  from the NAS's YADM checkout and publishes it on the NAS loopback, where the
+  host OpenCode service reaches it. A `yadm pull` on the NAS updates the
+  script, but the running container keeps the old one until it restarts.
+
+Removing the `baseURL` override restores direct access to OpenCode Go. While the
+override is in place, Go requests fail if the proxy is down; launchd and the
+container's restart policy bring it back.
+
+The proxy has its own tests:
+
+```sh
+mise exec -- node --test ~/.config/yadm/scripts/opencode-go-cost-proxy.test.mjs
+```
+
+The `session-metrics` plugin shows the Go allowance for Go sessions, and warns
+when the proxy doesn't answer. See
+[its README](../../.config/opencode/local-plugins/tui/session-metrics/README.md).
+
 ## Managed server configuration
 
 Edit `~/.config/opencode/opencode.json##template`, then run `yadm alt` to render

@@ -228,6 +228,12 @@
     "anthropic": {
       "settings": { "setCacheKey": true }
     },
+    // Go reports usage.cost = 0 for subscription-covered requests. The local
+    // proxy rewrites it to usage.opencode.list_cost, so cost reporting works.
+    // See ~/.agents/docs/opencode.md#go-subscription-cost.
+    "opencode-go": {
+      "settings": { "baseURL": "http://127.0.0.1:47990/openai/v1" }
+    },
 {% endif %}
     "gitlab": {
       "package": "aisdk:gitlab-ai-provider@6.25.0",

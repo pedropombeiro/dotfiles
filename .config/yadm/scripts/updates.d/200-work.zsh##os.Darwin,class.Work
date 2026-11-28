@@ -136,10 +136,19 @@ cleanup_gitlab_excludes() {
   gdk_root=${1}
   gitlab_exclude_file="${gdk_root}/gitlab/.git/info/exclude"
 
-    rm -f "${gdk_root}/gitlab/opencode.jsonc"
+    rm -f "${gdk_root}/gitlab/opencode.jsonc" \
+      "${gdk_root}/gitlab/.ai/lessons-learned.local.md" \
+      "${gdk_root}/gitlab/.opencode/skills/repo-bootstrap/SKILL.md" \
+      "${gdk_root}/gitlab/.opencode/skills/tool-routing/SKILL.md"
+    rmdir "${gdk_root}/gitlab/.opencode/skills/repo-bootstrap" \
+      "${gdk_root}/gitlab/.opencode/skills/tool-routing" 2>/dev/null || true
   if [[ -f ${gitlab_exclude_file} ]]; then
     sed -i '' '/^opencode\.jsonc$/d' "${gitlab_exclude_file}"
     sed -i '' '/^\/AGENTS\.local\.md$/d' "${gitlab_exclude_file}"
+    sed -i '' '/^\/\.ai\/lessons-learned\.local\.md$/d' "${gitlab_exclude_file}"
+    # Retired in favour of CLAUDE.local.md and global AGENTS.md routing
+    sed -i '' '\|^/\.opencode/skills/repo-bootstrap/|d' "${gitlab_exclude_file}"
+    sed -i '' '\|^/\.opencode/skills/tool-routing/|d' "${gitlab_exclude_file}"
     # Retired in favour of the global ~/.agents/skills/orbit copy
     sed -i '' '\|^/\.opencode/skills/orbit/|d' "${gitlab_exclude_file}"
     # Retired in favour of the repo-tracked .claude/skills/glab copy
@@ -326,8 +335,7 @@ write_opencode_config() {
 {
   "\$schema": "https://opencode.ai/config.json",
   "instructions": [
-    "CLAUDE.local.md",
-    ".ai/lessons-learned.local.md"
+    "CLAUDE.local.md"
   ],
   // Disable formatter to preserve project's existing code style
   "formatter": {

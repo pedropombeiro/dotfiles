@@ -6,7 +6,7 @@ the task needs them.
 ## Core Rules
 
 {% if yadm.class == "Work" %}
-- Always read `~/.agents/docs/work.md` for Work-machine instructions.
+- On Work machines: use the `glean_default` MCP server first (`chat` for synthesis, `search` for raw results) for GitLab docs, handbook, runbooks, and company knowledge; load `esquery` for Kibana logs (`esquery` / `esquery-staging` MCP, RED data); load `devex-clickhouse` (`clickhouse` MCP) for CI/test/work-item analytics. Read `~/.agents/docs/work.md` only when calling those tools, editing `$GDK_ROOT/gitlab` personal dotfiles, or running `gdkbox` on Compute Engine.
 {% endif %}
 - For library and framework documentation, use Context7 first.
 - In Code Mode, call MCP servers through `tools["lazy-mcp"].list_commands({ server })` -> `tools["lazy-mcp"].describe_commands({ server, command_names })` -> `tools["lazy-mcp"].invoke_command({ server, command_name, parameters })`. Describe only command names returned by `list_commands`; skip `list_commands` and `describe_commands` when a command's schema is already documented in loaded instructions or skills, or already invoked in the current session.

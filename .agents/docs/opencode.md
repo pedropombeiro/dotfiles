@@ -8,7 +8,7 @@ For everyday controls and common tasks, see the [OpenCode cheat sheet](../../.gi
   links there. OpenCode also discovers `~/.claude/skills` automatically.
 - Work-only skills live in `~/.agents/skills.work`. Only the Work branch of
   `opencode.json##template` adds that directory through `skills`.
-- `AGENTS.md##template` adds the instruction to read `~/.agents/docs/work.md`
+- `AGENTS.md##template` adds the Work routing summary and pointer to `~/.agents/docs/work.md`
   only on Work machines, through a `{% if yadm.class == "Work" %}` block. OpenCode 2
   accepts the `instructions` config field but does not load its entries.
 - Keep work-only skills out of all shared discovery directories. The

@@ -42,8 +42,8 @@ needed to proceed.
 ## Run a job
 
 1. **Resolve and pin on the host.** Load `glab` before forge operations,
-   `mr-workflow` for MR procedures, and `repo-bootstrap` and
-   `gitlab-coding-principles` as applicable for GitLab code work. Resolve mutable
+   `mr-workflow` for MR procedures, and `gitlab-coding-principles` as applicable
+   for GitLab code work. Resolve mutable
    refs to full commit SHAs. Accept an issue, merge request, branch, commit, or
    patch as input. For an issue, record the chosen base and any
    associated change to test. For an MR, distinguish diff base, source head, and

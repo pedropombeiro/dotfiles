@@ -1,6 +1,7 @@
 # Work instructions
 
-OpenCode's Work-specific global `AGENTS.md` instructs the agent to read this file.
+OpenCode's Work-specific global `AGENTS.md` summarizes Work tool routing and directs the agent to
+read this file when using Glean, `esquery`, DevEx ClickHouse, GDK dotfiles, or `gdkbox` on Compute Engine.
 
 - For GitLab documentation, runbooks, handbook content, or company knowledge,
   use Glean first via `tools["lazy-mcp"].invoke_command({ server: "glean_default", command_name, parameters })`.

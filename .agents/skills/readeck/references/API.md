@@ -86,8 +86,10 @@ PNG, JPEG, GIF, WebP, or SVG image.
 
 Use `--expect` with text that appears only in the supplied content, such as a
 sentence near the end of a document or a timestamp parameter in a video
-summary. A missing match means that Readeck used something other than the
-supplied content.
+summary. The helper matches `TEXT` against the stored HTML and against the
+extracted visible text with normalized whitespace, so phrases that wrap across
+HTML lines or inline tags still match. A missing match means that Readeck used
+something other than the supplied content.
 
 ### Failed sends
 

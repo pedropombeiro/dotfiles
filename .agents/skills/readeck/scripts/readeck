@@ -285,6 +285,9 @@ if [[ $command == post ]]; then
   if [[ $input_format == markdown ]] && ! command -v pandoc >/dev/null 2>&1; then
     die 127 "required command not found: pandoc"
   fi
+  if [[ -n $expect ]] && ! command -v python3 >/dev/null 2>&1; then
+    die 127 "required command not found: python3"
+  fi
   case "$entry_url" in
   "") die 64 "--url is required" ;;
   http://* | https://*) ;;
@@ -760,9 +763,73 @@ fi
 article_file="$work_dir/article.html"
 api_ok "Readeck article request" 200 GET "/api/bookmarks/$entry_id/article" "$article_file"
 
+# Check whether the stored article HTML contains the expected text, matching
+# either raw HTML (for link/attribute substrings such as t=123s) or extracted
+# visible text after whitespace normalization (for phrases split across HTML
+# line breaks, inline markup, or HTML entities).
+article_contains_expected() {
+  local html_file=$1 expected=$2
+  python3 - "$html_file" "$expected" <<'PY'
+from html.parser import HTMLParser
+from pathlib import Path
+import sys
+
+BLOCK_TAGS = frozenset({
+    "address", "article", "aside", "blockquote", "br", "caption", "dd",
+    "details", "div", "dl", "dt", "figcaption", "figure", "footer", "h1",
+    "h2", "h3", "h4", "h5", "h6", "header", "hr", "li", "main", "nav", "ol",
+    "p", "pre", "section", "summary", "table", "tbody", "td", "tfoot", "th",
+    "thead", "tr", "ul",
+})
+SKIP_TAGS = frozenset({"script", "style", "template"})
+
+
+class TextExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.skip_depth = 0
+        self.chunks = []
+
+    def handle_starttag(self, tag, attrs):
+        tag = tag.lower()
+        if tag in SKIP_TAGS:
+            self.skip_depth += 1
+        elif self.skip_depth == 0 and tag in BLOCK_TAGS:
+            self.chunks.append(" ")
+
+    def handle_endtag(self, tag):
+        tag = tag.lower()
+        if tag in SKIP_TAGS:
+            if self.skip_depth > 0:
+                self.skip_depth -= 1
+        elif self.skip_depth == 0 and tag in BLOCK_TAGS:
+            self.chunks.append(" ")
+
+    def handle_data(self, data):
+        if self.skip_depth == 0:
+            self.chunks.append(data)
+
+
+html_path, expected = sys.argv[1], sys.argv[2]
+normalized_expected = " ".join(expected.split())
+if not normalized_expected:
+    sys.exit(1)
+
+raw_html = Path(html_path).read_text(encoding="utf-8", errors="replace")
+if expected in raw_html:
+    sys.exit(0)
+
+parser = TextExtractor()
+parser.feed(raw_html)
+parser.close()
+visible_text = " ".join("".join(parser.chunks).split())
+sys.exit(0 if normalized_expected in visible_text else 1)
+PY
+}
+
 validation=skipped
 if [[ -n $expect ]]; then
-  if grep -q -F -- "$expect" "$article_file"; then
+  if article_contains_expected "$article_file" "$expect"; then
     validation=passed
   else
     discard_new_bookmark

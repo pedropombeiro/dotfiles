@@ -188,6 +188,12 @@ availability. Keep related checks together when they share state or ordering.
 Run `zsh ~/.config/yadm/scripts/tests/test-run-checks.zsh` to test discovery and
 failure handling with isolated fixtures, without running live health checks.
 
+The agent doc link check in `checks.d/040-agent-doc-links.zsh` accepts YADM
+alternates as link targets. An alternate renders the file it names on the
+machines its condition applies to, so a doc that links to
+`notes.md##class.Work` stays valid on machines where that alternate isn't
+rendered. A link with no matching file or alternate is still reported.
+
 `scripts/tests/` holds regression tests with fixtures and mocks. They don't run
 as part of health checks. `scripts/validators/` holds CI and hook validators.
 Health checks can call a validator when the same validation is useful at runtime,

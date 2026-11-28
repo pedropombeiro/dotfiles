@@ -15,3 +15,11 @@ lazy_bins = ["mcp-grafana"]
 [tools."github:grafana/mcp-grafana".platforms]
 # Select the native CLI archive, not the similarly named MCP bundle assets.
 linux-x64 = { asset_pattern = "mcp-grafana_Linux_x86_64.tar.gz" }
+
+# Markdown converter. The readeck skill needs it to turn a Markdown document
+# into HTML before it posts it.
+[tools."github:jgm/pandoc"]
+version = "3.14"
+
+[tools."github:jgm/pandoc".platforms]
+linux-x64 = { asset_pattern = "pandoc-*-linux-amd64.tar.gz" }

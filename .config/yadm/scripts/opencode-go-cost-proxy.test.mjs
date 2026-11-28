@@ -1,7 +1,7 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
 import http from "node:http"
-import { createServer, rewriteFrame, rewriteUsage } from "./opencode-go-cost-proxy.mjs"
+import { createServer, rewriteFrame, rewriteThinking, rewriteUsage } from "./opencode-go-cost-proxy.mjs"
 
 // The retry waits for real in production, and the tests skip the waiting.
 const FAST_RETRY = { retries: 3, retryDelaysMs: [0, 0, 0], sleep: () => Promise.resolve() }
@@ -381,6 +381,62 @@ test("the path and query reach the upstream unchanged", async () => {
       const response = await fetch(`http://127.0.0.1:${proxyPort}/openai/v1/chat/completions?stream=true`)
       const { url } = await response.json()
       assert.equal(url, "/openai/v1/chat/completions?stream=true")
+    },
+  )
+})
+
+test("the Messages path reaches the Anthropic path upstream", async () => {
+  await withProxy(
+    (req, res) => {
+      res.writeHead(200, { "content-type": "application/json" })
+      res.end(JSON.stringify({ url: req.url }))
+    },
+    async ({ proxyPort }) => {
+      const response = await fetch(`http://127.0.0.1:${proxyPort}/openai/v1/messages`, { method: "POST", body: "{}" })
+      const { url } = await response.json()
+      assert.equal(url, "/anthropic/v1/messages")
+    },
+  )
+})
+
+test("the thinking binding control is dropped", () => {
+  const body = Buffer.from(
+    JSON.stringify({ model: "claude-haiku-5-5", thinking: { type: "adaptive", block_binding: { prefix_mismatch_behavior: "drop_block" } } }),
+  )
+  const rewritten = JSON.parse(rewriteThinking(body).toString("utf8"))
+  assert.deepEqual(rewritten.thinking, { type: "adaptive" })
+})
+
+test("a request without a binding control is unchanged", () => {
+  const body = Buffer.from(JSON.stringify({ model: "claude-haiku-5-5", thinking: { type: "disabled" } }))
+  assert.equal(rewriteThinking(body), body)
+})
+
+test("a body that isn't JSON is unchanged", () => {
+  const body = Buffer.from("not json")
+  assert.equal(rewriteThinking(body), body)
+})
+
+test("an Anthropic request reaches the upstream without the binding control", async () => {
+  await withProxy(
+    (req, res) => {
+      const chunks = []
+      req.on("data", (chunk) => chunks.push(chunk))
+      req.on("end", () => {
+        res.writeHead(200, { "content-type": "application/json" })
+        res.end(JSON.stringify({ body: Buffer.concat(chunks).toString("utf8") }))
+      })
+    },
+    async ({ proxyPort }) => {
+      const response = await fetch(`http://127.0.0.1:${proxyPort}/openai/v1/messages`, {
+        method: "POST",
+        body: JSON.stringify({
+          model: "claude-haiku-5-5",
+          thinking: { type: "adaptive", block_binding: { prefix_mismatch_behavior: "drop_block" } },
+        }),
+      })
+      const { body } = await response.json()
+      assert.deepEqual(JSON.parse(body).thinking, { type: "adaptive" })
     },
   )
 })

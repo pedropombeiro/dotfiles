@@ -382,6 +382,11 @@ Model selections are defined once in `~/.config/mise/conf.d/` and referenced by
   the offline fallback for `git-ai-commit-msg` on personal machines;
   `~/.config/mise/conf.d/env.work.toml` clears it on Work machines where
   `provider.use` policy denies `ollama`.
+- The Go models share one monthly allowance pool, but each model has its own
+  limit, so a model with a small limit burns the allowance faster. The fast
+  slots use `opencode-go/mimo-v2.6-flash`: it speaks the OpenAI-compatible API
+  that the proxy forwards, and its $60 monthly limit against Claude Haiku's $15
+  makes it cheaper per token of the same request.
 
 YADM links `~/Developer/gitlab.com/opencode.jsonc` (plus the GDK and Caproni
 roots) for formatter overrides without forcing GitLab Duo globally. To select a
@@ -422,6 +427,13 @@ A local proxy closes the gap:
   - A request body over the limit gets a 413 instead of a reset.
   - A stream frame is rewritten whatever its line terminator is, and a frame
     that carries several data lines is joined before it is parsed.
+  - The Anthropic models, such as Claude Haiku, speak the Messages API, which
+    Go serves under `/anthropic/v1/messages`. The `baseURL` covers the
+    OpenAI-compatible path, so the proxy maps a Messages request to the
+    Anthropic path. Without the mapping, every Anthropic model answers 404.
+  - Go's Anthropic endpoint rejects `thinking.adaptive.block_binding`, which
+    the AI SDK sends so a cached prefix survives a mismatch. The proxy drops
+    the field, which keeps the request usable.
 - `opencode.json##template` points the `opencode-go` provider at
   `http://127.0.0.1:47990/openai/v1` in the non-Work branch, so the Mac and the
   NAS use it. Only the `baseURL` changes; the credentials and the
@@ -464,6 +476,25 @@ mise exec -- node --test ~/.config/yadm/scripts/opencode-go-cost-proxy.test.mjs
 The `session-metrics` plugin shows the Go allowance for Go sessions, and warns
 when the proxy doesn't answer. See
 [its README](../../.config/opencode/local-plugins/tui/session-metrics/README.md).
+
+### Context budget
+
+The Go models report a 1M context window, so a session keeps growing until it
+is far past the long-context pricing tier, and every request re-sends the
+whole conversation. `opencode.json##template` caps the Go models at 150k
+input.
+
+The compaction ceiling is the model's own window minus the buffer, and the
+buffer is a share of that window. A Go session therefore compacts around 127k
+tokens, at 15%. The Work class keeps its 83% buffer, because its models are
+not capped and the buffer is what keeps them below the 200k tier. The GitLab
+Duo models keep the catalog limits, so on the NAS their window is the
+catalog's, and the same 15% buffer leaves them a much higher ceiling than the
+Go models have.
+
+The compaction summary re-sends the whole context, so it runs on the fast
+model, which is the cheapest model on the meter. The `tool_output` caps keep a
+single tool result from pushing the conversation past the ceiling.
 
 ## Managed server configuration
 

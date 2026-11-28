@@ -72,6 +72,29 @@ const DROPPED_RESPONSE_HEADERS = new Set([
 // CR, and the blank line can mix them.
 const FRAME_END = /\r\n\r\n|\n\r\n|\r\n\n|\n\n|\r\r/
 
+// Go serves the Anthropic Messages API under its own path. OpenCode sends the
+// Anthropic models to the provider base URL, which points at the
+// OpenAI-compatible path, so the Messages path arrives here as
+// `/openai/v1/messages` and the upstream answers 404.
+const ANTHROPIC_MESSAGES_PATH = "/anthropic/v1/messages"
+
+// Go's Anthropic endpoint rejects `thinking.adaptive.block_binding`, which the
+// AI SDK sends so a cached prefix survives a mismatch. The field only tells
+// Anthropic how to treat a prefix it already holds, so dropping it keeps the
+// request usable.
+export function rewriteThinking(body) {
+  let parsed
+  try {
+    parsed = JSON.parse(body.toString("utf8"))
+  } catch {
+    return body
+  }
+  const thinking = parsed?.thinking
+  if (thinking?.type !== "adaptive" || !thinking.block_binding) return body
+  delete thinking.block_binding
+  return Buffer.from(JSON.stringify(parsed))
+}
+
 // Go reports `usage.cost = 0` for subscription-covered requests. The list
 // price travels in the same payload, so copy it over. A reported non-zero cost
 // is a real charge, which happens when Go's Extra Usage falls back to Console
@@ -254,10 +277,17 @@ async function handle(req, res, options) {
   // Identity keeps the body readable, so the proxy can rewrite it.
   headers["accept-encoding"] = "identity"
 
-  const response = await fetchUpstream(fetchImpl, `${upstream}${url.pathname}${url.search}`, {
+  // Anthropic models speak the Messages API, which Go serves under its own
+  // path. The base URL in the configuration covers the OpenAI-compatible one,
+  // so the Messages path is remapped here.
+  const anthropic = url.pathname.endsWith("/messages")
+  const target = anthropic ? ANTHROPIC_MESSAGES_PATH : url.pathname
+  const payload = anthropic ? rewriteThinking(body) : body
+
+  const response = await fetchUpstream(fetchImpl, `${upstream}${target}${url.search}`, {
     method: req.method,
     headers,
-    body: req.method === "GET" || req.method === "HEAD" ? undefined : body,
+    body: req.method === "GET" || req.method === "HEAD" ? undefined : payload,
     signal: controller.signal,
   }, retry)
 

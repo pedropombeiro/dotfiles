@@ -1,7 +1,11 @@
 [env]
 OPENCODE_PLAN_MODEL = "opencode-go/kimi-k3.1-pro"
 OPENCODE_BUILD_MODEL = "opencode-go/minimax-m3.1-flash"
-OPENCODE_FAST_MODEL = "opencode-go/claude-haiku-5-5"
+# The title and explore agents need a model that speaks the OpenAI-compatible
+# API the Go proxy forwards. Claude Haiku speaks the Anthropic API and has the
+# smallest monthly limit of the models in use, so it burns the allowance
+# fastest.
+OPENCODE_FAST_MODEL = "opencode-go/mimo-v2.6-flash"
 OPENCODE_OFFLINE_MODEL = "ollama/gemma4:e2b"
 
 # Per-machine credential stays outside yadm. Unprovisioned machines can still

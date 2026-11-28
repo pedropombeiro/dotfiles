@@ -183,13 +183,29 @@
     "plan": { "model": "{env:OPENCODE_PLAN_MODEL}", "color": "#fb4934" },
     "build": { "model": "{env:OPENCODE_BUILD_MODEL}", "color": "#b8bb26" },
     "explore": { "model": "{env:OPENCODE_FAST_MODEL}" },
+{% if yadm.class != "Work" %}
+    // The summary re-sends the whole context, so it runs on the fast model,
+    // which is the cheapest model on the meter.
+    "compaction": { "model": "{env:OPENCODE_FAST_MODEL}" },
+{% endif %}
     "title": { "model": "{env:OPENCODE_FAST_MODEL}" }
   },
+{% if yadm.class == "Work" %}
   // Compact around 170k-178k tokens on 1M-context models to stay below the 200k
   // long-context pricing tier.
   "compaction": {
     "buffer": "83%"
   },
+{% else %}
+  // The buffer is a share of each model's own window. The Go models are
+  // capped at 150k input below, so their window is 150k and the 15% margin
+  // leaves about 127k for the conversation.
+  "compaction": {
+    "auto": true,
+    "keep": { "tokens": 15000 },
+    "buffer": "15%"
+  },
+{% endif %}
   "mcp": {
     "servers": {
       "lazy-mcp": {
@@ -237,7 +253,44 @@
     // proxy rewrites it to usage.opencode.list_cost, so cost reporting works.
     // See ~/.agents/docs/opencode.md#go-subscription-cost.
     "opencode-go": {
-      "settings": { "baseURL": "http://127.0.0.1:47990/openai/v1" }
+      "settings": { "baseURL": "http://127.0.0.1:47990/openai/v1" },
+      // The Go models report a 1M context window, so a session keeps growing
+      // until it is far past the long-context pricing tier. The subscription is
+      // metered against a monthly allowance per model, so cap the window at
+      // 150k: the compaction ceiling is the window minus 15%, so a session
+      // compacts around 127k and every request stays small.
+      //
+      // The free models are left alone: they don't use the allowance. Add a
+      // model here when the catalog gains a paid one.
+      "models": {
+        "claude-haiku-5-5": { "limit": { "input": 150000 } },
+        "deepseek-v4-pro": { "limit": { "input": 150000 } },
+        "deepseek-v4.1-flash": { "limit": { "input": 150000 } },
+        "gemini-4-argon": { "limit": { "input": 150000 } },
+        "glm-5.3": { "limit": { "input": 150000 } },
+        "glm-5.3-flash": { "limit": { "input": 150000 } },
+        "gpt-5.6-luna": { "limit": { "input": 150000 } },
+        "gpt-6-luna": { "limit": { "input": 150000 } },
+        "grok-4.7": { "limit": { "input": 150000 } },
+        "hy3": { "limit": { "input": 150000 } },
+        "hy4": { "limit": { "input": 150000 } },
+        "hy4-preview": { "limit": { "input": 150000 } },
+        "kimi-k2.7-code": { "limit": { "input": 150000 } },
+        "kimi-k3": { "limit": { "input": 150000 } },
+        "kimi-k3.1-pro": { "limit": { "input": 150000 } },
+        "longcat-2.5": { "limit": { "input": 150000 } },
+        "mimo-v2.6-flash": { "limit": { "input": 150000 } },
+        "mimo-v2.6-pro": { "limit": { "input": 150000 } },
+        "minimax-m3": { "limit": { "input": 150000 } },
+        "minimax-m3.1-flash": { "limit": { "input": 150000 } },
+        "muse-spark-1.2-contributor": { "limit": { "input": 150000 } },
+        "muse-spark-1.3-contributor": { "limit": { "input": 150000 } },
+        "qwen3.7-plus": { "limit": { "input": 150000 } },
+        "qwen3.8-flash": { "limit": { "input": 150000 } },
+        "qwen3.8-max": { "limit": { "input": 150000 } },
+        "qwen4-max": { "limit": { "input": 150000 } },
+        "step-5-preview": { "limit": { "input": 150000 } }
+      }
     },
 {% endif %}
     "gitlab": {
@@ -429,6 +482,9 @@
   "share": "disabled",
   "update": "disable",
   "snapshots": false,
+  // Tool output is the biggest source of context growth. Truncating it keeps
+  // the conversation small enough to stay under the compaction ceiling.
+  "tool_output": { "max_lines": 500, "max_bytes": 20480 },
   // The last matching rule wins, so each broad default precedes its exceptions.
   "permissions": [
     { "action": "*", "resource": "*", "effect": "ask" },

@@ -676,6 +676,17 @@ while ((offset < total)); do
   offset=$((offset + 100))
 done
 
+if ((${#existing_ids[@]} == 0)); then
+  # The site filter doesn't always return the bookmark. A share that carries
+  # tracking parameters was stored under a host the filter didn't answer, so
+  # scan the newest bookmarks too before concluding there is no match.
+  recent_response="$work_dir/recent.json"
+  api_ok "Readeck bookmark list" 200 GET "/api/bookmarks?limit=100" "$recent_response"
+  while IFS= read -r existing; do
+    [[ -n $existing ]] && existing_ids+=("$existing")
+  done < <(jq -r --arg url "$entry_url" '.[] | select(.url == $url) | .id' "$recent_response")
+fi
+
 if ((${#existing_ids[@]} > 0)) && [[ $replace != true ]]; then
   printf 'existing_id=%s\n' "${existing_ids[0]}"
   die 1 "a bookmark with this URL already exists (${existing_ids[*]}); pass --replace to replace it"

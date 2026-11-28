@@ -111,3 +111,23 @@ unverified summary from video metadata or search results.
    metadata, or use third-party transcript sites without explicit approval.
 5. If the user declines a fallback, stop. Explain that timestamped takeaways
    require a transcript or another time-aligned source.
+
+## Unattended mode
+
+A run is unattended when nobody can answer a question. The Readeck video
+takeaways pipeline on the NAS uses this mode. In it:
+
+- Never ask a question and never call the `question` tool. The destination, the
+  language, and the posting are already decided.
+- Post the notes to Readeck without waiting for approval, and report the result
+  in the run output instead.
+- When the transcript helper fails because the video has no captions, stop
+  without posting and label the bookmark `no-summary`:
+  `../readeck/scripts/readeck label BOOKMARK_ID --add no-summary`
+- When the run fails for any other reason, label the bookmark
+  `video-takeaways-failed` the same way, and leave the bookmark in place.
+- Write the draft to a file in the working directory and delete it when the run
+  ends.
+- Pass `--url` to `scripts/send-to-readeck` when the caller gives an exact URL.
+  Readeck matches the bookmark to replace by URL, and a rewritten URL leaves
+  two bookmarks behind.

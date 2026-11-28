@@ -1,15 +1,25 @@
 import type { aggregate } from "./metrics"
 
-export const duration = (ms: number) => ms >= 3_600_000 ? `${(ms / 3_600_000).toFixed(1)}h` : ms >= 60_000 ? `${Math.floor(ms / 60_000)}m` : `${Math.floor(ms / 1000)}s`
+// Durations above a day read as days, so a weekly reset doesn't show as 168.0h.
+export const duration = (ms: number) => ms >= 86_400_000 ? `${(ms / 86_400_000).toFixed(1)}d` : ms >= 3_600_000 ? `${(ms / 3_600_000).toFixed(1)}h` : ms >= 60_000 ? `${Math.floor(ms / 60_000)}m` : `${Math.floor(ms / 1000)}s`
 export const percent = (value: number | undefined) => value === undefined ? "unavailable" : `${value.toFixed(0)}%`
 
 // Which detail view an indicator opens when clicked.
-export type Indicator = "compaction" | "cache" | "timing"
-export interface Segment { kind: Indicator; text: string }
+export type Indicator = "compaction" | "cache" | "timing" | "allowance"
 
-// The footer shows only timing; compaction and cache stay in the sidebar and details.
-export function segments(active: number): Segment[] {
-  return active >= 1000 ? [{ kind: "timing", text: `active ${duration(active)}` }] : []
+// How loudly a segment speaks. The footer keeps the muted tone unless the
+// segment needs attention.
+export type SegmentTone = "normal" | "warn" | "error"
+
+export interface Segment { kind: Indicator; text: string; tone?: SegmentTone }
+
+// The footer shows the timing and, for Go sessions, the allowance. Compaction
+// and cache stay in the sidebar and the details.
+export function segments(active: number, allowance?: { text: string; tone?: SegmentTone }): Segment[] {
+  const items: Segment[] = active >= 1000 ? [{ kind: "timing", text: `active ${duration(active)}` }] : []
+  // The allowance goes last, so a narrow footer drops it before the timing.
+  if (allowance) items.push({ kind: "allowance", text: allowance.text, tone: allowance.tone })
+  return items
 }
 
 export const join = (items: readonly Segment[]) => items.map((item) => item.text).join(" · ")

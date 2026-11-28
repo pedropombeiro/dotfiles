@@ -2,10 +2,11 @@
 import { Plugin } from "@opencode/plugin/tui"
 import type { PanelInput } from "@opencode/plugin/tui/context"
 import type { BoxRenderable } from "@opentui/core"
-import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js"
+import { createEffect, createMemo, createSignal, For, onCleanup, onMount, Show, untrack } from "solid-js"
 import { history } from "./src/history"
 import { aggregate, descendants, measure, type Message } from "./src/metrics"
-import { CACHE_NOTE, duration, fit, join, percent, segments, TIMING_NOTE, type Indicator } from "./src/format"
+import { CACHE_NOTE, duration, fit, join, percent, segments, TIMING_NOTE, type Indicator, type SegmentTone } from "./src/format"
+import { ALLOWANCE_NOTE, allowanceText, compactAllowanceText, fetchLimits, metersByUrgency, nearestCap, probeProxy, resetText, severity, type Limits, type Severity, type UsageStatus } from "./src/usage"
 
 export default Plugin.define({
   id: "pedropombeiro.session-metrics",
@@ -13,6 +14,9 @@ export default Plugin.define({
     const [version, update] = createSignal(0)
     const [now, clock] = createSignal(Date.now())
     const [mounted, sidebar] = createSignal<Record<string, number>>({})
+    const [limits, setLimits] = createSignal<Limits | undefined>()
+    const [proxyUp, setProxyUp] = createSignal<boolean | undefined>()
+    const [usageStatus, setUsageStatus] = createSignal<UsageStatus>("idle")
     const controller = new AbortController()
     const store = history({
       session: (id) => context.client.session.get({ sessionID: id }, { signal: controller.signal }),
@@ -41,6 +45,7 @@ export default Plugin.define({
     const acquire = (id: string) => {
       refs.set(id, (refs.get(id) ?? 0) + 1)
       refresh(id)
+      void refreshUsage([id])
       return () => {
         const count = (refs.get(id) ?? 1) - 1
         if (count) refs.set(id, count)
@@ -52,6 +57,61 @@ export default Plugin.define({
       const all = new Map(store.entries().flatMap(([, entry]) => entry.session ? [[entry.session.id, entry.session] as const] : []))
       for (const session of context.data.session.list()) all.set(session.id, session)
       return [...all.values()]
+    }
+    // A Go session is one whose model comes from the Go subscription. A fresh
+    // session has no messages yet, so the session model is the only signal.
+    const providerOf = (id: string) => {
+      const session = sessions().find((item) => item.id === id)
+      if (session?.model?.providerID) return session.model.providerID
+      for (const message of store.get(id).records.values()) {
+        if (message.model?.providerID) return message.model.providerID
+      }
+      return undefined
+    }
+    // The allowance is workspace-wide, so one fetch serves every Go session.
+    // Requests are coalesced, so mounting several views doesn't multiply
+    // them, and a late answer never replaces a newer one.
+    let usageRequest = 0
+    let usageRunning = false
+    let usageQueued = false
+    const refreshUsage = async (ids: readonly string[]) => {
+      if (disposed) return
+      // The lookup reads the history version, which would otherwise make the
+      // refresh depend on the very updates it triggers.
+      if (!untrack(() => ids.some((id) => providerOf(id) === "opencode-go"))) return
+      if (usageRunning) {
+        usageQueued = true
+        return
+      }
+      usageRunning = true
+      try {
+        do {
+          usageQueued = false
+          const request = ++usageRequest
+          setUsageStatus("loading")
+          // The current location is the one on screen. The default location
+          // can belong to another workspace.
+          const directory = (context.location ?? context.data.location.default())?.directory
+          const [loaded, up] = await Promise.all([
+            fetchLimits(context.client, directory, controller.signal).then(
+              (value) => ({ value }),
+              () => undefined,
+            ),
+            probeProxy(controller.signal),
+          ])
+          if (disposed || request !== usageRequest) return
+          if (loaded) {
+            setLimits(loaded.value)
+            setUsageStatus(loaded.value?.go ? "ready" : "empty")
+          } else {
+            // A failed fetch keeps the last good values.
+            setUsageStatus("failed")
+          }
+          setProxyUp(up)
+        } while (usageQueued && !disposed)
+      } finally {
+        usageRunning = false
+      }
     }
     const values = (id: string) => {
       const revision = version()
@@ -76,6 +136,32 @@ export default Plugin.define({
       const own = list.find((value) => value.session.id === id)
       if (!own) return
       return { own, list, total: aggregate(list), partial: list.some((value) => !store.get(value.session.id).complete || !!store.get(value.session.id).error) }
+    }
+    const tone = (level: Severity) => {
+      if (level === "error") return context.theme.text.feedback.error.base
+      if (level === "warn") return context.theme.text.feedback.warning.base
+      return context.theme.text.base
+    }
+
+    // The Go allowance leads the sidebar for Go sessions, above the native
+    // indicators and the plugin's own metrics.
+    function GoAllowance(props: { sessionID: string }) {
+      const data = createMemo(() => limits()?.go)
+      const up = createMemo(() => proxyUp())
+      const go = createMemo(() => providerOf(props.sessionID) === "opencode-go")
+      const status = createMemo(() => usageStatus())
+      const fallback = createMemo(() => status() === "loading" ? "Go allowance loading…" : "Go allowance unavailable")
+      onMount(() => onCleanup(acquire(props.sessionID)))
+      return <Show when={go()}>
+        <box gap={0} flexShrink={0}>
+          <Show when={up() === false}>
+            <text fg={context.theme.text.feedback.error.base} onMouseUp={() => openIndicator("allowance", props.sessionID)}>Go proxy down</text>
+          </Show>
+          <Show when={data()} fallback={<text fg={context.theme.text.muted} onMouseUp={() => openIndicator("allowance", props.sessionID)}>{fallback()}</text>}>
+            {(value) => <text fg={tone(severity(nearestCap(value())[1]))} onMouseUp={() => openIndicator("allowance", props.sessionID)}>{allowanceText(value())}</text>}
+          </Show>
+        </box>
+      </Show>
     }
 
     function Sidebar(props: { sessionID: string }) {
@@ -117,15 +203,23 @@ export default Plugin.define({
         if (!props.sessionID || mounted()[props.sessionID] || context.options.footer === false) return []
         const data = summary(props.sessionID)
         if (!data) return []
-        return segments(data.total.active)
+        const go = providerOf(props.sessionID) === "opencode-go" ? limits()?.go : undefined
+        if (!go) return segments(data.total.active)
+        const [, meter] = nearestCap(go)
+        return segments(data.total.active, { text: compactAllowanceText(go, now()), tone: severity(meter) })
       })
       const desired = () => Bun.stringWidth(join(items()))
+      const segmentTone = (level?: SegmentTone) => level === "error"
+        ? context.theme.text.feedback.error.base
+        : level === "warn"
+          ? context.theme.text.feedback.warning.base
+          : context.theme.text.muted
       return <Show when={desired() > 0}>
         <box width={desired()} flexShrink={100} minWidth={0} height={1} overflow="hidden" flexDirection="row"
           onSizeChange={function (this: BoxRenderable) { const size = this.width; queueMicrotask(() => resize(size)) }}>
           <For each={fit(items(), width())}>{(item, index) => <>
             <Show when={index() > 0}><text wrapMode="none" flexShrink={0} fg={context.theme.text.muted}>{" · "}</text></Show>
-            <text wrapMode="none" flexShrink={0} fg={context.theme.text.muted} onMouseUp={() => props.sessionID && openIndicator(item.kind, props.sessionID)}>{item.text}</text>
+            <text wrapMode="none" flexShrink={0} fg={segmentTone(item.tone)} onMouseUp={() => props.sessionID && openIndicator(item.kind, props.sessionID)}>{item.text}</text>
           </>}</For>
         </box>
       </Show>
@@ -205,12 +299,12 @@ export default Plugin.define({
     }
 
     function showCompaction(message: Message) {
-      context.ui.dialog.set({ size: "large", centered: true })
       context.ui.dialog.show(() => <box padding={1} height={Math.max(8, Math.min(30, context.renderer.height - 6))} gap={1}>
         <text fg={context.theme.text.base}><b>{message.reason} compaction · {message.status}</b></text>
         <scrollbox flexGrow={1} minHeight={0} scrollX={false}><text fg={context.theme.text.base}>{message.summary ?? message.error?.message ?? "Compaction in progress"}</text></scrollbox>
         <CloseRow />
       </box>)
+      context.ui.dialog.set({ size: "large", centered: true })
     }
 
     const closeAction = { bind: "ctrl+w", title: "Close", side: "right" as const, selection: "none" as const, onTrigger: () => context.ui.dialog.clear() }
@@ -220,6 +314,40 @@ export default Plugin.define({
       if (!records.length) return context.ui.toast.show({ message: "No compactions in this session yet", variant: "info" })
       const message = await context.ui.dialog.select({ title: "Compaction history", actions: [closeAction], options: records.map((item) => ({ title: `${new Date(item.time.created).toLocaleString()} · ${item.reason} · ${item.status}`, value: item })) })
       if (message) showCompaction(message)
+    }
+
+    function AllowanceDetail(props: { sessionID: string }) {
+      const data = createMemo(() => limits()?.go)
+      const up = createMemo(() => proxyUp())
+      const link = createMemo(() => limits()?.workspace.usageURL)
+      const price = createMemo(() => context.data.session.cost(props.sessionID))
+      const status = createMemo(() => usageStatus())
+      const fallback = createMemo(() => {
+        if (status() === "failed") return "Allowance unavailable"
+        if (status() === "empty") return "This workspace reports no Go allowance"
+        return "Loading…"
+      })
+      return <box padding={1} height={Math.max(8, Math.min(24, context.renderer.height - 6))} gap={1}>
+        <text fg={context.theme.text.base}><b>Go allowance</b><span style={{ fg: context.theme.text.muted }}> · workspace-wide</span></text>
+        <scrollbox flexGrow={1} minHeight={0} scrollX={false}>
+          <box gap={1} flexShrink={0}>
+            <Show when={up() === false}>
+              <text fg={context.theme.text.feedback.error.base}><b>Proxy down</b>{"\n"}Go requests fail while the proxy is down. Remove the opencode-go baseURL override to reach OpenCode Go directly.</text>
+            </Show>
+            <Show when={data()} fallback={<text fg={context.theme.text.muted}>{fallback()}</text>}>{(value) => (
+              <box gap={0} flexShrink={0}>
+                <For each={metersByUrgency(value())}>{([, title, meter]) => (
+                  <text fg={context.theme.text.muted}>{title} <span style={{ fg: tone(severity(meter)) }}><b>{percent(meter.percent)}</b></span> · {resetText(meter, now())}</text>
+                )}</For>
+                <text fg={context.theme.text.muted}>Session list price <span style={{ fg: context.theme.text.base }}><b>${price().toFixed(4)}</b></span></text>
+                <Show when={link()}>{(value) => <text fg={context.theme.text.muted}>Usage <span style={{ fg: context.theme.text.base }}><b>{value()}</b></span></text>}</Show>
+              </box>
+            )}</Show>
+            <text fg={context.theme.text.muted}><b>How to read this</b>{"\n"}{ALLOWANCE_NOTE}</text>
+          </box>
+        </scrollbox>
+        <CloseRow />
+      </box>
     }
 
     function Detail(props: { kind: "cache" | "timing"; sessionID: string }) {
@@ -251,10 +379,15 @@ export default Plugin.define({
 
     function openIndicator(kind: Indicator, sessionID: string) {
       if (kind === "compaction") return void showCompactionHistory(sessionID)
+      // Showing a dialog resets its size and centering, so the size is set
+      // afterwards.
+      context.ui.dialog.show(() => kind === "allowance"
+        ? <AllowanceDetail sessionID={sessionID} />
+        : <Detail kind={kind} sessionID={sessionID} />)
       context.ui.dialog.set({ size: "large", centered: true })
-      context.ui.dialog.show(() => <Detail kind={kind} sessionID={sessionID} />)
     }
 
+    context.ui.slot({ prepend: "sidebar.content", render: (props) => <GoAllowance sessionID={props.sessionID} /> })
     context.ui.slot({ append: "sidebar.content", render: (props) => <Sidebar sessionID={props.sessionID} /> })
     context.ui.slot({ append: "prompt.footer.status", render: (props) => <Footer sessionID={props.sessionID} /> })
     context.ui.slot({ append: "session.panel", render: (props) => <Show when={props.name === "metrics.details"}><Panel panel={props} /></Show> })
@@ -278,6 +411,7 @@ export default Plugin.define({
       const id = event.data?.sessionID ?? (event.type === "session.created" ? event.data?.id : undefined)
       if (!id) return
       if (event.type === "session.revert.committed") store.reset(id)
+      if (event.type === "session.model.selected" || event.type === "session.created") void refreshUsage([id])
       const relevant = [...refs.keys()].filter((root) => descendants(root, sessions()).includes(id))
       if (!relevant.length && event.type !== "session.created") return
       if (/session\.(execution\.|compaction\.|created|revert\.|model\.)/.test(event.type)) {
@@ -299,12 +433,23 @@ export default Plugin.define({
       if (refs.size) clock(Date.now())
     }, 1000)
     const reconcile = setInterval(() => { for (const root of refs.keys()) refresh(root) }, 30_000)
+    const usageTick = setInterval(() => {
+      const ids = [...refs.keys()]
+      if (!ids.some((id) => providerOf(id) === "opencode-go")) {
+        setLimits(undefined)
+        setProxyUp(undefined)
+        setUsageStatus("idle")
+        return
+      }
+      void refreshUsage(ids)
+    }, 60_000)
     return () => {
       disposed = true
       controller.abort()
       stop()
       clearInterval(tick)
       clearInterval(reconcile)
+      clearInterval(usageTick)
       for (const timer of timers.values()) clearTimeout(timer)
       store.dispose()
     }

@@ -1,10 +1,14 @@
 # session-metrics
 
 A CLI plugin for OpenCode V2 that shows compaction, cache, and timing metrics in
-the sidebar. When the sidebar is hidden, a footer contribution shows only the
-active time, and only when it fits the allocated space. Compaction and cache
-metrics stay in the sidebar and the details panel. The native context/cost and
-forge indicators take priority.
+the sidebar. When the sidebar is hidden, a footer contribution shows the active
+time, and only when it fits the allocated space. Compaction and cache metrics
+stay in the sidebar and the details panel. The native context/cost and forge
+indicators take priority.
+
+For sessions that run on the OpenCode Go subscription, the plugin also shows the
+Go allowance, in the sidebar and in the footer, and warns when the local cost
+proxy is down.
 
 ## Commands
 
@@ -22,6 +26,7 @@ Each indicator opens its own detail:
 | Compactions (sidebar) | The compaction history, where you pick a summary to read |
 | Cache (sidebar) | Cache reuse, read and write tokens, and input coverage, with a line per session |
 | Active, Model, tools (sidebar), `active` (footer) | Timing for the session and its descendants, with a line per session |
+| Go allowance (sidebar), `Go 62% → 1.1h` (footer) | The Go allowance meters, their reset times, the session list price, and the console usage link |
 
 Every dialog has a Close button. Escape closes it too, and Enter activates the button.
 The session title and `/session-metrics` open the full panel.
@@ -62,6 +67,42 @@ end timestamp in those records. Historical permission/question waits cannot be
 reconstructed separately. Timing is therefore recorded coverage, not billing time.
 Forked sessions exclude inherited messages dated before the fork's creation.
 
+## Go allowance
+
+OpenCode Go reports `usage.cost = 0` for requests that the subscription covers,
+and OpenCode prefers the provider-reported cost over its catalog estimate. A
+local proxy rewrites the reported zero to the list price, so the native cost
+indicator shows the list price rather than zero.
+
+The plugin adds the Go allowance for sessions whose model comes from the
+`opencode-go` provider. It reads the workspace allowance from the server's
+usage limits, which reports the share of the rolling 5-hour, weekly, and monthly
+allowances that the workspace has used, plus the reset time of each window. The
+sidebar shows one line, `Go 5h 5% · wk 22% · mo 11%`, above the plugin's own
+metrics. Sessions on other providers are unchanged.
+
+The window nearest its cap is the one worth watching, so the details panel lists
+it first, and the compact footer line names it rather than a fixed window. The
+footer reads `Go 62% → 1.1h`: the share of that window that the workspace has
+used, and the time left before the window resets. A percentage without the reset
+time says nothing about how much room is left, since a window that clears soon
+only matters when it runs out. The reset time also identifies the window, so
+the footer leaves the label out. Both turn amber at 80% and red once a window
+is limited. The panel keeps the reset time on every row.
+
+The allowance is workspace-wide, so it covers every client of the workspace, not
+only the session on screen. The plugin reads it for the current location,
+refreshes it every 60 seconds and when the session model changes, and coalesces
+overlapping requests so that mounting several views doesn't multiply them.
+
+The dollar figure in the details is the list price of the session's requests.
+The subscription covers them, so it is a burn rate rather than a bill.
+
+The Go provider only answers while the local cost proxy runs. The plugin probes
+the proxy's health endpoint for Go sessions and shows `Go proxy down` when it
+doesn't answer, so an outage doesn't look like a provider fault. The details
+explain the rollback.
+
 ## Loading and options
 
 Both `cli.base.json` alternates load this directory explicitly. Set `footer: false`
@@ -72,6 +113,9 @@ session loads in parallel. Partial history remains visible after a failure. Live
 events are coalesced, and visible sessions reconcile every 30 seconds to recover
 missed events. Completed calculations are cached between updates. No prompts or
 tool output are written to plugin storage; compaction summaries stay in memory.
+A failed allowance fetch keeps the last good values and never blanks the other
+metrics. The details report the failure, so a first load that fails doesn't
+look like a pending one.
 
 ## Tests
 
